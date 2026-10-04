@@ -1,7 +1,8 @@
 """The per-panel settings schema: the layout keys every HUD panel has, plus the panel's own.
 
-components.json stores (and a settings window edits) `x`, `y`, `align_x`, `align_y`, `alpha` (0-100), `font_size`,
-`drag`, `border` and `scale` (percent, set with the edit modifier + wheel on the Gameface page) for every panel.
+components.json stores (and a settings window edits) `x`, `y`, `align_x`, `align_y`, `alpha` (0-100), `drag` and
+`scale` (percent, set with the edit modifier + wheel on the Gameface page) for every panel; `font_size` and `border` are
+constants (`PANEL_FIXED`).
 `layout_props` maps them to the renderer props (GUIFlash label names; `scale` and `kind` reach only the Gameface
 page). The panel's on/off switch stays in the companion config.
 
@@ -13,7 +14,7 @@ its default place and takes no drag while the key is on.
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ...compat import is_number, string_types, to_text
-from ...settings import Schema
+from ...settings import Schema, fix
 from .constants import (
     ALIAS_PREFIX,
     DOCK_ANCHORS,
@@ -28,6 +29,7 @@ from .constants import (
     MOVED_ALIGNS,
     PANEL_CHOICES,
     PANEL_DEFAULTS,
+    PANEL_FIXED,
     PANEL_LIMITS,
     PLACE_KEYS,
 )
@@ -80,11 +82,13 @@ def panel_schema(defaults=None, choices=None, limits=None, normalizers=None, ret
     """The common panel keys plus the panel's own; the panel's defaults win (its own x/y, alignment)."""
     merged = dict(PANEL_DEFAULTS)
     merged.update(defaults or {})
+    fixed = dict((key, merged.get(key, value)) for key, value in PANEL_FIXED.items())
     all_choices = dict(PANEL_CHOICES)
     all_choices.update(choices or {})
     all_limits = dict(PANEL_LIMITS)
     all_limits.update(limits or {})
-    return PanelSchema(merged, choices=all_choices, limits=all_limits, normalizers=normalizers, retired=retired)
+    schema = PanelSchema(merged, choices=all_choices, limits=all_limits, normalizers=normalizers, retired=retired)
+    return fix(schema, fixed)
 
 
 def place_of(values):

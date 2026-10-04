@@ -8,8 +8,14 @@ from ....core.client.game import map_label, vehicle_short_name
 from ....core.client.hud.icons import client_file_exists
 from ....core.client.me import can_read, post_signed, signed_body
 from ....core.client.replays import replay_dir
+from ....core.compat import to_text
 from ....core.errors import ReasonError
-from ....core.events import EVENT_REPLAY_UPLOAD_REQUEST, EVENT_REPLAY_UPLOADED
+from ....core.events import (
+    EVENT_HIT_VIEWER_OPEN,
+    EVENT_REPLAY_UPLOAD_REQUEST,
+    EVENT_REPLAY_UPLOADED,
+    hit_viewer_battles,
+)
 from ....core.hud.icons import image
 from ....core.log import log
 from ....core.me import OK_STATUS
@@ -20,6 +26,7 @@ from ..model import (
     ACTION_DELETE,
     ACTION_FAVOURITE,
     ACTION_FOLDER,
+    ACTION_HITS,
     ACTION_PLAY,
     ACTION_REFRESH,
     ACTION_RENAME,
@@ -96,6 +103,7 @@ class ReplayManager(FeatureComponent):
             ACTION_DELETE: self._delete,
             ACTION_FAVOURITE: self._favourite,
             ACTION_UPLOAD: self._upload,
+            ACTION_HITS: self._open_hits,
         }
         app.bus.on(EVENT_REPLAY_UPLOADED, self._on_uploaded)
         app.bus.on('battle_event', self._on_battle_event)
@@ -230,6 +238,7 @@ class ReplayManager(FeatureComponent):
             upload=self._upload_state(),
             describe_vehicle=self.vehicles,
             image=_client_image,
+            viewer_battles=hit_viewer_battles(self.app.bus),
         )
         return build_page(
             self._replays(),
@@ -299,6 +308,12 @@ class ReplayManager(FeatureComponent):
             raise ReplayActionError(refusal)
         request_play(replay['path'])
         return self.notice_info('replay_manager_play_restarting', name=replay['name'])
+
+    def _open_hits(self, replay, value=None):
+        arena = (replay['header'] or {}).get('arena_unique_id')
+        if not arena:
+            raise ReplayActionError(ERROR_NO_ARENA)
+        self.app.bus.emit(EVENT_HIT_VIEWER_OPEN, to_text(arena))
 
     def _upload(self, replay, value=None):
         header = replay['header'] or {}

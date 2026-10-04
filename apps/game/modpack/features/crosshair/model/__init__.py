@@ -10,10 +10,13 @@ from .constants import (
     MARK_RENDITIONS,
     MARK_ROOT,
     MODE_RETICLES,
+    OUTLINE_SUFFIX,
     PRESET_PARTS,
+    RETIRED_MARKS,
     SERVER_RETICLE,
     SNIPER,
-    TINTED_FOLDER,
+    VECTOR_FOLDER,
+    VECTOR_RENDITIONS,
 )
 
 # Visual only: a preset sets the opacity and style of reticle parts the game's settings already offer, and a centre
@@ -42,31 +45,54 @@ def to_native(values):
     return result
 
 
-def rendition(size):
-    for candidate in MARK_RENDITIONS:
+def rendition(size, renditions=MARK_RENDITIONS):
+    for candidate in renditions:
         if size <= candidate:
             return candidate
-    return MARK_RENDITIONS[-1]
+    return renditions[-1]
 
 
-def mark_image(mark, size, color=DEFAULT_MARK_COLOR):
+def is_vector(mark):
+    found = MARK_FILES.get(mark)
+    return found is not None and found[0] == VECTOR_FOLDER
+
+
+def normalize_mark(value):
+    return RETIRED_MARKS.get(value, value)
+
+
+def mark_image(mark, size, color=DEFAULT_MARK_COLOR, outline=False):
     found = MARK_FILES.get(mark)
     if found is None or not size:
         return None
 
     folder, stem = found
-    if folder == TINTED_FOLDER:
-        if color not in MARK_COLORS:
-            color = DEFAULT_MARK_COLOR
-        stem = '%s_%s' % (stem, color)
-    return '%s/%s/%s_%d.png' % (MARK_ROOT, folder, stem, rendition(size))
+    if folder != VECTOR_FOLDER:
+        return '%s/%s/%s_%d.png' % (MARK_ROOT, folder, stem, rendition(size))
+
+    if color not in MARK_COLORS:
+        color = DEFAULT_MARK_COLOR
+    suffix = OUTLINE_SUFFIX if outline else ''
+    return '%s/%s/%s%s_%s_%d.png' % (MARK_ROOT, folder, stem, suffix, color, rendition(size, VECTOR_RENDITIONS))
 
 
-def mark_html(mark, size, color=DEFAULT_MARK_COLOR):
-    path = mark_image(mark, size, color)
+def settings_mark_image(settings, size=None):
+    return mark_image(
+        settings.get('mark'),
+        settings.get('mark_size') if size is None else size,
+        settings.get('mark_color'),
+        settings.get('mark_outline'),
+    )
+
+
+def mark_html(path, size):
     if path is None:
         return ''
     return '<img src="img://%s" width="%d" height="%d"/>' % (path, size, size)
+
+
+def mark_text(settings):
+    return mark_html(settings_mark_image(settings), settings.get('mark_size'))
 
 
 def screen_centre(size, scale):

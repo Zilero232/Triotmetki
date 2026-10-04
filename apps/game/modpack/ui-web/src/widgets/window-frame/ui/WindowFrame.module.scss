@@ -4,11 +4,10 @@
   position: absolute;
   overflow: hidden;
   border: 1px solid token(win-frame-line);
-  border-radius: token(radius-lg);
-  border-top: 2px solid token(color-accent);
+  border-radius: token(win-radius);
   background-color: token(color-bg);
   background-image: token(win-frame);
-  box-shadow: token(elev-3);
+  box-shadow: token(win-shadow);
 }
 
 .inner {

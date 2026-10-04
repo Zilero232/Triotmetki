@@ -12,7 +12,10 @@ from .widget import strip_widget
 
 
 def macro_values(info, settings, translate, now):
-    moment = time.localtime(now)
+    return moment_values(info, settings, translate, time.localtime(now))
+
+
+def moment_values(info, settings, translate, moment):
     ping = valid_ping(info.get('ping'))
     return {
         'time': format_moment(settings.get('clock_format'), moment),

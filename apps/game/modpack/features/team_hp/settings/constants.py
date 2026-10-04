@@ -23,17 +23,22 @@ DEFAULTS = {
     'align_x': 'center',
     'align_y': 'top',
     'style': 'full',
-    'bar_width': 30,
-    'icon_width': 3,
     'show_score': True,
     'show_alive': False,
     'show_diff': True,
-    'ally_color': COLOR_UP,
-    'enemy_color': COLOR_DOWN,
     'template': '',
     'replace_stock': True,
     'pinned': True,
 }
+# Retired options and the values the code keeps reading: the bar widths of the text styles and the up and down tones
+# of the HUD (spec section 6.4) for the two sides.
+FIXED = {
+    'bar_width': 30,
+    'icon_width': 3,
+    'ally_color': COLOR_UP,
+    'enemy_color': COLOR_DOWN,
+}
+ADVANCED = ('replace_stock', 'pinned', 'template')
 # The default places of older versions (x, y, align_x, align_y): a panel still at one moves to today's default.
 RETIRED_PLACES = (
     (0, 58, 'center', 'top'),

@@ -34,6 +34,7 @@ members = [
     "otmetki-feature-hangar-info",
     "otmetki-feature-hangar-space",
     "otmetki-feature-hangar-tweaks",
+    "otmetki-feature-hit-viewer",
     "otmetki-feature-hud-layouts",
     "otmetki-feature-marks-panel",
     "otmetki-feature-minimap",
@@ -486,6 +487,21 @@ requires-dist = [
 name = "otmetki-feature-hangar-tweaks"
 version = "0.3.0"
 source = { virtual = "features/hangar_tweaks" }
+dependencies = [
+    { name = "otmetki-companion" },
+    { name = "otmetki-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "otmetki-companion", virtual = "packages/companion" },
+    { name = "otmetki-core", virtual = "packages/core" },
+]
+
+[[package]]
+name = "otmetki-feature-hit-viewer"
+version = "0.1.0"
+source = { virtual = "features/hit_viewer" }
 dependencies = [
     { name = "otmetki-companion" },
     { name = "otmetki-core" },

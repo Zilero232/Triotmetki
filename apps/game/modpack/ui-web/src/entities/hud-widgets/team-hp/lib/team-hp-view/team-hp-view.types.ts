@@ -15,6 +15,9 @@ export type TeamHpPaint = { tone: HudTone | null; text: CSSProperties | undefine
 
 export type TeamHpSideView = {
   hp: string;
+  behind: boolean;
+  hpTone: HudTone | null;
+  hpStyle: CSSProperties | undefined;
   fill: number;
   segments: (TeamHpGap | TeamHpSegment)[];
   strip: (TeamHpStripVehicle | TeamHpTierLabel)[];
@@ -37,6 +40,15 @@ export type TeamHpView = {
   enemies: TeamHpSideView;
 };
 
-export type SideViewInput = { side: TeamHpData['allies']; vehicles: TeamHpVehicle[]; tone: HudTone; color: string | null; mirrored: boolean };
+export type SideViewInput = {
+  side: TeamHpData['allies'];
+  other: TeamHpData['allies'];
+  vehicles: TeamHpVehicle[];
+  tone: HudTone;
+  color: string | null;
+  mirrored: boolean;
+};
+
+export type BehindInput = Pick<SideViewInput, 'other' | 'side'>;
 
 export type PaintInput = { tone: HudTone; color: string | null };

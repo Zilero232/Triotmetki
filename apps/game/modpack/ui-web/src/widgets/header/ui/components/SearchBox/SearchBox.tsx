@@ -26,7 +26,13 @@ export const SearchBox = ({ query, onChange, onClear }: SearchBoxProps) => {
         onChange={(event) => onChange(event.currentTarget.value)}
         onEscape={search.onEscape}
       />
-      {query && <IconButton className={s.clear} icon='x' label={t('searchClear')} size='small' variant='ghost' onClick={onClear} />}
+      {query ? (
+        <IconButton className={s.clear} icon='x' label={t('searchClear')} size='small' variant='ghost' onClick={onClear} />
+      ) : (
+        <span aria-hidden='true' className={s.key}>
+          {t('searchKeyHint')}
+        </span>
+      )}
     </div>
   );
 };

@@ -18,7 +18,19 @@ COMPANION_KEYS = (
     'settings_anonymous_stats',
     'settings_include_resolution',
     'settings_include_sensitivity',
-    'flush_interval_seconds',
+    'hud_modifier',
+)
+# Rare data-sharing details, folded under the Advanced fold (docs/specs/2026-09-30-hud-consolidation-and-design.md,
+# section 12).
+COMPANION_ADVANCED = (
+    'send_moe_snapshots',
+    'send_queue_times',
+    'send_loadouts',
+    'send_shots',
+    'settings_target',
+    'settings_anonymous_stats',
+    'settings_include_resolution',
+    'settings_include_sensitivity',
     'hud_modifier',
 )
 # Never editable in the window: connection, one-shot actions and the language (the header switches it).
@@ -29,6 +41,8 @@ ACTION_SETTINGS_RESTORE = 'settings_restore'
 COMPANION_ACTIONS = (ACTION_SETTINGS_EXPORT, ACTION_SETTINGS_RESTORE)
 
 PANEL_POSITION_KEYS = ('x', 'y', 'align_x', 'align_y', 'drag', 'scale')
+# The opacity of a panel is a rare choice.
+PANEL_ADVANCED_KEYS = ('alpha',)
 
 # Card keys sent only when the feature instance has the hook: the full-window editor, the card's thumbnail
 # (img:// path or None) and the per-choice pictures ({field key: {choice value: img:// path or None}}).
@@ -76,7 +90,9 @@ PLACEMENT = {
     'streamer_mode': (SECTION_STREAMER, CONTEXT_ANY),
     'hangar_cleaner': (SECTION_STREAMER, CONTEXT_HANGAR),
     'session_stats': (SECTION_MARKS, CONTEXT_HANGAR),
-    'battle_results': (SECTION_MARKS, CONTEXT_HANGAR),
+    'battle_results': (SECTION_MARKS, CONTEXT_ANY),
+    'battle_summary': (SECTION_MARKS, CONTEXT_BATTLE),
+    'last_battle': (SECTION_MARKS, CONTEXT_BATTLE),
     'hangar_marks': (SECTION_MARKS, CONTEXT_HANGAR),
     'hangar_tweaks': (SECTION_HANGAR, CONTEXT_HANGAR),
     'hangar_info': (SECTION_HANGAR, CONTEXT_ANY),
@@ -92,6 +108,7 @@ PLACEMENT = {
     'auto_reserves': (SECTION_HANGAR, CONTEXT_HANGAR),
     'crew_xp': (SECTION_HANGAR, CONTEXT_HANGAR),
     'hangar_space': (SECTION_HANGAR, CONTEXT_HANGAR),
+    'hit_viewer': (SECTION_HANGAR, CONTEXT_HANGAR),
     'update_notice': (SECTION_HANGAR, CONTEXT_HANGAR),
     'config_backup': (SECTION_DATA, CONTEXT_ANY),
     'preset_advisor': (SECTION_HANGAR, CONTEXT_HANGAR),

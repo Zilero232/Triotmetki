@@ -32,7 +32,7 @@ const changedDamageLog = (): UiComponent => {
         return { ...field, value: 9 };
       }
 
-      return field.type === 'bool' ? { ...field, value: true } : field;
+      return field.type === 'int' && field.key === 'alpha' ? { ...field, value: 70 } : field;
     })
   };
 };
@@ -48,7 +48,7 @@ const install = () => {
 const undoEntries = () => $undo.get().map(({ kind, component: id, label, switchedOn, values }) => [kind, id, label, switchedOn, values]);
 
 const changeInterval = (value: number): void => {
-  changeSetting({ component: component('companion'), key: 'flush_interval_seconds', value });
+  changeSetting({ component: component('session_stats'), key: 'session_idle_minutes', value });
 };
 
 beforeEach(() => {
@@ -65,7 +65,7 @@ describe(changeSetting, () => {
 
     changeInterval(30);
 
-    expect(sent()).toEqual([{ type: 'set', component: 'companion', key: 'flush_interval_seconds', value: 30 }]);
+    expect(sent()).toEqual([{ type: 'set', component: 'session_stats', key: 'session_idle_minutes', value: 30 }]);
   });
 
   it('remembers the previous value of the field for undo', () => {
@@ -73,13 +73,13 @@ describe(changeSetting, () => {
 
     changeInterval(30);
 
-    expect(undoEntries()).toEqual([['field', 'companion', 'Интервал отправки, с', false, { flush_interval_seconds: 15 }]]);
+    expect(undoEntries()).toEqual([['field', 'session_stats', 'Новая сессия после простоя, мин', false, { session_idle_minutes: 60 }]]);
   });
 
   it('skips a change to the same value', () => {
     const sent = install();
 
-    changeInterval(15);
+    changeInterval(60);
 
     expect(sent()).toEqual([]);
     expect($undo.get()).toEqual([]);
@@ -118,7 +118,7 @@ describe(resetComponent, () => {
 
     resetComponent(changedDamageLog());
 
-    expect(sent()).toEqual([{ type: 'set_many', component: 'damage_log', values: { border: false, lines: 5 } }]);
+    expect(sent()).toEqual([{ type: 'set_many', component: 'damage_log', values: { alpha: 100, lines: 5 } }]);
   });
 });
 
@@ -134,7 +134,7 @@ describe(undoLast, () => {
 
     expect(sent().slice(2)).toEqual([
       { type: 'set', component: 'marks_panel', key: 'battle_moe_panel', value: true },
-      { type: 'set', component: 'companion', key: 'flush_interval_seconds', value: 15 }
+      { type: 'set', component: 'session_stats', key: 'session_idle_minutes', value: 60 }
     ]);
 
     expect($undo.get()).toEqual([]);
@@ -156,6 +156,6 @@ describe(undoLast, () => {
     undoLast();
 
     expect(sent()).toHaveLength(2);
-    expect(sent().at(-1)).toEqual({ type: 'set_many', component: 'damage_log', values: { border: true, lines: 9 } });
+    expect(sent().at(-1)).toEqual({ type: 'set_many', component: 'damage_log', values: { alpha: 70, lines: 9 } });
   });
 });

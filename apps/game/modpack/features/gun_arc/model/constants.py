@@ -38,3 +38,8 @@ VIEW_OFFSETS = {1: 'arcade_offset', 2: 'sniper_offset', 3: 'strategic_offset'}
 
 # The HUD report's reason while the panel has nothing to draw: the gun turns with a full turret (no yaw limits).
 NO_LIMITS = 'the gun has no traverse limits (a full turret)'
+
+# The settings window editor: field groups (spec 2026-09-30 section 12.3).
+EDITOR_GROUPS = (
+    ('scale', ('show_bar', 'show_degrees', 'show_yaw')),
+)

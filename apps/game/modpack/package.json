@@ -1,6 +1,6 @@
 {
   "name": "@otmetki/modpack",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "description": "Три отметки modpack for «Мир танков»: Python 2.7 game-client packages (core, companion, features) built into .mtmod/.wotmod, with Python 3 host tooling (uv workspace, pytest, ruff).",
   "homepage": "https://triotmetki.ru",
@@ -24,7 +24,7 @@
     "test": "python tools/run_tests.py",
     "test:pytest": "uv run pytest",
     "typecheck": "tsc -p ui-web --noEmit",
-    "ui:build": "vite build -c ui-web/vite.config.ts --configLoader runner && vite build -c ui-web/vite.config.ts --configLoader runner --mode hud && vite build -c ui-web/vite.config.ts --configLoader runner --mode advisor",
+    "ui:build": "vite build -c ui-web/vite.config.ts --configLoader runner && vite build -c ui-web/vite.config.ts --configLoader runner --mode hud && vite build -c ui-web/vite.config.ts --configLoader runner --mode advisor && vite build -c ui-web/vite.config.ts --configLoader runner --mode viewer",
     "ui:dev": "vite -c ui-web/vite.config.ts --configLoader runner",
     "ui:test": "vitest run"
   },

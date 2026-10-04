@@ -12,10 +12,13 @@ DEFAULTS = {
     'align_x': 'center',
     'align_y': 'bottom',
     'pinned': True,
+}
+# Retired options and the values the code keeps reading: the cells always take the stock slot size.
+FIXED = {
     'stock_size': True,
     'icon_size': 40,
 }
-LIMITS = {'icon_size': (20, 48)}
+ADVANCED = ('pinned',)
 # The default places of older versions (x, y, align_x, align_y): a panel still at one moves to today's default.
 RETIRED_PLACES = (
     (-200, -66, 'center', 'bottom'),

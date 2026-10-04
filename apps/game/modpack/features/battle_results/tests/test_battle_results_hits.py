@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 import _support
+from otmetki.core.settings import Settings
 from otmetki.features.battle_results.i18n import STRINGS
 from otmetki.features.battle_results.model import build_page
 from otmetki.features.battle_results.model.hits import HitBook, figure_of, figure_point, impact, side_of, summary
@@ -412,8 +413,9 @@ class SettingsTest(unittest.TestCase):
     def test_the_hits_tab_is_on_by_default(self):
         assert SCHEMA.defaults['hits_tab'] is True
 
-    def test_keeps_ten_battles_of_hits_by_default(self):
-        assert SCHEMA.defaults['hits_keep_battles'] == 10
+    def test_keeps_ten_battles_of_hits(self):
+        assert 'hits_keep_battles' not in SCHEMA.defaults
+        assert Settings({'hits_keep_battles': 30}, SCHEMA).get('hits_keep_battles') == 10
 
     def test_names_the_attacker_by_default(self):
         assert SCHEMA.defaults['hits_show_attacker'] is True

@@ -9,6 +9,11 @@
       "level": 95,
       "text": "~45 боёв"
     },
+    "damage": {
+      "label": "Сум. урон",
+      "target": 2540,
+      "value": 3100
+    },
     "delta": 0.18,
     "estimated": false,
     "goal": {
@@ -16,9 +21,16 @@
       "need": 2107
     },
     "has_curve": true,
+    "look": "box",
     "mark": "img://gui/maps/icons/library/marksOnGun/mark_2.png|otmetki:target",
+    "next": {
+      "level": 95,
+      "need": 25195
+    },
     "note": null,
     "percent": 86.3,
+    "silhouette": null,
+    "stars": 2,
     "step": {
       "need": 955,
       "step": 0.5
@@ -42,7 +54,7 @@
         "reached": false
       }
     ],
-    "tone": "good"
+    "tone": "text"
   },
   "kind": "marks_panel",
   "v": 1

@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ...core.vendor import attr
 from .component import Component, section_switch, switch_of
 from .constants import (
+    COMPANION_ADVANCED,
     COMPANION_ID,
     COMPANION_KEYS,
     COMPANION_SWITCH,
@@ -21,9 +22,16 @@ class FeatureInfo(object):
     settings_module = attr.ib(default=None)
     instance = attr.ib(default=None)
     title = attr.ib(default=None)
+    editor_module = attr.ib(default=None)
 
     def config_keys(self):
         return tuple(getattr(self.settings_module, 'SETTINGS', ()) or ())
+
+    def advanced(self):
+        return tuple(getattr(self.settings_module, 'ADVANCED', ()) or ())
+
+    def editor(self):
+        return getattr(self.editor_module, 'editor', None)
 
     def group(self, panel):
         declared = getattr(self.settings_module, 'GROUP', None)
@@ -71,6 +79,7 @@ def companion_component(sources, claimed, instance=None):
         keys,
         switch=COMPANION_SWITCH,
         instance=instance,
+        advanced=COMPANION_ADVANCED,
     )
 
 
@@ -94,6 +103,8 @@ def _section_component(feature, sources, section, config_keys, config_switch):
         fallback_title=feature.title,
         config_keys=config_fields,
         config_source=sources.config_source(),
+        advanced=feature.advanced(),
+        editor=feature.editor(),
     )
 
 
@@ -116,6 +127,8 @@ def _feature_component(feature, sources):
         panel=panel,
         instance=feature.instance,
         fallback_title=feature.title,
+        advanced=feature.advanced(),
+        editor=feature.editor(),
     )
 
 

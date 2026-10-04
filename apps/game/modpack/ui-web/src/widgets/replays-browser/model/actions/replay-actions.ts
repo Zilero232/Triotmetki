@@ -13,6 +13,7 @@ export const replayCommands = {
   toggleFavourite: (item: ReplayItem) =>
     runReplayAction({ action: REPLAYS.actions.favourite, row: item.id, value: item.favourite ? REPLAYS.favouriteOff : REPLAYS.favouriteOn }),
   upload: (item: ReplayItem) => runReplayAction({ action: REPLAYS.actions.upload, row: item.id }),
+  openHits: (item: ReplayItem) => runReplayAction({ action: REPLAYS.actions.hits, row: item.id }),
   openSite: (item: ReplayItem) => {
     if (item.site?.link) {
       openSitePath(item.site.link);

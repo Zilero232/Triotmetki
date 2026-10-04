@@ -27,6 +27,7 @@ from CurrentVehicle import g_currentVehicle
 from PlayerEvents import g_playerEvents
 
 from ....core.client.game import client_language, client_version
+from ....core.client.native import repair_detection_sound
 from ....core.client.packaging import warn_mixed_install
 from ....core.client.session_log import open_session_log
 from ....core.client.timer import Ticker
@@ -211,6 +212,7 @@ class OtmetkiApp(object):
         self.bus.emit('hangar')
         self.settings_ui.refresh()
         self.settings_share.on_hangar()
+        safe(repair_detection_sound)()
 
     @safe
     def _on_ingest_response(self, data):

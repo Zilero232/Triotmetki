@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
-<!-- (c) 2026 Три отметки. Original artwork: one colour (#ffffff, recoloured per rendition) over a dark outline. -->
-<path d="M40 30H30V98H40M88 30H98V98H88" stroke="#0e0e10" stroke-opacity="0.9" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-width="10"/>
-<path d="M40 30H30V98H40M88 30H98V98H88" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-width="4.5"/>
-<circle cx="64" cy="64" r="4.5" fill="#0e0e10"/>
-<circle cx="64" cy="64" r="2.5" fill="#ffffff"/>
-</svg>

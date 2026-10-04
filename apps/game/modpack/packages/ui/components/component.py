@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ...core.vendor import attr
 from ..fields import SWITCH_KEY, TYPE_BOOL, describe_fields, field_type
-from .constants import OPTIONAL_HOOKS, PANEL_POSITION_KEYS
+from .constants import OPTIONAL_HOOKS, PANEL_ADVANCED_KEYS, PANEL_POSITION_KEYS
 from .placement import placement_of
 
 
@@ -20,16 +20,15 @@ class Component(object):
     fallback_title = attr.ib(default=None)
     config_keys = attr.ib(default=(), converter=tuple)
     config_source = attr.ib(default=None)
+    advanced = attr.ib(default=(), converter=tuple)
+    editor = attr.ib(default=None)
 
     def __attrs_post_init__(self):
         self.switch_source = self.switch_source or self.source
 
     def field_keys(self):
         hidden = set([self.switch, SWITCH_KEY]) if self.switch is not None else set()
-        keys = [key for key in self.keys if key not in hidden]
-        if self.panel:
-            keys = [key for key in keys if key not in PANEL_POSITION_KEYS]
-        return keys
+        return [key for key in self.keys if key not in hidden and key not in PANEL_POSITION_KEYS]
 
     def editable(self, key):
         return key == self.switch or key in self.field_keys()
@@ -54,10 +53,13 @@ class Component(object):
         return {'key': self.switch, 'value': bool(switch_settings.get(self.switch))}
 
     def _advanced_keys(self):
+        keys = set(self.advanced)
+        if self.panel:
+            keys.update(PANEL_ADVANCED_KEYS)
         instance = self.instance
-        if instance is None or not hasattr(instance, 'ui_advanced'):
-            return frozenset()
-        return frozenset(instance.ui_advanced() or ())
+        if instance is not None and hasattr(instance, 'ui_advanced'):
+            keys.update(instance.ui_advanced() or ())
+        return frozenset(keys)
 
     def _describe_fields(self, labels):
         advanced = self._advanced_keys()
@@ -71,11 +73,15 @@ class Component(object):
                 field['advanced'] = True
         return fields
 
-    def _describe_optional(self):
+    def _describe_optional(self, labels):
         instance = self.instance
-        if instance is None:
-            return {}
-        return {key: getattr(instance, hook)() for key, hook in OPTIONAL_HOOKS if hasattr(instance, hook)}
+        described = {}
+        if self.editor is not None and self.source.settings is not None:
+            described['editor'] = self.editor(self.source.settings, labels.text)
+        if instance is not None:
+            hooks = [(key, hook) for key, hook in OPTIONAL_HOOKS if hasattr(instance, hook)]
+            described.update((key, getattr(instance, hook)()) for key, hook in hooks)
+        return described
 
     def describe(self, labels):
         section, context = placement_of(self.id, self.group, self.panel)
@@ -97,7 +103,7 @@ class Component(object):
             described['actions'] = list(instance.ui_actions() or [])
         if instance is not None and hasattr(instance, 'ui_page'):
             described['page'] = instance.ui_page()
-        described.update(self._describe_optional())
+        described.update(self._describe_optional(labels))
         return described
 
 

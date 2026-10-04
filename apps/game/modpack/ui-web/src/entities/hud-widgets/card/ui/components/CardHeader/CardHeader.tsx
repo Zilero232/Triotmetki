@@ -2,7 +2,7 @@ import clsx from 'clsx';
 
 import type { CardHeaderProps } from './CardHeader.types';
 
-import { ClientIcon, HudText, toneClass } from '../../../../../../shared/ui/hud';
+import { ClientIcon, HudText, IndexMark, toneClass } from '../../../../../../shared/ui/hud';
 import { CARD } from '../../../config';
 import { hasCardBody } from '../../../lib/card-view';
 
@@ -16,6 +16,7 @@ export const CardHeader = ({ data }: CardHeaderProps) => {
   return (
     <div className={clsx(s.header, hasCardBody(data) && s.divided)}>
       {data.icon !== null && <ClientIcon className={s.icon} icon={data.icon} size={CARD.headerIcon} tone='muted' />}
+      {data.title !== null && <IndexMark muted className={s.index} />}
       <HudText className={s.title} text={data.title} />
       <HudText className={s.subtitle} text={data.subtitle} />
       <HudText className={clsx(s.value, toneClass(data.value_tone))} text={data.value} />

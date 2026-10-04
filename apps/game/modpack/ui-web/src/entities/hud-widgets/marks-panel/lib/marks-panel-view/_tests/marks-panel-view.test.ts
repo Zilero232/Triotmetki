@@ -17,7 +17,7 @@ describe(marksPanelView, () => {
   it('signs the change and tones a gain as good', () => {
     const view = marksPanelView(data);
 
-    expect(view.delta).toBe('+0,18 %');
+    expect(view.delta).toBe('+0,18');
     expect(view.deltaTone).toBe(MARKS_PANEL.deltaTones.rising);
   });
 

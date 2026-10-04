@@ -23,3 +23,5 @@ CHOICES = {
     'event': LAYOUTS,
     'battle_royale': LAYOUTS,
 }
+
+ADVANCED = ('own_places',)

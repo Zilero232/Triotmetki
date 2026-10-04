@@ -20,7 +20,7 @@ def load_features(root_package, instances, skip=()):
         base = '%s.features.%s' % (root_package, feature_id)
         package = _import(base)
         features.append(FeatureInfo(feature_id, _import(base + '.settings'), instances[feature_id],
-                                    getattr(package, 'PACKAGE_NAME', None)))
+                                    getattr(package, 'PACKAGE_NAME', None), _import(base + '.model.editor')))
     return features
 
 

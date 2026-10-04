@@ -14,7 +14,4 @@ export const MOD_SWITCH_TONE = {
   off: 'steel'
 } as const;
 
-export const MOD_TUNABLES = [
-  { id: 'flush', setting: 'flush_interval_seconds', value: 15 },
-  { id: 'idle', setting: 'session_idle_minutes', value: 60 }
-] as const;
+export const MOD_TUNABLES = [{ id: 'idle', setting: 'session_idle_minutes', value: 60 }] as const;

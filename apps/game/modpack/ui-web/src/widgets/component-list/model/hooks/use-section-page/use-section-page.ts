@@ -6,6 +6,7 @@ import type { UseSectionPageInput } from './use-section-page.types';
 import { $components, $view, componentsOf, isEnabled, setContextFilter, useScrollMemory, useT } from '../../../../../entities/window-state';
 import { CONTEXT_CHOICES } from '../../../config';
 import { splitColumns } from '../../../lib/columns';
+import { listsBothContexts } from '../../../lib/context-filter';
 
 export const useSectionPage = ({ section, columns }: UseSectionPageInput) => {
   const t = useT();
@@ -13,14 +14,15 @@ export const useSectionPage = ({ section, columns }: UseSectionPageInput) => {
   const view = useStore($view);
   const scroll = useScrollMemory(section);
   const all = componentsOf({ components, section, context: 'all' });
-  const shown = componentsOf({ components, section, context: view.context });
+  const showFilter = listsBothContexts(all);
+  const shown = showFilter ? componentsOf({ components, section, context: view.context }) : all;
 
   return {
     total: all.length,
     enabled: all.filter(isEnabled).length,
     empty: all.length === 0,
     filteredEmpty: all.length > 0 && shown.length === 0,
-    showFilter: new Set(all.map(({ context }) => context)).size > 1,
+    showFilter,
     context: view.context,
     contextItems: CONTEXT_CHOICES.map((choice) => ({ value: choice.value, label: t(choice.label) })),
     setContext: (context: ContextFilter) => setContextFilter(context),

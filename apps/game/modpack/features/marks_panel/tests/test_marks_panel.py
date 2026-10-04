@@ -152,15 +152,14 @@ class PanelTest(unittest.TestCase):
 
         assert COLOR_UP in text
 
-    def test_step_setting(self):
+    def test_the_step_is_fixed_at_half_a_percent(self):
         text = panel_text(step='1', style='extended')
 
-        assert u'+1%: ' in text
+        assert u'+0.5%: ' in text
 
     def test_unknown_values_fall_back_to_the_defaults(self):
-        chosen = settings(step='2', color_mode='rainbow')
+        chosen = settings(color_mode='rainbow')
 
-        assert chosen.get('step') == '0.5'
         assert chosen.get('color_mode') == 'delta'
 
     def test_without_curve(self):

@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 STRINGS = {
     'ru': {
+        'battle_progress_group_rows': u'Строки',
         'component_battle_progress': u'Прогресс боя',
         'component_battle_progress_hint': u'Одна плашка, строка на каждую цель боя: урон до порога медали «Основной калибр» (20% ХП противника, не меньше 1 000), рекорд танка и WN8 этого боя. Строка видна, пока цель актуальна; WN8 и рекорды с сайта — после привязки.',
         'battle_progress_row_main_gun': u'Строка «Основной калибр»',
@@ -14,7 +15,6 @@ STRINGS = {
         'battle_progress_record_metric_damage': u'Урон',
         'battle_progress_record_metric_assist': u'Помощь',
         'battle_progress_record_metric_frags': u'Фраги',
-        'battle_progress_colored': u'WN8 цветом шкалы рейтинга',
         'bp_main_gun': u'Осн. калибр',
         'bp_record_damage': u'Рекорд танка',
         'bp_record_assist': u'Рекорд помощи',
@@ -26,6 +26,7 @@ STRINGS = {
         'bp_tank_wn8': u'танк {wn8}',
     },
     'en': {
+        'battle_progress_group_rows': u'Rows',
         'component_battle_progress': u'Battle progress',
         'component_battle_progress_hint': u'One plate with a row per battle target: the damage to the High Caliber threshold (20% of the enemy HP, at least 1,000), the tank record and this battle\'s WN8. A row shows while its target applies; WN8 and the site records need the mod bound.',
         'battle_progress_row_main_gun': u'High Caliber row',
@@ -37,7 +38,6 @@ STRINGS = {
         'battle_progress_record_metric_damage': u'Damage',
         'battle_progress_record_metric_assist': u'Assist',
         'battle_progress_record_metric_frags': u'Frags',
-        'battle_progress_colored': u'WN8 in the rating scale colour',
         'bp_main_gun': u'High Caliber',
         'bp_record_damage': u'Tank record',
         'bp_record_assist': u'Assist record',

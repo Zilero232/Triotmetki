@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
 from ....core.client.battle import call, feedback, is_enemy
-from ....core.client.game import player_tank_id, values_by_name
+from ....core.client.game import player_tank_id, values_by_name, vehicle_class_tag
 from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.moe import moe_service
 from ....core.log import safe
@@ -42,6 +42,7 @@ class MarksPanel(BattlePanel):
         self.totals = None
         self.snapshot = None
         self.tank_id = None
+        self.class_tag = None
         self.curve = None
         self.pace = None
         BattlePanel.__init__(self, app, PANEL_SPEC)
@@ -59,6 +60,7 @@ class MarksPanel(BattlePanel):
             return
         self.snapshot = snapshot
         self.tank_id = tank_id
+        self.class_tag = vehicle_class_tag(tank_id)
         self.curve = self.moe.curve(tank_id)
         self.moe.ensure(tank_id)
         self.pace = self.moe.pace(tank_id)
@@ -118,7 +120,7 @@ class MarksPanel(BattlePanel):
         state = panel_state(self.snapshot, self.totals.combined(), self.curve, self.pace, view)
 
         text = format_panel(state, view, self.app.translate)
-        self.show(text, marks_widget(state, view, self.app.translate))
+        self.show(text, marks_widget(state, view, self.app.translate, self.class_tag))
 
     def ui_actions(self):
         return self.card.history.actions()

@@ -13,6 +13,7 @@ from otmetki.features.aim_info.model.armor import (
     TickGate,
     armor_readout,
     format_armor,
+    public_team,
     reticle_place,
     server_tick,
     verdict_tone,
@@ -152,6 +153,27 @@ class ArmorReadoutTest(unittest.TestCase):
         assert tones == ['good', 'warning', 'bad']
 
 
+class FixedDict(object):
+
+    def __init__(self, values):
+        self.values = values
+
+    def __getitem__(self, key):
+        return self.values[key]
+
+
+class PublicTeamTest(unittest.TestCase):
+
+    def test_the_team_is_read_from_a_fixed_dict_without_get(self):
+        assert public_team(FixedDict({'team': 2})) == 2
+
+    def test_a_fixed_dict_without_a_team_has_none(self):
+        assert public_team(FixedDict({})) is None
+
+    def test_no_public_info_has_no_team(self):
+        assert public_team(None) is None
+
+
 class TickGateTest(unittest.TestCase):
 
     def test_the_first_resolution_of_a_tick_passes(self):
@@ -252,10 +274,10 @@ class WidgetTest(unittest.TestCase):
 
 class PlaceTest(unittest.TestCase):
 
-    def test_each_camera_view_has_its_offset(self):
+    def test_each_camera_view_has_its_fixed_offset(self):
         values = settings({'arcade_offset': 10, 'sniper_offset': 20, 'strategic_offset': 30})
 
-        assert [view_offset(view, values) for view in (1, 2, 3)] == [10, 20, 30]
+        assert [view_offset(view, values) for view in (1, 2, 3)] == [132, 132, 100]
 
     def test_another_view_has_no_offset(self):
         assert view_offset(7, settings()) is None

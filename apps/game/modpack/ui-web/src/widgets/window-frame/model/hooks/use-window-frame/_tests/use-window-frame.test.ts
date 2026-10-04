@@ -137,4 +137,17 @@ describe(useWindowFrame, () => {
     expect(hook.result.current.frameStyle).toMatchObject({ width: '1190rem', height: '750rem' });
     hook.unmount();
   });
+
+  it('resets a resized and zoomed window to the default size, zoom and the centre', () => {
+    const mock = install(ORIGIN);
+    const hook = mountWithGrip();
+
+    act(() => drag({ x: 2890, y: 1750 }, { x: 2790, y: 1650 }));
+    act(() => hook.result.current.zoomIn());
+    act(() => hook.result.current.onReset());
+
+    expect(hook.result.current).toMatchObject({ zoom: 100, frameStyle: { width: '1240rem', height: '800rem' } });
+    expect(layouts(mock.sent()).at(-1)).toMatchObject({ width: 1240, height: 800, zoom: 100, placed: false });
+    hook.unmount();
+  });
 });

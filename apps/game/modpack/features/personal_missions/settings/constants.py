@@ -5,9 +5,10 @@ SECTION = 'personal_missions'
 GROUP = 'hangar'
 
 DEFAULTS = {
-    'font_size': 14,
     'show_hangar': True,
     'show_conditions': True,
     'max_missions': 3,
 }
-LIMITS = {'font_size': (8, 32), 'max_missions': (1, 6)}
+LIMITS = {'max_missions': (1, 6)}
+# The card's type size follows the design scale (docs/specs/2026-09-30-hud-consolidation-and-design.md section 12).
+FIXED = {'font_size': 14}

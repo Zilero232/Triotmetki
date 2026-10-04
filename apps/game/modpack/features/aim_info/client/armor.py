@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.client.battle import arena_dp, call, player
 from ....core.client.game import client_attr, values_by_name
 from ....core.compat import is_number
-from ..model.armor import armor_readout
+from ..model.armor import armor_readout, public_team
 from .constants import (
     DISTANCE_FACTOR,
     DISTANCE_FACTOR_MODULE,
@@ -63,7 +63,7 @@ class ArmorReader(object):
             return None
         if getattr(entity, 'health', 0) <= 0:
             return None
-        team = (getattr(entity, 'publicInfo', None) or {}).get('team')
+        team = public_team(getattr(entity, 'publicInfo', None))
         if team is None or team == own_team():
             return None
         return entity

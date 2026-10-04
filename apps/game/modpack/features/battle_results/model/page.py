@@ -4,6 +4,7 @@ from ....core.compat import is_int, is_number
 from ....core.format import format_epoch, format_number, format_percent, format_timer
 from .constants import (
     ACTION_CLEAR,
+    ACTION_HITS,
     COST_KEYS,
     HISTORY_KEYS,
     MAX_BATTLE_DELTA,
@@ -185,6 +186,14 @@ def _newest_first(dated):
     return [row for _, row in sorted(dated, key=lambda pair: -pair[0] if is_number(pair[0]) else 0)]
 
 
+def with_viewer(row, viewer_battles, translate):
+    """`row` with the button that opens the hit viewer at its battle, when the viewer has that battle."""
+    if row['id'] not in viewer_battles:
+        return row
+    action = {'id': ACTION_HITS, 'label': translate('br_open_hits'), 'confirm': None}
+    return dict(row, actions=list(row['actions']) + [action])
+
+
 def _battle_rows(entries, translate, hit_battles, show_attacker):
     unmatched = dict((battle['id'], battle) for battle in hit_battles)
     dated = []
@@ -200,15 +209,17 @@ def _battle_rows(entries, translate, hit_battles, show_attacker):
     return _newest_first(dated)
 
 
-# `hit_battles`: the recorded hits on the own tank (HitBook.battles, oldest first), shown when the hits tab is on.
-def build_page(entries, translate, idle_s, hit_battles=(), show_attacker=True):
+# `hit_battles`: the recorded hits on the own tank (HitBook.battles, oldest first), shown when the hits tab is on;
+# `viewer_battles`: the battle ids the hit viewer can open (core.events hit_viewer_battles).
+def build_page(entries, translate, idle_s, hit_battles=(), show_attacker=True, viewer_battles=frozenset()):
     rows = []
 
     session = session_of(entries, idle_s)
     if session:
         rows.append(session_row(session, translate))
 
-    rows += _battle_rows(entries, translate, hit_battles, show_attacker)
+    battle_rows = _battle_rows(entries, translate, hit_battles, show_attacker)
+    rows += [with_viewer(row, viewer_battles, translate) for row in battle_rows]
     return {'kind': 'list', 'empty': translate('br_empty'), 'rows': rows}
 
 

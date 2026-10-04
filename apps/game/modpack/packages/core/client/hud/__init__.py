@@ -72,11 +72,11 @@ def panel_report(app):
     if report is None or report.layer is not layer:
         report = PanelReport(layer)
         _state['report'] = report
-        app.bus.on('battle_ready', lambda *args: BigWorld.callback(REPORT_DELAY_S, lambda: _log_report(report)))
+        app.bus.on('battle_ready', lambda *args: BigWorld.callback(REPORT_DELAY_S, lambda: _log_report(report, app)))
     return report
 
 
 @safe
-def _log_report(report):
+def _log_report(report, app):
     if report.layer.mode is not None:
-        log(report.text(report.layer.mode))
+        log(report.text(report.layer.mode, stock_control(app).summary()))

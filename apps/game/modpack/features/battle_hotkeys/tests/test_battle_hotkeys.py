@@ -56,8 +56,8 @@ class HotkeyTest(unittest.TestCase):
     def test_an_unknown_hotkey_falls_back_to_the_default(self):
         assert settings({'server_aim_key': 'f13'}).get('server_aim_key') == 'ctrl_shift_j'
 
-    def test_the_notice_time_is_capped(self):
-        assert settings({'notice_s': 60}).get('notice_s') == 5
+    def test_the_notice_time_is_fixed(self):
+        assert settings({'notice_s': 60}).get('notice_s') == 2
 
 
 class NoticeTest(unittest.TestCase):

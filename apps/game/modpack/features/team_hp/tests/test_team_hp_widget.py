@@ -81,10 +81,10 @@ class TeamHpWidgetTest(unittest.TestCase):
 
         assert data['colors'] == {'ally': None, 'enemy': None}
 
-    def test_a_colour_the_player_set_overrides_its_tone(self):
+    def test_an_old_own_colour_leaves_the_tones(self):
         payload = team_hp_widget(preview_teams(), Settings({'enemy_color': '#9188fe'}, SCHEMA), ALL_ON)
 
-        assert payload['data']['colors'] == {'ally': None, 'enemy': '#9188FE'}
+        assert payload['data']['colors'] == {'ally': None, 'enemy': None}
 
     def test_carries_the_alive_score_toggle(self):
         payload = team_hp_widget(preview_teams(), Settings({'show_alive': True}, SCHEMA), ALL_ON)

@@ -2,70 +2,23 @@
 
 .stage {
   display: flex;
-  width: 46%;
-  min-height: 0;
-  flex-direction: column;
-  flex-shrink: 0;
-  margin-right: 20px;
-}
-
-.screen {
-  position: relative;
-  display: flex;
-  min-height: 180px;
-  flex: 1 1 auto;
-  flex-direction: column;
-  border: 1px solid token(win-stage-line);
-  border-radius: token(radius-lg);
-  background-color: token(color-bg-deep);
-  background-image: token(win-stage);
-  box-shadow: token(win-well-shadow);
-}
-
-.caption {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  color: token(color-text-dim);
-  font-size: 10px;
-
-  @include caps(0.5px);
-}
-
-.zoom {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-}
-
-.view {
-  display: flex;
-  overflow: hidden;
+  min-width: 0;
   min-height: 0;
   flex: 1 1 auto;
-  align-items: center;
-  justify-content: center;
-}
-
-.zoomed {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform-origin: 50% 50%;
+  flex-direction: column;
+  margin-left: 24px;
 }
 
 .hint {
   display: flex;
-  min-height: 62px;
+  min-height: 56px;
   flex-direction: column;
   flex-shrink: 0;
   padding: 8px 12px;
   border: 1px solid token(win-frame-line);
-  border-radius: token(radius-lg);
+  border-radius: token(radius-md);
   margin-top: 12px;
   background-color: token(color-surface-sunken);
-  background-image: token(win-card);
-  box-shadow: token(win-card-shadow);
 }
 
 .hintLabel {

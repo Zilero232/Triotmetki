@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 STRINGS = {
     'ru': {
+        'platoon_points_group_shown': u'Кого показывать',
         'component_platoon_points': u'Очки взвода (турнир)',
         'component_platoon_points_hint': u'Очки как в турнире: за урон, помощь, фраги и выживание по вашим правилам. У вас считается всё своё; у союзников по взводу — фраги и ХП, которые игра и так показывает (уши, Tab, маркеры). Урон союзников в бою клиенту неизвестен и не показывается.',
         'platoon_points_damage_step': u'Урон за 1 очко',
@@ -17,6 +18,7 @@ STRINGS = {
         'platoon_points_row': u'{name}: {points} (фраги {frags})',
     },
     'en': {
+        'platoon_points_group_shown': u'Who is shown',
         'component_platoon_points': u'Platoon points (tournament)',
         'component_platoon_points_hint': u'Points like a tournament: for damage, assist, frags and survival, by your own rules. Your own results count in full; for platoon mates, the frags and HP the game already shows (team panels, Tab, markers). The client does not know the mates\' damage in battle, so it is never shown.',
         'platoon_points_damage_step': u'Damage per point',

@@ -34,5 +34,6 @@ export const PROTOCOL = {
   noticeKinds: ['info', 'error', 'code'],
   pageLayouts: ['list', 'gallery'],
   figureTones: ['pen', 'crit', 'blocked', 'ricochet', 'nodamage'],
+  schematics: ['minimap', 'camera'],
   autoLanguage: 'auto'
 } as const;

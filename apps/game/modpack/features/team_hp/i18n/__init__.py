@@ -3,9 +3,12 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 STRINGS = {
     'ru': {
+        'team_hp_style': u'Вид',
+        'team_hp_show_score': u'Счёт уничтоженных машин',
+        'team_hp_show_diff': u'Разница прочности команд',
+        'team_hp_template': u'Свой шаблон строки',
         'team_hp_diff': u'разница {diff}',
         'team_hp_style_icons': u'Полоска на каждый танк',
-        'team_hp_icon_width': u'Ширина полоски танка',
         'team_hp_style_full': u'Две полосы и счёт',
         'team_hp_style_segments': u'Сегменты по танкам',
         'team_hp_style_compact': u'Компактно: числа',
@@ -17,11 +20,18 @@ STRINGS = {
         'team_hp_show_alive': u'Живые вместо фрагов',
         'team_hp_show_alive_hint': u'В счёте — сколько машин каждой команды ещё живо, а не сколько уничтожено.',
         'team_hp_pinned_hint': u'Полоса стоит ровно на месте стандартной панели счёта вверху экрана (или справа от неё) и не перетаскивается. Снимите, чтобы двигать её самому.',
+        'team_hp_show_diff_hint': u'Под полосами — на сколько прочности одна команда впереди.',
+        'team_hp_template_hint': u'Своя строка вместо полос, с полями {allies_hp}, {enemies_hp} и другими.',
+        'team_hp_group_look': u'Вид',
+        'team_hp_group_score': u'Счёт',
     },
     'en': {
+        'team_hp_style': u'Style',
+        'team_hp_show_score': u'Score of destroyed vehicles',
+        'team_hp_show_diff': u'Team HP difference',
+        'team_hp_template': u'Own line template',
         'team_hp_diff': u'difference {diff}',
         'team_hp_style_icons': u'A bar per tank',
-        'team_hp_icon_width': u'Tank bar width',
         'team_hp_style_full': u'Two bars and the score',
         'team_hp_style_segments': u'A segment per tank',
         'team_hp_style_compact': u'Compact: numbers',
@@ -33,5 +43,9 @@ STRINGS = {
         'team_hp_show_alive': u'Alive instead of frags',
         'team_hp_show_alive_hint': u'The score shows how many vehicles of each team are still alive instead of how many were destroyed.',
         'team_hp_pinned_hint': u'The strip sits exactly in the stock score strip’s place at the top of the screen (or right of it) and cannot be dragged. Turn it off to move it yourself.',
+        'team_hp_show_diff_hint': u'Under the bars: how much HP one team is ahead by.',
+        'team_hp_template_hint': u'An own line instead of the bars, with {allies_hp}, {enemies_hp} and other fields.',
+        'team_hp_group_look': u'Look',
+        'team_hp_group_score': u'Score',
     },
 }

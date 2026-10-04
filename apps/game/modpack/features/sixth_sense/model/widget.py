@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.hud.icons import glyph, image
+from ....core.hud.icons import image
 from ....core.hud.widget import color_override, widget
 from ..settings.constants import DEFAULTS
 from . import icon_path
@@ -9,21 +9,11 @@ from .constants import KIND
 # Fair play: follows the client's own sixth-sense lamp (the player's vehicle is spotted); nothing about the spotter.
 
 
-def lamp_icon(settings):
-    path = icon_path(settings)
-    if path:
-        return image(path, 'lamp')
-    if settings.get('text'):
-        return None
-
-    return glyph('lamp')
-
-
 def sixth_sense_widget(state, settings, translate, now):
     seconds_left = state.seconds_left(now) or 0.0
 
     return widget(KIND, {
-        'icon': lamp_icon(settings),
+        'icon': image(icon_path(settings), 'lamp'),
         'size': settings.get('icon_size'),
         'text': settings.get('text'),
         'color': color_override(settings.get('color'), DEFAULTS['color']),

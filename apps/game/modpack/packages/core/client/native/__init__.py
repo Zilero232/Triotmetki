@@ -6,6 +6,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from .account_settings import apply_account_changed, read_account_settings
 from .component import NativeSettingsComponent, RecommendedSettingsComponent
 from .defaults import ClientDefaults, section_is_new
+from .detection_sound import repair_detection_sound
 from .settings_core import apply_changed, apply_settings, read_settings, settings_core
 
 __all__ = (
@@ -17,6 +18,7 @@ __all__ = (
     'apply_settings',
     'read_account_settings',
     'read_settings',
+    'repair_detection_sound',
     'section_is_new',
     'settings_core',
 )

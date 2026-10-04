@@ -2,6 +2,7 @@ import { defineHudWidget } from '../../../../../shared/lib/hud-widget';
 import { aimArmorSchema, AimArmorWidget } from '../../../aim-armor';
 import { battleClockSchema, BattleClockWidget } from '../../../battle-clock';
 import { battleLoadoutSchema, BattleLoadoutWidget } from '../../../battle-loadout';
+import { battleSummarySchema, BattleSummaryWidget } from '../../../battle-summary';
 import { cardSchema, CardWidget } from '../../../card';
 import { clockStripSchema, ClockStripWidget } from '../../../clock-strip';
 import { crosshairSchema, CrosshairWidget } from '../../../crosshair';
@@ -20,6 +21,7 @@ export const WIDGET_ENTRIES = [
   defineHudWidget({ kind: 'gun_arc', schema: gunArcSchema, Component: GunArcWidget }),
   defineHudWidget({ kind: 'aim_armor', schema: aimArmorSchema, Component: AimArmorWidget }),
   defineHudWidget({ kind: 'battle_loadout', schema: battleLoadoutSchema, Component: BattleLoadoutWidget, pointer: true }),
+  defineHudWidget({ kind: 'battle_summary', schema: battleSummarySchema, Component: BattleSummaryWidget, pointer: true }),
   defineHudWidget({ kind: 'option_notice', schema: optionNoticeSchema, Component: OptionNoticeWidget }),
   defineHudWidget({ kind: 'sixth_sense', schema: sixthSenseSchema, Component: SixthSenseWidget }),
   defineHudWidget({ kind: 'battle_clock', schema: battleClockSchema, Component: BattleClockWidget }),

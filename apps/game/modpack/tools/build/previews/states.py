@@ -21,6 +21,7 @@ HUD_PREVIEWS = {
     'battle_hotkeys': 'battle',
     'battle_loadout': 'battle',
     'battle_progress': 'battle',
+    'battle_results': 'battle',
     'crosshair': 'battle',
     'damage_log': 'battle',
     'gun_arc': 'battle',

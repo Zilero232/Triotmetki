@@ -164,7 +164,7 @@ def format_panel(state, settings, translate):
         return font(render(translate('marks_panel_line_no_curve'), values), COLOR_MUTED, size)
     if style == 'minimal':
         return font(render(translate('marks_panel_line_minimal'), values), color, size)
-    if style == 'compact':
+    if style in ('compact', 'silhouette'):
         key = 'marks_panel_line_compact_up' if _shows_up(state, settings) else 'marks_panel_line_compact'
         return font(render(translate(key), values), color, size)
     return LINE_SEPARATOR.join(_extended(state, values, settings, translate))

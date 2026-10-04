@@ -22,7 +22,7 @@ STUBBED = (
     'gui.Scaleform.daapi.view.battle.classic',
     'gui.Scaleform.daapi.view.battle.classic.page',
 )
-HOOKED = ('_populate', '_dispose', '_setComponentsVisibility')
+HOOKED = ('_populate', '_dispose', '_setComponentsVisibility', '_onRegisterFlashComponent')
 
 
 class SharedPage(object):
@@ -43,6 +43,9 @@ class SharedPage(object):
     def as_setComponentsVisibilityS(self, visible, hidden):
         self.applied.append((set(visible), set(hidden)))
 
+    def _onRegisterFlashComponent(self, view, alias):
+        self.components[alias] = view
+
 
 class ClassicPage(SharedPage):
     pass
@@ -56,6 +59,34 @@ class Event(object):
 
     def __init__(self, ctx):
         self.ctx = ctx
+
+
+class View(object):
+
+    def __init__(self, modal):
+        self.modal = modal
+        self.onDispose = ClientEvent()
+
+    def isViewModal(self):
+        return self.modal
+
+    def close(self):
+        self.onDispose(self)
+
+
+class ContainerManager(object):
+
+    def __init__(self):
+        self.onViewAddedToContainer = ClientEvent()
+
+    def show(self, view):
+        self.onViewAddedToContainer('container', view)
+
+
+class App(object):
+
+    def __init__(self):
+        self.containerManager = ContainerManager()
 
 
 class ClientEvent(object):
@@ -187,14 +218,14 @@ class StockControlTest(unittest.TestCase):
 
         assert page.applied[-1] == ({'fragCorrelationBar'}, set())
 
-    def test_other_battle_pages_keep_every_stock_element(self):
+    def test_every_battle_page_with_the_element_hides_it(self):
         page = EpicPage()
         self.control.want('team_hp', ('fragCorrelationBar',))
         page._populate()
 
         page._setComponentsVisibility(visible={'fragCorrelationBar'})
 
-        assert page.applied == [({'fragCorrelationBar'}, set())]
+        assert page.applied[-1] == (set(), {'fragCorrelationBar'})
 
     def test_restore_while_full_stats_is_open_waits_for_the_page(self):
         page = self.populated_page()
@@ -205,24 +236,53 @@ class StockControlTest(unittest.TestCase):
 
         assert 'sixthSense' in page._fsToggling
 
-    def test_event_battle_types_keep_the_stock_element(self):
+    def test_every_battle_type_hides_the_stock_element_the_page_has(self):
         page = self.populated_page()
-        self.layer.enter_mode('event')
-        self.control.want('team_hp', ('fragCorrelationBar',))
+        page.components = {'battleDamageLogPanel': object()}
 
-        page._setComponentsVisibility(visible={'fragCorrelationBar'})
+        for mode in ('random', 'comp7', 'frontline', 'event', 'battle_royale', None):
+            self.layer.enter_mode(mode)
+            self.control.want('damage_log', ('battleDamageLogPanel',))
 
-        assert page.applied == [({'fragCorrelationBar'}, set())]
+            assert self.control.hidden == frozenset(('battleDamageLogPanel',))
 
-    def test_leaving_an_event_battle_type_hides_the_alias_on_sync(self):
+    def test_a_stock_element_registered_after_the_page_is_hidden_then(self):
+        page = ClassicPage()
+        page.components = {'damagePanel': object()}
+        page._populate()
+        self.control.want('damage_log', ('battleDamageLogPanel',))
+
+        page._onRegisterFlashComponent(object(), 'battleDamageLogPanel')
+
+        assert page.applied[-1] == (set(), {'battleDamageLogPanel'})
+
+    def test_an_alias_the_page_turned_out_not_to_have_is_not_shown_back(self):
         page = self.populated_page()
-        self.layer.enter_mode('event')
-        self.control.want('team_hp', ('fragCorrelationBar',))
-        self.layer.enter_mode('comp7')
+        self.control.want('damage_log', ('battleDamageLogPanel',))
+        page.components = {'damagePanel': object()}
 
         self.control.sync()
 
-        assert page.applied[-1] == (set(), {'fragCorrelationBar'})
+        assert page.applied == [(set(), {'battleDamageLogPanel'})]
+        assert self.control.hidden == frozenset()
+
+    def test_the_summary_names_the_page_and_the_aliases_found_and_hidden(self):
+        page = ClassicPage()
+        page.alias = 'classicBattlePage'
+        page.components = {'battleDamageLogPanel': object(), 'sixthSense': object()}
+        page._populate()
+        self.control.want('damage_log', ('battleDamageLogPanel',))
+
+        summary = self.control.summary()
+
+        assert summary == {
+            'page': 'classicBattlePage',
+            'found': ['battleDamageLogPanel', 'sixthSense'],
+            'hidden': ['battleDamageLogPanel'],
+        }
+
+    def test_no_summary_off_the_battle_page(self):
+        assert self.control.summary() is None
 
     def test_an_alias_the_page_does_not_have_is_left_alone(self):
         page = ClassicPage()
@@ -282,6 +342,45 @@ class StockControlTest(unittest.TestCase):
 
         assert not self.layer.full_stats
         assert self.control.page is None
+
+    def page_with_app(self):
+        page = ClassicPage()
+        page.app = App()
+        page._populate()
+        self.layer.show('panel', 'text')
+        return page
+
+    def test_a_modal_view_fades_every_panel(self):
+        page = self.page_with_app()
+
+        page.app.containerManager.show(View(modal=True))
+
+        assert self.layer.cover == 'modal'
+
+    def test_a_view_that_is_not_modal_changes_nothing(self):
+        page = self.page_with_app()
+
+        page.app.containerManager.show(View(modal=False))
+
+        assert self.layer.cover == ''
+
+    def test_the_fade_goes_when_the_last_modal_view_closes(self):
+        page = self.page_with_app()
+        menu, help_window = View(modal=True), View(modal=True)
+        page.app.containerManager.show(menu)
+        page.app.containerManager.show(help_window)
+
+        menu.close()
+        faded = self.layer.cover
+        help_window.close()
+
+        assert (faded, self.layer.cover) == ('modal', '')
+
+    def test_the_page_end_stops_following_modal_views(self):
+        page = self.page_with_app()
+        page._dispose()
+
+        assert page.app.containerManager.onViewAddedToContainer.handlers == []
 
     def page_with_avatar(self):
         avatar = Avatar()

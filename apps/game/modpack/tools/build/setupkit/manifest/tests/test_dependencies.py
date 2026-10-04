@@ -151,10 +151,10 @@ class RequiredByFollowsTheCodeTest(unittest.TestCase):
         self.assertIn('session_stats', labels)
         self.assert_required_by(GUIFLASH, labels)
 
-    def test_only_the_ui_imports_gameface(self):
+    def test_only_the_ui_and_the_hit_viewer_open_gameface_windows(self):
         window = keys_using(GAMEFACE_IMPORT)
 
-        self.assertEqual(window, {'ui'})
+        self.assertEqual(window, {'ui', 'hit_viewer'})
 
     def test_gameface_window_and_labels_need_gameface(self):
         users = keys_using(GAMEFACE_IMPORT) | keys_using(HUD_USE)

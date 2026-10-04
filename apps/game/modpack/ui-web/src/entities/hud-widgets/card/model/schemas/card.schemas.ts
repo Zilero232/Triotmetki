@@ -32,5 +32,16 @@ export const cardSchema = z.object({
   strip: z.array(hudToneSchema),
   rows: z.array(cardRowSchema),
   footer: text,
-  width: z.nullable(z.number())
+  width: z.nullable(z.number()),
+  hero: z.optional(
+    z.nullable(
+      z.object({
+        fill: z.nullable(z.number()),
+        tone: hudToneSchema,
+        shape: text,
+        tick: z.nullable(z.number()),
+        points: z.array(z.number())
+      })
+    )
+  )
 });

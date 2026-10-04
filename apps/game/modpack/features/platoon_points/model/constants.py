@@ -12,3 +12,8 @@ PREVIEW_MEMBERS = (
     (2, {'name': u'Союзник', 'own': False, 'class': 'mediumTank', 'max_hp': 1600, 'alive': False}, 0, 1),
 )
 PREVIEW_OWN = {'damage': 2450, 'assist': 610}
+
+# The settings window editor: field groups (spec 2026-09-30 section 12.3).
+EDITOR_GROUPS = (
+    ('shown', ('show_platoon', 'show_solo')),
+)

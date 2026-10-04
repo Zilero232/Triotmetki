@@ -3,3 +3,15 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # CROSSHAIR_VIEW_ID of gui.battle_control.battle_constants (RU 1.45 client source).
 VIEW_ARCADE = 1
 VIEW_SNIPER = 2
+# VEHICLE_VIEW_STATE names the readouts follow (RU 1.45 battle_constants): HEALTH carries the own HP
+# (Avatar.updateVehicleHealth), REPAIRING (device, progress, seconds left, mode) a destroyed module's repair
+# (Avatar.updateDestroyedDevicesIsRepairing), DEVICES (device, state, actual state) the end of it, DESTROYED the death.
+READOUT_STATES = (
+    ('HEALTH', 'health'),
+    ('REPAIRING', 'repairing'),
+    ('DEVICES', 'devices'),
+    ('DESTROYED', 'destroyed'),
+)
+DEVICE_DESTROYED = 'destroyed'
+# The ammo controller's events after which the own magazine is read again (RU 1.45 ammo_ctrl.AmmoController).
+CLIP_EVENTS = ('onShellsUpdated', 'onCurrentShellChanged', 'onGunSettingsSet')

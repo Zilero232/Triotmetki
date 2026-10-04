@@ -101,7 +101,7 @@ describe(searchComponents, () => {
   });
 
   it('finds a single setting by its label', () => {
-    expect(searchKeys('интервал')).toEqual([['companion', ['flush_interval_seconds']]]);
+    expect(searchKeys('простоя')).toEqual([['session_stats', ['session_idle_minutes']]]);
   });
 
   it('finds a single setting by one of its choices, ignoring case', () => {
@@ -145,7 +145,7 @@ describe(valueOf, () => {
   });
 
   it('reads a field by its key', () => {
-    expect(valueOf({ component: byId('companion'), key: 'flush_interval_seconds' })).toBe(15);
+    expect(valueOf({ component: byId('session_stats'), key: 'session_idle_minutes' })).toBe(60);
   });
 
   it('reads null for an unknown key', () => {

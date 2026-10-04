@@ -441,7 +441,7 @@ class SurfaceTest(unittest.TestCase):
             'widget': None,
             'dock': None,
             'hint': '',
-            'dim': False,
+            'cover': '',
         }
 
     def test_edit_mode_needs_the_cursor(self):

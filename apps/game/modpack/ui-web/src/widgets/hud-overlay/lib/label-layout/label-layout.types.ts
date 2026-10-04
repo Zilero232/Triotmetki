@@ -31,6 +31,6 @@ export type ScaleOfInput = { panel: HudPanel; scales: Scales };
 
 export type DockItemInput = Pick<LayoutLabelsInput, 'overrides' | 'screen' | 'sizes'> & { panel: HudPanel; scale: number };
 
-export type OpacityOfInput = { panel: HudPanel; rect: Rect; screen: ClientSize; settled: boolean };
+export type OpacityOfInput = { panel: HudPanel; settled: boolean };
 
 export type LabelStyleInput = { rect: Rect; scale: number; opacity: number };

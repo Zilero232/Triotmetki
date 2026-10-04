@@ -157,5 +157,12 @@ class SettingsTest(unittest.TestCase):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
 
 
+class FixedSettingsTest(unittest.TestCase):
+
+    def test_the_font_size_is_fixed(self):
+        assert 'font_size' not in SCHEMA.defaults
+        assert Settings({'font_size': 30}, SCHEMA).get('font_size') == 14
+
+
 if __name__ == '__main__':
     unittest.main()

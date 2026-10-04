@@ -24,8 +24,8 @@ describe(lampView, () => {
     expect(lampView(lamp()).progress).toBeCloseTo(0.7);
   });
 
-  it('writes the seconds in the dealt tone without a colour of the player', () => {
-    expect(lampView(lamp())).toMatchObject({ seconds: '7', tone: 'accent', color: undefined });
+  it('writes the seconds in white without a colour of the player: the ring carries the colour', () => {
+    expect(lampView(lamp())).toMatchObject({ seconds: '7', tone: 'text', color: undefined });
   });
 
   it('paints the seconds in the colour the player set', () => {

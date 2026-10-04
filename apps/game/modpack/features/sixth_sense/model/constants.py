@@ -9,7 +9,6 @@ ICON_RENDITIONS = (64, 128)
 DIM_SUFFIX = '_dim'
 # The settings window's picture of each icon set: the larger rendition, so a gallery tile stays sharp.
 GALLERY_ICON_SIZE = 128
-CUSTOM_SET = 'custom'
 IMAGE_SCHEME = 'img://'
 # The pulse swaps the icon and its dimmed frame every half second while the lamp is lit.
 PULSE_PERIOD_S = 0.5
@@ -43,3 +42,9 @@ KIND = 'sixth_sense'
 # The timer line under the lamp: this much smaller than the text, never below the smallest readable size.
 TIMER_FONT_DECREASE = 6
 MIN_TIMER_FONT_SIZE = 8
+
+# The settings window's editor: the icon with its colour and pulse, then the timer.
+EDITOR_GROUPS = (
+    ('icon', ('icon_set', 'color', 'pulse')),
+    ('timer', ('show_timer',)),
+)

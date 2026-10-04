@@ -2,14 +2,15 @@ import clsx from 'clsx';
 
 import type { DamageLogRowProps } from './DamageLogRow.types';
 
-import { ClientIcon, MiniBar, ShellChip, toneClass } from '../../../../../../../shared/ui/hud';
+import { ClientIcon, MiniBar, ShellChip, TabularText, toneClass } from '../../../../../../../shared/ui/hud';
 import { DAMAGE_LOG } from '../../../../config';
 
 import s from './DamageLogRow.module.scss';
 
 export const DamageLogRow = ({ row, isNewest }: DamageLogRowProps) => (
   <div className={clsx(s.row, isNewest && s.enter)}>
-    <span className={clsx(s.amount, toneClass(row.tone))}>{row.amountText}</span>
+    {isNewest && <span className={s.index} />}
+    <TabularText className={clsx(s.amount, toneClass(row.tone))} text={row.amountText} />
     <ClientIcon className={s.icon} icon={row.icon} size={DAMAGE_LOG.iconSize} tone={row.tone} />
     <span className={s.shell}>{row.shell && <ShellChip gold={row.shell.gold} label={row.shell.label} />}</span>
     <ClientIcon className={s.icon} icon={row.cls} size={DAMAGE_LOG.iconSize} />

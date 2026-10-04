@@ -3,52 +3,45 @@
 .item {
   position: relative;
   display: flex;
-  height: 40px;
+  height: 36px;
   flex-direction: row;
   align-items: center;
-  padding: 0 10px 0 12px;
-  border: 1px solid transparent;
-  border-radius: token(radius-md);
-  margin: 0 8px 2px;
+  padding: 0 16px 0 18px;
+  border: none;
   background-color: transparent;
-  color: token(color-text-muted);
+  color: token(win-text-label);
   cursor: pointer;
   text-align: left;
 
-  @include ease(background-color, border-color, color);
+  @include ease(background-color, color);
 
   &:hover {
-    background-color: token(color-surface-hover);
+    background-color: token(win-item-hover);
     color: token(color-text);
   }
 }
 
 .itemOn {
-  border-color: token(color-accent-soft);
-  background-color: token(color-surface);
-  background-image: token(win-accent-tint);
+  background-color: token(win-item-on);
   color: token(color-text);
 
   &:hover {
-    background-color: token(color-surface);
+    background-color: token(win-item-on);
   }
 }
 
 .marker {
   position: absolute;
-  top: 9px;
-  bottom: 9px;
-  left: -9px;
-  width: 3px;
-  border-radius: token(radius-full);
-  background-color: token(color-accent);
-  content: '';
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  background-color: token(win-index);
 }
 
 .compact {
   justify-content: center;
   padding: 0;
-  margin: 0 6px 2px;
 }
 
 .label {
@@ -63,11 +56,11 @@
 
 .count {
   flex-shrink: 0;
-  padding: 0 6px;
-  border-radius: token(radius-full);
   margin-left: 8px;
-  background-color: token(color-surface-sunken);
-  color: token(color-text-dim);
+  color: token(win-text-caption);
   font-size: 11px;
-  line-height: 18px;
+}
+
+.countOn {
+  color: token(win-index);
 }

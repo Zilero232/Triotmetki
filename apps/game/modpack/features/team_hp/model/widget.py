@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.hud.icons import class_icon
 from ....core.hud.widget import color_override, widget
-from ..settings.constants import DEFAULTS
+from ..settings.constants import FIXED
 from .constants import KIND, SIDE_COLOR_KEYS, SIDE_TINTS, SIDE_TONES, STRIP_STYLES
 from .strip import strip_rows
 
@@ -57,6 +57,6 @@ def team_hp_widget(teams, settings, options):
         'score_alive': bool(settings.get('show_alive')),
         'diff': values['diff'] if settings.get('show_diff') else None,
         'tones': dict(SIDE_TONES),
-        'colors': dict((side, color_override(settings.get(key), DEFAULTS[key])) for side, key in SIDE_COLOR_KEYS),
+        'colors': dict((side, color_override(settings.get(key), FIXED[key])) for side, key in SIDE_COLOR_KEYS),
         'vehicles': strip_sides(teams, settings, options),
     })

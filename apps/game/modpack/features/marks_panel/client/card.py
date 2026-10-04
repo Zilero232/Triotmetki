@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.client.component import FeatureComponent
-from ....core.client.game import on_vehicle_changed, selected_tank_id, vehicle_short_name
+from ....core.client.game import on_vehicle_changed, selected_tank_id, vehicle_class_tag, vehicle_short_name
 from ....core.client.hud import hud_layer
 from ....core.client.hud.modifier import ModifierWatch
 from ....core.client.lobby_view import lobby_view
@@ -146,6 +146,7 @@ class TankCardPanel(FeatureComponent):
             mastery=mastery,
             own_mastery=(snapshot or {}).get('mastery'),
             research=research,
+            class_tag=vehicle_class_tag(self.selected),
         )
 
     def _state(self, snapshot):

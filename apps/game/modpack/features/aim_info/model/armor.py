@@ -23,6 +23,17 @@ def _angle(cos):
     return int(round(math.degrees(math.acos(max(-1.0, min(1.0, cos))))))
 
 
+# RU 1.45 client source: Vehicle.publicInfo is a PyFixedDictDataInstance (entity_defs PUBLIC_VEHICLE_INFO), which has
+# item access but no `.get`.
+def public_team(public_info):
+    if public_info is None:
+        return None
+    try:
+        return public_info['team']
+    except (KeyError, TypeError):
+        return None
+
+
 def armor_readout(layers, piercing, verdict):
     """The numbers of one resolution: `layers` are the armour plates the own shell's ray meets, in its order, each
     `{'armor': nominal mm, 'effective': mm at the angle, after the shell's normalisation, 'damaging': the plate

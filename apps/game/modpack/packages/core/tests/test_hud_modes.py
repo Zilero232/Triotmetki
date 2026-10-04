@@ -11,7 +11,6 @@ from otmetki.core.hud.modes import (
     allowed_panels,
     battle_mode,
     clean_place,
-    suppresses,
 )
 from otmetki.core.storage import MemoryFile
 
@@ -126,27 +125,6 @@ class AllowedPanelsTest(unittest.TestCase):
 
     def test_off_layout_allows_nothing(self):
         assert allowed_panels('off') == frozenset()
-
-
-class SuppressesTest(unittest.TestCase):
-
-    def test_unknown_mode_suppresses(self):
-        assert suppresses(None)
-
-    def test_random_suppresses(self):
-        assert suppresses('random')
-
-    def test_comp7_suppresses(self):
-        assert suppresses('comp7')
-
-    def test_event_keeps_the_stock_elements(self):
-        assert not suppresses('event')
-
-    def test_frontline_keeps_the_stock_elements(self):
-        assert not suppresses('frontline')
-
-    def test_battle_royale_keeps_the_stock_elements(self):
-        assert not suppresses('battle_royale')
 
 
 class CleanPlaceTest(unittest.TestCase):

@@ -19,7 +19,7 @@ import {
 import { send } from '../../../../../shared/api/protocol';
 import { CONTEXT_BADGES } from '../../../config';
 import { cardLayout, panelPreview } from '../../../lib/card-layout';
-import { cardPreviewKind, carouselPreview } from '../../../lib/card-preview';
+import { cardPreviewKind, cardSummary, carouselPreview } from '../../../lib/card-preview';
 import { useCardActions } from '../use-card-actions';
 
 export const useComponentCard = ({ component, fields, forceOpen = false }: UseComponentCardInput) => {
@@ -40,6 +40,7 @@ export const useComponentCard = ({ component, fields, forceOpen = false }: UseCo
     preview: panelPreview({ component, panels: state?.hud.panels ?? [] }),
     previewKind: cardPreviewKind(component),
     carousel: carouselPreview(component.fields),
+    summary: cardSummary(component.fields),
     thumb: component.thumb ?? null,
     gallery: component.gallery ?? {},
     showAdvanced: forceOpen,

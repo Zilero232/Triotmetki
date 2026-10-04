@@ -63,8 +63,8 @@ class ClockTest(unittest.TestCase):
 
         assert values == {'time': '21:47', 'timer': ''}
 
-    def test_the_battle_clock_has_its_own_time_format(self):
-        values = clock_values(moment(), info(clock_format='%H:%M', battle_clock_format='%H:%M:%S'), 125)
+    def test_the_battle_clock_follows_the_hangar_time_format(self):
+        values = clock_values(moment(), info(clock_format='%H:%M:%S'), 125)
 
         assert values['time'] == '21:47:05'
 
@@ -106,19 +106,21 @@ class SettingsTest(unittest.TestCase):
     def test_the_stock_timer_stays_by_default(self):
         assert SCHEMA.defaults['replace_timer'] is False
 
-    def test_an_unknown_battle_clock_format_falls_back_to_the_default(self):
-        assert info(battle_clock_format='%s rm -rf').get('battle_clock_format') == '%H:%M'
+    def test_the_battle_clock_format_and_the_font_size_are_fixed(self):
+        assert 'battle_clock_format' not in SCHEMA.defaults
+        assert 'font_size' not in SCHEMA.defaults
+        assert info(font_size=30).get('font_size') == 14
 
     def test_the_panel_keeps_the_id_of_the_old_component(self):
         assert CLOCK_PANEL_ID == 'battle_clock'
 
-    def test_the_panel_sits_under_the_stock_timer(self):
+    def test_the_panel_sits_left_of_the_stock_timer(self):
         place = [CLOCK_SCHEMA.defaults[key] for key in ('x', 'y', 'align_x', 'align_y')]
 
-        assert place == [-8, 46, 'right', 'top']
+        assert place == [-190, 4, 'right', 'top']
 
-    def test_the_old_default_place_is_retired(self):
-        assert (-190, 4, 'right', 'top') in CLOCK_SCHEMA.retired
+    def test_the_place_under_the_timer_is_retired(self):
+        assert (-8, 46, 'right', 'top') in CLOCK_SCHEMA.retired
 
 
 if __name__ == '__main__':

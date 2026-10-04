@@ -1,12 +1,11 @@
 import type { EditorStageProps } from './EditorStage.types';
 
-import { HudSample } from '../../../../../../../entities/hud-widgets/registry';
 import { useT } from '../../../../../../../entities/window-state';
 import { ActionBar } from '../../../../../../../shared/ui/action-bar';
 import { Button } from '../../../../../../../shared/ui/button';
 import { Confirm } from '../../../../../../../shared/ui/confirm';
 import { Icon } from '../../../../../../../shared/ui/icon';
-import { Segmented } from '../../../../../../../shared/ui/segmented';
+import { EditorScreen } from '../EditorScreen';
 
 import s from './EditorStage.module.scss';
 
@@ -16,17 +15,7 @@ export const EditorStage = ({ component, model }: EditorStageProps) => {
 
   return (
     <div className={s.stage}>
-      <div className={s.screen}>
-        <span className={s.caption}>{t('preview')}</span>
-        <Segmented className={s.zoom} items={model.zoomItems} label={t('editorZoom')} value={String(model.zoom)} onSelect={model.setZoom} />
-        <div className={s.view}>
-          {card.preview && (
-            <div className={s.zoomed} style={{ transform: `scale(${model.zoom})` }}>
-              <HudSample text={card.preview.text ?? card.preview.preview} widget={card.preview.widget} />
-            </div>
-          )}
-        </div>
-      </div>
+      <EditorScreen model={model} />
       <div aria-live='polite' className={s.hint}>
         <span className={s.hintLabel}>{hint.label}</span>
         {hint.text && <span className={s.hintText}>{hint.text}</span>}

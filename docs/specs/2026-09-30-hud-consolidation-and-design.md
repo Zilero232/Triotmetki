@@ -771,3 +771,91 @@ Steps 3–7 each remove their old packages in the same change, so no release shi
 - Warhelios in the Gameface page without an `@font-face` (the page relies on the game font today).
 - Revision-3 migration on real player files: a file with a configured chat filter keeps it on; an untouched file flips.
 - Fresh install: the one-time apply of the crosshair, camera and minimap defaults in the first hangar, then «Вернуть как было» restores the exact previous reticle dicts, camera and minimap values.
+
+---
+
+## 12. Settings window audit (2026-10-03)
+
+The player's verdict on the in-game window: too many options, some of which should not be options at all; nothing shows what a field changes; the header reads as generated. This section is the field-by-field decision, written before the change, and the rules the window follows after it.
+
+### 12.1 Rules
+
+- **Keep** a field when it changes something the player sees or needs.
+- **Advanced** («Дополнительно», folded): a real choice that few players make (privacy details of the upload, custom templates, tournament rules, the placement of a docked panel).
+- **Delete** internal knobs, duplicates of game settings, numeric tuning nobody touches, second-count timers, hex colours where a palette or swatch exists, anything only a developer understands.
+- A deleted key becomes a **fixed value**: `core.settings.fix(schema, FIXED)` drops it from the schema (so it leaves `config.json` / `components.json` on the next save and the window never shows it) while `Settings.get` still answers the constant, so the code that read it keeps working. `FIXED` lives in the feature's `settings/constants.py` with the old default.
+- **The panel look keys** of `core.hud.panel_schema` (`font_size`, `border`, `alpha`): the window never shows `font_size` (the HUD edit wheel scales the whole panel, the type scale is fixed by §6.2) and `border` (a layout debug frame); `alpha` («Прозрачность») moves to «Дополнительно». They stay in `PANEL_DEFAULTS` until the HUD renderer stops reading them (outside this change).
+- Migration entries (`MERGED_SECTIONS`, `RETIRED_VALUES`) that target a deleted key go with it.
+- Every component with a look gets the full-window editor: a live preview (the real HUD widget, or a schematic for the stock minimap and camera), fields in named groups, galleries for visual choices, swatches for colours, a hint on hover. A feature declares it in `model/editor.py` (`editor(settings, translate)`) and its folded fields as `ADVANCED` in `settings/`; the window picks both up with no UI code. Components without a look keep the card, with a summary of what they do (the chosen keys as key chips, the checked items as a list).
+
+### 12.2 Per component
+
+K = keep, A = advanced, D = delete (fixed value in brackets).
+
+| Component | K | A | D |
+|---|---|---|---|
+| companion «Данные и сайт» | send_battle_results, share_settings | send_moe_snapshots, send_queue_times, send_loadouts, send_shots, settings_target, settings_anonymous_stats, settings_include_resolution, settings_include_sensitivity, hud_modifier | flush_interval_seconds (15) |
+| aim_info | armor_under_aim, show_piercing, show_nominal, show_angle, target_distance, shell_tooltips, aim_circle | aim_circle_scale, placement | arcade_offset (132), sniper_offset (132), strategic_offset (100) |
+| auto_reserves | reserve_xp, reserve_crew_xp, reserve_free_xp, reserve_credits, when | — | — |
+| auto_resupply | auto_repair, auto_load, auto_equip, auto_boosters | — | — |
+| battle_hotkeys | server_aim_key, zoom_key | — | notice_s (2) |
+| battle_loadout | — | pinned | icon_size (40), stock_size (on) |
+| battle_progress | row_main_gun, row_record, row_wn8, record_metric | main_gun_share | colored (on) |
+| battle_results | hits_tab, bonus_types, show_combat, show_economy, show_marks | hits_show_attacker, history_size, template | colored (on), hits_keep_battles (10) |
+| bush_circle | mode, hotkey, color | — | — |
+| camera | preset, sniper_zoom, dynamic_camera, horizontal_stabilization | — | — |
+| chat_filter | filter_duplicates, block_words, timestamp_format | rate_limit, filter_commands | duplicate_window_s (30), rate_window_s (10) |
+| comp7_helper | show_thresholds, show_battles, show_skill | — | font_size (14) |
+| crew_xp | show_card, show_tooltip | — | font_size (14) |
+| crosshair | preset, modes, server_reticle, mark, mark_size, mark_color, mark_hides_centre | — | — |
+| damage_log | style, sections, dealt_lines, received_lines, group_by_target, show_hp, show_misses, show_received_blocked, show_assist_rows, alt_mode, palette | keep_stock, template, entry_template | kind_colors (on), kind_icons (on), color_damage, color_assist, color_blocked, color_received ('': the palette), alt_entry_template ('') |
+| depot_seller | sell_shells, sell_modules, sell_equipment, sell_consumables, dismiss_crew | include_fitting, include_special, crew_with_skills | — |
+| event_trackers | show_triathlon, show_caravan | triathlon_shown | font_size (14) |
+| free_camera | hotkey, in_replays, in_hangar, hide_ui | — | — |
+| gun_arc | show_bar, show_degrees, show_yaw | placement | warn_deg (5), arcade_offset (96), sniper_offset (96), strategic_offset (64) |
+| hangar_cleaner | hide_offer_banners, hide_teaser, hide_event_entries | — | — |
+| hangar_info | clock_format, date_format, show_server, show_ping, show_online, battle_clock | replace_timer, template | battle_clock_format (%H:%M), font_size (14) |
+| hangar_space | — (the page picks the hangar) | space | — |
+| hangar_tweaks | carousel_rows, carousel_tiles, interface_scale, quick_actions | interface_scale_exact | — |
+| hud_layouts | random, comp7, frontline, event, battle_royale | own_places | — |
+| marks_panel | show_battle_panel, style, color_mode, alt_detail, show_targets, show_battles, hangar_card, hangar_style, show_trend, show_tank_ratings | show_battle, show_step, show_up, show_mastery, show_research, trend_battles, template | step (0.5), max_entries (100), page_rows (50) |
+| minimap | size, transparency, vehicle_names, view_range, max_view_range, draw_range | — | — |
+| notification_filter | hide_promo, hide_reminders, hide_friend_requests, hide_clan | — | — |
+| personal_missions | show_hangar, show_conditions, max_missions | — | font_size (14) |
+| platoon_points | show_platoon, show_solo | damage_step, assist_step, frag_points, alive_points | — |
+| preset_advisor | equipment, directives, consumables | — | — |
+| quick_demount | — | show_locked | max_vehicles (20) |
+| replay_manager | auto_rename, notify_analysis | name_template | — |
+| responsive_reticle | follow | — | — |
+| session_stats | show_goals, show_moe, show_account, metric_wn8, metric_win_rate, metric_avg_damage, metric_eff | max_goals, session_idle_minutes, share_session_report, share_session_channel | — |
+| sixth_sense | icon_set, color (six swatches instead of a hex field), show_timer, pulse | text, replace_stock | hide_after_s (0: as long as the stock lamp), icon_size (56), icon ('') with the `custom` icon set |
+| streamer_mode | hotkey, private, hide_chat, hide_hangar_stats | keep_hidden | — |
+| team_hp | style, show_score, show_diff, show_alive | replace_stock, pinned, template | ally_color, enemy_color (the §6.4 tones), bar_width (30), icon_width (3) |
+| update_notice | show_card, notify | — | font_size (14) |
+| every HUD panel | — | alpha | font_size, border (hidden by the window, see 12.1) |
+
+### 12.3 Editors
+
+| Component | Preview | Groups |
+|---|---|---|
+| sixth_sense | the lamp widget | Значок (icon_set gallery, color swatches, pulse) · Таймер (show_timer) |
+| team_hp | the strip | Вид (style) · Счёт (show_score, show_alive, show_diff) |
+| damage_log | the log | Вид (style, palette) · Разделы (sections, dealt_lines, received_lines) · Строки (group_by_target, show_hp, show_misses, show_received_blocked, show_assist_rows, alt_mode) |
+| marks_panel | the battle panel and the Tank card | В бою (show_battle_panel, style, color_mode, alt_detail) · Цифры (show_targets, show_battles) · В ангаре (hangar_card, hangar_style, show_trend, show_tank_ratings) |
+| battle_loadout | the equipment row | only folded fields |
+| minimap | a schematic minimap whose size, transparency, names and three circles follow the fields | Карта (size, transparency, vehicle_names) · Круги (view_range, max_view_range, draw_range) |
+| camera | a schematic sniper view: zoom, stabilisation, shake | Пресет (preset) · Снайперский режим (sniper_zoom, horizontal_stabilization) · Камера (dynamic_camera) |
+| session_stats | the Session card | Сессия (show_moe) · Цели (show_goals) · Аккаунт (show_account, metric_*) |
+| hangar_info | the clock strip | Время (clock_format, date_format) · Сервер (show_server, show_ping, show_online) · В бою (battle_clock) |
+| gun_arc | the traverse scale | Шкала (show_bar, show_degrees, show_yaw) |
+| aim_info | the armour readout | Броня (armor_under_aim, show_piercing, show_nominal, show_angle) · Цель (target_distance) · Снаряды и сведение (shell_tooltips, aim_circle) |
+| platoon_points | the points row | Кого показывать (show_platoon, show_solo) |
+| battle_progress | the progress plate | Строки (row_main_gun, row_record, record_metric, row_wn8) |
+| crosshair | unchanged | unchanged |
+
+### 12.4 Window chrome
+
+- **Header:** a compact brand mark and the window title on the left; the search in the centre with a «Ctrl+F» hint; on the right one status chip (bound: the account name; not bound: «Мод не привязан»), an overflow menu «⋯» with zoom, language and «Сбросить окно», and the close button.
+- **Page header:** icon, title and a one-line description; actions right-aligned. The «Все / Ангар / Бой» filter shows only on a page that lists both hangar and battle cards (not on Replays, Streamers, Data, Tools).
+- **Sidebar:** the counter reads «13 вкл.» instead of «13/14».
+- One spacing rhythm (4/8/12/16/24) and the type scale of the tokens; no decoration without a purpose.

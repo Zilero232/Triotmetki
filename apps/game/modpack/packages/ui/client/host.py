@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import time
 
 from ...companion.settings_ui.client import SettingsView, add_settings_view
-from ...core.events import EVENT_SETTINGS_OPEN
+from ...core.events import EVENT_SETTINGS_CLOSE, EVENT_SETTINGS_OPEN
 from ...core.log import log, safe
 from ...core.durable import open_config
 from ..bridge import SettingsBridge
@@ -65,6 +65,7 @@ class UiHost(object):
         bus.on('component_settings', self._on_changed)
         bus.on('tick', self._on_tick)
         bus.on(EVENT_SETTINGS_OPEN, self.open_at)
+        bus.on(EVENT_SETTINGS_CLOSE, self.close)
         if GamefaceSettingsView.available():
             add_settings_view(app, GamefaceSettingsView(app, self))
         else:

@@ -7,3 +7,7 @@ VEHICLE_MODULE = 'Vehicle'
 VEHICLE_CLASS = 'Vehicle'
 SHOT_METHOD = 'showDamageFromShot'
 OWN_VEHICLE_ATTR = 'isPlayerVehicle'
+# The avatar (BigWorld.player()) names the player's own vehicle entity in playerVehicleID.
+BIGWORLD_MODULE = 'BigWorld'
+PLAYER_FUNCTION = 'player'
+OWN_VEHICLE_ID_ATTR = 'playerVehicleID'

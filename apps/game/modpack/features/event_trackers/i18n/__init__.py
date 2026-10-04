@@ -5,7 +5,6 @@ STRINGS = {
     'ru': {
         'component_event_trackers': u'Трекеры событий',
         'component_event_trackers_hint': u'Карточки в ангаре, пока идёт событие. «Триатлон»: ваш раунд — три лучших случайных боя по чистому опыту за 60 минут на технике VI уровня и выше, сколько осталось времени и лучший раунд. «Торговый караван»: ваши жетоны и когда событие закончится. Только ваши бои и данные — места соперников видны лишь на странице события в игре.',
-        'event_trackers_font_size': u'Размер шрифта',
         'event_trackers_show_triathlon': u'Триатлон',
         'event_trackers_triathlon_shown': u'Когда показывать «Триатлон»',
         'event_trackers_triathlon_shown_event': u'Пока игра показывает соревнование',
@@ -29,7 +28,6 @@ STRINGS = {
     'en': {
         'component_event_trackers': u'Event trackers',
         'component_event_trackers_hint': u'Hangar cards while an event runs. Triathlon: your round — the three best random battles by clean XP in 60 minutes on tier VI and up, the time left and the best round. Trading Caravan: your tokens and when the event ends. Only your own battles and data — the rivals\' places are only on the game\'s own event page.',
-        'event_trackers_font_size': u'Font size',
         'event_trackers_show_triathlon': u'Triathlon',
         'event_trackers_triathlon_shown': u'When to show Triathlon',
         'event_trackers_triathlon_shown_event': u'While the game lists the competition',

@@ -25,6 +25,10 @@ STRINGS = {
         'camera_native_recommended_confirm': u'Без динамической камеры, со стабилизацией в снайперском режиме, '
                                              u'зум запоминается. Текущие настройки сохранятся, их можно вернуть.',
         'camera_native_failed': u'Не удалось изменить настройки игры, попробуйте ещё раз.',
+        'camera_group_preset': u'Пресет',
+        'camera_group_sniper': u'Снайперский режим',
+        'camera_group_camera': u'Камера',
+        'camera_dynamic_camera_hint': u'Камера покачивается от выстрелов и попаданий.',
     },
     'en': {
         'component_camera': u'Zoom and camera',
@@ -49,5 +53,9 @@ STRINGS = {
         'camera_native_recommended_confirm': u'No dynamic camera, stabilisation in sniper mode, the last zoom '
                                              u'remembered. Your current settings are kept so you can restore them.',
         'camera_native_failed': u'Could not change the game settings, please try again.',
+        'camera_group_preset': u'Preset',
+        'camera_group_sniper': u'Sniper mode',
+        'camera_group_camera': u'Camera',
+        'camera_dynamic_camera_hint': u'The camera shakes with shots and hits.',
     },
 }

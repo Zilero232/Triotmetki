@@ -78,7 +78,7 @@ describe(editorRow, () => {
 
 describe(editorGroups, () => {
   it('lays the fields out in the editor groups, skipping unknown keys and empty groups', () => {
-    const groups = editorGroups({ fields: [size, mark, color], editor, otherLabel: 'More' });
+    const groups = editorGroups({ fields: [size, mark, color], editor, otherLabel: 'More', advancedLabel: 'Advanced' });
 
     expect(groups.map(({ id, rows }) => [id, rows.map(({ field }) => field.key)])).toEqual([
       ['shape', ['mark']],
@@ -87,8 +87,16 @@ describe(editorGroups, () => {
   });
 
   it('puts the fields no group names in a last group', () => {
-    const groups = editorGroups({ fields: [mark, extra], editor, otherLabel: 'More' });
+    const groups = editorGroups({ fields: [mark, extra], editor, otherLabel: 'More', advancedLabel: 'Advanced' });
 
     expect(groups.at(-1)).toMatchObject({ id: 'other', label: 'More', rows: [{ field: extra, kind: 'control' }] });
+  });
+
+  it('folds the advanced fields into their own last group', () => {
+    const folded = { ...extra, key: 'alpha', advanced: true };
+
+    const groups = editorGroups({ fields: [mark, extra, folded], editor, otherLabel: 'More', advancedLabel: 'Advanced' });
+
+    expect(groups.map(({ id }) => id).slice(-2)).toEqual(['other', 'advanced']);
   });
 });

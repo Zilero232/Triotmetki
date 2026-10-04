@@ -7,8 +7,10 @@ unchanged text is not sent again (a Flash or Gameface re-layout per call is the 
 `set_muted(True)` (the streamer hotkey) and `set_blocked(panel_ids)` (the streamer's private panels) take panels off
 the screen without the features knowing: their texts are held and come back when the panel is allowed again.
 `set_cover(reason, on)` is the one rule for what covers the battle view (`constants.COVER_EFFECTS`): V, the killer
-camera and the loading screen make the shown panels invisible, Tab marks them `dim`; the page keeps every panel drawn
-where it was, so nothing moves when they come back. `set_gui_hidden` and `set_full_stats` are its V and Tab reasons.
+camera and the loading screen make the shown panels invisible, Tab gives them the `cover` prop `stats` and a modal stock
+view (the Esc menu) `modal`: the page fades them and they take no mouse and show no tooltip. The page keeps every panel
+drawn where it was, so nothing moves when they come back. `set_gui_hidden`, `set_full_stats` and `set_menu` are its V,
+Tab and Esc reasons.
 
 `enter_mode(mode)` (a battle type, `core.hud.modes`) asks the layout policy a component set with `set_policy(policy)`
 which panels the type shows and whether it keeps places of its own: a panel the type leaves out is held like a muted
@@ -36,7 +38,7 @@ from ..panel import (
     pinned_values,
     retired_reset,
 )
-from .constants import COVER_DIM, COVER_EFFECTS, COVER_FULL_STATS, COVER_GUI, COVER_HIDE
+from .constants import COVER_EFFECTS, COVER_FADES, COVER_FULL_STATS, COVER_GUI, COVER_HIDE, COVER_MENU, COVER_NONE
 
 
 class HudLayer(object):
@@ -68,7 +70,19 @@ class HudLayer(object):
 
     @property
     def full_stats(self):
-        return self._covered(COVER_DIM)
+        return COVER_FULL_STATS in self.covers
+
+    @property
+    def menu(self):
+        return COVER_MENU in self.covers
+
+    @property
+    def cover(self):
+        """The page's `cover` prop of the shown panels: the strongest fade a covering view asks for, or ''."""
+        for effect in COVER_FADES:
+            if self._covered(effect):
+                return effect
+        return COVER_NONE
 
     def _covered(self, effect):
         return any(COVER_EFFECTS.get(reason) == effect for reason in self.covers)
@@ -115,7 +129,7 @@ class HudLayer(object):
 
     def props(self, panel_id, text, widget=None):
         props = self.layout(panel_id)
-        props.update({'text': text, 'visible': not self.gui_hidden, 'widget': widget, 'dim': self.full_stats})
+        props.update({'text': text, 'visible': not self.gui_hidden, 'widget': widget, 'cover': self.cover})
         props['hint'] = panel_hint(self.translate, alias_of(panel_id))
         return props
 
@@ -242,15 +256,19 @@ class HudLayer(object):
         return bool(changed)
 
     def _cover_props(self):
-        return {'visible': not self.gui_hidden, 'dim': self.full_stats}
+        return {'visible': not self.gui_hidden, 'cover': self.cover}
 
     def set_gui_hidden(self, hidden):
         """Follow the stock battle GUI hidden with V (True) and shown again (False); the panels stay in place."""
         self.set_cover(COVER_GUI, bool(hidden))
 
     def set_full_stats(self, shown):
-        """Follow the full stats held open with Tab: the panels stay, marked `dim` for the page (True), or not."""
+        """Follow the full stats held open with Tab: the panels stay, faded where the full stats lie (True), or not."""
         self.set_cover(COVER_FULL_STATS, bool(shown))
+
+    def set_menu(self, shown):
+        """Follow a modal stock view over the battle (the Esc menu): every panel stays, faded (True), or not."""
+        self.set_cover(COVER_MENU, bool(shown))
 
     def _update_shown(self, props):
         for alias in sorted(self.shown):

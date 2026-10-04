@@ -49,3 +49,9 @@ PREVIEW_VEHICLES = (
 PREVIEW_SIZE = (300, 60)
 
 KIND = 'team_hp'
+
+# The settings window's editor: the look of the strip, then what the score shows.
+EDITOR_GROUPS = (
+    ('look', ('style',)),
+    ('score', ('show_score', 'show_alive', 'show_diff')),
+)

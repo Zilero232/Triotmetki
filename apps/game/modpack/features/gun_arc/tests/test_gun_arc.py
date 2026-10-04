@@ -197,10 +197,10 @@ class YawTest(unittest.TestCase):
 
 class PlacementTest(unittest.TestCase):
 
-    def test_each_camera_mode_has_its_own_offset(self):
+    def test_each_camera_mode_has_its_fixed_offset(self):
         settings = Settings({'arcade_offset': 80, 'sniper_offset': 120, 'strategic_offset': 40}, SCHEMA)
 
-        assert [view_offset(view, settings) for view in (1, 2, 3)] == [80, 120, 40]
+        assert [view_offset(view, settings) for view in (1, 2, 3)] == [96, 96, 64]
 
     def test_another_view_has_no_offset(self):
         assert view_offset(4, Settings({}, SCHEMA)) is None
@@ -218,8 +218,8 @@ class PlacementTest(unittest.TestCase):
         for placement in PLACEMENTS:
             assert 'gun_arc_placement_' + placement in STRINGS['ru']
 
-    def test_the_offset_is_capped(self):
-        assert Settings({'sniper_offset': 999}, SCHEMA).get('sniper_offset') == 300
+    def test_the_warning_threshold_is_fixed(self):
+        assert Settings({'warn_deg': 20}, SCHEMA).get('warn_deg') == 5
 
 
 class SettingsTest(unittest.TestCase):

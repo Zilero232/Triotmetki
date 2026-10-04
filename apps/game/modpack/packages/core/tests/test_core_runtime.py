@@ -14,10 +14,10 @@ import _support  # noqa: F401
 from otmetki.core import hooks, log, registry
 from otmetki.core.client.game import values_by_name
 from otmetki.core.errors import ReasonError
-from otmetki.core.events import EventBus
+from otmetki.core.events import EVENT_HIT_VIEWER_BATTLES, EventBus, hit_viewer_battles
 from otmetki.core.i18n import Catalog, Translator, resolve_language
 from otmetki.core.format import format_number, format_percent, single_spaces, strip_tags
-from otmetki.core.settings import Schema, Settings
+from otmetki.core.settings import Schema, Settings, fix
 from otmetki.core.storage import JsonFile, account_file
 
 FEATURE_IDS = ('marks_panel', 'session_stats', 'replay_upload')
@@ -166,6 +166,18 @@ class EventBusTest(unittest.TestCase):
         result = bus.emit('nobody', 1)
 
         self.assertIsNone(result)
+
+
+class HitViewerBattlesTest(unittest.TestCase):
+
+    def test_the_battles_are_the_hit_viewers_answer(self):
+        bus = EventBus()
+        bus.on(EVENT_HIT_VIEWER_BATTLES, lambda reply: reply(['1', '2']))
+
+        assert hit_viewer_battles(bus) == frozenset(['1', '2'])
+
+    def test_without_the_hit_viewer_there_are_none(self):
+        assert hit_viewer_battles(EventBus()) == frozenset()
 
 
 class SubscriptionsTest(unittest.TestCase):
@@ -595,6 +607,16 @@ class SettingsSchemaTest(unittest.TestCase):
         settings = Settings({'on': False}, schema=settings_schema())
 
         self.assertFalse(settings.is_enabled('on'))
+
+    def test_a_fixed_key_leaves_the_file_and_keeps_its_value(self):
+        schema = fix(settings_schema(), {'count': 5})
+
+        settings = Settings({'count': 9, 'mode': 'b'}, schema=schema)
+
+        self.assertNotIn('count', settings.to_dict())
+        self.assertEqual(settings.get('count'), 5)
+        self.assertEqual(settings.update({'count': 7}), [])
+        self.assertEqual(settings.get('mode'), 'b')
 
 
 class I18nCatalogTest(unittest.TestCase):

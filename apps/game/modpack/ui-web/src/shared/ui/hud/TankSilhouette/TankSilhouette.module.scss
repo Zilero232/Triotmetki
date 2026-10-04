@@ -1,0 +1,36 @@
+@use '../../../styles/gameface' as *;
+
+.root {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+}
+
+.layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  transition: width token(duration-reveal) token(ease-out);
+}
+
+.fillBox {
+  display: flex;
+}
+
+.tick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background-color: token(hud-index);
+  transition: left token(duration-reveal) token(ease-out);
+}

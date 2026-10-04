@@ -12,5 +12,5 @@ export const HUD_OVERLAY = {
   emptyRect: { left: 0, top: 0, width: 0, height: 0 },
   dock: { gap: 6, reserve: 190, ceiling: 80 },
   hintGap: 6,
-  fullStats: { width: 1240, top: 80, bottom: 150, alpha: 0.2 }
+  coverAlpha: { stats: 0.25, modal: 0.25 }
 } as const;

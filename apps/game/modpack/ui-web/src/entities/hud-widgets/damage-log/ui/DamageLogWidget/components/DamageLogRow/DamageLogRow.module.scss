@@ -3,32 +3,59 @@
 @keyframes row-in {
   from {
     opacity: 0;
-    transform: translateX(-8px);
+    transform: translateY(4px);
   }
 
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes index-out {
+  0% {
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
   }
 }
 
 .row {
+  position: relative;
   display: flex;
   height: 18px;
   flex-direction: row;
   align-items: center;
+  padding-left: 4px;
 }
 
 .enter {
-  animation: row-in 200ms ease-out;
+  animation: row-in 180ms ease-out;
+}
+
+.index {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 0;
+  width: 2px;
+  animation: index-out 2.4s ease-out;
+  background-color: token(hud-index);
+  opacity: 0;
 }
 
 .amount {
   @include hud-type(value);
 
-  min-width: 40px;
+  min-width: 44px;
+  justify-content: flex-end;
   margin-right: 8px;
-  text-align: right;
 }
 
 .icon {

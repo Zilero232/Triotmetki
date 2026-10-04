@@ -30,13 +30,12 @@ class EquipmentWidgetTest(unittest.TestCase):
         assert data['cell'] == 52
         assert data['gap'] == 5
 
-    def test_an_own_icon_size_keeps_the_stock_pitch_frame(self):
+    def test_an_old_own_icon_size_gives_way_to_the_stock_slot_size(self):
         settings = Settings({'stock_size': False, 'icon_size': 30}, SCHEMA)
 
         data = equipment_widget(clean_devices(PREVIEW_DEVICES), settings)['data']
 
-        assert data['size'] == 30
-        assert data['cell'] == 34
+        assert data['size'] == 48
 
     def test_every_sample_item_is_drawn(self):
         items = preview_data()['items']

@@ -7,7 +7,9 @@ handler is logged without stopping the ones after it, so one feature cannot brea
 Events sent between packages (not by the app host) are named here: `component_settings(component_id,
 changed_keys)` from the settings window and a profile load, `replay_uploaded(arena_unique_id, replay_id)`
 from the replay upload, `replay_upload_request(request, reply)` from the replay manager, `settings_open(section)`
-to open the settings window at a page.
+to open the settings window at a page, `settings_close()` to close it, `hit_viewer_open(battle_id)` to open the hit
+viewer at a recorded battle, `hit_viewer_battles(reply)` for the battles it can open (`hit_viewer_battles(bus)` asks),
+`battle_progress_state(state)` from the battle progress panel.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -16,18 +18,27 @@ from collections import OrderedDict  # novermin (2.7 has it; vermin counts 3.1 f
 from ..log import log_exception
 from ..vendor.blinker import NamedSignal, Namespace
 from .constants import (
+    EVENT_BATTLE_PROGRESS,
     EVENT_COMPONENT_SETTINGS,
+    EVENT_HIT_VIEWER_BATTLES,
+    EVENT_HIT_VIEWER_OPEN,
     EVENT_REPLAY_UPLOAD_REQUEST,
     EVENT_REPLAY_UPLOADED,
+    EVENT_SETTINGS_CLOSE,
     EVENT_SETTINGS_OPEN,
 )
 
 __all__ = (
+    'EVENT_BATTLE_PROGRESS',
     'EVENT_COMPONENT_SETTINGS',
+    'EVENT_HIT_VIEWER_BATTLES',
+    'EVENT_HIT_VIEWER_OPEN',
     'EVENT_REPLAY_UPLOAD_REQUEST',
     'EVENT_REPLAY_UPLOADED',
+    'EVENT_SETTINGS_CLOSE',
     'EVENT_SETTINGS_OPEN',
     'EventBus',
+    'hit_viewer_battles',
 )
 
 
@@ -75,3 +86,10 @@ class EventBus(object):
                 handler(*args, **kwargs)
             except Exception:
                 self._on_error('%s handler' % name)
+
+
+def hit_viewer_battles(bus):
+    """The battle ids (text) the hit viewer can open now; empty without it."""
+    answers = []
+    bus.emit(EVENT_HIT_VIEWER_BATTLES, answers.append)
+    return frozenset(answers[0]) if answers else frozenset()

@@ -39,10 +39,11 @@ export const editorRow = ({ field, editor }: EditorRowInput): EditorRow => {
   };
 };
 
-export const editorGroups = ({ fields, editor, otherLabel }: EditorGroupsInput): EditorGroup[] => {
+export const editorGroups = ({ fields, editor, otherLabel, advancedLabel }: EditorGroupsInput): EditorGroup[] => {
   const byKey = indexBy(fields, ({ key }) => key);
   const placed = new Set(editor.groups.flatMap(({ keys }) => keys));
-  const rest = fields.filter(({ key }) => !placed.has(key));
+  const rest = fields.filter(({ key, advanced }) => !placed.has(key) && !advanced);
+  const folded = fields.filter(({ key, advanced }) => !placed.has(key) && advanced === true);
 
   const groups = editor.groups
     .map(({ id, label, keys }) => ({
@@ -55,9 +56,10 @@ export const editorGroups = ({ fields, editor, otherLabel }: EditorGroupsInput):
     }))
     .filter(({ rows }) => rows.length > 0);
 
-  if (rest.length === 0) {
-    return groups;
-  }
+  const extra = [
+    { id: EDITOR.otherGroup, label: otherLabel, rows: rest.map((field) => editorRow({ field, editor })) },
+    { id: EDITOR.advancedGroup, label: advancedLabel, rows: folded.map((field) => editorRow({ field, editor })) }
+  ];
 
-  return [...groups, { id: EDITOR.otherGroup, label: otherLabel, rows: rest.map((field) => editorRow({ field, editor })) }];
+  return [...groups, ...extra.filter(({ rows }) => rows.length > 0)];
 };

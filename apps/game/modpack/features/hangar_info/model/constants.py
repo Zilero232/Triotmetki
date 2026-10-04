@@ -41,3 +41,14 @@ DETAIL_SEPARATOR = u' | '
 
 # The hangar strip's widget (ui-web entities/hud-widgets/clock-strip).
 STRIP_KIND = 'clock_strip'
+
+# The settings window's editor (docs/specs/2026-09-30-hud-consolidation-and-design.md section 12.3): its field groups
+# and the strip it previews, a fixed evening on a busy server.
+EDITOR_GROUPS = (
+    ('time', ('clock_format', 'date_format')),
+    ('server', ('show_server', 'show_ping', 'show_online')),
+    ('battle', ('battle_clock',)),
+)
+SAMPLE_ID = 'strip'
+SAMPLE_MOMENT = (2026, 10, 3, 21, 47, 5, 5, 276, -1)
+SAMPLE_INFO = {'server': 'RU5', 'ping': 16, 'online': '5148', 'region_online': ''}

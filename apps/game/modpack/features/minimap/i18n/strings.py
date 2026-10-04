@@ -22,6 +22,10 @@ STRINGS = {
         'minimap_native_recommended_confirm': u'Круг своего обзора и круг 445 м, названия техники по Alt, '
                                               u'без круга отрисовки. Текущие настройки сохранятся, их можно вернуть.',
         'minimap_native_failed': u'Не удалось изменить настройки игры, попробуйте ещё раз.',
+        'minimap_max_view_range_hint': u'Круг 445 м — дальше этого обзор не бывает ни у какой техники.',
+        'minimap_draw_range_hint': u'Граница, дальше которой игра не рисует технику.',
+        'minimap_group_map': u'Карта',
+        'minimap_group_circles': u'Круги',
     },
     'en': {
         'component_minimap': u'Minimap',
@@ -43,5 +47,9 @@ STRINGS = {
         'minimap_native_recommended_confirm': u'Own view range and the 445 m circle, vehicle names on Alt, no draw '
                                               u'distance circle. Your current settings are kept so you can restore them.',
         'minimap_native_failed': u'Could not change the game settings, please try again.',
+        'minimap_max_view_range_hint': u'The 445 m circle: no vehicle spots further than this.',
+        'minimap_draw_range_hint': u'The edge beyond which the game draws no vehicles.',
+        'minimap_group_map': u'Map',
+        'minimap_group_circles': u'Circles',
     },
 }

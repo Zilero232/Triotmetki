@@ -3,7 +3,7 @@ effects drawn on the player's own vehicle."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from .hooks import BattleHooks
-from .own_vehicle import SHOT_METHOD, on_own_shot, on_own_vehicle_effect
+from .own_vehicle import SHOT_METHOD, on_own_shot, on_own_vehicle_effect, on_shot_with_own_vehicle
 from .session import (
     ammo,
     arena,
@@ -43,6 +43,7 @@ __all__ = (
     'is_enemy',
     'on_own_shot',
     'on_own_vehicle_effect',
+    'on_shot_with_own_vehicle',
     'optional_devices',
     'personal_efficiency',
     'player',

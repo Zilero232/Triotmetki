@@ -4,6 +4,10 @@
   width: 230px;
 }
 
+.large {
+  width: 264px;
+}
+
 .custom {
   @include hud-type(body);
 }

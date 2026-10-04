@@ -2,7 +2,7 @@
 
 .center {
   display: flex;
-  width: 92px;
+  width: 80px;
   flex-direction: column;
   flex-shrink: 0;
   align-items: center;
@@ -24,14 +24,23 @@
   @include hud-type(key);
 }
 
+.frags {
+  min-width: 28px;
+  justify-content: flex-start;
+}
+
+.fragsAllies {
+  justify-content: flex-end;
+}
+
 .colon {
-  margin: 0 4px;
-  color: token(hud-muted);
+  margin: 0 3px;
+  color: token(hud-dim);
 }
 
 .bottom {
   display: flex;
-  height: 18px;
+  height: 14px;
   align-items: center;
   white-space: nowrap;
 

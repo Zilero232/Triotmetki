@@ -149,3 +149,10 @@ ICON_ROOT = 'gui/maps/icons/otmetki/damage_log/icons'
 ICON_RENDITION = 32
 
 KIND = 'damage_log'
+
+# The settings window's editor: the look, which sections and how many lines, then what each row shows.
+EDITOR_GROUPS = (
+    ('look', ('style', 'palette')),
+    ('sections', ('sections', 'dealt_lines', 'received_lines')),
+    ('rows', ('group_by_target', 'show_hp', 'show_misses', 'show_received_blocked', 'show_assist_rows', 'alt_mode')),
+)

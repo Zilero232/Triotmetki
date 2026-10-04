@@ -5,7 +5,6 @@ STRINGS = {
     'ru': {
         'component_comp7_helper': u'Натиск: дивизионы',
         'component_comp7_helper_hint': u'Карточка в ангаре «Натиска»: ваш рейтинг, текущий дивизион, сколько очков до следующего и пороги «Чемпиона» и «Легенды» (C, B, A) — те же, что в подсказках рангов самой игры, — и навык роли выбранной машины. Вне «Натиска» скрыта.',
-        'comp7_helper_font_size': u'Размер шрифта',
         'comp7_helper_show_thresholds': u'Пороги «Чемпиона» и «Легенды»',
         'comp7_helper_show_skill': u'Навык роли машины',
         'comp7_helper_card_title': u'Натиск',
@@ -37,7 +36,6 @@ STRINGS = {
     'en': {
         'component_comp7_helper': u'Onslaught: divisions',
         'component_comp7_helper_hint': u'A card in the Onslaught hangar: your rating, your division, the points to the next one and the Champion and Legend thresholds (C, B, A) — the same as in the game\'s own rank tooltips — and the role skill of the selected vehicle. Hidden outside Onslaught.',
-        'comp7_helper_font_size': u'Font size',
         'comp7_helper_show_thresholds': u'Champion and Legend thresholds',
         'comp7_helper_show_skill': u'The vehicle\'s role skill',
         'comp7_helper_card_title': u'Onslaught',

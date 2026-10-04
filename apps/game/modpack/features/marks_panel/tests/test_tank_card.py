@@ -9,7 +9,7 @@ from otmetki.core.moe import ThresholdCurve
 from otmetki.core.settings import Settings
 from otmetki.features.marks_panel.i18n import STRINGS
 from otmetki.features.marks_panel.model import hangar_state
-from otmetki.features.marks_panel.model.card import TankCard, card_text, tank_card
+from otmetki.features.marks_panel.model.card import TankCard, card_text, percent_history, tank_card
 from otmetki.features.marks_panel.model.constants import CARD_WIDTH, TIER_COLORS
 from otmetki.features.marks_panel.model.preview import card_preview_text, card_preview_widget
 from otmetki.features.marks_panel.settings import CARD_PANEL_ID, CARD_SCHEMA, SCHEMA
@@ -221,12 +221,30 @@ class SettingsTest(unittest.TestCase):
     def test_the_hangar_style_is_compact_or_extended(self):
         assert Settings({'hangar_style': 'custom'}, SCHEMA).get('hangar_style') == 'compact'
 
-    def test_the_history_limits(self):
-        settings = Settings({'trend_battles': 0, 'max_entries': 9999, 'page_rows': 1}, SCHEMA)
+    def test_the_trend_takes_at_least_one_battle(self):
+        settings = Settings({'trend_battles': 0}, SCHEMA)
 
         assert settings.get('trend_battles') == 1
-        assert settings.get('max_entries') == 500
-        assert settings.get('page_rows') == 10
+
+    def test_the_history_limits_are_fixed(self):
+        settings = Settings({'max_entries': 9999, 'page_rows': 1}, SCHEMA)
+
+        assert (settings.get('max_entries'), settings.get('page_rows')) == (100, 50)
+
+
+class HeroTest(unittest.TestCase):
+
+    def test_the_silhouette_fills_to_the_percent(self):
+        assert widget(tank_data())['hero']['fill'] == 81.5
+
+    def test_the_tick_marks_the_next_mark(self):
+        assert widget(tank_data())['hero']['tick'] == 85.0
+
+    def test_the_percent_history_ends_at_today(self):
+        assert percent_history(80.0, [0.5, -0.25]) == [79.75, 80.25, 80.0]
+
+    def test_one_reading_has_no_history(self):
+        assert percent_history(80.0, []) == []
 
 
 class PreviewTest(unittest.TestCase):

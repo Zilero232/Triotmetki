@@ -20,7 +20,7 @@ def timer_seconds(period, period_end, server_now):
 
 def clock_values(moment, settings, seconds_left=None):
     timer = format_timer(seconds_left) if settings.get('replace_timer') else u''
-    return {'time': format_moment(settings.get('battle_clock_format'), moment), 'timer': timer}
+    return {'time': format_moment(settings.get('clock_format'), moment), 'timer': timer}
 
 
 def format_battle_clock(values, font_size):

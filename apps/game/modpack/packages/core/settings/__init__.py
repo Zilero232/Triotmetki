@@ -2,6 +2,9 @@
 
 A value of the wrong type, an unknown key or a value a normalizer rejects is ignored, so a hand-edited
 config.json can never put the mod into a state its schema does not describe.
+
+`fix(schema, values)` turns keys into fixed values: they leave the schema (so the files and the settings window lose
+them) while `Settings.get` still answers the constant, so the code that reads them needs no change.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -15,6 +18,7 @@ class Schema(object):
         self.choices = dict(choices or {})
         self.limits = dict(limits or {})
         self.normalizers = dict(normalizers or {})
+        self.fixed = {}
 
     def coerce(self, key, value):
         """The stored form of `value` for `key`, or None when it is rejected."""
@@ -77,10 +81,23 @@ class Settings(object):
         return sorted(changed)
 
     def get(self, key):
-        return self.values.get(key, self.schema.defaults.get(key))
+        if key in self.values:
+            return self.values[key]
+        return getattr(self.schema, 'fixed', {}).get(key, self.schema.defaults.get(key))
 
     def is_enabled(self, feature):
         return bool(self.values.get('enabled')) and bool(self.values.get(feature))
 
     def to_dict(self):
         return dict(self.values)
+
+
+def fix(schema, values):
+    """`schema` without the keys of `values`, which `Settings.get` answers as constants from now on."""
+    for key, value in values.items():
+        schema.defaults.pop(key, None)
+        schema.choices.pop(key, None)
+        schema.limits.pop(key, None)
+        schema.normalizers.pop(key, None)
+        schema.fixed[key] = value
+    return schema

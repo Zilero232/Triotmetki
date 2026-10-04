@@ -3,6 +3,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 STRINGS = {
     'ru': {
+        'aim_info_group_armor': u'Броня под прицелом',
+        'aim_info_group_target': u'Цель',
+        'aim_info_group_shells': u'Снаряды и сведение',
         'component_aim_info': u'Прицел и снаряды',
         'component_aim_info_hint': u'Броня под прицелом: приведённая и номинальная броня цели в точке прицеливания и пробитие вашего снаряда на этой дистанции, цветом штатного маркера. Дистанция до любой техники под прицелом, подсказки своих снарядов на панели боеприпасов и, по желанию, круг сведения ближе к реальному разбросу.',
         'aim_info_target_distance': u'Дистанция до любой цели под прицелом',
@@ -20,9 +23,6 @@ STRINGS = {
         'aim_info_placement': u'Где числа',
         'aim_info_placement_reticle': u'Под прицелом в любом режиме камеры',
         'aim_info_placement_fixed': u'На своём месте панели',
-        'aim_info_arcade_offset': u'Ниже прицела в аркаде, px',
-        'aim_info_sniper_offset': u'Ниже прицела в снайперском режиме, px',
-        'aim_info_strategic_offset': u'Ниже прицела в артиллерийском режиме, px',
         'aim_info_mm': u'мм',
         'aim_info_ricochet': u'рикошет',
         'aim_info_nominal_value': u'ном. {value}',
@@ -30,6 +30,9 @@ STRINGS = {
         'aim_info_piercing_label': u'проб.',
     },
     'en': {
+        'aim_info_group_armor': u'Armour under the reticle',
+        'aim_info_group_target': u'Target',
+        'aim_info_group_shells': u'Shells and aiming',
         'component_aim_info': u'Aim and shells',
         'component_aim_info_hint': u'Armour under the reticle: the target\'s effective and nominal armour at the aim point and your shell\'s penetration at that distance, in the stock marker colour. The distance to any vehicle under the reticle, tooltips of your shells on the ammo panel and, if you want, an aim circle closer to the real dispersion.',
         'aim_info_target_distance': u'Distance to any target under the reticle',
@@ -47,9 +50,6 @@ STRINGS = {
         'aim_info_placement': u'Where the numbers sit',
         'aim_info_placement_reticle': u'Under the reticle in every camera mode',
         'aim_info_placement_fixed': u'At the panel\'s own place',
-        'aim_info_arcade_offset': u'Below the reticle in arcade mode, px',
-        'aim_info_sniper_offset': u'Below the reticle in sniper mode, px',
-        'aim_info_strategic_offset': u'Below the reticle in artillery mode, px',
         'aim_info_mm': u'mm',
         'aim_info_ricochet': u'ricochet',
         'aim_info_nominal_value': u'nom. {value}',

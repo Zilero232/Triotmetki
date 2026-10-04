@@ -22,3 +22,4 @@ RETIRED_PLACES = (
     (260, 8, 'left', 'top'),
 )
 LIMITS = {'damage_step': (10, 1000), 'assist_step': (10, 2000), 'frag_points': (0, 20), 'alive_points': (0, 20)}
+ADVANCED = ('damage_step', 'assist_step', 'frag_points', 'alive_points')

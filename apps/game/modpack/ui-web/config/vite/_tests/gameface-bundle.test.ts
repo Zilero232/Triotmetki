@@ -7,9 +7,10 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { advisorConfig } from '../advisor';
 import { hudConfig } from '../hud';
 import { settingsConfig } from '../settings';
+import { viewerConfig } from '../viewer';
 import { UI_BUILD } from '../vite.constants';
 
-const BUNDLE_FILES = ['hud.html', 'icon.png', 'icons.png', 'index.html', 'preset_advisor.js'];
+const BUNDLE_FILES = ['hud.html', 'icon.png', 'icons.png', 'index.html', 'preset_advisor.js', 'viewer.html'];
 const CLASSIC_SCRIPT_AT_BODY_END = /<script>\(function\(\)\{[\s\S]*\}\)\(\);<\/script>\s*<\/body>\s*<\/html>\s*$/;
 const POLYFILLED_ELEMENTS = /\.jsxs?\)\([`'"](?:ul|ol|li|dl|dt|dd|select|option)[`'"],/;
 
@@ -21,7 +22,7 @@ beforeAll(async () => {
   outDir = await mkdtemp(path.join(tmpdir(), 'otmetki-ui-'));
   vi.stubEnv('NODE_ENV', 'production');
 
-  for (const config of [settingsConfig(), hudConfig(), advisorConfig()]) {
+  for (const config of [settingsConfig(), hudConfig(), advisorConfig(), viewerConfig()]) {
     await build(mergeConfig(config, { configFile: false, logLevel: 'silent', build: { outDir } }));
   }
 }, 60_000);
@@ -45,16 +46,19 @@ describe('committed Gameface bundle', () => {
     }
   });
 
-  it.each(['index.html', 'hud.html'])('loads %s with one classic inline script at the end of the body, as the client pages do', async (file) => {
-    const page = await read(outDir, file);
+  it.each(['index.html', 'hud.html', 'viewer.html'])(
+    'loads %s with one classic inline script at the end of the body, as the client pages do',
+    async (file) => {
+      const page = await read(outDir, file);
 
-    expect(page).not.toContain('type="module"');
-    expect(page.match(/<\/script>/g)).toHaveLength(1);
-    expect(page).toMatch(CLASSIC_SCRIPT_AT_BODY_END);
-  });
+      expect(page).not.toContain('type="module"');
+      expect(page.match(/<\/script>/g)).toHaveLength(1);
+      expect(page).toMatch(CLASSIC_SCRIPT_AT_BODY_END);
+    }
+  );
 
   it('renders no list or select elements, which Gameface only supports through a polyfill', async () => {
-    const files = await Promise.all(['index.html', 'hud.html'].map((file) => read(outDir, file)));
+    const files = await Promise.all(['index.html', 'hud.html', 'viewer.html'].map((file) => read(outDir, file)));
 
     files.forEach((source) => expect(source).not.toMatch(POLYFILLED_ELEMENTS));
   });

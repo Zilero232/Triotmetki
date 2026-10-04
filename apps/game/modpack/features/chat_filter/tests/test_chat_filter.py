@@ -22,7 +22,7 @@ def after_one_line(**values):
 
 
 def after_two_lines():
-    chat_filter = chat(rate_limit=2, rate_window_s=10, filter_duplicates=False)
+    chat_filter = chat(rate_limit=2, filter_duplicates=False)
     chat_filter.allow_message('a', '1', 0.0)
     chat_filter.allow_message('a', '2', 1.0)
     return chat_filter
@@ -63,7 +63,7 @@ class DuplicateTest(unittest.TestCase):
 class RateLimitTest(unittest.TestCase):
 
     def test_a_line_under_the_limit_is_allowed(self):
-        chat_filter = chat(rate_limit=2, rate_window_s=10, filter_duplicates=False)
+        chat_filter = chat(rate_limit=2, filter_duplicates=False)
         chat_filter.allow_message('a', '1', 0.0)
 
         assert chat_filter.allow_message('a', '2', 1.0)
@@ -94,10 +94,10 @@ class BlockedWordsTest(unittest.TestCase):
 class CommandTest(unittest.TestCase):
 
     def test_a_first_command_is_allowed(self):
-        assert chat(rate_limit=1, rate_window_s=10).allow_command('a', 0.0)
+        assert chat(rate_limit=1).allow_command('a', 0.0)
 
     def test_a_command_over_the_limit_is_hidden(self):
-        chat_filter = chat(rate_limit=1, rate_window_s=10)
+        chat_filter = chat(rate_limit=1)
         chat_filter.allow_command('a', 0.0)
 
         assert not chat_filter.allow_command('a', 1.0)
@@ -134,6 +134,14 @@ class SettingsTest(unittest.TestCase):
 
     def test_both_languages_have_the_same_strings(self):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
+
+
+class FixedSettingsTest(unittest.TestCase):
+
+    def test_the_duplicate_window_s_is_fixed(self):
+        assert 'duplicate_window_s' not in SCHEMA.defaults
+        assert Settings({'rate_window_s': 60}, SCHEMA).get('rate_window_s') == 10
+        assert Settings({'duplicate_window_s': 120}, SCHEMA).get('duplicate_window_s') == 30
 
 
 if __name__ == '__main__':

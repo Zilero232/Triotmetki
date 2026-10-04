@@ -327,17 +327,17 @@ class IconRowTest(unittest.TestCase):
     def icon_style_text(self):
         teams = battle()
         teams.set_health(3, 600)
-        return format_panel(teams, settings_with(style='icons', icon_width=4), translator(), ALL_ON)
+        return format_panel(teams, settings_with(style='icons'), translator(), ALL_ON)
 
     def test_each_ally_gets_a_bar_of_the_icon_width(self):
         allies = self.icon_style_text().split('   ')[0]
 
-        assert allies.count('|') == 8
+        assert allies.count('|') == 6
 
     def test_each_enemy_gets_a_bar_of_the_icon_width(self):
         enemies = self.icon_style_text().split('   ')[2]
 
-        assert enemies.count('|') == 8
+        assert enemies.count('|') == 6
 
     def test_the_score_sits_between_the_sides(self):
         score = self.icon_style_text().split('   ')[1]
@@ -381,15 +381,16 @@ class ArenaVehiclesTest(unittest.TestCase):
 
 class SettingsTest(unittest.TestCase):
 
-    def test_a_valid_color_is_upper_cased(self):
-        settings = settings_with(ally_color='#00ff00')
+    def test_the_side_colours_are_the_hud_tones(self):
+        settings = settings_with(ally_color='#00ff00', enemy_color='#0000ff')
 
-        assert settings.get('ally_color') == '#00FF00'
+        assert (settings.get('ally_color'), settings.get('enemy_color')) == ('#7CD35B', '#E3564A')
 
-    def test_an_invalid_color_falls_back_to_the_default(self):
-        settings = settings_with(enemy_color='blue')
+    def test_the_bar_widths_are_fixed(self):
+        settings = settings_with(bar_width=50, icon_width=8)
 
-        assert settings.get('enemy_color') == '#E3564A'
+        assert (settings.get('bar_width'), settings.get('icon_width')) == (30, 3)
+        assert 'bar_width' not in SCHEMA.defaults
 
     def test_strings_in_sync(self):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])

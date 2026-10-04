@@ -6,24 +6,8 @@
   flex-shrink: 0;
   flex-wrap: wrap;
   align-items: center;
-  padding: 20px 24px 16px;
+  padding: 24px 24px 16px;
   border-bottom: 1px solid token(win-divider);
-  background-image: token(win-page-glow);
-}
-
-.tile {
-  display: flex;
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid token(color-accent);
-  border-radius: token(radius-lg);
-  margin-right: 16px;
-  background-color: token(color-surface);
-  background-image: token(win-accent-tint);
-  box-shadow: token(win-accent-ring);
 }
 
 .titles {
@@ -34,17 +18,29 @@
 }
 
 .title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   margin: 0;
+  color: token(color-text);
   font-size: 20px;
+  font-weight: 700;
+  line-height: 24px;
+}
 
-  @include caps;
+.icon {
+  display: flex;
+  margin-right: 8px;
 }
 
 .hint {
-  margin: 4px 0 0;
-  color: token(color-text-muted);
-  font-size: 13px;
-  line-height: 1.4;
+  max-width: 640px;
+  margin: 4px 0 0 28px;
+  color: token(win-text-label);
+  font-size: 12px;
+  line-height: 16px;
+
+  @include ellipsis;
 }
 
 .aside {
@@ -52,5 +48,5 @@
   flex-direction: row;
   flex-shrink: 0;
   align-items: center;
-  margin: 8px 0 0 16px;
+  margin-left: 16px;
 }

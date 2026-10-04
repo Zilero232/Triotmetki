@@ -12,7 +12,8 @@ export const lampView = (data: SixthSenseData): LampView => {
     progress: data.duration > 0 ? left / data.duration : 0,
     seconds: data.timer ? formatSeconds(left) : '',
     alpha: data.dim ? SIXTH_SENSE.dimAlpha : 1,
-    tone: data.color === null ? 'accent' : null,
+    tone: data.color === null ? 'text' : null,
+    lit: !data.dim && data.duration > 0 && data.elapsed < data.duration,
     color: data.color === null ? undefined : { color: data.color }
   };
 };

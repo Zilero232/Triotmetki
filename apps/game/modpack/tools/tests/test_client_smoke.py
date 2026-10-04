@@ -72,12 +72,12 @@ BATTLE_PANELS = [
     'battle_clock', 'battle_progress', 'damage_log', 'sixth_sense', 'team_hp',
 ]
 DESCRIBED_PANELS = [
-    'aim_info', 'battle_clock', 'battle_hotkeys', 'battle_loadout', 'battle_progress', 'crosshair', 'damage_log',
-    'gun_arc', 'hangar_marks', 'marks_panel', 'platoon_points', 'sixth_sense', 'team_hp',
+    'aim_info', 'battle_clock', 'battle_hotkeys', 'battle_loadout', 'battle_progress', 'battle_summary', 'crosshair',
+    'damage_log', 'gun_arc', 'hangar_marks', 'last_battle', 'marks_panel', 'platoon_points', 'sixth_sense', 'team_hp',
 ]
 HUD_EDIT_PREVIEWS = [
-    'aim_info', 'battle_clock', 'battle_loadout', 'battle_progress', 'damage_log', 'gun_arc', 'hangar_marks',
-    'marks_panel', 'platoon_points', 'sixth_sense',
+    'aim_info', 'battle_clock', 'battle_loadout', 'battle_progress', 'battle_summary', 'crosshair', 'damage_log',
+    'gun_arc', 'hangar_marks', 'last_battle', 'marks_panel', 'platoon_points', 'sixth_sense',
 ]
 # RU 1.45 aih_constants.SHOT_RESULT values.
 SHOT_RESULTS = {'UNDEFINED': 0, 'NOT_PIERCED': 1, 'LITTLE_PIERCED': 2, 'GREAT_PIERCED': 3}
@@ -110,6 +110,8 @@ MOE_CURVE = {'tank_id': 1, 'thresholds': {'65': 2000, '85': 2600, '95': 3100}}
 HANGAR_MOE = {'tank_id': 1, 'damage_rating': 8600, 'moving_avg_damage': 2550, 'marks_on_gun': 2}
 ARENA_MODIFIERS = 'arena-modifiers'
 ROLE_SLOT = 3
+# A battle after the one the results fixture is of.
+NEXT_ARENA = 4243
 REPLAY_ID = '0f8e2d4c-6b1a-4f3e-9d2c-7a5b3c1d9e8f'
 BUSH_CIRCLE_KEY = 48
 STREAMER_KEY = 35
@@ -1421,7 +1423,7 @@ class BattleHudTest(StoryTest):
         game.install_hud_stubs()
         app = game.open_hangar(is_bound=True)
         hud = game.hud_module()
-        hud.hud_layer(app).update_settings('sixth_sense', {'hide_after_s': 30})
+        hud.hud_layer(app).update_settings('sixth_sense', {'pulse': False})
         app.marks.hangar_moe[1] = dict(HANGAR_MOE)
         results = _support.battle_results()
         session = game.enter_battle(results['arenaUniqueID'])
@@ -1506,7 +1508,7 @@ class BattleHudTest(StoryTest):
     def test_a_dragged_panel_saves_its_place_beside_its_settings(self):
         self.assertEqual(self.saved['damage_log']['x'], 111)
         self.assertEqual(self.saved['damage_log']['y'], 222)
-        self.assertEqual(self.saved['sixth_sense']['hide_after_s'], 30)
+        self.assertFalse(self.saved['sixth_sense']['pulse'])
 
     def test_leaving_the_battle_removes_every_panel(self):
         self.assertEqual(self.panels_after_battle, {})
@@ -1518,6 +1520,60 @@ class BattleHudTest(StoryTest):
         self.assertTrue(self.moe_messages, self.messages)
         self.assertIn('+1.00%', self.moe_messages[0])
         self.assertIn('2 150', self.moe_messages[0])
+
+
+class BattleCardsTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        app = game.open_hangar(is_bound=True)
+        app.marks.hangar_moe[1] = dict(HANGAR_MOE)
+        session = game.enter_battle(NEXT_ARENA, tank_id=1)
+        session.own_feedback(
+            Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)),
+            Feedback(KINDS.DAMAGE, ALLY_VEHICLE, Extra(50)),
+            Feedback(KINDS.RADIO_ASSIST, ENEMY_VEHICLE, Extra(120)),
+            Feedback(KINDS.TANKING, ENEMY_VEHICLE, Extra(240)),
+            Feedback(KINDS.KILL, ENEMY_VEHICLE, Extra()),
+        )
+        cls.panels_alive = sorted(game.hud_components())
+        session.arena.onVehicleKilled(OWN_VEHICLE, ENEMY_VEHICLE, 0, 0, 1)
+        cls.summary_after_death = game.hud_text('battle_summary')
+        session.arena.onPeriodChange(ARENA_PERIODS['AFTERBATTLE'], 0, 0, (2, 1))
+        cls.summary_after_end = game.hud_text('battle_summary')
+
+        game.events.onBattleResultsReceived(True, _support.battle_results())
+        cls.last_battle = game.hud_text('last_battle')
+        cards = game.instances()['battle_results'].last_battle
+        cards._on_pressed('otmetki.hud.last_battle')
+        cls.panels_dismissed = sorted(game.hud_components())
+        game.back_to_hangar()
+        cls.panels_after_battle = sorted(game.hud_components())
+
+    def test_the_summary_waits_for_the_own_tank_or_the_battle_end(self):
+        self.assertNotIn('battle_summary', self.panels_alive)
+
+    def test_the_summary_shows_the_own_numbers_once_the_tank_is_destroyed(self):
+        self.assertIn(u'Итоги боя', self.summary_after_death)
+        self.assertIn(u'390', self.summary_after_death)
+
+    def test_the_summary_counts_no_ally_damage(self):
+        self.assertNotIn(u'440', self.summary_after_death)
+
+    def test_the_summary_names_the_outcome_when_the_battle_ends(self):
+        self.assertIn(u'поражение', self.summary_after_end)
+
+    def test_the_previous_battle_s_results_show_in_the_next_battle(self):
+        self.assertIn(u'Прошлый бой', self.last_battle)
+
+    def test_the_previous_battle_card_can_be_dismissed(self):
+        self.assertNotIn('last_battle', self.panels_dismissed)
+
+    def test_leaving_the_battle_removes_both_cards(self):
+        cards = [panel for panel in self.panels_after_battle if panel in ('battle_summary', 'last_battle')]
+
+        self.assertEqual(cards, [])
 
 
 class HudSwitchedOffTest(StoryTest):

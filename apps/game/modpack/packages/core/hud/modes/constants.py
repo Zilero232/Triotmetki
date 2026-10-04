@@ -94,10 +94,6 @@ LAYOUTS = (LAYOUT_FULL, LAYOUT_COMPACT, LAYOUT_OFF)
 # log.
 COMPACT_PANELS = ('marks_panel', 'battle_clock', 'damage_log')
 
-# Stock elements are replaced only on these battle types (docs/specs/2026-09-29-hud-visual-redesign.md section 3.2.5):
-# the event, Frontline and Steel Hunter pages keep every stock element, our panels there are overlays.
-SUPPRESSING_MODES = (MODE_RANDOM, MODE_COMP7)
-
 # components.json keeps the places the player gave the panels in each battle type (other than random) under this key.
 PLACES_SECTION = 'hud_layout_places'
 PLACE_NUMBERS = ('x', 'y', 'scale')

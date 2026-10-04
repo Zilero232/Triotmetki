@@ -2,12 +2,12 @@
 
 .line {
   display: flex;
-  min-height: 42px;
+  min-height: 36px;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: 5px 6px 5px 0;
-  border-bottom: 1px solid token(color-border);
+  padding: 2px 4px 2px 0;
+  border-bottom: 1px solid token(win-divider);
 }
 
 .stacked {
@@ -30,12 +30,12 @@
 }
 
 .dot {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
   flex-shrink: 0;
-  border-radius: 3px;
+  border-radius: 2px;
   margin: 0 8px 0 2px;
-  background-color: token(color-border-strong);
+  background-color: transparent;
 }
 
 .dotOn {

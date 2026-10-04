@@ -1,18 +1,28 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.hud import hex_color, matching, max_length, panel_schema
-from .constants import CHOICES, DEFAULTS, ICON_PATH, ICON_SETS, MAX_PATH, MAX_TEXT, PANEL_ID, RETIRED_PLACES, SWITCH  # noqa: F401
+from ....core.hud import hex_color, max_length, panel_schema
+from ....core.settings import fix
+from .constants import (  # noqa: F401
+    ADVANCED,
+    CHOICES,
+    COLORS,
+    DEFAULTS,
+    FIXED,
+    ICON_SETS,
+    MAX_TEXT,
+    PANEL_ID,
+    RETIRED_PLACES,
+    SWITCH,
+)
 
 SETTINGS = (SWITCH,)
 
-SCHEMA = panel_schema(
+SCHEMA = fix(panel_schema(
     DEFAULTS,
     choices=CHOICES,
-    limits={'icon_size': (16, 256), 'hide_after_s': (0, 60)},
     normalizers={
         'text': max_length(MAX_TEXT),
         'color': hex_color,
-        'icon': matching(ICON_PATH, MAX_PATH),
     },
     retired=RETIRED_PLACES,
-)
+), FIXED)

@@ -1,0 +1,1 @@
+export { CameraSchematic } from './CameraSchematic';

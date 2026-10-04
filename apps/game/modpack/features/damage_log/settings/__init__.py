@@ -1,9 +1,11 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.hud import hex_color, max_length, panel_schema
+from ....core.hud import max_length, panel_schema
+from ....core.settings import fix
 from .constants import (
+    ADVANCED,
     DEFAULTS,
-    KIND_COLOR_KEYS,
+    FIXED,
     LIMITS,
     MAX_TEMPLATE,
     PALETTES,
@@ -18,14 +20,13 @@ from .constants import (
 SETTINGS = (SWITCH,)
 
 NORMALIZERS = dict((key, max_length(MAX_TEMPLATE)) for key in TEMPLATE_KEYS)
-NORMALIZERS.update((key, hex_color) for key in KIND_COLOR_KEYS)
 
-SCHEMA = panel_schema(
+SCHEMA = fix(panel_schema(
     DEFAULTS,
     choices={'style': STYLES, 'sections': SECTIONS, 'palette': PALETTES},
     limits=LIMITS,
     normalizers=NORMALIZERS,
     retired=RETIRED_PLACES,
-)
+), FIXED)
 
-__all__ = ('PANEL_ID', 'SCHEMA', 'SETTINGS', 'SWITCH')
+__all__ = ('ADVANCED', 'PANEL_ID', 'SCHEMA', 'SETTINGS', 'SWITCH')

@@ -10,8 +10,17 @@
 }
 
 .solid {
-  border-top: 1px solid token(hud-plate-line);
+  border-top: 1px solid token(hud-hairline);
+  border-left: 1px solid token(hud-rule);
   background-image: token(hud-plate-solid);
+
+  @include hud-plate-padding(solid);
+}
+
+.contrast {
+  border-top: 1px solid token(hud-hairline);
+  border-left: 1px solid token(hud-rule);
+  background-image: token(hud-plate-contrast);
 
   @include hud-plate-padding(solid);
 }

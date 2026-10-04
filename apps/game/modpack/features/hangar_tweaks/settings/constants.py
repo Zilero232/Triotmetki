@@ -23,3 +23,5 @@ CHOICES = {
     'carousel_tiles': CAROUSEL_TILES,
     'interface_scale': INTERFACE_SCALE_CHOICES,
 }
+
+ADVANCED = ('interface_scale_exact',)

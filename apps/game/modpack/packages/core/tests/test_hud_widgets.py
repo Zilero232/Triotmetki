@@ -191,7 +191,7 @@ class WidgetPayloadTest(unittest.TestCase):
 
         layer.set_full_stats(True)
 
-        assert backend.calls[-1] == ('update', {'dim': True})
+        assert backend.calls[-1] == ('update', {'cover': 'stats'})
         assert 'delete' not in [call[0] for call in backend.calls]
 
     def test_closed_full_stats_takes_the_dim_mark_off(self):
@@ -202,7 +202,7 @@ class WidgetPayloadTest(unittest.TestCase):
 
         layer.set_full_stats(False)
 
-        assert backend.calls[-1] == ('update', {'dim': False})
+        assert backend.calls[-1] == ('update', {'cover': ''})
 
     def test_surface_keeps_a_dict_widget(self):
         surface = HudSurface()

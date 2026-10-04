@@ -5,7 +5,7 @@ SECTION = 'quick_demount'
 GROUP = 'hangar'
 
 DEFAULTS = {
-    'max_vehicles': 20,
     'show_locked': True,
 }
-LIMITS = {'max_vehicles': (5, 40)}
+FIXED = {'max_vehicles': 20}
+ADVANCED = ('show_locked',)

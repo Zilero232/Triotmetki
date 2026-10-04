@@ -24,16 +24,10 @@ DEFAULTS = {
     'show_piercing': True,
     'show_angle': False,
     'placement': PLACEMENT_RETICLE,
-    'arcade_offset': 132,
-    'sniper_offset': 132,
-    'strategic_offset': 100,
 }
 
-OFFSET_LIMITS = (-300, 300)
-LIMITS = {
-    'aim_circle_scale': (40, 100),
-    'arcade_offset': OFFSET_LIMITS,
-    'sniper_offset': OFFSET_LIMITS,
-    'strategic_offset': OFFSET_LIMITS,
-}
+LIMITS = {'aim_circle_scale': (40, 100)}
 CHOICES = {'placement': PLACEMENTS}
+# Deleted settings, fixed at their old defaults (spec 2026-09-30 section 12).
+FIXED = {'arcade_offset': 132, 'sniper_offset': 132, 'strategic_offset': 100}
+ADVANCED = ('aim_circle_scale', 'placement')

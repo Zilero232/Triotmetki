@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 # The Gameface HUD page (ui-web `hud` entry, packages/ui/gameface/hud.html) and its view model: one string
 # property with the whole HUD as JSON, one command the page sends its messages through.
-HUD_PROTOCOL_VERSION = 4
+HUD_PROTOCOL_VERSION = 5
 HUD_STATE_PROPERTY = 'state'
 HUD_SEND_COMMAND = 'send'
 HUD_MESSAGE_ARG = 'message'
@@ -42,8 +42,11 @@ PANEL_KEYS = (
     ('widget', 'widget', None),
     ('dock', 'dock', None),
     ('hint', 'hint', ''),
-    ('dim', 'dim', False),
+    ('cover', 'cover', ''),
 )
+# A panel's `cover` (core.hud.layer: the stock view over it, the page fades the panel and takes no mouse over it):
+# none, the full stats (Tab), a modal view (the Esc menu).
+COVERS = ('', 'stats', 'modal')
 # The optional int keys of a panel's `dock` (core.hud.panel.dock_of).
 DOCK_NUMBERS = ('reserve', 'ceiling')
 

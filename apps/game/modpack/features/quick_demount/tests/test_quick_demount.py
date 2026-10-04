@@ -49,14 +49,13 @@ class MenuTest(unittest.TestCase):
         assert menu(language='ru')['label'] == u'Быстрый демонтаж'
 
     def test_a_list_within_the_limit_has_no_rest_line(self):
-        items = menu(current_id=None, max_vehicles=5)['items']
+        items = menu(current_id=None)['items']
 
         assert [item['id'] for item in items][-1] == 'otmetki_quick_demount:1'
 
     def test_the_rest_line_counts_the_hidden_tanks(self):
-        garage = [dict(GARAGE[0], id=index, tier=5) for index in range(10, 18)]
-        settings = Settings({'max_vehicles': 5}, SCHEMA)
-        items = demount_menu(garage, None, settings, _support.translator(STRINGS, 'en'))['items']
+        garage = [dict(GARAGE[0], id=index, tier=5) for index in range(10, 33)]
+        items = demount_menu(garage, None, Settings({}, SCHEMA), _support.translator(STRINGS, 'en'))['items']
 
         assert items[-1] == {'id': 'otmetki_quick_demount_more', 'label': u'…and 3 more', 'enabled': False}
 

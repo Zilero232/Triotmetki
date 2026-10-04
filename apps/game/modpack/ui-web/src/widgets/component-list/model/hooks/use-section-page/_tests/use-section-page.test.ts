@@ -11,6 +11,13 @@ import { useSectionPage } from '../use-section-page';
 
 const sample = readFileSync(path.resolve(import.meta.dirname, '../../../../../../shared/api/protocol/_tests/fixtures/state.sample.json'), 'utf8');
 
+const withBattleMarksCard = (): string => {
+  const state: { components: { id: string; section: string; context: string }[] } = JSON.parse(sample);
+  const marks = state.components.find(({ id }) => id === 'marks_panel');
+
+  return JSON.stringify({ ...state, components: [...state.components, { ...marks, id: 'battle_progress', context: 'battle' }] });
+};
+
 const mountPage = (section: UiSection, columns = 1) => renderHook(() => useSectionPage({ section, columns }));
 
 beforeEach(() => {
@@ -28,12 +35,14 @@ describe(useSectionPage, () => {
     expect(ids).toEqual([['marks_panel'], ['session_stats']]);
   });
 
-  it('offers the context filter on a page whose cards work in different places', () => {
+  it('offers the context filter on a page with hangar and battle cards', () => {
+    receiveState(withBattleMarksCard());
+
     expect(mountPage('marks').result.current.showFilter).toBe(true);
   });
 
-  it('hides the context filter on a single-context page', () => {
-    expect(mountPage('battle').result.current.showFilter).toBe(false);
+  it('hides the context filter when the other cards work anywhere', () => {
+    expect(mountPage('marks').result.current.showFilter).toBe(false);
   });
 
   it('counts the page components and the enabled ones', () => {
@@ -41,6 +50,7 @@ describe(useSectionPage, () => {
   });
 
   it('filters the cards by where a component works', async () => {
+    receiveState(withBattleMarksCard());
     const marks = mountPage('marks');
 
     act(() => marks.result.current.setContext(CONTEXT_FILTER.hangar));

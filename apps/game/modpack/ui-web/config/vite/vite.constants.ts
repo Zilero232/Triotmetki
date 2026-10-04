@@ -7,9 +7,11 @@ export const UI_BUILD = {
   outDir: path.resolve(UI_WEB_ROOT, '../packages/ui/gameface'),
   hudMode: 'hud',
   advisorMode: 'advisor',
+  viewerMode: 'viewer',
   pages: {
     settings: path.resolve(UI_WEB_ROOT, 'index.html'),
-    hud: path.resolve(UI_WEB_ROOT, 'hud.html')
+    hud: path.resolve(UI_WEB_ROOT, 'hud.html'),
+    viewer: path.resolve(UI_WEB_ROOT, 'viewer.html')
   },
   scripts: {
     advisor: { entry: path.resolve(UI_WEB_ROOT, 'src/app/preset-advisor/main.ts'), file: 'preset_advisor.js' }

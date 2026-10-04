@@ -2,21 +2,25 @@
 
 .header {
   display: flex;
-  height: 64px;
+  height: 56px;
   flex: 0 0 auto;
   flex-direction: row;
   align-items: center;
   padding: 0 12px 0 0;
   border-bottom: 1px solid token(win-divider);
   background-color: token(color-bg-deep);
-  background-image: token(win-bar-glow);
-  box-shadow: token(win-card-shadow);
 }
 
 .actions {
   display: flex;
-  flex: 0 0 auto;
+  min-width: 0;
+  flex: 1 1 0;
   flex-direction: row;
   align-items: center;
-  margin-left: auto;
+  justify-content: flex-end;
+  padding-left: 16px;
+}
+
+.close {
+  margin-left: 4px;
 }

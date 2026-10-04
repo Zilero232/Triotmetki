@@ -31,4 +31,5 @@ export type EditorGroupsInput = {
   fields: UiField[];
   editor: UiEditor;
   otherLabel: string;
+  advancedLabel: string;
 };

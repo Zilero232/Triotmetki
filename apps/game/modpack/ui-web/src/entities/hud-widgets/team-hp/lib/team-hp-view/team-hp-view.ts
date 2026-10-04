@@ -2,6 +2,7 @@ import { isIncludedIn, reverse, sumBy } from 'remeda';
 
 import type { TeamHpData, TeamHpVehicle } from '../../model/schemas';
 import type {
+  BehindInput,
   PaintInput,
   SideViewInput,
   TeamHpGap,
@@ -49,16 +50,23 @@ const stripOf = (vehicles: TeamHpVehicle[]): (TeamHpStripVehicle | TeamHpTierLab
 const paintOf = ({ tone, color }: PaintInput): TeamHpPaint =>
   color === null ? { tone, text: undefined, fill: undefined } : { tone: null, text: { color }, fill: { backgroundColor: color } };
 
-const sideView = ({ side, vehicles, tone, color, mirrored }: SideViewInput): TeamHpSideView => {
+const isBehind = ({ side, other }: BehindInput): boolean => other.hp > 0 && side.hp < other.hp * TEAM_HP.behindShare;
+
+const sideView = ({ side, other, vehicles, tone, color, mirrored }: SideViewInput): TeamHpSideView => {
+  const behind = isBehind({ side, other });
+  const paint = paintOf({ tone, color });
   const segments = segmentsOf(vehicles);
   const strip = stripOf(vehicles);
 
   return {
     hp: formatNumber(side.hp),
+    behind,
+    hpTone: behind ? 'warning' : paint.tone,
+    hpStyle: behind ? undefined : paint.text,
     fill: barFill({ value: side.hp, max: side.max, width: TEAM_HP.barWidth }),
     segments: mirrored ? reverse(segments) : segments,
     strip: mirrored ? reverse(strip) : strip,
-    paint: paintOf({ tone, color })
+    paint
   };
 };
 
@@ -78,14 +86,28 @@ export const teamHpView = (data: TeamHpData): TeamHpView => {
   return {
     numbers: isIncludedIn(style, TEAM_HP.numberStyles),
     bars: isIncludedIn(style, TEAM_HP.barStyles),
-    segmented: style === 'segments',
+    segmented: isIncludedIn(style, TEAM_HP.segmentStyles) && data.vehicles.allies.length + data.vehicles.enemies.length > 0,
     strip,
     secondRow: strip || diff !== null,
     score,
     diff,
     diffTone: (data.diff ?? 0) >= 0 ? 'good' : 'bad',
     hasCenter: score !== null || diff !== null,
-    allies: sideView({ side: data.allies, vehicles: data.vehicles.allies, tone: data.tones.ally, color: data.colors.ally, mirrored: true }),
-    enemies: sideView({ side: data.enemies, vehicles: data.vehicles.enemies, tone: data.tones.enemy, color: data.colors.enemy, mirrored: false })
+    allies: sideView({
+      side: data.allies,
+      other: data.enemies,
+      vehicles: data.vehicles.allies,
+      tone: data.tones.ally,
+      color: data.colors.ally,
+      mirrored: true
+    }),
+    enemies: sideView({
+      side: data.enemies,
+      other: data.allies,
+      vehicles: data.vehicles.enemies,
+      tone: data.tones.enemy,
+      color: data.colors.enemy,
+      mirrored: false
+    })
   };
 };

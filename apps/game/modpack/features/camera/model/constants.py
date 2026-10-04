@@ -20,3 +20,12 @@ CAMERA_PRESETS = {
     'balanced': {'sniper_zoom': 'x4', 'dynamic_camera': 'off', 'horizontal_stabilization': 'on'},
     'dynamic': {'sniper_zoom': 'x2', 'dynamic_camera': 'on', 'horizontal_stabilization': 'on'},
 }
+
+# The settings window's editor (docs/specs/2026-09-30-hud-consolidation-and-design.md section 12.3): its field groups
+# around a schematic sniper view the window draws from the field values.
+EDITOR_GROUPS = (
+    ('preset', ('preset',)),
+    ('sniper', ('sniper_zoom', 'horizontal_stabilization')),
+    ('camera', ('dynamic_camera',)),
+)
+SCHEMATIC = 'camera'

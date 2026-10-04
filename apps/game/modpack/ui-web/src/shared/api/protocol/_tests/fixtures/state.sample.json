@@ -17,39 +17,43 @@
       "fields": [
         {
           "default": true,
-          "hint": null,
+          "hint": "Итоги каждого вашего боя (урон, опыт, исход, танк, карта): из них сайт считает вашу статистику, сессии и цели.",
           "key": "send_battle_results",
           "label": "Отправлять итоги своих боёв",
           "type": "bool",
           "value": true
         },
         {
+          "advanced": true,
           "default": true,
-          "hint": null,
+          "hint": "Точный процент отметки танка после боя: сайт строит график отметок и прогноз.",
           "key": "send_moe_snapshots",
           "label": "Отправлять проценты отметок",
           "type": "bool",
           "value": true
         },
         {
+          "advanced": true,
           "default": true,
-          "hint": null,
+          "hint": "Сколько вы ждали в очереди и на каком уровне: для общей статистики очередей на сайте.",
           "key": "send_queue_times",
           "label": "Отправлять время в очереди",
           "type": "bool",
           "value": true
         },
         {
+          "advanced": true,
           "default": true,
-          "hint": null,
+          "hint": "Оборудование, снаряжение и навыки экипажа танка, на котором вы сыграли: для популярных сборок на сайте.",
           "key": "send_loadouts",
           "label": "Отправлять оборудование, снаряжение и навыки своего танка",
           "type": "bool",
           "value": true
         },
         {
+          "advanced": true,
           "default": true,
-          "hint": null,
+          "hint": "Урон и пробития только ваших выстрелов: для проверки разброса урона («Честный рандом»).",
           "key": "send_shots",
           "label": "Отправлять урон своих выстрелов (для «Честного рандома»)",
           "type": "bool",
@@ -57,13 +61,14 @@
         },
         {
           "default": true,
-          "hint": null,
+          "hint": "Сохранение настроек игры на сайт и применение сохранённых настроек через мод.",
           "key": "share_settings",
           "label": "Настройки игры: экспорт и «Применить через мод»",
           "type": "bool",
           "value": true
         },
         {
+          "advanced": true,
           "choices": [
             {
               "label": "В профиль на сайте",
@@ -75,21 +80,23 @@
             }
           ],
           "default": "private",
-          "hint": null,
+          "hint": "«В профиль на сайте» — настройки видны в вашем профиле, «Только себе» — их видите только вы.",
           "key": "settings_target",
           "label": "Куда отправлять настройки игры",
           "type": "choice",
           "value": "private"
         },
         {
+          "advanced": true,
           "default": false,
-          "hint": null,
+          "hint": "Ваши настройки без имени попадают в общую статистику популярных настроек.",
           "key": "settings_anonymous_stats",
           "label": "Учитывать мои настройки в анонимной статистике",
           "type": "bool",
           "value": false
         },
         {
+          "advanced": true,
           "default": false,
           "hint": null,
           "key": "settings_include_resolution",
@@ -98,6 +105,7 @@
           "value": false
         },
         {
+          "advanced": true,
           "default": false,
           "hint": null,
           "key": "settings_include_sensitivity",
@@ -106,16 +114,7 @@
           "value": false
         },
         {
-          "default": 15,
-          "hint": null,
-          "key": "flush_interval_seconds",
-          "label": "Интервал отправки, с",
-          "max": 600,
-          "min": 5,
-          "type": "int",
-          "value": 15
-        },
-        {
+          "advanced": true,
           "choices": [
             {
               "label": "Alt",
@@ -272,6 +271,7 @@
       "context": "battle",
       "fields": [
         {
+          "advanced": true,
           "default": 100,
           "hint": null,
           "key": "alpha",
@@ -280,24 +280,6 @@
           "min": 0,
           "type": "int",
           "value": 100
-        },
-        {
-          "default": false,
-          "hint": null,
-          "key": "border",
-          "label": "Рамка",
-          "type": "bool",
-          "value": false
-        },
-        {
-          "default": 14,
-          "hint": null,
-          "key": "font_size",
-          "label": "Размер шрифта",
-          "max": 48,
-          "min": 8,
-          "type": "int",
-          "value": 14
         },
         {
           "default": 5,

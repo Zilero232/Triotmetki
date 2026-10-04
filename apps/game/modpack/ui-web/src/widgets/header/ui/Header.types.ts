@@ -10,6 +10,7 @@ export type HeaderFrame = {
   zoomOut: () => void;
   handles: { move: RefObject<HTMLDivElement | null> };
   onRecentre: () => void;
+  onReset: () => void;
 };
 
 export type HeaderProps = {

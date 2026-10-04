@@ -133,3 +133,37 @@ WN8_BOUNDS = tuple(bound for bound, _ in WN8_SCALE)
 # More percent than a battle can move the MoE (core.moe MAX_BATTLE_CHANGE): a session change past this per battle is a
 # misread.
 MAX_BATTLE_DELTA = 10.0
+
+# The settings window's editor (docs/specs/2026-09-30-hud-consolidation-and-design.md section 12.3): its field groups
+# and the Session card it previews, an evening of seven battles with two site goals and the account line.
+EDITOR_GROUPS = (
+    ('session', ('show_moe',)),
+    ('goals', ('show_goals',)),
+    ('account', ('show_account', 'metric_wn8', 'metric_win_rate', 'metric_avg_damage', 'metric_eff')),
+)
+SAMPLE_ID = 'card'
+SAMPLE_SUMMARY = {
+    'battles': 7,
+    'win_rate': 57.14,
+    'avg_damage': 3120.0,
+    'wn8': 2310,
+    'recent': ('win', 'loss', 'win', 'win', 'draw', 'loss', 'win'),
+    'pending': 0,
+}
+SAMPLE_MOE = ({'tank_id': 1, 'change': 0.42, 'percent': 86.54},)
+SAMPLE_GOALS = (
+    {'id': 'wn8', 'metric': 'wn8', 'tank_id': None, 'target': 2500.0, 'baseline': 2000.0, 'current': 2310.0,
+     'status': 'active'},
+    {'id': 'moe', 'metric': 'moe', 'tank_id': 2, 'target': 85.0, 'baseline': 70.0, 'current': 85.4,
+     'status': 'achieved'},
+)
+SAMPLE_OVERVIEW = {
+    'overall': {
+        'battles': 18452,
+        'win_rate': 53.8,
+        'avg_damage': 2140.0,
+        'wn8': {'value': 2050.0, 'tier': 'great'},
+        'eff': {'value': 1650.0, 'tier': 'good'},
+    },
+}
+SAMPLE_VEHICLES = {1: 'IS-7', 2: 'T-62A'}

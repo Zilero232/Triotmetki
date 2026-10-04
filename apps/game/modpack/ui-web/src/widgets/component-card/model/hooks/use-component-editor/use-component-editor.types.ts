@@ -5,6 +5,8 @@ export type UseComponentEditorInput = {
   editor: UiEditor;
 };
 
+export type EditorBackdrop = 'forest' | 'snow';
+
 export type EditorHint = {
   label: string;
   text: string | null;

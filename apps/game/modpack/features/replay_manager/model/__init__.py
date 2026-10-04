@@ -6,6 +6,7 @@ from .constants import (  # noqa: F401
     ACTION_DELETE,
     ACTION_FAVOURITE,
     ACTION_FOLDER,
+    ACTION_HITS,
     ACTION_PLAY,
     ACTION_REFRESH,
     ACTION_RENAME,

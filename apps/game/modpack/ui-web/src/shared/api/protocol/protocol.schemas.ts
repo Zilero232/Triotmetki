@@ -93,10 +93,14 @@ export const pageSchema = z.object({
 
 const replaysPageSchema = z.looseObject({ kind: z.literal('replays') });
 
+export const widgetSchema = z.object({ kind: z.string(), v: z.number(), data: z.unknown() });
+
 export const editorSchema = z.object({
   groups: z.array(z.object({ id: text, label: text, keys: z.array(text) })),
   icons: z.record(text, z.record(text, z.nullable(z.string()))),
-  swatches: z.record(text, z.record(text, text))
+  swatches: z.record(text, z.record(text, text)),
+  samples: z.optional(z.array(z.object({ id: text, label: text, widget: widgetSchema }))),
+  schematic: z.optional(z.enum(PROTOCOL.schematics))
 });
 
 export const componentSchema = z.object({
@@ -115,8 +119,6 @@ export const componentSchema = z.object({
   thumb: optionalText,
   gallery: z.optional(z.record(text, z.record(text, z.nullable(z.string()))))
 });
-
-export const widgetSchema = z.object({ kind: z.string(), v: z.number(), data: z.unknown() });
 
 export const panelSchema = z.object({
   id: text,

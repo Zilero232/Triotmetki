@@ -2,7 +2,7 @@ import clsx from 'clsx';
 
 import type { TeamCenterProps } from './TeamCenter.types';
 
-import { toneClass } from '../../../../../../shared/ui/hud';
+import { TabularText, toneClass } from '../../../../../../shared/ui/hud';
 
 import s from './TeamCenter.module.scss';
 
@@ -12,9 +12,9 @@ export const TeamCenter = ({ view }: TeamCenterProps) =>
       <div className={s.top}>
         {view.score && (
           <>
-            <span>{view.score.allies}</span>
+            <TabularText className={clsx(s.frags, s.fragsAllies)} text={view.score.allies} />
             <span className={s.colon}>:</span>
-            <span>{view.score.enemies}</span>
+            <TabularText className={s.frags} text={view.score.enemies} />
           </>
         )}
       </div>

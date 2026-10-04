@@ -8,8 +8,7 @@ SECTIONS = ('both', 'dealt', 'received')
 # safe.
 PALETTES = ('classic', 'graphite', 'contrast', 'colorblind')
 MAX_TEMPLATE = 600
-TEMPLATE_KEYS = ('template', 'entry_template', 'alt_entry_template')
-KIND_COLOR_KEYS = ('color_damage', 'color_assist', 'color_blocked', 'color_received')
+TEMPLATE_KEYS = ('template', 'entry_template')
 LIMITS = {'dealt_lines': (0, 10), 'received_lines': (0, 10)}
 
 DEFAULTS = {
@@ -29,16 +28,21 @@ DEFAULTS = {
     'show_assist_rows': True,
     'alt_mode': True,
     'palette': 'graphite',
-    'kind_icons': True,
-    'kind_colors': True,
     'template': '{dealt} | {blocked} | {assisted} | {received}',
     'entry_template': '',
+}
+# Retired options and the values the code keeps reading: kind icons and kind colours on, the colours of the chosen
+# palette, the built-in Alt row.
+FIXED = {
+    'kind_icons': True,
+    'kind_colors': True,
     'alt_entry_template': '',
     'color_damage': '',
     'color_assist': '',
     'color_blocked': '',
     'color_received': '',
 }
+ADVANCED = ('keep_stock', 'template', 'entry_template')
 # The default places of older versions (x, y, align_x, align_y): a panel still at one moves to today's default.
 RETIRED_PLACES = (
     (250, -260, 'left', 'bottom'),

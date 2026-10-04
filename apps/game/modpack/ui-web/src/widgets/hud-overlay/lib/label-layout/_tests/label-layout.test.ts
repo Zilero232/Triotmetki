@@ -53,16 +53,24 @@ describe(labelStyle, () => {
 });
 
 describe(layoutLabels, () => {
-  it('dims a panel under the full stats while Tab is held', () => {
-    expect(opacityOf(panel({ dim: true }))).toBe(HUD_OVERLAY.fullStats.alpha);
+  it('fades every panel under the full stats backdrop while Tab is held', () => {
+    expect(opacityOf(panel({ cover: 'stats', align_x: 'left', y: 1000 }))).toBe(HUD_OVERLAY.coverAlpha.stats);
   });
 
-  it('keeps a panel clear of the full stats at full opacity while Tab is held', () => {
-    expect(opacityOf(panel({ dim: true, align_x: 'left', y: 1000 }))).toBe(1);
+  it('fades every panel under a modal stock view', () => {
+    expect(opacityOf(panel({ cover: 'modal', align_x: 'left', y: 1000 }))).toBe(HUD_OVERLAY.coverAlpha.modal);
   });
 
   it('draws a panel at full opacity once Tab is released', () => {
-    expect(opacityOf(panel({ dim: false }))).toBe(1);
+    expect(opacityOf(panel({ cover: '' }))).toBe(1);
+  });
+
+  it('takes no drag and no pointer on a covered panel', () => {
+    expect(layoutOf(panel({ cover: 'stats', drag: true }), true)).toMatchObject({ movable: false, pointer: false });
+  });
+
+  it('takes no click on a covered button', () => {
+    expect(layoutOf(panel({ cover: 'modal', kind: 'button' }))?.button).toBe(false);
   });
 
   it('keeps a hidden panel laid out in its place, drawn transparent', () => {

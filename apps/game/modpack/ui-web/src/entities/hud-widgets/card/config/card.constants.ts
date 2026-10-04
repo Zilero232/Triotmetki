@@ -3,6 +3,7 @@ export const CARD = {
   headerIcon: 20,
   rowIcon: 16,
   chipIcon: 16,
+  hero: { silhouette: 176, scale: 240, sparkWidth: 60, sparkHeight: 16, levels: [65, 85, 95] },
   status: {
     active: { icon: 'otmetki:dot', tone: 'accent' },
     done: { icon: 'otmetki:check', tone: 'good' },

@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 STRINGS = {
     'ru': {
         'component_hud_layouts': u'Раскладка по типу боя',
-        'component_hud_layouts_hint': u'Свой набор боевых панелей для каждого типа боя: в «Натиске», «Линии фронта», событиях вроде «Ваффентрагера» и в «Стальном охотнике» — только нужное. Тип боя определяется сам. Стандартные элементы боя заменяются только в случайных боях и «Натиске»; в других режимах наши панели лишь дополняют их.',
+        'component_hud_layouts_hint': u'Свой набор боевых панелей для каждого типа боя: в «Натиске», «Линии фронта», событиях вроде «Ваффентрагера» и в «Стальном охотнике» — только нужное. Тип боя определяется сам. Стандартный элемент боя (лог урона, шкала счёта, лампа шестого чувства) заменяется в любом режиме, где он есть на экране боя.',
         'hud_layouts_random': u'Случайные бои',
         'hud_layouts_random_hint': u'И учебные, ранговые, «Мапбокс», клановые бои.',
         'hud_layouts_comp7': u'Натиск',
@@ -35,7 +35,7 @@ STRINGS = {
     },
     'en': {
         'component_hud_layouts': u'Layout per battle type',
-        'component_hud_layouts_hint': u'A battle panel set of its own for each battle type: in Onslaught, Frontline, events like Waffenträger and in Steel Hunter only what is needed. The battle type is detected by itself. Stock battle elements are replaced only in random battles and Onslaught; in other modes our panels only add to them.',
+        'component_hud_layouts_hint': u'A battle panel set of its own for each battle type: in Onslaught, Frontline, events like Waffenträger and in Steel Hunter only what is needed. The battle type is detected by itself. A stock battle element (damage log, score strip, sixth sense lamp) is replaced in every mode whose battle screen has it.',
         'hud_layouts_random': u'Random battles',
         'hud_layouts_random_hint': u'Also training, ranked, Mapbox and clan battles.',
         'hud_layouts_comp7': u'Onslaught',

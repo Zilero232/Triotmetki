@@ -55,3 +55,10 @@ VIEW_OFFSETS = {1: 'arcade_offset', 2: 'sniper_offset', 3: 'strategic_offset'}
 # The HUD report's reasons while the readout shows nothing.
 NO_TARGET = 'no enemy vehicle under the reticle'
 NO_RESOLVER = 'the client has no shot-result resolver to read'
+
+# The settings window editor: field groups (spec 2026-09-30 section 12.3).
+EDITOR_GROUPS = (
+    ('armor', ('armor_under_aim', 'show_piercing', 'show_nominal', 'show_angle')),
+    ('target', ('target_distance',)),
+    ('shells', ('shell_tooltips', 'aim_circle')),
+)

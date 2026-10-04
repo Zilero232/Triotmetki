@@ -733,15 +733,15 @@
     {
       "id": "battle_results",
       "category": "hangar",
-      "context": "hangar",
+      "context": "any",
       "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Итоги боёв",
         "en": "Battle results"
       },
       "description": {
-        "ru": "Сводка после каждого боя в уведомлениях с точным изменением отметки и список боёв сессии в окне мода. У боя — «Попадания по мне»: схема танка сверху с местами попаданий и список с исходом, уроном и тем, кто стрелял.",
-        "en": "A summary after each battle in the notifications with the exact MoE change and the session battles in the mod window. Each battle shows «Hits on me»: a top-down schematic with the hit spots and a list with the outcome, the damage and who fired."
+        "ru": "Сводка после каждого боя в уведомлениях с точным изменением отметки и список боёв сессии в окне мода. У боя — «Попадания по мне»: схема танка сверху с местами попаданий и список с исходом, уроном и тем, кто стрелял. В бою — карточка ваших итогов после гибели танка и в конце боя, а итоги прошлого боя, пришедшие уже в новом, — короткой карточкой.",
+        "en": "A summary after each battle in the notifications with the exact MoE change and the session battles in the mod window. Each battle shows «Hits on me»: a top-down schematic with the hit spots and a list with the outcome, the damage and who fired. In battle, a card with your results once your tank is destroyed and when the battle ends, and a short card with the previous battle's results that arrive in the next one."
       },
       "fairPlay": {
         "ru": "Только ваша часть итогов боя.",
@@ -749,7 +749,7 @@
       },
       "perf": "low",
       "preview": {
-        "image": "previews/battle_results.svg"
+        "image": "previews/battle_results.png"
       }
     },
     {
@@ -948,6 +948,28 @@
       "perf": "low",
       "preview": {
         "image": "previews/hangar_space.svg"
+      }
+    },
+    {
+      "id": "hit_viewer",
+      "category": "hangar",
+      "context": "hangar",
+      "presets": ["recommended"],
+      "title": {
+        "ru": "Просмотр попаданий",
+        "en": "Hit viewer"
+      },
+      "description": {
+        "ru": "Где вас пробили и куда попали вы: после боя в ангаре на модели танка — точка и направление каждого попадания, список «По мне / По врагам» со снарядом, исходом, уроном, углом встречи и приведённой бронёй, выбор из последних боёв. Включён по умолчанию.",
+        "en": "Where you were penetrated and where you hit: after the battle, on the tank model in the hangar, each hit's point and direction and an «On me / On enemies» list with the shell, result, damage, impact angle and effective armour, for the last battles. On by default."
+      },
+      "fairPlay": {
+        "ru": "Только выстрелы между вашим танком и одной другой машиной, как их рисует клиент; брызги арты и авиаудары не пишутся. В бою ничего не анализируется: угол и броню ангар меряет на модели после боя.",
+        "en": "Only the shots between your tank and one other vehicle, as the client draws them; artillery splash and air strikes are not recorded. Nothing is analysed in battle: the hangar measures the angle and armour on the model after it."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/hit_viewer.svg"
       }
     },
     {
@@ -1210,10 +1232,12 @@
         "crosshair",
         "streamer_mode",
         "session_stats",
+        "battle_results",
         "personal_missions",
         "comp7_helper",
         "event_trackers",
         "crew_xp",
+        "hit_viewer",
         "update_notice",
         "hangar_info",
         "free_camera"
@@ -1262,6 +1286,7 @@
         "crosshair",
         "streamer_mode",
         "session_stats",
+        "battle_results",
         "personal_missions",
         "comp7_helper",
         "event_trackers",

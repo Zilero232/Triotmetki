@@ -1,6 +1,9 @@
 {
   "client": "1.45.0.0",
   "folder": "C:/Games/Tanki/replays",
+  "hit_viewer": [
+    "555"
+  ],
   "items": [
     {
       "arena": "111",

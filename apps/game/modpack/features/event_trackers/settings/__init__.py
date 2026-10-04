@@ -1,7 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.hud import component_schema
-from .constants import CHOICES, DEFAULTS, GROUP, LIMITS, SECTION, SWITCH  # noqa: F401
+from ....core.settings import fix
+from .constants import ADVANCED, CHOICES, DEFAULTS, FIXED, GROUP, SECTION, SWITCH  # noqa: F401
 
 SETTINGS = (SWITCH,)
-SCHEMA = component_schema(DEFAULTS, choices=CHOICES, limits=LIMITS)
+SCHEMA = fix(component_schema(DEFAULTS, choices=CHOICES), FIXED)

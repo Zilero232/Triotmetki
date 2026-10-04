@@ -11,6 +11,8 @@ import _support  # noqa: F401
 CLIENT_PREFIX = 'otmetki.core.client'
 STUBBED = ('BigWorld', 'Vehicle')
 ENEMY = 7
+OWN = 3
+ALLY = 9
 POINTS = [0x1234]
 EXPLOSION_METHOD = 'showDamageFromExplosion'
 
@@ -20,8 +22,9 @@ def vehicle_class(with_explosion=True):
 
     class Vehicle(object):
 
-        def __init__(self, own):
+        def __init__(self, own, entity_id=OWN):
             self.isPlayerVehicle = own
+            self.id = entity_id
             self.drawn = []
 
         def showDamageFromShot(self, attacker_id, points, effects_index, damage_factor, last_material_is_shield):
@@ -36,9 +39,15 @@ def vehicle_class(with_explosion=True):
     return Vehicle
 
 
+class Avatar(object):
+
+    playerVehicleID = OWN
+
+
 def load_own_vehicle(vehicle):
     """core.client.battle on a stubbed client whose Vehicle module holds `vehicle`."""
     sys.modules['BigWorld'] = types.ModuleType(str('BigWorld'))
+    sys.modules['BigWorld'].player = Avatar
     sys.modules['Vehicle'] = types.ModuleType(str('Vehicle'))
     sys.modules['Vehicle'].Vehicle = vehicle
     try:
@@ -95,6 +104,34 @@ class OwnShotTest(unittest.TestCase):
 
     def test_hooking_reports_success(self):
         assert self.hook_shots()
+
+
+class ShotWithOwnVehicleTest(unittest.TestCase):
+
+    def setUp(self):
+        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.vehicle = vehicle_class()
+        self.battle = load_own_vehicle(self.vehicle)
+        self.shots = []
+        self.battle.on_shot_with_own_vehicle(lambda *args: self.shots.append((args[0].id,) + args[1:]))
+
+    def tearDown(self):
+        restore(self.saved)
+
+    def test_a_shot_on_the_own_vehicle_reaches_the_callback(self):
+        self.vehicle(True).showDamageFromShot(ENEMY, POINTS, 4, 1.0, False)
+
+        assert self.shots == [(OWN, ENEMY, POINTS, 4)]
+
+    def test_an_own_shot_on_another_vehicle_reaches_the_callback(self):
+        self.vehicle(False, ENEMY).showDamageFromShot(OWN, POINTS, 4, 1.0, False)
+
+        assert self.shots == [(ENEMY, OWN, POINTS, 4)]
+
+    def test_a_shot_between_two_other_vehicles_is_never_seen(self):
+        self.vehicle(False, ENEMY).showDamageFromShot(ALLY, POINTS, 4, 1.0, False)
+
+        assert self.shots == []
 
 
 class OwnVehicleEffectTest(unittest.TestCase):

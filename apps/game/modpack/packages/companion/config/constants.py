@@ -18,6 +18,8 @@ FEATURES = (
     'battle_team_hp',
     'battle_sixth_sense',
     'hangar_battle_results',
+    'battle_summary',
+    'battle_last_results',
     'hangar_replay_manager',
     'hangar_tweaks',
     'minimap_tweaks',
@@ -46,6 +48,7 @@ FEATURES = (
     'hangar_auto_reserves',
     'hangar_crew_xp',
     'hangar_space',
+    'hangar_hit_viewer',
     'hangar_update_notice',
     'hangar_quick_demount',
     'config_backup',
@@ -146,20 +149,15 @@ MERGED_SECTIONS = (
     (('hangar_ratings', 'metric_avg_damage', True), ('session_stats', 'metric_avg_damage')),
     (('hangar_ratings', 'metric_eff', False), ('session_stats', 'metric_eff')),
     (('main_gun', 'show_team', True), ('battle_progress', 'main_gun_share')),
-    (('battle_efficiency', 'colored', True), ('battle_progress', 'colored')),
     (('main_gun', 'x', -372), ('battle_progress', 'x')),
     (('main_gun', 'y', 60), ('battle_progress', 'y')),
     (('main_gun', 'align_x', 'right'), ('battle_progress', 'align_x')),
     (('main_gun', 'align_y', 'top'), ('battle_progress', 'align_y')),
     (('battle_hits', 'show_attacker', True), ('battle_results', 'hits_show_attacker')),
-    (('battle_hits', 'keep_battles', 10), ('battle_results', 'hits_keep_battles')),
-    (('battle_clock', 'clock_format', '%H:%M'), ('hangar_info', 'battle_clock_format')),
     (('battle_clock', 'replace_timer', False), ('hangar_info', 'replace_timer')),
     (('hangar_marks', 'style', 'extended'), ('marks_panel', 'hangar_style')),
     (('marks_history', 'show_panel', True), ('marks_panel', 'show_trend')),
     (('marks_history', 'trend_battles', 5), ('marks_panel', 'trend_battles')),
-    (('marks_history', 'max_entries', 100), ('marks_panel', 'max_entries')),
-    (('marks_history', 'page_rows', 50), ('marks_panel', 'page_rows')),
     (('hangar_ratings', 'show_tank', True), ('marks_panel', 'show_tank_ratings')),
 )
 # (section, ((merged switch, key), ...)): when any merged switch was on, each key takes its switch's value, so the
@@ -184,8 +182,6 @@ SWITCHED_OFF_PARTS = (
 # set it in the window.
 RETIRED_VALUES = (
     ('damage_log', 'alt_mode', False, True),
-    ('sixth_sense', 'icon_size', 64, 56),
-    ('battle_loadout', 'icon_size', 45, 40),
     ('hangar_info', 'clock_format', '%H:%M:%S', '%H:%M'),
     ('hangar_info', 'date_format', '%d.%m.%Y', '%d.%m'),
     ('marks_panel', 'style', 'extended', 'compact'),
@@ -224,7 +220,6 @@ DEFAULTS = {
     'server_url': DEFAULT_SERVER_URL,
     'language': 'auto',
     'session_idle_minutes': 60,
-    'flush_interval_seconds': 15,
     'bind_code': '',
     'send_battle_results': True,
     'send_moe_snapshots': True,
@@ -237,6 +232,8 @@ DEFAULTS = {
     'battle_team_hp': True,
     'battle_sixth_sense': True,
     'hangar_battle_results': True,
+    'battle_summary': True,
+    'battle_last_results': True,
     'hangar_replay_manager': True,
     'hangar_tweaks': False,
     'minimap_tweaks': True,
@@ -265,6 +262,7 @@ DEFAULTS = {
     'hangar_auto_reserves': False,
     'hangar_crew_xp': True,
     'hangar_space': False,
+    'hangar_hit_viewer': True,
     'hangar_update_notice': True,
     'hangar_quick_demount': False,
     'config_backup': True,
@@ -292,6 +290,8 @@ CHOICES = {
 }
 LIMITS = {
     'session_idle_minutes': (10, 24 * 60),
-    'flush_interval_seconds': (5, 600),
 }
 LOCAL_HOSTS = ('http://localhost', 'http://127.0.0.1')
+# Settings that are no longer choices (docs/specs/2026-09-30-hud-consolidation-and-design.md section 12): the
+# outbox sends every 15 s.
+FIXED = {'flush_interval_seconds': 15}

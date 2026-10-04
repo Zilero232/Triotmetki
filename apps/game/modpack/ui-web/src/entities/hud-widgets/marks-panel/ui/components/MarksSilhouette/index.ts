@@ -1,0 +1,1 @@
+export { MarksSilhouette } from './MarksSilhouette';

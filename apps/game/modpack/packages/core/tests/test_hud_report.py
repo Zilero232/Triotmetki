@@ -101,7 +101,17 @@ class PanelReportTest(unittest.TestCase):
 
         text = report.text('random')
 
-        assert text == 'HUD report (random): battle_loadout waiting: no vehicle yet; marks_panel shown'
+        assert text == (
+            'HUD report (random): battle_loadout waiting: no vehicle yet; marks_panel shown; stock: no battle page'
+        )
+
+    def test_the_line_ends_with_the_stock_aliases_found_and_hidden(self):
+        _, report = reported('damage_log')
+        stock = {'page': 'eventBattlePage', 'found': ['battleDamageLogPanel', 'sixthSense'], 'hidden': []}
+
+        text = report.text('event', stock)
+
+        assert text.endswith('; stock on eventBattlePage: found battleDamageLogPanel, sixthSense, hidden -')
 
 
 class SurfaceSummaryTest(unittest.TestCase):

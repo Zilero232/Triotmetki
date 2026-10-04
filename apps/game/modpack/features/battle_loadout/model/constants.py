@@ -81,3 +81,6 @@ PREVIEW_DEVICES = [
         'booster': 'boost',
     },
 ]
+
+# The settings window's editor: the equipment row as the preview, its one option folded under «Дополнительно».
+EDITOR_GROUPS = ()

@@ -2,21 +2,21 @@
 
 .toast {
   position: absolute;
-  bottom: 18px;
+  bottom: 24px;
   left: 50%;
   display: flex;
-  width: 560px;
-  height: 48px;
+  width: 520px;
+  height: 44px;
   flex-direction: row;
   align-items: center;
   padding: 0 8px 0 16px;
-  border: 1px solid token(color-border-strong);
-  border-radius: token(radius-lg);
-  border-left: 3px solid token(color-success);
-  margin-left: -280px;
+  border: 1px solid token(win-line-strong);
+  border-radius: token(win-radius);
+  border-left: 3px solid token(win-index);
+  margin-left: -260px;
   background-color: token(color-surface-overlay);
   background-image: token(win-toast);
-  box-shadow: token(shadow-popover);
+  box-shadow: token(win-shadow);
 }
 
 .icon {

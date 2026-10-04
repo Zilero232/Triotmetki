@@ -2,42 +2,33 @@
 
 .chip {
   display: flex;
-  height: 32px;
+  height: 28px;
   flex-direction: row;
   flex-shrink: 0;
   align-items: center;
-  padding: 0 10px;
-  border: 1px solid token(color-accent);
+  padding: 0 12px 0 8px;
+  border: 1px solid token(color-border);
   border-radius: token(radius-full);
-  margin-right: 12px;
-  background-color: token(color-accent-soft);
-  color: token(color-accent);
+  margin-right: 8px;
+  background-color: token(color-surface);
+  color: token(color-text-muted);
   cursor: pointer;
 
-  @include ease(background-color, border-color);
+  @include ease(background-color, border-color, color);
 
   &:hover {
-    background-color: token(color-surface);
-    background-image: token(win-accent-tint);
+    border-color: token(color-border-strong);
+    background-color: token(color-surface-hover);
+    color: token(color-text);
   }
 }
 
-.success {
-  border-color: token(color-success);
-  background-color: token(color-armor-soft);
-  color: token(color-success);
-}
-
-.danger {
-  border-color: token(color-danger);
-  background-color: token(color-battle-soft);
-  color: token(color-danger);
+.compact {
+  padding: 0 6px;
 }
 
 .label {
-  margin-left: 6px;
-  font-size: 11px;
+  margin-left: 8px;
+  font-size: 12px;
   white-space: nowrap;
-
-  @include caps(0.5px);
 }

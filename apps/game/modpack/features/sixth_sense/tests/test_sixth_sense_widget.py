@@ -55,20 +55,16 @@ class SixthSenseWidgetTest(unittest.TestCase):
 
         assert data['elapsed'] == 8.0
 
-    def test_the_preview_ring_follows_the_players_own_time(self):
+    def test_the_preview_ring_drains_as_long_as_the_stock_lamp(self):
         data = preview_widget(Settings({'hide_after_s': 6}, SCHEMA), None)['data']
 
-        assert data['duration'] == 6.0
+        assert data['duration'] == 10.0
 
-    def test_an_empty_custom_icon_with_own_text_shows_the_text_only(self):
-        data = widget_data(lamp_lit_at(0.0), 1.0, icon_set='custom', text='SPOTTED')
+    def test_the_own_caption_keeps_the_icon(self):
+        data = widget_data(lamp_lit_at(0.0), 1.0, text='SPOTTED')
 
-        assert data['icon'] is None
-
-    def test_an_empty_custom_icon_without_text_falls_back_to_the_lamp_glyph(self):
-        data = widget_data(lamp_lit_at(0.0), 1.0, icon_set='custom')
-
-        assert data['icon'] == 'otmetki:lamp'
+        assert data['icon'].endswith('|otmetki:lamp')
+        assert data['text'] == 'SPOTTED'
 
     def test_fixture_for_the_page(self):
         payload = preview_widget(Settings({}, SCHEMA), None)

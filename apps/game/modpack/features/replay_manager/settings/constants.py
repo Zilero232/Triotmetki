@@ -11,3 +11,5 @@ DEFAULTS = {
     'auto_rename': False,
     'name_template': DEFAULT_NAME_TEMPLATE,
 }
+
+ADVANCED = ('name_template',)

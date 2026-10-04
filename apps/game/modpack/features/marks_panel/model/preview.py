@@ -14,6 +14,7 @@ from .constants import (
     PREVIEW_PACE,
     PREVIEW_SNAPSHOT,
     PREVIEW_THRESHOLDS,
+    PREVIEW_CLASS,
 )
 from .research import research_state
 from .widget import marks_widget
@@ -35,7 +36,7 @@ def preview_text(settings, translate):
 
 def preview_widget(settings, translate):
     view = PanelView(settings, held=True)
-    return marks_widget(preview_state(view), view, translate)
+    return marks_widget(preview_state(view), view, translate, PREVIEW_CLASS)
 
 
 def card_preview():
@@ -49,6 +50,7 @@ def card_preview():
         mastery=CARD_PREVIEW_MASTERY,
         own_mastery=CARD_PREVIEW_OWN_MASTERY,
         research=research_state(CARD_PREVIEW_RESEARCH),
+        class_tag=PREVIEW_CLASS,
     )
 
 

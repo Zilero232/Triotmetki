@@ -1,14 +1,24 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.hud import hex_color, max_length, panel_schema
-from .constants import DEFAULTS, MAX_TEMPLATE, OVERLAY_STYLES, PANEL_ID, RETIRED_PLACES, STYLES, SWITCH  # noqa: F401
+from ....core.hud import max_length, panel_schema
+from ....core.settings import fix
+from .constants import (  # noqa: F401
+    ADVANCED,
+    DEFAULTS,
+    FIXED,
+    MAX_TEMPLATE,
+    OVERLAY_STYLES,
+    PANEL_ID,
+    RETIRED_PLACES,
+    STYLES,
+    SWITCH,
+)
 
 SETTINGS = (SWITCH,)
 
-SCHEMA = panel_schema(
+SCHEMA = fix(panel_schema(
     DEFAULTS,
     choices={'style': STYLES},
-    limits={'bar_width': (5, 60), 'icon_width': (1, 8)},
-    normalizers={'ally_color': hex_color, 'enemy_color': hex_color, 'template': max_length(MAX_TEMPLATE)},
+    normalizers={'template': max_length(MAX_TEMPLATE)},
     retired=RETIRED_PLACES,
-)
+), FIXED)

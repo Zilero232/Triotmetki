@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ....core.classes import class_key
 from ....core.compat import is_number
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, counted, font, format_number, format_percent
 from ....core.hud.icons import glyph, mark_icon
-from ....core.hud.widget import card, card_chip, card_row
+from ....core.hud.widget import card, card_chip, card_hero, card_row
 from ....core.moe import moe_macros
 from ....core.templates import render
 from ....core.vendor import attr
@@ -12,6 +13,7 @@ from . import macro_values
 from .constants import (
     APPROX,
     CARD_WIDTH,
+    DEFAULT_SHAPE,
     DELTA_COLORS,
     DELTA_GLYPHS,
     DELTA_TONES,
@@ -48,6 +50,7 @@ class TankCard(object):
     mastery = attr.ib(default=None)
     own_mastery = attr.ib(default=None)
     research = attr.ib(default=None)
+    class_tag = attr.ib(default=None)
 
 
 # Every threshold the site has for the tank, 100% included: the card is where the player plans the next marks.
@@ -194,6 +197,27 @@ def _percent_value(state):
     return moe_macros(state)['percent'] + PERCENT_SUFFIX
 
 
+# The percent after each of the last battles, oldest first, walked back from today's percent by the battles' changes.
+def percent_history(percent, deltas):
+    points = [percent]
+    for delta in reversed(deltas or ()):
+        points.insert(0, points[0] - delta)
+    return [round(min(100.0, max(0.0, point)), 2) for point in points] if len(points) > 1 else []
+
+
+def _hero(data, settings):
+    state = data.state
+    if state is None or not is_number(state['percent']):
+        return None
+    deltas = data.summary.get('deltas') if settings.get('show_trend') and data.summary else None
+    return card_hero(
+        state['percent'],
+        shape=class_key(data.class_tag) or DEFAULT_SHAPE,
+        tick=state['next_level'],
+        points=percent_history(state['percent'], deltas),
+    )
+
+
 def tank_card(data, settings, translate):
     state = data.state
     return card(
@@ -203,6 +227,7 @@ def tank_card(data, settings, translate):
         subtitle=data.vehicle,
         value=_percent_value(state),
         value_tone='gold',
+        hero=_hero(data, settings),
         chips=_chips(state, translate) if state is not None else (),
         strip=_strip(data.summary, settings),
         footer=_footer(data, settings, translate),

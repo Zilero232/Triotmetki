@@ -9,7 +9,7 @@
 
 .divided {
   padding-bottom: 4px;
-  border-bottom: 1px solid token(hud-divider);
+  border-bottom: 1px solid token(hud-hairline);
   margin-bottom: 4px;
 }
 
@@ -17,12 +17,17 @@
   margin-right: 8px;
 }
 
+.index {
+  margin-right: 4px;
+}
+
 .title {
   flex-shrink: 0;
   color: token(hud-muted);
+  font-size: 10px;
+  line-height: 12px;
 
-  @include hud-type(caption);
-  @include caps;
+  @include caps(1.2px);
 }
 
 .subtitle {

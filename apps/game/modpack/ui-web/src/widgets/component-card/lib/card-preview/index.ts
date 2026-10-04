@@ -1,3 +1,3 @@
-export { cardPreviewKind, carouselPreview } from './card-preview';
+export { cardPreviewKind, cardSummary, carouselPreview } from './card-preview';
 
-export type { CardPreviewKind, CarouselPreviewModel } from './card-preview.types';
+export type { CardPreviewKind, CardSummaryModel, CarouselPreviewModel, KeyChip } from './card-preview.types';

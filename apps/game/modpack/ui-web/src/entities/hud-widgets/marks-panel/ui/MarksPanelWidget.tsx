@@ -2,7 +2,7 @@ import type { MarksPanelWidgetProps } from './MarksPanelWidget.types';
 
 import { HudPlate, HudText } from '../../../../shared/ui/hud';
 import { marksPanelView } from '../lib/marks-panel-view';
-import { MarksAverage, MarksMain, MarksThresholds } from './components';
+import { MarksAverage, MarksBox, MarksDamage, MarksMain, MarksSilhouette, MarksThresholds } from './components';
 
 import s from './MarksPanelWidget.module.scss';
 
@@ -18,8 +18,11 @@ export const MarksPanelWidget = ({ data }: MarksPanelWidgetProps) => {
   }
 
   return (
-    <HudPlate className={s.plate}>
-      <MarksMain view={view} />
+    <HudPlate className={view.look === 'silhouette' ? s.large : s.plate}>
+      {view.look === 'line' && <MarksMain view={view} />}
+      {view.look === 'box' && <MarksBox view={view} />}
+      {view.look === 'silhouette' && <MarksSilhouette view={view} />}
+      <MarksDamage damage={view.damage} />
       <MarksThresholds step={view.step} thresholds={view.thresholds} />
       <MarksAverage average={view.average} battles={view.battles} />
     </HudPlate>

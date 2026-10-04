@@ -32,6 +32,8 @@ COST_KEYS = ('repair', 'ammo', 'consumables')
 STATE_KEY = 'battle_results_history'
 SESSION_ROW = 'session'
 ACTION_CLEAR = 'clear'
+# A battle row's button that opens the hit viewer at that battle (core.events hit_viewer_open).
+ACTION_HITS = 'hit_viewer'
 SITE_BATTLES_PATH = '/me/battles'
 HISTORY_KEYS = (
     'arena',

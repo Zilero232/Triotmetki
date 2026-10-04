@@ -10,6 +10,7 @@ import s from './ReplayTools.module.scss';
 
 export const ReplayTools = ({ item, browser }: DetailsActionProps) => {
   const t = useReplaysT();
+  const hasHits = item.arena !== null && (browser.page?.hit_viewer.includes(item.arena) ?? false);
 
   return (
     <div className={s.tools}>
@@ -17,6 +18,12 @@ export const ReplayTools = ({ item, browser }: DetailsActionProps) => {
         <ReplayIcon className={s.buttonIcon} name='star' size={14} />
         {item.favourite ? t('favouriteRemove') : t('favouriteAdd')}
       </Button>
+      {hasHits && (
+        <Button className={s.tool} size='small' variant='ghost' onClick={() => browser.openHits(item)}>
+          <ReplayIcon className={s.buttonIcon} name='hits' size={14} />
+          {t('viewHits')}
+        </Button>
+      )}
       <Button className={s.tool} size='small' variant='ghost' onClick={() => browser.startRename(item)}>
         <ReplayIcon className={s.buttonIcon} name='pencil' size={14} />
         {t('rename')}

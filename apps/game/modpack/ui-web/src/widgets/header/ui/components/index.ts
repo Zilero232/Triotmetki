@@ -1,5 +1,5 @@
 export { AccountChip } from './AccountChip';
 export { Brand } from './Brand';
+export { HeaderMenu } from './HeaderMenu';
 export { SearchBox } from './SearchBox';
-export { Tools } from './Tools';
 export { ZoomControl } from './ZoomControl';

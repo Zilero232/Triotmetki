@@ -13,7 +13,7 @@ export const SixthSenseWidget = ({ data }: SixthSenseWidgetProps) => {
 
   return (
     <div className={s.lamp}>
-      <div style={{ opacity: view.alpha }}>
+      <div className={clsx(view.lit && s.lit)} style={{ opacity: view.alpha }}>
         <RadialTimer progress={view.progress} size={view.ring} stroke={SIXTH_SENSE.ring.stroke} tone='accent'>
           <ClientIcon icon={data.icon} size={data.size} />
         </RadialTimer>

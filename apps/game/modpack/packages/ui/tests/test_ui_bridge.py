@@ -42,13 +42,11 @@ PANEL_SCHEMA = Schema(
         'align_x': 'center',
         'align_y': 'top',
         'alpha': 100,
-        'font_size': 14,
         'drag': True,
-        'border': False,
         'lines': 5,
     },
     choices={'align_x': ('left', 'center', 'right'), 'align_y': ('top', 'center', 'bottom')},
-    limits={'x': (-4000, 4000), 'y': (-4000, 4000), 'alpha': (0, 100), 'font_size': (8, 48), 'lines': (1, 20)},
+    limits={'x': (-4000, 4000), 'y': (-4000, 4000), 'alpha': (0, 100), 'lines': (1, 20)},
 )
 BAD_MESSAGES = ('not json', '[]', json.dumps({'type': 'nope'}), json.dumps({'type': 'set'}), 42)
 UNSAFE_PATHS = ('https://evil.example', '//evil.example/x', 'javascript:alert(1)', '/a b')
@@ -427,6 +425,40 @@ class BridgeStateTest(BridgeTestCase):
 
         assert [(field['key'], field.get('advanced')) for field in fields] == [('enabled', None), ('zoom', True)]
 
+    def test_fields_the_settings_name_are_advanced(self):
+        feature = FeatureInfo('minimap', settings_module(SETTINGS=(), ADVANCED=('zoom',)))
+        component = Component('minimap', 'battle', SectionSource(self.context.component_config, 'minimap'),
+                              ('enabled', 'zoom'), advanced=feature.advanced())
+
+        fields = component.describe(Labels(Catalog(), 'en'))['fields']
+
+        assert [(field['key'], field.get('advanced')) for field in fields] == [('enabled', None), ('zoom', True)]
+
+    def test_the_editor_module_draws_the_editor_from_the_section(self):
+        editor_module = settings_module(editor=lambda settings, translate: {'zoom': settings.get('zoom'),
+                                                                           'title': translate('nope')})
+        feature = FeatureInfo('minimap', settings_module(SETTINGS=()), editor_module=editor_module)
+        component = Component('minimap', 'battle', SectionSource(self.context.component_config, 'minimap'),
+                              ('enabled', 'zoom'), editor=feature.editor())
+
+        described = component.describe(Labels(Catalog(), 'en'))
+
+        assert described['editor'] == {'zoom': 'native', 'title': 'nope'}
+
+    def test_a_hangar_label_hides_its_place(self):
+        self.context.component_config.section('label', Schema({'x': 0, 'scale': 100, 'show': True}))
+        component = Component('label', 'hangar', SectionSource(self.context.component_config, 'label'),
+                              ('x', 'scale', 'show'))
+
+        fields = component.describe(Labels(Catalog(), 'en'))['fields']
+
+        assert [field['key'] for field in fields] == ['show']
+
+    def test_a_panel_folds_its_opacity(self):
+        fields = card(self.bridge.state(), 'damage_log')['fields']
+
+        assert [(field['key'], field.get('advanced')) for field in fields] == [('alpha', True), ('lines', None)]
+
     def test_fields_carry_no_advanced_key_without_the_hook(self):
         fields = card(self.bridge.state(), 'minimap')['fields']
 
@@ -561,11 +593,11 @@ class SetManyMessageTest(BridgeTestCase):
         assert self.context.events[-1] == ('minimap', ['enabled', 'zoom'])
 
     def test_set_many_on_the_companion_saves_each_key_and_refreshes_once(self):
-        values = {'send_shots': False, 'flush_interval_seconds': 30}
+        values = {'send_shots': False, 'send_queue_times': False}
 
         send(self.bridge, type='set_many', component=COMPANION_ID, values=values)
 
-        assert self.context.refreshed[-1] == ['flush_interval_seconds', 'send_shots']
+        assert self.context.refreshed[-1] == ['send_queue_times', 'send_shots']
         assert self.context.saved == 3
 
     def test_set_many_refuses_keys_outside_the_card(self):
@@ -655,7 +687,7 @@ class UserSetTest(BridgeTestCase):
 
     def test_a_profile_load_records_nothing(self):
         send(self.bridge, type='profile_save', name='A')
-        self.context.profiles.get('p1')['data']['config']['flush_interval_seconds'] = 30
+        self.context.profiles.get('p1')['data']['config']['hud_modifier'] = 'ctrl'
 
         send(self.bridge, type='profile_load', id='p1')
 
@@ -949,14 +981,14 @@ class BridgeProfilesTest(BridgeTestCase):
 
     def test_load_restores_the_saved_settings(self):
         self.saved_profile()
-        send(self.bridge, type='set', component=COMPANION_ID, key='flush_interval_seconds', value=30)
+        send(self.bridge, type='set', component=COMPANION_ID, key='hud_modifier', value='ctrl')
         send(self.bridge, type='set', component='minimap', key='zoom', value='x2')
         send(self.bridge, type='hud_move', panel='damage_log', x=50, y=60)
         del self.context.events[:]
 
         send(self.bridge, type='profile_load', id='p1')
 
-        assert self.context.config.get('flush_interval_seconds') == 15
+        assert self.context.config.get('hud_modifier') == 'alt'
         assert self.minimap().get('zoom') == 'native'
         assert self.damage_log().get('x') == 10
         assert sorted(event[0] for event in self.context.events) == ['config', 'damage_log', 'minimap']

@@ -18,5 +18,15 @@
       "entrance": "OtmetkiHud",
       "impl": "gameface"
     }
+  },
+  {
+    "itemID": "otmetki/ui/hit_viewer",
+    "type": "Layout",
+    "path": "coui://gui/gameface/mods/triotmetki/ui/viewer.html",
+    "parameters": {
+      "extension": "",
+      "entrance": "OtmetkiHitViewer",
+      "impl": "gameface"
+    }
   }
 ]

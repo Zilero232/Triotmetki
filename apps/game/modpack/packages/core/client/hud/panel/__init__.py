@@ -6,7 +6,7 @@ from ....vendor import attr
 from ...battle import BattleHooks
 from ...component import FeatureComponent
 from .. import hud_layer, panel_report, stock_control
-from ..modes import current_mode
+from ..modes import current_mode, mode_details
 from ..stock.constants import EXTENDED_INFO_EVENT
 
 
@@ -75,7 +75,7 @@ class BattlePanel(FeatureComponent):
         self._on_leave()
         mode = current_mode(self.stock.page)
         if mode != self.hud.mode:
-            log('HUD: battle type %s' % mode)
+            log('HUD: battle type %s (%s)' % (mode, mode_details(self.stock.page)))
         self.hud.enter_mode(mode)
         self.wait(None)
         if self.enabled() and self.hud.allows(self.component_id):

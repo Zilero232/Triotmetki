@@ -23,9 +23,9 @@ export const SidebarItem = ({ item, compact }: SidebarItemProps) => {
       {...tip}
     >
       {item.active && <span aria-hidden='true' className={s.marker} />}
-      <Icon name={item.icon} size={18} tone={item.active ? 'accent' : 'muted'} />
+      <Icon name={item.icon} size={16} tone={item.iconTone} />
       {!compact && <span className={s.label}>{label}</span>}
-      {!compact && item.count && <span className={s.count}>{item.count}</span>}
+      {!compact && item.count && <span className={clsx(s.count, item.active && s.countOn)}>{item.count}</span>}
     </button>
   );
 };

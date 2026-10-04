@@ -1,1 +1,1 @@
-export const HUD_PLATE_FILLS = ['solid', 'edge', 'edge-end', 'centre', 'none'] as const;
+export const HUD_PLATE_FILLS = ['solid', 'contrast', 'edge', 'edge-end', 'centre', 'none'] as const;

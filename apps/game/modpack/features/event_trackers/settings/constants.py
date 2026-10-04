@@ -6,10 +6,11 @@ GROUP = 'hangar'
 
 # `triathlon_shown`: `event` while the client lists a clean-XP competition, `always` also outside it.
 DEFAULTS = {
-    'font_size': 14,
     'show_triathlon': True,
     'triathlon_shown': 'event',
     'show_caravan': True,
 }
 CHOICES = {'triathlon_shown': ('event', 'always')}
-LIMITS = {'font_size': (8, 32)}
+# The card's type size follows the design scale (docs/specs/2026-09-30-hud-consolidation-and-design.md section 12).
+FIXED = {'font_size': 14}
+ADVANCED = ('triathlon_shown',)

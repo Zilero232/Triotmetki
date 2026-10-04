@@ -17,18 +17,18 @@ beforeEach(() => {
 });
 
 describe(useSidebar, () => {
-  it('lists the component pages with their on/total counts', () => {
+  it('lists the component pages with how many are on', () => {
     const { components } = renderHook(useSidebar).result.current;
 
     const counts = components.map(({ section, count }) => [section, count]);
 
     expect(counts).toEqual([
-      ['battle', '1/2'],
+      ['battle', '1 вкл.'],
       ['hangar', null],
-      ['marks', '2/2'],
-      ['replays', '1/1'],
+      ['marks', '2 вкл.'],
+      ['replays', '1 вкл.'],
       ['streamer', null],
-      ['data', '1/1']
+      ['data', '1 вкл.']
     ]);
   });
 

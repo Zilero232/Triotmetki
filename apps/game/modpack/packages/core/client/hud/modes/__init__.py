@@ -30,3 +30,9 @@ def arena_types():
 def current_mode(page=None):
     gui_type, bonus_type = arena_types()
     return battle_mode(gui_type, bonus_type, page_alias(page))
+
+
+def mode_details(page=None):
+    """What the battle type was read from, for the log: the arena's gui and bonus types and the battle page alias."""
+    gui_type, bonus_type = arena_types()
+    return 'gui type %s, bonus type %s, page %s' % (gui_type, bonus_type, page_alias(page) or '-')

@@ -68,6 +68,13 @@ export const useWindowFrame = (saved: UiWindow | null) => {
 
       setPlaced(centred);
       persist({ frame: centred, zoom, placed: false });
+    },
+    onReset: () => {
+      const centred = centredFrame({ bounds });
+
+      setPlaced(centred);
+      setChosenZoom(WINDOW_FRAME.defaultZoom);
+      persist({ frame: centred, zoom: WINDOW_FRAME.defaultZoom, placed: false });
     }
   };
 };

@@ -104,6 +104,7 @@ export const REPLAYS_RU = {
   favouriteAdd: 'В избранное',
   favouriteRemove: 'Убрать из избранного',
   rename: 'Переименовать',
+  viewHits: 'Посмотреть попадания',
   renameSave: 'Сохранить',
   remove: 'Удалить',
   removeConfirm: 'Удалить реплей ({name}) с диска? Это нельзя отменить.',

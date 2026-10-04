@@ -1,7 +1,6 @@
 import type { ComponentEditorProps } from './ComponentEditor.types';
 
 import { useT } from '../../../../../entities/window-state';
-import { Badge } from '../../../../../shared/ui/badge';
 import { IconButton } from '../../../../../shared/ui/icon-button';
 import { ScrollArea } from '../../../../../shared/ui/scroll-area';
 import { useComponentEditor } from '../../../model/hooks';
@@ -23,12 +22,11 @@ export const ComponentEditor = ({ component, editor }: ComponentEditorProps) => 
           <CardTile enabled={model.card.enabled} icon={model.card.icon} />
         </span>
         <span className={s.title}>{component.title}</span>
-        {model.card.changedCount > 0 && <Badge tone='accent'>{`${t('changedBadge')}: ${model.card.changedCount}`}</Badge>}
+        {model.card.changedCount > 0 && <span className={s.changed}>{`${model.card.changedCount} ${t('changedShort')}`}</span>}
         <span className={s.spacer} />
         <CardSwitch card={model.card} component={component} />
       </header>
       <div className={s.split}>
-        <EditorStage component={component} model={model} />
         <div className={s.controls} onMouseLeave={model.clearHint}>
           <ScrollArea contentClassName={s.groups} label={component.title}>
             {model.groups.map((group) => (
@@ -36,6 +34,7 @@ export const ComponentEditor = ({ component, editor }: ComponentEditorProps) => 
             ))}
           </ScrollArea>
         </div>
+        <EditorStage component={component} model={model} />
       </div>
     </section>
   );

@@ -77,7 +77,8 @@ export const UI_ICON_NAMES = [
   'copy',
   'download',
   'keyboard',
-  'maximize-2'
+  'maximize-2',
+  'ellipsis'
 ] as const;
 
 export const UI_ICON_TONES = ['muted', 'text', 'accent', 'contrast', 'success', 'danger'] as const;

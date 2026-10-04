@@ -14,3 +14,5 @@ DEFAULTS = {
     'hide_hangar_stats': True,
 }
 CHOICES = {'hotkey': HOTKEY_CHOICES}
+
+ADVANCED = ('keep_hidden',)

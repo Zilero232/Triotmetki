@@ -22,7 +22,7 @@ from otmetki.features.battle_progress.settings import SCHEMA, SETTINGS
 ACCOUNT = 12345678
 EXPECTED = {'damage': 1180.0, 'spot': 1.42, 'frag': 0.98, 'def': 0.75, 'win_rate': 52.3}
 RECORD = {'damage': 6812, 'assist': 5120, 'frags': 6, 'xp': 2740}
-LABELLED_KEYS = ('row_main_gun', 'row_record', 'row_wn8', 'main_gun_share', 'record_metric', 'colored')
+LABELLED_KEYS = ('row_main_gun', 'row_record', 'row_wn8', 'main_gun_share', 'record_metric')
 
 
 def translator(language='ru'):
@@ -257,10 +257,8 @@ class Wn8RowTest(unittest.TestCase):
 
         assert row['color'] == '#4FC3B0'
 
-    def test_is_plain_when_not_coloured(self):
-        row = only_row(state(row=site_row(), damage=1506), colored=False)
-
-        assert row['color'] is None
+    def test_wn8_is_always_coloured(self):
+        assert settings(colored=False).get('colored') is True
 
 
 class PlateTest(unittest.TestCase):

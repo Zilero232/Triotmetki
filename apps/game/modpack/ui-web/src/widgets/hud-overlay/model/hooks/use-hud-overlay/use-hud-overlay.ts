@@ -21,7 +21,8 @@ import { useWheelResize } from '../use-wheel-resize';
 export const useHudOverlay = () => {
   const { state, overrides, scales, onMoved, onScaled } = useHudState();
   const screen = useHudScreen();
-  const edit = Boolean(state?.edit);
+  const isCovered = Boolean(state?.panels.some(({ cover }) => cover));
+  const edit = Boolean(state?.edit) && !isCovered;
   const targetsRef = useRef<DragTarget[]>([]);
   const [report] = useState(createMouseReport);
   const pointerInput = { edit, report, targets: () => targetsRef.current, onMoved, onScaled };
@@ -53,11 +54,11 @@ export const useHudOverlay = () => {
   targetsRef.current = layouts.map(({ id, rect, button, movable, pointer, scale }) => ({ id, rect, button, movable, pointer, scale }));
 
   const clickable = layouts.filter(({ button }) => button).map(({ rect }) => rect);
-  const hovered = useHoveredPanel({ active: Boolean(state?.cursor), targets: targetsRef.current });
+  const hovered = useHoveredPanel({ active: Boolean(state?.cursor) && !isCovered, targets: targetsRef.current });
 
   useInputArea({ edit, hover: Boolean(state?.hover), dragging: live !== null, screen, clickable, targets: targetsRef.current, hovered, report });
 
-  const hint = usePanelHint(live === null ? layouts.find(({ id }) => id === hovered) : undefined);
+  const hint = usePanelHint(live === null ? layouts.find(({ id, panel }) => id === hovered && panel.visible) : undefined);
 
   return {
     labels: layouts.map(labelOf),

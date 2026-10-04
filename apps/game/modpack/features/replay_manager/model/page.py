@@ -105,6 +105,7 @@ class PageContext(object):
     upload = attr.ib(default=None)
     describe_vehicle = attr.ib(default=None, converter=lambda value: value or _no_vehicle)
     image = attr.ib(default=None, converter=lambda value: value or _no_image)
+    viewer_battles = attr.ib(default=(), converter=frozenset)
 
     def image_of(self, path):
         return self.image(path) if path else None
@@ -232,5 +233,6 @@ def build_page(replays, context, status, progress, folder, cache=None):
         'client': to_text(context.client_version or ''),
         'folder': to_text(folder or ''),
         'upload': context.upload,
+        'hit_viewer': sorted(to_text(battle_id) for battle_id in context.viewer_battles),
         'items': items,
     }

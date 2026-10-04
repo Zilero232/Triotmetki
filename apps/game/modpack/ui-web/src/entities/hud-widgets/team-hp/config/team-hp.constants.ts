@@ -4,6 +4,8 @@ export const TEAM_HP = {
   barStyles: ['full', 'segments', 'icons', 'minimal', 'bars'],
   singleRowStyles: ['compact', 'minimal'],
   barWidth: 168,
+  segmentStyles: ['full', 'segments', 'icons'],
+  behindShare: 0.7,
   iconSize: 16,
   segmentGap: 1,
   tierGap: 4

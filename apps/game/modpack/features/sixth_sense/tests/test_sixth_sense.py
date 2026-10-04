@@ -10,13 +10,13 @@ import unittest
 import _support
 from otmetki.core.settings import Settings
 from otmetki.features.sixth_sense.i18n import STRINGS
-from otmetki.features.sixth_sense.model import SixthSense, format_sixth_sense, icon_gallery, icon_path
+from otmetki.features.sixth_sense.model import SixthSense, format_sixth_sense, icon_gallery, icon_path, set_icon_path
 from otmetki.features.sixth_sense.model.preview import preview_text
 from otmetki.features.sixth_sense.settings import SCHEMA
-from otmetki.features.sixth_sense.settings.constants import ICON_SETS
+from otmetki.features.sixth_sense.settings.constants import COLORS, ICON_SETS
 
 ASSETS_DIR = os.path.join(_support.MODPACK_DIR, 'assets')
-SHIPPED_ICON_SETS = ICON_SETS[1:]
+SHIPPED_ICON_SETS = ICON_SETS
 DEFAULT_LAMP = '<img src="img://gui/maps/icons/otmetki/sixth_sense/icons/lamp_64.png" width="56" height="56"/>'
 
 
@@ -137,31 +137,26 @@ class ExpiryTest(unittest.TestCase):
 
 class FormatTest(unittest.TestCase):
 
-    def test_without_an_icon_the_default_text_shows(self):
-        settings = settings_with(icon_set='custom')
+    def test_the_own_caption_shows_next_to_the_icon(self):
+        settings = settings_with(text='SPOTTED')
 
         text = format_sixth_sense(lamp_lit_at(100.0), settings, translator(), 104.2)
 
-        assert 'Вас засветили!' in text
+        assert 'SPOTTED' in text
+        assert 'lamp_' in text
 
     def test_the_timer_shows_the_seconds_since_the_detection(self):
-        settings = settings_with(icon_set='custom')
+        settings = settings_with()
 
         text = format_sixth_sense(lamp_lit_at(100.0), settings, translator(), 104.2)
 
         assert '4 с' in text
 
-    def test_a_custom_icon_replaces_the_default_text(self):
-        settings = settings_with(
-            icon_set='custom',
-            icon='gui/maps/icons/otmetki/lamp.png',
-            icon_size=64,
-            show_timer=False,
-        )
+    def test_the_custom_icon_set_is_gone(self):
+        settings = settings_with(icon_set='custom', icon='gui/maps/icons/otmetki/lamp.png')
 
-        text = format_sixth_sense(lamp_lit_at(100.0), settings, translator('en'), 101.0)
-
-        assert text == '<img src="img://gui/maps/icons/otmetki/lamp.png" width="64" height="64"/>'
+        assert settings.get('icon_set') == 'lamp'
+        assert settings.get('icon') == ''
 
     def test_the_shipped_lamp_is_the_default_icon(self):
         settings = settings_with(show_timer=False)
@@ -184,12 +179,15 @@ class FormatTest(unittest.TestCase):
 
         assert 'lamp_64.png' in text
 
-    def test_without_the_pulse_the_icon_never_dims_and_picks_the_larger_rendition(self):
-        settings = settings_with(pulse=False, icon_size=100)
+    def test_without_the_pulse_the_icon_never_dims(self):
+        settings = settings_with(pulse=False)
 
         path = icon_path(settings, True)
 
-        assert path == 'gui/maps/icons/otmetki/sixth_sense/icons/lamp_128.png'
+        assert path == 'gui/maps/icons/otmetki/sixth_sense/icons/lamp_64.png'
+
+    def test_a_larger_size_picks_the_larger_rendition(self):
+        assert set_icon_path('lamp', 100) == 'gui/maps/icons/otmetki/sixth_sense/icons/lamp_128.png'
 
     def test_preview_draws_something(self):
         text = preview_text(settings_with(), translator('en'))
@@ -199,20 +197,26 @@ class FormatTest(unittest.TestCase):
 
 class SettingsTest(unittest.TestCase):
 
-    def test_an_unsafe_icon_path_is_dropped(self):
-        settings = settings_with(icon='../"><script>')
-
-        assert settings.get('icon') == ''
-
     def test_an_invalid_color_falls_back_to_the_default(self):
         settings = settings_with(color='red')
 
         assert settings.get('color') == '#F2B25B'
 
-    def test_the_own_time_is_capped_at_a_minute(self):
-        settings = settings_with(hide_after_s=600)
+    def test_a_colour_outside_the_swatches_falls_back_to_the_default(self):
+        settings = settings_with(color='#123456')
 
-        assert settings.get('hide_after_s') == 60
+        assert settings.get('color') == '#F2B25B'
+
+    def test_a_swatch_colour_is_kept_in_any_case(self):
+        settings = settings_with(color='#40c8ff')
+
+        assert settings.get('color') == '#40C8FF'
+
+    def test_the_retired_options_are_fixed(self):
+        settings = settings_with(hide_after_s=9, icon_size=100)
+
+        assert (settings.get('hide_after_s'), settings.get('icon_size')) == (0, 56)
+        assert 'hide_after_s' not in SCHEMA.defaults
 
 
 class StringsTest(unittest.TestCase):
@@ -224,6 +228,10 @@ class StringsTest(unittest.TestCase):
         for value in ICON_SETS:
             assert 'sixth_sense_icon_set_' + value in STRINGS['en'], value
 
+    def test_every_colour_has_a_label(self):
+        for value in COLORS:
+            assert 'sixth_sense_color_' + value in STRINGS['en'], value
+
 
 class ShippedAssetsTest(unittest.TestCase):
 
@@ -231,7 +239,7 @@ class ShippedAssetsTest(unittest.TestCase):
         shipped = shipped_files()
 
         for icon_set, size, dimmed in itertools.product(SHIPPED_ICON_SETS, (32, 100), (False, True)):
-            path = icon_path(settings_with(icon_set=icon_set, icon_size=size), dimmed)
+            path = set_icon_path(icon_set, size, dimmed)
             assert path in shipped, path
 
     def test_the_gallery_shows_a_shipped_icon_of_every_set(self):
@@ -241,9 +249,6 @@ class ShippedAssetsTest(unittest.TestCase):
         for icon_set in SHIPPED_ICON_SETS:
             assert pictures[icon_set].startswith('img://'), icon_set
             assert pictures[icon_set][len('img://'):] in shipped, icon_set
-
-    def test_the_custom_set_has_no_gallery_picture(self):
-        assert icon_gallery(ICON_SETS)['icon_set']['custom'] is None
 
     def test_the_gallery_shows_the_larger_rendition(self):
         assert icon_gallery(('lamp',))['icon_set']['lamp'].endswith('/lamp_128.png')

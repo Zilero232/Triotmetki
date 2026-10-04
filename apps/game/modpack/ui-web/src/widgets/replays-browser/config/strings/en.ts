@@ -106,6 +106,7 @@ export const REPLAYS_EN: ReplaysStrings = {
   favouriteAdd: 'Add to favourites',
   favouriteRemove: 'Remove from favourites',
   rename: 'Rename',
+  viewHits: 'View hits',
   renameSave: 'Save',
   remove: 'Delete',
   removeConfirm: 'Delete the replay ({name}) from the disk? This cannot be undone.',

@@ -53,7 +53,8 @@ export const replaysHeadSchema = z.object({
   progress: z.object({ done: z.number(), total: z.number() }),
   client: z.string(),
   folder: z.string(),
-  upload: z.catch(z.enum(REPLAYS.uploadStates), 'missing')
+  upload: z.catch(z.enum(REPLAYS.uploadStates), 'missing'),
+  hit_viewer: z.catch(z.array(z.string()), [])
 });
 
 export const replaysPageSchema = z.extend(replaysHeadSchema, { items: z.array(replayItemSchema) });

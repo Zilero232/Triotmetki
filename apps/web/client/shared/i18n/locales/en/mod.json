@@ -196,6 +196,10 @@
         "title": "Hangar switcher",
         "text": "Any hangar the game already has; event hangars stay as in the game."
       },
+      "hit_viewer": {
+        "title": "Hit viewer",
+        "text": "Where you were penetrated and where you hit: after the battle, on the tank model in the hangar, with the angle and effective armour."
+      },
       "update_notice": {
         "title": "New mod version",
         "text": "A hangar card when a release is out, with «Skip this version»."
@@ -226,7 +230,7 @@
       },
       "battle_results": {
         "title": "Battle results",
-        "text": "A summary after every battle and the map of hits on your tank in the mod window."
+        "text": "A summary after every battle and the map of hits on your tank in the mod window, and in battle your results once your tank is destroyed and the previous battle's results."
       },
       "replay_manager": {
         "title": "Replay manager",
@@ -391,11 +395,6 @@
       }
     },
     "tunables": {
-      "flush": {
-        "title": "Send interval",
-        "text": "How often the mod sends the queued events from the hangar.",
-        "value": "{value} s"
-      },
       "idle": {
         "title": "Session end",
         "text": "Minutes without battles after which a new session starts.",

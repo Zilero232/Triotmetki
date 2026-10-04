@@ -12,7 +12,7 @@ export const ComponentCard = ({ component, fields, forceOpen }: ComponentCardPro
   const card = useComponentCard({ component, fields, forceOpen });
 
   return (
-    <article className={clsx(s.card, !card.enabled && s.off, card.open && s.open)}>
+    <article className={clsx(s.card, card.open && s.open)}>
       <div className={s.head}>
         <button
           aria-expanded={card.expandable && !card.hasEditor ? card.open : undefined}

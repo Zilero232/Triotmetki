@@ -290,7 +290,7 @@ class FormatTest(unittest.TestCase):
         assert u'Получено 310' in lines[0]
 
     def test_the_rows_follow_the_totals_with_the_received_last(self):
-        lines = format_damage_log(filled_log(), settings(kind_icons=False), translator()).split('\n')
+        lines = format_damage_log(filled_log(), settings(), translator()).split('\n')
 
         assert len(lines) == 8
         assert u'−310 ОФ KV-1' in lines[-2]
@@ -318,10 +318,13 @@ class FormatTest(unittest.TestCase):
         icon = '<img src="img://gui/maps/icons/otmetki/damage_log/icons/blocked_32.png" width="14" height="14"/>'
         assert icon in lines[-1]
 
-    def test_rows_without_kind_icons_are_plain_text(self):
-        text = format_damage_log(filled_log(), settings(kind_icons=False), translator())
+    def test_the_kind_icons_and_colours_are_fixed_on(self):
+        values = settings(kind_icons=False, kind_colors=False)
 
-        assert '<img' not in text
+        assert (values.get('kind_icons'), values.get('kind_colors')) == (True, True)
+
+    def test_the_retired_keys_leave_the_schema(self):
+        assert 'kind_icons' not in SCHEMA.defaults
 
     def test_every_class_glyph_ships(self):
         shipped = shipped_icons()
@@ -353,37 +356,34 @@ class FormatTest(unittest.TestCase):
         assert '#1 40 IS' in text
 
     def test_notes_wait_for_alt_in_the_alt_mode(self):
-        text = format_damage_log(filled_log(), settings(kind_icons=False), translator())
+        text = format_damage_log(filled_log(), settings(), translator())
 
         assert u'оглушение' not in text
 
     def test_alt_adds_the_notes(self):
-        text = format_damage_log(filled_log(), settings(kind_icons=False), translator(), extended=True)
+        text = format_damage_log(filled_log(), settings(), translator(), extended=True)
 
         assert u'оглушение' in text
 
     def test_notes_are_always_there_without_the_alt_mode(self):
-        text = format_damage_log(filled_log(), settings(kind_icons=False, alt_mode=False), translator())
+        text = format_damage_log(filled_log(), settings(alt_mode=False), translator())
 
         assert u'оглушение' in text
 
-    def test_the_alt_template_is_the_row_while_alt_is_held(self):
+    def test_the_alt_template_is_retired(self):
         custom = settings(alt_entry_template='#{index} {vehicle}', sections='received')
 
         text = format_damage_log(filled_log(), custom, translator(), extended=True)
 
-        assert '#1 KV-1' in text
+        assert '#1 KV-1' not in text
 
-    def test_the_players_own_kind_colour_wins_over_the_palette(self):
-        assert kind_color('received', settings(palette='classic', color_received='#123abc')) == '#123ABC'
+    def test_an_old_own_kind_colour_gives_way_to_the_palette(self):
+        color = kind_color('received', settings(palette='classic', color_received='#123abc'))
 
-    def test_an_invalid_kind_colour_falls_back_to_the_palette(self):
-        assert kind_color('damage', settings(palette='classic', color_damage='red')) == '#E3564A'
+        assert color == PALETTES['classic'][3]
 
-    def test_rows_are_muted_without_kind_colours(self):
-        lines = format_damage_log(filled_log(), settings(kind_colors=False), translator()).split('\n')
-
-        assert '#A09A8B' in lines[-1]
+    def test_the_dealt_kind_takes_the_palettes_first_colour(self):
+        assert kind_color('damage', settings(palette='classic')) == PALETTES['classic'][0]
 
     def test_an_ammo_rack_hit_says_so_on_alt(self):
         log = filled_log()

@@ -1,12 +1,13 @@
+@use '../../../../../shared/styles/gameface' as *;
+
 .search {
   position: relative;
   display: flex;
-  min-width: 160px;
-  max-width: 520px;
-  flex: 1 1 360px;
+  min-width: 200px;
+  max-width: 560px;
+  flex: 0 1 560px;
   flex-direction: row;
   align-items: center;
-  margin-right: 24px;
 }
 
 .input {
@@ -16,6 +17,19 @@
 
 .clear {
   position: absolute;
-  top: 3px;
-  right: 3px;
+  top: 2px;
+  right: 2px;
+}
+
+.key {
+  position: absolute;
+  top: 7px;
+  right: 8px;
+  padding: 0 4px;
+  border: 1px solid token(color-border);
+  border-radius: token(radius-sm);
+  color: token(color-text-dim);
+  font-size: 11px;
+  line-height: 16px;
+  pointer-events: none;
 }

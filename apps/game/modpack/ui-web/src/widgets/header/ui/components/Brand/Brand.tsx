@@ -14,10 +14,8 @@ export const Brand = ({ compact, dragRef, onRecentre }: BrandProps) => {
   return (
     <div ref={dragRef} aria-label={t('dragHint')} className={s.brand} onDoubleClick={onRecentre} {...tip}>
       <LogoMark className={s.mark} size={HEADER.logoSize} />
-      <div className={s.text}>
-        <span className={s.title}>{t('title')}</span>
-        {!compact && <span className={s.subtitle}>{t('subtitle')}</span>}
-      </div>
+      {!compact && <span className={s.title}>{t('title')}</span>}
+      {!compact && <span className={s.subtitle}>{t('subtitle')}</span>}
     </div>
   );
 };

@@ -3,20 +3,18 @@
 .frame {
   display: flex;
   flex-shrink: 0;
-  padding: 1px;
-  background-color: token(hud-bar-line);
 }
 
 .bar {
   display: flex;
-  height: 6px;
+  height: 4px;
   flex-direction: row;
   justify-content: flex-start;
   background-color: token(hud-bar-track);
 }
 
 .plain {
-  justify-content: space-between;
+  justify-content: flex-start;
   background-color: rgb(0 0 0 / 0%);
 }
 
@@ -33,9 +31,14 @@
   background-color: token(hud-bar-track);
 }
 
+.dead {
+  opacity: 0.35;
+}
+
 .fill {
   height: 100%;
   background-color: token(hud-text);
+  transition: width token(duration-reveal) token(ease-out);
 }
 
 .ally {

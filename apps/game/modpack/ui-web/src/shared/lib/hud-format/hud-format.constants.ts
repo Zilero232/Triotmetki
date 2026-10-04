@@ -1,5 +1,6 @@
 export const HUD_FORMAT = {
   thinSpace: ' ',
+  noBreakSpace: ' ',
   minus: '-',
   plus: '+',
   decimalComma: ',',

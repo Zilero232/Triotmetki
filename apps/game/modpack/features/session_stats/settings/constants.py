@@ -18,3 +18,6 @@ DEFAULTS = {
     'metric_eff': False,
 }
 LIMITS = {'max_goals': (1, 5)}
+
+# The goals count, the idle timeout and the session report are rare choices: the window folds them away.
+ADVANCED = ('max_goals', IDLE_MINUTES, SHARE, SHARE_CHANNEL)

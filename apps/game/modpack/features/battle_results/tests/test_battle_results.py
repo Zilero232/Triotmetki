@@ -5,6 +5,7 @@ import unittest
 
 import _support
 from otmetki.companion.payload import build_battle_event
+from otmetki.core.format import strip_tags
 from otmetki.core.settings import Settings
 from otmetki.features.battle_results.i18n import STRINGS
 from otmetki.features.battle_results.model import (
@@ -18,6 +19,7 @@ from otmetki.features.battle_results.model import (
     session_of,
     signed,
 )
+from otmetki.features.battle_results.model.constants import ACTION_HITS
 from otmetki.features.battle_results.settings import SCHEMA
 
 MOE_BEFORE = {'tank_id': 1, 'damage_rating': 8600, 'moving_avg_damage': 2550, 'marks_on_gun': 1}
@@ -182,19 +184,19 @@ class FormatSummaryTest(unittest.TestCase):
             'средний урон <font color="#7CD35B">+60</font>',
         ]
 
-    def test_plain_text_with_only_the_marks_section(self):
-        settings = Settings({'colored': False, 'show_economy': False, 'show_combat': False}, SCHEMA)
+    def test_only_the_marks_section(self):
+        settings = Settings({'show_economy': False, 'show_combat': False}, SCHEMA)
         summary = build_summary(battle_event(), MOE_BEFORE)
 
-        text = format_summary(summary, settings, translator('en'))
+        text = strip_tags(format_summary(summary, settings, translator('en')))
 
         assert text == 'Three Marks: victory — T-34, 02_malinovka\nMoE 87.00%, marks 2 (+1.00%), average damage +60'
 
     def test_marks_section_is_left_out_without_a_moe(self):
-        settings = Settings({'colored': False, 'show_economy': False, 'show_combat': False}, SCHEMA)
+        settings = Settings({'show_economy': False, 'show_combat': False}, SCHEMA)
         summary = build_summary({'result': 'loss'})
 
-        text = format_summary(summary, settings, translator('en'))
+        text = strip_tags(format_summary(summary, settings, translator('en')))
 
         assert text == 'Three Marks: defeat — , '
 
@@ -277,6 +279,21 @@ class BuildPageTest(unittest.TestCase):
         page = build_page(history(), translator(), 3600)
 
         assert [row['id'] for row in page['rows']] == ['session', '2', FIXTURE_ARENA]
+
+    def test_a_battle_the_hit_viewer_has_gets_its_button(self):
+        rows = build_page(history(), translator(), 3600, viewer_battles=frozenset(['2']))['rows']
+
+        assert [action['id'] for action in rows[1]['actions']] == [ACTION_HITS]
+
+    def test_a_battle_the_hit_viewer_lacks_gets_no_button(self):
+        rows = build_page(history(), translator(), 3600, viewer_battles=frozenset(['2']))['rows']
+
+        assert rows[2]['actions'] == []
+
+    def test_the_hits_button_names_the_viewer(self):
+        rows = build_page(history(), translator(), 3600, viewer_battles=frozenset(['2']))['rows']
+
+        assert rows[1]['actions'][0]['label'] == 'Посмотреть попадания'
 
     def test_session_row_sums_up_the_current_session(self):
         session = build_page(history(), translator(), 3600)['rows'][0]

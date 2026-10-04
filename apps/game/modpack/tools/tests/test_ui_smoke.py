@@ -605,12 +605,12 @@ class UiSmokeTest(unittest.TestCase):
     def test_loading_a_saved_profile_restores_its_settings(self):
         app = self.open_window(1)
         self.send(type='profile_save', name='Streamer')
-        self.send(type='set', component='companion', key='flush_interval_seconds', value=30)
+        self.send(type='set', component='companion', key='hud_modifier', value='ctrl')
         profile_id = self.state()['profiles']['active']
 
         self.send(type='profile_load', id=profile_id)
 
-        assert app.config.get('flush_interval_seconds') == 15
+        assert app.config.get('hud_modifier') == 'alt'
         with open(os.path.join('mods', 'configs', 'otmetki', 'profiles.json')) as handle:
             assert json.load(handle)['profiles'][0]['name'] == 'Streamer'
 

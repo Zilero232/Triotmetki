@@ -32,10 +32,10 @@ describe(applyMessage, () => {
   });
 
   it('writes every value of a set_many message into its field', () => {
-    const next = applyMessage({ state: STATE, message: { type: 'set_many', component: 'damage_log', values: { lines: 9, border: true } } });
+    const next = applyMessage({ state: STATE, message: { type: 'set_many', component: 'damage_log', values: { lines: 9, alpha: 70 } } });
 
     expect(fieldValue({ state: next, component: 'damage_log', key: 'lines' })).toBe(9);
-    expect(fieldValue({ state: next, component: 'damage_log', key: 'border' })).toBe(true);
+    expect(fieldValue({ state: next, component: 'damage_log', key: 'alpha' })).toBe(70);
   });
 
   it('keeps the window where it was left', () => {

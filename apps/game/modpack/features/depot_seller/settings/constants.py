@@ -11,3 +11,5 @@ CATEGORIES = ('sell_shells', 'sell_modules', 'sell_equipment', 'sell_consumables
 WIDENERS = ('include_fitting', 'include_special', 'crew_with_skills')
 
 DEFAULTS = dict((key, False) for key in CATEGORIES + WIDENERS)
+
+ADVANCED = ('include_fitting', 'include_special', 'crew_with_skills')

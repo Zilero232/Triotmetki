@@ -8,6 +8,7 @@ import {
   CircleDashed,
   CloudUpload,
   Coins,
+  Crosshair,
   DatabaseBackup,
   EyeOff,
   Film,
@@ -79,6 +80,7 @@ export const MOD_SHOWCASE = [
       { id: 'auto_reserves', icon: Zap, context: 'hangar', isDefault: false },
       { id: 'crew_xp', icon: GraduationCap, context: 'hangar', isDefault: true },
       { id: 'hangar_space', icon: House, context: 'hangar', isDefault: false },
+      { id: 'hit_viewer', icon: Crosshair, context: 'hangar', isDefault: true },
       { id: 'update_notice', icon: BellRing, context: 'hangar', isDefault: true },
       { id: 'preset_advisor', icon: BadgeCheck, context: 'hangar', isDefault: true },
       { id: 'config_backup', icon: DatabaseBackup, context: 'any', isDefault: true }
@@ -91,7 +93,7 @@ export const MOD_SHOWCASE = [
       { id: 'marks_panel', icon: Mark3Icon, context: 'any', isDefault: true },
       { id: 'battle_progress', icon: Medal, context: 'battle', isDefault: false },
       { id: 'session_stats', icon: ChartColumn, context: 'hangar', isDefault: true },
-      { id: 'battle_results', icon: ScrollText, context: 'hangar', isDefault: true }
+      { id: 'battle_results', icon: ScrollText, context: 'any', isDefault: true }
     ]
   },
   {

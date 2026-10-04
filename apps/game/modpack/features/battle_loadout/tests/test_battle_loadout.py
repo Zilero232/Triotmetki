@@ -159,12 +159,12 @@ class FormatTest(unittest.TestCase):
 
         assert text == u'<img src="img://gui/maps/icons/artefact/turbocharger.png" width="48" height="48"/>'
 
-    def test_an_own_icon_size_replaces_the_stock_one(self):
+    def test_an_old_own_icon_size_gives_way_to_the_stock_one(self):
         settings = Settings({'stock_size': False, 'icon_size': 40}, SCHEMA)
 
         text = format_panel(clean_devices([turbocharger(bonus=False)]), settings)
 
-        assert 'width="40"' in text
+        assert 'width="48"' in text
 
     def test_empty_slots_draw_nothing_in_the_text_row(self):
         items = slot_items([turbocharger(bonus=False), None], [])
@@ -189,10 +189,10 @@ class FormatTest(unittest.TestCase):
         assert u'!' in text
         assert u'Турбонагнетатель' not in text
 
-    def test_the_preview_follows_the_icon_size(self):
-        text = preview_text(Settings({'stock_size': False, 'icon_size': 24}, SCHEMA), translator())
+    def test_the_preview_draws_every_sample_at_the_stock_size(self):
+        text = preview_text(Settings({}, SCHEMA), translator())
 
-        assert text.count('width="24"') == 5
+        assert text.count('width="48"') == 5
 
 
 class SettingsTest(unittest.TestCase):
@@ -214,11 +214,11 @@ class SettingsTest(unittest.TestCase):
     def test_an_older_default_place_is_retired(self):
         assert (-200, -66, 'center', 'bottom') in SCHEMA.retired
 
-    def test_cells_as_large_as_the_stock_slots_by_default(self):
-        assert SCHEMA.defaults['stock_size'] is True
+    def test_cells_are_always_as_large_as_the_stock_slots(self):
+        assert Settings({'stock_size': False}, SCHEMA).get('stock_size') is True
 
-    def test_the_own_icon_size_stays_as_an_option(self):
-        assert SCHEMA.defaults['icon_size'] == 40
+    def test_the_own_icon_size_is_no_option(self):
+        assert 'icon_size' not in SCHEMA.defaults
 
 
 class SummaryTest(unittest.TestCase):

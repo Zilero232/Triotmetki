@@ -10,17 +10,14 @@ TIMESTAMP_FORMATS = ('', '%H:%M', '%H:%M:%S')
 DEFAULTS = {
     'timestamp_format': '%H:%M:%S',
     'filter_duplicates': True,
-    'duplicate_window_s': 30,
     'rate_limit': 4,
-    'rate_window_s': 10,
     'filter_commands': True,
     'block_words': '',
 }
 
 CHOICES = {'timestamp_format': TIMESTAMP_FORMATS}
 
-LIMITS = {
-    'duplicate_window_s': (5, 300),
-    'rate_limit': (0, 20),
-    'rate_window_s': (5, 60),
-}
+LIMITS = {'rate_limit': (0, 20)}
+
+FIXED = {'duplicate_window_s': 30, 'rate_window_s': 10}
+ADVANCED = ('rate_limit', 'filter_commands')

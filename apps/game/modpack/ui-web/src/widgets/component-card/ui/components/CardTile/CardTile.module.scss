@@ -2,24 +2,10 @@
 
 .tile {
   display: flex;
-  width: 44px;
-  height: 44px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  border: 1px solid token(color-border-strong);
-  border-radius: token(radius-lg);
-  margin-right: 16px;
-  background-color: token(color-bg-deep);
-  background-image: token(win-control);
-  box-shadow: token(win-control-shadow);
-
-  @include ease(border-color, box-shadow);
-}
-
-.tileOn {
-  border-color: token(color-accent);
-  background-color: token(color-surface);
-  background-image: token(win-accent-tint);
-  box-shadow: token(win-accent-ring);
+  margin-right: 12px;
 }

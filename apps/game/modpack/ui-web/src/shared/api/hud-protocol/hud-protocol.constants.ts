@@ -1,8 +1,9 @@
 export const HUD_PROTOCOL = {
-  version: 4,
+  version: 5,
   commands: ['ready', 'moved', 'resized', 'pressed', 'mouse'],
   mouseEvents: ['hover', 'down', 'wheel'],
   kinds: ['label', 'button'],
+  covers: ['', 'stats', 'modal'],
   widgetVersion: 1,
   tones: [
     'text',

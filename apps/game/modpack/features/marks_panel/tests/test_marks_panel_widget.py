@@ -49,8 +49,8 @@ class MainRowTest(unittest.TestCase):
         assert data['delta'] == 0.18
         assert data['mark'] == 'img://gui/maps/icons/library/marksOnGun/mark_2.png|otmetki:target'
 
-    def test_a_rise_is_toned_good(self):
-        assert widget_data({})['tone'] == 'good'
+    def test_colour_by_change_keeps_the_percent_white(self):
+        assert widget_data({'color_mode': 'delta'})['tone'] == 'text'
 
     def test_colour_off_keeps_the_text_tone(self):
         assert widget_data({'color_mode': 'off'})['tone'] == 'text'
@@ -166,6 +166,38 @@ class EmptyTest(unittest.TestCase):
 
     def test_without_a_curve_there_is_no_goal(self):
         assert curveless_widget()['goal'] is None
+
+
+class LookTest(unittest.TestCase):
+
+    def test_the_default_plate_is_the_box(self):
+        assert widget_data({})['look'] == 'box'
+
+    def test_the_silhouette_style_draws_the_own_class(self):
+        view = PanelView(Settings({'style': 'silhouette'}, SCHEMA))
+        data = marks_widget(preview_state(view), view, translator(), 'heavyTank')['data']
+
+        assert (data['look'], data['silhouette']) == ('silhouette', 'heavy')
+
+    def test_an_unknown_class_draws_the_medium_silhouette(self):
+        view = PanelView(Settings({'style': 'silhouette'}, SCHEMA))
+
+        assert marks_widget(preview_state(view), view, translator(), None)['data']['silhouette'] == 'medium'
+
+    def test_the_box_sends_no_silhouette(self):
+        assert widget_data({})['silhouette'] is None
+
+    def test_the_index_lights_the_marks_on_the_gun(self):
+        assert widget_data({})['stars'] == 2
+
+    def test_the_next_mark_is_the_scale_cursor_target(self):
+        assert widget_data({})['next']['level'] == 95
+
+    def test_the_damage_row_compares_the_battle_with_the_average(self):
+        assert widget_data({})['damage'] == {'label': u'Сум. урон', 'value': 3100, 'target': 2540}
+
+    def test_no_curve_has_no_damage_row(self):
+        assert curveless_widget()['damage'] is None
 
 
 class FixtureTest(unittest.TestCase):

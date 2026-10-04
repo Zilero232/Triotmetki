@@ -7,21 +7,21 @@ under licences that allow redistribution in a paid product; each licence text sh
 
 | Asset | Author | Licence | Component | In-game path |
 | --- | --- | --- | --- | --- |
-| Crosshair Pack 1.1 (5 of 200) | Kenney (www.kenney.nl) | CC0-1.0 | crosshair | `res/gui/maps/icons/otmetki/crosshair/kenney` |
+| Crosshair Pack 1.1 (3 of 200) | Kenney (www.kenney.nl) | CC0-1.0 | crosshair | `res/gui/maps/icons/otmetki/crosshair/kenney` |
 | Crosshair centre marks | Три отметки | LicenseRef-TriOtmetki-Artwork | crosshair | `res/gui/maps/icons/otmetki/crosshair/otmetki` |
-| Crosshair centre marks in six colours | Три отметки | LicenseRef-TriOtmetki-Artwork | crosshair | `res/gui/maps/icons/otmetki/crosshair/tinted` |
+| Crosshair vector centre marks in eight colours | Три отметки | LicenseRef-TriOtmetki-Artwork | crosshair | `res/gui/maps/icons/otmetki/crosshair/vector` |
 | Sixth-sense icons | Три отметки | LicenseRef-TriOtmetki-Artwork | sixth_sense | `res/gui/maps/icons/otmetki/sixth_sense/icons` |
 | Damage-log kind glyphs | Три отметки | LicenseRef-TriOtmetki-Artwork | damage_log | `res/gui/maps/icons/otmetki/damage_log/icons` |
 
 ## Third-party assets
 
-### Crosshair Pack 1.1 (5 of 200)
+### Crosshair Pack 1.1 (3 of 200)
 
 - Author: Kenney (www.kenney.nl)
 - Copyright: Kenney Vleugels, dedicated to the public domain
 - Licence: CC0-1.0 (`assets/third_party/kenney_crosshair_pack/License.txt`)
 - Source: https://kenney.nl/assets/crosshair-pack
-- Contents: crosshair-016, -021, -061, -113, -196 from PNG/Outline (2x) (148 px, unmodified in src/), resized to 64 and 128 px
+- Contents: crosshair-021, -113, -196 from PNG/Outline (2x) (148 px, unmodified in src/), resized to 64 and 128 px
 - Ships in: `res/gui/maps/icons/otmetki/crosshair/kenney` (component `crosshair`)
 - Fair play: A static image drawn at the client's own reticle centre; computes nothing.
 
@@ -36,18 +36,18 @@ visual reference only (layout, sizes, readability, colour conventions); nothing 
 - Copyright: Copyright (c) 2026 Три отметки
 - Licence: LicenseRef-TriOtmetki-Artwork (`assets/otmetki/LICENSE.md`)
 - Source: https://triotmetki.ru
-- Contents: 10 centre marks (dot, cross, ring, chevron, streamer, colorblind, triad, arcs, aim_box, stack): SVG sources, RGBA PNG 64 and 128 px
+- Contents: 4 full-colour centre marks (colorblind, triad, arcs, stack): SVG sources, RGBA PNG 64 and 128 px
 - Ships in: `res/gui/maps/icons/otmetki/crosshair/otmetki` (component `crosshair`)
 - Fair play: A static image drawn at the client's own reticle centre; computes nothing.
 
-### Crosshair centre marks in six colours
+### Crosshair vector centre marks in eight colours
 
 - Author: Три отметки
 - Copyright: Copyright (c) 2026 Три отметки
 - Licence: LicenseRef-TriOtmetki-Artwork (`assets/otmetki/LICENSE.md`)
 - Source: https://triotmetki.ru
-- Contents: 5 one-colour centre marks (dot, cross, ring, brackets, diamond): SVG sources, RGBA PNG 64 and 128 px in white, green, yellow, cyan, magenta and red
-- Ships in: `res/gui/maps/icons/otmetki/crosshair/tinted` (component `crosshair`)
+- Contents: 19 pixel-snapped vector centre marks (chevrons, crosses, arrow, dots, rings, angles, brackets, corners, X, diamond), plain and with a 1 px dark outline: SVG sources written from the ui-web reticle-mark geometry, RGBA PNG 64 px in white, orange, lime, green, yellow, cyan, magenta and red
+- Ships in: `res/gui/maps/icons/otmetki/crosshair/vector` (component `crosshair`)
 - Fair play: A static image drawn at the client's own reticle centre; computes nothing.
 
 ### Sixth-sense icons

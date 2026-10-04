@@ -14,3 +14,11 @@ DRAW_RANGE = 'minimapDrawRange'
 SIZE = 'minimapSize'
 
 VEHICLE_NAME_MODES = {'never': 0, 'alt': 1, 'always': 2}
+
+# The settings window's editor (docs/specs/2026-09-30-hud-consolidation-and-design.md section 12.3): its field groups
+# around a schematic minimap the window draws from the field values.
+EDITOR_GROUPS = (
+    ('map', ('size', 'transparency', 'vehicle_names')),
+    ('circles', ('view_range', 'max_view_range', 'draw_range')),
+)
+SCHEMATIC = 'minimap'

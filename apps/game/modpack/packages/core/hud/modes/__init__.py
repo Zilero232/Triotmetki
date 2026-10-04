@@ -31,7 +31,6 @@ from .constants import (
     PLACE_ALIGNS,
     PLACE_NUMBERS,
     PLACES_SECTION,
-    SUPPRESSING_MODES,
 )
 
 __all__ = (
@@ -48,11 +47,9 @@ __all__ = (
     'MODE_RANDOM',
     'ModePlaces',
     'PLACES_SECTION',
-    'SUPPRESSING_MODES',
     'allowed_panels',
     'battle_mode',
     'clean_place',
-    'suppresses',
 )
 
 
@@ -79,10 +76,6 @@ def allowed_panels(layout):
     if layout == LAYOUT_OFF:
         return frozenset()
     return None
-
-
-def suppresses(mode):
-    return mode is None or mode in SUPPRESSING_MODES
 
 
 def clean_place(values):

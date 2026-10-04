@@ -30,6 +30,8 @@ ACTION_DELETE = 'delete'
 ACTION_FAVOURITE = 'favourite'
 ACTION_PLAY = 'play'
 ACTION_UPLOAD = 'upload'
+# Opens the hit viewer at the replay's battle (core.events hit_viewer_open).
+ACTION_HITS = 'hits'
 
 PAGE_KIND = 'replays'
 STATUS_READY = 'ready'

@@ -169,6 +169,20 @@ describe(ComponentEditor, () => {
     expect(screen.getByText(RU.preview)).toBeTruthy();
   });
 
+  it('captions every sample after the panel preview', () => {
+    const editor: UiEditor = { ...EDITOR, samples: [{ id: 'card', label: 'Tank card in the hangar', widget: { kind: 'unknown', v: 1, data: {} } }] };
+
+    render(<ComponentEditor component={{ ...COMPONENT, panel: false }} editor={editor} />);
+
+    expect(screen.getByText('Tank card in the hangar')).toBeTruthy();
+  });
+
+  it('draws the schematic of a stock element instead of a preview', () => {
+    render(<ComponentEditor component={{ ...COMPONENT, panel: false }} editor={{ ...EDITOR, schematic: 'minimap' }} />);
+
+    expect(screen.getByText(RU.schematicCaption)).toBeTruthy();
+  });
+
   it('closes on its close button', () => {
     mountEditor();
 

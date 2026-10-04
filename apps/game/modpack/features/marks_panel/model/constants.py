@@ -23,6 +23,12 @@ DETAIL_SWITCHES = ('show_targets', 'show_battle', 'show_step', 'show_battles', '
 MARK_TONES = ('muted', 'text', 'text', 'gold')
 
 KIND = 'marks_panel'
+# The two plates of the battle panel (model/view.py PanelView.look) and the mark levels the plate draws as stars.
+LOOK_BOX = 'box'
+LOOK_SILHOUETTE = 'silhouette'
+MAX_STARS = 3
+# The silhouette of a vehicle whose class is unknown (core.classes keys; ui-web marks-panel draws one per class).
+DEFAULT_SHAPE = 'medium'
 # The detail rows of a plate that shows none (a style at rest, or no thresholds for the tank).
 NO_ROWS = {'thresholds': [], 'step': None, 'average': None, 'battles': None}
 
@@ -31,6 +37,7 @@ PREVIEW_SNAPSHOT = {'moving_avg_damage': 2540, 'damage_rating': 8612, 'marks_on_
 PREVIEW_THRESHOLDS = {'thresholds': {'65': 1900, '85': 2450, '95': 3050, '100': 3900}}
 PREVIEW_COMBINED = 3100
 PREVIEW_PACE = 3400
+PREVIEW_CLASS = 'mediumTank'
 
 # The hangar Tank card (model/card.py): its width in design px, the step its average line reads, its preview.
 CARD_WIDTH = 264
@@ -129,3 +136,10 @@ ENTRY_MOMENT_FORMAT = '%d.%m %H:%M'
 DELTA_COLORS = {1: COLOR_UP, 0: COLOR_NEUTRAL, -1: COLOR_DOWN}
 DELTA_TONES = {1: 'good', 0: 'muted', -1: 'bad'}
 DELTA_GLYPHS = {1: 'trend_up', 0: 'dot', -1: 'trend_down'}
+
+# The settings window's editor: the battle panel, its numbers, then the hangar Tank card.
+EDITOR_GROUPS = (
+    ('battle', ('show_battle_panel', 'style', 'color_mode', 'alt_detail')),
+    ('numbers', ('show_targets', 'show_battles')),
+    ('hangar', ('hangar_card', 'hangar_style', 'show_trend', 'show_tank_ratings')),
+)

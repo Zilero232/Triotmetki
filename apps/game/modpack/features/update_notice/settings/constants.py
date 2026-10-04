@@ -5,8 +5,8 @@ SECTION = 'update_notice'
 GROUP = 'hangar'
 
 DEFAULTS = {
-    'font_size': 14,
     'show_card': True,
     'notify': True,
 }
-LIMITS = {'font_size': (8, 32)}
+# The card's type size follows the design scale (docs/specs/2026-09-30-hud-consolidation-and-design.md section 12).
+FIXED = {'font_size': 14}

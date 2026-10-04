@@ -5,9 +5,9 @@ SECTION = 'comp7_helper'
 GROUP = 'hangar'
 
 DEFAULTS = {
-    'font_size': 14,
     'show_thresholds': True,
     'show_skill': True,
     'show_battles': True,
 }
-LIMITS = {'font_size': (8, 32)}
+# The card's type size follows the design scale (docs/specs/2026-09-30-hud-consolidation-and-design.md section 12).
+FIXED = {'font_size': 14}

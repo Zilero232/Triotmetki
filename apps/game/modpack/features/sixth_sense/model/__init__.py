@@ -2,7 +2,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.format import font
 from .constants import (
-    CUSTOM_SET,
     DIM_SUFFIX,
     ENDED,
     GALLERY_ICON_SIZE,
@@ -111,33 +110,16 @@ def set_icon_path(icon_set, size, dimmed=False):
     return '%s/%s%s_%d.png' % (ICON_ROOT, icon_set, suffix, rendition(size))
 
 
-# The client image path of the icon to show; '' when a custom icon is left empty (the text shows instead).
 def icon_path(settings, dimmed=False):
-    icon_set = settings.get('icon_set')
-    if icon_set == CUSTOM_SET:
-        return settings.get('icon')
-
-    return set_icon_path(icon_set, settings.get('icon_size'), dimmed and settings.get('pulse'))
+    return set_icon_path(settings.get('icon_set'), settings.get('icon_size'), dimmed and settings.get('pulse'))
 
 
 def gallery_picture(icon_set):
-    if icon_set == CUSTOM_SET:
-        return None
     return IMAGE_SCHEME + set_icon_path(icon_set, GALLERY_ICON_SIZE)
 
 
 def icon_gallery(icon_sets):
     return {'icon_set': dict((icon_set, gallery_picture(icon_set)) for icon_set in icon_sets)}
-
-
-def lamp_text(settings, has_icon, translate):
-    own_text = settings.get('text')
-    if own_text:
-        return own_text
-    if has_icon:
-        return ''
-
-    return translate('sixth_sense_default_text')
 
 
 def timer_line(state, settings, translate, now):
@@ -150,13 +132,10 @@ def timer_line(state, settings, translate, now):
 
 
 def format_sixth_sense(state, settings, translate, now):
-    icon = icon_path(settings, state.dimmed(now))
-    text = lamp_text(settings, bool(icon), translate)
+    text = settings.get('text')
     timer = timer_line(state, settings, translate, now)
 
-    parts = []
-    if icon:
-        parts.append(icon_html(icon, settings.get('icon_size')))
+    parts = [icon_html(icon_path(settings, state.dimmed(now)), settings.get('icon_size'))]
     if text:
         parts.append(font(text, settings.get('color'), settings.get('font_size')))
     if timer:

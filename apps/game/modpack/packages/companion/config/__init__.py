@@ -1,13 +1,14 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ...core.compat import is_int, string_types
-from ...core.settings import Schema, Settings
+from ...core.settings import Schema, Settings, fix
 from .constants import (  # noqa: F401
     CHOICES,
     DEFAULT_SERVER_URL,
     DEFAULTS,
     DEFAULTS_REVISION,
     FEATURES,
+    FIXED,
     LIMITS,
     LOCAL_HOSTS,
     ONE_TIME_SWITCHES,
@@ -35,11 +36,14 @@ def normalize_server_url(url):
     return url.rstrip('/') if is_valid_server_url(url) else None
 
 
-SCHEMA = Schema(
-    DEFAULTS,
-    choices=CHOICES,
-    limits=LIMITS,
-    normalizers={'server_url': normalize_server_url, USER_SET_KEY: normalize_user_set},
+SCHEMA = fix(
+    Schema(
+        DEFAULTS,
+        choices=CHOICES,
+        limits=LIMITS,
+        normalizers={'server_url': normalize_server_url, USER_SET_KEY: normalize_user_set},
+    ),
+    FIXED,
 )
 
 

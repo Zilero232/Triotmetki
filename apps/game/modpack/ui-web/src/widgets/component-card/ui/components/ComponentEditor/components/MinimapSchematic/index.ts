@@ -1,0 +1,1 @@
+export { MinimapSchematic } from './MinimapSchematic';

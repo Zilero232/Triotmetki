@@ -7,8 +7,8 @@ $tones: (
   'hud-text': #f4f1ea,
   'hud-muted': #a8a49a,
   'hud-dim': #6f6c64,
-  'hud-ally': #7cd35b,
-  'hud-enemy': #e3564a,
+  'hud-ally': #8fd16a,
+  'hud-enemy': #e5584c,
   'hud-enemy-cb': #9188fe,
   'hud-dealt': #ff9a3c,
   'hud-received': #f1705b,
@@ -19,17 +19,24 @@ $tones: (
   'hud-gold': #e8b84a,
   'hud-good': #4cc36b,
   'hud-bad': #eb7276,
-  'hud-warn': #d9b23c
+  'hud-warn': #d9b23c,
+  // The HUD accent («Планшет наводчика», docs/research/design/2026-10-03-competitor-ui.md B.1): the scale cursor, the own
+  // row, the `///` index. One per block.
+  'hud-index': #ff8a2a
 );
 $surfaces: (
-  'hud-plate-solid': 'linear-gradient(180deg, rgb(16 16 19 / 74%), rgb(16 16 19 / 56%))',
-  'hud-plate-line': 'rgb(255 255 255 / 7%)',
+  'hud-plate-solid': 'linear-gradient(180deg, rgb(14 14 16 / 70%), rgb(14 14 16 / 58%))',
+  'hud-plate-contrast': 'linear-gradient(180deg, rgb(10 10 12 / 84%), rgb(10 10 12 / 76%))',
+  'hud-plate-line': 'rgb(255 255 255 / 10%)',
+  'hud-hairline': 'rgb(255 255 255 / 10%)',
+  'hud-rule': 'rgb(255 255 255 / 22%)',
+  'hud-tick': 'rgb(255 255 255 / 55%)',
   'hud-plate-edge': 'linear-gradient(90deg, rgb(10 10 12 / 62%) 0%, rgb(10 10 12 / 40%) 60%, rgb(10 10 12 / 0%) 100%)',
   'hud-plate-edge-end': 'linear-gradient(270deg, rgb(10 10 12 / 62%) 0%, rgb(10 10 12 / 40%) 60%, rgb(10 10 12 / 0%) 100%)',
   'hud-plate-centre':
     'linear-gradient(90deg, rgb(10 10 12 / 0%) 0%, rgb(10 10 12 / 50%) 18%, rgb(10 10 12 / 62%) 50%, rgb(10 10 12 / 50%) 82%, rgb(10 10 12 / 0%) 100%)',
   'hud-divider': 'rgb(255 255 255 / 8%)',
-  'hud-bar-track': 'rgb(255 255 255 / 10%)',
+  'hud-bar-track': 'rgb(255 255 255 / 14%)',
   'hud-bar-line': 'rgb(0 0 0 / 50%)',
   'hud-ring-track': 'rgb(10 10 12 / 35%)',
   'hud-tip': 'rgb(14 14 16 / 92%)',
@@ -38,7 +45,8 @@ $surfaces: (
   'hud-slot-bonus': 'rgb(232 184 74 / 55%)',
   'hud-slot-active': 'rgb(76 195 107 / 18%)',
   'hud-text-shadow': '0 0 2px rgb(0 0 0 / 90%), 1px 1px 1px rgb(0 0 0 / 90%)',
-  'hud-radius': 2px
+  'hud-radius': 0,
+  'hud-slot-radius': 2px
 );
 
 // Five type steps: (size, line height, weight).
@@ -76,7 +84,16 @@ $type: (
   'hud-key': 20px,
   'hud-hero': 28px
 );
-$root: map.merge(map.merge($tones, $surfaces), $type);
+
+// The crosshair's centre marks and the readouts by the reticle (modpack features/crosshair, ui-web crosshair widget):
+// the 1 px dark outline that keeps a mark visible on the sky, the dark fill of a filled ring and the sky-over-field
+// backdrop the mark gallery is judged on.
+$reticle: (
+  'hud-reticle-outline': 'rgb(11 12 14 / 90%)',
+  'hud-reticle-shade': 'rgb(11 12 14 / 55%)',
+  'hud-reticle-backdrop': 'linear-gradient(180deg, #8fb4d4 0%, #b9cdd9 50%, #5d6b3a 50%, #46512b 100%)'
+);
+$root: map.merge(map.merge(map.merge($tones, $surfaces), $type), $reticle);
 
 @mixin hud-type($step) {
   @if not map.has-key($type-steps, $step) {

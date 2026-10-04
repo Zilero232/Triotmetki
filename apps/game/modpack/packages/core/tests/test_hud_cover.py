@@ -5,7 +5,7 @@ import unittest
 
 import _support  # noqa: F401
 from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer, panel_schema
-from otmetki.core.hud.layer.constants import COVER_FULL_STATS, COVER_GUI, COVER_KILLCAM, COVER_LOADING
+from otmetki.core.hud.layer.constants import COVER_FULL_STATS, COVER_GUI, COVER_KILLCAM, COVER_LOADING, COVER_MENU
 from otmetki.core.hud.panel import fit_place
 from otmetki.core.storage import MemoryFile
 
@@ -61,12 +61,46 @@ class CoverTest(unittest.TestCase):
 
         layer.set_cover(COVER_FULL_STATS, True)
 
-        assert backend.calls == [('update', {'dim': True})]
+        assert backend.calls == [('update', {'cover': 'stats'})]
+
+    def test_a_modal_stock_view_fades_every_panel(self):
+        layer, backend = shown_layer()
+
+        layer.set_cover(COVER_MENU, True)
+
+        assert backend.calls == [('update', {'cover': 'modal'})]
+
+    def test_the_modal_fade_wins_over_the_full_stats_one(self):
+        layer, _ = shown_layer()
+        layer.set_cover(COVER_FULL_STATS, True)
+
+        layer.set_cover(COVER_MENU, True)
+
+        assert layer.cover == 'modal'
+
+    def test_the_full_stats_fade_stays_when_the_modal_view_closes(self):
+        layer, backend = shown_layer()
+        layer.set_cover(COVER_FULL_STATS, True)
+        layer.set_cover(COVER_MENU, True)
+
+        layer.set_cover(COVER_MENU, False)
+
+        assert backend.calls[-1] == ('update', {'cover': 'stats'})
+
+    def test_a_panel_shown_under_a_modal_view_is_created_faded(self):
+        backend = Recorder()
+        layer = HudLayer(backend, ComponentConfig(MemoryFile()))
+        layer.register('panel', panel_schema({}))
+        layer.set_menu(True)
+
+        layer.show('panel', 'text')
+
+        assert backend.calls[0][1]['cover'] == 'modal'
 
     def test_a_covered_panel_is_never_deleted(self):
         layer, backend = shown_layer()
 
-        for reason in (COVER_GUI, COVER_KILLCAM, COVER_LOADING, COVER_FULL_STATS):
+        for reason in (COVER_GUI, COVER_KILLCAM, COVER_LOADING, COVER_FULL_STATS, COVER_MENU):
             layer.set_cover(reason, True)
             layer.set_cover(reason, False)
 
@@ -100,7 +134,7 @@ class CoverTest(unittest.TestCase):
     def test_an_unknown_reason_changes_nothing(self):
         layer, backend = shown_layer()
 
-        assert not layer.set_cover('menu', True)
+        assert not layer.set_cover('chat', True)
         assert backend.calls == []
 
     def test_a_panel_shown_while_covered_is_created_hidden(self):

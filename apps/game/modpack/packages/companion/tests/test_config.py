@@ -48,7 +48,13 @@ class ConfigTest(unittest.TestCase):
 
         changed = config.update(INVALID_UPDATE)
 
-        self.assertEqual(changed, ['flush_interval_seconds', 'send_queue_times', 'session_idle_minutes'])
+        self.assertEqual(changed, ['send_queue_times', 'session_idle_minutes'])
+
+    def test_the_send_interval_is_fixed(self):
+        config = Config({'flush_interval_seconds': 30})
+
+        self.assertNotIn('flush_interval_seconds', config.to_dict())
+        self.assertEqual(config.get('flush_interval_seconds'), 15)
 
     def test_update_validates_types_and_limits(self):
         config = Config()
@@ -56,7 +62,7 @@ class ConfigTest(unittest.TestCase):
         config.update(INVALID_UPDATE)
 
         self.assertTrue(config.get('enabled'))
-        self.assertEqual(config.get('flush_interval_seconds'), 5)
+        self.assertEqual(config.get('flush_interval_seconds'), 15)
         self.assertEqual(config.get('session_idle_minutes'), 30)
         self.assertEqual(config.server_url, DEFAULT_SERVER_URL)
         self.assertFalse(config.is_enabled('send_queue_times'))

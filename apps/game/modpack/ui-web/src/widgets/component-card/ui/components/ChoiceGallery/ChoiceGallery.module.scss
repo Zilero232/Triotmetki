@@ -20,12 +20,10 @@
 
 .tileOn {
   border-color: token(color-accent);
-  background-image: token(win-accent-tint);
-  box-shadow: token(win-accent-ring);
+  box-shadow: none;
 
   &:hover {
     border-color: token(color-accent-hover);
-    background-image: token(win-accent-tint);
   }
 }
 

@@ -1,0 +1,1 @@
+export { HitTable } from './HitTable';

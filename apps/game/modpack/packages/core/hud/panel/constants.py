@@ -10,10 +10,13 @@ PANEL_DEFAULTS = {
     'align_x': 'center',
     'align_y': 'top',
     'alpha': 100,
-    'font_size': 14,
     'drag': True,
-    'border': False,
     'scale': 100,
+}
+# Panel keys the settings window no longer offers: constants `Settings.get` answers (a panel's own default wins).
+PANEL_FIXED = {
+    'font_size': 14,
+    'border': False,
 }
 
 PANEL_CHOICES = {
@@ -25,7 +28,6 @@ PANEL_LIMITS = {
     'x': (-4000, 4000),
     'y': (-4000, 4000),
     'alpha': (0, 100),
-    'font_size': (8, 48),
     'scale': (50, 300),
 }
 
@@ -43,7 +45,7 @@ HEX_COLOR = re.compile(r'^#[0-9A-Fa-f]{6}$')
 MOVED_ALIGNS = (('alignX', 'align_x'), ('alignY', 'align_y'))
 
 # Renderer props only the Gameface HUD page draws; GUIFlash's Flash labels are never sent them.
-GAMEFACE_PROPS = ('scale', 'kind', 'widget', 'dock', 'hint', 'dim')
+GAMEFACE_PROPS = ('scale', 'kind', 'widget', 'dock', 'hint', 'cover')
 
 # A panel's tooltip on the Gameface page is the short description of the component that draws it, its
 # `component_<id>_hint` string: the id follows the alias prefix (`otmetki.hud.<id>`, `otmetki.<id>[.<part>]`) unless the
@@ -79,19 +81,23 @@ DOCK_ANCHORS = {
     'battle_left_bottom': {'x': 232, 'y': -6, 'align_x': 'left', 'align_y': 'bottom', 'reserve': 560},
     # Right of the left team list in its widest mode and under the score strip, above the damage log column.
     'battle_left_top': {'x': 372, 'y': 60, 'align_x': 'left', 'align_y': 'top', 'reserve': 290, 'ceiling': 60},
-    # The mirror of the left column, left of the right team list and above the largest minimap.
-    'battle_right_top': {'x': -372, 'y': 60, 'align_x': 'right', 'align_y': 'top', 'reserve': 420, 'ceiling': 60},
+    # The mirror of the left column, left of the right team list and above the largest minimap (610 px square at the
+    # bottom right, MinimapSizeConst.as, plus its 6 px margin).
+    'battle_right_top': {'x': -372, 'y': 60, 'align_x': 'right', 'align_y': 'top', 'reserve': 620, 'ceiling': 60},
     # Right on top of the stock consumables panel (ConsumablesPanel.as: y = H - 58), centred with it.
     'battle_bottom_center': {'x': 0, 'y': -64, 'align_x': 'center', 'align_y': 'bottom', 'reserve': 560},
-    # Hangar: left column under the crew, right column under the vehicle parameters, both above the tank carousel.
-    'hangar_left': {'x': 16, 'y': 440, 'align_x': 'left', 'align_y': 'top', 'reserve': 190},
+    # Hangar: left column under the crew, right column under the vehicle parameters, both above the tank carousel. The
+    # left one also ends above the clock and server strip (hangar_info: 196 px over the bottom edge, about 30 tall).
+    'hangar_left': {'x': 16, 'y': 440, 'align_x': 'left', 'align_y': 'top', 'reserve': 236},
     'hangar_right': {'x': -16, 'y': 570, 'align_x': 'right', 'align_y': 'top', 'reserve': 190},
 }
 DOCKS = {
     'otmetki.hud.damage_log': ('battle_left_bottom', 0),
     'otmetki.hud.marks_panel': ('battle_left_top', 0),
     'otmetki.hud.platoon_points': ('battle_left_top', 1),
+    'otmetki.hud.last_battle': ('battle_left_top', 2),
     'otmetki.hud.battle_progress': ('battle_right_top', 0),
+    'otmetki.hud.battle_summary': ('battle_right_top', 1),
     'otmetki.hud.battle_loadout': ('battle_bottom_center', 0),
     'otmetki.hud.hangar_marks': ('hangar_left', 0),
     'otmetki.session': ('hangar_right', 0),

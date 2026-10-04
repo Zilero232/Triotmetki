@@ -17,7 +17,7 @@ export const TeamBar = ({ side, segmented, mirrored = false }: TeamBarProps) => 
             item.kind === 'gap' ? (
               <div key={item.key} className={s.gap} style={{ width: `${TEAM_HP.tierGap}rem` }} />
             ) : (
-              <div key={item.key} className={clsx(s.segment, mirrored && s.mirrored)} style={{ width: `${item.width}rem` }}>
+              <div key={item.key} className={clsx(s.segment, mirrored && s.mirrored, !item.alive && s.dead)} style={{ width: `${item.width}rem` }}>
                 <div className={fill} style={{ ...side.paint.fill, width: `${item.fill}rem` }} />
               </div>
             )

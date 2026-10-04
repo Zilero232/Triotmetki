@@ -1,4 +1,5 @@
 export const HEADER = {
-  logoSize: 28,
-  searchMaxLength: 60
+  logoSize: 20,
+  searchMaxLength: 60,
+  chipIconSize: 14
 } as const;

@@ -15,7 +15,8 @@ export const REPLAYS = {
     remove: 'delete',
     favourite: 'favourite',
     play: 'play',
-    upload: 'upload'
+    upload: 'upload',
+    hits: 'hits'
   },
   favouriteOn: '1',
   favouriteOff: '0',

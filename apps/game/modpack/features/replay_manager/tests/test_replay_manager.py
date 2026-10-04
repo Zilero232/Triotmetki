@@ -508,7 +508,11 @@ class PageTest(unittest.TestCase):
                 mtime=now - 90000,
             ),
         ]
-        self.context = page_context(queued={'555'}, describe_vehicle=lambda tank_id, vehicle: vehicles[vehicle])
+        self.context = page_context(
+            queued={'555'},
+            describe_vehicle=lambda tank_id, vehicle: vehicles[vehicle],
+            viewer_battles=['555'],
+        )
 
     def page(self, cache=None):
         status = page_status(ACCOUNT, LibraryStub)
@@ -521,6 +525,9 @@ class PageTest(unittest.TestCase):
         self.assertEqual(page['status'], 'ready')
         self.assertEqual(page['progress'], {'done': 2, 'total': 2})
         self.assertEqual([item['id'] for item in page['items']], names_of(self.replays))
+
+    def test_page_lists_the_battles_the_hit_viewer_can_open(self):
+        self.assertEqual(self.page()['hit_viewer'], ['555'])
 
     def test_page_without_an_account(self):
         self.assertEqual(page_status(None, LibraryStub), 'no_account')

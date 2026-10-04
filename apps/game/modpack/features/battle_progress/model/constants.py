@@ -106,3 +106,8 @@ PREVIEW_ROW = {
     'wn8': {'value': 2104.9, 'tier': 'very_good'},
     'expected': {'damage': 1180.0, 'spot': 1.42, 'frag': 0.98, 'def': 0.75, 'win_rate': 52.3},
 }
+
+# The settings window editor: field groups (spec 2026-09-30 section 12.3).
+EDITOR_GROUPS = (
+    ('rows', ('row_main_gun', 'row_record', 'record_metric', 'row_wn8')),
+)

@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .constants import DETAIL_SWITCHES
+from .constants import DETAIL_SWITCHES, LOOK_BOX, LOOK_SILHOUETTE
 
 
 # The settings one render reads. With `alt_detail` on, holding Alt shows the extended view with every detail row,
@@ -16,3 +16,7 @@ class PanelView(object):
 
     def get(self, key):
         return self.overrides[key] if key in self.overrides else self.settings.get(key)
+
+    # The plate's look follows the player's style, also while Alt shows the extended rows.
+    def look(self):
+        return LOOK_SILHOUETTE if self.settings.get('style') == LOOK_SILHOUETTE else LOOK_BOX

@@ -1,7 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.hud import panel_schema
-from .constants import CHOICES, DEFAULTS, GROUP, PANEL_ID, SWITCH  # noqa: F401
+from ....core.settings import fix
+from .constants import ADVANCED, CHOICES, DEFAULTS, FIXED, GROUP, PANEL_ID, SWITCH  # noqa: F401
 
 SETTINGS = (SWITCH,)
-SCHEMA = panel_schema(DEFAULTS, choices=CHOICES)
+SCHEMA = fix(panel_schema(DEFAULTS, choices=CHOICES), FIXED)

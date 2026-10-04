@@ -4,8 +4,16 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # unknown or not yet validated key.
 INVALID_RES_ID = -1
 
-# The wulf layer of the HUD window, the one GUIFlash 0.6 loads its Flash view into (WindowLayer.WINDOW).
-# UNVERIFIED on Lesta 1.45: its order against the Scaleform battle page and the hangar's own windows.
+# The wulf layer of the HUD window (WindowLayer.WINDOW, 7; the one GUIFlash 0.6 loads its Flash view into). RU 1.45
+# client source, frameworks/wulf/gui_constants.py: VIEW 4 < SUB_VIEW 5 < TOP_SUB_VIEW 6 < WINDOW 7 < FULLSCREEN_WINDOW 8
+# < TOP_WINDOW 10 < OVERLAY 11 < TOOLTIP 14. The Scaleform battle page is one SFWindow on VIEW, and the full stats
+# (Tab), the battle loading screen and the post-battle end warning are components of that page
+# (battle/classic/__init__.py), so no layer is under them yet over the page's own panels: below VIEW the window would
+# sit under the whole page (the battle app has no MARKER container, gui/Scaleform/battle_entry.py) and lose the mouse
+# there. The Esc menu (INGAME_MENU, TOP_WINDOW) and the tooltips are above WINDOW. The page fades the panels under the
+# full stats and under a modal view instead (core.hud.layer COVER_EFFECTS). UNVERIFIED on Lesta 1.45: that the engine
+# interleaves a Gameface window with the Scaleform layers at all (if not, it draws over every Scaleform view and the
+# fade is all there is).
 WINDOW_LAYER = 'WINDOW'
 
 # skeletons.gui.app_loader.GuiGlobalSpaceID names (RU 1.45 client source) the HUD window may live in. A window
