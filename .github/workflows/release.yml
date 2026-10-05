@@ -109,7 +109,53 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: ./.github/actions/modpack-release
+      # node_modules for @resvg/resvg-js (the catalogue previews), ruff, and the Python 2.7 that runs the tooling.
+      - uses: ./.github/actions/setup
+        with:
+          tools: ruff
+          python: 'true'
+
+      # Every modpack suite on the game's own Python 2.7, then the linter, before anything is built.
+      - name: Test the modpack
+        working-directory: apps/game/modpack
+        run: |
+          python tools/run_tests.py
+          ruff check .
+
+      - name: Pin owg_python_compiler
+        shell: bash
+        run: echo "OWG_COMPILER_VERSION=v1.2.1" >> "$GITHUB_ENV"
+
+      - id: owg
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ${{ runner.temp }}/owg/build
+          key: owg-${{ runner.os }}-${{ env.OWG_COMPILER_VERSION }}
+
+      # A C++23 tool without published binaries: build the pinned tag (GCC 14 ships on ubuntu-24.04).
+      - name: Build owg_python_compiler
+        if: steps.owg.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          git clone --depth 1 --branch "$OWG_COMPILER_VERSION" --recurse-submodules --shallow-submodules \
+            https://gitlab.com/openwg/owg-python-compiler.git "$RUNNER_TEMP/owg"
+          cmake -S "$RUNNER_TEMP/owg" -B "$RUNNER_TEMP/owg/build" -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14
+          cmake --build "$RUNNER_TEMP/owg/build" --parallel
+
+      - name: Build the packages
+        shell: bash
+        run: |
+          owg="$RUNNER_TEMP/owg/build/owg_python_compiler"
+          "$owg" version
+          python apps/game/modpack/tools/build/build.py --require-pyc --compiler owg --owg-compiler "$owg" --out dist/modpack
+          python apps/game/modpack/tools/build/build.py --require-pyc --compiler owg --owg-compiler "$owg" --out dist/modpack --single
+
+      # --strict: every package needs its catalog/catalog.json entry for a release.
+      - name: Build the component catalogue
+        shell: bash
+        working-directory: apps/game/modpack
+        run: python tools/build/setupkit --strict --packages ../../../dist/modpack --out ../../../dist/catalog
 
       - name: Check the version against the catalogue
         env:
@@ -150,14 +196,24 @@ jobs:
           persist-credentials: false
 
       - uses: ./.github/actions/setup
-
-      - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
         with:
-          toolchain: stable
+          tools: rust
 
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
         with:
           workspaces: apps/game/manager/tauri -> target
+
+      # The manager's UI and Rust checks, before the installer is built.
+      - name: Test the manager
+        shell: bash
+        env:
+          MANIFEST: apps/game/manager/tauri/Cargo.toml
+        run: |
+          bun --filter @otmetki/manager typecheck
+          bunx vitest run --project manager
+          cargo fmt --manifest-path "$MANIFEST" --check
+          cargo clippy --manifest-path "$MANIFEST" --all-targets --locked -- -D warnings
+          cargo test --manifest-path "$MANIFEST" --locked
 
       - name: Build the installer
         shell: bash

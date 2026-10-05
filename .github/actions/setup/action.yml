@@ -1,14 +1,35 @@
 name: Setup toolchain
-description: Bun and the caches every job in this repo needs.
+description: Bun, the other mise.toml tools a job asks for, and the caches every job in this repo needs.
+
+inputs:
+  tools:
+    description: Extra mise.toml tools to install next to Bun, space-separated (e.g. "rust" or "ruff").
+    required: false
+    default: ''
+  python:
+    description: >-
+      "true" adds the modpack's only Python, 2.7.18 (conda:python, the version the game client embeds), with the
+      packages of apps/game/modpack/tools/requirements.txt.
+    required: false
+    default: 'false'
 
 runs:
   using: composite
 
   steps:
-    # mise.toml pins the Bun version; only Bun is installed here (Python and Rust come from their own setup actions).
+    # Every tool comes from mise.toml, so CI and a local `mise install` run the same versions.
     - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
       with:
-        install_args: bun
+        install_args: bun ${{ inputs.tools }}${{ inputs.python == 'true' && ' conda:python' || '' }}
+
+    # The anaconda build ships no pip, so ensurepip bootstraps the one Python 2.7 bundles.
+    - name: Install the modpack tooling packages
+      if: inputs.python == 'true'
+      shell: bash
+      run: |
+        python -c 'import sys; assert sys.version_info[:2] == (2, 7), sys.version'
+        python -m pip --version || python -m ensurepip
+        python -m pip install --disable-pip-version-check --no-warn-script-location -r apps/game/modpack/tools/requirements.txt
 
     - name: Cache bun packages
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6

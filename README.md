@@ -142,7 +142,7 @@ flowchart LR
 | API      | NestJS 11 on Bun, better-auth (Lesta ID, Telegram, VK Mini App), Zod contracts, OpenAPI                                               |
 | Worker   | BullMQ jobs, a shared Redis rate limiter, cockatiel circuit breaker                                                                   |
 | Data     | PostgreSQL 17 + TimescaleDB, Prisma 7, Redis                                                                                          |
-| Game mod | Python 2.7 `.mtmod` packages (logic tested on Python 3), React Gameface UI                                                            |
+| Game mod | Python 2.7 `.mtmod` packages (tested and built on the client's own 2.7.18), React Gameface UI                                         |
 | Manager  | Tauri 2: Rust core + React UI                                                                                                         |
 | Tooling  | Bun workspaces + catalog, ESLint, Prettier, Stylelint, Vitest, Playwright, knip, jscpd, madge, Husky, commitlint                      |
 
@@ -169,10 +169,11 @@ flowchart LR
 
 ## Getting started
 
-You need [mise](https://mise.jdx.dev) and Docker. [mise.toml](mise.toml) pins the toolchain: Bun, Node, Python 3 and uv for the modpack's tooling, and Rust for the manager. A Python 2.7 (or OpenWG's `owg_python_compiler`) is needed only to compile the modpack's bytecode for release builds; it is a system install, mise does not manage it.
+You need [mise](https://mise.jdx.dev) and Docker. [mise.toml](mise.toml) pins the toolchain: Bun, Node, Python 2.7.18 (the game client's own version, which runs the modpack's code, tests and tooling) and Rust for the manager. The modpack's Python packages come from `apps/game/modpack/tools/requirements.txt`.
 
 ```bash
-mise install             # Bun, Node, Python 3, uv, Rust at the pinned versions
+mise install             # Bun, Node, Python 2.7, Rust at the pinned versions
+python -m ensurepip && python -m pip install -r apps/game/modpack/tools/requirements.txt   # the modpack tooling's packages
 bun install
 cp .env.example .env     # set INTERNAL_API_TOKEN; the secrets are listed below
 bun run dev:infra        # TimescaleDB :5434, Redis :6380, Mailpit :1025 (inbox :8025)
@@ -246,7 +247,7 @@ Use `bun run test`, never `bun test`.
 | ---------------------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [deploy](.github/workflows/deploy.yml)   | manual                                      | verify, tests, modpack suites and the e2e smoke, then client and server images to ghcr and a rollout on the VPS. Code that already passed skips the checks. |
 | [release](.github/workflows/release.yml) | manual                                      | Builds the modpack and the manager for versions not yet on the VPS and publishes them there                                                                 |
-| [modpack](.github/workflows/modpack.yml) | PRs touching `apps/game/modpack`, or manual | pytest, ruff, vermin; a manual release build of the packages and the component catalogue                                                                    |
+| [modpack](.github/workflows/modpack.yml) | PRs touching `apps/game/modpack`, or manual | the Python 2.7 suite and ruff; a manual release build of the packages and the component catalogue                                                           |
 | [manager](.github/workflows/manager.yml) | PRs touching the manager, or manual         | UI checks, `cargo fmt` / `clippy` / `test` on Windows; a manual NSIS installer build                                                                        |
 
 To release, bump `version` in [apps/game/modpack/package.json](apps/game/modpack/package.json) (its `otmetki.games` lists the supported clients) or in [apps/game/manager/package.json](apps/game/manager/package.json), commit, and run **release**: it publishes whichever of the two has a version not yet in the published index. The first production deploy follows [docs/ops/deploy.md](docs/ops/deploy.md).

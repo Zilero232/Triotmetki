@@ -24,10 +24,10 @@ paths:
 - No comments explaining what code does; names do that. A `#` comment only says why a
   name or value is what it is: client provenance (`RU 1.45 client source`, `UNVERIFIED on
   Lesta 1.45`), fair play and what was left out, a Python 2 quirk; plus tool directives
-  (`# noqa`, `# novermin`, `# type:`). Docstrings only on core's public API and the app host
+  (`# noqa`, `# type:`). Docstrings only on core's public API and the app host
   interface (`companion/app/client`, `companion/settings_ui/client`). Tests have none
-  (the test name says it). `tools/` is Python 3 host tooling and keeps
-  its docstrings.
+  (the test name says it). `tools/` is host tooling (on the same Python 2.7) and
+  keeps its docstrings.
 - Errors: never let an exception escape a game hook. Core wraps them: `hooks.subscribe`,
   `Subscriptions`, `BattleHooks` and `timer.Ticker` log a failing handler, `hooks.override`
   logs it and falls back to the original (an exception of the original itself propagates),

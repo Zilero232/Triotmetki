@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "ignoreBinaries": ["uv"],
+  "ignoreBinaries": ["mise"],
   "ignoreDependencies": ["pino-pretty", "@prisma/client-runtime-utils", "stylelint-order"],
   "ignoreUnresolved": ["^.$"],
   "ignoreExportsUsedInFile": {

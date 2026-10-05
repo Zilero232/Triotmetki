@@ -213,6 +213,16 @@ export default eslint(
     }
   },
 
+  // Gameface's setTimeout/setInterval drop the arguments after the delay, so the
+  // `setTimeout(fn, ms, arg)` form this rule autofixes to calls fn with nothing.
+  {
+    name: 'otmetki/modpack-timers',
+    files: ['apps/game/modpack/ui-web/src/**/*.{ts,tsx}'],
+    rules: {
+      'e18e/prefer-timer-args': 'off'
+    }
+  },
+
   // A scrollable region (role='region' with an accessible name) must take focus so
   // keyboard users can scroll it (WCAG 2.1.1, axe `scrollable-region-focusable`).
   // The first entry repeats the rule's default list, which options replace.

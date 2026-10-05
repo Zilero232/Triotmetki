@@ -65,7 +65,7 @@ const findValue = (root: unknown, keys: readonly string[]): string | undefined =
   return undefined;
 };
 
-export const fetchJson = async (request: APIRequestContext, apiPath: string): Promise<unknown> => {
+const fetchJson = async (request: APIRequestContext, apiPath: string): Promise<unknown> => {
   try {
     const response = await request.get(`${SCREENS_ENV.apiUrl}${apiPath}`, { timeout: SCREENS_TIMING.apiTimeoutMs, failOnStatusCode: false });
 

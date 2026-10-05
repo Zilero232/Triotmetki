@@ -22,9 +22,8 @@ What runs where:
 ### CI workflows
 
 - **deploy.yml**: every check runs before any image is built, so an image is never pushed from a tree that would fail. The `gate` job keys a cache marker on the git tree hash: a tree that already passed `checks` or `e2e` skips that job on the next run. Lint, tsc, the Next build and the Playwright browser are cached as well.
-- **modpack.yml**: on pull requests that touch the modpack, on Windows like the players: pytest + the stdlib runner, ruff, vermin (the Python 2.7 syntax guard). Manual runs add a test release build (`.github/actions/modpack-release`: OpenWG `owg_python_compiler` built from source, the packages with compiled `.pyc`, the component catalogue); publishing is `release.yml`, which runs the same action.
-- **manager.yml**: on pull requests that touch the manager or the packages its UI reads, on Windows: the UI typecheck and Vitest, `cargo fmt`, clippy and the Rust tests. The contract test fails when `tauri/contract/*.json` no longer matches the serialised commands; refresh it locally with `OTMETKI_UPDATE_FIXTURES=1` and commit. Manual runs add `tauri build` (NSIS, ru/en, per user, unsigned; the updater archive and its signature only when `TAURI_SIGNING_PRIVATE_KEY` is set), a build to look at.
-- **release.yml**: §4.
+- **release.yml**: §4. Before it builds anything it runs the modpack suite on Python 2.7.18 (the client's version; its compiler is the syntax guard) and ruff, and the manager's UI typecheck and Vitest, `cargo fmt`, clippy and the Rust tests on Windows. The manager's contract test fails when `tauri/contract/*.json` no longer matches the serialised commands; refresh it locally with `OTMETKI_UPDATE_FIXTURES=1` and commit.
+- Every tool comes from the root `mise.toml` through `.github/actions/setup` (`tools: rust` / `ruff`, `python: 'true'` for the modpack's Python 2.7 and its packages).
 
 ## 0. Go-live checklist
 
@@ -52,7 +51,7 @@ This is the status of every area at the last audit. **Ready** means the piece is
 | **SMTP**: `SMTP_*`, `EMAIL_FROM`, SPF/DKIM | Blocked, optional | Email is off while `SMTP_HOST` is empty. Leave it empty rather than copying the Mailpit values from `.env.example` |
 | Web push (`VAPID_*`) | Optional | `bunx web-push generate-vapid-keys` |
 | **Legal pages**: operator name, ИНН, ОГРН/ОГРНИП, address, dates, hosting, payments, retention, cookies | Blocked | 13 `<todo>` per language (§5) |
-| **Release signing**: `TAURI_SIGNING_PRIVATE_KEY`, `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | Blocked | One minisign key signs both the manager's self-update and every modpack release the manager installs. `release.yml` refuses to run without it; `manager.yml` then only skips the updater `.sig`. Its public half must match `plugins.updater.pubkey` in `tauri.conf.json` (§4) |
+| **Release signing**: `TAURI_SIGNING_PRIVATE_KEY`, `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | Blocked | One minisign key signs both the manager's self-update and every modpack release the manager installs. `release.yml` refuses to run without it. Its public half must match `plugins.updater.pubkey` in `tauri.conf.json` (§4) |
 | Windows code signing of the manager installer | Not set up | The NSIS installer ships unsigned, and SmartScreen warns on the first run |
 | Modpack and manager release (`release.yml`) | Ready | Needs the secrets above and the downloads folder; the first release is in §4 |
 
@@ -173,7 +172,7 @@ There is no directory listing.
 | supported clients | `otmetki.games` in the same `package.json` (`["1.45.*"]`; patterns `1.46.*`, `1.46.0.0`) | `modpack-release.ts source` (validated with the release schema) |
 | manager version | `version` in `apps/game/manager/package.json` | `tauri.conf.json` (`"version": "../package.json"`), `tauri/build.rs` (`MANAGER_VERSION`), the workflow |
 
-Jobs: `check` (secrets, reads the published `releases.json` and runs `apps/web/server/scripts/modpack-release.ts source`: both versions, the clients, `modpack_needed` / `manager_needed`), then in parallel `modpack` (`.github/actions/modpack-release`, only when `modpack_needed`) and `manager` (`tauri build`, only when `manager_needed`; the installer carries no modpack files, the manager downloads the catalogue and the packages on the first install), then `publish` (when either is needed: signs the payload with `bunx tauri signer sign`, merges only what was built into `releases.json` with `… index`, uploads to `DEPLOY_PATH/.downloads-staging/` and renames into `downloads/`, `releases.json` last so the index never names a missing file).
+Jobs: `check` (secrets, reads the published `releases.json` and runs `apps/web/server/scripts/modpack-release.ts source`: both versions, the clients, `modpack_needed` / `manager_needed`), then in parallel `modpack` (the modpack suite and ruff, then the `owg_python_compiler` build and the catalogue, only when `modpack_needed`) and `manager` (the UI and Rust checks, then `tauri build`, only when `manager_needed`; the installer carries no modpack files, the manager downloads the catalogue and the packages on the first install), then `publish` (when either is needed: signs the payload with `bunx tauri signer sign`, merges only what was built into `releases.json` with `… index`, uploads to `DEPLOY_PATH/.downloads-staging/` and renames into `downloads/`, `releases.json` last so the index never names a missing file).
 
 Component versions (`VERSION` in `packages/*/version.py` and `features/<id>/__init__.py`) stay separate: the Python 2.7 runtime reads its own and the manager compares them per package. The workflow has no inputs: a published version is never replaced (bump it instead). The run fails before building when a secret is missing, and when the built catalogue's `modpackVersion` differs from that `version`.
 
