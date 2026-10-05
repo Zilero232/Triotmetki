@@ -59,6 +59,14 @@ describe('useStatsTiles', () => {
     expect(tile(list, 'survival').value).toBe(STATS.survivalRate);
   });
 
+  it('shows averages and ratings as whole numbers', () => {
+    const list = tiles({ stats: { ...STATS, avgDamage: 5508.475, wn8: { value: 6528.276, tier: 'super_unicum' } } });
+
+    expect(tile(list, 'avgDamage').format).toEqual({ maximumFractionDigits: 0 });
+    expect(tile(list, 'wn8').format).toEqual({ maximumFractionDigits: 0 });
+    expect(tile(list, 'eff').format).toEqual({ maximumFractionDigits: 0 });
+  });
+
   it('shows no change without a reference period', () => {
     const list = tiles({ stats: STATS });
 

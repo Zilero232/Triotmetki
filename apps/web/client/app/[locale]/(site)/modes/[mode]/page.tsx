@@ -20,7 +20,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/modes/[m
   const t = await getTranslations({ locale, namespace: 'modes' });
 
   if (!parsed.success) {
-    return createPageMetadata({ title: t('meta.title'), description: t('meta.description'), path: ROUTES.modes.list, locale });
+    notFound();
   }
 
   const name = t(`names.${parsed.data}`);

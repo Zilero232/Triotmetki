@@ -21,19 +21,19 @@
   "type": {
     "title": "Typography",
     "display": {
-      "meta": "Tektur · display",
+      "meta": "Fira Sans Condensed · display",
       "sample": "Armour-piercing"
     },
     "heading": {
-      "meta": "Tektur · heading",
+      "meta": "Fira Sans Condensed · heading",
       "sample": "Server-wide vehicle stats"
     },
     "body": {
-      "meta": "Onest · body",
+      "meta": "Fira Sans · body",
       "sample": "Three Marks collects Mir Tankov stats and turns them into clear charts, mark thresholds and hints for every battle."
     },
     "mono": {
-      "meta": "IBM Plex Mono · HUD",
+      "meta": "JetBrains Mono · HUD",
       "sample": "Range 445 m · bearing 042° · target locked"
     },
     "numbers": {

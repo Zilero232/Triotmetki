@@ -26,7 +26,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/t/collec
   const t = await getTranslations({ locale, namespace: 'vehicleCatalog' });
 
   if (!isTankCollection(slug)) {
-    return createPageMetadata({ title: t('meta.title'), description: t('meta.description'), path: ROUTES.tanks.catalog, locale });
+    notFound();
   }
 
   return createPageMetadata({

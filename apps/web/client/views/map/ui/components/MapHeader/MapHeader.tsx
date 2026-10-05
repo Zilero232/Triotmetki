@@ -19,10 +19,8 @@ export const MapHeader = ({ map }: MapHeaderProps) => {
 
   return (
     <PageHeader
-      description={mapModes(map)
-        .map(({ mode }) => labels.mode(mode))
-        .join(' · ')}
       breadcrumbs={[{ label: t('head.title'), href: ROUTES.maps.list }, { label: name }]}
+      description={labels.modes(mapModes(map).map(({ mode }) => mode)).join(' · ')}
       meta={camouflage && <Badge tone={isMapCamouflage(camouflage) ? CAMOUFLAGE_TONE[camouflage] : 'neutral'}>{labels.camouflage(camouflage)}</Badge>}
       title={name}
     >

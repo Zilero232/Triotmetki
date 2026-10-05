@@ -48,7 +48,7 @@ export const useMapsColumns = (): TableColumn<MapSummary>[] => {
       id: 'modes',
       header: t('columns.modes'),
       enableSorting: false,
-      cell: ({ row: { original } }) => original.modes.map((mode) => labels.mode(mode)).join(' · ')
+      cell: ({ row: { original } }) => labels.modes(original.modes).join(' · ')
     })
   ];
 };

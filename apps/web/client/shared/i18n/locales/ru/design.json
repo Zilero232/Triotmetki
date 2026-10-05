@@ -21,19 +21,19 @@
   "type": {
     "title": "Типографика",
     "display": {
-      "meta": "Tektur · дисплей",
+      "meta": "Fira Sans Condensed · дисплей",
       "sample": "Бронебойный"
     },
     "heading": {
-      "meta": "Tektur · заголовок",
+      "meta": "Fira Sans Condensed · заголовок",
       "sample": "Серверная статистика техники"
     },
     "body": {
-      "meta": "Onest · текст",
+      "meta": "Fira Sans · текст",
       "sample": "«Три отметки» собирают статистику «Мира танков» и превращают её в понятные графики, пороги отметок и подсказки для каждого боя."
     },
     "mono": {
-      "meta": "IBM Plex Mono · HUD",
+      "meta": "JetBrains Mono · HUD",
       "sample": "Дальность 445 м · курс 042° · цель захвачена"
     },
     "numbers": {

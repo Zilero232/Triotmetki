@@ -1,9 +1,10 @@
 'use client';
 
-import { useFormatter, useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import { ratingValueTone } from '@/entities/player/stats';
 import { TankIdentity, TankImage, vehicleIdentity } from '@/entities/tank/tank';
+import { statValueText } from '@/shared/lib';
 
 import type { SessionHighlightsProps } from './SessionHighlights.types';
 
@@ -12,7 +13,7 @@ import s from './SessionHighlights.module.scss';
 export const SessionHighlights = ({ best, worst }: SessionHighlightsProps) => {
   const t = useTranslations('profile.sessions');
   const tCommon = useTranslations('common');
-  const format = useFormatter();
+  const locale = useLocale();
 
   const items = [
     { key: 'best', entry: best },
@@ -31,10 +32,10 @@ export const SessionHighlights = ({ best, worst }: SessionHighlightsProps) => {
                 <TankIdentity tank={vehicleIdentity(entry.vehicle)} withNation={false} />
                 <div className={s.stats}>
                   <span className={s.rating} data-tone={ratingValueTone(entry.stats.wn8)}>
-                    {tCommon('ratings.wn8')} {format.number(entry.stats.wn8.value ?? 0)}
+                    {tCommon('ratings.wn8')} {statValueText({ value: entry.stats.wn8.value, locale })}
                   </span>
                   <span className={s.muted}>{t('battlesCount', { count: entry.stats.battles })}</span>
-                  <span className={s.muted}>{t('avgDamageShort', { value: format.number(entry.stats.avgDamage ?? 0) })}</span>
+                  <span className={s.muted}>{t('avgDamageShort', { value: statValueText({ value: entry.stats.avgDamage, locale }) })}</span>
                 </div>
               </div>
             </div>

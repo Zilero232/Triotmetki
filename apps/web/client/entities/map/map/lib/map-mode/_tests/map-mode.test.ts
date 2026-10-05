@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { MAP_CAMOUFLAGES, MAP_MODE_KINDS, MAP_MODE_PREFIXES } from '../../../config';
-import { isMapCamouflage, mapModeKind } from '../map-mode';
+import { isMapCamouflage, mapModeKind, mapModeKinds } from '../map-mode';
 
 describe('mapModeKind', () => {
   it('recognises the game mode behind every known prefix', () => {
@@ -18,6 +18,16 @@ describe('mapModeKind', () => {
 
   it('leaves a mode the client does not know unmapped', () => {
     expect(mapModeKind('frontline_epic')).toBeNull();
+  });
+});
+
+describe('mapModeKinds', () => {
+  it('lists each known mode once, however many revisions the server reports', () => {
+    expect(mapModeKinds(['ctf', 'ctf30x30', 'domination', 'domination3', 'assault2'])).toEqual(['standard', 'encounter', 'assault']);
+  });
+
+  it('drops internal and unknown modes instead of showing their ids', () => {
+    expect(mapModeKinds(['bootcamp', 'maps_training', 'bob', 'epic', 'comp7'])).toEqual(['onslaught']);
   });
 });
 
