@@ -6,7 +6,7 @@ import unittest
 import _support
 from otmetki.core.settings import Settings
 from otmetki.features.streamer_mode.i18n import STRINGS
-from otmetki.features.streamer_mode.model import PanelToggle, blocked_labels, hides_chat
+from otmetki.features.streamer_mode.model import PanelToggle, blocked_labels, hides_chat, is_player_line
 from otmetki.features.streamer_mode.model.constants import HOTKEY_CHOICES, HOTKEYS, PRIVATE_HANGAR_LABELS
 from otmetki.features.streamer_mode.settings import SCHEMA, SETTINGS
 
@@ -57,6 +57,18 @@ class PrivateModeTest(unittest.TestCase):
 
     def test_the_chat_stays_when_its_switch_is_off(self):
         assert not hides_chat(settings({'private': True, 'hide_chat': False}), True)
+
+    def test_a_line_of_another_player_can_be_hidden(self):
+        assert is_player_line(4242, False)
+
+    def test_a_line_without_a_sender_is_a_plain_message(self):
+        assert not is_player_line(None, False)
+
+    def test_a_line_of_sender_zero_is_a_plain_message(self):
+        assert not is_player_line(0, False)
+
+    def test_the_own_line_is_never_hidden(self):
+        assert not is_player_line(4242, True)
 
 
 class PanelToggleTest(unittest.TestCase):

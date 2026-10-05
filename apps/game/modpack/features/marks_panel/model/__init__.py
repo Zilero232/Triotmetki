@@ -88,9 +88,10 @@ def panel_state(snapshot, combined, curve, pace, settings):
 
 # The Tank card's view of the selected tank between battles: nothing projected, the needs are the next battle's.
 def hangar_state(snapshot, curve, pace):
+    is_verified = percent_source(snapshot, curve) == SOURCE_VERIFIED
     return moe_state(
         snapshot['moving_avg_damage'],
-        rating_to_percent(snapshot.get('damage_rating')),
+        rating_to_percent(snapshot.get('damage_rating')) if is_verified else None,
         None,
         curve,
         pace,

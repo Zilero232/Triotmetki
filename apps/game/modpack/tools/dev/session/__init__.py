@@ -30,6 +30,24 @@ DevError = (
 )
 
 
+# What a half-edited source breaks a build with: a syntax error, missing constants (layout's SystemExit), a broken
+# assets.json, a file that vanished mid-build.
+BUILD_ERRORS = (SyntaxError, SystemExit, OSError, ValueError, KeyError)
+
+
+def build_each(package_builder, keys, built):
+    """Build every package of `keys` on its own into `built`, so one that fails leaves the others built; returns the
+    keys that failed."""
+    failed = []
+    for key in keys:
+        try:
+            built.update(package_builder.build([key]))
+        except BUILD_ERRORS as error:
+            print('Build of %s failed: %s (waiting for the next change)' % (key, error))
+            failed.append(key)
+    return failed
+
+
 class Session(object):
 
     def __init__(self, environ, out_dir, cache_dir):
@@ -174,13 +192,13 @@ class Session(object):
             print('Changed: %s' % ', '.join(keys))
             try:
                 self.refuse_next_to_manager()
-                built.update(package_builder.build(keys))
+                build_each(package_builder, keys, built)
                 self.sync(chosen, built, third_party)
             except (deploy.DeployError, ManagerInstallError) as error:
                 print('Not installed yet: %s (retrying)' % error)
                 return False
-            except (SyntaxError, SystemExit, OSError) as error:
-                print('Build failed: %s (waiting for the next change)' % error)
+            except BUILD_ERRORS as error:
+                print('Install failed: %s (waiting for the next change)' % error)
             return True
 
         watch.run(chosen.keys, reinstall)

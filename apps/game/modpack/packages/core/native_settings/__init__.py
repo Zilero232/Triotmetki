@@ -16,7 +16,7 @@ from .constants import (
     TRI_STATE,
 )
 from .initial import NativeState, client_keys, is_recommended, native_choices, offered_action, recommended
-from .mapping import from_table, merge_value, native_values, setting_names, tri_state
+from .mapping import changed_values, from_table, merge_value, native_values, setting_names, tri_state
 from .write import write_settings
 
 __all__ = (
@@ -31,6 +31,7 @@ __all__ = (
     'STEP_NATIVE',
     'TRI_STATE',
     'NativeState',
+    'changed_values',
     'client_keys',
     'from_table',
     'is_recommended',

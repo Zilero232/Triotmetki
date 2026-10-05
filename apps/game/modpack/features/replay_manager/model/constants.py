@@ -55,6 +55,7 @@ ERROR_BATTLE = 'battle'
 ERROR_PLAYING = 'playing'
 ERROR_UNAVAILABLE = 'unavailable'
 ERROR_NO_ARENA = 'no_arena'
+ERROR_PATH = 'path'
 
 # BattleReplay (RU 1.45 client source, :235 and :1030) hands the engine BigWorld.getProductVersion(); a replay whose
 # clientVersionFromExe differs pops the client's own 'version differs' dialog, and its 'no' calls stop() on a replay

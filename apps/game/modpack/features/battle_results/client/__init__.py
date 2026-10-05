@@ -18,6 +18,7 @@ from ..model import (
     page_actions,
     restore_history,
     stock_lines,
+    trimmed,
 )
 from ..model.constants import ACTION_CLEAR, ACTION_HITS, STATE_KEY
 from ..settings import SCHEMA, SECTION, SWITCH
@@ -31,8 +32,8 @@ class BattleResultsSummary(FeatureComponent):
     def __init__(self, app):
         FeatureComponent.__init__(self, app, SECTION, SCHEMA, SWITCH, STRINGS)
         self.pending = []
-        self.history = restore_history(app.state.get(STATE_KEY))
-        app.register_state(STATE_KEY, lambda: self.history)
+        self.history = []
+        app.register_account_state(STATE_KEY, lambda: self.history, self._load_history)
         self.hits = HitRecorder(self)
         self.last_battle = LastBattlePanel(app)
         self.notices = StockNotices()
@@ -44,9 +45,13 @@ class BattleResultsSummary(FeatureComponent):
         app.bus.on('battle_enter', self._on_battle_enter)
         app.bus.on('tick', self._on_tick)
 
+    def _load_history(self, stored):
+        self.history = restore_history(stored)
+
     def settings_changed(self, changed):
-        if 'hits_keep_battles' in changed:
-            self.hits.resize()
+        if 'history_size' in changed:
+            self.history = trimmed(self.history, self.settings.get('history_size'))
+            self.app.save_state()
 
     def _on_battle_event(self, event, now):
         if not self.enabled():
@@ -67,8 +72,7 @@ class BattleResultsSummary(FeatureComponent):
         return build_summary(event, moe_before, map_label(event.get('arena_type_id')))
 
     def _remember(self, summary):
-        self.history.append(compact(summary))
-        del self.history[:-self.settings.get('history_size')]
+        self.history = trimmed(self.history + [compact(summary)], self.settings.get('history_size'))
 
     # After every package took the battle (bus battle_recorded), so the session line counts it too.
     def _on_battle_recorded(self):

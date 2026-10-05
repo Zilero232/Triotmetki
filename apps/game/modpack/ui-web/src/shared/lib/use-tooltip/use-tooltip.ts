@@ -14,7 +14,7 @@ export const useTooltip = (text: string | undefined): TooltipProps => {
     }
   }, []);
 
-  useEffect(() => hide, [hide]);
+  useEffect(() => hide, [hide, text]);
 
   if (!text) {
     return {};

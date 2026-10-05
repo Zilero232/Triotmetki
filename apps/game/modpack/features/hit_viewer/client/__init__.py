@@ -38,6 +38,7 @@ class HitViewer(FeatureComponent):
     def settings_changed(self, changed):
         if 'keep_battles' in changed:
             self.recorder.resize()
+            self.screen.battles_changed()
         self.mods_list.set_available(self._can_open())
 
     def _can_open(self):

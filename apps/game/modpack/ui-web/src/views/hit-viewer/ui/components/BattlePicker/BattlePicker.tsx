@@ -1,7 +1,8 @@
 import clsx from 'clsx';
-import { useState } from 'react';
 
 import type { BattleLineProps, BattlePickerProps } from './BattlePicker.types';
+
+import { useBattlePicker } from '../../../model/hooks/use-battle-picker';
 
 import s from './BattlePicker.module.scss';
 
@@ -13,26 +14,21 @@ const BattleLine = ({ battle }: BattleLineProps) => (
 );
 
 export const BattlePicker = ({ battles, current, label, onPick }: BattlePickerProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const pick = (id: string): void => {
-    setIsOpen(false);
-    onPick(id);
-  };
+  const picker = useBattlePicker(onPick);
 
   return (
     <div className={s.picker}>
-      <button aria-expanded={isOpen} aria-label={label} className={s.battle} type='button' onClick={() => setIsOpen(!isOpen)}>
+      <button aria-expanded={picker.isOpen} aria-label={label} className={s.battle} type='button' onClick={picker.toggle}>
         <BattleLine battle={current} />
       </button>
-      {isOpen && (
-        <div className={s.list}>
+      {picker.isOpen && (
+        <div ref={picker.listRef} className={s.list}>
           {battles.map((battle) => (
             <button
               key={battle.id}
               className={clsx(s.battle, s.entry, battle.id === current.id && s.entryOn)}
               type='button'
-              onClick={() => pick(battle.id)}
+              onClick={() => picker.pick(battle.id)}
             >
               <BattleLine battle={battle} />
             </button>

@@ -382,6 +382,20 @@ class FreeCameraClientTest(unittest.TestCase):
         assert not self.feature.flight.active
         assert VideoCamera.made[0].destroyed
 
+    def test_a_battle_entered_mid_flight_keeps_its_own_camera(self):
+        self.press('KEY_LCONTROL', 'KEY_LSHIFT', 'KEY_F')
+        camera = VideoCamera.made[0]
+        battle_camera = self._camera(Camera('battle'))
+        self.lobby_layers[:] = []
+
+        self.app.bus.emit('battle_enter')
+
+        assert self.cameras[-1] is battle_camera
+        assert camera.enabled
+        assert camera.destroyed
+        assert self.lobby_layers == []
+        assert not self.layer.muted
+
     def test_switched_off_the_key_does_nothing(self):
         self.app.config.enabled = False
         self.feature.settings_changed(['hotkey'])

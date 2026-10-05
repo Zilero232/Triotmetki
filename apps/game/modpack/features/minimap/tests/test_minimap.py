@@ -50,10 +50,26 @@ class MinimapTest(unittest.TestCase):
     def test_values_map_to_the_client_settings(self):
         assert to_native(chosen_values()) == {
             'minimapAlpha': 40,
+            'minimapAlphaEnabled': True,
             'showVehModelsOnMap': 1,
             'minimapViewRange': True,
             'minimapMaxViewRange': False,
         }
+
+    def test_a_chosen_transparency_turns_on_the_games_transparency_switch(self):
+        values = dict(chosen_values(), transparency='20')
+
+        assert to_native(values)['minimapAlphaEnabled'] is True
+
+    def test_no_transparency_turns_the_games_transparency_switch_off(self):
+        values = dict(chosen_values(), transparency='0')
+
+        assert to_native(values)['minimapAlphaEnabled'] is False
+
+    def test_the_games_transparency_is_left_alone_with_its_own_value(self):
+        values = dict(chosen_values(), transparency='native')
+
+        assert 'minimapAlphaEnabled' not in to_native(values)
 
     def test_the_size_maps_to_the_account_setting(self):
         assert to_account(chosen_values()) == {'minimapSize': 3}

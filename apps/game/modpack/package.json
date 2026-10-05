@@ -42,6 +42,7 @@
     "nanostores": "1.5.3",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "react-error-boundary": "^6.1.6",
     "remeda": "catalog:",
     "zod": "catalog:"
   },

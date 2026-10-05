@@ -18,6 +18,7 @@ from otmetki.features.battle_results.model import (
     restore_history,
     session_of,
     signed,
+    trimmed,
 )
 from otmetki.features.battle_results.model.constants import ACTION_HITS
 from otmetki.features.battle_results.settings import SCHEMA
@@ -107,6 +108,15 @@ class BuildSummaryTest(unittest.TestCase):
         summary = build_summary(battle_event())
 
         assert summary['map'] == '02_malinovka'
+        assert summary['moe_delta'] is None
+        assert summary['moving_avg_delta'] is None
+        assert summary['marks_delta'] is None
+
+    def test_a_battle_that_does_not_count_for_marks_gives_no_deltas(self):
+        event = dict(battle_event(), bonus_type=7)
+
+        summary = build_summary(event, MOE_BEFORE, 'Малиновка')
+
         assert summary['moe_delta'] is None
         assert summary['moving_avg_delta'] is None
         assert summary['marks_delta'] is None
@@ -252,6 +262,12 @@ class HistoryTest(unittest.TestCase):
         stored = [{'arena': '1', 'marks_on_gun': 1, 'moe_percent': 66.47, 'moe_delta': 0.42}]
 
         assert restore_history(stored) == stored
+
+    def test_trimmed_keeps_the_newest_entries(self):
+        assert trimmed([1, 2, 3, 4], 2) == [3, 4]
+
+    def test_trimmed_keeps_a_shorter_history(self):
+        assert trimmed([1, 2], 5) == [1, 2]
 
     def test_history_size_is_limited(self):
         assert Settings({'history_size': 1000}, SCHEMA).get('history_size') == 100

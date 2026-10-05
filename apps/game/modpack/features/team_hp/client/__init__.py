@@ -68,5 +68,5 @@ class TeamHpPanel(BattlePanel):
         self.show(text, payload)
 
         if self.settings.get('pinned'):
-            x, y = pinned_place(self.settings)
+            x, y = pinned_place(self.settings, self.hud.renders_widgets())
             self.hud.place(PANEL_ID, x, y)

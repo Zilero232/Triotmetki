@@ -22,6 +22,9 @@ MODS_LIST = 'modslist'
 RENDERER_HOST = 'core'
 HUD_USE = re.compile(r'\bBattlePanel\b|\bHangarLabel\b|\bPolledHangarCard\b|\bhud_layer\(|\.ui\.show\(')
 GAMEFACE_IMPORT = re.compile(r'^\s*(?:from\s+openwg_gameface\s+import|import\s+openwg_gameface)\b', re.MULTILINE)
+# What reaches Gameface through core without a panel: a stock view's injected page (core/client/hud/gameface/inject)
+# and buttons drawn by the renderer itself (only the Gameface page draws them).
+GAMEFACE_USE = re.compile(r'\bcan_inject\(|\bmod_inject\(|\bcreate_backend\(')
 MODS_LIST_IMPORT = re.compile(r'^\s*from\s+gui\.modsListApi\s+import\b', re.MULTILINE)
 SKIPPED_DIRS = ('tests', '__pycache__')
 REVIEWED_PINS = {
@@ -157,7 +160,10 @@ class RequiredByFollowsTheCodeTest(unittest.TestCase):
         self.assertEqual(window, {'ui', 'hit_viewer'})
 
     def test_gameface_window_and_labels_need_gameface(self):
-        users = keys_using(GAMEFACE_IMPORT) | keys_using(HUD_USE)
+        users = keys_using(GAMEFACE_IMPORT) | keys_using(HUD_USE) | keys_using(GAMEFACE_USE)
+
+        self.assertIn('preset_advisor', users)
+        self.assertIn('battle_menu', users)
 
         self.assert_required_by(GAMEFACE, users)
 

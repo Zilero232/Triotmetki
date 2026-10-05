@@ -5,8 +5,8 @@ from ....core.moe import rating_change
 from ....core.format import COLOR_DOWN, COLOR_UP, font, format_number
 from ....core.templates import render
 from .constants import ASSIST_KEYS, COST_KEYS, RANDOM_BONUS_TYPE, RESULT_COLORS, STAT_FIELDS
-from .notice import APPEND, HOLD, PUSH, StockNotices, with_lines  # noqa: F401
-from .page import build_page, compact, page_actions, restore_history, session_of  # noqa: F401
+from .notice import APPEND, HOLD, PUSH, StockNotices, arena_key, with_lines  # noqa: F401
+from .page import build_page, compact, page_actions, restore_history, session_of, trimmed  # noqa: F401
 from .text import percent_text, result_label, signed
 
 
@@ -65,6 +65,8 @@ def build_summary(event, moe_before=None, map_label=None):
     summary.update(_stat_fields(event.get('stats') or {}))
     summary.update(_moe_fields(event.get('moe') or {}))
 
+    if summary['bonus_type'] != RANDOM_BONUS_TYPE:
+        moe_before = None
     summary.update(_moe_deltas(summary, moe_before or {}, event.get('moe') or {}))
 
     return summary

@@ -21,14 +21,19 @@ def take_snapshot(config, component_config=None):
     return {'config': values, 'components': sections}
 
 
+def _part(snapshot, key):
+    part = snapshot.get(key) if isinstance(snapshot, dict) else None
+    return part if isinstance(part, dict) else {}
+
+
 def apply_snapshot(snapshot, config, save_config, component_config=None, layer=None):
     changes = {}
-    changed = config.update(portable_values(snapshot.get('config') or {}))
+    changed = config.update(portable_values(_part(snapshot, 'config')))
     if changed:
         save_config()
         changes['config'] = changed
     if component_config is not None:
-        changes.update(_apply_sections(snapshot.get('components') or {}, component_config, layer))
+        changes.update(_apply_sections(_part(snapshot, 'components'), component_config, layer))
     return changes
 
 

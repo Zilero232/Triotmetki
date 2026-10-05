@@ -23,6 +23,15 @@ Add the new entry on top of the component's previous ones when you bump a `VERSI
 - Убраны лишние резервные копии: компонент «Резервная копия настроек» (копия файлов мода рядом с `preferences.xml` игры) и точка восстановления перед применением настроек с сайта (кнопка «Вернуть мои настройки», файл `settings_backup_<аккаунт>.json`). Применение настроек с сайта работает как раньше, только без копии прежних значений. Чтобы вернуться к своим настройкам мода, сохраните профиль. Привязка, настройки, компоненты, профили и состояние по-прежнему копируются в `%APPDATA%\TriOtmetki` и переживают очистку `mods/configs`. Переключатель удалённого компонента и его секция уходят из настроек сами; оставшиеся папка `otmetki_backup` и файлы `settings_backup_*.json` больше не читаются, их можно удалить.
 - Повторы стандартного интерфейса убраны: «Прицел» больше не показывает ремонт модулей (его показывает стандартная панель повреждений), карточка «Натиска» — рейтинг, дивизион и очки до следующего (их показывает шапка «Натиска»), а «Новая версия мода» вместо карточки в ангаре ставит значок на строку мода в списке модов ModsList и присылает одно уведомление; значок гаснет, когда вы открываете окно мода. Настройки убранных частей удаляются из файлов сами.
 - Перенос настроек больше не оставляет копию `components.json.r2.bak` рядом с файлом настроек.
+- Настройки камеры, мини-карты и ангара, изменённые в окне, открытом из меню боя (Esc), применяются в следующем ангаре (раньше они сохранялись, но в игру не попадали).
+- Изменение одного пункта компонента больше не перезаписывает остальные его настройки игры: число рядов карусели или масштаб, выбранные в настройках игры, не возвращаются к значению мода, когда вы меняете другой пункт или загружаете профиль.
+- Горячие клавиши мода не срабатывают, пока вы печатаете в чате боя.
+- После входа в другой аккаунт отметка «до боя» не берётся из снимка ангара прошлого аккаунта.
+- Профиль и код профиля больше не включают и не выключают мод целиком (главный переключатель карточки «Данные и сайт» меняете только вы).
+- Окно настроек устойчивее: `profiles.json` или сохранённый профиль неверной формы больше не ломают окно, код профиля, который распаковывается в слишком большой объём или вложен слишком глубоко, отклоняется, ошибка одной карточки компонента не оставляет окно пустым, а сбой команды окна показывает ошибку.
+- Числа `Infinity` и `NaN` в `config.json`, `components.json` и кодах профилей игнорируются, `state.json` неверной формы больше не мешает запуску мода.
+- Запрос с сайта на применение настроек, который не удалось показать (настройки игры или диалог недоступны), предлагается снова при следующем опросе; сбой отправки опроса больше не останавливает опросы до перезапуска игры.
+- Отправка, которая повторяется днями без связи, больше не обрывается ошибкой в расчёте задержки.
 
 ### en
 
@@ -41,6 +50,15 @@ Add the new entry on top of the component's previous ones when you bump a `VERSI
 - The extra backups are gone: the «Settings backup» component (a copy of the mod files next to the game's `preferences.xml`) and the restore point before settings are applied from the site (the «Restore my settings» button, the `settings_backup_<account>.json` file). Applying settings from the site works as before, without a copy of the previous values. Save a profile to come back to your mod settings. The binding, settings, components, profiles and state are still mirrored into `%APPDATA%\TriOtmetki` and survive a wiped `mods/configs`. The removed component's switch and section leave the settings by themselves; a leftover `otmetki_backup` folder and `settings_backup_*.json` files are no longer read and can be deleted.
 - Repeats of the stock interface are gone: «Crosshair» no longer shows module repairs (the stock damage panel does), the Onslaught card no longer shows the rating, the division and the points to the next one (the Onslaught header does), and «New mod version» puts a badge on the mod row of the ModsList mods list and sends one notification instead of a hangar card; the badge goes out once you open the mod window. The settings of the removed parts leave the files by themselves.
 - The settings migration no longer leaves a `components.json.r2.bak` copy next to the settings file.
+- Camera, minimap and hangar settings changed in the window opened from the battle menu (Esc) are applied in the next hangar (they used to be saved but never reached the game).
+- Changing one option of a component no longer rewrites its other game settings: the carousel rows or the interface scale picked in the game's own settings no longer go back to the mod's value when you change another option or load a profile.
+- The mod's hotkeys do not fire while you type in the battle chat.
+- After logging into another account the «before the battle» mark no longer comes from the previous account's hangar snapshot.
+- A profile or a profile code no longer turns the whole mod on or off (only you change the main switch on the «Data and site» card).
+- The settings window holds up better: a `profiles.json` or a stored profile of the wrong shape no longer breaks it, a profile code that unpacks too large or nests too deep is refused, one component card failing no longer leaves the window empty, and a window command that fails shows an error.
+- `Infinity` and `NaN` numbers in `config.json`, `components.json` and profile codes are ignored, and a `state.json` of the wrong shape no longer stops the mod from starting.
+- A request from the site to apply settings that could not be shown (the game settings or the dialog unavailable) is offered again at the next poll; a poll that failed to go out no longer stops the polling until the game restarts.
+- A send that keeps retrying for days without a connection no longer breaks on an error in the delay calculation.
 
 ## 0.2.0
 
@@ -262,11 +280,17 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - Новый компонент «Просмотр попаданий» (включён): в бою записываются попадания по вашему танку и ваши попадания по другим машинам — точки, снаряд и калибр, исход, урон; после боя в ангаре они видны на модели танка: точка и направление каждого попадания, список «По мне / По врагам» с углом встречи и приведённой бронёй (их меряет ангар на модели, в бою ничего не анализируется), выбор боя; закрытие возвращает ваш танк и камеру. Хранит последние 20 боёв, открывается кнопкой компонента, из истории «Итогов боёв» и из «Менеджера реплеев».
 - «Просмотр попаданий» открывается своей кнопкой в списке модов (ModsList), как «Боевые раны»: последний бой одним нажатием; в очереди на бой кнопка неактивна.
+- Окно, закрытое самим клиентом (бой без очереди, выход из аккаунта), больше не оставляет в ангаре подменённый танк и работающий таймер меток; ангар отписывается от смены танка при каждом закрытии.
+- Бой, в который вы вернулись после разрыва связи, остаётся одним боем: попадания второй части добавляются к первой, а не к отдельной строке с тем же номером.
+- Переход к другому бою в окне больше не оставляет модель и попадания прошлого боя (в бою с меньшим числом попаданий окно сыпало ошибками); уменьшение «Боёв в истории» при открытом окне переводит его на последний бой. Повторное открытие в первые секунды после закрытия больше не оставляет окно в «загрузке».
 
 ### en
 
 - New component «Hit viewer» (on): in battle it records the hits on your tank and your hits on other vehicles — the points, the shell and calibre, the result, the damage; after the battle the hangar shows them on the tank model: each hit's point and direction, an «On me / On enemies» list with the impact angle and the effective armour (measured on the model in the hangar, nothing is analysed in battle), a battle picker; closing brings back your tank and camera. Keeps the last 20 battles, opens from the component's button, the «Battle results» history and the «Replay manager».
 - The hit viewer opens from its own ModsList entry, as BattleHits does: the last battle in one click; the entry is greyed out in the battle queue.
+- A window the client closes itself (a battle without a queue, a logout) no longer leaves the swapped tank in the hangar and the marker timer running; the hangar's vehicle-change subscription is removed on every close.
+- A battle you rejoin after a disconnect stays one battle: the hits of its second part join the first instead of a separate row with the same id.
+- Switching to another battle in the viewer no longer keeps the previous battle's model and hits (a battle with fewer hits kept raising errors); lowering «Battles in history» while the viewer is open moves it to the latest battle. Reopening it within seconds of closing no longer leaves it stuck loading.
 
 ## battle_progress 0.1.0
 
@@ -292,6 +316,7 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - В штатном окне снаряжения танка подсвечиваются оборудование и инструкции, которые чаще всего ставят лучшие 10 % игроков на этом танке по данным triotmetki.ru; расходники можно включить отдельно.
 - Мод спрашивает у сайта только номер выбранного танка и ничего не ставит и не покупает сам. Работает только в ангаре.
+- Менеджер ставит вместе с компонентом OpenWG Gameface: подсказки встраиваются в окно игры через него.
 
 ### en
 
@@ -299,6 +324,7 @@ A new component: build hints in the loadout setup.
 
 - The game's own loadout window marks the equipment and directives the top 10 % of players fit on this tank, from triotmetki.ru; consumables can be switched on separately.
 - The mod sends the site only the id of the selected tank and never fits or buys anything itself. Hangar only.
+- The manager installs OpenWG Gameface with the component: the hints are injected into the game's window through it.
 
 ## free_camera 0.1.0
 
@@ -309,6 +335,7 @@ A new component: build hints in the loadout setup.
 - Игровая видеокамера по клавише (по умолчанию Ctrl+Shift+F) в реплеях и в ангаре: WASD, Q/E, мышь и колесо; Esc или та же клавиша — выход.
 - В полёте интерфейс игры и панели мода прячутся (отключается в настройках).
 - В живом бою камера не включается никогда.
+- Бой, начавшийся во время полёта над ангаром (из очереди), получает свою камеру: камера ангара ему больше не возвращается.
 
 ### en
 
@@ -317,6 +344,7 @@ A new component: the free camera (off by default).
 - The game's own video camera on a key (Ctrl+Shift+F by default) in replays and in the hangar: WASD, Q/E, the mouse and the wheel; Esc or the same key leaves it.
 - While flying, the game interface and the mod panels hide (can be turned off in the settings).
 - It never works in a live battle.
+- A battle that starts while the camera flies over the hangar (from the queue) keeps its own camera: the hangar camera is no longer given back to it.
 
 ## aim_info 0.1.0
 
@@ -366,11 +394,13 @@ A new component: the free camera (off by default).
 
 - Настройки мода из боя: под меню Esc появляется кнопка «///», она закрывает меню игры и открывает окно настроек мода на странице «Бой». Ctrl+Shift+T делает то же с клавиатуры.
 - Включена по умолчанию: кнопка есть только вместе с меню Esc.
+- Менеджер ставит вместе с компонентом OpenWG Gameface: кнопку рисует только его страница.
 
 ### en
 
 - Mod settings from battle: a «///» button shows up under the Esc menu; it closes the game's menu and opens the mod's settings window at the Battle page. Ctrl+Shift+T does the same from the keyboard.
 - On by default: the button is there only with the Esc menu.
+- The manager installs OpenWG Gameface with the component: only its page draws the button.
 
 ## quick_demount 0.1.0
 
@@ -409,6 +439,7 @@ A new component: Layout per battle type.
 - Продаёт со склада снаряды, модули, оборудование и снаряжение, которые не подходят ни к одной вашей машине, и демобилизует танкистов без навыков из резерва.
 - Все категории выключены; дополнительно можно разрешить то, что подходит к вашим машинам, улучшенное, трофейное, модернизированное и купленное за золото, и танкистов с навыками. Премиум-экипаж не демобилизуется никогда.
 - Страница компонента показывает весь список; «Продать» спрашивает подтверждение со списком и суммой в кредитах и отправляет те же запросы, что кнопки склада игры. Если склад изменился после показа, продажа отменяется.
+- Продажа идёт только по тому списку, который показало подтверждение: если склад или цены изменились, пока оно было открыто, продажа отклоняется, а не продаёт то, чего в списке не было. Ошибка при сборе экипажа больше не оставляет кнопку «Продать» навсегда занятой.
 
 ### en
 
@@ -417,6 +448,7 @@ A new component: Depot seller.
 - Sells the shells, modules, equipment and consumables in the depot that fit none of your vehicles and dismisses reserve crew without skills.
 - Every category is off; you can also allow what fits your vehicles, improved, trophy, modernised and gold-bought items, and crew with skills. Premium crew is never dismissed.
 - The component page lists everything; «Sell» asks for a confirmation with the items and the credits and sends the same requests as the game's depot buttons. When the depot changed after it was shown, the sale is called off.
+- The sale goes only for the list the confirmation showed: when the depot or the prices changed while it was open, the sale is refused instead of selling what the list never named. An error while gathering the crew no longer leaves «Sell» busy for good.
 
 ## auto_reserves 0.1.0
 
@@ -427,6 +459,8 @@ A new component: Depot seller.
 - Включает выбранные личные резервы (кредиты, опыт, опыт экипажа, свободный опыт) в первом ангаре после запуска игры и, если выбрано, каждый раз, когда резерв закончился.
 - Сначала самый сильный резерв, из равных — тот, что раньше сгорает; не больше свободных слотов. Резерв, который игра не включила, до конца сеанса не повторяется.
 - По умолчанию выключен; есть кнопка «Включить выбранные сейчас».
+- После смены аккаунта резервы включаются в его первом ангаре, отказы прошлого аккаунта не переносятся.
+- Включение «в начале сессии» больше не сгорает на экране входа: резервы проверяются только с первого ангара аккаунта, а сессия считается отработанной лишь после того, как клиент отдал список резервов. Если игра отказала в одном резерве, повторно не пробуется только он, а не все выбранные.
 
 ### en
 
@@ -435,6 +469,8 @@ A new component: Auto personal reserves.
 - Turns the chosen personal reserves (credits, XP, crew XP, free XP) on in the first hangar after the game starts and, when chosen, every time one runs out.
 - The strongest reserve first, among equals the one that expires first; never more than the free slots. A reserve the game refused is not tried again in the same session.
 - Off by default; a «Turn the chosen ones on now» button.
+- After an account switch the reserves are turned on in that account's first hangar; the previous account's refusals are not carried over.
+- «At the start of the session» no longer burns its one activation on the login screen: the reserves are checked from the account's first hangar on, and the session counts as done only once the client returned the reserve list. When the game refuses one reserve, only that one is not tried again, not every picked one.
 
 ## crew_xp 0.1.0
 
@@ -465,6 +501,7 @@ A new component: Crew XP.
 - Страница компонента перечисляет ангары, которые уже есть в игре; «Выбрать» ставит выбранный вместо стандартного, «Как в игре» возвращает стандартный.
 - Событийные ангары сервера и ангары других режимов остаются как в игре.
 - По умолчанию выключен.
+- Папка, введённая вручную в «Дополнительно», ставится, только если такой ангар есть в игре: несуществующая больше не ломает загрузку ангара.
 
 ### en
 
@@ -473,6 +510,7 @@ A new component: Hangar switcher.
 - The component page lists the hangars the game already has; «Choose» puts one in place of the standard hangar, «As in the game» brings the standard one back.
 - The server's event hangars and the hangars of other modes stay as in the game.
 - Off by default.
+- A folder typed into «Advanced» is used only when the game has that hangar: a missing one no longer breaks the hangar load.
 
 ## update_notice 0.1.0
 
@@ -484,6 +522,7 @@ A new component: Hangar switcher.
 - «Пропустить эту версию» в окне мода прячет её до следующего релиза, «Скачать на сайте» открывает страницу загрузки, «Проверить сейчас» спрашивает снова.
 - В запросе только версия игры.
 - Вместо карточки в ангаре — значок на строке мода в списке модов ModsList (гаснет, когда вы открываете окно мода или пропускаете версию) и одно уведомление, как у других сборок; настройка «Карточка в ангаре» удалена.
+- Версии разной длины сравниваются как числа: 1.2 и 1.2.0 — одна версия, и уведомление о ложном обновлении не появляется.
 
 ### en
 
@@ -493,6 +532,7 @@ A new component: New mod version.
 - «Skip this version» in the mod window hides it until the next release, «Download on the site» opens the download page, «Check now» asks again.
 - The request carries only the game version.
 - A badge on the mod row of the ModsList mods list (it goes out when you open the mod window or skip the version) and one notification replace the hangar card, as in other packs; the «Hangar card» option is removed.
+- Versions of different lengths compare as numbers: 1.2 and 1.2.0 are the same version, so no false update notice appears.
 
 ## comp7_helper 0.3.0
 
@@ -567,10 +607,12 @@ A new component: Event trackers (off by default).
 ### ru
 
 - Заголовок «Очки взвода» и итог золотом, фраги подписью «фр. N»; полоски прочности — только с Alt.
+- Взводный, чьи данные пришли уже после загрузки боя (поздний вход), теперь попадает во взвод: бой во взводе больше не выглядит одиночным.
 
 ### en
 
 - A «Platoon points» header with the total in gold, frags as «fr. N»; HP bars only while Alt is held.
+- A platoon mate whose data arrives after the battle loaded (a late join) now joins the platoon: a platoon battle no longer looks solo.
 
 ## platoon_points 0.1.2
 
@@ -671,10 +713,12 @@ A new component: Event trackers (off by default).
 ### ru
 
 - Круг 15 м на земле вокруг вашего танка: постоянно или по клавише (Ctrl+Shift+B, Ctrl+Shift+C, F7, F8), четыре цвета; исчезает, когда танк уничтожен.
+- Выключение компонента в бою сразу убирает круг и горячую клавишу. В режимах с возрождением круг возвращается на новом танке.
 
 ### en
 
 - A 15 m circle on the ground around your tank: always on or by a hotkey (Ctrl+Shift+B, Ctrl+Shift+C, F7, F8), four colours; gone when the tank is destroyed.
+- Switching the component off in battle removes the circle and its hotkey at once. In respawn modes the circle comes back on the new tank.
 
 ## hangar_info 0.5.0
 
@@ -720,11 +764,13 @@ A new component: Event trackers (off by default).
 
 - Ячейки как у стандартной панели (44 px, значок 40), разделитель перед директивами, подсказка по Ctrl в общем стиле; размер значков по умолчанию 40.
 - Ряд оборудования — слева от стандартной панели снарядов и расходников на её высоте (12 px от неё, 8 px над краем экрана), как у kurzdor в Lebwa и Jove, а не поверх неё; если рядом тесно с журналом боя — над левой половиной панели.
+- Исправлено: в режиме расстановки панелей в ангаре образец ряда оборудования пропадал после перетаскивания, сброса или любой смены его настроек.
 
 ### en
 
 - Slots like the stock panel (44 px, 40 px icons), a divider before the directives, the Ctrl tooltip in the shared style; default icon size 40.
 - The equipment row sits left of the stock shells and consumables panel at its height (12 px from it, 8 px over the screen edge), as kurzdor's row in Lebwa and Jove, not on top of it; above the panel's left half when the battle log leaves no room.
+- Fixed: in the hangar's HUD edit mode the equipment row's sample vanished after a drag, a reset or any change of its settings.
 
 ## battle_loadout 0.5.1
 
@@ -885,10 +931,12 @@ A new component: Event trackers (off by default).
 ### ru
 
 - Приватный режим прячет карточку «Сессия», ЛБЗ и карточку танка. Выключен по умолчанию.
+- Скрытие чата больше не трогает строки без отправителя (системные сообщения): прячутся только сообщения других игроков.
 
 ### en
 
 - Private mode hides the Session card, the missions and the tank card. Off by default.
+- Hiding the chat no longer touches lines with no sender (system messages): only other players' messages are hidden.
 
 ## streamer_mode 0.1.0
 
@@ -910,6 +958,8 @@ A new component: Event trackers (off by default).
 - По умолчанию центр прицела — стандартный: метки — выбор игрока, ни один модпак не ставит свою вместо центра игры. Оранжевый шеврон остаётся в галерее; у кого он стоял по умолчанию и не выбирался вручную, возвращается стандартный центр.
 - Таймер перезарядки у прицела больше не дублирует стандартный: пока рамка перезарядки на экране, стандартный таймер перезарядки прицела скрыт (и индикатор магазина, пока рамка показывает ячейки магазина); дуги перезарядки и прочности так же скрывают стандартные индикаторы перезарядки и прочности. Выключите показатель — стандартный вернётся сразу, настройки прицела в игре не меняются.
 - Ремонт модулей у прицела убран: его показывает стандартная панель повреждений, как во всех сборках; настройка «Ремонт модулей» удалена.
+- Исправлено: если бой начинался, когда орудие уже перезаряжалось, таймер у прицела показывал больше оставшегося времени — он считал от момента, когда игра в последний раз прислала перезарядку, а не от текущего.
+- Изменение пресета прицела в бою (окно из меню Esc) больше не теряется: оно записывается в настройки игры в следующем ангаре. Изменение одного поля записывает только ту настройку игры, которую оно меняет, и не перетирает остальные, выставленные в окне настроек игры. В описании компонента исправлено число меток: 26 (19 одноцветных своих, 4 цветных своих и 3 Kenney).
 
 ### en
 
@@ -917,6 +967,8 @@ A new component: Event trackers (off by default).
 - The game's own reticle centre stays by default: a centre mark is the player's pick and no modpack replaces the stock centre. The orange chevron stays in the gallery; where it was the untouched default, the stock centre comes back.
 - The reload timer by the reticle no longer doubles the stock one: while the reload frame is on screen the stock reticle's reload timer is hidden (and its magazine indicator while the frame shows the magazine cells); the reload and HP arcs hide the stock reload and HP indicators the same way. Switch a readout off and the stock part is back at once; the game's reticle settings are never changed.
 - The module repairs by the reticle are gone: the stock damage panel shows them, as in every pack; the «Module repairs» option is removed.
+- Fixed: when the battle started with the gun already reloading, the timer by the reticle showed more time than was left: it counted from the client's last reload update instead of from now.
+- A reticle preset changed in battle (the window from the Esc menu) is no longer lost: it is written to the game settings in the next hangar. Changing one field writes only the game setting it moves and no longer overwrites the others set in the game's own settings window. The component description now gives the right mark count: 26 (19 one-colour of ours, 4 full-colour of ours and 3 from Kenney).
 
 ## crosshair 0.3.2
 
@@ -967,6 +1019,7 @@ A new component: Event trackers (off by default).
 - Места по стандартным элементам боя: панель по умолчанию получает `attach` с шириной панели снарядов и расходников (по её слотам) и размером мини-карты из настроек игры, страница HUD ставит её рядом с ними. Событие `battle_progress_state` удалено.
 - Скрытие стандартных частей прицела: компонент может назвать части стандартного прицела, которые он рисует сам (таймер и индикатор перезарядки, индикатор прочности, индикатор магазина), и пока он их рисует, панель прицела получает их с прозрачностью 0. Сохранённые настройки игры не меняются; при выключении компонента, выходе из боя или ошибке прицел сразу возвращается к настройкам игрока.
 - Удалены `core.backup` и сигнал `core.storage.FILE_SAVED`, которыми пользовался только компонент «Резервная копия настроек», и `core.client.game.preferences_path`.
+- Файл настроек, сохранённый в Блокноте (с меткой порядка байтов), читается, а не считается пропавшим: копия из %APPDATA% больше не затирает правку игрока.
 
 ### en
 
@@ -975,6 +1028,7 @@ A new component: Event trackers (off by default).
 - Places from the stock battle elements: a panel at its default place gets `attach` with the shells and consumables panel's width (from its slots) and the game's minimap size, and the HUD page places it beside them. The `battle_progress_state` event is gone.
 - Hiding parts of the stock reticle: a component can name the parts of the stock reticle it draws itself (the reload timer and indicator, the HP indicator, the magazine indicator), and while it draws them the crosshair panel gets them at opacity 0. The game's saved settings are never written; when the component is switched off, the battle ends or anything fails, the reticle is back to the player's own settings at once.
 - `core.backup` and the `core.storage.FILE_SAVED` signal, used only by the «Settings backup» component, are gone, and so is `core.client.game.preferences_path`.
+- A settings file saved in Notepad (with a byte order mark) reads instead of counting as missing: the %APPDATA% copy no longer overwrites the player's edit.
 
 ## core 0.6.8
 
@@ -1192,6 +1246,7 @@ A new component: Event trackers (off by default).
 - События `enqueued` и `dequeued` (очередь на бой). Ревизия настроек 4: часы ангара с места над каруселью и карточка «Опыта экипажа», оставшиеся по умолчанию, получают новые значения.
 - Ревизия настроек 4 также убирает переключатель и секцию карточки «Итоги в бою» и возвращает стандартный центр прицела, если шеврон стоял по умолчанию.
 - Ревизия настроек 4 убирает переключатель и секцию компонента «Резервная копия настроек». Применение настроек с сайта больше не сохраняет прежние значения в `settings_backup_<аккаунт>.json`, действие `settings_action: restore` удалено (сохранённое значение сбрасывается).
+- Итоги боя, из которых не удалось собрать событие, тоже запоминаются: повторная выдача тех же итогов клиентом больше не засчитывает бой дважды.
 
 ### en
 
@@ -1199,6 +1254,7 @@ A new component: Event trackers (off by default).
 - The `enqueued` and `dequeued` events (the battle queue). Settings revision 4: the hangar clock left above the carousel and the crew XP card left at the default take the new values.
 - Settings revision 4 also drops the «Results in battle» switch and section and brings back the stock reticle centre where the chevron was the untouched default.
 - Settings revision 4 drops the «Settings backup» component's switch and section. Applying settings from the site no longer keeps the previous values in `settings_backup_<account>.json`, and the `settings_action: restore` action is gone (a stored one resets).
+- Battle results no event could be built from are remembered too: the client posting the same results again no longer counts the battle twice.
 
 ## companion 0.6.4
 
@@ -1333,6 +1389,12 @@ A new component: Event trackers (off by default).
 - Общая подсказка HUD, рамки режима правки в фирменном оранжевом, текст панелей с тенью HUD.
 - Панели боя сразу встают на свои места при входе в бой: страница HUD перечитывает их размеры в следующих кадрах, когда Gameface их разметил, а не ждёт следующего обновления (раньше панели стояли криво, пока не нажать Ctrl); размер экрана и масштаб интерфейса она берёт, когда движок готов, и по его событиям смены разрешения и масштаба вместо проверки раз в секунду.
 - Кнопка «Вернуть мои настройки» в карточке «Данные» удалена вместе с точкой восстановления; «Отправить настройки игры на сайт» осталась.
+- Панель HUD или образец в окне настроек, упавший при отрисовке, больше не гасит всю страницу: пропадает только он и возвращается со следующими данными; панель или карточка компонента, не прошедшая проверку данных, пропускается, а не отключает весь HUD или всё окно («неверное состояние»).
+- Поворот колёсика вбок в режиме правки HUD больше не уменьшает панель.
+- Esc в числовом или текстовом поле отменяет набранное значение, а не сохраняет его; второй Esc уходит из поля.
+- Подсказка клиента пропадает, когда у кнопки под курсором меняется или исчезает текст, а не висит до закрытия окна.
+- «Просмотр попаданий»: список боёв прокручивается колёсиком в правильную сторону (сценарием, как остальные списки окна, а не встроенной прокруткой Gameface, которая шла наоборот).
+- Советник пресетов снова отмечает карточки: элементы Gameface не знают `hasAttribute`, и скрипт падал на первой карточке.
 
 ### en
 
@@ -1341,6 +1403,12 @@ A new component: Event trackers (off by default).
 - A shared HUD tooltip, edit-mode frames in the brand orange, panel text with the HUD shadow.
 - Battle panels take their places as soon as the battle starts: the HUD page reads their sizes again over the next frames, once Gameface has laid them out, instead of waiting for the next update (they sat in wrong places until Ctrl was pressed); it reads the screen size and interface scale once the engine is ready and on its resolution and scale events instead of a check every second.
 - The «Restore my settings» button on the «Data» card is gone along with the restore point; «Send game settings to the site» stays.
+- A HUD panel or a settings window sample that throws while it renders no longer blanks the whole page: only it goes and comes back with its next data; a panel or a component card that fails the data check is skipped instead of switching the whole HUD or the whole window off («invalid state»).
+- A sideways wheel turn in HUD edit mode no longer shrinks a panel.
+- Esc in a number or text field discards what was typed instead of saving it; a second Esc leaves the field.
+- The client tooltip goes away when the button under the pointer changes or loses its text, instead of staying until the window closes.
+- «Hit viewer»: the battle list scrolls with the wheel the right way (by script, like the window's other lists, not by Gameface's native scrolling, which ran backwards).
+- The preset advisor marks the cards again: Gameface elements have no `hasAttribute`, and the script failed on the first card.
 
 ## ui 0.6.7
 
@@ -1606,6 +1674,9 @@ A new component: Event trackers (off by default).
 - В ангаре — карточка танка: процент, тренд последних боёв, урон за бой до отметок, прогноз боёв и WN8 танка с сайта по Alt. История отметок и расчёт отметок — в окне мода; файлы истории сохранены.
 - Новая настройка «Процент отметки в карусели» (выключена): процент в строке статистики под танками карусели, как в XVM и PMOD; строку статистики включает фильтр карусели.
 - Панель отметки в бою — внизу справа от стандартной панели снарядов и расходников (12 px от неё, 8 px над краем экрана), как у Lebwa и PROTanki, по живой ширине панели; если она дошла бы до мини-карты — над правой половиной панели. Панель, стоявшая слева сверху по умолчанию, переезжает.
+- Карточка танка без процента отметки в досье (0) больше не показывает «0.00%» и уже пройденную отметку 65 % как следующую: следующая отметка считается по кривой сайта, как на панели в бою.
+- Расчёт отметок и строки истории считают изменение за бой от досье на входе в бой, как карточка танка: если игра обновила досье до прихода итогов, изменение больше не показывается как 0.
+- История отметок записывает только случайные бои: бои других режимов отметку не двигают и больше не добавляют в график ложных точек.
 
 ### en
 
@@ -1613,6 +1684,9 @@ A new component: Event trackers (off by default).
 - In the hangar a tank card shows the percent, the trend of the last battles, the damage per battle to each mark, the battles forecast and the tank’s WN8 from the site on Alt. The marks history and the marks report are in the mod window; history files are kept.
 - A new «MoE percent on the carousel» option (off): the percent in the stats row under the carousel tanks, as in XVM and PMOD; the carousel filter turns the stats row on.
 - The battle marks panel sits at the bottom right of the stock shells and consumables panel (12 px from it, 8 px over the screen edge), as in Lebwa and PROTanki, following the panel's live width; above the panel's right half when it would reach the minimap. A panel left at its old top-left default moves.
+- The tank card of a tank whose dossier has no MoE percent (0) no longer shows «0.00%» and the 65% mark already passed as the next one: the next mark follows the site curve, as on the battle panel.
+- The marks report and the history lines count a battle's change from the dossier on the way into it, as the tank card does: when the game refreshed the dossier before the results came, the change no longer shows as 0.
+- The marks history records random battles only: battles of other modes do not move the mark and no longer add false points to the chart.
 
 ## marks_panel 0.5.0
 
@@ -1707,12 +1781,16 @@ A new component: Event trackers (off by default).
 - Карточка «Сессия» объединяет цели с сайта (прогресс, ✓ и звук выполненной цели) и строку аккаунта (WN8, процент побед, средний урон); одна граница сессии для всего.
 - Компоненты «Цели с сайта», «Мои рейтинги в ангаре», «Антитилт» и «Помощник взвода» удалены: полоска последних боёв уже показывает серию поражений, а готовность взвода видна в окне взвода.
 - Карточка «Сессия» перешла в левую колонку ангара под карточку танка: правая колонка закрывала характеристики машины и кнопки событий. Новая настройка «Сессия в сообщении после боя» (выключена) — строка с итогами сессии в стандартном сообщении о бое, как в PMOD.
+- Бой, чьи итоги отброшены сбросом сессии, больше не добавляет изменение отметки в новую сессию. Новое время простоя сессии действует сразу, без перезапуска клиента.
+- Сессия, её отметки, объявленные цели и отправленный отчёт хранятся отдельно для каждого аккаунта: после входа в другой аккаунт он не видит чужую сессию и не получает пачку уведомлений «цель выполнена».
 
 ### en
 
 - The Session card takes in the site goals (progress, ✓ and the goal-done sound) and the account line (WN8, win rate, average damage); one session boundary for everything.
 - The «Goals from the site», «My ratings in the hangar», «Tilt guard» and «Platoon helper» components are removed: the last-results strip already shows a loss streak, and the platoon window shows who is ready.
 - The Session card moved to the hangar's left column under the tank card: the right column covered the vehicle parameters and the event buttons. A new «Session in the post-battle message» option (off) adds the session totals to the stock battle message, as PMOD does.
+- A battle whose results a session reset dropped no longer adds its MoE change to the new session. A new session idle time applies at once, with no client restart.
+- The session, its marks, the announced goals and the sent report are kept per account: after logging into another account it does not see the other one's session and gets no burst of «goal done» notices.
 
 ## session_stats 0.5.0
 
@@ -1816,6 +1894,7 @@ A new component: Event trackers (off by default).
 - Снаряд — плашка ББ/БП/КС/ОФ, премиум золотом. По Alt журнал шире и добавляет исход словами, криты и остаток прочности (Alt включён по умолчанию).
 - Панель «Последнее попадание» удалена: это та же строка, что верхняя в разделе полученного.
 - Новые настройки: разделы, строк нанесённого и полученного, одна строка на цель, прочность цели, выстрелы без урона, заблокированные попадания, строки помощи.
+- Рикошеты союзников и попадания по чужому танку, за которым следит камера после гибели, больше не попадают в журнал полученного урона зависшими строками.
 
 ### en
 
@@ -1823,6 +1902,7 @@ A new component: Event trackers (off by default).
 - The shell is an AP/APCR/HEAT/HE chip, premium in gold. Alt widens the log and adds the outcome in words, crits and the HP left (Alt is on by default).
 - The «Last hit» panel is removed: it was the top row of the received section again.
 - New settings: sections, dealt and received rows, one row per target, target HP, shots without damage, blocked hits, assist rows.
+- Ally ricochets and hits on the tank the camera follows after your death no longer land in the received log as stuck rows.
 
 ## damage_log 0.4.0
 
@@ -1905,10 +1985,12 @@ A new component: Event trackers (off by default).
 ### ru
 
 - Новый вид: полупрозрачная полоса по центру, полосы 170×8 от центра, счёт крупно, разница под счётом; цвета сторон — из палитры HUD, свой цвет в настройках по-прежнему главнее.
+- Закреплённая полоса, которая заменяет стандартную, встаёт на её место только там, где стандартная правда скрыта (страница OpenWG Gameface); без неё — справа от стандартной, а не поверх.
 
 ### en
 
 - New look: a centre-faded strip, 170×8 bars filling from the centre, a large score with the difference under it; side colours come from the HUD palette, a colour you set still wins.
+- A pinned strip that replaces the stock one takes its place only where the stock strip is really hidden (the OpenWG Gameface page); without it the strip sits right of the stock one instead of over it.
 
 ## team_hp 0.5.1
 
@@ -1983,10 +2065,12 @@ A new component: Event trackers (off by default).
 ### ru
 
 - Кольцо 84 px с тёмной подложкой, лампа 56 px, секунды крупнее и в цвете нанесённого урона; размер значка по умолчанию 56.
+- Если танк уже засвечен, когда панель запускается (или когда клиент передал управление танком), лампа загорается сразу, как у стандартного индикатора, а не ждёт следующего засвета.
 
 ### en
 
 - An 84 px ring on a dark track, a 56 px lamp, larger seconds in the dealt-damage colour; default icon size 56.
+- When the tank is already spotted as the panel starts (or as the client hands over the vehicle), the lamp lights at once, as the stock indicator does, instead of waiting for the next spotting.
 
 ## sixth_sense 0.3.0
 
@@ -2041,12 +2125,18 @@ A new component: Event trackers (off by default).
 - «Итоги боёв» забрали «Боевые раны»: у боя в списке — схема и список попаданий по вам (часть, сторона, исход, урон, кто стрелял); отдельная карточка в ангаре удалена, история попаданий сохранена.
 - После боя в ангаре одно сообщение, а не два: строки «Трёх отметок» (урон, помощь, заблокировано, изменение отметки, а со «Сессией» — строка сессии) дописываются в стандартное сообщение о результатах боя, как в PMOD. Своё отдельное уведомление — только если стандартное сообщение пришло раньше итогов или клиент его не показал.
 - В бою больше нет карточки итогов текущего боя (после гибели танка и в конце боя): её показывают сами панель после гибели, лог урона и экран итогов, ни один модпак её не повторяет; переключатель «Итоги в бою» удалён. Итоги прошлого боя, пришедшие уже в новом, сами появляются справа над мини-картой (8 px от края, 12 px над ней, по размеру мини-карты из настроек игры), выезжают справа и через 8 секунд гаснут; несколько — по очереди, без крестика и Ctrl. Карточка, стоявшая слева сверху по умолчанию, переезжает на новое место.
+- Строки «Трёх отметок» теперь действительно дописываются в стандартное сообщение о бое: сообщение и итоги искали друг друга по номеру боя разного типа (число и текст), и вместо этого через 20 секунд приходило отдельное уведомление. Итоги текущего боя, пришедшие в его конце, больше не показываются карточкой прошлого боя над мини-картой.
+- Уменьшение «Размера истории» сразу укорачивает сохранённый список боёв, а не только после следующего боя. Изменение отметки, среднего и отметок на стволе считается только для случайных боёв: другие режимы отметку не двигают и больше не показывают ложных изменений.
+- История итогов боёв хранится отдельно для каждого аккаунта.
 
 ### en
 
 - Battle results take over Battle wounds: a battle in the list shows the schematic and the hits on you (part, side, outcome, damage, who fired); the separate hangar card is gone, the recorded hits are kept.
 - After a battle the hangar shows one message, not two: the Three Marks lines (damage, assist, blocked, the MoE change and, with «Session», the session line) are added to the stock battle results message, as PMOD does. A message of its own comes only when the stock one arrived before the results or the client did not show it.
 - No card in battle repeats the battle being played any more (after your tank is destroyed and at the end): the stock post-mortem panel, damage log and results screen show it, and no modpack repeats it; the «Results in battle» switch is gone. The previous battle's results that arrive in the next one show by themselves on the right above the minimap (8 px from the edge, 12 px above it, following the game's minimap size), slide in from the right and fade after 8 seconds; several take turns, with no cross and no Ctrl. A card left at its old top-left default moves to the new place.
+- The Three Marks lines now really join the stock battle message: the message and the results looked each other up by battle ids of different types (a number and text), so a separate notification came 20 seconds later instead. The results of the battle being played that arrive at its end no longer show as the previous battle's card above the minimap.
+- Lowering «History size» trims the stored battle list right away, not only after the next battle. The MoE, average and marks changes are worked out for random battles only: other modes do not move the mark and no longer show false changes.
+- The battle results history is kept per account.
 
 ## battle_results 0.1.1
 
@@ -2073,20 +2163,28 @@ A new component: Event trackers (off by default).
 ### ru
 
 - В бою: время у сообщений чата и скрытие повторов, флуда, спама быстрыми командами и строк с запрещёнными словами. Собственные сообщения игрока не скрываются никогда.
+- Быстрые команды без строки в чате (ответы, точки на карте) больше не считаются в лимит отправителя и в число скрытых.
+- Включение и выключение фильтра в окне настроек посреди боя действует сразу, а не со следующего боя. Строки без отправителя (системные сообщения) больше никогда не скрываются.
 
 ### en
 
 - In battle: time stamps on chat lines and hiding of repeats, flood, quick-command spam and lines with blocked words. The player's own lines are never hidden.
+- Quick commands without a chat line (replies, map points) no longer count against the sender's limit or as hidden lines.
+- Switching the filter on or off in the settings window mid-battle takes effect at once, not from the next battle. Lines with no sender (system messages) are never hidden any more.
 
 ## replay_manager 0.3.3
 
 ### ru
 
 - Контекст страницы повторов хранится как attrs-класс; поведение не меняется.
+- Переименование, меняющее только регистр букв («бой» → «Бой»), больше не отказывает с «файл уже существует»: в Windows это тот же файл.
+- «Смотреть» запускает реплеи с кириллицей в имени или пути (их даёт и шаблон автопереименования по умолчанию): клиент получает путь в кодировке файловой системы. Путь, который клиент открыть не сможет, отклоняется с понятной причиной, а не перезапуском впустую.
 
 ### en
 
 - The replays page context is an attrs class; the behaviour does not change.
+- A rename that only changes the letter case («fight» → «Fight») no longer fails with «the file exists»: on Windows it is the same file.
+- «Watch» plays replays with Cyrillic in the name or path (the default auto-rename template makes them too): the client gets the path in the file system encoding. A path the client could not open is refused with a clear reason instead of a pointless restart.
 
 ## replay_manager 0.3.2
 
@@ -2157,10 +2255,12 @@ A new component: Event trackers (off by default).
 ### ru
 
 - Точный масштаб интерфейса: любое значение от 50 до 300 % между шагами игры (0 — выключен, по умолчанию). Применяется только в ангаре и не сохраняется в настройки игры; при выключении возвращается масштаб из настроек.
+- Масштаб из настроек возвращается и когда выключен весь компонент, а не только точный масштаб.
 
 ### en
 
 - An exact interface scale: any value from 50 to 300 % between the game's steps (0: off, the default). Applied in the hangar only and never saved into the game settings; switched off, the game's own scale returns.
+- The game's own scale also returns when the whole component is switched off, not only the exact scale.
 
 ## hangar_tweaks 0.2.0
 
@@ -2199,10 +2299,12 @@ A new component: Event trackers (off by default).
 ### ru
 
 - На новой установке один раз включаются круги обзора и 445 м и названия техники по Alt, круг отрисовки выключается; прежние настройки сохраняются, кнопка «Вернуть как было». У остальных ничего не меняется, в карточке есть «Рекомендуемые настройки».
+- Прозрачность миникарты теперь действует: вместе со значением включается переключатель прозрачности игры, без которого она не применялась.
 
 ### en
 
 - A fresh install turns on the view range and 445 m circles and vehicle names on Alt, and the draw distance circle off, once, keeping the previous settings for «Restore my settings»; existing players get a «Recommended settings» button instead.
+- The minimap transparency now takes effect: the game's own transparency switch, without which the value was ignored, is turned on with it.
 
 ## minimap 0.1.1
 
@@ -2229,10 +2331,12 @@ A new component: Event trackers (off by default).
 ### ru
 
 - На новой установке один раз выключается динамическая камера, включается стабилизация и запоминается зум; прежние настройки сохраняются, кнопка «Вернуть как было». У остальных ничего не меняется, в карточке есть «Рекомендуемые настройки».
+- Выбор пресета «Снайпер», «Универсальный» или «Динамичный» теперь его применяет: поля пресета, не изменённые вместе с ним, возвращаются к значению игры, и пресет их заполняет (раньше рекомендуемые значения свежей установки перекрывали пресет).
 
 ### en
 
 - A fresh install turns the dynamic camera off, stabilisation on and the zoom to «remember» once, keeping the previous settings for «Restore my settings»; existing players get a «Recommended settings» button instead.
+- Picking the «Sniper», «Balanced» or «Dynamic» preset now applies it: the preset's fields not changed together with it go back to the game's value and the preset fills them (the fresh install's recommended values used to win over the preset).
 
 ## camera 0.2.0
 

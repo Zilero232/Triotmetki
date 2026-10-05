@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ...companion.settings_ui import record_user_set
 from ...core.compat import is_number, string_types, to_text
 from ...core.hud import EVENT_RESET_LAYOUT
-from ...core.log import log
+from ...core.log import log, log_exception
 from ..components import COMPANION_ACTIONS, COMPANION_ID, SECTIONS, build_catalog, find
 from ..feeds import Feed
 from ..fields import Labels
@@ -95,6 +95,9 @@ class SettingsBridge(object):
             self._notice(NOTICE_ERROR, 'error_protocol', reason=error.reason)
         except ProfileError as error:
             self._notice(NOTICE_ERROR, 'error_profile_%s' % error.reason)
+        except Exception:
+            log_exception('ui message')
+            self._notice(NOTICE_ERROR, 'error_internal')
         if is_quiet:
             return False
         self.revision += 1

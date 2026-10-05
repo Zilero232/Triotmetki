@@ -517,12 +517,12 @@ Each is a feature package with a config.json switch (on by default) and a compon
 
 ### minimap — minimap
 
-- **What:** size (`AccountSettings` `minimapSize` 0..5, what the battle minimap and its +/- keys use; it is not a settings-core option), transparency (`minimapAlpha`), vehicle names on the map (`showVehModelsOnMap`: never / Alt / always) and the player's own range circles (`minimapViewRange`, `minimapMaxViewRange`, `minimapDrawRange`).
+- **What:** size (`AccountSettings` `minimapSize` 0..5, what the battle minimap and its +/- keys use; it is not a settings-core option), transparency (`minimapAlpha`, with its `minimapAlphaEnabled` switch turned on for any transparency above zero: the client counts the alpha only while it is on), vehicle names on the map (`showVehModelsOnMap`: never / Alt / always) and the player's own range circles (`minimapViewRange`, `minimapMaxViewRange`, `minimapDrawRange`).
 - **Switch:** `minimap_tweaks`. **Fair play:** vanilla options only; a test checks that no setting name concerns enemies, directions, tracers, destroyed objects or spotting. **Left out:** zoom beyond the client's own size range (Flash patch); lost-enemy markers, gun directions, arty tracers (forbidden).
 
 ### camera — camera
 
-- **What:** camera presets (`preset`: `sniper` = enter the sight at x8 without the dynamic camera, `balanced` = at x4, `dynamic` = at x2 with the dynamic camera; all with horizontal stabilisation), the zoom on entering sniper mode (`sniperZoom`, the game's own option: remember the last one, x2, x4, x8; the client has no option for the list of zoom steps), the dynamic camera and horizontal stabilisation. A preset only fills the fields left at «Как в игре»; a field set by hand wins.
+- **What:** camera presets (`preset`: `sniper` = enter the sight at x8 without the dynamic camera, `balanced` = at x4, `dynamic` = at x2 with the dynamic camera; all with horizontal stabilisation), the zoom on entering sniper mode (`sniperZoom`, the game's own option: remember the last one, x2, x4, x8; the client has no option for the list of zoom steps), the dynamic camera and horizontal stabilisation. Choosing a preset puts the fields it covers that the same change did not set back to «Как в игре», so the preset fills them; a field set by hand after it wins.
 - **Switch:** `camera_tweaks`. **Left out until Lesta/МОСТ confirms them in writing:** camera distance and zoom beyond the client's own options, free-look / pitch limits, the commander camera and sway removal. All of them override the camera configuration (PMOD-style) rather than a setting the game exposes.
 
 ### crosshair — crosshair presets

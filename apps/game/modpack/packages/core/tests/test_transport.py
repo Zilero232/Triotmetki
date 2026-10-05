@@ -6,6 +6,7 @@ import unittest
 
 import _support  # noqa: F401
 from otmetki.core.codec import parse_retry_after
+from otmetki.core.net.backoff import backoff_delay
 from otmetki.core.net.signing import server_time
 from otmetki.core.net.transport import NETWORK_ERROR, StoppableBody, SyncTransport, ThreadTransport, response_headers
 
@@ -156,6 +157,14 @@ class SyncTransportTest(LocalServerTestCase):
         SyncTransport(timeout=5).request('POST', self.base + '/ok', {}, body, self.record)
 
         self.assertEqual(self.results[0][0], NETWORK_ERROR)
+
+
+class BackoffTest(unittest.TestCase):
+
+    def test_a_retry_after_thousands_of_attempts_waits_the_longest_delay(self):
+        delay = backoff_delay(5000, 5.0, 600.0, 0.0, lambda: 0.5)
+
+        self.assertEqual(delay, 600.0)
 
 
 class ResponseHeadersTest(unittest.TestCase):

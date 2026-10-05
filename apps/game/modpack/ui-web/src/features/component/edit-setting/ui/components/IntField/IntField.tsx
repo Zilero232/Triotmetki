@@ -22,6 +22,7 @@ export const IntField = ({ field, onSet }: IntFieldProps) => {
         value={control.text}
         onBlur={control.commit}
         onChange={(event) => control.edit(event.currentTarget.value)}
+        onEscape={control.onEscape}
         onKeyDown={(event) => control.onKey(event.key)}
       />
       <IconButton disabled={!control.canIncrease} icon='plus' label={t('increase')} size='small' onClick={control.increase} />

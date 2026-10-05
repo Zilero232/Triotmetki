@@ -1,7 +1,16 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.native_settings import NATIVE, from_table, native_values, tri_state
-from .constants import DRAW_RANGE, MAX_VIEW_RANGE, SIZE, TRANSPARENCY, VEHICLE_NAME_MODES, VEHICLE_NAMES, VIEW_RANGE
+from .constants import (
+    DRAW_RANGE,
+    MAX_VIEW_RANGE,
+    SIZE,
+    TRANSPARENCY,
+    TRANSPARENCY_ENABLED,
+    VEHICLE_NAME_MODES,
+    VEHICLE_NAMES,
+    VIEW_RANGE,
+)
 
 # Deliberately absent (Lesta fair play): lost-enemy markers, gun directions, arty tracers, destroyed objects,
 # ally-spot markers, and zoom beyond the client's own size range (that needs patching the Flash minimap).
@@ -28,7 +37,10 @@ ACCOUNT_FIELDS = {
 
 
 def to_native(values):
-    return native_values(values, FIELDS)
+    result = native_values(values, FIELDS)
+    if TRANSPARENCY in result:
+        result[TRANSPARENCY_ENABLED] = result[TRANSPARENCY] > 0
+    return result
 
 
 def to_account(values):

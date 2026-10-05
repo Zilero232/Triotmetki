@@ -7,14 +7,15 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # gameplay/delegator.py, game.py :90-205 (mods load in gui_personality.init, before ServiceLocator.gameplay.start).
 
 import os
+import sys
 import time
 
 from ....core.client.game import client_attr
 from ....core.hooks import override
 from ....core.log import log, log_exception, safe
 from ....core.storage import JsonFile
-from ..model import LAUNCH_FILE, launch_request, pending_launch, stop_on_teardown
-from .constants import BOOT_CONFIG_DIR, RESTART_DELAY_S
+from ..model import LAUNCH_FILE, launch_request, native_path, pending_launch, stop_on_teardown
+from .constants import BOOT_CONFIG_DIR, FALLBACK_ENCODING, RESTART_DELAY_S
 
 
 class _Session(object):
@@ -40,6 +41,10 @@ def replay_busy():
     if controller is None:
         return False
     return bool(getattr(controller, 'isPlaying', False) or getattr(controller, 'isRecording', False))
+
+
+def native_replay_path(path):
+    return native_path(path, sys.getfilesystemencoding() or FALLBACK_ENCODING)
 
 
 def can_play():
@@ -108,7 +113,7 @@ def _override_replay_controller():
 
     @override(controller, 'getAutoStartFileName')
     def auto_start_name(call, self):
-        return _Session.path or call(self)
+        return native_replay_path(_Session.path) if _Session.path else call(self)
 
     @override(controller, 'autoStartBattleReplay')
     def auto_start(call, self):

@@ -1,6 +1,8 @@
 import os
 import sys
+import types
 import unittest
+from unittest import mock
 
 TOOLS_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 if TOOLS_DIR not in sys.path:
@@ -45,6 +47,66 @@ class PackagesForTest(unittest.TestCase):
 
     def test_a_path_outside_the_sources_rebuilds_nothing(self):
         self.assertEqual(watch.packages_for(source('ui-web', 'src', 'main.tsx'), PACKAGES), set())
+
+
+class IsIgnoredTest(unittest.TestCase):
+
+    def test_a_folder_named_like_an_ignored_one_above_the_repo_ignores_nothing(self):
+        root = os.path.join(os.sep, 'tests', 'repo')
+
+        self.assertFalse(watch.is_ignored(os.path.join(root, 'packages', 'core', 'x.py'), root))
+
+    def test_a_tests_folder_inside_the_repo_is_ignored(self):
+        root = os.path.join(os.sep, 'repo')
+
+        self.assertTrue(watch.is_ignored(os.path.join(root, 'packages', 'core', 'tests', 'x.py'), root))
+
+
+class _Observer(object):
+
+    def schedule(self, *args, **kwargs):
+        pass
+
+    def start(self):
+        pass
+
+    def stop(self):
+        pass
+
+    def join(self):
+        pass
+
+
+class RunTest(unittest.TestCase):
+
+    def run_rounds(self, layouts):
+        rounds = [{source('features', FEATURE, 'model', 'x.py')} for _ in layouts]
+        drains = iter(rounds)
+
+        def drain(events, timeout):
+            try:
+                return next(drains)
+            except StopIteration:
+                raise KeyboardInterrupt
+        reinstalled = []
+        observers = types.ModuleType('watchdog.observers')
+        observers.Observer = _Observer
+        stubs = {'watchdog': types.ModuleType('watchdog'), 'watchdog.observers': observers}
+        modules = mock.patch.dict(sys.modules, stubs)
+        readings = mock.patch.object(layout, 'split_packages', side_effect=layouts)
+        with modules, readings, mock.patch.object(watch, '_drain', drain):
+            watch.run([FEATURE], lambda keys: reinstalled.append(keys) or True)
+        return reinstalled
+
+    def test_an_unreadable_package_layout_keeps_watching(self):
+        reinstalled = self.run_rounds([SystemExit('missing VERSION'), PACKAGES])
+
+        self.assertEqual(reinstalled, [[FEATURE]])
+
+    def test_a_half_written_assets_file_keeps_watching(self):
+        reinstalled = self.run_rounds([ValueError('bad json'), PACKAGES])
+
+        self.assertEqual(reinstalled, [[FEATURE]])
 
 
 if __name__ == '__main__':

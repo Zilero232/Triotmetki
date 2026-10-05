@@ -64,20 +64,17 @@ class SessionStats(FeatureComponent):
         self.label = HangarLabel(app, HANGAR_PANEL)
 
         self.session = SessionAggregator(idle_seconds=app.config.get(IDLE_MINUTES) * 60)
-        self.session.load(app.state.get(STATE_KEY))
-        app.register_state(STATE_KEY, self.session.to_dict)
-        self.moe = SessionMoe(app.state.get(MOE_STATE_KEY))
-        app.register_state(MOE_STATE_KEY, self.moe.to_dict)
-
+        self.moe = SessionMoe()
         self.site = SiteData(app.account_id)
-        self.announced = Announced(app.state.get(GOALS_STATE_KEY))
-        app.register_state(GOALS_STATE_KEY, self.announced.to_list)
-
-        self.share_synced = restore_synced(app.state.get(SHARE_STATE_KEY))
+        self.announced = Announced()
+        self.share_synced = None
         self.share_sending = False
         self.share_retry_at = 0.0
         self.share_refused = None
-        app.register_state(SHARE_STATE_KEY, self._stored_share)
+        app.register_account_state(STATE_KEY, lambda: self.session.to_dict(), self._load_session)
+        app.register_account_state(MOE_STATE_KEY, lambda: self.moe.to_dict(), self._load_moe)
+        app.register_account_state(GOALS_STATE_KEY, lambda: self.announced.to_list(), self._load_announced)
+        app.register_account_state(SHARE_STATE_KEY, self._stored_share, self._load_share)
 
         bus = app.bus
         bus.on('account', self._on_account)
@@ -91,6 +88,19 @@ class SessionStats(FeatureComponent):
         bus.on('rebind', self._on_rebind)
         bus.on('tick', self._on_tick)
         bus.on(EVENT_BATTLE_NOTICE_LINES, self._answer_notice_line)
+
+    def _load_session(self, stored):
+        self.session = SessionAggregator(idle_seconds=self.session.idle_seconds)
+        self.session.load(stored)
+
+    def _load_moe(self, stored):
+        self.moe = SessionMoe(stored)
+
+    def _load_announced(self, stored):
+        self.announced = Announced(stored)
+
+    def _load_share(self, stored):
+        self.share_synced = restore_synced(stored)
 
     def _stored_share(self):
         if not self.share_synced:
@@ -123,7 +133,7 @@ class SessionStats(FeatureComponent):
     def _on_battle_event(self, event, now):
         event['session_id'] = self.session.add(event, now)
         self.site.after_battle(now)
-        if self.session.counts(event):
+        if event['session_id'] is not None and self.session.counts(event):
             self._record_moe(event)
 
     def _record_moe(self, event):
@@ -158,6 +168,8 @@ class SessionStats(FeatureComponent):
             self.sync_share(now)
 
     def settings_changed(self, changed):
+        if IDLE_MINUTES in changed:
+            self.session.idle_seconds = self.app.config.get(IDLE_MINUTES) * 60
         if SHARE in changed or SHARE_CHANNEL in changed:
             self.share_retry_at = 0.0
             self.sync_share(time.time())

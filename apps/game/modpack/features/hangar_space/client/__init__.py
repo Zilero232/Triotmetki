@@ -13,6 +13,7 @@ from ..model import (
     PLAN_LATER,
     PLAN_RELOAD,
     PLAN_WAIT,
+    available_space,
     build_page,
     override_changes,
     reload_plan,
@@ -51,7 +52,9 @@ class HangarSpace(FeatureComponent):
         self.apply(force=True)
 
     def wanted_path(self):
-        return space_path(self.settings.get('space')) if self.enabled() else None
+        if not self.enabled():
+            return None
+        return space_path(available_space(self.settings.get('space'), space_names(available_paths())))
 
     def apply(self, force=False):
         switcher = controller()

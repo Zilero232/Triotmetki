@@ -20,11 +20,17 @@ from .constants import (  # noqa: F401
 # release index the site and the manager read.
 
 
+# Trailing zeros are dropped so versions of different lengths compare as the numbers they are: 1.2 == 1.2.0.
 def version_key(text):
     if not isinstance(text, string_types):
         return None
     found = VERSION_NUMBERS.match(to_text(text))
-    return tuple(int(part) for part in found.group(0).split('.')) if found else None
+    if not found:
+        return None
+    parts = [int(part) for part in found.group(0).split('.')]
+    while parts and parts[-1] == 0:
+        parts.pop()
+    return tuple(parts)
 
 
 def package_of(file_name):

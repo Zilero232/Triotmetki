@@ -116,5 +116,26 @@ class StockNoticesTest(unittest.TestCase):
         self.assertEqual(unclaimed, [])
 
 
+class ArenaKeyTest(unittest.TestCase):
+
+    def test_the_stock_message_arena_meets_the_results_text_id(self):
+        notices = StockNotices()
+        delivered = []
+        notices.stock_arrived(ARENA, delivered.extend, 0.0)
+
+        action, deliver = notices.results_arrived(str(ARENA), summary())
+        deliver([u'line'])
+
+        self.assertEqual(action, APPEND)
+        self.assertEqual(delivered, [u'line'])
+
+    def test_results_held_by_their_text_id_go_to_the_stock_message(self):
+        notices = StockNotices()
+        held = summary()
+        notices.results_arrived(str(ARENA), held)
+
+        self.assertIs(notices.stock_arrived(ARENA, None, 0.0), held)
+
+
 if __name__ == '__main__':
     unittest.main()

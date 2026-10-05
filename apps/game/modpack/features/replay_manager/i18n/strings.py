@@ -34,6 +34,7 @@ STRINGS = {
         'replay_manager_error_playing': u'Клиент сейчас записывает или показывает реплей',
         'replay_manager_error_unavailable': u'Этот клиент не умеет запускать реплеи из ангара',
         'replay_manager_error_no_arena': u'В реплее нет данных боя: загрузить его нельзя',
+        'replay_manager_error_path': u'Клиент не откроет файл с таким путём: переименуйте реплей или папку латиницей',
         'replay_manager_error_io': u'Не удалось изменить файл: он занят или нет доступа',
     },
     'en': {
@@ -68,6 +69,7 @@ STRINGS = {
         'replay_manager_error_playing': u'The client is recording or showing a replay right now',
         'replay_manager_error_unavailable': u'This client cannot start replays from the hangar',
         'replay_manager_error_no_arena': u'The replay has no battle data: it cannot be uploaded',
+        'replay_manager_error_path': u'The client cannot open a file at this path: rename the replay or its folder in Latin letters',
         'replay_manager_error_io': u'Could not change the file: it is in use or access is denied',
     },
 }

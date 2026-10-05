@@ -11,6 +11,11 @@ export const stickySize = ({ previous, next }: StickyInput): Measured =>
 
 export const wheelScale = ({ current, deltaY }: WheelScaleInput): number => {
   const { min, max, step } = HUD_PROTOCOL.scale;
+
+  if (deltaY === 0) {
+    return current;
+  }
+
   const next = current + (deltaY < 0 ? step : -step);
 
   return Math.round(clamp(next, { min, max }) * 100) / 100;

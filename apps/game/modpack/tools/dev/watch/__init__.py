@@ -34,8 +34,13 @@ def source_roots(package):
     return in_packages if os.path.isdir(in_packages) else os.path.join(layout.FEATURES_DIR, package.key)
 
 
-def is_ignored(path):
-    parts = os.path.normpath(path).split(os.sep)
+def is_ignored(path, root=None):
+    """Whether a change of `path` is a test, a cache or an editor temporary; only the folders below `root` (the
+    modpack) count, so a parent folder of the checkout named `tests` ignores nothing."""
+    root = layout.MODPACK_DIR if root is None else root
+    inside = _key(path).startswith(_key(root) + os.sep)
+    relative = os.path.relpath(path, root) if inside else path
+    parts = os.path.normpath(relative).split(os.sep)
     return any(part in IGNORED_DIRS for part in parts) or path.endswith(IGNORED_SUFFIXES)
 
 
@@ -97,6 +102,16 @@ def _drain(events, timeout):
         paths.add(path)
 
 
+def _read_packages():
+    """The split layout, or None while a half-written source (a feature without its constants, a broken assets.json)
+    leaves it unreadable: the watch waits for the next change instead of stopping."""
+    try:
+        return layout.split_packages('root_init.py')
+    except (SystemExit, ValueError, KeyError, OSError) as error:
+        print('Package layout unreadable: %s (waiting for the next change)' % error)
+        return None
+
+
 def run(installed_keys, reinstall):
     """Blocks until Ctrl+C. `reinstall(keys)` rebuilds and syncs those packages and returns False to be retried."""
     from watchdog.observers import Observer
@@ -108,12 +123,16 @@ def run(installed_keys, reinstall):
     observer.start()
     print('Watching %s (Ctrl+C stops)' % ', '.join(watched_dirs()))
     pending = set()
+    unmapped = set()
     try:
         while True:
-            paths = _drain(events, RETRY_S if pending else IDLE_S)
-            packages = layout.split_packages('root_init.py')
-            for path in paths:
+            unmapped |= _drain(events, RETRY_S if pending else IDLE_S)
+            packages = _read_packages()
+            if packages is None:
+                continue
+            for path in unmapped:
                 pending |= packages_for(path, packages) & set(installed_keys)
+            unmapped = set()
             if pending and reinstall(sorted(pending)):
                 pending = set()
     except KeyboardInterrupt:

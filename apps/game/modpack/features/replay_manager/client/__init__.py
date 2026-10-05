@@ -34,6 +34,7 @@ from ..model import (
     ERROR_EXISTS,
     ERROR_MISSING,
     ERROR_NO_ARENA,
+    ERROR_PATH,
     INDEX_FILE,
     LIBRARY_FILE,
     AnalysisWatch,
@@ -46,6 +47,7 @@ from ..model import (
     analysis_notice,
     build_page,
     find_own,
+    is_taken,
     name_values,
     page_status,
     parse_statuses,
@@ -66,7 +68,7 @@ from ..model.constants import (
 )
 from ..settings import SCHEMA, SWITCH
 from .constants import FAVOURITE_ON
-from .playback import can_play, product_version, replay_busy, request_play
+from .playback import can_play, native_replay_path, product_version, replay_busy, request_play
 from .vehicles import VehicleNames
 
 
@@ -282,7 +284,7 @@ class ReplayManager(FeatureComponent):
         target = os.path.join(os.path.dirname(replay['path']), name)
         if name == replay['name']:
             return None
-        if os.path.exists(target):
+        if is_taken(replay['path'], target):
             raise ReplayActionError(ERROR_EXISTS)
 
         os.rename(replay['path'], target)
@@ -306,6 +308,8 @@ class ReplayManager(FeatureComponent):
         refusal = play_refusal(replay, product_version(), self.app.in_battle, replay_busy(), can_play())
         if refusal is not None:
             raise ReplayActionError(refusal)
+        if native_replay_path(replay['path']) is None:
+            raise ReplayActionError(ERROR_PATH)
         request_play(replay['path'])
         return self.notice_info('replay_manager_play_restarting', name=replay['name'])
 

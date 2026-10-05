@@ -101,4 +101,21 @@ describe(useIntField, () => {
 
     expect(onCommit).not.toHaveBeenCalled();
   });
+
+  it('lets Esc leave the field when nothing is typed', () => {
+    const { hook } = mount(30);
+
+    expect(hook.result.current.onEscape).toBeUndefined();
+  });
+
+  it('discards the draft on Esc, so the blur that follows commits nothing', () => {
+    const { hook, onCommit } = mount(30);
+
+    act(() => hook.result.current.edit('45'));
+    act(() => hook.result.current.onEscape?.());
+    act(() => hook.result.current.commit());
+
+    expect(hook.result.current.text).toBe('30');
+    expect(onCommit).not.toHaveBeenCalled();
+  });
 });

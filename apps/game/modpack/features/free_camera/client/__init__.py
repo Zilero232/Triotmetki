@@ -59,7 +59,8 @@ class FreeCamera(FeatureComponent):
 
     def _on_battle_enter(self):
         if self.flight.place == PLACE_HANGAR:
-            self.stop()
+            self.flights[PLACE_HANGAR].drop()
+            self._finish(show_gui=False)
         self._install_hotkey()
 
     def _on_battle_leave(self):

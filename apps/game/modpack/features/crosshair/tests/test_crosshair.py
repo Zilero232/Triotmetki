@@ -34,6 +34,7 @@ from otmetki.core.hud.stock import RETICLE_CASSETTE, RETICLE_CONDITION, RETICLE_
 from otmetki.features.crosshair.model.readouts import (
     Readouts,
     readouts_data,
+    reload_left,
     replaced_reticle_parts,
     wants_readouts,
 )
@@ -342,6 +343,18 @@ class ReadoutsTest(unittest.TestCase):
         readouts.tick(1.5)
 
         assert readouts.reload_state() is None
+
+    def test_a_reload_read_later_counts_from_now_not_from_its_update(self):
+        assert reload_left(6.0, 1.5) == 1.5
+
+    def test_no_shells_stays_no_shells_whatever_the_time_left(self):
+        assert reload_left(-1, 0.0) == -1
+
+    def test_a_finished_reload_stays_finished(self):
+        assert reload_left(0.0, 0.0) == 0.0
+
+    def test_a_snapshot_without_a_time_left_keeps_its_value(self):
+        assert reload_left(6.0, None) == 6.0
 
     def test_no_shells_is_empty(self):
         readouts = Readouts()

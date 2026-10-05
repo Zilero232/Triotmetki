@@ -4,6 +4,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # unknown name is never written. Every one of them is a vanilla option of the game's own settings window
 # (Battle / Minimap), so nothing here shows what the client does not.
 TRANSPARENCY = 'minimapAlpha'
+# RU 1.45 gui/Scaleform/daapi/view/battle/classic/minimap.py __updateAlpha: minimapAlpha counts only while this switch
+# (off by default) is on, as the settings window's transparency checkbox writes it.
+TRANSPARENCY_ENABLED = 'minimapAlphaEnabled'
 VEHICLE_NAMES = 'showVehModelsOnMap'
 VIEW_RANGE = 'minimapViewRange'
 MAX_VIEW_RANGE = 'minimapMaxViewRange'

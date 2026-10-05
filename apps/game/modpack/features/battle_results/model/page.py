@@ -46,6 +46,10 @@ def restore_history(stored):
     return [_repaired(entry) for entry in stored if isinstance(entry, dict)]
 
 
+def trimmed(history, size):
+    return history[-size:]
+
+
 def _idle_gap_between(later, earlier, idle_s):
     later_time = later.get('time')
     earlier_time = earlier.get('time')

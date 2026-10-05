@@ -21,8 +21,10 @@ def replaces_stock(settings):
     return bool(settings.get('replace_stock')) and settings.get('style') not in OVERLAY_STYLES
 
 
-def pinned_place(settings):
-    if replaces_stock(settings):
+# The strip keeps its own place only where the stock one is really hidden: the renderer draws widgets and the strip
+# replaces it (core.client.hud.panel hides the stock aliases only then).
+def pinned_place(settings, renders_widgets):
+    if renders_widgets and replaces_stock(settings):
         return settings.get('x'), settings.get('y')
 
     return BESIDE_STOCK_PLACE

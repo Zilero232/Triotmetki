@@ -1,8 +1,10 @@
-import type { MarkCardInput, MarkCardsInput } from './card-marks.types';
+import type { HasMarkInput, MarkCardInput, MarkCardsInput } from './card-marks.types';
 
 import { PRESET_ADVISOR } from '../../config';
 
 const { markAttribute, positionedAttribute, badgeClass, cardPattern, maxCardDepth, staticPosition, imageExtension } = PRESET_ADVISOR.dom;
+
+const hasMark = ({ element, name }: HasMarkInput): boolean => element.getAttribute(name) !== null;
 
 const imageOf = (element: Element): string => {
   if (element.tagName === 'IMG') {
@@ -36,11 +38,11 @@ const badgeOf = (card: Element): Element | null => Array.from(card.children).fin
 const isStatic = (card: HTMLElement): boolean => card.ownerDocument.defaultView?.getComputedStyle(card).position === staticPosition;
 
 const markCard = ({ card, label }: MarkCardInput): void => {
-  if (!card.hasAttribute(markAttribute)) {
+  if (!hasMark({ element: card, name: markAttribute })) {
     card.setAttribute(markAttribute, '');
   }
 
-  if (card instanceof HTMLElement && !card.hasAttribute(positionedAttribute) && isStatic(card)) {
+  if (card instanceof HTMLElement && !hasMark({ element: card, name: positionedAttribute }) && isStatic(card)) {
     card.setAttribute(positionedAttribute, '');
     card.style.position = 'relative';
   }
@@ -66,7 +68,7 @@ const unmarkCard = (card: Element): void => {
   card.removeAttribute(markAttribute);
   badgeOf(card)?.remove();
 
-  if (card instanceof HTMLElement && card.hasAttribute(positionedAttribute)) {
+  if (card instanceof HTMLElement && hasMark({ element: card, name: positionedAttribute })) {
     card.removeAttribute(positionedAttribute);
     card.style.position = '';
   }
@@ -74,18 +76,19 @@ const unmarkCard = (card: Element): void => {
 
 export const markCards = ({ root, images, label }: MarkCardsInput): number => {
   const cards = new Set<Element>();
+  const elements = Array.from(root.getElementsByTagName('*'));
 
   if (images.length > 0) {
-    for (const element of Array.from(root.getElementsByTagName('*'))) {
+    for (const element of elements) {
       if (showsImage(imageOf(element), images)) {
         cards.add(cardOf(element));
       }
     }
   }
 
-  for (const marked of Array.from(root.querySelectorAll(`[${markAttribute}]`))) {
-    if (!cards.has(marked)) {
-      unmarkCard(marked);
+  for (const element of elements) {
+    if (!cards.has(element) && hasMark({ element, name: markAttribute })) {
+      unmarkCard(element);
     }
   }
 

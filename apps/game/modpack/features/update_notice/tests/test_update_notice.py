@@ -82,6 +82,19 @@ class UpdateTest(unittest.TestCase):
 
         assert update['outdated'] == 1
 
+    def test_a_version_with_a_trailing_zero_is_no_update(self):
+        release = clean_release(answer(files=['net.triotmetki.hangar_tweaks_0.2.0.mtmod']))
+
+        assert find_update(release, installed_packages(['net.triotmetki.hangar_tweaks_0.2.mtmod'])) is None
+
+    def test_a_single_package_with_a_trailing_zero_is_no_update(self):
+        release = clean_release(answer(version='0.1.8.0'))
+
+        assert find_update(release, installed_packages(['otmetki.0.1.8.mtmod'])) is None
+
+    def test_versions_of_different_lengths_compare_equal(self):
+        assert version_key('1.2') == version_key('1.2.0')
+
     def test_a_release_for_another_client_is_ignored(self):
         assert clean_release(answer(status='waiting')) is None
         assert clean_release({'status': 'compatible', 'release': None}) is None

@@ -91,4 +91,25 @@ describe(useTooltip, () => {
 
     expect(props).toEqual({});
   });
+
+  it('hides the client tooltip when the text goes away under the pointer', () => {
+    const events = installClient();
+    const initialProps: { text: string | undefined } = { text: 'Zoom in' };
+    const hook = renderHook(({ text }) => useTooltip(text), { initialProps });
+
+    hook.result.current.onMouseEnter?.();
+    hook.rerender({ text: undefined });
+
+    expect(events.at(-1)).toMatchObject({ on: false });
+  });
+
+  it('hides the client tooltip when the text changes under the pointer', () => {
+    const events = installClient();
+    const hook = renderHook(({ text }: { text: string }) => useTooltip(text), { initialProps: { text: 'Zoom in' } });
+
+    hook.result.current.onMouseEnter?.();
+    hook.rerender({ text: 'Zoom out' });
+
+    expect(events.at(-1)).toMatchObject({ on: false });
+  });
 });

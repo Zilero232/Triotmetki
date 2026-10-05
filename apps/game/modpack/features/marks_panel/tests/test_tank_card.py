@@ -263,5 +263,20 @@ class PreviewTest(unittest.TestCase):
         assert card['rows'][-1]['text'] == u'Т-54'
 
 
+class UnratedTest(unittest.TestCase):
+
+    def unrated(self):
+        snapshot = dict(SNAPSHOT, damage_rating=0)
+        return hangar_state(snapshot, ThresholdCurve.from_api(CURVE), 3000)
+
+    def test_a_tank_without_a_dossier_rating_shows_no_zero_percent(self):
+        card = widget(TankCard(self.unrated(), u'T-34'))
+
+        assert card['value'] is None
+
+    def test_its_next_mark_follows_the_curve(self):
+        assert self.unrated()['next_level'] == 85
+
+
 if __name__ == '__main__':
     unittest.main()

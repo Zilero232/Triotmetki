@@ -12,7 +12,7 @@ from .constants import (
     SOURCE_BATTLE,
     STAR,
 )
-from .history import percent, rating_delta
+from .history import percent, rating_delta, start_of
 from .report import marks_report
 
 # The marks history page of the mod window: one row per tank, newest first, with its entries and the report.
@@ -76,8 +76,7 @@ def _entry_rows(vehicle, translate):
     start = max(0, len(entries) - MAX_DETAIL_LINES)
     rows = []
     for index in reversed(range(start, len(entries))):
-        before = entries[index - 1] if index > 0 else None
-        rows.append({'label': u'', 'value': _entry_line(before, entries[index], translate)})
+        rows.append({'label': u'', 'value': _entry_line(start_of(entries, index), entries[index], translate)})
     return rows
 
 

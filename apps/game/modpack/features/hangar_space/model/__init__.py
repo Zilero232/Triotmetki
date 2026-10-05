@@ -49,6 +49,12 @@ def space_names(paths):
     return sorted(set(name for name in (space_name(path) for path in paths or ()) if name))
 
 
+# A folder typed into the advanced field that the client has no hangar config of would break the hangar load
+# (gui.ClientHangarSpace reads _HANGAR_CFGS[path] for the space it loads): only a space the client lists is written.
+def available_space(name, names):
+    return name if name and name in names else None
+
+
 def override_changes(current, owned, wanted):
     """{is_premium: new override or None to drop it} for the default hangar's space overrides: ours is written or
     dropped only where the slot is empty or already holds ours; an override the server set (an event hangar) stays."""

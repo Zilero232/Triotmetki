@@ -29,6 +29,16 @@ def _tenths(seconds):
     return u'%.1f' % (math.ceil(round(seconds * 10, 6)) / 10.0)
 
 
+# RU 1.45 ammo_ctrl.ReloadingTimeSnapshot: getActualValue() is the time left when the client last set it, getTimeLeft()
+# the time left now; a snapshot read later than its update (the one taken when the readouts start) counts from now.
+# A finished reload (0) and the client's "no shells" (-1) are kept as they are.
+def reload_left(actual, time_left):
+    actual = _seconds(actual)
+    if actual is None or actual <= 0 or _seconds(time_left) is None:
+        return actual
+    return _seconds(time_left)
+
+
 class Readouts(object):
 
     def __init__(self):

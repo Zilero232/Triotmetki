@@ -15,6 +15,7 @@ from otmetki.core.replay_file import MAGIC, read_header
 from otmetki.core.storage import MemoryFile
 from otmetki.features.replay_manager.i18n import STRINGS
 from otmetki.features.replay_manager.model import (
+    is_taken,
     AnalysisWatch,
     AutoNamer,
     ItemCache,
@@ -30,6 +31,7 @@ from otmetki.features.replay_manager.model import (
     item_of,
     launch_request,
     name_values,
+    native_path,
     page_status,
     parse_statuses,
     pending_launch,
@@ -663,6 +665,24 @@ class PlayTest(unittest.TestCase):
         self.assertEqual(play_refusal(playable_replay(), None, False, False, True), 'version')
 
 
+CYRILLIC_PATH = u'C:/Игры/replays/Т-34 Малиновка.mtreplay'
+
+
+class NativePathTest(unittest.TestCase):
+
+    def test_a_cyrillic_path_takes_the_file_system_encoding(self):
+        path = native_path(CYRILLIC_PATH, 'cp1251')
+
+        assert isinstance(path, str)
+        assert (path if isinstance(path, type(u'')) else path.decode('cp1251')) == CYRILLIC_PATH
+
+    def test_a_path_the_encoding_cannot_hold_is_none(self):
+        assert native_path(u'C:/Игры/a.mtreplay', 'ascii') is None
+
+    def test_an_unknown_encoding_is_none(self):
+        assert native_path(u'C:/a.mtreplay', 'no-such-codec') is None
+
+
 class LaunchTest(unittest.TestCase):
 
     def setUp(self):
@@ -717,6 +737,23 @@ class RenameTest(unittest.TestCase):
         for title in ('', '   ', '...', 'CON', 'lpt1', None, 42):
             with self.assertRaises(ReplayActionError):
                 rename_target('a.mtreplay', title)
+
+
+class TakenNameTest(unittest.TestCase):
+
+    def test_another_file_takes_the_name(self):
+        assert is_taken('r/a.mtreplay', 'r/b.mtreplay', exists=lambda path: True)
+
+    def test_a_free_name_is_not_taken(self):
+        assert not is_taken('r/a.mtreplay', 'r/b.mtreplay', exists=lambda path: False)
+
+    def test_the_same_file_in_another_case_is_not_taken(self):
+        def exists(path):
+            return True
+
+        found = is_taken('r/best.mtreplay', 'r/Best.mtreplay', exists=exists, normcase=lambda path: path.lower())
+
+        assert not found
 
 
 class UploadedIndexTest(unittest.TestCase):

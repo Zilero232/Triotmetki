@@ -1,6 +1,6 @@
 export { parseFeed, parseState, send } from './protocol';
 export { PROTOCOL } from './protocol.constants';
-export { figureSchema, marksReportSchema, messageSchema, widgetSchema } from './protocol.schemas';
+export { figureSchema, lenientArray, marksReportSchema, messageSchema, widgetSchema } from './protocol.schemas';
 
 export type {
   FieldOf,

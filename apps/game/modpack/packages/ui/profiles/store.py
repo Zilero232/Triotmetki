@@ -38,7 +38,8 @@ class ProfileStore(object):
         data = store.read({})
         if not isinstance(data, dict):
             data = {}
-        profiles = [dict(item) for item in data.get('profiles') or [] if _is_profile(item)]
+        stored = data.get('profiles')
+        profiles = [dict(item) for item in stored if _is_profile(item)] if isinstance(stored, list) else []
         self.profiles = profiles[:MAX_PROFILES]
         active = data.get('active')
         self.active = active if self.get(active) is not None else None

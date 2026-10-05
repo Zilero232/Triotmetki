@@ -17,6 +17,8 @@ from otmetki.core.shells.constants import BATTLE_LOG_SHELL_NAMES
 from otmetki.core.vendor.enum34 import IntEnum
 
 ACCOUNT = 12345678
+OTHER_ACCOUNT = 87654321
+OTHER_TANK = 999
 # The switches that are off by default and that the stories play: the opt-in panels and the components that override
 # client views or send client requests.
 BATTLE_OPT_INS = (
@@ -134,6 +136,10 @@ CHAT_PACKAGES = (
     'messenger', 'messenger.gui', 'messenger.gui.Scaleform', 'messenger.gui.Scaleform.channels',
     'messenger.gui.Scaleform.channels.bw_chat2', 'messenger.ext', 'notification',
 )
+
+
+def account_part(state, key, account_id=ACCOUNT):
+    return state['accounts'][str(account_id)][key]
 
 
 class Event(object):
@@ -1386,8 +1392,8 @@ class LoadOrderTest(StoryTest):
             self.assertEqual(len(battle), 1, order['entries'])
             self.assertTrue(battle[0]['session_id'], order['entries'])
             self.assertEqual(state['seen_arenas'], [order['arena_id']])
-            self.assertEqual(state['session']['totals']['battles'], 1)
-            self.assertEqual(state['session']['session_id'], battle[0]['session_id'])
+            self.assertEqual(account_part(state, 'session')['totals']['battles'], 1)
+            self.assertEqual(account_part(state, 'session')['session_id'], battle[0]['session_id'])
 
     def test_every_load_order_shows_the_session_message(self):
         for order in self.orders:
@@ -2406,7 +2412,7 @@ class ReplayAndShareTest(StoryTest):
         shares = game.fetches_to('/mod/me/session-share')
         cls.share_request = json.loads(shares[0][3])
         shares[0][4](Response(200, b'{}'))
-        cls.synced = app.state_file.read({})['session_share_synced']
+        cls.synced = account_part(app.state_file.read({}), 'session_share_synced')
         cls.refusal = stats.ui_action('share_now')
         game.events.onBattleResultsReceived(True, _support.battle_results())
         cls.share_answer = stats.ui_action('share_now')
@@ -3457,6 +3463,61 @@ class AimArmorArcadeTest(StoryTest):
 
     def test_the_readout_hides_when_the_player_dies(self):
         self.assertNotIn('aim_info', self.panels_after_death)
+
+
+class UnreadableResultsTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        app = game.open_hangar()
+        cls.announced = []
+        app.bus.on('battle_results', lambda arena_id, results: cls.announced.append(arena_id))
+        results = _support.battle_results()
+        results['personal'] = {'avatar': results['personal']['avatar']}
+        cls.arena_id = results['arenaUniqueID']
+        game.events.onBattleResultsReceived(True, copy.deepcopy(results))
+        game.events.onBattleResultsReceived(True, copy.deepcopy(results))
+
+    def test_results_no_event_can_be_built_from_are_announced_once(self):
+        self.assertEqual(self.announced, [self.arena_id])
+
+
+class AccountSwitchTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        app = game.open_hangar()
+        cls.loads = []
+        app.register_account_state('probe', lambda: 'kept by %d' % app.account_id, cls.loads.append)
+        app.marks.hangar_moe[OTHER_TANK] = dict(MOE_SNAPSHOT)
+        instances = game.instances()
+        game.events.onBattleResultsReceived(True, _support.battle_results())
+        cls.results_before = len(instances['battle_results'].history)
+        cls.session_before = instances['session_stats'].session.session_id
+        game.player = Player(OTHER_ACCOUNT)
+        game.events.onAccountShowGUI()
+        cls.moe_tanks = sorted(app.marks.hangar_moe)
+        cls.results_after = len(instances['battle_results'].history)
+        cls.session_after = instances['session_stats'].session.session_id
+        cls.saved = _support.load_json(os.path.join(app.config_dir, 'state.json'))
+
+    def test_another_account_starts_without_the_first_ones_state_part(self):
+        self.assertIsNone(self.loads[-1])
+
+    def test_the_first_accounts_part_is_kept_under_its_id(self):
+        self.assertEqual(self.saved['accounts'][str(ACCOUNT)]['probe'], 'kept by %d' % ACCOUNT)
+
+    def test_another_account_starts_without_the_first_ones_moe_snapshots(self):
+        self.assertNotIn(OTHER_TANK, self.moe_tanks)
+
+    def test_the_first_account_had_a_battle_in_its_results_and_session(self):
+        self.assertEqual((self.results_before, bool(self.session_before)), (1, True))
+
+    def test_another_account_starts_without_the_first_ones_battle_results(self):
+        self.assertEqual(self.results_after, 0)
+
+    def test_another_account_starts_without_the_first_ones_session(self):
+        self.assertIsNone(self.session_after)
 
 
 if __name__ == '__main__':

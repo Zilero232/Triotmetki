@@ -36,6 +36,7 @@ def battle(arena, rating, tank_id=TIGER, damage=2000, occurred=T0, marks=2):
         'arena_unique_id': str(arena),
         'occurred_at': occurred + arena,
         'result': 'win',
+        'bonus_type': 1,
         'vehicle': {'tank_id': tank_id, 'name': 'germany:G04_PzVI_Tiger_I', 'tier': 7},
         'stats': {'damage_dealt': damage, 'damage_assisted_radio': 300, 'damage_assisted_track': 0},
         'moe': {'damage_rating': rating, 'moving_avg_damage': 2400, 'marks_on_gun': marks},
@@ -124,6 +125,27 @@ class PageReportTest(unittest.TestCase):
             fixture = json.load(handle)
 
         assert fixture == json.loads(json.dumps(payload))
+
+
+class BattleStartTest(unittest.TestCase):
+
+    def after_a_refreshed_hangar_read(self):
+        history = MarksHistory(MemoryFile(), max_entries=100)
+        snapshot = {'tank_id': TIGER, 'damage_rating': 8400, 'moving_avg_damage': 2400, 'marks_on_gun': 2}
+        history.record_snapshot(snapshot, T0)
+        history.record_snapshot(dict(snapshot, damage_rating=8520, moving_avg_damage=2450), T0 + 5)
+        history.record_battle(battle(1, 8520), before=8400)
+        return history
+
+    def test_the_last_battle_counts_from_the_dossier_read_before_it(self):
+        report = marks_report(TIGER, self.after_a_refreshed_hangar_read().vehicle(TIGER))
+
+        assert report['last']['delta'] == 1.2
+
+    def test_the_history_line_counts_from_the_dossier_read_before_it(self):
+        page = build_page(self.after_a_refreshed_hangar_read(), _support.translator(STRINGS, 'en'), 5, 10)
+
+        assert u'(+1.20%)' in page['rows'][0]['details'][0]['value']
 
 
 if __name__ == '__main__':

@@ -5,6 +5,7 @@ from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.timer import Ticker
 from ....core.log import safe
 from ..i18n import STRINGS
+from ..model import arena_key
 from ..model.battle import CardQueue, card_text, card_widget, last_view
 from ..model.battle.constants import LAST_SHOW_S, PREVIEW_SIZE
 from ..model.preview import last_preview_text, last_preview_widget
@@ -37,7 +38,8 @@ class LastBattlePanel(BattlePanel):
         return BattlePanel.enabled(self) and bool(self.app.config.is_enabled(SWITCH))
 
     def offer(self, summary):
-        if not self.enabled() or summary.get('arena') == getattr(player(), 'arenaUniqueID', None):
+        this_battle = arena_key(getattr(player(), 'arenaUniqueID', None))
+        if not self.enabled() or arena_key(summary.get('arena')) == this_battle:
             return
         if self.queue.push(summary) and self.running:
             self._present()

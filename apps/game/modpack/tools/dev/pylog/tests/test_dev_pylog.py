@@ -1,5 +1,8 @@
+import io
 import os
+import shutil
 import sys
+import tempfile
 import unittest
 
 TOOLS_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -34,6 +37,51 @@ class OurLinesTest(unittest.TestCase):
         lines = ['2026-10-05: ERROR: client failure', '  File "scripts/client/gui/battle.py", line 1']
 
         self.assertEqual(pylog.OurLines().filter(lines), [])
+
+
+class ReadFromTest(unittest.TestCase):
+
+    def setUp(self):
+        self.folder = tempfile.mkdtemp()
+        self.path = os.path.join(self.folder, 'python.log')
+        self.reader = pylog.LogReader(self.path)
+
+    def tearDown(self):
+        shutil.rmtree(self.folder, ignore_errors=True)
+
+    def append(self, data):
+        with open(self.path, 'ab') as handle:
+            handle.write(data)
+
+    def test_a_letter_split_between_two_reads_comes_out_whole(self):
+        letter = u'Ж'.encode('utf-8')
+        self.append(b'a' + letter[:1])
+        first = self.reader.read()
+        self.append(letter[1:] + b'\n')
+
+        second = self.reader.read()
+
+        self.assertEqual(first + second, u'aЖ\n')
+
+    def test_a_file_the_client_started_again_is_read_from_its_start(self):
+        self.append(b'old line\n')
+        self.reader.read()
+        os.remove(self.path)
+        self.append(b'new\n')
+
+        self.assertEqual(self.reader.read(), u'new\n')
+
+
+class SafeOutputTest(unittest.TestCase):
+
+    def test_a_character_the_console_cannot_show_is_replaced(self):
+        stream = io.TextIOWrapper(io.BytesIO(), encoding='cp1251', newline='\n')
+
+        pylog.safe_output(stream)
+        stream.write(u'� →\n')
+        stream.flush()
+
+        self.assertEqual(stream.buffer.getvalue(), b'? ?\n')
 
 
 if __name__ == '__main__':

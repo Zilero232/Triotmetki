@@ -58,4 +58,21 @@ describe(useTextField, () => {
 
     expect(onCommit).not.toHaveBeenCalled();
   });
+
+  it('lets Esc leave the field when nothing is typed', () => {
+    const { hook } = mount('{damage}');
+
+    expect(hook.result.current.onEscape).toBeUndefined();
+  });
+
+  it('discards the typed text on Esc, so the blur that follows commits nothing', () => {
+    const { hook, onCommit } = mount('{damage}');
+
+    act(() => hook.result.current.edit(TYPED));
+    act(() => hook.result.current.onEscape?.());
+    act(() => hook.result.current.commit());
+
+    expect(hook.result.current.text).toBe('{damage}');
+    expect(onCommit).not.toHaveBeenCalled();
+  });
 });

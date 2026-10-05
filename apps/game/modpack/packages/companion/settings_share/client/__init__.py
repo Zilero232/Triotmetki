@@ -131,7 +131,11 @@ class SettingsShare(object):
                 return
             self._ask_first_new(parse_poll_response(data))
 
-        self._post(POLL_PATH, build_poll_request(self.app.current_credentials()), done)
+        try:
+            self._post(POLL_PATH, build_poll_request(self.app.current_credentials()), done)
+        except Exception:
+            self.polling = False
+            raise
 
     def _ask_first_new(self, requests):
         for request in requests:
@@ -143,6 +147,7 @@ class SettingsShare(object):
         self.asked.add(request['id'])
         current = read_client_settings()
         if current is None:
+            self.asked.discard(request['id'])
             log('settings core unavailable, apply request %s stays pending' % request['id'])
             return
 
@@ -181,6 +186,7 @@ class SettingsShare(object):
                 self._report(request['id'], 'rejected')
 
         if not show_confirm(title, message, answered):
+            self.asked.discard(request['id'])
             log('confirm dialog unavailable, apply request %s stays pending' % request['id'])
 
     def _apply(self, request, changes):

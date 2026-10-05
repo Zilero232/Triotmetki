@@ -5,6 +5,18 @@ import { LANGUAGES } from '@/shared/i18n';
 import { PROTOCOL } from './protocol.constants';
 
 const text = z.string();
+
+export const lenientArray = <Item extends z.ZodMiniType>(item: Item) =>
+  z.pipe(
+    z.array(z.unknown()),
+    z.transform((values) =>
+      values.flatMap((value): z.output<Item>[] => {
+        const parsed = item.safeParse(value);
+
+        return parsed.success ? [parsed.data] : [];
+      })
+    )
+  );
 const optionalText = z.optional(z.nullable(z.string()));
 
 const fieldBase = { key: text, label: text, hint: z.nullable(z.string()), advanced: z.optional(z.boolean()) };
@@ -165,7 +177,7 @@ export const stateSchema = z.object({
   languages: z.array(text),
   status: statusSchema,
   site: text,
-  components: z.array(componentSchema),
+  components: lenientArray(componentSchema),
   profiles: profilesSchema,
   hud: z.object({ editing: z.boolean(), panels: z.array(panelSchema) }),
   notice: z.nullable(noticeSchema),

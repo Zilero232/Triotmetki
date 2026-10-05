@@ -22,5 +22,14 @@ def resolve(values):
     return resolved
 
 
+# A preset is chosen to take over its fields: the ones the same change did not set go back to the game's value, so the
+# preset fills them (resolve) instead of the recommended values a fresh install starts with.
+def preset_reset(values, changed):
+    if 'preset' not in changed:
+        return {}
+    covered = CAMERA_PRESETS.get(values.get('preset'), {})
+    return dict((key, NATIVE) for key in covered if key not in changed)
+
+
 def to_native(values):
     return native_values(resolve(values), FIELDS)

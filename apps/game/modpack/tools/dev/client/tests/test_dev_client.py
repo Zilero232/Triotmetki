@@ -165,6 +165,14 @@ class FindClientTest(unittest.TestCase):
 
         self.assertEqual(found.path, explicit)
 
+    def test_a_game_dir_variable_spelt_with_slashes_names_the_same_client(self):
+        explicit = lesta_client(self.root, 'Explicit')
+        spelt = explicit.replace(os.sep, '/') + '/'
+
+        found = client.find_client(self.environ(OTMETKI_GAME_DIR=spelt))
+
+        self.assertEqual(found.path, explicit)
+
     def test_a_game_dir_variable_without_a_client_is_an_error(self):
         with self.assertRaises(client.ClientError):
             client.find_client(self.environ(OTMETKI_GAME_DIR=self.root))

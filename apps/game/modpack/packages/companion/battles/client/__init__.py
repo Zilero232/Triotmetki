@@ -149,6 +149,10 @@ class BattleCapture(object):
         event = self._battle_event(arena_id, results)
         if event is not None:
             self._record(arena_id, event)
+            return
+        # Results no event can be built from are still seen: the client posting them again must not count them twice.
+        self.seen_arenas.append(arena_id)
+        self.app.save_state()
 
     def _is_foreign(self, results):
         avatar = (results.get('personal') or {}).get('avatar') or {}

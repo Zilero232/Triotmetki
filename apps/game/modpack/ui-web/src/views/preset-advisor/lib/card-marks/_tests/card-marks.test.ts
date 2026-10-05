@@ -58,4 +58,21 @@ describe('markCards', () => {
     expect(root.querySelector('.BoosterCard')?.hasAttribute('data-otmetki-advised')).toBe(true);
     expect(root.querySelector('.otmetki-advised-badge')).toBeNull();
   });
+
+  it('marks and unmarks cards on an engine whose elements have no hasAttribute', () => {
+    const root = render(card('rammer'));
+    const original = Element.prototype.hasAttribute;
+
+    Reflect.deleteProperty(Element.prototype, 'hasAttribute');
+
+    try {
+      expect(markCards({ root, images: ['rammer'], label: 'Site build' })).toBe(1);
+      expect(markCards({ root, images: [], label: 'Site build' })).toBe(0);
+    } finally {
+      Element.prototype.hasAttribute = original;
+    }
+
+    expect(markedImages(root)).toHaveLength(0);
+    expect(root.querySelector('.OptDeviceSlot_base')?.getAttribute('style')).toBeFalsy();
+  });
 });

@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import BigWorld
 
-from ....core.client.battle import BattleHooks, arena
+from ....core.client.battle import BattleHooks, arena, vehicle_state
 from ....core.client.component import FeatureComponent
 from ....core.client.hotkey import HotkeyChoice
 from ....core.log import log_exception, safe
@@ -36,6 +36,7 @@ class BushCircle(FeatureComponent):
         self.state = CircleState(self.settings.get('mode'))
         self.vehicle_id = getattr(battle_player, 'playerVehicleID', None)
         self.hooks.add(arena, 'onVehicleKilled', self._on_vehicle_killed)
+        self.hooks.add(vehicle_state, 'onVehicleControlling', self._on_vehicle_controlling)
         self._install_hotkey()
         self.apply()
 
@@ -47,6 +48,9 @@ class BushCircle(FeatureComponent):
         self.state = None
 
     def settings_changed(self, changed):
+        if not self.enabled():
+            self._on_battle_leave()
+            return
         if self.state is not None:
             self.state.mode = self.settings.get('mode')
             self._remove()
@@ -69,6 +73,17 @@ class BushCircle(FeatureComponent):
             return
         if self.state.killed():
             self.apply()
+
+    # The controlled vehicle switches on a respawn (the player's own new tank) and after death to the ally the camera
+    # follows (RU 1.45 vehicle_state_ctrl._setup): only the own one gets the circle.
+    def _on_vehicle_controlling(self, vehicle):
+        if self.state is None or not getattr(vehicle, 'isPlayerVehicle', False):
+            return
+        if vehicle.id != self.vehicle_id:
+            self._remove()
+            self.vehicle_id = vehicle.id
+        self.state.respawned()
+        self.apply()
 
     @safe
     def apply(self, attempt=0):

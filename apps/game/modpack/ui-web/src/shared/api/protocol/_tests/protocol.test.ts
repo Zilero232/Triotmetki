@@ -37,6 +37,21 @@ describe('parseState', () => {
     });
   });
 
+  it('keeps the other cards when one component does not match the schema', () => {
+    const sample: { components: Record<string, unknown>[] } = JSON.parse(SAMPLE);
+    const [first, ...rest] = sample.components;
+    const broken = JSON.stringify({ ...sample, components: [{ ...first, title: null }, ...rest] });
+
+    expect(parseState(broken)?.components.map(({ id }) => id)).toEqual([
+      'marks_panel',
+      'session_stats',
+      'minimap',
+      'replay_manager',
+      'damage_log',
+      'hud_layouts'
+    ]);
+  });
+
   it.each([
     ['text that is not JSON', 'not json'],
     ['a message with only the version', '{"v": 2}'],

@@ -72,6 +72,26 @@ class DestroyedTankTest(unittest.TestCase):
         assert not state.wanted()
 
 
+class RespawnTest(unittest.TestCase):
+
+    def test_a_respawned_tank_has_its_circle_again(self):
+        state = CircleState('always')
+        state.killed()
+
+        state.respawned()
+
+        assert state.wanted()
+
+    def test_a_respawn_after_a_kill_is_a_change(self):
+        state = CircleState('always')
+        state.killed()
+
+        assert state.respawned()
+
+    def test_a_respawn_of_a_living_tank_is_no_change(self):
+        assert not CircleState('always').respawned()
+
+
 class ValuesTest(unittest.TestCase):
 
     def test_the_radius_is_the_games_15_m(self):

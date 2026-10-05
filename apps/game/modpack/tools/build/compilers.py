@@ -28,11 +28,17 @@ PY27_CANDIDATES = (
     ['C:\\Python27\\python.exe'],
 )
 
+# py_compile stamps the source's mtime into the .pyc header (bytes 4-8 on Python 2, 8-12 after PEP 552); the script
+# overwrites it with ZIP_EPOCH (argv[1]) so a package is the same bytes on every build, as owg's --timestamp does.
 PY27_COMPILE_SCRIPT = r'''
-import json, py_compile, sys
+import json, py_compile, struct, sys
 jobs = json.loads(sys.stdin.read())
+offset = 4 if sys.version_info[0] == 2 else 8
 for src, dst, dfile in jobs:
     py_compile.compile(src, cfile=dst, dfile=dfile, doraise=True)
+    with open(dst, 'r+b') as handle:
+        handle.seek(offset)
+        handle.write(struct.pack('<I', int(sys.argv[1])))
 print('compiled %d files' % len(jobs))
 '''
 
@@ -91,7 +97,7 @@ def compile_py27(python27, entries, staging):
         jobs.append([path, target, in_package_path(archive_path)])
         compiled.append((target, archive_path + 'c'))
     result = subprocess.run(
-        python27 + ['-c', PY27_COMPILE_SCRIPT],
+        python27 + ['-c', PY27_COMPILE_SCRIPT, str(ZIP_EPOCH)],
         input=json.dumps(jobs),
         capture_output=True,
         text=True,

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import base64
 import importlib
 import io
 import json
@@ -8,6 +9,7 @@ import os
 import re
 import types
 import unittest
+import zlib
 
 import _support  # noqa: F401
 from otmetki.companion.config import DEFAULTS, FEATURES, Config
@@ -49,7 +51,7 @@ PANEL_SCHEMA = Schema(
     limits={'x': (-4000, 4000), 'y': (-4000, 4000), 'alpha': (0, 100), 'lines': (1, 20)},
 )
 BAD_MESSAGES = ('not json', '[]', json.dumps({'type': 'nope'}), json.dumps({'type': 'set'}), 42)
-UNSAFE_PATHS = ('https://evil.example', '//evil.example/x', 'javascript:alert(1)', '/a b')
+UNSAFE_PATHS = ('https://evil.example', '//evil.example/x', 'javascript:alert(1)', '/a b', '/profile' + chr(10))
 PRIVATE_CONFIG_KEYS = (
     'send_shots',
     'share_settings',
@@ -122,6 +124,8 @@ class ReplayPage(object):
         return {'kind': 'list', 'empty': 'none', 'rows': [row]}
 
     def ui_action(self, action, row, value):
+        if action == 'explode':
+            raise RuntimeError('broken action')
         self.actions.append((action, row, value))
         return {'kind': 'info', 'text': 'done'}
 
@@ -174,6 +178,22 @@ def profile_ids():
         counter[0] += 1
         return 'p%d' % counter[0]
     return new_id
+
+
+def packed_code(raw):
+    return 'TM1.' + base64.urlsafe_b64encode(zlib.compress(raw, 9)).decode('ascii').rstrip('=')
+
+
+class BrokenFeature(object):
+
+    def ui_actions(self):
+        raise RuntimeError('broken card')
+
+    def ui_thumb(self):
+        raise RuntimeError('broken card')
+
+    def ui_advanced(self):
+        raise RuntimeError('broken card')
 
 
 class FakeContext(object):
@@ -416,6 +436,15 @@ class BridgeStateTest(BridgeTestCase):
 
         assert described['thumb'] == THUMB
         assert described['gallery'] == GALLERY
+
+    def test_a_failing_card_hook_leaves_the_card_drawn(self):
+        feature = BrokenFeature()
+        component = Component('minimap', 'battle', SectionSource(self.context.component_config, 'minimap'),
+                              ('enabled', 'zoom'), instance=feature)
+
+        described = component.describe(Labels(Catalog(), 'en'))
+
+        assert described['actions'] == []
 
     def test_fields_named_by_the_instance_are_advanced(self):
         component = Component('minimap', 'battle', SectionSource(self.context.component_config, 'minimap'),
@@ -783,6 +812,12 @@ class ActionMessageTest(BridgeTestCase):
         assert self.context.page.actions == [('rename', 'a.mtreplay', 'B')]
         assert self.bridge.notice == {'kind': 'info', 'text': 'done', 'code': None}
 
+    def test_a_failing_action_becomes_an_error_notice(self):
+        changed = self.bridge.handle(json.dumps({'type': 'action', 'component': 'replay_manager', 'action': 'explode'}))
+
+        assert changed is True
+        assert self.notice_kind() == 'error'
+
     def test_an_action_of_a_card_without_actions_is_refused(self):
         send(self.bridge, type='action', component='minimap', action='rename')
 
@@ -1030,6 +1065,29 @@ class BridgeProfilesTest(BridgeTestCase):
         assert self.context.config.get('upload_replays') is False
         assert self.context.config.get('settings_target') == 'private'
 
+    def test_loading_a_profile_never_turns_the_companion_switch_back_on(self):
+        data = self.saved_profile()
+        send(self.bridge, type='set', component=COMPANION_ID, key='enabled', value=False)
+        data['config']['enabled'] = True
+
+        send(self.bridge, type='profile_load', id='p1')
+
+        assert self.context.config.get('enabled') is False
+
+    def test_a_stored_profile_of_the_wrong_shape_loads_nothing_and_breaks_nothing(self):
+        data = self.saved_profile()
+        data['config'] = [1]
+        data['components'] = 'junk'
+
+        send(self.bridge, type='profile_load', id='p1')
+
+        assert self.notice_kind() == 'info'
+
+    def test_a_profiles_file_of_the_wrong_shape_reads_as_empty(self):
+        store = ProfileStore(MemoryFile({'profiles': 5}), lambda: 1000.0)
+
+        assert store.items() == []
+
     def test_rename(self):
         self.saved_profile()
 
@@ -1103,6 +1161,16 @@ class ProfileCodeTest(BridgeTestCase):
 
     def test_a_broken_code_is_refused(self):
         send(self.bridge, type='profile_import', code='TM1.garbage')
+
+        assert self.notice_kind() == 'error'
+
+    def test_a_code_nested_too_deep_is_refused(self):
+        send(self.bridge, type='profile_import', code=packed_code(b'[' * 100000))
+
+        assert self.notice_kind() == 'error'
+
+    def test_a_code_that_unpacks_too_large_is_refused(self):
+        send(self.bridge, type='profile_import', code=packed_code(b'{"name":"x","data":{}}' + b' ' * (8 * 1024 * 1024)))
 
         assert self.notice_kind() == 'error'
 

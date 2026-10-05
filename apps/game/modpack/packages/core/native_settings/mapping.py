@@ -34,6 +34,13 @@ def native_values(values, fields):
     return result
 
 
+def changed_values(before, after):
+    """The client settings of `after` that differ from `before`: what a change of a component's section writes, so a
+    later change in the game's own settings window survives a change of another key. A value gone from `after` (back
+    to 'native') writes nothing."""
+    return dict((name, value) for name, value in after.items() if name not in before or before[name] != value)
+
+
 def setting_names(fields):
     """The client setting names a `fields` table can write, sorted."""
     return tuple(sorted(name for name, _ in fields.values()))

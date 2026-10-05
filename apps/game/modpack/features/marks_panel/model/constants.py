@@ -146,3 +146,6 @@ EDITOR_GROUPS = (
 
 # The percent joins the stock stats row of a carousel tile (mastery, wins, marks), after the stock gap between them.
 CAROUSEL_GAP = u'   '
+
+# The bonus types (constants.ARENA_BONUS_TYPE) whose battles move the marks: the random battle, as session_stats counts.
+MOE_BONUS_TYPES = (1,)

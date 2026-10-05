@@ -84,15 +84,20 @@ class HangarStage(object):
     def __init__(self, on_loaded):
         self.on_loaded = on_loaded
         self.space = None
+        self.subscribed = None
         self.saved_camera = None
         self.loading = False
         self.restoring = False
         self.shown = False
+        self.generation = 0
 
     def preview(self):
         return client_attr(PREVIEW_MODULE, PREVIEW_NAME)
 
     def begin(self):
+        self._finish()
+        self.restoring = False
+        self.generation += 1
         self.space = hangar_space()
         if self.space is None or self.preview() is None:
             return False
@@ -101,7 +106,7 @@ class HangarStage(object):
         except Exception:
             log_exception('hit viewer: camera place')
             self.saved_camera = None
-        subscribe(self.space, 'onVehicleChanged', self._on_vehicle_changed)
+        self.subscribed = subscribe(self.space, 'onVehicleChanged', self._on_vehicle_changed)
         return True
 
     def show(self, target):
@@ -124,7 +129,8 @@ class HangarStage(object):
         self.restoring = True
         self.shown = False
         self.preview().selectNoVehicle()
-        BigWorld.callback(RESTORE_WAIT_S, self._restore_late)
+        generation = self.generation
+        BigWorld.callback(RESTORE_WAIT_S, lambda: self._restore_late(generation))
 
     @safe
     def _on_vehicle_changed(self):
@@ -136,8 +142,8 @@ class HangarStage(object):
             self.on_loaded()
 
     @safe
-    def _restore_late(self):
-        if self.restoring:
+    def _restore_late(self, generation):
+        if self.restoring and generation == self.generation:
             self._restore_camera()
 
     def _restore_camera(self):
@@ -148,9 +154,11 @@ class HangarStage(object):
         self._finish()
 
     def _finish(self):
-        if self.space is not None:
-            unsubscribe(self.space, 'onVehicleChanged', self._on_vehicle_changed)
-        self.space = None
+        if self.space is None:
+            return
+        if self.subscribed is not None:
+            unsubscribe(self.space, 'onVehicleChanged', self.subscribed)
+        self.space, self.subscribed = None, None
         log('hit viewer: the hangar vehicle and camera are back')
 
     def entity(self):

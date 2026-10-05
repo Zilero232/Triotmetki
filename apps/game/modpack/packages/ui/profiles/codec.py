@@ -6,7 +6,7 @@ import zlib
 
 from ...core.codec import canonical_json, decode_json
 from ...core.compat import string_types, to_bytes, to_text
-from .constants import CODE_MAX_CHARS, CODE_PREFIX, ERROR_CODE
+from .constants import CODE_MAX_CHARS, CODE_PREFIX, ERROR_CODE, UNPACKED_MAX_BYTES
 from .errors import ProfileError
 
 
@@ -26,8 +26,9 @@ def decode_profile(code):
     body += '=' * (-len(body) % 4)
     try:
         packed = base64.urlsafe_b64decode(to_bytes(body))
-        payload = decode_json(zlib.decompress(packed))
-    except (TypeError, ValueError, binascii.Error, zlib.error, UnicodeDecodeError):
+        payload = decode_json(_unpacked(packed))
+    # RuntimeError: a code nested too deep for the parser (RecursionError on Python 3).
+    except (TypeError, ValueError, RuntimeError, binascii.Error, zlib.error, UnicodeDecodeError):
         raise ProfileError(ERROR_CODE)
     data = payload.get('data') if isinstance(payload, dict) else None
     if not _is_snapshot(data):
@@ -36,6 +37,14 @@ def decode_profile(code):
     name = payload.get('name')
     snapshot = {'config': data.get('config') or {}, 'components': data.get('components') or {}}
     return (to_text(name) if isinstance(name, string_types) else ''), snapshot
+
+
+def _unpacked(packed):
+    unpacker = zlib.decompressobj()
+    raw = unpacker.decompress(packed, UNPACKED_MAX_BYTES)
+    if unpacker.unconsumed_tail:
+        raise ProfileError(ERROR_CODE)
+    return raw
 
 
 def _is_snapshot(data):

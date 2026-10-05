@@ -234,9 +234,23 @@ class HitBook(object):
         for entry in current['hits']:
             entry.pop('at', None)
             entry.pop('other', None)
+        current = self._joined(current)
         self.battles.append(current)
         del self.battles[:-self.keep]
         return current
+
+    # A battle rejoined after a disconnect starts again under the same arenaUniqueID: its hits join the part already
+    # kept, so one id stays one battle for the page and the viewer.
+    def _joined(self, current):
+        earlier = [battle for battle in self.battles if battle['id'] == current['id']]
+        if not earlier:
+            return current
+        joined = earlier[-1]
+        self.battles = [battle for battle in self.battles if battle['id'] != current['id']]
+        for key, target in current['targets'].items():
+            joined['targets'].setdefault(key, target)
+        joined['hits'] = (joined['hits'] + current['hits'])[:MAX_HITS]
+        return joined
 
     def battle(self, battle_id=None):
         """The recorded battle `battle_id`, else the latest one, or None."""

@@ -152,6 +152,16 @@ class BookTest(unittest.TestCase):
 
         assert [battle['id'] for battle in book.battles] == ['2']
 
+    def test_a_battle_rejoined_after_a_disconnect_stays_one_battle(self):
+        _, book = finished_battle()
+        book.start(42, 1500.0, u'Химмельсдорф', u'ИС-7')
+        book.target(OWN_TARGET, OWN)
+        book.hit(received(), 3.0)
+
+        book.finish()
+
+        assert [(battle['id'], len(battle['hits'])) for battle in book.battles] == [('42', 3)]
+
     def test_a_saved_book_reads_back(self):
         store = MemoryFile()
         _, book = finished_battle()

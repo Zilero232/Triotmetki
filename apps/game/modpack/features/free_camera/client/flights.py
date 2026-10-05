@@ -49,6 +49,14 @@ class HangarFlight(object):
             BigWorld.camera(self.previous)
         self.previous = None
 
+    # The battle has its own camera by now and the hangar is gone: the video camera is dropped without disable()
+    # (it resets the FOV) and the hangar camera is not given back.
+    def drop(self):
+        camera, self.camera = self.camera, None
+        if camera is not None:
+            camera.destroy()
+        self.previous = None
+
     def key(self, key, is_down):
         return bool(self.camera is not None and self.camera.handleKeyEvent(key, is_down))
 

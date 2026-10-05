@@ -109,10 +109,11 @@ class ViewerWindowHost(object):
     """The viewer's Gameface window: opened over the hangar, its page pushed `state` and `marks`, Esc held while it is
     open (the client's game input manager, as the settings window holds it)."""
 
-    def __init__(self, on_message, on_escape, on_ready):
+    def __init__(self, on_message, on_escape, on_ready, on_gone):
         self.on_message_cb = on_message
         self.on_escape = on_escape
         self.on_ready = on_ready
+        self.on_gone = on_gone
         self.window = None
         self.view = None
         self.escape_manager = None
@@ -163,11 +164,14 @@ class ViewerWindowHost(object):
         self.view, self.pushed = view, {}
         self.on_ready()
 
+    # The client destroys the window itself with the lobby (a battle that starts without a queue, a logout): the
+    # screen still has its ticker and the swapped hangar vehicle to give back.
     def on_destroyed(self, view):
         if self.view is view:
             self.view = None
             self.window = None
             self._release_escape()
+            self.on_gone()
 
     def on_message(self, raw):
         self.on_message_cb(raw)

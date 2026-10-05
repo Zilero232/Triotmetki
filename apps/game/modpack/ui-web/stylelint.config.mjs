@@ -77,7 +77,10 @@ export default {
         'text-overflow': ['clip', 'ellipsis'],
         '/^border(-(top|right|bottom|left))?-style$/': ['solid', 'none', 'hidden'],
         'text-decoration-style': ['solid'],
-        content: ['none', 'normal', '/^["\'].*["\']$/']
+        content: ['none', 'normal', '/^["\'].*["\']$/'],
+        // Native overflow scrolling ran backwards in the 1.45 client: a scroll box is overflow: hidden with a
+        // script-driven wheel listener (shared/lib/wheel-scroll, the ui-kit ScrollArea).
+        '/^overflow(-x|-y)?$/': ['hidden', 'visible']
       },
       { message: (property, value) => `Gameface does not support "${property}: ${value}"` }
     ],

@@ -630,8 +630,8 @@
         "en": "Crosshairs"
       },
       "description": {
-        "ru": "Пресеты стандартного прицела игры (сетка, центральная метка, круг сведения, индикаторы) для аркадного и снайперского режимов, серверный прицел и 20 центральных меток на выбор: 10 своих (среди них зелёные дуги, рамка с засечками и уголки поправки), 5 своих одноцветных в шести цветах и 5 из CC0-набора Kenney; по умолчанию центр прицела — стандартный. Таймер перезарядки у прицела; пока он на экране, стандартный таймер перезарядки прицела скрыт. Ремонт модулей остаётся на стандартной панели повреждений.",
-        "en": "Presets for the game's own reticle (net, central marker, aiming circle, indicators) in arcade and sniper modes, the server reticle and 20 centre marks to pick from: 10 of our own (green arcs, a box with ticks and stacked chevrons among them), 5 one-colour marks of ours in six colours and 5 from Kenney's CC0 pack; the game's own centre stays by default. A reload timer by the reticle; while it is on screen the stock reticle's reload timer hides. Module repairs stay on the stock damage panel."
+        "ru": "Пресеты стандартного прицела игры (сетка, центральная метка, круг сведения, индикаторы) для аркадного и снайперского режимов, серверный прицел и 26 центральных меток на выбор: 19 своих одноцветных в восьми цветах (с тёмным контуром или без), 4 своих цветных (среди них зелёные дуги и уголки поправки) и 3 из CC0-набора Kenney; по умолчанию центр прицела — стандартный. Таймер перезарядки у прицела; пока он на экране, стандартный таймер перезарядки прицела скрыт. Ремонт модулей остаётся на стандартной панели повреждений.",
+        "en": "Presets for the game's own reticle (net, central marker, aiming circle, indicators) in arcade and sniper modes, the server reticle and 26 centre marks to pick from: 19 one-colour marks of ours in eight colours (with or without a dark outline), 4 full-colour marks of ours (green arcs and stacked chevrons among them) and 3 from Kenney's CC0 pack; the game's own centre stays by default. A reload timer by the reticle; while it is on screen the stock reticle's reload timer hides. Module repairs stay on the stock damage panel."
       },
       "fairPlay": {
         "ru": "Только внешний вид: без автоприцела, калькулятора пробития и чужих данных.",
@@ -1205,6 +1205,7 @@
         "aim_info",
         "platoon_points",
         "battle_hotkeys",
+        "battle_menu",
         "hud_layouts",
         "battle_loadout",
         "crosshair",
@@ -1217,6 +1218,7 @@
         "crew_xp",
         "hit_viewer",
         "hangar_info",
+        "preset_advisor",
         "free_camera"
       ],
       "optional": false,

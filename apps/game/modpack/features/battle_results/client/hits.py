@@ -37,11 +37,6 @@ class HitRecorder(object):
     def battles(self):
         return self.book.battles if self.book is not None else []
 
-    def resize(self):
-        if self.book is not None:
-            self.book.resize(self._keep())
-            self.book.save()
-
     def clear(self):
         if self.book is not None:
             self.book.clear()

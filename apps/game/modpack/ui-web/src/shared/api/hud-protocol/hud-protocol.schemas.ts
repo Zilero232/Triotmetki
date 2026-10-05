@@ -1,6 +1,6 @@
 import * as z from 'zod/mini';
 
-import { PROTOCOL, widgetSchema } from '@/shared/api/protocol';
+import { lenientArray, PROTOCOL, widgetSchema } from '@/shared/api/protocol';
 
 import { HUD_PROTOCOL } from './hud-protocol.constants';
 
@@ -51,7 +51,7 @@ export const hudStateSchema = z.object({
   cursor: z.boolean(),
   edit: z.boolean(),
   hover: z.boolean(),
-  panels: z.array(hudPanelSchema)
+  panels: lenientArray(hudPanelSchema)
 });
 
 export const hudMessageSchema = z.discriminatedUnion('type', [

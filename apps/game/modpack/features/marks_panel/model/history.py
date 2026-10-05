@@ -9,6 +9,7 @@ from .constants import (
     ITEM_CODE,
     MAX_BATTLE_DELTA,
     MAX_VEHICLES,
+    MOE_BONUS_TYPES,
     READING_KEYS,
     RESULTS_PERCENT_MAX,
     WRONG_SCALE_SPAN,
@@ -103,21 +104,21 @@ def _battle_indexes(entries):
 
 # A battle's starting point is the dossier read on the way into it (companion before_battle) when the entry has it: the
 # entry before it may be a hangar read the client refreshed after the battle, which already holds the new percent.
-def _start_of(entries, index):
+def start_of(entries, index):
     before = entries[index].get('before')
-    if is_int(before):
+    if entries[index].get('source') == SOURCE_BATTLE and is_int(before):
         return {'rating': before}
-    return entries[index - 1]
+    return entries[index - 1] if index > 0 else None
 
 
 def _span_delta(entries, indexes):
     if not indexes:
         return None
-    return rating_delta(_start_of(entries, indexes[0]), entries[indexes[-1]])
+    return rating_delta(start_of(entries, indexes[0]), entries[indexes[-1]])
 
 
 def _battle_deltas(entries, indexes):
-    deltas = [rating_delta(_start_of(entries, index), entries[index]) for index in indexes]
+    deltas = [rating_delta(start_of(entries, index), entries[index]) for index in indexes]
     return [delta for delta in deltas if delta is not None]
 
 
@@ -220,6 +221,8 @@ class MarksHistory(object):
         info = event.get('vehicle') or {}
         tank_id = info.get('tank_id')
         self.rejected = None
+        if event.get('bonus_type') not in MOE_BONUS_TYPES:
+            return None
         if not _is_recordable(tank_id, moe) or self._has_arena(tank_id, event.get('arena_unique_id')):
             return None
         self.rejected = implausible_change(before, moe['damage_rating'])

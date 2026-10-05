@@ -16,6 +16,7 @@ export const TextField = ({ field, onSet }: TextFieldProps) => {
       variant='wide'
       onBlur={control.commit}
       onChange={(event) => control.edit(event.currentTarget.value)}
+      onEscape={control.onEscape}
       onKeyDown={(event) => control.onKey(event.key)}
     />
   );

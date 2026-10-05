@@ -27,6 +27,14 @@ describe(parseHudState, () => {
     });
   });
 
+  it('keeps the other panels when one panel does not match the schema', () => {
+    const sample: { panels: Record<string, unknown>[] } = JSON.parse(SAMPLE);
+    const [panel] = sample.panels;
+    const mixed = JSON.stringify({ ...sample, panels: [{ ...panel, id: 'broken', text: null }, panel] });
+
+    expect(parseHudState(mixed)?.panels.map(({ id }) => id)).toEqual(['otmetki.hud.damage_log']);
+  });
+
   it('refuses text that is not JSON', () => {
     expect(parseHudState('not json')).toBeNull();
   });

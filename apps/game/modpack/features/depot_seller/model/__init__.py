@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import hashlib
+import json
+
 from ....core.compat import is_int, string_types, to_text
 from ....core.format import format_number, plural
 from .constants import (  # noqa: F401
@@ -15,6 +18,8 @@ from .constants import (  # noqa: F401
     REFUSE_CHANGED,
     REFUSE_NOTHING,
     REFUSE_UNSET,
+    SALE_TOKEN_LENGTH,
+    SALE_TOKEN_SEPARATOR,
 )
 
 # Fair play: only the player's own depot and barracks. Nothing is sold without the confirmation that names the items
@@ -103,12 +108,23 @@ def plan(items, crew, values):
     return {'items': chosen, 'crew': members, 'credits': sum(_worth(item) for item in chosen)}, None
 
 
-def signature(sale):
-    """What the player confirmed: the same items, counts and crew must still be on sale when the request goes."""
+# What the player confirmed, carried in the action the dialog sends: the same items, counts, prices and crew must still
+# be on sale when the request goes.
+def sale_token(sale):
     if sale is None:
         return None
-    items = sorted((item['cd'], item['count']) for item in sale['items'])
-    return tuple(items), tuple(sorted(member['inv_id'] for member in sale['crew']))
+    items = sorted([item['cd'], item['count'], item['price']] for item in sale['items'])
+    crew = sorted(member['inv_id'] for member in sale['crew'])
+    packed = json.dumps([items, crew], sort_keys=True).encode('utf-8')
+    return hashlib.sha1(packed).hexdigest()[:SALE_TOKEN_LENGTH]
+
+
+def sell_action(sale):
+    return '%s%s%s' % (ACTION_SELL, SALE_TOKEN_SEPARATOR, sale_token(sale))
+
+
+def is_confirmed(action, sale):
+    return sale is not None and action == sell_action(sale)
 
 
 def item_line(item):

@@ -182,6 +182,8 @@ class DamageLogPanel(BattlePanel):
     def on_own_shot(self, attacker_id, points):
         if self.log is None or not is_ricochet(points):
             return
+        if not is_enemy(attacker_id) or not controls_own_vehicle():
+            return
 
         name, tag = vehicle_name(attacker_id), vehicle_class(attacker_id)
         hit = Hit(vehicle_id=attacker_id, vehicle=name, vehicle_class=tag, at=time.time())

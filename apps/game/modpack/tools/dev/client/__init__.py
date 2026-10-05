@@ -265,7 +265,9 @@ def find_client(environ):
     """The client to work on: OTMETKI_GAME_DIR, else the manager's rules. Raises ClientError when there is none."""
     explicit = environ.get(GAME_DIR_ENV)
     if explicit:
-        client = inspect(explicit, 'env')
+        # The manager keys its install records by the path's exact spelling (manager.client_key): D:/Games/Tanki/ and
+        # D:\Games\Tanki must name one client.
+        client = inspect(os.path.normpath(explicit), 'env')
         if client is None:
             raise ClientError('%s=%s has no readable version.xml: not a game client folder' % (GAME_DIR_ENV, explicit))
         return client

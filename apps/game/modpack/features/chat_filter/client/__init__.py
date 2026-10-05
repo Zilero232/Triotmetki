@@ -4,6 +4,7 @@ import time
 
 from ....core.client.chat import battle_layout, format_controllers, is_own, is_own_command
 from ....core.client.component import FeatureComponent
+from ....core.compat import call
 from ....core.hooks import override
 from ....core.log import log
 from .. import FEATURE_ID
@@ -38,12 +39,21 @@ class ChatFilterFeature(FeatureComponent):
         if self.enabled():
             self.filter = ChatFilter(self.settings)
 
+    def settings_changed(self, changed):
+        if not self.app.in_battle:
+            return
+        if not self.enabled():
+            self._on_battle_leave()
+        elif self.filter is None:
+            self.filter = ChatFilter(self.settings)
+
     def _on_battle_leave(self):
         if self.filter is not None and self.filter.hidden:
             log('chat filter: %d lines hidden' % self.filter.hidden)
         self.filter = None
 
-    # A hidden line skips the client's own addMessage, so the channel history and the replay's chat
+    # A line with no sender (a system line) is a plain message: never hidden. A hidden line skips the client's own
+    # addMessage, so the channel history and the replay's chat
     # (g_replayCtrl.onBattleChatMessage, RU 1.45 messenger/gui/Scaleform/channels/layout.py) leave it out too:
     # the replay shows the chat as the player saw it.
     def _add_message(self, original, layout, message, *args, **kwargs):
@@ -53,7 +63,7 @@ class ChatFilterFeature(FeatureComponent):
 
     def _hides_message(self, message):
         session_id = getattr(message, 'avatarSessionID', None)
-        if self.filter is None or is_own(session_id):
+        if self.filter is None or not session_id or is_own(session_id):
             return False
         text = getattr(message, 'text', '')
         return not self.filter.allow_message(session_id, text, time.time())
@@ -63,8 +73,10 @@ class ChatFilterFeature(FeatureComponent):
             return None
         return original(layout, command, *args, **kwargs)
 
+    # RU 1.45 BattleLayout.addCommand: a command without a chat line (a reply, a map point) shows nothing, so it is
+    # neither hidden nor counted against the sender's limit.
     def _hides_command(self, command):
-        if self.filter is None or is_own_command(command):
+        if self.filter is None or is_own_command(command) or call(command, 'hasNoChatMessage'):
             return False
         return not self.filter.allow_command(command.getSenderID(), time.time())
 

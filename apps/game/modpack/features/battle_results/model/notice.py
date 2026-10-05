@@ -11,6 +11,11 @@ PUSH = 'push'
 HOLD = 'hold'
 
 
+# The stock message names its arena by the results' int arenaUniqueID, a battle event by its text (companion payload).
+def arena_key(arena):
+    return None if arena is None else six.text_type(arena)
+
+
 def _bounded(items):
     while len(items) > NOTICE_ARENAS_LIMIT:
         items.popitem(last=False)
@@ -31,6 +36,7 @@ class StockNotices(object):
         self.hangar_at = None
 
     def stock_arrived(self, arena, deliver, now):
+        arena = arena_key(arena)
         if arena in self.held:
             return self.held.pop(arena)
         self.waiting[arena] = (deliver, now + STOCK_WAIT_S)
@@ -38,6 +44,7 @@ class StockNotices(object):
         return None
 
     def results_arrived(self, arena, results):
+        arena = arena_key(arena)
         if arena in self.waiting:
             deliver, _ = self.waiting.pop(arena)
             return APPEND, deliver

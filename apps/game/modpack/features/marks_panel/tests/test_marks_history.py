@@ -18,6 +18,7 @@ def battle(arena, rating, marks=2, avg=2600, damage=2000, radio=500, occurred=T0
         'arena_unique_id': str(arena),
         'occurred_at': occurred,
         'result': 'win',
+        'bonus_type': 1,
         'vehicle': {'tank_id': 1, 'name': 'ussr:R04_T-34', 'tier': 5},
         'stats': {'damage_dealt': damage, 'damage_assisted_radio': radio, 'damage_assisted_track': 100},
         'moe': {'damage_rating': rating, 'moving_avg_damage': avg, 'marks_on_gun': marks},
@@ -99,6 +100,11 @@ class RecordTest(unittest.TestCase):
         history = empty_history()
 
         assert history.record_battle(battle(1, 8520, occurred=T0)) is not None
+
+    def test_a_battle_that_does_not_count_for_marks_is_not_recorded(self):
+        history = empty_history()
+
+        assert history.record_battle(dict(battle(1, 8520, occurred=T0), bonus_type=7)) is None
 
     def test_a_battle_of_the_same_arena_is_recorded_once(self):
         history = empty_history()

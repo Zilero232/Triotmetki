@@ -66,6 +66,15 @@ class PlatoonPointsPanel(BattlePanel):
         self.hooks.add(feedback, 'onVehicleFeedbackReceived', self._on_vehicle_feedback)
         self.hooks.add(vehicle_state, 'onVehicleStateUpdated', self._on_vehicle_state)
         self.hooks.add(arena, 'onVehicleKilled', self._on_killed)
+        self.hooks.add(arena, 'onVehicleAdded', self._on_arena_entry)
+        self.hooks.add(arena, 'onVehicleUpdated', self._on_arena_entry)
+        self.render()
+
+    # A platoon mate whose arena entry comes after the battle loaded (a late connect) joins when it arrives.
+    def _on_arena_entry(self, *args):
+        if self.platoon is None:
+            return
+        self._add_members()
         self.render()
 
     def _add_members(self):

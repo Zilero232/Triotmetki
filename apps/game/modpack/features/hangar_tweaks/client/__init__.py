@@ -59,9 +59,9 @@ class HangarTweaks(NativeSettingsComponent):
     # The exact scale is put back after anything that set another one (the game's own option, a resolution change), in
     # the hangar only; switched off, the scale saved in the game's preferences returns.
     def apply_exact_scale(self, *args):
-        if not self.enabled_in_hangar():
+        if self.app.in_battle:
             return
-        wanted = exact_scale(self.settings.get('interface_scale_exact'))
+        wanted = exact_scale(self.settings.get('interface_scale_exact')) if self.enabled() else None
         if wanted is None:
             if self.exact_on:
                 self.exact_on = False

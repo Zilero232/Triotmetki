@@ -12,7 +12,7 @@ from .constants import (
     REPORT_TRENDS,
     SOURCE_BATTLE,
 )
-from .history import percent, rating_delta
+from .history import percent, rating_delta, start_of
 
 # The «Расчёт отметок» page of one tank: everything comes from the player's own marks history (own dossier values after
 # each own battle); nothing is read about anyone else.
@@ -43,8 +43,7 @@ def battle_rows(entries):
     for index, entry in enumerate(entries):
         if entry.get('source') != SOURCE_BATTLE:
             continue
-        before = entries[index - 1] if index > 0 else None
-        rows.append(_battle_row(before, entry))
+        rows.append(_battle_row(start_of(entries, index), entry))
     return list(reversed(rows))
 
 

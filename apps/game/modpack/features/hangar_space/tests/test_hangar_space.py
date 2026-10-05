@@ -12,6 +12,7 @@ from otmetki.features.hangar_space.model import (
     PLAN_LOADED,
     PLAN_RELOAD,
     PLAN_WAIT,
+    available_space,
     build_page,
     listed_spaces,
     normalize_space,
@@ -79,6 +80,21 @@ class OverridesTest(unittest.TestCase):
 
     def test_nothing_changes_when_the_choice_is_in_place(self):
         assert override_changes({True: OURS, False: OURS}, OURS, OURS) == {}
+
+
+class AvailableSpaceTest(unittest.TestCase):
+
+    def test_a_space_the_client_has_is_kept(self):
+        assert available_space('h16_mt_museum', ['h08_mt_hangar', 'h16_mt_museum']) == 'h16_mt_museum'
+
+    def test_a_folder_the_client_lacks_keeps_the_game_hangar(self):
+        assert available_space('h99_typo', ['h08_mt_hangar', 'h16_mt_museum']) is None
+
+    def test_without_the_client_list_nothing_is_written(self):
+        assert available_space('h16_mt_museum', []) is None
+
+    def test_the_game_hangar_stays_the_game_hangar(self):
+        assert available_space('', ['h08_mt_hangar']) is None
 
 
 class TitlesTest(unittest.TestCase):

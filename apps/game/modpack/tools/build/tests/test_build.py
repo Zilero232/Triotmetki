@@ -15,6 +15,7 @@ if BUILD_DIR not in sys.path:
 
 import archive  # noqa: E402
 import build  # noqa: E402
+import compilers  # noqa: E402
 import layout  # noqa: E402
 
 MODS = layout.MODS_ROOT + '/'
@@ -263,6 +264,29 @@ class BuildTest(unittest.TestCase):
         self.assertEqual(result, [])
         self.assertFalse(os.path.exists(dry_out))
         self.assertIn(UI_ASSETS + 'index.html', output.getvalue())
+
+
+class Py27CompileTest(unittest.TestCase):
+
+    def compiled(self, folder, mtime):
+        source = os.path.join(folder, 'mod.py')
+        with open(source, 'w') as handle:
+            handle.write('VALUE = 1\n')
+        os.utime(source, (mtime, mtime))
+        staging = os.path.join(folder, 'out%d' % mtime)
+        [(target, _)] = compilers.compile_py27([sys.executable], [(source, 'mod.py')], staging)
+        with open(target, 'rb') as handle:
+            return handle.read()
+
+    def test_the_bytecode_does_not_depend_on_the_source_mtime(self):
+        folder = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, folder, True)
+
+        with contextlib.redirect_stdout(io.StringIO()):
+            first = self.compiled(folder, 1000000000)
+            second = self.compiled(folder, 1200000000)
+
+        self.assertEqual(first, second)
 
 
 if __name__ == '__main__':

@@ -21,6 +21,10 @@ class MarksCapture(object):
         self.battles = BattleSnapshots()
         self.moe_sent = dict(app.state.get('moe_sent') or {})
         app.register_state('moe_sent', lambda: self.moe_sent)
+        app.bus.on('account', self._on_account)
+
+    def _on_account(self, account_id):
+        self.hangar_moe = {}
 
     def on_vehicle_changed(self):
         snapshot = current_vehicle_moe()

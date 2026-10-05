@@ -67,8 +67,10 @@ class SixthSenseAlert(BattlePanel):
         self.has_lit = False
         self.lamp = SixthSense()
         self.hooks.add(vehicle_state, 'onVehicleStateUpdated', self._on_vehicle_state)
+        self.hooks.add(vehicle_state, 'onVehicleControlling', self._read_spotted)
         self.hooks.add(arena, 'onPeriodChange', self._on_period)
         self.hooks.add(lambda: g_playerEvents, 'onRoundFinished', self._finish)
+        self._read_spotted(call(vehicle_state(), 'getControllingVehicle'))
 
     def stop(self):
         self.lamp = None
@@ -86,7 +88,18 @@ class SixthSenseAlert(BattlePanel):
             return
         if name == OBSERVED and not controls_own_vehicle():
             return
+        self._apply_state(name, value)
 
+    # A tank spotted before the panel started (or before the controlled vehicle was ready) has no OBSERVED_BY_ENEMY
+    # update to come: the stock SixthSenseIndicator reads the controlled vehicle's sixthSenseState then (RU 1.45
+    # gui/Scaleform/daapi/view/battle/shared/indicators.py __onVehicleChanged / __onControlModeChanged).
+    def _read_spotted(self, vehicle):
+        if self.lamp is None or vehicle is None or not controls_own_vehicle():
+            return
+        if bool(getattr(vehicle, 'sixthSenseState', False)) and call(vehicle, 'isAlive', True):
+            self._apply_state(OBSERVED, True)
+
+    def _apply_state(self, name, value):
         duration = lamp_duration(self.settings.get('hide_after_s'), own_spotting_decrease())
         change = self.lamp.vehicle_state(name, value, time.time(), duration)
 

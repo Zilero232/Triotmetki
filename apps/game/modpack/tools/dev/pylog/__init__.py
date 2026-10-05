@@ -4,8 +4,10 @@ Our lines carry core.log's `[OTMETKI]` prefix or name an otmetki path; the trace
 (indented frames, `Traceback ...`, the closing `SomethingError: ...`) come along. The client rewrites python.log on
 every start, so a file that shrinks is read again from its beginning.
 """
+import codecs
 import os
 import re
+import sys
 import time
 
 PYTHON_LOG = 'python.log'
@@ -42,16 +44,36 @@ class OurLines(object):
         return [line for line in lines if self.keep(line)]
 
 
-def decode(data):
-    return data.decode('utf-8', 'replace')
+def safe_output(stream):
+    """Let `stream` print what its code page lacks as '?': through bun or uv stdout is a pipe in the ANSI code page,
+    which has no U+FFFD (an undecodable byte of the log) or arrows."""
+    if hasattr(stream, 'reconfigure'):
+        stream.reconfigure(errors='replace')
 
 
-def _read_from(path, position):
-    """(new text since position, the new position)."""
-    with open(path, 'rb') as handle:
-        handle.seek(position)
-        data = handle.read()
-    return decode(data), position + len(data)
+class LogReader(object):
+    """The text the client appended to its log since the last read; a UTF-8 letter split between two reads comes out
+    whole, and a file that shrank (the client started again) is read from its start."""
+
+    def __init__(self, path):
+        self.path = path
+        self.position = 0
+        self.restarted = False
+        self.decoder = codecs.getincrementaldecoder('utf-8')('replace')
+
+    def read(self):
+        self.restarted = False
+        if not os.path.isfile(self.path):
+            return ''
+        if os.path.getsize(self.path) < self.position:
+            self.restarted = True
+            self.position = 0
+            self.decoder.reset()
+        with open(self.path, 'rb') as handle:
+            handle.seek(self.position)
+            data = handle.read()
+        self.position += len(data)
+        return self.decoder.decode(data)
 
 
 def _complete_lines(buffer):
@@ -62,25 +84,21 @@ def _complete_lines(buffer):
 
 def tail(path, keep_all=False, follow=True, last=TAIL_LINES):
     """Prints our last `last` lines, then (with follow) new ones as the client writes them, until Ctrl+C."""
+    safe_output(sys.stdout)
     lines = OurLines(keep_all)
-    position = 0
-    pending = ''
-    if os.path.isfile(path):
-        text, position = _read_from(path, 0)
-        finished, pending = _complete_lines(text)
-        for line in lines.filter(finished)[-last:]:
-            print(line)
+    reader = LogReader(path)
+    finished, pending = _complete_lines(reader.read())
+    for line in lines.filter(finished)[-last:]:
+        print(line)
     if not follow:
         return
     print('-- following %s (Ctrl+C stops)' % path)
     try:
         while True:
             time.sleep(POLL_S)
-            if not os.path.isfile(path):
-                continue
-            if os.path.getsize(path) < position:
-                position, pending = 0, ''
-            text, position = _read_from(path, position)
+            text = reader.read()
+            if reader.restarted:
+                pending = ''
             finished, pending = _complete_lines(pending + text)
             for line in lines.filter(finished):
                 print(line, flush=True)

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import codecs
 import importlib
 import itertools
 import os
@@ -603,6 +604,20 @@ class SettingsSchemaTest(unittest.TestCase):
 
         self.assertEqual(changed, ['mode'])
 
+    def test_a_number_that_is_not_finite_is_ignored(self):
+        settings = Settings({}, schema=settings_schema())
+
+        changed = settings.update({'count': float('inf'), 'mode': 'b'})
+
+        self.assertEqual(changed, ['mode'])
+
+    def test_a_number_that_is_not_a_number_is_ignored(self):
+        settings = Settings({}, schema=settings_schema())
+
+        changed = settings.update({'count': float('nan')})
+
+        self.assertEqual(changed, [])
+
     def test_a_switched_off_flag_is_not_enabled(self):
         settings = Settings({'on': False}, schema=settings_schema())
 
@@ -669,6 +684,13 @@ class JsonFileTest(unittest.TestCase):
             handle.write('{broken')
 
         self.assertEqual(JsonFile(self.path).read('fallback'), 'fallback')
+
+    def test_a_file_saved_with_a_byte_order_mark_reads(self):
+        JsonFile(self.path).write({})
+        with open(self.path, 'wb') as handle:
+            handle.write(codecs.BOM_UTF8 + b'{"a": 1}')
+
+        self.assertEqual(JsonFile(self.path).read('fallback'), {'a': 1})
 
     def test_account_file_names_one_account_per_file(self):
         stored = account_file(os.path.join('configs', 'otmetki'), 'hits_%d.json', 12345)

@@ -11,8 +11,10 @@ from otmetki.features.depot_seller.model import (
     REFUSE_UNSET,
     build_page,
     confirm_text,
+    is_confirmed,
     plan,
-    signature,
+    sale_token,
+    sell_action,
 )
 from otmetki.features.depot_seller.settings import DEFAULTS, SCHEMA, SETTINGS
 
@@ -117,13 +119,42 @@ class ConfirmationTest(unittest.TestCase):
 
         assert confirm_text(sale, translate).endswith(u'и ещё 3?')
 
-    def test_the_signature_changes_with_the_stock(self):
+    def test_the_same_stock_has_the_same_token(self):
         values = chosen(sell_modules=True)
-        before = signature(plan([item(1)], [], values)[0])
 
-        assert before == signature(plan([item(1)], [], values)[0])
-        assert before != signature(plan([item(1, count=2)], [], values)[0])
-        assert signature(None) is None
+        assert sale_token(plan([item(1)], [], values)[0]) == sale_token(plan([item(1)], [], values)[0])
+
+    def test_the_token_changes_with_the_stock(self):
+        values = chosen(sell_modules=True)
+
+        assert sale_token(plan([item(1)], [], values)[0]) != sale_token(plan([item(1, count=2)], [], values)[0])
+
+    def test_the_token_changes_with_the_price(self):
+        values = chosen(sell_modules=True)
+
+        assert sale_token(plan([item(1)], [], values)[0]) != sale_token(plan([item(1, price=900)], [], values)[0])
+
+    def test_the_token_changes_with_the_crew(self):
+        values = chosen(sell_modules=True, dismiss_crew=True)
+
+        first = sale_token(plan([item(1)], [member(5)], values)[0])
+
+        assert first != sale_token(plan([item(1)], [member(6)], values)[0])
+
+    def test_nothing_on_sale_has_no_token(self):
+        assert sale_token(None) is None
+
+    def test_the_confirmed_sale_is_the_one_the_dialog_listed(self):
+        values = chosen(sell_modules=True)
+        listed = plan([item(1)], [], values)[0]
+
+        assert is_confirmed(sell_action(listed), plan([item(1)], [], values)[0])
+
+    def test_a_sale_that_changed_under_the_dialog_is_not_confirmed(self):
+        values = chosen(sell_modules=True)
+        listed = plan([item(1)], [], values)[0]
+
+        assert not is_confirmed(sell_action(listed), plan([item(1), item(2)], [], values)[0])
 
 
 class PageTest(unittest.TestCase):

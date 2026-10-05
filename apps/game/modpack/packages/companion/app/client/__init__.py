@@ -17,6 +17,11 @@ Events on `app.bus` (features subscribe to these; see CLAUDE.md for the host int
     battle_recorded()            a battle result was recorded
     ingest_response(data)        a 2xx body from /mod/ingest
     tick(now)                    once a second, hangar only
+
+State in state.json: `register_state(key, dump)` keeps a part shared by every account (read it from `app.state`);
+`register_account_state(key, dump, load)` keeps one per account (`companion.account_state`): `load(value)` gets the
+current account's value (None when it has none) at once when the account is known and again on every account switch,
+before the `account` event, so a session or a battle history never carries over to another account.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -42,6 +47,7 @@ from ....core.log import log, safe
 from ....core.registry import registry
 from ....core.storage import JsonFile
 from ....core.version import VERSION as CORE_VERSION
+from ...account_state import AccountState
 from ...battles.client import BattleCapture
 from ...binding import CredentialStore
 from ...binding.client import Binder
@@ -61,6 +67,11 @@ def _path(name):
     return os.path.join(CONFIG_DIR, name)
 
 
+def _stored_object(storage):
+    stored = storage.read({})
+    return stored if isinstance(stored, dict) else {}
+
+
 class OtmetkiApp(object):
 
     def __init__(self):
@@ -76,8 +87,9 @@ class OtmetkiApp(object):
         self.translate = Translator(resolve_language(self.config.get('language'), client_language()))
         self.credentials = CredentialStore(open_config(CONFIG_DIR, 'credentials.json'))
         self.state_file = open_config(CONFIG_DIR, 'state.json')
-        self.state = self.state_file.read({}) or {}
+        self.state = _stored_object(self.state_file)
         self.state_parts = []
+        self.account_state = AccountState()
         self.transport = create_transport()
         self.account_id = None
         self.outbox = None
@@ -119,10 +131,14 @@ class OtmetkiApp(object):
     def register_state(self, key, dump):
         self.state_parts.append((key, dump))
 
+    def register_account_state(self, key, dump, load):
+        self.account_state.register(self.state, key, dump, load)
+
     def save_state(self):
         data = dict(self.state)
         for key, dump in self.state_parts:
             data[key] = dump()
+        data = self.account_state.saved(data)
         self.state = data
         self.state_file.write(data)
 
@@ -179,7 +195,9 @@ class OtmetkiApp(object):
         self.settings_ui.refresh()
 
     def _switch_account(self, account_id):
+        self.state = self.account_state.switch(self.state, account_id)
         self.account_id = account_id
+        self.save_state()
         self.outbox = Outbox(JsonFile(_path('outbox_%d.json' % account_id)))
         self.bus.emit('account', account_id)
         self.rebuild_sender()

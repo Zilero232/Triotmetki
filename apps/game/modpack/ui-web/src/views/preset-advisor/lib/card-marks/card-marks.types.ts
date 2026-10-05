@@ -8,3 +8,8 @@ export type MarkCardInput = {
   card: Element;
   label: string;
 };
+
+export type HasMarkInput = {
+  element: Element;
+  name: string;
+};

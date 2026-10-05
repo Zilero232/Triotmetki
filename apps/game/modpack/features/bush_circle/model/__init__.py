@@ -32,5 +32,10 @@ class CircleState(object):
         self.alive = False
         return changed
 
+    def respawned(self):
+        changed = not self.alive
+        self.alive = True
+        return changed
+
     def wanted(self):
         return self.alive and (self.mode == 'always' or self.toggled)

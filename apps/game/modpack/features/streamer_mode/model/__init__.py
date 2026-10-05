@@ -15,6 +15,11 @@ def hides_chat(settings, in_battle):
     return bool(in_battle and settings.get('private') and settings.get('hide_chat'))
 
 
+# A line with no sender (a system line) is a plain message, and the own lines are the player's: neither is hidden.
+def is_player_line(session_id, is_own_line):
+    return bool(session_id) and not is_own_line
+
+
 class PanelToggle(object):
 
     def __init__(self):

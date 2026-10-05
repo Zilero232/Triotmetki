@@ -19,6 +19,7 @@ export const useTextField = ({ value, onCommit }: UseTextFieldInput) => {
     text: draft ?? value,
     edit: setDraft,
     commit,
-    onKey: onEnterKey(commit)
+    onKey: onEnterKey(commit),
+    onEscape: draft === null ? undefined : () => setDraft(null)
   };
 };

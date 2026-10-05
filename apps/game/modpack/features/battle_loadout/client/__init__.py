@@ -49,8 +49,10 @@ class BattleLoadoutPanel(BattlePanel):
         self.devices = []
         self.summary = None
 
+    # Outside the battle the layer holds the HUD edit mode's preview of the panel, which a drag or a reset changes.
     def settings_changed(self, changed):
-        self.render()
+        if self.running:
+            self.render()
 
     def _on_vehicle_updated(self, vehicle_id, *args):
         if vehicle_id == getattr(player(), 'playerVehicleID', None):

@@ -19,7 +19,7 @@ class HitViewerScreen(object):
     def __init__(self, component, recorder):
         self.component = component
         self.recorder = recorder
-        self.window = ViewerWindowHost(self.on_message, self.close, self.push)
+        self.window = ViewerWindowHost(self.on_message, self.close, self.push, self._on_window_gone)
         self.stage = HangarStage(self._on_model_loaded)
         self.ticker = Ticker(TICK_S, self._tick)
         self.selection = {'battle': None, 'tab': None, 'index': None}
@@ -59,16 +59,37 @@ class HitViewerScreen(object):
     def close(self):
         if not self.is_open:
             return
-        self.ticker.stop()
         self.window.close()
+        self._release()
+
+    @safe
+    def _on_window_gone(self):
+        self._release()
+
+    def _release(self):
+        self.ticker.stop()
         self.stage.end()
         self.loaded, self.wanted, self.decoded = None, None, {}
         log('hit viewer: closed')
 
     def battle(self):
-        return self.recorder.book.battle(self.selection['battle']) if self.recorder.book is not None else None
+        if self.recorder.book is None:
+            return None
+        battle = self.recorder.book.battle(self.selection['battle'])
+        return battle if battle is not None and battle['id'] == self.selection['battle'] else None
+
+    def battles_changed(self):
+        if not self.is_open:
+            return
+        battle = self.recorder.book.battle(self.selection['battle']) if self.recorder.book is not None else None
+        if battle is None:
+            self.close()
+        elif battle['id'] != self.selection['battle']:
+            self._select_battle(battle)
 
     def _select_battle(self, battle):
+        if battle['id'] != self.selection['battle']:
+            self.loaded, self.wanted, self.decoded = None, None, {}
         tab = first_side(battle)
         self.selection = {'battle': battle['id'], 'tab': tab, 'index': default_index(battle, tab)}
         self._show_selected()

@@ -31,6 +31,7 @@ export const useIntField = ({ value, min, max, onCommit }: UseIntFieldInput) => 
     edit: setDraft,
     commit,
     onKey: onEnterKey(commit),
+    onEscape: draft === null ? undefined : () => setDraft(null),
     decrease: () => apply(String(value - INT_FIELD.step)),
     increase: () => apply(String(value + INT_FIELD.step))
   };

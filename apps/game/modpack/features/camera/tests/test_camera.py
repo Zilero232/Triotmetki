@@ -5,7 +5,7 @@ import unittest
 import _support  # noqa: F401
 from otmetki.core.native_settings import client_keys, native_choices, setting_names
 from otmetki.core.settings import Settings
-from otmetki.features.camera.model import FIELDS, to_native
+from otmetki.features.camera.model import FIELDS, preset_reset, to_native
 from otmetki.features.camera.settings import SCHEMA, SETTINGS
 
 
@@ -61,6 +61,26 @@ class PresetTest(unittest.TestCase):
         result = native({'preset': 'dynamic', 'sniper_zoom': 'x4'})
 
         assert result == {'sniperZoom': 2, 'dynamicCamera': True, 'horStabilizationSnp': True}
+
+    def test_choosing_a_preset_on_a_fresh_install_applies_it(self):
+        values = dict(SCHEMA.defaults, preset='sniper')
+
+        values.update(preset_reset(values, ['preset']))
+
+        assert to_native(values)['sniperZoom'] == 3
+
+    def test_a_field_changed_with_the_preset_is_kept(self):
+        values = dict(SCHEMA.defaults, preset='sniper', sniper_zoom='x4')
+
+        values.update(preset_reset(values, ['preset', 'sniper_zoom']))
+
+        assert to_native(values)['sniperZoom'] == 2
+
+    def test_the_native_preset_keeps_the_fields(self):
+        assert preset_reset(dict(SCHEMA.defaults), ['preset']) == {}
+
+    def test_a_change_that_is_not_the_preset_keeps_the_fields(self):
+        assert preset_reset(dict(SCHEMA.defaults, preset='sniper'), ['sniper_zoom']) == {}
 
     def test_an_unknown_preset_falls_back_to_native(self):
         assert Settings({'preset': 'pmod'}, SCHEMA).get('preset') == 'native'

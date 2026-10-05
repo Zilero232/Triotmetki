@@ -1,9 +1,19 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ...core.log import log_exception
 from ...core.vendor import attr
 from ..fields import SWITCH_KEY, TYPE_BOOL, describe_fields, field_type
 from .constants import OPTIONAL_HOOKS, PANEL_ADVANCED_KEYS, PANEL_POSITION_KEYS
 from .placement import placement_of
+
+
+# A feature's card hook that fails costs only what it describes: the rest of the card and every other card still draw.
+def _hook(instance, name, default=None):
+    try:
+        return getattr(instance, name)()
+    except Exception:
+        log_exception('ui %s of %s' % (name, type(instance).__name__))
+        return default
 
 
 @attr.s(eq=False)
@@ -58,7 +68,7 @@ class Component(object):
             keys.update(PANEL_ADVANCED_KEYS)
         instance = self.instance
         if instance is not None and hasattr(instance, 'ui_advanced'):
-            keys.update(instance.ui_advanced() or ())
+            keys.update(_hook(instance, 'ui_advanced') or ())
         return frozenset(keys)
 
     def _describe_fields(self, labels):
@@ -80,7 +90,7 @@ class Component(object):
             described['editor'] = self.editor(self.source.settings, labels.text)
         if instance is not None:
             hooks = [(key, hook) for key, hook in OPTIONAL_HOOKS if hasattr(instance, hook)]
-            described.update((key, getattr(instance, hook)()) for key, hook in hooks)
+            described.update((key, _hook(instance, hook)) for key, hook in hooks)
         return described
 
     def describe(self, labels):
@@ -100,9 +110,9 @@ class Component(object):
         }
         instance = self.instance
         if instance is not None and hasattr(instance, 'ui_actions'):
-            described['actions'] = list(instance.ui_actions() or [])
+            described['actions'] = list(_hook(instance, 'ui_actions') or [])
         if instance is not None and hasattr(instance, 'ui_page'):
-            described['page'] = instance.ui_page()
+            described['page'] = _hook(instance, 'ui_page')
         described.update(self._describe_optional(labels))
         return described
 

@@ -23,4 +23,4 @@ SITE_URL = 'https://triotmetki.ru'
 API_PREFIX = 'https://api.'
 LOCAL_SITE_URL = 'http://localhost:3000'
 LOCAL_HOSTS = ('http://localhost', 'http://127.0.0.1')
-SAFE_PATH = re.compile(r'^/(?!/)[A-Za-z0-9/_.~%?=&-]*$')
+SAFE_PATH = re.compile(r'^/(?!/)[A-Za-z0-9/_.~%?=&-]*\Z')

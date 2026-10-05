@@ -27,10 +27,10 @@
 
 .list {
   display: flex;
+  overflow: hidden;
   max-height: 280px;
   flex-direction: column;
   margin-top: 4px;
-  overflow-y: auto;
 }
 
 .entry {

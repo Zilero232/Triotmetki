@@ -7,7 +7,7 @@ from ....core.client.hud import hud_layer
 from ....core.hooks import override
 from ....core.log import log, safe
 from ..i18n import STRINGS
-from ..model import PanelToggle, blocked_labels, hides_chat
+from ..model import PanelToggle, blocked_labels, hides_chat, is_player_line
 from ..model.constants import HOTKEYS
 from ..settings import SCHEMA, SECTION, SWITCH
 
@@ -88,8 +88,8 @@ class StreamerMode(FeatureComponent):
     # The own lines and commands are never touched (a command that cannot tell counts as own); a hidden line skips the
     # client's addMessage like chat_filter's.
     def _add_message(self, original, layout, message, *args, **kwargs):
-        is_own_line = is_own(getattr(message, 'avatarSessionID', None))
-        if self._hides_chat() and not is_own_line:
+        session_id = getattr(message, 'avatarSessionID', None)
+        if self._hides_chat() and is_player_line(session_id, is_own(session_id)):
             return True
         return original(layout, message, *args, **kwargs)
 

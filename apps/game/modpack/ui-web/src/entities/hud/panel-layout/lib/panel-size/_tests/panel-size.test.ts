@@ -33,7 +33,8 @@ describe(wheelScale, () => {
     { name: 'grows on wheel up', current: 1, deltaY: -100, expected: 1.1 },
     { name: 'shrinks on wheel down', current: 1, deltaY: 100, expected: 0.9 },
     { name: 'stops at the largest scale', current: 3, deltaY: -100, expected: 3 },
-    { name: 'stops at the smallest scale', current: 0.5, deltaY: 100, expected: 0.5 }
+    { name: 'stops at the smallest scale', current: 0.5, deltaY: 100, expected: 0.5 },
+    { name: 'keeps the scale on a sideways turn with no vertical delta', current: 1, deltaY: 0, expected: 1 }
   ])('$name', ({ current, deltaY, expected }) => {
     expect(wheelScale({ current, deltaY })).toBe(expected);
   });

@@ -28,7 +28,8 @@ class JsonFile(object):
 
     def read(self, default=None):
         try:
-            with io.open(self.path, 'r', encoding='utf-8') as handle:
+            # utf-8-sig: a file the player saved in Notepad starts with a byte order mark plain utf-8 reads as bad JSON.
+            with io.open(self.path, 'r', encoding='utf-8-sig') as handle:
                 return json.load(handle)
         except (IOError, OSError, ValueError):
             return default

@@ -19,10 +19,20 @@ def _repeated(event):
     return bool(check()) if check is not None else False
 
 
+def _chat_focused():
+    # XVM's check (RU 1.45 messenger/MessengerEntry.py): a key typed into the battle chat is text, not a hotkey.
+    try:
+        from messenger import MessengerEntry
+        return bool(MessengerEntry.g_instance.gui.isFocused())
+    except Exception:  # no messenger yet (the login screen) or its API moved
+        return False
+
+
 class Hotkey(object):
     """Calls `on_press()` when the key named `key` (a `Keys` name, KEY_T) goes down while every key of `modifiers`
-    is held (a left-hand Ctrl, Shift or Alt also on the right), through the game's own InputHandler.onKeyDown (hangar
-    and battle). A held key's auto-repeat does not press it again. `install()` / `remove()` are idempotent."""
+    is held (a left-hand Ctrl, Shift or Alt also on the right) and the battle chat has no focus, through the game's
+    own InputHandler.onKeyDown (hangar and battle). A held key's auto-repeat does not press it again. `install()` /
+    `remove()` are idempotent."""
 
     def __init__(self, key, modifiers, on_press):
         self.key = key
@@ -48,7 +58,7 @@ class Hotkey(object):
     def _on_key_down(self, event):
         import BigWorld
         import Keys
-        if not self._is_first_press(event, Keys):
+        if not self._is_first_press(event, Keys) or _chat_focused():
             return
         if all(_held(BigWorld, Keys, name) for name in self.modifiers):
             self.on_press()

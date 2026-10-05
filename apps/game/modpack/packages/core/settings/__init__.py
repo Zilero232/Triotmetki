@@ -8,6 +8,8 @@ them) while `Settings.get` still answers the constant, so the code that reads th
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import math
+
 from ..compat import is_int, is_number, string_types, to_text
 
 
@@ -32,7 +34,7 @@ class Schema(object):
         return None
 
     def _coerce_int(self, key, value):
-        if not is_number(value):
+        if not is_number(value) or math.isinf(value) or math.isnan(value):
             return None
         value = int(value)
         low, high = self.limits.get(key, (None, None))

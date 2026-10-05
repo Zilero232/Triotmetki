@@ -3,14 +3,21 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.client.battle import ammo, call, controls_own_vehicle, crosshair, player, vehicle_info, vehicle_state
 from ....core.client.game import values_by_name
 from ....core.client.hud.panel import BattlePanel, PanelSpec
-from ....core.client.native import ClientDefaults, apply_changed, section_is_new
+from ....core.client.native import ClientDefaults, NativeSettingsComponent, section_is_new
 from ....core.client.timer import Ticker
 from ..i18n import STRINGS
 from ..model import mark_offset, mark_text, shows_in, to_native
 from ..model.constants import PREVIEW_SIZE, READOUT_TICK_S
 from ..model.editor import editor
 from ..model.preview import preview_text, preview_widget
-from ..model.readouts import Readouts, readouts_data, readouts_text, replaced_reticle_parts, wants_readouts
+from ..model.readouts import (
+    Readouts,
+    readouts_data,
+    readouts_text,
+    reload_left,
+    replaced_reticle_parts,
+    wants_readouts,
+)
 from ..model.widget import crosshair_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .constants import CLIP_EVENTS, READOUT_STATES, VIEW_ARCADE, VIEW_SNIPER
@@ -49,7 +56,8 @@ def own_health():
     return getattr(vehicle, 'health', None)
 
 
-# The presets are the player's client settings, written only on the player's change in the hangar; the centre mark
+# The presets are the player's client settings, written by the core's NativeSettingsComponent on the panel's own section
+# (only what a change moves; a change made in battle on the next hangar); the centre mark
 # and the readouts follow the client's own reticle position (CrosshairDataProxy). Fair play: the readouts are the own
 # gun's reload (the ammo controller the stock reticle's reload indicator reads) and the own damage panel's HP; every
 # update is dropped while the camera follows an ally (controls_own_vehicle). While the readouts are
@@ -64,17 +72,8 @@ class CrosshairComponent(BattlePanel):
         self.ticker = Ticker(READOUT_TICK_S, self._on_tick)
         BattlePanel.__init__(self, app, PANEL_SPEC)
         self.view = None
-        self.client_defaults = ClientDefaults(self, is_new_section)
-
-    def client_values(self, values):
-        return to_native(values), {}
-
-    def apply(self):
-        return apply_changed(to_native(self.settings.to_dict()))
-
-    def settings_changed(self, changed):
-        if self.enabled_in_hangar():
-            self.apply()
+        self.native = NativeSettingsComponent(app, PANEL_ID, SCHEMA, SWITCH, STRINGS, to_native)
+        self.client_defaults = ClientDefaults(self.native, is_new_section)
 
     def ui_actions(self):
         return self.client_defaults.ui_actions()
@@ -141,7 +140,8 @@ class CrosshairComponent(BattlePanel):
             self.render()
 
     def _set_reload(self, snapshot):
-        self.readouts.set_reload(call(snapshot, 'getActualValue'), call(snapshot, 'getBaseValue'))
+        left = reload_left(call(snapshot, 'getActualValue'), call(snapshot, 'getTimeLeft'))
+        self.readouts.set_reload(left, call(snapshot, 'getBaseValue'))
         self._count()
 
     def _on_vehicle_state(self, state, value):
