@@ -197,7 +197,7 @@ export class TrackingStoreService implements PollStorePort {
   private async latestAccountBattles({ tx, accountId }: LatestAccountBattlesInput): Promise<Map<SnapshotMode, number>> {
     const rows = await tx.$queryRaw<{ mode: string; battles: number }[]>`
       SELECT modes.mode::text AS mode, latest.battles
-      FROM (VALUES ('all'::"StatsMode"), ('random'::"StatsMode")) AS modes(mode)
+      FROM (VALUES ('all'::stats_mode), ('random'::stats_mode)) AS modes(mode)
       CROSS JOIN LATERAL (
         SELECT battles
         FROM account_snapshot
@@ -226,10 +226,11 @@ export class TrackingStoreService implements PollStorePort {
     deltas,
     baseline,
     modeStats = [],
-    tankModeStats = []
+    tankModeStats = [],
+    lestaMarks
   }: WriteAccountChangesInput): Promise<void> {
     const id = BigInt(accountId);
-    const marks = snapshotMarks(tankSnapshots);
+    const marks = lestaMarks ?? snapshotMarks(tankSnapshots);
     const capturedAt = tankSnapshots[0]?.capturedAt;
 
     const previous =
