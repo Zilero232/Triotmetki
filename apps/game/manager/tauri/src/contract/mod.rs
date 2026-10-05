@@ -13,7 +13,6 @@ use crate::components::{ComponentState, Installation, InstalledComponent};
 use crate::conflicts::{ConflictReport, DuplicatePackage, ForeignConflict, MissingComponent, OverridingFiles, ReplacedComponent};
 use crate::credentials::AccountBinding;
 use crate::deep_link::DeepLink;
-use crate::dependencies::{DependencyState, DependencyStatus};
 use crate::detect::client::{Branch, ClientProblem};
 use crate::detect::{ClientSource, GameClient, GameVersion};
 use crate::error::{AppError, ErrorCode};
@@ -186,14 +185,6 @@ fn samples() -> Vec<(&'static str, Value)> {
                 installed: true,
                 current_components: vec!["core".into(), "companion".into(), "hit_log".into()],
                 parked_components: vec!["hit_log".into()],
-                dependencies: vec![
-                    DependencyStatus {
-                        id: "openwg_gameface".into(),
-                        state: DependencyState::Ours,
-                        file: Some("net.openwg.gameface_1.2.2.mtmod".into()),
-                    },
-                    DependencyStatus { id: "guiflash".into(), state: DependencyState::User, file: Some("gambiter.guiflash_0.6.5.mtmod".into()) },
-                ],
             }),
         ),
         (
@@ -207,7 +198,6 @@ fn samples() -> Vec<(&'static str, Value)> {
                 installed: false,
                 current_components: Vec::new(),
                 parked_components: Vec::new(),
-                dependencies: Vec::new(),
             }),
         ),
         (

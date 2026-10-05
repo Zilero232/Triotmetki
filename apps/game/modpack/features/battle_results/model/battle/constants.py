@@ -40,3 +40,12 @@ PREVIEW_LAST = {
     'moe_percent': 84.0,
     'moe_delta': -0.42,
 }
+
+# RU 1.45 client source: the stock battle notifier (gui/Scaleform/daapi/view/battle/shared/battle_notifier.py) shows the
+# previous battle's result in battle only when the arena's bonus type has it (its controller exists:
+# controllers/repositories.py, arena_visitor.hasBattleNotifier), the server enables it
+# (helpers/server_settings.isBattleNotifierEnabled) and the game option enableBattleNotifier is on
+# (settings_constants.GAME.ENABLE_BATTLE_NOTIFIER). The names of the reads, in the order the log writes them.
+NOTIFIER_READS = ('arena', 'server', 'option')
+NOTIFIER_SHOWN = 'battle_results: the stock battle notifier shows the previous battle (%s): our card stays hidden'
+NOTIFIER_NOT_SHOWN = 'battle_results: the stock battle notifier does not show the previous battle (%s): our card shows'

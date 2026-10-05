@@ -26,20 +26,26 @@ Researched on 2026-09-27. Lesta publishes **no author portal, upload API or pack
 
 The section's list [8] and Lesta's support article [10] cover the following. Penalties for players who use such mods: a 7-day ban, then a 30-day ban, then a permanent ban.
 
-- Enemy positions shown otherwise than the client shows them, or beyond the draw distance.
+- Enemy positions shown otherwise than the client shows them: destroyed objects marked on the field or the minimap, arty tracers redrawn or an enemy SPG located from them, spotted enemies shown when the player does not aim at them.
 - Enemy aim point or shell trajectory.
 - Enemy reload timers.
-- "Smart" sights beyond the stock target lock.
+- "Smart" sights beyond the stock reticle, «особенно те, которые автоматически наводятся на слабобронированные или уязвимые места машины противника, либо фиксируют прицел на цели за препятствием, либо рассчитывают упреждение вместо игрока».
 - Changing the transparency of map objects.
-- Markers where an enemy was spotted.
+- Markers or indicators on the field where an ally spotted an enemy.
+- Changing vehicle or game-object parameters that affect gameplay.
 - Gun directions on the minimap.
 - The direction to the nearest enemies out of view.
-- Any change to vehicle or game-object parameters.
+- Enemy location beyond the draw distance.
+- Announced, not yet listed: «модификации для анализа брони в бою» («Мы считаем, что этот функционал предоставляет игрокам значительное преимущество… После создания этого инструмента аналогичные модификации с дополнительными функциями… будут внесены в список запрещённых»). The same article: «Мы абсолютно не против модов, действующих только в Ангаре».
 
-Our fair-play rules ([apps/game/modpack/CLAUDE.md](../../apps/game/modpack/CLAUDE.md), README «Left out of the component catalogue») already exclude all of these. The components a reviewer will look at hardest:
+Beyond the list, the Game Rules ([11], 2.1.7) forbid «программ, имитирующих действия Пользователей в Игре (боты), программ-кликеров, макросов управления клавиатурой и мышью, иных подобных методов накапливания внутриигровых достижений».
+
+Our fair-play rules ([apps/game/modpack/CLAUDE.md](../../apps/game/modpack/CLAUDE.md), README «Left out of the component catalogue») already exclude all of these; the per-component verdicts are in [the fair-play audit](../research/data/2026-10-05-fair-play-audit.md). The components a reviewer will look at hardest:
 
 - `sixth_sense`: a text next to the vanilla lamp, with no timer for the enemy;
 - `minimap`, `camera`, `crosshair`: only the game's own options;
+- `responsive_reticle`: the own gun marker redrawn every frame from the client's own prediction (on by default);
+- `gun_arc`, `bush_circle`: own-vehicle markers by the reticle and on the ground;
 - `chat_filter`;
 - `replay_upload`: network uploads.
 
@@ -132,7 +138,7 @@ Warnings are:
 5. Mod features that need a Три отметки Плюс subscription on the site: allowed or not?
 6. Network access: is HTTPS to our API (after an explicit binding code) acceptable, and do you need the source code?
 7. Configs: МОСТ's config clean-up deletes `mods/configs/otmetki` (the binding). The mod now mirrors it into `%APPDATA%\TriOtmetki` and restores it; is a mod writing there acceptable, or can a mod's config folder be exempted instead?
-8. The grey features (commander camera, zoom beyond x8, a timer of the player's own full aim, no gun flash and shake, white wrecks and tracks, SafeShot, the armour readout under the reticle built on the client's own shot-result resolution): allowed or not, item by item. Sent as the letter below; each stays out of the modpack until a written answer.
+8. The grey features (commander camera, zoom beyond x8, a timer of the player's own full aim, no gun flash and shake, white wrecks and tracks, SafeShot, and the three that ship off by default: the smaller aim circle, auto-activated personal reserves, the exact interface scale with 3–5 carousel rows): allowed or not, item by item. Sent as the letter below; the first ones stay out of the modpack, the last three stay off by default until a written answer.
 
 ### Letter to the curators about the grey features
 
@@ -148,7 +154,9 @@ None of these is in Lesta's ten forbidden categories ([8], [10]); some are in М
 > 4. **Без вспышки выстрела и тряски камеры** (как noGunFlash) — убрать эффект вспышки и тряски своего экрана при своём выстреле и попадании. Прозрачность объектов (пункт 5) не меняется.
 > 5. **Белые подбитые танки и гусеницы** — свои текстуры для уничтоженной техники и сбитых гусениц (наш арт, без символики Лесты).
 > 6. **SafeShot** — блокировка своего выстрела по союзнику и по уничтоженной технике. Спорно по пункту 10, если это считается изменением параметров техники.
-> 7. **Броня под прицелом** — числа штатного расчёта исхода выстрела, которым клиент сам красит маркер орудия (приведённая броня в точке прицеливания и пробитие своего снаряда), только для видимой техники противника под прицелом. Ничего сверх штатного расчёта: ни точек вне прицела, ни скрытых модулей. Спорно по статье поддержки об «анализе брони в бою».
+> 7. **Уменьшенный круг сведения** — свой маркер орудия рисуется на 40–100 % от размера, который посчитал клиент (ближе к тому, куда ложится большинство снарядов). Разброс, наведение и выстрел не меняются, в реплей пишется настоящий размер. Спорно по пункту 4 («умные прицелы»). Сейчас в модпаке, выключен по умолчанию.
+> 8. **Автоактивация личных резервов** — в первом ангаре сессии и, если выбрано, когда резерв закончился, мод отправляет тот же запрос, что кнопка «Активировать» окна резервов, только для резервов, которые игрок сам отметил. Единственное действие ангара без нажатия кнопки; спорно по п. 2.1.7 правил игры (боты и макросы). Сейчас в модпаке, выключен по умолчанию.
+> 9. **Точный масштаб интерфейса и 3–5 рядов карусели** — масштаб между штатными шагами (например, 130 %) через штатный механизм масштаба, без записи в настройки игры, и карусель в 3–5 рядов без правки Flash. Только ангар и только вид. Сейчас в модпаке, выключен по умолчанию.
 >
 > Ответ «да» или «нет» по каждому пункту нам достаточно. Если что-то разрешено с условиями (например, только по клавише или без изменения конфигов камеры), напишите, пожалуйста, какими.
 >
@@ -175,3 +183,4 @@ None of these is in Lesta's ten forbidden categories ([8], [10]); some are in М
 8. «Категории запрещенных модификаций игрового клиента» (27.02.2025). <https://forum.tanki.su/topic/2200660-категории-запрещенных-модификаций-игрового-кл/>
 9. wotstat mod docs: modpacks (МОСТ takes mods from the forum section; quality, current version, regular updates) and packaging (`meta.xml`, `<author>.<mod>_<version>.mtmod`, `mods/<game version>/`). <https://docs.wotstat.info/guide/distribution/modpacks/>, <https://docs.wotstat.info/guide/first-steps/environment/python/>
 10. Lesta support, «Запрещённые модификации клиента игры» (list and penalties). <https://lesta.ru/support/ru/products/mt/article/15152/>
+11. «Правила игры и кланов Мира танков», Lesta legal (2.1.7: bots, clickers, macros). <https://legal.lesta.ru/game-rules/>

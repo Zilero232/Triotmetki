@@ -7,11 +7,11 @@
   align-items: start;
   padding: var(--space-5);
   gap: var(--space-5);
-  grid-template-columns: 160px minmax(0, 1fr) auto;
+  grid-template-columns: 240px minmax(0, 1fr) auto;
   transition: border-color var(--duration-fast) ease;
 
   @media (width <= 760px) {
-    grid-template-columns: 112px minmax(0, 1fr) auto;
+    grid-template-columns: 168px minmax(0, 1fr) auto;
   }
 
   &[data-state='enabled'] {

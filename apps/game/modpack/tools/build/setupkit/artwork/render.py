@@ -2,12 +2,18 @@
 
     catalog/previews/*.svg (or a .png screenshot)  -> previews/<component id>.png, 640x360
 
+Every preview is drawn on one 640x360 canvas (16:9, the manager's card frame) with the bundled Fira Sans
+(catalog/fonts, OFL), never the system fonts, so a Linux release runner draws the same Cyrillic as Windows.
 tools/most reuses svg_png, cover and the libraries for its submission sizes.
 """
 import io
 import os
 
+from .. import CATALOG_DIR
+
 PREVIEW_SIZE = (640, 360)
+PREVIEW_FONT = 'Fira Sans'
+FONTS_DIR = os.path.join(CATALOG_DIR, 'fonts')
 
 
 class ArtworkError(RuntimeError):
@@ -25,7 +31,14 @@ def _libraries():
 
 def svg_png(svg_path, width):
     resvg_py, _ = _libraries()
-    return bytes(resvg_py.svg_to_bytes(svg_path=svg_path, width=width))
+    return bytes(resvg_py.svg_to_bytes(
+        svg_path=svg_path,
+        width=width,
+        skip_system_fonts=True,
+        font_dirs=[FONTS_DIR],
+        font_family=PREVIEW_FONT,
+        sans_serif_family=PREVIEW_FONT,
+    ))
 
 
 def cover(image, size, image_module):

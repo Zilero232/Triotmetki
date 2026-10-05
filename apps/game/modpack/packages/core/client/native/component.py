@@ -71,8 +71,8 @@ class NativeSettingsComponent(FeatureComponent):
 
 
 class RecommendedSettingsComponent(NativeSettingsComponent):
-    """A NativeSettingsComponent whose schema defaults are the recommended client settings: written once on a fresh
-    install with a backup, and offered on its card (`ClientDefaults`)."""
+    """A NativeSettingsComponent whose schema defaults are the recommended client settings: offered on its card and
+    written with a backup only when the player asks (`ClientDefaults`)."""
 
     def __init__(self, app, component_id, schema, switch, strings, to_native, to_account=None):
         is_new_section = section_is_new(app, component_id)

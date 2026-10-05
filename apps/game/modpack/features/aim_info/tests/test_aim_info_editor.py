@@ -8,8 +8,6 @@ from otmetki.features.aim_info.i18n import STRINGS
 from otmetki.features.aim_info.model.editor import editor
 from otmetki.features.aim_info.settings import ADVANCED, SCHEMA
 
-PANEL_KEYS = ('x', 'y', 'align_x', 'align_y', 'drag', 'scale', 'alpha', 'font_size', 'border')
-
 
 def spec():
     return editor(Settings(None, SCHEMA), lambda key, **params: key)
@@ -26,7 +24,7 @@ class EditorTest(unittest.TestCase):
             assert key in SCHEMA.defaults, key
 
     def test_every_kept_field_is_in_a_group(self):
-        kept = set(SCHEMA.defaults) - set(PANEL_KEYS) - set(ADVANCED)
+        kept = set(SCHEMA.defaults) - set(ADVANCED)
 
         assert kept <= set(grouped_keys()), sorted(kept - set(grouped_keys()))
 

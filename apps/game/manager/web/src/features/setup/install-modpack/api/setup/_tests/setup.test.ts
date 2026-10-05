@@ -16,12 +16,6 @@ describe('installPlanSchema', () => {
 
     expect(parsed.parkedComponents.every((id) => parsed.currentComponents.includes(id))).toBe(true);
   });
-
-  it('carries who owns each runtime dependency in the client', () => {
-    const parsed = installPlanSchema.parse(plan);
-
-    expect(parsed.dependencies.map((status) => status.state)).toEqual(['ours', 'user']);
-  });
 });
 
 describe('installOutcomeSchema', () => {

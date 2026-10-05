@@ -15,15 +15,7 @@ import type { ClientScoped, ToggleInput, UseInstallWizardStateInput } from './us
 
 import { installModpack, readInstallerProfile } from '../../../api';
 import { INSTALL_WIZARD } from '../../../config';
-import {
-  closeDependencies,
-  dependencyRows,
-  installBlocker,
-  installedDependencies,
-  matchingPreset,
-  presetSelection,
-  toggleSelection
-} from '../../../lib';
+import { closeDependencies, installBlocker, matchingPreset, presetSelection, toggleSelection } from '../../../lib';
 import { useInstallPlan } from '../use-install-plan';
 
 export const useInstallWizardState = ({ initialPreset, initialComponents, startAtReview }: UseInstallWizardStateInput) => {
@@ -39,12 +31,10 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
   const [stepIndex, setStepIndex] = useState(startAtReview ? INSTALL_WIZARD.steps.length - 1 : 0);
   const [chosenFor, setChosenFor] = useState<ClientScoped | null>(null);
   const [removeOthersFor, setRemoveOthersFor] = useState<ClientScoped | null>(null);
-  const [excludedFor, setExcludedFor] = useState<ClientScoped | null>(null);
   const [focusedId, setFocusedId] = useState<string | null>(null);
 
   const chosen = chosenFor?.clientPath === clientPath ? chosenFor.selection : null;
   const removeOthers = removeOthersFor?.clientPath === clientPath ? removeOthersFor.selection : new Set<string>();
-  const excluded = excludedFor?.clientPath === clientPath ? excludedFor.selection : new Set<string>();
   const setChosen = (selection: Selection) => setChosenFor({ clientPath, selection });
   const plan = planQuery.data ?? null;
   const catalog = plan?.catalog ?? null;
@@ -75,23 +65,6 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
     }))
     .filter((group) => group.components.length > 0);
 
-  const rows = dependencyRows({ dependencies: catalog?.dependencies ?? [], statuses: plan?.dependencies ?? [], selection, excluded });
-  const dependencies = rows.map(({ dependency, state, file, checked, locked }) => ({
-    id: dependency.id,
-    title: text(dependency.title),
-    description: text(dependency.description),
-    version: dependency.version,
-    licence: dependency.licence.name,
-    licenceUrl: dependency.licence.url,
-    author: dependency.author.name,
-    authorUrl: dependency.author.url,
-    optional: dependency.optional,
-    state,
-    file,
-    checked,
-    locked
-  }));
-
   const focused = components.find((component) => component.id === focusedId) ?? components[0] ?? null;
   const preview = focused && {
     category: focused.category,
@@ -110,8 +83,7 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
   const canInstall = clientPath !== null && plan !== null && blocker === null;
 
   const install = useMutation({
-    mutationFn: () =>
-      installModpack({ clientPath, components: [...selection], removeOthers: [...removeOthers], excludedDependencies: [...excluded] }),
+    mutationFn: () => installModpack({ clientPath, components: [...selection], removeOthers: [...removeOthers] }),
     onSuccess: async ({ installation, warnings }) => {
       queryClient.setQueryData(QUERY_KEYS.installation(clientPath), installation);
       await queryClient.invalidateQueries();
@@ -163,8 +135,6 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
     selectedCount: selection.size,
     totalCount: components.length,
     removeOthers,
-    dependencies,
-    dependencyCount: installedDependencies(rows).length,
     isReinstall,
     isClientSupported,
     isOffline: blocker === 'offline',
@@ -183,11 +153,6 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
       setRemoveOthersFor({
         clientPath,
         selection: checked ? new Set([...removeOthers, id]) : new Set([...removeOthers].filter((item) => item !== id))
-      }),
-    onToggleDependency: ({ id, checked }: ToggleInput) =>
-      setExcludedFor({
-        clientPath,
-        selection: checked ? new Set([...excluded].filter((item) => item !== id)) : new Set([...excluded, id])
       }),
     onLoadProfile: () => loadProfile.mutate(),
     onInstall: () => install.mutate()

@@ -4,6 +4,7 @@ from ...core.compat import is_int
 from .constants import (
     DEFAULTS_REVISION,
     DROPPED_KEYS,
+    DROPPED_PANELS,
     DROPPED_SECTIONS,
     GUARDED_SWITCHES,
     LAYOUT_PLACES_SECTION,
@@ -102,10 +103,11 @@ def _retired_values(components, chosen, revision):
 def _without_dropped_places(places):
     if not isinstance(places, dict):
         return places
+    dropped = DROPPED_SECTIONS + DROPPED_PANELS
     kept = {}
     for mode, panels in places.items():
         if isinstance(panels, dict):
-            panels = dict((panel, place) for panel, place in panels.items() if panel not in DROPPED_SECTIONS)
+            panels = dict((panel, place) for panel, place in panels.items() if panel not in dropped)
         kept[mode] = panels
     return kept
 

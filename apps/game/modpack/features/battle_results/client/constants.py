@@ -15,3 +15,11 @@ FORMAT_METHOD = 'format'
 ARENA_KEY = 'arenaUniqueID'
 SAVED_KEY = 'savedData'
 TEXT_KEY = 'message'
+# RU 1.45 client source: the reads behind the stock battle notifier (model/battle/constants NOTIFIER_READS): the
+# session's DynamicControllersLocator.battleNotifier (None on a battle type without it),
+# ILobbyContext.getServerSettings().isBattleNotifierEnabled() and the settings core's GAME.ENABLE_BATTLE_NOTIFIER.
+NOTIFIER_CONTROLLER = 'battleNotifier'
+LOBBY_CONTEXT_MODULE = 'skeletons.gui.lobby_context'
+LOBBY_CONTEXT = 'ILobbyContext'
+NOTIFIER_SERVER_FLAG = 'isBattleNotifierEnabled'
+NOTIFIER_OPTION = 'enableBattleNotifier'

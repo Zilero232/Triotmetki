@@ -220,12 +220,27 @@ DROPPED_SECTIONS = (
 )
 # (section, key) of the removed options of components that stay, dropped from every file older than DEFAULTS_REVISION
 # (a section of an installed component loses them on its next save anyway; this covers a component not installed).
-# Revision 4: the crosshair's repair timers (the stock damage panel shows them) and the update notice's hangar card
-# (the ModsList badge and one message took its place).
+# Revision 4: the crosshair's repair timers (the stock damage panel shows them), the update notice's hangar card
+# (the ModsList badge and one message took its place) and aim_info's armour readout with the HUD panel only it drew
+# (fair play: Lesta forbids in-battle armour analysis).
 DROPPED_KEYS = (
     ('crosshair', 'repair_timers'),
     ('update_notice', 'show_card'),
+    ('aim_info', 'armor_under_aim'),
+    ('aim_info', 'show_nominal'),
+    ('aim_info', 'show_piercing'),
+    ('aim_info', 'show_angle'),
+    ('aim_info', 'placement'),
+    ('aim_info', 'x'),
+    ('aim_info', 'y'),
+    ('aim_info', 'align_x'),
+    ('aim_info', 'align_y'),
+    ('aim_info', 'alpha'),
+    ('aim_info', 'drag'),
+    ('aim_info', 'scale'),
 )
+# Components that stay but are no HUD panel any more, so their battle-type places go (revision 4: aim_info).
+DROPPED_PANELS = ('aim_info',)
 # The keys the player set in the settings window (config switches by name, component values as `<section>.<key>`),
 # space-separated: a later default change never moves them.
 USER_SET_KEY = 'user_set'

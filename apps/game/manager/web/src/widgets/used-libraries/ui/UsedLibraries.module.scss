@@ -1,0 +1,35 @@
+@use '@/shared/styles/mixins' as *;
+
+.list {
+  @include stack(var(--space-3));
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-6);
+}
+
+.name {
+  color: var(--color-text);
+}
+
+.version {
+  @include numeric;
+
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: var(--text-xs);
+  gap: var(--space-4);
+}

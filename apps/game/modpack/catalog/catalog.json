@@ -419,7 +419,7 @@
       },
       "perf": "medium",
       "preview": {
-        "image": "previews/gun_arc.png"
+        "image": "previews/gun_arc.svg"
       }
     },
     {
@@ -454,16 +454,16 @@
         "en": "Aim and shells"
       },
       "description": {
-        "ru": "Дистанция у прицела до любой техники под ним, а не только до той, у чьего маркера дистанция скрыта, и подсказка снаряда на панели боеприпасов: урон, пробитие, скорость и урон модулям. По желанию (по умолчанию выключено) — броня под прицелом: приведённая и номинальная броня цели в точке прицеливания и пробитие вашего снаряда на этой дистанции цветом штатного маркера (зелёный, жёлтый, красный), под прицелом в любом режиме камеры; и круг сведения меньше стандартного (40–100 %), ближе к реальному разбросу.",
-        "en": "The reticle distance to any vehicle under it, not only to the ones whose markers hide the distance, and a shell tooltip on the ammo panel: damage, penetration, speed and module damage. If you want (off by default), armour under the reticle: the target's effective and nominal armour at the aim point and your shell's penetration at that distance in the stock marker colour (green, yellow, red), under the reticle in every camera mode; and an aim circle smaller than the stock one (40–100 %), closer to the real dispersion."
+        "ru": "Дистанция у прицела до любой техники под ним, а не только до той, у чьего маркера дистанция скрыта, и подсказка снаряда на панели боеприпасов: урон, пробитие, скорость и урон модулям. По желанию (по умолчанию выключено) — круг сведения меньше стандартного (40–100 %), ближе к реальному разбросу.",
+        "en": "The reticle distance to any vehicle under it, not only to the ones whose markers hide the distance, and a shell tooltip on the ammo panel: damage, penetration, speed and module damage. If you want (off by default), an aim circle smaller than the stock one (40–100 %), closer to the real dispersion."
       },
       "fairPlay": {
-        "ru": "Броня под прицелом — те же числа, которыми клиент сам красит маркер орудия (штатный расчёт исхода выстрела): только видимая техника противника под вашим прицелом, только точка прицеливания; ничего о технике вне прицела, скрытых модулях и перезарядке. Дистанцию до цели под прицелом клиент и так показывает на маркерах; подсказки — параметры своих снарядов. Круг сведения только рисуется меньше: наведение, выстрел и разброс не меняются, в реплей пишется настоящий размер.",
-        "en": "Armour under the reticle is the very numbers the client colours the gun marker with (its own shot-result resolution): only the visible enemy vehicle under your reticle, only at the aim point; nothing about vehicles elsewhere, hidden modules or reloads. The client already shows the distance to the target under the reticle on its markers; the tooltips are your own shells' parameters. The aim circle is only drawn smaller: the aim, the shot and the dispersion stay as they are, and the replay records the real size."
+        "ru": "Дистанцию до цели под прицелом клиент и так показывает на маркерах; подсказки — параметры своих снарядов. Круг сведения только рисуется меньше: наведение, выстрел и разброс не меняются, в реплей пишется настоящий размер. Брони под прицелом нет: Леста запрещает анализ бронирования в бою.",
+        "en": "The client already shows the distance to the target under the reticle on its markers; the tooltips are your own shells' parameters. The aim circle is only drawn smaller: the aim, the shot and the dispersion stay as they are, and the replay records the real size. No armour under the reticle: Lesta forbids in-battle armour analysis."
       },
       "perf": "medium",
       "preview": {
-        "image": "previews/aim_info.png"
+        "image": "previews/aim_info.svg"
       }
     },
     {
@@ -740,8 +740,8 @@
         "en": "Battle results"
       },
       "description": {
-        "ru": "Строки с уроном, помощью и точным изменением отметки — в стандартном сообщении после боя (одно сообщение на бой, как в PMOD) и список боёв сессии в окне мода. У боя — «Попадания по мне»: схема танка сверху с местами попаданий и список с исходом, уроном и тем, кто стрелял. В бою — итоги прошлого боя, пришедшие уже в новом: короткая карточка сама появляется справа над мини-картой и через несколько секунд исчезает.",
-        "en": "Lines with the damage, assistance and exact MoE change in the stock post-battle message (one message per battle, as in PMOD) and the session battles in the mod window. Each battle shows «Hits on me»: a top-down schematic with the hit spots and a list with the outcome, the damage and who fired. In battle, the previous battle's results that arrive in the next one: a short card shows by itself on the right above the minimap and goes after a few seconds."
+        "ru": "Строки с уроном, помощью и точным изменением отметки — в стандартном сообщении после боя (одно сообщение на бой, как в PMOD) и список боёв сессии в окне мода. У боя — «Попадания по мне»: схема танка сверху с местами попаданий и список с исходом, уроном и тем, кто стрелял. В бою — итоги прошлого боя, пришедшие уже в новом: короткая карточка сама появляется справа над мини-картой и через несколько секунд исчезает, если игра не показывает их сама (штатное уведомление в бою выключено в настройках или на сервере).",
+        "en": "Lines with the damage, assistance and exact MoE change in the stock post-battle message (one message per battle, as in PMOD) and the session battles in the mod window. Each battle shows «Hits on me»: a top-down schematic with the hit spots and a list with the outcome, the damage and who fired. In battle, the previous battle's results that arrive in the next one: a short card shows by itself on the right above the minimap and goes after a few seconds, unless the game shows them itself (the stock in-battle notifier is off in the settings or on the server)."
       },
       "fairPlay": {
         "ru": "Только ваша часть итогов боя.",
@@ -766,8 +766,8 @@
         "en": "A carousel of 1–5 rows (1–2 the game's own setting, 3–5 added by the mod), tile size and interface scale from the game settings; quick actions on a button: demount removable equipment, take the style off, crew to the barracks and return the previous crew."
       },
       "fairPlay": {
-        "ru": "Работает только в ангаре.",
-        "en": "Works in the hangar only."
+        "ru": "Работает только в ангаре. Точный масштаб интерфейса и 3–5 рядов карусели выходят за штатные настройки игры: это не запрещено Лестой, но ждёт письменного ответа МОСТ, поэтому компонент выключен по умолчанию, а оба пункта стоят «Как в игре».",
+        "en": "Works in the hangar only. The exact interface scale and 3–5 carousel rows go beyond the game's own options: Lesta does not forbid them, but they wait for МОСТ's written answer, so the component is off by default and both start at «As in the game»."
       },
       "perf": "low",
       "preview": {
@@ -898,8 +898,8 @@
         "en": "Turns the chosen personal reserves on at the game start and, when chosen, whenever one runs out. Off by default: reserves get spent, so you pick which ones."
       },
       "fairPlay": {
-        "ru": "Только ваши личные резервы, тем же запросом, что кнопка «Активировать» игры; клановые и событийные не трогает.",
-        "en": "Only your own personal reserves, with the same request as the game's «Activate» button; clan and event reserves are left alone."
+        "ru": "Только ваши личные резервы, тем же запросом, что кнопка «Активировать» игры; клановые и событийные не трогает. Единственное действие ангара без нажатия кнопки: правила игры (п. 2.1.7) запрещают ботов и макросы, а об автоматической активации резервов прямо ничего не сказано, поэтому компонент и каждый резерв выключены, пока вы их не выберете, и вопрос отправлен кураторам МОСТ.",
+        "en": "Only your own personal reserves, with the same request as the game's «Activate» button; clan and event reserves are left alone. The one hangar action without a button press: the Game Rules (2.1.7) forbid bots and macros and say nothing about activating reserves automatically, so the component and every reserve stay off until you pick them, and the question is with the МОСТ curators."
       },
       "perf": "low",
       "preview": {
@@ -1202,7 +1202,6 @@
         "team_hp",
         "sixth_sense",
         "gun_arc",
-        "aim_info",
         "platoon_points",
         "battle_hotkeys",
         "battle_menu",
@@ -1257,7 +1256,6 @@
         "team_hp",
         "sixth_sense",
         "gun_arc",
-        "aim_info",
         "platoon_points",
         "battle_hotkeys",
         "hud_layouts",

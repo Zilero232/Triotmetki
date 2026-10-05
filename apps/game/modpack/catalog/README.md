@@ -7,16 +7,29 @@ catalog/
   catalog.json          titles, descriptions, fair-play notes (ru/en), categories, presets, previews, ownedPatterns,
                         and the third-party runtime mods (kind "dependency") the manager installs
   catalog.schema.json   the JSON Schema (Draft 7) of catalog.json, which setupkit validates it against
-  previews/<id>.svg     16:9 component previews (a .png screenshot works too); a HUD component's is <id>.png, rendered
+  previews/<id>.svg     16:9 component previews on the 640x360 canvas (below); a HUD component's is <id>.png, rendered
                         by its own HUD panel (below)
+  fonts/                Fira Sans Regular and Bold (Latin + Cyrillic subset, SIL OFL 1.1, OFL.txt): the only fonts
+                        the preview renderer loads, so a Linux release runner draws the same text as Windows
   screenshots/<id>/     real client screenshots for МОСТ, at most 3 per component (optional)
 ```
 
-[tools/build/setupkit](../tools/build/setupkit/__init__.py) turns it into the files the manager reads: `manifest/` merges the catalog with the package layout into `components.json`, `artwork/` renders the previews with resvg-py and Pillow.
+[tools/build/setupkit](../tools/build/setupkit/__init__.py) turns it into the files the manager reads: `manifest/` merges the catalog with the package layout into `components.json`, `artwork/` renders the previews with resvg-py (the fonts in `fonts/` only, never the system ones) and Pillow.
+
+## Preview canvas
+
+The manager shows a preview in a 16:9 frame 240 px wide on a component card (168 px in a narrow window) and about 270 px in the install wizard (`object-fit: cover`), so every preview is drawn for that size:
+
+- an SVG preview is `width="640" height="360" viewBox="0 0 640 360"` with `font-family="Fira Sans"` on the root;
+- every text is at least 28 px on that canvas (about 11 px on the card): a preview carries a few large words and numbers, not a screenshot of a whole window;
+- the artwork fills the canvas (a plate with a 24 px margin, or a scene to the edges), on the design tokens' dark colours (`packages/design-tokens/scss/_colors.scss`: `#18181b` ground, `#1f1f23` plate, `#3a3a42` line, `#f2f2f3` / `#a3a3ad` text, `#ff7a1a` accent);
+- a preview shows only what the component does today, and a removed component leaves no preview behind.
+
+[tools/build/setupkit/artwork/tests/test_previews.py](../tools/build/setupkit/artwork/tests/test_previews.py) checks all of it: the canvas, the font, the smallest text, how much of the canvas the rendered artwork spans, 16:9 PNGs, and that every file in `previews/` belongs to a catalog entry.
 
 ## HUD component previews
 
-The preview of every HUD component (`HUD_PREVIEWS` in [tools/build/previews/states.py](../tools/build/previews/states.py)) is its own panel as the in-game HUD page draws it from the feature's `model/preview.py`, centred and scaled to fit a 16:9 frame, 1280×720, 256 colours. Client art is replaced by our glyphs, so the images carry no game files. After a change to a panel or its preview:
+The preview of every HUD component (`HUD_PREVIEWS` in [tools/build/previews/states.py](../tools/build/previews/states.py)) is its own panel as the in-game HUD page draws it from the feature's `model/preview.py`, centred in a 16:9 frame, 1280×720, 256 colours. The panel is scaled to fit, but never below 2.2× for its height and 1.6× for its width ([render.mjs](../tools/build/previews/render.mjs) `FIT`), so its text stays legible on the card: a taller panel shows its top rows and a wider one its middle, faded out at the cut edge. A component whose look is not one panel (`gun_arc`'s markers stand at the traverse limits, around the reticle) has a drawn SVG instead. Client art is replaced by our glyphs, so the images carry no game files. After a change to a panel or its preview:
 
 ```bash
 cd apps/game/modpack

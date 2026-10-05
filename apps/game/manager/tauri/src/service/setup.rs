@@ -40,7 +40,6 @@ pub struct InstallPlan {
     pub installed: bool,
     pub current_components: Vec<String>,
     pub parked_components: Vec<String>,
-    pub dependencies: Vec<DependencyStatus>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
@@ -50,8 +49,6 @@ pub struct InstallRequest {
     pub components: Vec<String>,
     #[serde(default)]
     pub remove_others: Vec<PathBuf>,
-    #[serde(default)]
-    pub excluded_dependencies: Vec<String>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
@@ -172,7 +169,6 @@ impl Manager {
 
         Ok(InstallPlan {
             other_mods: without_owned_dependencies(install::other_mods(&client, &owned), &dependency_statuses),
-            dependencies: dependency_statuses,
             release: release.map(|release| ReleaseSummary { version: release.version, notes: release.notes }),
             current_components: installation.as_ref().map(|installation| components_in(installation, None)).unwrap_or_default(),
             parked_components: installation
@@ -206,7 +202,7 @@ impl Manager {
 
         let packages = fetch_packages(&self.releases, &release, &ids).await?;
         let version = release.version;
-        let wanted = dependencies::resolve(ResolveInput { catalog, components: &ids, excluded: &request.excluded_dependencies })?;
+        let wanted = dependencies::resolve(ResolveInput { catalog, components: &ids });
         let fetched =
             self.fetch_dependencies(DownloadPlanInput { context: scope.context(), wanted: &wanted, removing: &request.remove_others }).await?;
         let parked: BTreeSet<String> = components_in(&read_installation(scope.context())?, Some(ComponentState::Disabled)).into_iter().collect();

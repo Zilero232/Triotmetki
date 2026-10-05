@@ -480,18 +480,48 @@ class UiSmokeTest(unittest.TestCase):
             assert self.core.applied[-1]['arcade']['custom'] == 3
             assert self.core.applied[-1]['arcade']['net'] == 0
 
-    def test_a_fresh_install_writes_the_recommended_reticle_once_and_keeps_the_old_one(self):
+    def test_a_fresh_install_writes_no_client_setting_on_the_first_hangar(self):
         for seed in LOAD_ORDER_SEEDS:
             self.restart()
 
             app = self.open_hangar(seed)
 
-            assert self.core.values['arcade']['net'] == 0
-            assert app.state['native_backup']['crosshair']['settings']['arcade'] == {'net': 100, 'custom': 3}
-            assert app.state['native_initial_applied']['crosshair'] == 3
+            assert self.core.applied == []
+            assert 'crosshair' not in app.state.get('native_backup', {})
+
+    def test_a_fresh_install_leaves_the_reticle_to_the_game(self):
+        self.open_window(0)
+
+        crosshair = card_of(self.state(), 'crosshair')
+
+        assert [field['value'] for field in crosshair['fields'] if field['key'] == 'preset'] == ['native']
+
+    def test_a_fresh_install_card_offers_the_recommended_reticle(self):
+        self.open_window(0)
+
+        actions = card_of(self.state(), 'crosshair')['actions']
+
+        assert [action['id'] for action in actions] == ['native_recommended']
+
+    def test_recommended_writes_the_reticle_and_keeps_the_old_one(self):
+        app = self.open_window(0)
+
+        self.send(type='action', component='crosshair', action='native_recommended')
+
+        assert self.core.values['arcade']['net'] == 0
+        assert app.state['native_backup']['crosshair']['settings']['arcade'] == {'net': 100, 'custom': 3}
+
+    def test_after_recommended_the_card_offers_the_restore(self):
+        self.open_window(0)
+
+        self.send(type='action', component='crosshair', action='native_recommended')
+
+        actions = card_of(self.state(), 'crosshair')['actions']
+        assert [action['id'] for action in actions] == ['native_restore']
 
     def test_the_hangar_again_writes_nothing_more(self):
-        self.open_hangar(0)
+        self.open_window(0)
+        self.send(type='action', component='crosshair', action='native_recommended')
         written = len(self.core.applied)
 
         self.events.onAccountShowGUI()
@@ -500,6 +530,7 @@ class UiSmokeTest(unittest.TestCase):
 
     def test_restore_writes_the_old_reticle_back_and_leaves_it_to_the_game(self):
         app = self.open_window(0)
+        self.send(type='action', component='crosshair', action='native_recommended')
 
         self.send(type='action', component='crosshair', action='native_restore')
 
@@ -510,11 +541,23 @@ class UiSmokeTest(unittest.TestCase):
 
     def test_after_a_restore_the_card_offers_the_recommended_reticle(self):
         self.open_window(0)
+        self.send(type='action', component='crosshair', action='native_recommended')
 
         self.send(type='action', component='crosshair', action='native_restore')
 
         actions = card_of(self.state(), 'crosshair')['actions']
         assert [action['id'] for action in actions] == ['native_recommended']
+
+    def test_a_pending_preset_of_an_older_build_writes_nothing(self):
+        config_dir = os.path.join(self.game_dir, 'mods', 'configs', 'otmetki')
+        os.makedirs(config_dir)
+        with open(os.path.join(config_dir, 'state.json'), 'w') as handle:
+            json.dump({'native_initial_applied': {'crosshair': 0, 'minimap': 0, 'camera': 0}}, handle)
+
+        app = self.open_hangar(0)
+
+        assert self.core.applied == []
+        assert 'native_initial_applied' not in app.state
 
     def test_an_existing_install_writes_no_client_setting(self):
         config_dir = os.path.join(self.game_dir, 'mods', 'configs', 'otmetki')

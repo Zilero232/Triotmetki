@@ -18,5 +18,10 @@
   "unsignedTitle": "Unsigned build",
   "unsignedDescription": "The manager is not signed with a developer certificate, so SmartScreen may warn on the first start (“More info” → “Run anyway”). Updates of the manager itself are checked with a minisign signature.",
   "site": "triotmetki.ru",
-  "modPage": "Mod page"
+  "modPage": "Mod page",
+  "libraries": {
+    "title": "Libraries used",
+    "description": "Free mods by other authors that the modpack installs with the selected components. Their licences are kept with the install.",
+    "licence": "{name} licence"
+  }
 }

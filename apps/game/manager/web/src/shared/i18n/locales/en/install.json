@@ -32,7 +32,6 @@
   },
   "reviewClient": "Client {version}",
   "reviewComponents": "Components: {count}",
-  "reviewDependencies": "Third-party libraries to download: {count}",
   "reviewRemove": "Other mods to remove: {count}",
   "reviewReinstall": "The modpack is already installed: it is replaced with this selection, and disabled components ({count}) stay disabled",
   "confirmRemoveTitle": "Remove {count} other mods?",
@@ -40,21 +39,6 @@
   "installed": "The modpack is installed",
   "noCatalog": "The component catalogue has not been downloaded from the server yet",
   "clientUnsupported": "The modpack cannot be installed into this client — choose Lesta's Mir Tankov at a supported version",
-  "dependencies": {
-    "title": "Required libraries",
-    "description": "Free third-party mods the selected components need. They are downloaded from their authors' official releases and checked against a pinned checksum; the licence is kept with the install. A copy you installed yourself stays yours and is never replaced or removed. An optional library can be unticked: the components work without it and lose only the convenience it adds.",
-    "state": {
-      "missing": "Will be installed",
-      "outdated": "Will be updated",
-      "ours": "Installed by the manager",
-      "user": "Yours"
-    },
-    "optional": "Optional",
-    "userCopy": "Your copy is used: {file}",
-    "version": "Version {version}",
-    "licence": "Licence:",
-    "author": "Author:"
-  },
   "installedHint": "Components on: {count}.",
   "installing": "Installing",
   "installingHint": "Downloading the packages, checking their checksums and putting the files in place. Do not start the game until the install finishes.",

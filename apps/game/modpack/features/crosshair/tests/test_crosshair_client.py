@@ -30,7 +30,6 @@ class App(object):
         self.in_battle = False
         self.state = {}
         self.config_dir = '.'
-        self.fresh_install = False
 
     def register_state(self, key, dump):
         pass

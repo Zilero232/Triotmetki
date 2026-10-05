@@ -81,7 +81,6 @@ class OtmetkiApp(object):
         self.hooks = Subscriptions()
         self.config_file = open_config(CONFIG_DIR, 'config.json', pretty=True)
         stored_config = self.config_file.read({})
-        self.fresh_install = not stored_config
         self.config = Config(migrate_stored(CONFIG_DIR, stored_config))
         self.save_config()
         self.translate = Translator(resolve_language(self.config.get('language'), client_language()))

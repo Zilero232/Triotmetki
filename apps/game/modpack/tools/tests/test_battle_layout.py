@@ -37,8 +37,8 @@ QUEST_PROGRESS = (200, 107, 245)
 TIMER_WIDTH = 184
 BATTLE_CLOCK_WIDTH = 90
 BATTLE_PANELS = (
-    'aim_info', 'battle_hotkeys', 'battle_loadout', 'battle_progress', 'damage_log', 'gun_arc', 'marks_panel',
-    'platoon_points', 'sixth_sense',
+    'battle_hotkeys', 'battle_loadout', 'battle_progress', 'damage_log', 'gun_arc', 'marks_panel', 'platoon_points',
+    'sixth_sense',
 )
 # The page's places of the attached panels (ui-web views/hud/lib/attach, HUD_OVERLAY.attach), design px: the gap to
 # the stock element, the bottom margin, the consumables panel's height, the gap over it and the gap between the two
@@ -215,8 +215,8 @@ STOCK_RECTS = (
 # info and destroy timers under the reticle and the consumables popup (H - 110): they show for a moment.
 HUD_RESOLUTIONS = ((1920, 1080), (2560, 1440))
 # The largest default size of each panel (design px); a docked column is one box from its anchor to its reserve. The
-# reticle panels (aim_info, gun_arc) follow the reticle and are checked only against each other; the traverse limit
-# markers stand at the reticle's height across the width of their canvas (32 px tall).
+# traverse limit markers (gun_arc) follow the reticle, at its height across the width of their canvas, and have no
+# size here.
 PANEL_SIZES = {
     'battle_clock': (90, 24),
     'battle_hotkeys': (300, 30),
@@ -228,7 +228,6 @@ PANEL_SIZES = {
 }
 COLUMN_WIDTH = 340
 DAMAGE_LOG_SIZE = (330, 260)
-RETICLE_SIZES = (('aim_info', (220, 40)), ('gun_arc', (1280, 32)))
 DOCKED = (
     ('platoon_points', 'battle_left_top'),
     ('damage_log', 'battle_left_bottom'),
@@ -390,13 +389,6 @@ class DefaultPlacesTest(unittest.TestCase):
             ]
 
         assert crowded == []
-
-    def test_the_reticle_panels_keep_apart(self):
-        first, second = [
-            panel_rect(default_place(feature_id), HUD_RESOLUTIONS[0], size) for feature_id, size in RETICLE_SIZES
-        ]
-
-        assert not overlaps(first, second)
 
     def test_the_equipment_row_sits_beside_the_consumables_or_above_them(self):
         screen = (2560, 1440)

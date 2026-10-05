@@ -10,9 +10,7 @@ from .constants import (
     NATIVE,
     OFF,
     ON,
-    STAMP_STATE_KEY,
-    STEP_APPLY,
-    STEP_NATIVE,
+    RETIRED_STAMP_STATE_KEY,
     TRI_STATE,
 )
 from .initial import NativeState, client_keys, is_recommended, native_choices, offered_action, recommended
@@ -26,9 +24,7 @@ __all__ = (
     'NATIVE',
     'OFF',
     'ON',
-    'STAMP_STATE_KEY',
-    'STEP_APPLY',
-    'STEP_NATIVE',
+    'RETIRED_STAMP_STATE_KEY',
     'TRI_STATE',
     'NativeState',
     'changed_values',

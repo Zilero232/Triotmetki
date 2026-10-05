@@ -74,26 +74,16 @@ BATTLE_PANELS = [
     'battle_clock', 'battle_progress', 'damage_log', 'sixth_sense', 'team_hp',
 ]
 DESCRIBED_PANELS = [
-    'aim_info', 'battle_clock', 'battle_hotkeys', 'battle_loadout', 'battle_progress', 'crosshair', 'damage_log',
+    'battle_clock', 'battle_hotkeys', 'battle_loadout', 'battle_progress', 'crosshair', 'damage_log',
     'gun_arc', 'hangar_marks', 'last_battle', 'marks_panel', 'platoon_points', 'sixth_sense', 'team_hp',
 ]
 HUD_EDIT_PREVIEWS = [
-    'aim_info', 'battle_clock', 'battle_loadout', 'battle_progress', 'crosshair', 'damage_log', 'gun_arc',
+    'battle_clock', 'battle_loadout', 'battle_progress', 'crosshair', 'damage_log', 'gun_arc',
     'hangar_marks', 'last_battle', 'marks_panel', 'platoon_points', 'sixth_sense',
 ]
-# RU 1.45 aih_constants.SHOT_RESULT values.
-SHOT_RESULTS = {'UNDEFINED': 0, 'NOT_PIERCED': 1, 'LITTLE_PIERCED': 2, 'GREAT_PIERCED': 3}
-# The own shell's piercing power at 100 and 500 m, the target's plates the resolver stub walks (a spaced screen, then
-# the hull's front plate at 30 degrees) and where the reticle sits on a 1920x1080 screen.
-OWN_PIERCING = (218.4, 180.0)
-TARGET_PLATES = ((20.0, 0), (180.0, 1))
-HIT_ANGLE_COS = 0.866
+# Where the reticle sits on a 1920x1080 screen; CROSSHAIR_VIEW_ID (RU 1.45): the arcade view.
 RETICLE_SCREEN = {'position': (960, 540), 'size': (1920, 1080), 'scale': 1.0}
-# CROSSHAIR_VIEW_ID (RU 1.45): the arcade view and the dead player's view; the arcade reticle sits 15 % of the half
-# height above the centre (gui/avatar_input_handler.xml arcadeMode/defaultOffset 0 0.15).
 ARCADE_VIEW = 1
-POSTMORTEM_VIEW = 4
-ARCADE_RETICLE = (960, 459)
 OWN_SHOT = {
     'damage': 390,
     'nominal': None,
@@ -3268,46 +3258,6 @@ class Vector(object):
         return (self.x ** 2 + self.y ** 2 + self.z ** 2) ** 0.5
 
 
-def plate(armor, damage_factor):
-    return instance('MaterialInfo', {
-        'armor': armor, 'kind': int(armor), 'useHitAngle': True, 'vehicleDamageFactor': damage_factor,
-        'collideOnceOnly': False, 'mayRicochet': True, 'checkCaliberForRichet': False,
-    })
-
-
-def plate_detail(index, values):
-    return instance('Detail', {
-        'dist': 0.1 * index, 'hitAngleCos': HIT_ANGLE_COS, 'matInfo': plate(*values), 'compName': index,
-    })
-
-
-class ShotResultResolver(object):
-    # RU 1.45 gun_marker_ctrl._CrosshairShotResults: the verdict and the steps it takes, on the stub's plates.
-    verdicts = []
-
-    @classmethod
-    def getShotResult(cls, hitPoint, collision, direction, excludeTeam=0, piercingMultiplier=1):
-        cls.verdicts.append((collision.entity, excludeTeam, piercingMultiplier))
-        return SHOT_RESULTS['LITTLE_PIERCED']
-
-    @classmethod
-    def _getAllCollisionDetails(cls, hitPoint, direction, entity):
-        return [plate_detail(index, values) for index, values in enumerate(TARGET_PLATES)]
-
-    @classmethod
-    def _computePiercingPowerAtDist(cls, ppDesc, dist, maxDist, piercingMultiplier):
-        p100, p500 = ppDesc
-        return (p100 if dist <= 100.0 else p500) * piercingMultiplier
-
-    @classmethod
-    def _computePenetrationArmor(cls, shell, hitAngleCos, matInfo):
-        return matInfo.armor / hitAngleCos
-
-    @classmethod
-    def _shouldRicochet(cls, shell, hitAngleCos, matInfo):
-        return False
-
-
 def crosshair_proxy():
     proxy = instance('CrosshairDataProxy', {
         'getViewID': lambda proxy: proxy.view_id,
@@ -3321,148 +3271,6 @@ def crosshair_proxy():
     proxy.onCrosshairViewChanged = Event()
     proxy.onCrosshairPositionChanged = Event()
     return proxy
-
-
-def install_aim_armor_stubs():
-    package('AvatarInputHandler')
-    module('AvatarInputHandler.gun_marker_ctrl', createShotResultResolver=lambda: ShotResultResolver)
-    module('aih_constants', SHOT_RESULT=constants('SHOT_RESULT', SHOT_RESULTS))
-    module('helpers_common', computeDistanceFactor=lambda shell, distance, name: 1.0)
-
-
-def own_shot():
-    shell = instance('Shell', {'kind': 'ARMOR_PIERCING'})
-    return instance('Shot', {'shell': shell, 'piercingPower': OWN_PIERCING, 'maxDistance': 720.0})
-
-
-def target(vehicle_class, team):
-    vehicle = vehicle_class(False)
-    vehicle.health = 900
-    vehicle.publicInfo = {'team': team}
-    return vehicle
-
-
-class AimArmorTest(StoryTest):
-
-    @classmethod
-    def play(cls, game):
-        app, vehicle_class = open_shots_hangar(game)
-        game.hud_module().hud_layer(app).update_settings('aim_info', {'armor_under_aim': True})
-        install_aim_armor_stubs()
-        ShotResultResolver.verdicts = []
-        session = BattleSession()
-        session.shared.crosshair = crosshair_proxy()
-        game.player = Player(ACCOUNT, 4243)
-        game.player.vehicleTypeDescriptor = instance('Descriptor', {'shot': own_shot()})
-        game.player.getOwnVehiclePosition = lambda: Vector(0.0, 0.0, 0.0)
-        game.join(session)
-        enemy = target(vehicle_class, 2)
-        ally = target(vehicle_class, 1)
-        cls.panels_before_aiming = sorted(game.hud_components())
-
-        cls.aim(session, enemy)
-        cls.readout = game.hud_text('aim_info')
-        props = game.hud_components()['aim_info']
-        cls.place = (props['x'], props['y'])
-        cls.aim(session, enemy)
-        cls.verdicts_in_one_tick = len(ShotResultResolver.verdicts)
-
-        game.clock[0] += 0.2
-        cls.aim(session, ally)
-        cls.panels_over_an_ally = sorted(game.hud_components())
-        game.clock[0] += 0.2
-        cls.aim(session, enemy)
-        game.clock[0] += 0.2
-        cls.aim(session, None)
-        cls.panels_without_a_target = sorted(game.hud_components())
-        cls.excluded_team = ShotResultResolver.verdicts[0][1]
-        game.back_to_hangar()
-
-    @staticmethod
-    def aim(session, vehicle):
-        collision = instance('Collision', {'entity': vehicle}) if vehicle is not None else None
-        session.shared.crosshair.onGunMarkerStateChanged(1, Vector(0.0, 0.0, 50.0), Vector(0.0, 0.0, 1.0), collision)
-
-    def test_nothing_shows_before_an_enemy_is_under_the_reticle(self):
-        self.assertNotIn('aim_info', self.panels_before_aiming)
-
-    def test_the_readout_writes_the_effective_and_nominal_armour_and_the_own_penetration(self):
-        self.assertIn(u'231', self.readout)
-        self.assertIn(u'ном. 180', self.readout)
-        self.assertIn(u'проб. 218', self.readout)
-
-    def test_the_readout_sits_under_the_reticle(self):
-        self.assertEqual(self.place, (0, 132))
-
-    def test_one_resolution_per_server_tick(self):
-        self.assertEqual(self.verdicts_in_one_tick, 1)
-
-    def test_the_own_team_is_excluded_as_the_stock_marker_does(self):
-        self.assertEqual(self.excluded_team, 1)
-
-    def test_an_ally_under_the_reticle_hides_the_readout(self):
-        self.assertNotIn('aim_info', self.panels_over_an_ally)
-
-    def test_no_target_hides_the_readout(self):
-        self.assertNotIn('aim_info', self.panels_without_a_target)
-
-
-class AimArmorArcadeTest(StoryTest):
-
-    @staticmethod
-    def join_arcade_battle(game):
-        app, vehicle_class = open_shots_hangar(game)
-        game.hud_module().hud_layer(app).update_settings('aim_info', {'armor_under_aim': True})
-        install_aim_armor_stubs()
-        session = BattleSession()
-        session.shared.crosshair = crosshair_proxy()
-        session.shared.crosshair.screen['position'] = ARCADE_RETICLE
-        game.player = Player(ACCOUNT, 4243)
-        game.player.vehicleTypeDescriptor = instance('Descriptor', {'shot': own_shot()})
-        game.player.getOwnVehiclePosition = lambda: Vector(0.0, 0.0, 0.0)
-        game.join(session)
-        return session, target(vehicle_class, 2)
-
-    @classmethod
-    def play(cls, game):
-        session, enemy = cls.join_arcade_battle(game)
-        crosshair = session.shared.crosshair
-
-        game.clock[0] += 0.2
-        AimArmorTest.aim(session, enemy)
-        props = game.hud_components()['aim_info']
-        cls.arcade_place = (props['x'], props['y'])
-
-        game.clock[0] += 0.2
-        AimArmorTest.aim(session, None)
-        AimArmorTest.aim(session, enemy)
-        game.run_callbacks()
-        cls.panels_once_the_aim_settles_on_an_enemy = sorted(game.hud_components())
-
-        game.clock[0] += 0.2
-        AimArmorTest.aim(session, enemy)
-        AimArmorTest.aim(session, None)
-        game.run_callbacks()
-        cls.panels_once_the_aim_leaves_the_enemy = sorted(game.hud_components())
-
-        game.clock[0] += 0.2
-        AimArmorTest.aim(session, enemy)
-        crosshair.view_id = POSTMORTEM_VIEW
-        crosshair.onCrosshairViewChanged(POSTMORTEM_VIEW)
-        cls.panels_after_death = sorted(game.hud_components())
-        game.back_to_hangar()
-
-    def test_the_readout_shows_under_the_arcade_reticle(self):
-        self.assertEqual(self.arcade_place, (0, 51))
-
-    def test_the_readout_follows_the_aim_that_settles_on_an_enemy_within_a_tick(self):
-        self.assertIn('aim_info', self.panels_once_the_aim_settles_on_an_enemy)
-
-    def test_the_readout_hides_when_the_aim_leaves_the_enemy_within_a_tick(self):
-        self.assertNotIn('aim_info', self.panels_once_the_aim_leaves_the_enemy)
-
-    def test_the_readout_hides_when_the_player_dies(self):
-        self.assertNotIn('aim_info', self.panels_after_death)
 
 
 class UnreadableResultsTest(StoryTest):

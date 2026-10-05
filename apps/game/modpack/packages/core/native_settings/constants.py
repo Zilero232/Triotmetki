@@ -5,15 +5,10 @@ ON = 'on'
 OFF = 'off'
 TRI_STATE = (NATIVE, ON, OFF)
 
-# state.json keys of the one-time client presets (core.native_settings.initial): the client values a component replaced,
-# per component, and per component the defaults revision whose presets it wrote (PENDING: a fresh install that has
-# not reached the hangar with the switch on yet).
+# state.json key of the client values a component replaced when the player asked for its recommended values, per
+# component (the card's restore point).
 BACKUP_STATE_KEY = 'native_backup'
-STAMP_STATE_KEY = 'native_initial_applied'
-INITIAL_REVISION = 3
-PENDING = 0
-STEP_APPLY = 'apply'
-STEP_NATIVE = 'native'
-
+# state.json key of the one-time presets older builds wrote on a fresh install without asking (dropped on load).
+RETIRED_STAMP_STATE_KEY = 'native_initial_applied'
 ACTION_RESTORE = 'native_restore'
 ACTION_RECOMMENDED = 'native_recommended'

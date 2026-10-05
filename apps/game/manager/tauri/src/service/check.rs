@@ -279,7 +279,7 @@ impl Manager {
 
         let input = ToggleInput { context: scope.context(), component_id, enabled };
         let missing = if enabled { components::missing_for_enable(&input)? } else { Vec::new() };
-        let wanted = if enabled { dependencies::needed_to_enable(&scope.catalog.catalog, component_id)? } else { BTreeSet::new() };
+        let wanted = if enabled { dependencies::needed_to_enable(&scope.catalog.catalog, component_id) } else { BTreeSet::new() };
         let fetched = self.fetch_dependencies(DownloadPlanInput { context: scope.context(), wanted: &wanted, removing: &[] }).await?;
 
         if !missing.is_empty() {

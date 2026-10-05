@@ -1,4 +1,3 @@
-import { aimArmorSchema, AimArmorWidget } from '@/entities/hud/aim-armor';
 import { battleClockSchema, BattleClockWidget } from '@/entities/hud/battle-clock';
 import { battleLoadoutSchema, BattleLoadoutWidget } from '@/entities/hud/battle-loadout';
 import { battleSummarySchema, BattleSummaryWidget } from '@/entities/hud/battle-summary';
@@ -20,7 +19,6 @@ export const WIDGET_ENTRIES = [
   defineHudWidget({ kind: 'damage_log', schema: damageLogSchema, Component: DamageLogWidget }),
   defineHudWidget({ kind: 'marks_panel', schema: marksPanelSchema, Component: MarksPanelWidget }),
   defineHudWidget({ kind: 'gun_arc', schema: gunArcSchema, Component: GunArcWidget }),
-  defineHudWidget({ kind: 'aim_armor', schema: aimArmorSchema, Component: AimArmorWidget }),
   defineHudWidget({ kind: 'battle_loadout', schema: battleLoadoutSchema, Component: BattleLoadoutWidget, pointer: true }),
   defineHudWidget({ kind: 'battle_summary', schema: battleSummarySchema, Component: BattleSummaryWidget }),
   defineHudWidget({ kind: 'option_notice', schema: optionNoticeSchema, Component: OptionNoticeWidget }),

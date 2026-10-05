@@ -8,8 +8,7 @@ import s from './ReviewStep.module.scss';
 
 export const ReviewStep = () => {
   const t = useTranslations('install');
-  const { plan, chosenGroups, selectedCount, removeOthers, dependencyCount, isReinstall, parkedCount, blocker, isInstalling, goTo } =
-    useInstallWizard();
+  const { plan, chosenGroups, selectedCount, removeOthers, isReinstall, parkedCount, blocker, isInstalling, goTo } = useInstallWizard();
 
   return (
     <Card title={t('steps.review')}>
@@ -59,7 +58,6 @@ export const ReviewStep = () => {
             {t('reviewWhere')}: {t('reviewClient', { version: plan.client.version })} <span className={s.path}>{plan.client.modsDir}</span>
           </li>
         )}
-        {dependencyCount > 0 && <li>{t('reviewDependencies', { count: dependencyCount })}</li>}
         {isReinstall && <li className={s.warning}>{t('reviewReinstall', { count: parkedCount })}</li>}
         {removeOthers.size > 0 && <li className={s.danger}>{t('reviewRemove', { count: removeOthers.size })}</li>}
         {plan && <li>{t(`source.${plan.source}`, { version: plan.release?.version ?? '' })}</li>}

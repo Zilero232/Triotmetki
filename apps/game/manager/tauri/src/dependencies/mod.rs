@@ -2,12 +2,11 @@ use std::collections::BTreeSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use serde::Serialize;
 use walkdir::WalkDir;
 
 use crate::catalog::{Catalog, DependencyComponent, PACKAGE_EXTENSIONS};
 use crate::components::{sync_manifest, ClientContext};
-use crate::error::{AppError, AppResult, ErrorCode};
+use crate::error::AppResult;
 use crate::fsx::{copy_verified, file_sha256, remove_path, write_atomic};
 use crate::patch::{stage, StagedFile};
 use crate::paths::same_path;
@@ -18,8 +17,7 @@ pub const NOTICES_DIR: &str = "notices";
 pub const LICENCE_FILE: &str = "LICENSE";
 pub const SEARCH_DEPTH: usize = 4;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
-#[serde(rename_all = "snake_case")]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DependencyState {
     Missing,
     Ours,
@@ -27,8 +25,7 @@ pub enum DependencyState {
     User,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DependencyStatus {
     pub id: String,
     pub state: DependencyState,
@@ -45,7 +42,6 @@ pub struct FetchedDependency {
 pub struct ResolveInput<'a> {
     pub catalog: &'a Catalog,
     pub components: &'a BTreeSet<String>,
-    pub excluded: &'a [String],
 }
 
 pub struct InstallDependenciesInput<'a> {
@@ -64,27 +60,22 @@ pub struct UpdatesInput<'a> {
     pub from_mods_dir: Option<&'a Path>,
 }
 
-pub fn resolve(input: ResolveInput) -> AppResult<BTreeSet<String>> {
-    if let Some(unknown) = input.excluded.iter().find(|id| input.catalog.dependency(id).is_none()) {
-        return Err(AppError::coded(ErrorCode::UnknownComponent, format!("unknown dependency {unknown}")));
-    }
-
-    Ok(input
+pub fn resolve(input: ResolveInput) -> BTreeSet<String> {
+    input
         .catalog
         .dependencies
         .iter()
         .filter(|dependency| dependency.required_by.iter().any(|id| input.components.contains(id)))
-        .filter(|dependency| !input.excluded.contains(&dependency.id))
         .map(|dependency| dependency.id.clone())
-        .collect())
+        .collect()
 }
 
-pub fn needed_to_enable(catalog: &Catalog, component_id: &str) -> AppResult<BTreeSet<String>> {
-    let mut needed = resolve(ResolveInput { catalog, components: &catalog.with_dependencies([component_id]), excluded: &[] })?;
+pub fn needed_to_enable(catalog: &Catalog, component_id: &str) -> BTreeSet<String> {
+    let mut needed = resolve(ResolveInput { catalog, components: &catalog.with_dependencies([component_id]) });
 
     needed.retain(|id| catalog.dependency(id).is_some_and(|dependency| !dependency.optional));
 
-    Ok(needed)
+    needed
 }
 
 pub fn is_copy_of(dependency: &DependencyComponent, file_name: &str) -> bool {

@@ -39,12 +39,7 @@ fn a_first_install_without_a_connection_is_offline() {
         assert!(plan.catalog.is_none());
         assert!(plan.release.is_none());
 
-        let request = InstallRequest {
-            client_path: Some(client.clone()),
-            components: Vec::new(),
-            remove_others: Vec::new(),
-            excluded_dependencies: Vec::new(),
-        };
+        let request = InstallRequest { client_path: Some(client.clone()), components: Vec::new(), remove_others: Vec::new() };
 
         assert_eq!(manager.install_modpack(request).await.unwrap_err().code(), ErrorCode::Offline);
     });
@@ -78,8 +73,7 @@ fn refuses_to_write_into_an_unsupported_client() {
     assert!(manager.usable_client(Some(&supported)).is_ok());
 
     tauri::async_runtime::block_on(async {
-        let request =
-            InstallRequest { client_path: Some(old.clone()), components: Vec::new(), remove_others: Vec::new(), excluded_dependencies: Vec::new() };
+        let request = InstallRequest { client_path: Some(old.clone()), components: Vec::new(), remove_others: Vec::new() };
 
         assert_eq!(manager.install_modpack(request).await.unwrap_err().code(), ErrorCode::ClientUnsupported);
         assert_eq!(manager.migrate_now(Some(&old)).await.unwrap_err().code(), ErrorCode::ClientUnsupported);

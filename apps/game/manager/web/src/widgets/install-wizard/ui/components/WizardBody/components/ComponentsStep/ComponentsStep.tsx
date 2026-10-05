@@ -5,8 +5,6 @@ import { ComponentPreview, FairPlayNote, PERF, PreviewAudio } from '@/entities/c
 import { useInstallWizard } from '@/features/setup/install-modpack';
 import { Badge, Button, Card, Checkbox, EmptyState, ExternalLink, FormField, Select } from '@/ui-kit';
 
-import { DependencyList } from './components';
-
 import s from './ComponentsStep.module.scss';
 
 export const ComponentsStep = () => {
@@ -64,7 +62,6 @@ export const ComponentsStep = () => {
               ))}
             </fieldset>
           ))}
-          <DependencyList />
         </div>
         {preview && (
           <aside className={s.preview}>

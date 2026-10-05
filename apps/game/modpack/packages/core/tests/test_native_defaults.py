@@ -7,8 +7,6 @@ from otmetki.core.native_settings import (
     ACTION_RECOMMENDED,
     ACTION_RESTORE,
     NATIVE,
-    STEP_APPLY,
-    STEP_NATIVE,
     TRI_STATE,
     NativeState,
     client_keys,
@@ -63,69 +61,6 @@ class OfferedActionTest(unittest.TestCase):
         assert offered_action(False, True) is None
 
 
-class EnrollTest(unittest.TestCase):
-
-    def test_a_fresh_install_makes_the_component_due(self):
-        state = NativeState()
-
-        state.enroll('camera', fresh_install=True)
-
-        assert state.is_due('camera') is True
-
-    def test_an_existing_install_is_never_due(self):
-        state = NativeState()
-
-        state.enroll('camera', fresh_install=False)
-
-        assert state.is_due('camera') is False
-
-    def test_enrolling_reports_a_new_component(self):
-        assert NativeState().enroll('camera', fresh_install=True) is True
-
-    def test_a_stamped_component_is_not_enrolled_again(self):
-        state = NativeState(stamps={'camera': 3})
-
-        enrolled = state.enroll('camera', fresh_install=True)
-
-        assert enrolled is False
-        assert state.is_due('camera') is False
-
-    def test_a_pending_stamp_survives_a_restart(self):
-        state = NativeState(stamps=NativeState(stamps={'camera': 0}).dump_stamps())
-
-        state.enroll('camera', fresh_install=False)
-
-        assert state.is_due('camera') is True
-
-
-class HangarStepTest(unittest.TestCase):
-
-    def due_state(self):
-        state = NativeState()
-        state.enroll('minimap', fresh_install=True)
-        return state
-
-    def test_a_due_component_with_its_switch_on_applies(self):
-        assert self.due_state().hangar_step('minimap', True) == STEP_APPLY
-
-    def test_a_due_component_with_its_switch_off_goes_native(self):
-        assert self.due_state().hangar_step('minimap', False) == STEP_NATIVE
-
-    def test_a_settled_component_does_nothing(self):
-        state = self.due_state()
-
-        state.settle('minimap')
-
-        assert state.hangar_step('minimap', True) is None
-
-    def test_settling_stamps_the_revision(self):
-        state = self.due_state()
-
-        state.settle('minimap')
-
-        assert state.dump_stamps() == {'minimap': 3}
-
-
 class BackupTest(unittest.TestCase):
 
     def test_a_kept_backup_reads_back(self):
@@ -153,7 +88,6 @@ class BackupTest(unittest.TestCase):
         assert NativeState(backups={'camera': 'x'}).backup('camera') is None
 
     def test_damaged_state_starts_empty(self):
-        state = NativeState(backups=[1], stamps='x')
+        state = NativeState(backups=[1])
 
         assert state.dump_backups() == {}
-        assert state.dump_stamps() == {}

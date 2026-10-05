@@ -369,18 +369,6 @@
     "companion",
     "hit_log"
   ],
-  "dependencies": [
-    {
-      "file": "net.openwg.gameface_1.2.2.mtmod",
-      "id": "openwg_gameface",
-      "state": "ours"
-    },
-    {
-      "file": "gambiter.guiflash_0.6.5.mtmod",
-      "id": "guiflash",
-      "state": "user"
-    }
-  ],
   "installed": true,
   "otherMods": [
     {

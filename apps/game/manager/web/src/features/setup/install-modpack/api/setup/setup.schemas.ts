@@ -13,12 +13,6 @@ export const foreignEntrySchema = z.object({
   location: z.enum(['mods', 'res_mods'])
 });
 
-export const dependencyStatusSchema = z.object({
-  id: z.string(),
-  state: z.enum(['missing', 'ours', 'outdated', 'user']),
-  file: z.string().nullable()
-});
-
 export const installPlanSchema = z.object({
   client: gameClientSchema,
   catalog: catalogSchema.nullable(),
@@ -27,8 +21,7 @@ export const installPlanSchema = z.object({
   otherMods: z.array(foreignEntrySchema),
   installed: z.boolean(),
   currentComponents: z.array(z.string()),
-  parkedComponents: z.array(z.string()),
-  dependencies: z.array(dependencyStatusSchema)
+  parkedComponents: z.array(z.string())
 });
 
 export const installWarningSchema = z.object({

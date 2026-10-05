@@ -176,6 +176,26 @@ class SectionsTest(unittest.TestCase):
 
         self.assertEqual(migrated_components, {'crosshair': {'reload_box': True}, 'update_notice': {}})
 
+    def test_a_file_at_revision_three_loses_the_armour_readout_and_the_place_of_the_aim_panel(self):
+        config = {'defaults_revision': MIGRATION_REVISION}
+        aim = {
+            'x': 0, 'y': 132, 'align_x': 'center', 'align_y': 'center', 'alpha': 100, 'drag': True, 'scale': 100,
+            'armor_under_aim': True, 'show_nominal': True, 'show_piercing': True, 'show_angle': False,
+            'placement': 'reticle', 'target_distance': False, 'aim_circle': True,
+        }
+
+        _, components = migrate(config, {'aim_info': aim})
+
+        self.assertEqual(components['aim_info'], {'target_distance': False, 'aim_circle': True})
+
+    def test_a_file_at_revision_three_loses_the_battle_type_places_of_the_aim_panel(self):
+        config = {'defaults_revision': MIGRATION_REVISION}
+        places = {'comp7': {'aim_info': {'x': 1}, 'damage_log': {'x': 2}}}
+
+        _, components = migrate(config, {LAYOUT_PLACES_SECTION: places})
+
+        self.assertEqual(components[LAYOUT_PLACES_SECTION], {'comp7': {'damage_log': {'x': 2}}})
+
     def test_a_file_at_the_revision_keeps_what_it_holds(self):
         config = {'defaults_revision': DEFAULTS_REVISION}
         components = {'crosshair': {'repair_timers': True}}

@@ -5,6 +5,7 @@ use super::*;
 use crate::catalog::fixtures::catalog;
 use crate::detect::fixtures::{lesta_client, patch_client};
 use crate::detect::GameClient;
+use crate::error::ErrorCode;
 use crate::install::{remove_our_files, selection};
 use crate::releases::sha256_hex;
 
@@ -73,17 +74,15 @@ impl Setup {
 #[test]
 fn resolves_the_dependencies_of_the_selected_components() {
     let catalog = test_catalog();
-    let resolve_for = |components: &[&str], excluded: &[String]| {
+    let resolve_for = |components: &[&str]| {
         let components = selection(&catalog, &components.iter().map(|id| (*id).to_owned()).collect::<Vec<_>>()).unwrap();
 
-        resolve(ResolveInput { catalog: &catalog, components: &components, excluded })
+        resolve(ResolveInput { catalog: &catalog, components: &components })
     };
 
-    assert_eq!(resolve_for(&[], &[]).unwrap(), BTreeSet::new());
-    assert_eq!(resolve_for(&["marks_panel"], &[]).unwrap(), ids(&[GAMEFACE]));
-    assert_eq!(resolve_for(&["hit_log"], &[]).unwrap(), ids(&[GAMEFACE, GUIFLASH]));
-    assert_eq!(resolve_for(&["hit_log"], &[GUIFLASH.to_owned()]).unwrap(), ids(&[GAMEFACE]));
-    assert_eq!(resolve_for(&["hit_log"], &["nope".to_owned()]).unwrap_err().code(), ErrorCode::UnknownComponent);
+    assert_eq!(resolve_for(&[]), BTreeSet::new());
+    assert_eq!(resolve_for(&["marks_panel"]), ids(&[GAMEFACE]));
+    assert_eq!(resolve_for(&["hit_log"]), ids(&[GAMEFACE, GUIFLASH]));
 }
 
 #[test]
@@ -272,21 +271,21 @@ fn carries_owned_dependencies_into_the_new_mods_folder() {
 fn enabling_a_component_needs_the_dependencies_of_everything_it_pulls_in() {
     let catalog = test_catalog();
 
-    assert_eq!(needed_to_enable(&catalog, "marks_panel").unwrap(), ids(&[GAMEFACE]));
-    assert_eq!(needed_to_enable(&catalog, "hit_log").unwrap(), ids(&[GAMEFACE, GUIFLASH]));
-    assert_eq!(needed_to_enable(&catalog, "core").unwrap(), BTreeSet::new());
+    assert_eq!(needed_to_enable(&catalog, "marks_panel"), ids(&[GAMEFACE]));
+    assert_eq!(needed_to_enable(&catalog, "hit_log"), ids(&[GAMEFACE, GUIFLASH]));
+    assert_eq!(needed_to_enable(&catalog, "core"), BTreeSet::new());
 }
 
 #[test]
-fn enabling_a_component_never_pulls_in_an_optional_dependency_the_wizard_still_offers() {
+fn enabling_a_component_never_pulls_in_an_optional_dependency_the_wizard_installs() {
     let mut catalog = test_catalog();
 
     catalog.dependencies.iter_mut().filter(|dependency| dependency.id == GUIFLASH).for_each(|dependency| dependency.optional = true);
 
     let components = selection(&catalog, &["hit_log".to_owned()]).unwrap();
 
-    assert_eq!(needed_to_enable(&catalog, "hit_log").unwrap(), ids(&[GAMEFACE]));
-    assert_eq!(resolve(ResolveInput { catalog: &catalog, components: &components, excluded: &[] }).unwrap(), ids(&[GAMEFACE, GUIFLASH]));
+    assert_eq!(needed_to_enable(&catalog, "hit_log"), ids(&[GAMEFACE]));
+    assert_eq!(resolve(ResolveInput { catalog: &catalog, components: &components }), ids(&[GAMEFACE, GUIFLASH]));
 }
 
 #[test]

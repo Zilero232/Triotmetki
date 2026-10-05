@@ -5,6 +5,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use serde::Serialize;
+use walkdir::WalkDir;
 
 pub use profile_ini::read_component_profile;
 
@@ -15,9 +16,12 @@ use crate::detect::GameClient;
 use crate::durable::remove_durable_copies;
 use crate::error::{AppError, AppResult, ErrorCode};
 use crate::fsx::{list_files, remove_path};
+use crate::gameface::RES_MAP_FILE;
 use crate::patch::{apply_packages, recover_retired, ApplyInput, FetchedPackage};
 use crate::paths::{configs_dir, same_path};
 use crate::state::{disabled_dir, Manifest, CLIENT_INI, MANIFEST_INI};
+
+pub const GENERATED_RES_MODS_FILES: [&str; 1] = [RES_MAP_FILE];
 
 pub const DEFAULT_OWNED_PATTERNS: [&str; 4] = ["net.triotmetki.*.mtmod", "net.triotmetki.*.wotmod", "otmetki.*.mtmod", "otmetki.*.wotmod"];
 
@@ -52,6 +56,26 @@ fn entries(dir: &Path) -> Vec<(PathBuf, String, bool)> {
         .unwrap_or_default()
 }
 
+fn is_generated_path(relative: &str, is_dir: bool) -> bool {
+    GENERATED_RES_MODS_FILES.iter().any(|file| {
+        if is_dir {
+            file.strip_prefix(relative).is_some_and(|rest| rest.starts_with('/'))
+        } else {
+            file.eq_ignore_ascii_case(relative)
+        }
+    })
+}
+
+fn only_generated(res_mods_dir: &Path, entry: &Path) -> bool {
+    WalkDir::new(entry).follow_links(false).into_iter().all(|item| {
+        item.ok().is_some_and(|item| {
+            let relative = item.path().strip_prefix(res_mods_dir).map(|path| path.to_string_lossy().replace('\\', "/")).unwrap_or_default();
+
+            is_generated_path(&relative.to_lowercase(), item.file_type().is_dir())
+        })
+    })
+}
+
 pub fn other_mods(client: &GameClient, catalog: &Catalog) -> Vec<ForeignEntry> {
     let in_mods = entries(&client.mods_dir).into_iter().filter(|(_, name, _)| !is_owned(catalog, name)).map(|(path, name, is_dir)| ForeignEntry {
         path,
@@ -59,8 +83,10 @@ pub fn other_mods(client: &GameClient, catalog: &Catalog) -> Vec<ForeignEntry> {
         is_dir,
         location: ForeignLocation::Mods,
     });
-    let in_res_mods =
-        entries(&client.res_mods_dir).into_iter().map(|(path, name, is_dir)| ForeignEntry { path, name, is_dir, location: ForeignLocation::ResMods });
+    let in_res_mods = entries(&client.res_mods_dir)
+        .into_iter()
+        .filter(|(path, _, _)| !only_generated(&client.res_mods_dir, path))
+        .map(|(path, name, is_dir)| ForeignEntry { path, name, is_dir, location: ForeignLocation::ResMods });
     let mut found: Vec<ForeignEntry> = in_mods.chain(in_res_mods).collect();
 
     found.sort_by(|left, right| left.path.cmp(&right.path));

@@ -4,8 +4,7 @@ from ...native_settings import (
     ACTION_RECOMMENDED,
     ACTION_RESTORE,
     BACKUP_STATE_KEY,
-    STAMP_STATE_KEY,
-    STEP_NATIVE,
+    RETIRED_STAMP_STATE_KEY,
     NativeState,
     client_keys,
     is_recommended,
@@ -25,10 +24,11 @@ def native_state(app):
     if state is not None:
         return state
     stored = app.state or {}
-    state = NativeState(stored.get(BACKUP_STATE_KEY), stored.get(STAMP_STATE_KEY))
+    state = NativeState(stored.get(BACKUP_STATE_KEY))
     setattr(app, STATE_ATTR, state)
     app.register_state(BACKUP_STATE_KEY, state.dump_backups)
-    app.register_state(STAMP_STATE_KEY, state.dump_stamps)
+    if isinstance(app.state, dict):
+        app.state.pop(RETIRED_STAMP_STATE_KEY, None)
     return state
 
 
@@ -38,48 +38,26 @@ def section_is_new(app, component_id):
 
 
 class ClientDefaults(object):
-    """The schema defaults of a client-settings component as recommended client settings. On a fresh install they
-    are written once, the first time the hangar shows with the switch on, after the client values they replace are
-    kept in state.json; the card then offers them back (the restore button). With the switch off then, and on an
-    existing install for a section it creates, the client values start at 'native' and nothing is written; the card
-    offers the recommended values with the same backup.
+    """The schema defaults of a client-settings component as recommended client settings, written only when the
+    player asks for them on the card (the recommended button), after the client values they replace are kept in
+    state.json; the card then offers those back (the restore button). A section the component creates starts at
+    'native' on every install, so nothing is written unasked.
 
     `component` is a FeatureComponent with `client_values(values)` ((settings core values, AccountSettings values) of
     its section `values`) and `apply()` (writes the current section); `is_new_section` from `section_is_new`."""
 
     def __init__(self, component, is_new_section):
         self.component = component
-        self.app = app = component.app
+        self.app = component.app
         self.component_id = component.component_id
         self.schema = component.settings.schema
         self.keys = client_keys(self.schema)
-        self.state = native_state(app)
-        if self.state.enroll(self.component_id, app.fresh_install):
-            if is_new_section and not app.fresh_install:
-                self._update(native_choices(self.keys))
-            app.save_state()
-        app.bus.on('hangar', self._on_hangar)
+        self.state = native_state(self.app)
+        if is_new_section:
+            self._update(native_choices(self.keys))
 
     def _update(self, values):
         component_config(self.app).update(self.component_id, values)
-
-    def _on_hangar(self):
-        step = self.state.hangar_step(self.component_id, self.component.enabled())
-        if step is None:
-            return
-        if step == STEP_NATIVE:
-            self._update(native_choices(self.keys))
-        elif not self._apply_with_backup(self.component.settings.to_dict()):
-            return
-
-        self.state.settle(self.component_id)
-        self.app.save_state()
-
-    def _apply_with_backup(self, values):
-        if not self._keep_backup(values):
-            return False
-        self.component.apply()
-        return True
 
     def _keep_backup(self, values):
         settings, account = self.component.client_values(values)

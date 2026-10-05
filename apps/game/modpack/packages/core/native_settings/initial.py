@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .constants import ACTION_RECOMMENDED, ACTION_RESTORE, INITIAL_REVISION, NATIVE, PENDING, STEP_APPLY, STEP_NATIVE
+from .constants import ACTION_RECOMMENDED, ACTION_RESTORE, NATIVE
 
 
 def _dict_of(value):
@@ -35,32 +35,11 @@ def offered_action(has_backup, holds_recommended):
 
 
 class NativeState(object):
-    """The one-time client presets in state.json: `backups` {component: {'settings', 'account'}} of the client values
-    a component replaced, and `stamps` {component: revision}, PENDING while a fresh install still has to write them."""
+    """The client values each component replaced when the player asked for its recommended values, in state.json:
+    `backups` {component: {'settings', 'account'}}."""
 
-    def __init__(self, backups=None, stamps=None):
+    def __init__(self, backups=None):
         self.backups = _dict_of(backups)
-        self.stamps = _dict_of(stamps)
-
-    def enroll(self, component_id, fresh_install):
-        """Stamps a component seen for the first time: due on a fresh install, done otherwise. True when it was new."""
-        if component_id in self.stamps:
-            return False
-        self.stamps[component_id] = PENDING if fresh_install else INITIAL_REVISION
-        return True
-
-    def is_due(self, component_id):
-        return self.stamps.get(component_id) == PENDING
-
-    def hangar_step(self, component_id, is_enabled):
-        """What a component due its presets does in the hangar: STEP_APPLY them with its switch on, else STEP_NATIVE
-        (its client values go to 'native', so turning it on later writes nothing unasked). None when not due."""
-        if not self.is_due(component_id):
-            return None
-        return STEP_APPLY if is_enabled else STEP_NATIVE
-
-    def settle(self, component_id):
-        self.stamps[component_id] = INITIAL_REVISION
 
     def backup(self, component_id):
         backup = self.backups.get(component_id)
@@ -76,6 +55,3 @@ class NativeState(object):
 
     def dump_backups(self):
         return dict(self.backups)
-
-    def dump_stamps(self):
-        return dict(self.stamps)

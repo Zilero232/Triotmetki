@@ -7,6 +7,7 @@ import { CollectLogsButton } from '@/features/app/collect-logs';
 import { LINKS } from '@/shared/config';
 import { Card, ExternalLink, PageHeader } from '@/ui-kit';
 import { SectionTabs } from '@/widgets/section-tabs';
+import { UsedLibraries } from '@/widgets/used-libraries';
 
 import s from './AboutView.module.scss';
 
@@ -45,6 +46,7 @@ export const AboutView = () => {
           </dl>
         </Card>
       )}
+      <UsedLibraries />
       <Card description={t('about.unsignedDescription')} title={t('about.unsignedTitle')} tone='warning' />
       <p className={s.legal}>{t('common.legal')}</p>
     </>

@@ -34,11 +34,63 @@ fn lists_other_mods_but_never_ours() {
 
     fs::write(client.mods_dir.join("net.triotmetki.core_0.1.0.mtmod"), "").unwrap();
     fs::write(client.mods_dir.join("izeberg.modssettingsapi_1.6.0.mtmod"), "").unwrap();
-    fs::create_dir_all(client.res_mods_dir.join("gui")).unwrap();
+    fs::create_dir_all(client.res_mods_dir.join("scripts")).unwrap();
 
     let names: Vec<String> = other_mods(&client, &catalog()).into_iter().map(|entry| entry.name).collect();
 
-    assert_eq!(names, vec!["izeberg.modssettingsapi_1.6.0.mtmod", "gui"]);
+    assert_eq!(names, vec!["izeberg.modssettingsapi_1.6.0.mtmod", "scripts"]);
+}
+
+fn write_res_mods_file(client: &crate::detect::GameClient, relative: &str) {
+    let path = client.res_mods_dir.join(relative);
+
+    fs::create_dir_all(path.parent().unwrap()).unwrap();
+    fs::write(path, "{}").unwrap();
+}
+
+#[test]
+fn the_generated_res_map_is_not_another_mod() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.45.0.0");
+
+    write_res_mods_file(&client, crate::gameface::RES_MAP_FILE);
+
+    assert_eq!(other_mods(&client, &catalog()), Vec::new());
+}
+
+#[test]
+fn the_folders_left_after_gameface_deleted_its_res_map_are_not_another_mod() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.45.0.0");
+
+    fs::create_dir_all(client.res_mods_dir.join("gui").join("unbound").join("gen")).unwrap();
+
+    assert_eq!(other_mods(&client, &catalog()), Vec::new());
+}
+
+#[test]
+fn a_res_mods_folder_with_foreign_files_next_to_the_res_map_is_listed() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.45.0.0");
+
+    write_res_mods_file(&client, crate::gameface::RES_MAP_FILE);
+    write_res_mods_file(&client, "gui/flash/прицел.swf");
+
+    let names: Vec<String> = other_mods(&client, &catalog()).into_iter().map(|entry| entry.name).collect();
+
+    assert_eq!(names, vec!["gui"]);
+}
+
+#[test]
+fn refuses_to_remove_the_folder_of_the_generated_res_map() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.45.0.0");
+    let gui = client.res_mods_dir.join("gui");
+
+    write_res_mods_file(&client, crate::gameface::RES_MAP_FILE);
+
+    assert!(remove_other_mods(&client, &catalog(), std::slice::from_ref(&gui)).is_err());
+    assert!(client.res_mods_dir.join(crate::gameface::RES_MAP_FILE).is_file());
 }
 
 #[test]

@@ -1,4 +1,7 @@
 // Draws each HUD component's preview with the built HUD page in Chromium and saves it as a 16:9 catalog preview.
+// The panel is scaled to fit the frame, but never below minScale for its height or minWidthScale for its width, so its
+// body text stays legible in the manager's card: a taller panel shows its top rows, a wider one (team_hp's full-width
+// bars) its middle, faded out at the cut edges.
 // usage: node render.mjs <hud.html> <job.json> <out dir>   (job.json: tools/build/previews/states.py `job()`)
 import { chromium } from '@playwright/test';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -7,7 +10,8 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const FRAME = { width: 640, height: 360, pixelRatio: 2 };
-const FIT = { width: 0.84, height: 0.78, maxScale: 2 };
+const FIT = { width: 0.92, height: 0.84, minScale: 2.2, minWidthScale: 1.6, maxScale: 4 };
+const FADE_PX = 72;
 const SETTLE_MS = 1200;
 const IMAGE_HOST = 'http://img.local/';
 const PANEL = '#hud button[aria-label]';
@@ -16,11 +20,11 @@ const BACKDROPS = {
   hangar: '#22252a'
 };
 
-const bridge = ({ state, scale }) => `<script>
+const bridge = ({ state, scale, viewport }) => `<script>
 window.model = { state: ${JSON.stringify(state)}, send: function () {} };
 window.engine = { whenReady: Promise.resolve(), on: function () {} };
 window.viewEnv = {
-  getClientSizePx: function () { return { width: ${FRAME.width}, height: ${FRAME.height} }; },
+  getClientSizePx: function () { return { width: ${viewport.width}, height: ${viewport.height} }; },
   addDataChangedCallback: function () { return 1; },
   setInputArea: function () {},
   resizeViewPx: function () {}
@@ -39,8 +43,28 @@ new MutationObserver(function (changes) {
 
 const backdrop = (name) => `<div style="position:fixed;inset:0;z-index:-1;background:${BACKDROPS[name]}"></div>`;
 
-const pageFile = ({ html, preview, scale, directory }) => {
-  const page = html.replace('<head>', `<head>${bridge({ state: preview.state, scale })}`).replace('<body>', `<body>${backdrop(preview.backdrop)}`);
+const fadeStyle = 'position:fixed;z-index:2147483647;pointer-events:none';
+
+const fades = ({ name, viewport }) => {
+  const colour = BACKDROPS[name];
+  const left = (viewport.width - FRAME.width) / 2;
+  const bottom =
+    viewport.height > FRAME.height
+      ? `<div style="${fadeStyle};left:0;right:0;top:${FRAME.height - FADE_PX}px;height:${FADE_PX}px;background:linear-gradient(180deg, transparent, ${colour})"></div>`
+      : '';
+
+  const sides =
+    left > 0
+      ? `<div style="${fadeStyle};top:0;bottom:0;left:${left}px;width:${FADE_PX}px;background:linear-gradient(270deg, transparent, ${colour})"></div>` +
+        `<div style="${fadeStyle};top:0;bottom:0;left:${left + FRAME.width - FADE_PX}px;width:${FADE_PX}px;background:linear-gradient(90deg, transparent, ${colour})"></div>`
+      : '';
+
+  return bottom + sides;
+};
+
+const pageFile = ({ html, preview, scale, viewport, directory }) => {
+  const overlays = `${backdrop(preview.backdrop)}${fades({ name: preview.backdrop, viewport })}`;
+  const page = html.replace('<head>', `<head>${bridge({ state: preview.state, scale, viewport })}`).replace('<body>', `<body>${overlays}`);
   const file = path.join(directory, `${preview.id}.html`);
 
   writeFileSync(file, page);
@@ -55,7 +79,18 @@ const panelSize = async (tab) => {
 };
 
 const fitScale = ({ width, height }) =>
-  Math.min(FIT.maxScale, (FRAME.width * FIT.width) / Math.max(width, 1), (FRAME.height * FIT.height) / Math.max(height, 1));
+  Math.min(
+    FIT.maxScale,
+    Math.max(FIT.minWidthScale, (FRAME.width * FIT.width) / Math.max(width, 1)),
+    Math.max(FIT.minScale, (FRAME.height * FIT.height) / Math.max(height, 1))
+  );
+
+const evenCeil = (value) => Math.ceil(value / 2) * 2;
+
+const viewportFor = ({ width, height }, scale) => ({
+  width: Math.max(FRAME.width, evenCeil(width * scale + FRAME.width * (1 - FIT.width))),
+  height: Math.max(FRAME.height, Math.ceil(height * scale + FRAME.height * (1 - FIT.height)))
+});
 
 const serveImages = async (tab, images) => {
   await tab.route(`${IMAGE_HOST}**`, (route) => {
@@ -66,12 +101,20 @@ const serveImages = async (tab, images) => {
 };
 
 const render = async ({ tab, html, preview, out, directory }) => {
-  await tab.goto(pageFile({ html, preview, scale: 1, directory }));
-  const scale = fitScale(await panelSize(tab));
+  await tab.setViewportSize({ width: FRAME.width, height: FRAME.height });
+  await tab.goto(pageFile({ html, preview, scale: 1, viewport: FRAME, directory }));
+  const size = await panelSize(tab);
+  const scale = fitScale(size);
+  const viewport = viewportFor(size, scale);
 
-  await tab.goto(pageFile({ html, preview, scale, directory }));
+  await tab.setViewportSize(viewport);
+  await tab.goto(pageFile({ html, preview, scale, viewport, directory }));
   await panelSize(tab);
-  await tab.screenshot({ path: path.join(out, `${preview.id}.png`) });
+
+  await tab.screenshot({
+    path: path.join(out, `${preview.id}.png`),
+    clip: { x: (viewport.width - FRAME.width) / 2, y: 0, width: FRAME.width, height: FRAME.height }
+  });
 };
 
 const main = async ([htmlPath, jobPath, out]) => {
