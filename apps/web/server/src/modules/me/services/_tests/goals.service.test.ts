@@ -1,14 +1,14 @@
 import { MOD_HANGAR } from '@otmetki/schemas';
 import { addDays, subHours } from 'date-fns';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { mock, mockDeep } from 'vitest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import type { AccountRating, AccountTankRating, Goal, PlayerTank, UserLestaAccount } from '../../../../../generated';
-import type { PrismaService } from '../../../../core';
 import type { EntitlementsService } from '../../../billing';
 
 import { AppBadRequestException, AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../../common/exceptions';
 import { bonusTypesOfMode } from '../../../../common/lib';
+import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { GOALS, MOD_GOALS } from '../../config';
 import { GoalsService } from '../goals.service';
 
@@ -33,7 +33,7 @@ const goalRow = (overrides: Partial<Goal> = {}): Goal =>
   });
 
 const createService = () => {
-  const prisma = mockDeep<PrismaService>();
+  const prisma = mockPrismaService();
   const entitlements = mock<EntitlementsService>();
 
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));

@@ -1,9 +1,27 @@
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
+
+// Shared with vitest.db.config.ts. The URLs are placeholders: nothing in the unit
+// project connects, and the database project builds its own throwaway database.
+export const SERVER_TEST_ENV = {
+  NODE_ENV: 'test',
+  DATABASE_URL: 'postgresql://test:test@localhost:5434/test',
+  DIRECT_URL: 'postgresql://test:test@localhost:5434/test',
+  REDIS_URL: 'redis://localhost:6380',
+  API_URL: 'http://localhost:4000',
+  WEB_URL: 'http://localhost:3000',
+  BETTER_AUTH_SECRET: 'test-secret-not-used-outside-tests-000',
+  INTERNAL_API_TOKEN: 'test-internal-token-not-used-outside-tests',
+  MOD_INGEST_SECRET: 'test-mod-ingest-secret-not-used-outside-tests',
+  TOKEN_ENCRYPTION_SECRET: 'test-token-encryption-not-used-outside-tests',
+  LESTA_APPLICATION_ID: 'test-application'
+} as const;
+
+export const SERVER_TEST_DECORATORS = {
+  decorator: { legacy: true, emitDecoratorMetadata: true }
+} as const;
 
 export default defineConfig({
-  oxc: {
-    decorator: { legacy: true, emitDecoratorMetadata: true }
-  },
+  oxc: SERVER_TEST_DECORATORS,
   test: {
     name: 'server',
     pool: 'threads',
@@ -21,19 +39,9 @@ export default defineConfig({
     testTimeout: 15_000,
     hookTimeout: 15_000,
     include: ['src/**/_tests/**/*.test.ts'],
+    // Database suites belong to the server-db project (vitest.db.config.ts, `bun run test:db`).
+    exclude: [...configDefaults.exclude, 'src/**/_tests/**/*.db.test.ts'],
     setupFiles: ['./vitest.setup.ts'],
-    env: {
-      NODE_ENV: 'test',
-      DATABASE_URL: 'postgresql://test:test@localhost:5434/test',
-      DIRECT_URL: 'postgresql://test:test@localhost:5434/test',
-      REDIS_URL: 'redis://localhost:6380',
-      API_URL: 'http://localhost:4000',
-      WEB_URL: 'http://localhost:3000',
-      BETTER_AUTH_SECRET: 'test-secret-not-used-outside-tests-000',
-      INTERNAL_API_TOKEN: 'test-internal-token-not-used-outside-tests',
-      MOD_INGEST_SECRET: 'test-mod-ingest-secret-not-used-outside-tests',
-      TOKEN_ENCRYPTION_SECRET: 'test-token-encryption-not-used-outside-tests',
-      LESTA_APPLICATION_ID: 'test-application'
-    }
+    env: SERVER_TEST_ENV
   }
 });

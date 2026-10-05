@@ -1,1 +1,2 @@
-export { moscowCalendarDate, moscowDay, moscowDayStart } from './moscow-time';
+export { moscowCalendarDate, moscowDay, moscowDayStart, moscowZone, previousWeek, weekWindow } from './moscow-time';
+export type { WeekWindow } from './moscow-time.types';

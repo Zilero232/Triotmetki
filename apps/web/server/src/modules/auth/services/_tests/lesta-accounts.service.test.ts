@@ -2,18 +2,18 @@ import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { UserLestaAccount } from '../../../../../generated';
-import type { PrismaService } from '../../../../core';
 import type { LestaClient } from '../../../../lib/lesta';
 import type { EntitlementsService } from '../../../billing';
 import type { CollectorProducerService, PurgeGuardService } from '../../../collector';
 
+import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { createTokenCipher } from '../../../../core/token-cipher/_tests/token-cipher.fixtures';
 import { LestaAccountsService } from '../lesta-accounts.service';
 
 const identity = { userId: 'user', accountId: 7, nickname: 'Tanker', accessToken: 'token', expiresAt: new Date() };
 
 const createService = ({ others, isKnown, isCleared = true }: { others: number; isKnown: boolean; isCleared?: boolean }) => {
-  const prisma = mockDeep<PrismaService>();
+  const prisma = mockPrismaService();
   const entitlements = mock<EntitlementsService>();
   const collector = mock<CollectorProducerService>();
   const purgeGuard = mock<PurgeGuardService>();

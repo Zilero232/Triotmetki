@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { clampPercent, clampPercentDelta, percentOf, ratio } from '../ratio';
+import { clampPercent, clampPercentDelta, percentOf, ratio, winRatePercent, winRateShare } from '../ratio';
 
 describe('ratio and percentOf', () => {
   it('has no value for a zero denominator', () => {
@@ -37,5 +37,35 @@ describe('clampPercentDelta', () => {
     expect(clampPercentDelta(-5)).toBe(-5);
     expect(clampPercentDelta(140)).toBe(100);
     expect(clampPercentDelta(null)).toBeNull();
+  });
+});
+
+describe('winRatePercent', () => {
+  it('has no value without battles', () => {
+    expect(winRatePercent({ wins: 0, battles: 0 })).toBeNull();
+  });
+
+  it('is the share of wins on the 0..100 scale', () => {
+    expect(winRatePercent({ wins: 13, battles: 25 })).toBe(52);
+  });
+
+  it('keeps zero wins as zero', () => {
+    expect(winRatePercent({ wins: 0, battles: 7 })).toBe(0);
+  });
+});
+
+describe('winRateShare', () => {
+  it('has no value without battles', () => {
+    expect(winRateShare({ wins: 0, battles: 0 })).toBeNull();
+  });
+
+  it('is the share of wins on the 0..1 scale', () => {
+    expect(winRateShare({ wins: 13, battles: 25 })).toBe(0.52);
+  });
+
+  it('is the percent divided by one hundred', () => {
+    const counts = { wins: 7, battles: 9 };
+
+    expect(winRateShare(counts)).toBeCloseTo((winRatePercent(counts) ?? 0) / 100, 12);
   });
 });

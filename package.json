@@ -100,6 +100,7 @@
     "test": "vitest run",
     "test:changed": "vitest run --changed",
     "test:coverage": "vitest run --coverage",
+    "test:db": "vitest run --config apps/web/server/vitest.db.config.ts",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:modpack": "bun --filter @otmetki/modpack test",
@@ -119,6 +120,9 @@
       "stylelint --fix",
       "prettier --write"
     ]
+  },
+  "overrides": {
+    "kysely": "0.29.6"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.3",

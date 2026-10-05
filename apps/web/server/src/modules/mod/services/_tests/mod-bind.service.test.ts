@@ -3,14 +3,14 @@ import { addMinutes } from 'date-fns';
 import RedisMock from 'ioredis-mock';
 import { omit } from 'remeda';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { mock, mockDeep } from 'vitest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import type { ModDevice, OneTimeCode, Player, UserLestaAccount } from '../../../../../generated';
 import type { AppConfigService } from '../../../../config';
-import type { PrismaService } from '../../../../core';
 
 import { AppForbiddenException } from '../../../../common/exceptions';
 import { USER_LESTA_ACCOUNT_ORDER } from '../../../../core';
+import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { BIND_CODE, MOD_DEVICE, MOD_DEVICE_LIMITS } from '../../config';
 import { bindCodePattern, deviceSecret, hashSecret } from '../../lib';
 import { ModBindService } from '../mod-bind.service';
@@ -49,7 +49,7 @@ const bindBody = (overrides: Record<string, unknown> = {}) => ({
 });
 
 const createService = () => {
-  const prisma = mockDeep<PrismaService>();
+  const prisma = mockPrismaService();
   const config = mock<AppConfigService>();
 
   config.get.mockReturnValue(SERVER_SECRET);

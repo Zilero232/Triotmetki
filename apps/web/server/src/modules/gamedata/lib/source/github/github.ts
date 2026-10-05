@@ -1,3 +1,4 @@
+import { isHTTPError } from 'ky';
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import pLimit from 'p-limit';
@@ -16,6 +17,7 @@ import type {
   SourceReader
 } from '../source.types';
 
+import { getJson, http } from '../../../../../lib/http';
 import { ASSET_PATHS, ASSET_SOURCES, FETCH, GAME_DATA_SOURCES, GITHUB, MINIMAP_SOURCES } from '../source.constants';
 
 const commitResponseSchema = z.object({
@@ -57,22 +59,25 @@ export const vehicleRenderUrl = (tag: string): string =>
   assetUrl({ sourceId: GAME_DATA_SOURCES.RU.id, path: `${ASSET_PATHS.vehicleRender}/${tag}${ASSET_PATHS.extension}` });
 
 const resolveCommit = async ({ source, ref, token, fetch }: ResolveCommitInput): Promise<ResolvedCommit> => {
-  const response = await fetch(`${GITHUB.api}/repos/${source.owner}/${source.repo}/commits/${encodeURIComponent(ref)}`, {
-    headers: headers(token),
-    signal: AbortSignal.timeout(FETCH.timeoutMs)
-  });
+  try {
+    const body = await getJson({
+      url: `${GITHUB.api}/repos/${source.owner}/${source.repo}/commits/${encodeURIComponent(ref)}`,
+      schema: commitResponseSchema,
+      options: { headers: headers(token), timeout: FETCH.timeoutMs, retry: GITHUB.commitRetries, fetch }
+    });
 
-  if (!response.ok) {
+    return { sha: body.sha, committedAt: body.commit?.committer?.date };
+  } catch (error) {
+    if (!isHTTPError(error)) {
+      throw error;
+    }
+
     if (GITHUB.commitSha.test(ref)) {
       return { sha: ref.toLowerCase() };
     }
 
-    throw new Error(`GitHub ${response.status} resolving ${source.owner}/${source.repo}@${ref}`);
+    throw new Error(`GitHub ${error.response.status} resolving ${source.owner}/${source.repo}@${ref}`);
   }
-
-  const body = commitResponseSchema.parse(await response.json());
-
-  return { sha: body.sha, committedAt: body.commit?.committer?.date };
 };
 
 export const createRepoReader = async ({
@@ -82,7 +87,7 @@ export const createRepoReader = async ({
   token,
   concurrency = FETCH.concurrency,
   retryDelayMs = FETCH.retryDelayMs,
-  fetch: fetchImpl = fetch
+  fetch: fetchImpl
 }: CreateRepoReaderInput): Promise<RepoReader> => {
   const commit = await resolveCommit({ source, ref: ref ?? source.ref, token, fetch: fetchImpl });
   const root = join(cacheDir, source.owner, source.repo, commit.sha);
@@ -91,9 +96,11 @@ export const createRepoReader = async ({
   const download = async (path: string): Promise<string | undefined> =>
     pRetry(
       async () => {
-        const response = await fetchImpl(rawUrl({ owner: source.owner, repo: source.repo, sha: commit.sha, path }), {
+        const response = await http.get(rawUrl({ owner: source.owner, repo: source.repo, sha: commit.sha, path }), {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
-          signal: AbortSignal.timeout(FETCH.timeoutMs)
+          timeout: FETCH.timeoutMs,
+          throwHttpErrors: false,
+          fetch: fetchImpl
         });
 
         if (response.status === 404) {

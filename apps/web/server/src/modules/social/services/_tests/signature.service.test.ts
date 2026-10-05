@@ -1,6 +1,6 @@
 import type { Redis } from 'ioredis';
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { mockDeep } from 'vitest-mock-extended';
 
 import type { AccountRating, Clan, Player } from '../../../../../generated';
@@ -8,6 +8,7 @@ import type { PrismaService } from '../../../../core';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
 import { SIGNATURE } from '../../config';
+import * as signatureLib from '../../lib';
 import { SignatureService } from '../signature.service';
 
 const at = new Date('2026-09-01T00:00:00Z');
@@ -33,7 +34,7 @@ const rating: AccountRating = {
   accountId: 1n,
   period: 'overall',
   battles: 12_345,
-  winRate: 0.53,
+  winRate: 53.21,
   avgDamage: 1_850,
   avgFrags: 1,
   avgTier: null,
@@ -117,5 +118,15 @@ describe('SignatureService.png', () => {
     await service.png('Tanker');
 
     expect(prisma.clan.findUnique).not.toHaveBeenCalled();
+  });
+
+  it('passes the win rate to the image as a fraction, since ratings store it in percent', async () => {
+    const { service } = createService();
+    const render = vi.spyOn(signatureLib, 'renderSignature');
+
+    await service.png('Tanker');
+
+    expect(render.mock.calls[0]?.[0].data.winRate).toBeCloseTo(0.5321);
+    render.mockRestore();
   });
 });

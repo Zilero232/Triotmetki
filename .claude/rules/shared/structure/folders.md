@@ -22,6 +22,10 @@ A `lib/<concern>/` or `model/hooks/use-<x>/` folder gets its own `index.ts`,
 `<name>.ts`, `<name>.types.ts` where needed and `_tests/`. Related helpers share
 one concern folder rather than one folder per function.
 
+**The server app is the exception.** `apps/web/server` keeps one file per topic inside a
+module segment and barrels only at module boundaries; its `lib/<concern>/` folders follow
+this rule. See `server/structure/service-files.md`.
+
 Never a `*.helpers.ts`, `*.utils.ts` or `*.constants.ts` beside a component:
 helpers go to `lib/<concern>/` (project-agnostic ones to `shared/lib/<concern>/`),
 constants to `config/<concern>.constants.ts`. The client's component-folder rules

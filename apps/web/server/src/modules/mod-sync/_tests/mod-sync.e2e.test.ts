@@ -9,13 +9,14 @@ import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { createHmac, randomBytes } from 'node:crypto';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { mock, mockDeep } from 'vitest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import type { ModDevice, ModSyncLibrary } from '../../../../generated';
 
 import { AllExceptionsFilter } from '../../../common/filters';
 import { AppConfigService } from '../../../config';
 import { PrismaService, REDIS } from '../../../core';
+import { mockPrismaService } from '../../../core/prisma/_tests/prisma-mock';
 import { deviceSecret, hashSecret, MOD_DEVICE, ModDeviceService, signedMessage } from '../../mod';
 import { ModSyncAccountController } from '../mod-sync-account.controller';
 import { ModSyncController } from '../mod-sync.controller';
@@ -33,7 +34,7 @@ type SignedInput = {
   body: unknown;
 };
 
-const prisma = mockDeep<PrismaService>();
+const prisma = mockPrismaService();
 const config = mock<AppConfigService>();
 
 const SECRET = deviceSecret({ deviceId: DEVICE_ID, serverSecret: SERVER_SECRET });

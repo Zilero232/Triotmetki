@@ -1,15 +1,17 @@
+import type { CompiledQuery } from 'kysely';
+
 import { addDays, fromUnixTime } from 'date-fns';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { mock, mockDeep } from 'vitest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 import { z } from 'zod';
 
 import type { AccountRating, Player, PlayerTank, TankBattleDelta, TankSnapshotLatest } from '../../../../../../generated';
-import type { PrismaService } from '../../../../../core';
 import type { GainedMark } from '../../lib/marks-gain';
 import type { AccountChanges, StoredPlayer } from '../../lib/poll-pipeline';
 import type { TankSnapshotRow } from '../../lib/snapshots';
 
 import { moscowCalendarDate } from '../../../../../common/lib';
+import { advisoryLocks, mockPrismaService } from '../../../../../core/prisma/_tests/prisma-mock';
 import { ExpectedValuesService } from '../../../../reference';
 import { PurgeGuardService } from '../../../purge';
 import { TRACKING } from '../../config';
@@ -21,7 +23,8 @@ import { TrackingStoreService } from '../tracking-store.service';
 const NOW = new Date('2026-09-26T12:00:00Z');
 
 const createStore = () => {
-  const prisma = mockDeep<PrismaService>();
+  const queries: CompiledQuery[] = [];
+  const prisma = mockPrismaService({ queries });
   const guard = mock<PurgeGuardService>();
   const announce = mock<TrackingAnnounceService>();
   const expected = mock<ExpectedValuesService>();
@@ -30,7 +33,7 @@ const createStore = () => {
   announce.subscribers.mockResolvedValue(new Set());
   expected.all.mockResolvedValue(new Map());
 
-  return { prisma, guard, announce, expected, store: new TrackingStoreService(prisma, guard, announce, expected) };
+  return { prisma, queries, guard, announce, expected, store: new TrackingStoreService(prisma, guard, announce, expected) };
 };
 
 const stored = (fields: Partial<StoredPlayer> = {}): StoredPlayer => ({
@@ -348,11 +351,11 @@ describe('TrackingStoreService.overallWn8', () => {
 
 describe('TrackingStoreService.withAccount', () => {
   it('runs the account writes inside the per-account advisory lock', async () => {
-    const { prisma, store } = createStore();
+    const { queries, store } = createStore();
 
     await store.withAccount({ accountId: 42, run: async () => 'done' });
 
-    expect(prisma.$executeRaw.mock.calls[0]?.slice(1)).toEqual([TRACKING.lock.scope, '42']);
+    expect(advisoryLocks(queries)).toEqual([[TRACKING.lock.scope, '42']]);
   });
 
   it('announces the marks gained inside the transaction only after it commits', async () => {

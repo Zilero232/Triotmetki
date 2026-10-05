@@ -13,7 +13,8 @@ paths:
 A change is verified with **typecheck, lint and the tests it touches**:
 `bun run verify` (typecheck, ESLint, the client's import-cycle check, Prettier,
 Stylelint, encoding) plus `bun run test` — or the targeted form, `bun run typecheck`,
-`eslint <path>`, `bun run test:changed` and `bunx vitest run --project <workspace>`. Bare `bun test` is Bun's own runner and
+`eslint <path>`, `bun run test:changed` and `bunx vitest run --project <workspace>`. A change
+to server queries also runs `bun run test:db` (needs `bun run dev:infra`). Bare `bun test` is Bun's own runner and
 fails the suite. There is no per-push CI: the manual deploy workflow
 (`.github/workflows/deploy.yml`, `checks` job) runs both before any image is built, and its `gate` job skips them for a tree that
 already passed.

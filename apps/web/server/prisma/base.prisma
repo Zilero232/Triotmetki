@@ -4,6 +4,15 @@ generator client {
   previewFeatures = ["views"]
 }
 
+generator kysely {
+  provider            = "prisma-kysely"
+  output              = "../generated/kysely"
+  fileName            = "database.ts"
+  enumFileName        = "enums.ts"
+  bigIntTypeOverride  = "number"
+  decimalTypeOverride = "number"
+}
+
 datasource db {
   provider = "postgresql"
 }

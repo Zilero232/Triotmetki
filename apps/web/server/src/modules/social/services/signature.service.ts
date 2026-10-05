@@ -46,7 +46,7 @@ export class SignatureService {
         nickname: player.nickname,
         clanTag: clan?.tag ?? null,
         battles: rating?.battles ?? null,
-        winRate: rating?.winRate ?? null,
+        winRate: rating ? rating.winRate / 100 : null,
         wn8: rating?.wn8 ?? null,
         avgDamage: rating?.avgDamage ?? null
       },

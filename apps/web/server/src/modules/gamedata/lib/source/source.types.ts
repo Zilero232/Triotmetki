@@ -1,3 +1,5 @@
+import type { Options } from 'ky';
+
 import type { GAME_DATA_SOURCES } from './source.constants';
 
 type GameDataSourceId = keyof typeof GAME_DATA_SOURCES;
@@ -26,7 +28,7 @@ export type SourceReader = RepoReader & {
   revision: SourceRevision;
 };
 
-export type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
+export type FetchLike = NonNullable<Options['fetch']>;
 
 export type CreateRepoReaderInput = {
   source: RepoSource;
@@ -58,7 +60,7 @@ export type ResolveCommitInput = {
   source: RepoSource;
   ref: string;
   token?: string;
-  fetch: FetchLike;
+  fetch?: FetchLike;
 };
 
 export type RawUrlInput = {

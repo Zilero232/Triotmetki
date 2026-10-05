@@ -6,6 +6,7 @@ export { bulkRequestsPerSecond, LESTA_CLIENT, LESTA_CLIENTS, LESTA_OUTCOME_RECOR
 export type { LestaClients, LestaOutcomeRecorder, RecordLestaInput } from './lesta';
 export { AppLoggerModule, LOGGER } from './logger';
 export {
+  asPrismaTransaction,
   HYPERTABLE,
   isPrismaRequestError,
   isTransactionConflict,
@@ -13,12 +14,19 @@ export {
   isUniqueViolationOn,
   LIMIT_LOCK_SCOPE,
   lockedTransaction,
+  moscowBucket,
+  moscowDayText,
+  moscowHour,
+  moscowWeekday,
+  percentile,
   PRISMA_CODE,
   PRISMA_TIMEOUT,
   PrismaModule,
-  PrismaService
+  PrismaService,
+  replayWithoutModBattle,
+  statSums
 } from './prisma';
-export type { PrismaExecutor } from './prisma';
+export type { Database, PrismaExecutor, PrismaTransaction } from './prisma';
 export { QueuesModule } from './queues';
 export { REDIS, RedisModule } from './redis';
 export { PageCrawlerService, ScrapeModule } from './scrape';

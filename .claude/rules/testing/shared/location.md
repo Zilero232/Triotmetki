@@ -16,7 +16,9 @@ paths:
 A Vitest suite lives in a `_tests/` folder beside the source, named after it:
 `shared/i18n/locale-path/_tests/locale-path.test.ts`. Playwright specs live in
 `e2e/`. Only pure logic and components with behaviour are covered — anything
-needing a database, Redis or the live Lesta API is verified by running it.
+needing Redis or the live Lesta API is verified by running it. The server's query
+functions are the exception: they run against a throwaway TimescaleDB in the
+`server-db` project (`*.db.test.ts`, `testing/environment/server.md`).
 
 ## Where they live
 

@@ -10,25 +10,37 @@ paths:
 
 ## Nothing but the class in a service or controller file
 
-| What                               | Where                                                       |
-| ---------------------------------- | ----------------------------------------------------------- |
+| What                               | Where                                                                                     |
+| ---------------------------------- | ----------------------------------------------------------------------------------------- |
 | Constants, timeouts, lookup tables | `config/<concern>.constants.ts`; a lib's own tunables in `lib/<name>/<name>.constants.ts` |
-| Pure domain logic                  | `lib/<name>/` — one folder per **concern**, tested there    |
-| Row / payload → DTO converters     | `mappers/<name>/` — every `to*View` / `to*Dto`               |
-| Prisma `select` / `include`        | `selects/<name>/` with its `GetPayload` type                 |
-| Standalone raw-SQL builders        | `queries/<name>/` (`Prisma.sql` fragments)                    |
-| Guards, decorators, interceptors   | `guards/`, `decorators/`, `interceptors/`, one folder each    |
-| Custom providers, queue handles    | `providers/<name>.provider.ts`                              |
-| Types                              | `x.types.ts` next to the file that owns them                |
+| Pure domain logic                  | `lib/<concern>/` — one folder per **concern**, tested there                               |
+| Row / payload → DTO converters     | `mappers/<topic>.mappers.ts` — every `to*View` / `to*Dto` of one topic                    |
+| Prisma `select` / `include`        | `selects/<topic>.selects.ts` with their `GetPayload` types                                |
+| SQL beyond Prisma Client           | `queries/<topic>.queries.ts` — Kysely query functions (`data/queries.md`)                 |
+| Guards, decorators, interceptors   | `guards/`, `decorators/`, `interceptors/`, one file per item                              |
+| Custom providers, queue handles    | `providers/<name>.provider.ts`                                                            |
+| Types                              | `<file>.types.ts` next to the file that owns them                                         |
 
-Every item is its own folder (`<name>.ts` + `.types.ts` + `index.ts` + `_tests/`) and every
-segment has an `index.ts` barrel. A file that mixes a mapper with domain logic is split:
-`tanks/lib/vehicle-sources` keeps `rewardMissions`, `tanks/mappers/vehicle-source-view`
-takes `toVehicleSourceView`. The same folder rule holds in `common/`, `config/` and
-`core/` (`config/cors/`, `config/env/`, `core/prisma/lib/advisory-lock/`).
+## One file per topic, barrels only at module boundaries
 
-Import from a module's barrel across boundaries, never reach into its files.
-Inside a module, relative paths are fine.
+The server does **not** follow the shared "every thing is a folder" rule. Inside a
+module, a segment (`selects/`, `mappers/`, `queries/`, `dto/`, `config/`) holds **one
+file per topic** — `player-history.queries.ts`, `players.selects.ts` — not one folder per
+constant or function. Its types sit beside it as `<topic>.types.ts`, its tests in the
+segment's `_tests/` (`queries/_tests/player-history.queries.db.test.ts`). A topic becomes
+a folder only when it outgrows one file. `lib/<concern>/` keeps its folder (logic plus
+`_tests/`), and a file that mixes a mapper with domain logic is still split.
+
+`index.ts` barrels exist only at boundaries other code imports through: a module root
+(`modules/<x>/index.ts`), a collector sub-module, `core/<x>/`, `src/lib/<client>/` and
+`common/lib/index.ts`. No barrel per segment and none per item; inside a module,
+relative imports point at the file. Import from a module's barrel across boundaries,
+never reach into its files.
+
+Code written before this rule still has the folder-per-item shape; the module packages
+of [the refactor plan](../../../../docs/specs/2026-10-05-server-refactor.md) convert it.
+New code follows this rule; an edit to an old folder leaves its shape alone unless the
+change converts the whole segment.
 
 Nest resolves providers from decorator metadata, so **no `import type` for
 injected classes** — the `otmetki/server` ESLint block turns

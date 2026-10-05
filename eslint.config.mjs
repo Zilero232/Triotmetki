@@ -1,5 +1,7 @@
 import { eslint } from '@siberiacancode/eslint';
 
+import { RAW_SQL_ALLOWLIST } from './apps/web/server/eslint.raw-sql-allowlist.mjs';
+
 export default eslint(
   {
     typescript: true,
@@ -107,6 +109,31 @@ export default eslint(
       'react/no-unnecessary-use-prefix': 'off',
       // main.ts and worker.ts are ESM entrypoints Bun runs directly.
       'antfu/no-top-level-await': 'off'
+    }
+  },
+
+  // One way to write SQL in the server: Kysely through prisma.$kysely (docs/guides/server/queries.md).
+  // Prisma's raw API is banned outside the shrinking allowlist of files not yet moved; tests may still
+  // reference it on their mocks.
+  {
+    name: 'otmetki/server-raw-sql',
+    files: ['apps/web/server/src/**/*.ts', 'apps/web/server/scripts/**/*.ts'],
+    ignores: ['apps/web/server/src/**/_tests/**', ...RAW_SQL_ALLOWLIST],
+    rules: {
+      'no-restricted-properties': [
+        'error',
+        ...['$queryRaw', '$executeRaw', '$queryRawUnsafe', '$executeRawUnsafe'].map((property) => ({
+          property,
+          message:
+            'Write SQL with Kysely (prisma.$kysely / tx.$kysely, expressions in core/prisma/sql-expressions.ts) — docs/guides/server/queries.md.'
+        })),
+        ...['sql', 'raw', 'join', 'empty'].map((property) => ({
+          object: 'Prisma',
+          property,
+          message:
+            'Write SQL with Kysely (prisma.$kysely / tx.$kysely, expressions in core/prisma/sql-expressions.ts) — docs/guides/server/queries.md.'
+        }))
+      ]
     }
   },
 

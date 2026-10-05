@@ -14,7 +14,9 @@ const source = GAME_DATA_SOURCES.RU;
 const createFetch = (files: Record<string, string>, failures: Record<string, number> = {}) => {
   const calls: string[] = [];
 
-  const fetch: FetchLike = async (input) => {
+  const fetch: FetchLike = async (request) => {
+    const input = request instanceof Request ? request.url : String(request);
+
     calls.push(input);
 
     if (input.startsWith(GITHUB.api)) {
@@ -75,5 +77,26 @@ describe('createGithubReader', () => {
     expect(await reader.read('a.xml')).toBe('<root/>');
     expect(calls.filter((url) => url.endsWith('missing.xml'))).toHaveLength(1);
     expect(calls.filter((url) => url.endsWith('a.xml'))).toHaveLength(3);
+  });
+
+  it('keeps a commit sha GitHub cannot resolve as the pinned commit', async () => {
+    const fetch: FetchLike = async () => new Response('gone', { status: 422 });
+    const reader = await createGithubReader({ sourceId: 'RU', ref: SHA.toUpperCase(), cacheDir, fetch });
+
+    expect(reader.revision.sha).toBe(SHA);
+  });
+
+  it('reports the GitHub status for a branch it cannot resolve', async () => {
+    const fetch: FetchLike = async () => new Response('missing', { status: 404 });
+
+    await expect(createGithubReader({ sourceId: 'RU', ref: 'no-such-branch', cacheDir, fetch })).rejects.toThrow(/GitHub 404 resolving/);
+  });
+
+  it('asks GitHub once for the commit', async () => {
+    const { fetch, calls } = createFetch({});
+
+    await createGithubReader({ sourceId: 'RU', cacheDir, fetch });
+
+    expect(calls.filter((url) => url.startsWith(GITHUB.api))).toHaveLength(1);
   });
 });

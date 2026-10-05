@@ -25,6 +25,23 @@ never a fat `x.service.ts` at the module root.
 There is no facade: a consumer injects the specific domain service it uses, and
 the module `exports` only what other modules legitimately call.
 
+## Service names say what the service does
+
+| Suffix                       | Does                                                         | Runs in |
+| ---------------------------- | ------------------------------------------------------------ | ------- |
+| `<topic>-reader.service.ts`  | reads for an endpoint (queries, mapping, caching)            | API     |
+| `<topic>-writer.service.ts`  | writes with business rules (limits, locks, side effects)     | API     |
+| `<topic>-sync.service.ts`    | a worker job that pulls an external source into the database | worker  |
+| `<topic>-aggregate.service.ts` | a worker job that recomputes a table from other tables     | worker  |
+
+No `-query`, `-store`, `-fetch`, `-list` or `-feed` suffixes on new services; existing
+names are converted by the module packages. Schedules keep `-schedules.service.ts`,
+processors `.processor.ts`. A service whose only method forwards to one query function
+is deleted and the caller calls the function. A service stays at one domain of work and
+about 200 lines; more than ~8 public methods or ~5 injected collaborators means split it.
+`core/` holds infrastructure only — a domain service (a user's linked accounts, battle
+events) lives in a module.
+
 ## Segments beyond the basics
 
 - `processors/` — BullMQ processors and the module's `*-schedules.service.ts`

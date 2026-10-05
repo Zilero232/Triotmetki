@@ -1,6 +1,7 @@
 import type { PoolConfig } from 'pg';
 
-import type { Prisma, PrismaClient } from '../../../generated';
+import type { Prisma } from '../../../generated';
+import type { Database } from './kysely';
 import type { PrismaService } from './prisma.service';
 
 export type CreatePrismaClientInput = {
@@ -11,12 +12,16 @@ export type CreatePrismaClientInput = {
 
 export type CreatePgPoolInput = Pick<CreatePrismaClientInput, 'pool' | 'url'>;
 
+export type PrismaTransaction = Prisma.TransactionClient & { $kysely: Database };
+
 export type LockedTransactionInput<T> = {
-  prisma: Pick<PrismaClient, '$transaction'>;
+  prisma: Pick<PrismaService, '$transaction'>;
   scope: string;
   key: string;
-  run: (tx: Prisma.TransactionClient) => Promise<T>;
+  run: (tx: PrismaTransaction) => Promise<T>;
 };
+
+export type TakeLockInput = Pick<LockedTransactionInput<unknown>, 'key' | 'scope'> & { tx: PrismaTransaction };
 
 export type PrismaModuleOptions = {
   poolMax?: number;

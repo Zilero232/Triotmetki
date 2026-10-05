@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { Env } from '../../../../config/env';
-import type { HttpClientService } from '../../../../core';
+import type { HttpClientService, HttpRequestInput } from '../../../../core';
 import type { FeedReaderService } from '../feed-reader.service';
 import type { TwitchSdkService } from '../twitch-sdk.service';
 
@@ -55,7 +55,7 @@ const fetch: NonNullable<Options['fetch']> = async (input, init) => {
 };
 
 const httpClient = mock<HttpClientService>({
-  getJson: ({ url, options }) => http.get(url, { ...options, fetch }).json(),
+  getJson: ({ url, options }: HttpRequestInput) => http.get(url, { ...options, fetch }).json(),
   requestJson: ({ url, options }) => http(url, { ...options, fetch }).json()
 });
 

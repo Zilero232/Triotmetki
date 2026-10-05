@@ -11,7 +11,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { mock, mockDeep } from 'vitest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import type { Replay } from '../../../../generated';
 import type { AuthenticatedDevice } from '../../mod';
@@ -19,6 +19,7 @@ import type { AuthenticatedDevice } from '../../mod';
 import { AppForbiddenException, ModException } from '../../../common/exceptions';
 import { AllExceptionsFilter } from '../../../common/filters';
 import { LocalDiskStorage, ObjectStorage, PrismaService } from '../../../core';
+import { mockPrismaService } from '../../../core/prisma/_tests/prisma-mock';
 import { parseReplaySummary } from '../../../lib/replay';
 import { FIXTURE, readFixture } from '../../../lib/replay/_tests/fixtures';
 import { EntitlementsService } from '../../billing';
@@ -27,7 +28,7 @@ import { REPLAY_UPLOAD, REPLAYS_QUEUE } from '../config';
 import { ReplaysController } from '../replays.controller';
 import { HeatmapService, ReplayOwnerService, ReplayParseService, ReplayQueryService, ReplayUploadService } from '../services';
 
-const prisma = mockDeep<PrismaService>();
+const prisma = mockPrismaService();
 const queue = mock<Queue>();
 const entitlements = mock<EntitlementsService>();
 const devices = mock<ModDeviceService>();

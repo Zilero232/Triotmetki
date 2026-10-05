@@ -14,4 +14,4 @@ Purge jobs, deletion requests (`PurgeGuardService`) and the Timescale retention
 policies (`TIMESCALE` in `config/timescale.constants.ts`) are not optional. Every
 table that grows with time gets a `RETENTION.rules` entry
 (`modules/collector/purge/config`) in the same change, or is listed in
-`apps/web/server/CLAUDE.md` as kept on purpose with the reason.
+`docs/guides/server/data.md` (Retention) as kept on purpose with the reason.

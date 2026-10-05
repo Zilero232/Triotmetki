@@ -8,6 +8,14 @@
     "incremental": true,
     "tsBuildInfoFile": "node_modules/.cache/tsc/server.tsbuildinfo"
   },
-  "include": ["src/**/*.ts", "scripts/**/*.ts", "prisma.config.ts", "vitest.config.ts", "vitest.setup.ts"],
+  "include": [
+    "src/**/*.ts",
+    "scripts/**/*.ts",
+    "prisma.config.ts",
+    "vitest.config.ts",
+    "vitest.db.config.ts",
+    "vitest.db.global-setup.ts",
+    "vitest.setup.ts"
+  ],
   "exclude": ["node_modules", "generated"]
 }

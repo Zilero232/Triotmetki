@@ -29,7 +29,7 @@ Design specs, one per initiative, dated.
 The style guide, split by stack. Index and tooling: [guides/README.md](guides/README.md).
 
 - `guides/client/` — slices, `ui/` and `ui-kit`, `model/hooks`, segments, React, component body and size, styles, forms, conditional render, drill cleanup.
-- `guides/server/` — [NestJS modules and routes](guides/server/nestjs.md).
+- `guides/server/` — [NestJS modules and routes](guides/server/nestjs.md), [what each module owns](guides/server/modules.md), [queries: Prisma Client and Kysely](guides/server/queries.md), [schema, retention, locks](guides/server/data.md), [the collector](guides/server/collector.md).
 - `guides/shared/` — naming, imports and barrels, types, functions, blank lines, shared schemas, forbidden list, pre-commit checklist, [external docs (context7 ids)](guides/shared/references.md).
 - Modpack — [apps/game/modpack/CLAUDE.md](../apps/game/modpack/CLAUDE.md) and [apps/game/modpack/README.md](../apps/game/modpack/README.md); the component catalogue the manager and МОСТ read — [apps/game/modpack/catalog/README.md](../apps/game/modpack/catalog/README.md).
 - Modpack manager (Tauri 2 app, the way players install the modpack) — [apps/game/manager/CLAUDE.md](../apps/game/manager/CLAUDE.md) and [apps/game/manager/README.md](../apps/game/manager/README.md): client detection, state layout, patch flow, the `/modpack/releases/latest` and updater feeds, `triotmetki://` deep links.

@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { mock, mockDeep } from 'vitest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import type { WebhookEndpoint } from '../../../../../generated';
-import type { PrismaService } from '../../../../core';
 import type { HostLookupService } from '../host-lookup.service';
 
+import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { API_TIERS, WEBHOOK_EVENT_TO_DB } from '../../config';
 import { ApiTierService } from '../api-tier.service';
 import { WebhookEndpointsService } from '../webhook-endpoints.service';
@@ -32,7 +32,7 @@ const endpoint = (overrides: Partial<WebhookEndpoint> = {}): WebhookEndpoint => 
 });
 
 const createService = () => {
-  const prisma = mockDeep<PrismaService>();
+  const prisma = mockPrismaService();
   const tiers = mock<ApiTierService>();
 
   tiers.tierFor.mockResolvedValue('free');

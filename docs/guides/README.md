@@ -34,6 +34,10 @@ command — `bun run verify` (typecheck + ESLint + the client's import-cycle che
 ### Server (`apps/web/server`)
 
 - [Server routes — NestJS](server/nestjs.md) — §18
+- [Server modules](server/modules.md) — what each module owns
+- [Queries: Prisma Client and Kysely](server/queries.md)
+- [Data: schema, retention, concurrency](server/data.md)
+- [The collector](server/collector.md)
 
 ### Shared (TypeScript everywhere)
 

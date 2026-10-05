@@ -1,20 +1,20 @@
 import { overlayConfigSchema } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
-import { mock, mockDeep } from 'vitest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import type { AppConfigService } from '../../../../config';
-import type { PrismaService } from '../../../../core';
 import type { EntitlementsService } from '../../../billing';
 import type { CosmeticsService } from '../../../progression';
 import type { OverlayDataService } from '../overlay-data.service';
 
 import { AppForbiddenException } from '../../../../common/exceptions';
+import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { OverlayService } from '../overlay.service';
 
 const config = overlayConfigSchema.parse({ metrics: ['wn8'] });
 
 const createService = () => {
-  const prisma = mockDeep<PrismaService>();
+  const prisma = mockPrismaService();
   const data = mock<OverlayDataService>();
   const entitlements = mock<EntitlementsService>();
 

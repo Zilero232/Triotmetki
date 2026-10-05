@@ -1,12 +1,12 @@
 import type { ModComponentSet } from '@otmetki/schemas';
+import type { CompiledQuery } from 'kysely';
 
 import { MOD_SYNC } from '@otmetki/schemas';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { mockDeep } from 'vitest-mock-extended';
 
 import type { ModSyncLibrary } from '../../../../../generated';
-import type { PrismaService } from '../../../../core';
 
+import { advisoryLocks, mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { ModSyncService } from '../mod-sync.service';
 
 const NOW = new Date('2026-09-30T12:00:00.000Z');
@@ -24,12 +24,13 @@ const storedRow = (data: object, revision = 3): ModSyncLibrary => ({
 });
 
 const createService = () => {
-  const prisma = mockDeep<PrismaService>();
+  const queries: CompiledQuery[] = [];
+  const prisma = mockPrismaService({ queries });
 
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
   prisma.modSyncLibrary.upsert.mockResolvedValue(storedRow({}, 1));
 
-  return { service: new ModSyncService(prisma), prisma };
+  return { service: new ModSyncService(prisma), prisma, queries };
 };
 
 beforeEach(() => {
@@ -62,13 +63,13 @@ describe('ModSyncService.sets', () => {
 
 describe('ModSyncService.saveSets', () => {
   it('stores a changed library as the next revision under the per-user lock', async () => {
-    const { service, prisma } = createService();
+    const { service, prisma, queries } = createService();
 
     prisma.modSyncLibrary.findUnique.mockResolvedValue(storedRow({ items: [set('a')], deleted: [] }));
 
     await service.saveSets({ userId: USER_ID, body: { sets: [set('b')], deleted: [], mode: 'merge' } });
 
-    expect(prisma.$executeRaw).toHaveBeenCalledOnce();
+    expect(advisoryLocks(queries)).toHaveLength(1);
 
     expect(prisma.modSyncLibrary.upsert).toHaveBeenCalledWith(
       expect.objectContaining({

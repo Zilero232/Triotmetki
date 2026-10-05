@@ -45,7 +45,8 @@ export const GITHUB = {
   raw: 'https://raw.githubusercontent.com',
   apiVersion: '2022-11-28',
   userAgent: 'otmetki-gamedata',
-  commitSha: /^[0-9a-f]{40}$/i
+  commitSha: /^[0-9a-f]{40}$/i,
+  commitRetries: 0
 } as const;
 
 export const FETCH = {

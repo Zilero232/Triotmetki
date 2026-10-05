@@ -7,9 +7,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { ApiKey } from '../../../../../generated';
-import type { PrismaService } from '../../../../core';
 import type { OtmetkiAuth } from '../../../../lib/auth';
 
+import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { API_KEY_PLUGIN } from '../../../../lib/auth';
 import { API_KEY_POLICY, API_TIERS } from '../../config';
 import { ApiKeysService } from '../api-keys.service';
@@ -54,7 +54,7 @@ const keyRow = (overrides: Partial<ApiKey> = {}): ApiKey => ({
 });
 
 const createService = () => {
-  const prisma = mockDeep<PrismaService>();
+  const prisma = mockPrismaService();
   const tiers = mock<ApiTierService>();
   const auth = mockDeep<AuthService<OtmetkiAuth>>();
   const tierSync = mock<ApiTierSyncService>();
