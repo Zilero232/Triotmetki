@@ -41,6 +41,10 @@ export const SettingsForm = ({ settings }: SettingsFormProps) => {
           <FormField label={t('interval')}>
             {(field) => <Select {...field} {...register('checkIntervalMinutes', { valueAsNumber: true })} options={intervalOptions} />}
           </FormField>
+        </div>
+      </Card>
+      <Card title={t('interfaceTitle')}>
+        <div className={s.fields}>
           <FormField label={t('language')}>{(field) => <Select {...field} {...register('language')} options={languageOptions} />}</FormField>
         </div>
       </Card>

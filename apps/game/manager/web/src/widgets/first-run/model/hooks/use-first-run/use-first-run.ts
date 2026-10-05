@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLocale } from 'use-intl';
 
+import { useCatalog } from '@/entities/catalog';
 import { useSelectedClient } from '@/entities/client';
 import { installBlocker, presetSelection, useInstallPlan } from '@/features/setup/install-modpack';
 import { pickLocalized, useErrorText, useNavigation } from '@/shared/lib';
@@ -11,6 +12,7 @@ export const useFirstRun = () => {
   const { navigate } = useNavigation();
   const { query: clientsQuery, client, clientPath } = useSelectedClient();
   const planQuery = useInstallPlan(clientPath);
+  const { data: catalog } = useCatalog();
   const [chosenPreset, setChosenPreset] = useState<string | null>(null);
 
   const plan = planQuery.data ?? null;
@@ -26,6 +28,7 @@ export const useFirstRun = () => {
 
   const selected = presets.find((preset) => preset.id === chosenPreset) ?? presets[0] ?? null;
   const blocker = plan ? installBlocker(plan) : null;
+  const canInstall = plan !== null && blocker === null && selected !== null;
 
   return {
     clientsQuery,
@@ -34,8 +37,12 @@ export const useFirstRun = () => {
     hasClient: client !== undefined,
     presets: presets.map((preset) => ({ ...preset, isSelected: preset.id === selected?.id })),
     selectedTitle: selected?.title ?? null,
+    selectedCount: selected?.count ?? 0,
+    releaseVersion: plan?.release?.version ?? plan?.catalog?.modpackVersion ?? catalog?.modpackVersion ?? null,
     blocker,
-    canInstall: plan !== null && blocker === null && selected !== null,
+    canInstall,
+    isGameDone: client !== undefined && client.problem === null,
+    isPresetDone: canInstall,
     errorMessage: (error: unknown) => {
       const { title, hint } = errorText(error);
 

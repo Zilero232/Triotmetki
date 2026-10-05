@@ -24,16 +24,13 @@ use crate::report::{ReportPart, ReportPreview, ReportReceipt};
 use crate::service::{
     AccountLink, ClientsView, InstallOutcome, InstallPlan, InstallRequest, Manager, SyncReport, SyncStatus, UninstallRequest, WhatsNew,
 };
-use crate::sets::SetsView;
 use crate::settings::ManagerSettings;
 use crate::sync::Resolution;
 
 pub use dialogs::DialogText;
 use dialogs::{ask_path, DialogKind, FileDialog};
 
-pub const SET_FILE_EXTENSIONS: [&str; 1] = [crate::sets::SET_EXTENSION];
-pub const LIBRARY_FILE_EXTENSIONS: [&str; 1] = [crate::sets::LIBRARY_EXTENSION];
-pub const IMPORT_FILE_EXTENSIONS: [&str; 2] = [crate::sets::SET_EXTENSION, crate::sets::LIBRARY_EXTENSION];
+pub const IMPORT_FILE_EXTENSIONS: [&str; 3] = [crate::sets::SET_EXTENSION, crate::sets::LIBRARY_EXTENSION, crate::profiles::CODE_FILE_EXTENSION];
 pub const REPORT_FILE_EXTENSIONS: [&str; 1] = [crate::report::ZIP_EXTENSION];
 pub const PROFILE_FILE_EXTENSIONS: [&str; 1] = [crate::install::PROFILE_EXTENSION];
 pub const FALLBACK_FILE_NAME: &str = "triotmetki";
@@ -125,12 +122,17 @@ pub async fn set_component_enabled(app: AppHandle, client_path: Option<PathBuf>,
 
 #[tauri::command]
 pub async fn list_profiles(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<ProfilesView> {
-    Ok(manager.profile_store(client_path.as_deref())?.load()?.view())
+    manager.profiles_view(client_path.as_deref())
 }
 
 #[tauri::command]
-pub async fn save_profile(manager: State<'_, Manager>, client_path: Option<PathBuf>, name: String) -> AppResult<ProfilesView> {
-    manager.change_profiles(client_path.as_deref(), |store| store.save_current(&name).map(drop)).await
+pub async fn save_profile(
+    manager: State<'_, Manager>,
+    client_path: Option<PathBuf>,
+    name: String,
+    components: Option<Vec<String>>,
+) -> AppResult<ProfilesView> {
+    manager.change_profiles(client_path.as_deref(), |store| store.save_current(&name, components).map(drop)).await
 }
 
 #[tauri::command]
@@ -161,6 +163,22 @@ pub async fn import_profile(
 #[tauri::command]
 pub async fn export_profile(manager: State<'_, Manager>, client_path: Option<PathBuf>, id: String) -> AppResult<String> {
     manager.profile_store(client_path.as_deref())?.export(&id)
+}
+
+#[tauri::command]
+pub async fn import_profile_file(
+    app: AppHandle,
+    manager: State<'_, Manager>,
+    client_path: Option<PathBuf>,
+    text: DialogText,
+) -> AppResult<Option<ProfilesView>> {
+    let dialog = FileDialog { kind: DialogKind::Open, text, extensions: &IMPORT_FILE_EXTENSIONS, fallback_name: FALLBACK_FILE_NAME };
+    let Some(path) = ask_path(&app, dialog).await? else {
+        return Ok(None);
+    };
+    let text = crate::sets::read_limited(&path)?;
+
+    manager.change_profiles(client_path.as_deref(), |store| store.import_text(&text).map(drop)).await.map(Some)
 }
 
 #[tauri::command]
@@ -267,74 +285,6 @@ pub async fn get_conflicts(app: AppHandle, client_path: Option<PathBuf>) -> AppR
 #[tauri::command]
 pub async fn restore_missing(app: AppHandle, client_path: Option<PathBuf>) -> AppResult<ConflictReport> {
     with_manager(&app, move |manager| block_on(manager.restore_missing(client_path.as_deref()))).await
-}
-
-#[tauri::command]
-pub async fn list_sets(manager: State<'_, Manager>) -> AppResult<SetsView> {
-    Ok(manager.sets_view())
-}
-
-#[tauri::command]
-pub async fn save_set(manager: State<'_, Manager>, name: String, components: Vec<String>) -> AppResult<SetsView> {
-    manager.change_sets(|file| file.add(&name, &components).map(drop)).await
-}
-
-#[tauri::command]
-pub async fn rename_set(manager: State<'_, Manager>, id: String, name: String) -> AppResult<SetsView> {
-    manager.change_sets(|file| file.rename(&id, &name)).await
-}
-
-#[tauri::command]
-pub async fn duplicate_set(manager: State<'_, Manager>, id: String, name: String) -> AppResult<SetsView> {
-    manager.change_sets(|file| file.duplicate(&id, &name).map(drop)).await
-}
-
-#[tauri::command]
-pub async fn delete_set(manager: State<'_, Manager>, id: String) -> AppResult<SetsView> {
-    manager.change_sets(|file| file.remove(&id)).await
-}
-
-#[tauri::command]
-pub async fn export_set(manager: State<'_, Manager>, id: String) -> AppResult<String> {
-    manager.set_store().export_code(&id)
-}
-
-#[tauri::command]
-pub async fn import_set(manager: State<'_, Manager>, code: String, name: Option<String>) -> AppResult<SetsView> {
-    let _guard = manager.write_guard().await?;
-
-    manager.set_store().import_code(&code, name.as_deref())?;
-
-    Ok(manager.sets_view())
-}
-
-#[tauri::command]
-pub async fn export_set_file(app: AppHandle, manager: State<'_, Manager>, id: String, text: DialogText) -> AppResult<Option<PathBuf>> {
-    manager.set_store().load().get(&id)?;
-
-    let dialog = FileDialog { kind: DialogKind::Save, text, extensions: &SET_FILE_EXTENSIONS, fallback_name: FALLBACK_FILE_NAME };
-
-    ask_path(&app, dialog).await?.map(|path| manager.set_store().export_file(&id, &path)).transpose()
-}
-
-#[tauri::command]
-pub async fn export_sets_library(app: AppHandle, manager: State<'_, Manager>, text: DialogText) -> AppResult<Option<PathBuf>> {
-    let dialog = FileDialog { kind: DialogKind::Save, text, extensions: &LIBRARY_FILE_EXTENSIONS, fallback_name: FALLBACK_FILE_NAME };
-
-    ask_path(&app, dialog).await?.map(|path| manager.set_store().export_library(&path)).transpose()
-}
-
-#[tauri::command]
-pub async fn import_set_file(app: AppHandle, manager: State<'_, Manager>, text: DialogText) -> AppResult<Option<SetsView>> {
-    let dialog = FileDialog { kind: DialogKind::Open, text, extensions: &IMPORT_FILE_EXTENSIONS, fallback_name: FALLBACK_FILE_NAME };
-    let Some(path) = ask_path(&app, dialog).await? else {
-        return Ok(None);
-    };
-    let _guard = manager.write_guard().await?;
-
-    manager.set_store().import_file(&path)?;
-
-    Ok(Some(manager.sets_view()))
 }
 
 #[tauri::command]

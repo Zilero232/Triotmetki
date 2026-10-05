@@ -25,7 +25,6 @@ use crate::report::{ReportItem, ReportPart, ReportPreview, ReportReceipt};
 use crate::service::setup::{InstallStep, InstallWarning, PackageSource, ReleaseSummary};
 use crate::service::sync::LocalSync;
 use crate::service::{AccountLink, ClientsView, InstallOutcome, InstallPlan, SyncReport, SyncStatus, WhatsNew};
-use crate::sets::{ComponentSet, SetsView, MAX_SETS};
 use crate::settings::ManagerSettings;
 use crate::sync::{LibrarySync, SyncOutcome};
 
@@ -148,8 +147,10 @@ fn samples() -> Vec<(&'static str, Value)> {
                     name: "Стрим".into(),
                     created: Some(1_790_000_000.5),
                     updated: Some(1_790_000_100.25),
+                    installed: Some(vec!["core".into(), "companion".into(), "marks_panel".into()]),
                     active: true,
                 }],
+                pending_sets: 2,
             }),
         ),
         (
@@ -225,19 +226,6 @@ fn samples() -> Vec<(&'static str, Value)> {
             }),
         ),
         (
-            "sets",
-            value(&SetsView {
-                max: MAX_SETS,
-                sets: vec![ComponentSet {
-                    id: "a1b2c3d4e5f6".into(),
-                    name: "Стрим".into(),
-                    components: vec!["core".into(), "companion".into(), "marks_panel".into()],
-                    created: 1_790_000_000.5,
-                    updated: 1_790_000_100.25,
-                }],
-            }),
-        ),
-        (
             "cache-plan",
             value(&CachePlan {
                 targets: vec![
@@ -281,19 +269,11 @@ fn samples() -> Vec<(&'static str, Value)> {
                 selected: Some(12_345_678),
             }),
         ),
-        (
-            "sync-status",
-            value(&SyncStatus {
-                linked: true,
-                sets: LocalSync { synced_at: Some(1_790_000_000.5), pending: 2 },
-                profiles: Some(LocalSync { synced_at: None, pending: 1 }),
-            }),
-        ),
+        ("sync-status", value(&SyncStatus { linked: true, profiles: Some(LocalSync { synced_at: None, pending: 1 }) })),
         (
             "sync-report",
             value(&SyncReport {
-                sets: LibrarySync { outcome: SyncOutcome::Conflict, local: 3, remote: 4, local_changes: 1, remote_changes: 2 },
-                profiles: Some(LibrarySync { outcome: SyncOutcome::Pushed, local: 2, remote: 1, local_changes: 1, remote_changes: 0 }),
+                profiles: Some(LibrarySync { outcome: SyncOutcome::Conflict, local: 3, remote: 4, local_changes: 1, remote_changes: 2 }),
             }),
         ),
         (

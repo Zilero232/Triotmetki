@@ -3,6 +3,7 @@ export {
   deleteProfile,
   exportProfile,
   importProfile,
+  importProfileFile,
   listProfiles,
   profilesViewSchema,
   renameProfile,

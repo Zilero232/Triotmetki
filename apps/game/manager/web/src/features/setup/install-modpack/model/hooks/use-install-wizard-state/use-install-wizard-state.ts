@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'use-intl';
 import { previewSrc } from '@/entities/catalog';
 import { useSelectedClient } from '@/entities/client';
 import { useGamefaceNotice } from '@/entities/gameface';
+import { activateProfile } from '@/entities/profile';
 import { QUERY_KEYS } from '@/shared/config';
 import { pickLocalized, useErrorText, useErrorToast, useNavigation } from '@/shared/lib';
 
@@ -17,7 +18,7 @@ import { INSTALL_WIZARD } from '../../../config';
 import { closeDependencies, installBlocker, matchingPreset, presetSelection, toggleSelection } from '../../../lib';
 import { useInstallPlan } from '../use-install-plan';
 
-export const useInstallWizardState = ({ initialPreset, initialComponents, startAtReview }: UseInstallWizardStateInput) => {
+export const useInstallWizardState = ({ initialPreset, initialComponents, startAtReview, profileId }: UseInstallWizardStateInput) => {
   const t = useTranslations('install');
   const locale = useLocale();
   const { navigate } = useNavigation();
@@ -81,6 +82,15 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
   const blocker = plan && installBlocker(plan);
   const canInstall = clientPath !== null && plan !== null && blocker === null;
 
+  const applyProfile = async (id: string) => {
+    try {
+      queryClient.setQueryData(QUERY_KEYS.profiles(clientPath), await activateProfile({ clientPath, id }));
+      toast.success(t('profileApplied'));
+    } catch (error) {
+      showError(error);
+    }
+  };
+
   const install = useMutation({
     mutationFn: () => installModpack({ clientPath, components: [...selection], removeOthers: [...removeOthers] }),
     onSuccess: async ({ installation, warnings }) => {
@@ -93,6 +103,10 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
 
       for (const warning of warnings) {
         toast.warning(t(`partial.${warning.step}`), { description: errorText({ code: warning.code, message: '' }).hint });
+      }
+
+      if (profileId) {
+        await applyProfile(profileId);
       }
 
       navigate({ page: 'home' });

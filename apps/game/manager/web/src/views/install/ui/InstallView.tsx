@@ -19,6 +19,7 @@ export const InstallView = () => {
         key={visit}
         initialComponents={params.components ?? null}
         initialPreset={params.preset ?? null}
+        profileId={params.profileId ?? null}
         startAtReview={params.review ?? false}
       />
     </>

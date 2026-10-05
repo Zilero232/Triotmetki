@@ -1,6 +1,6 @@
 {
   "title": "Help",
-  "description": "Answers to common questions about installing, updates and sets. If yours is not here, collect the logs and write to us.",
+  "description": "Answers to common questions about installing, updates and profiles. If yours is not here, collect the logs and write to us.",
   "tipLabel": "Tip",
   "faqTitle": "Common questions",
   "supportTitle": "Did not find an answer?",
@@ -21,7 +21,7 @@
     },
     "notWorking": {
       "question": "Mods stopped working after a patch",
-      "answer": "Close the game and press “Check now” on Home. If the modpack is up to date and the problem stays, clear the game cache in Settings. If that does not help, open Components: the mods folder check shows conflicts and missing files."
+      "answer": "Close the game and press “Check now” on Home. If the modpack is up to date and the problem stays, clear the game cache under Maintenance. If that does not help, open Components: the mods folder check shows conflicts and missing files."
     },
     "conflicts": {
       "question": "What is a mod conflict?",
@@ -32,8 +32,8 @@
       "answer": "“Recommended” is everything for every day. “Minimal” keeps only light components for slower PCs. “Streamer” is what viewers see on a stream. Any set can be adjusted with the checkboxes — it then becomes “Custom”."
     },
     "sets": {
-      "question": "How is a build different from a profile?",
-      "answer": "A build is the list of installed components (“what is installed”). A profile is the component settings from the in-game mod window (“how they look”). Both can be shared with a code."
+      "question": "What does a profile keep?",
+      "answer": "A profile is which components are installed and how they are set up. Applying it in the manager installs the components (you see the list before installing) and writes their settings. In the in-game mod window a profile changes the settings only. Share a profile with a TM1.… code; old TS1.… build codes import as profiles."
     },
     "fairPlay": {
       "question": "Can I get banned?",
@@ -45,7 +45,7 @@
     },
     "uninstall": {
       "question": "How do I remove the modpack?",
-      "answer": "Open Settings → “Remove the modpack”. Only our files are removed, other mods stay. You can keep the mod settings in case you come back."
+      "answer": "Open Modpack → Maintenance → “Remove the modpack” at the bottom of the page. Only our files are removed, other mods stay. You can keep the mod settings in case you come back."
     },
     "smartscreen": {
       "question": "Windows warns me on launch",
@@ -56,8 +56,8 @@
     "home": "The essentials at a glance: is the game found, is the modpack installed, are there updates. The manager checks for updates on its own, on the schedule from Settings.",
     "install": "Four steps: game, components, other mods, install. If the install fails halfway, the previous files are put back.",
     "components": "The switch turns a component on or off without reinstalling. Changes apply on the next game launch.",
-    "sets": "A build remembers a list of components. “Apply” opens the install wizard with that list — you see the changes before installing.",
-    "profiles": "A profile keeps the component settings from the in-game mod window. Apply a profile while the game is closed.",
-    "account": "The same binding to your triotmetki.ru account as the in-game mod uses. Once linked, your builds and profiles are kept on the site and come back on another computer."
+    "profiles": "A profile keeps the component list and their settings. “Apply…” first shows what will be installed and writes the settings after the install. Apply a profile while the game is closed.",
+    "account": "The same binding to your triotmetki.ru account as the in-game mod uses. Once linked, your profiles are kept on the site and come back on another computer.",
+    "maintenance": "Everything about the modpack itself: which version is installed, whether a newer one is out, which client it lives in. Removal is at the bottom, in the danger zone."
   }
 }

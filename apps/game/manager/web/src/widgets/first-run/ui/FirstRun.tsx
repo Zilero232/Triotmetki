@@ -1,4 +1,4 @@
-import { PackageCheck, SlidersHorizontal } from 'lucide-react';
+import { Check, Layers, Package, PackageCheck, SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
 import { ClientPicker } from '@/features/client/client-picker';
@@ -21,18 +21,24 @@ export const FirstRun = () => {
     hasClient,
     presets,
     selectedTitle,
+    selectedCount,
+    releaseVersion,
     blocker,
     canInstall,
+    isGameDone,
+    isPresetDone,
     errorMessage,
     onSelectPreset,
     onQuickInstall,
     onCustomize
   } = useFirstRun();
 
+  const doneLabel = t('home.setup.stepDone');
+
   return (
-    <Card description={t('home.setup.description')} title={t('home.setup.title')} tone='accent'>
+    <Card description={t('home.setup.description')} title={t('home.setup.title')}>
       <ol className={s.steps}>
-        <SetupStep isDone={hasClient} title={t('home.setup.stepGame')}>
+        <SetupStep doneLabel={doneLabel} index={1} isDone={isGameDone} title={t('home.setup.stepGame')}>
           <QueryState errorMessage={errorMessage} {...queryLabels} query={clientsQuery}>
             {() => (
               <>
@@ -51,7 +57,7 @@ export const FirstRun = () => {
             )}
           </QueryState>
         </SetupStep>
-        <SetupStep title={t('home.setup.stepPreset')}>
+        <SetupStep doneLabel={doneLabel} index={2} isDone={isPresetDone} title={t('home.setup.stepPreset')}>
           {hasClient ? (
             <QueryState errorMessage={errorMessage} {...queryLabels} query={planQuery}>
               {() =>
@@ -70,9 +76,17 @@ export const FirstRun = () => {
                         type='button'
                         onClick={() => onSelectPreset(preset.id)}
                       >
-                        <span className={s.presetTitle}>{preset.title}</span>
+                        <span className={s.presetHead}>
+                          <span className={s.presetTitle}>{preset.title}</span>
+                          <span aria-hidden className={s.presetCheck}>
+                            <Check strokeWidth={3} />
+                          </span>
+                        </span>
                         {preset.description && <span className={s.presetText}>{preset.description}</span>}
-                        <span className={s.presetCount}>{t('home.setup.presetCount', { count: preset.count })}</span>
+                        <span className={s.presetCount}>
+                          <Layers aria-hidden />
+                          {t('home.setup.presetCount', { count: preset.count })}
+                        </span>
                       </button>
                     ))}
                   </div>
@@ -83,13 +97,24 @@ export const FirstRun = () => {
             <p className={s.muted}>{t('home.setup.chooseGameFirst')}</p>
           )}
         </SetupStep>
-        <SetupStep title={t('home.setup.stepInstall')}>
+        <SetupStep doneLabel={doneLabel} index={3} title={t('home.setup.stepInstall')}>
+          {releaseVersion && (
+            <div className={s.release}>
+              <Package aria-hidden className={s.releaseIcon} />
+              <div className={s.releaseText}>
+                <span className={s.releaseVersion}>{t('home.setup.release', { version: releaseVersion })}</span>
+                {canInstall && client && (
+                  <span className={s.releaseMeta}>{t('home.setup.releaseMeta', { count: selectedCount, game: client.version })}</span>
+                )}
+              </div>
+            </div>
+          )}
           <div className={s.actions}>
             <Button disabled={!canInstall} size='lg' onClick={onQuickInstall}>
               <PackageCheck aria-hidden />
               {selectedTitle ? t('home.setup.quickInstall', { preset: selectedTitle }) : t('home.installCta')}
             </Button>
-            <Button disabled={!canInstall} variant='secondary' onClick={onCustomize}>
+            <Button disabled={!canInstall} size='lg' variant='secondary' onClick={onCustomize}>
               <SlidersHorizontal aria-hidden />
               {t('home.setup.customize')}
             </Button>

@@ -1,9 +1,13 @@
-use std::io::{Read, Write};
+use std::io::Read;
+#[cfg(test)]
+use std::io::Write;
 
 use base64::engine::{DecodePaddingMode, GeneralPurpose, GeneralPurposeConfig};
 use base64::{alphabet, Engine};
 use flate2::read::ZlibDecoder;
+#[cfg(test)]
 use flate2::write::ZlibEncoder;
+#[cfg(test)]
 use flate2::Compression;
 use serde::{Deserialize, Serialize};
 
@@ -50,6 +54,7 @@ fn checked(name: &str, components: &[String]) -> AppResult<(String, Vec<String>)
     Ok((normalize_name(name).unwrap_or_default(), components))
 }
 
+#[cfg(test)]
 pub fn encode(name: &str, components: &[String]) -> AppResult<String> {
     let payload = Payload { name: name.to_owned(), components: components.to_vec() };
     let mut encoder = ZlibEncoder::new(Vec::new(), Compression::best());
@@ -72,6 +77,7 @@ pub fn decode(code: &str) -> AppResult<(String, Vec<String>)> {
     checked(&payload.name, &payload.components)
 }
 
+#[cfg(test)]
 pub fn to_file_text(name: &str, components: &[String]) -> AppResult<String> {
     let file = SetFile { format: FILE_FORMAT.to_owned(), version: FILE_FORMAT_VERSION, name: name.to_owned(), components: components.to_vec() };
 

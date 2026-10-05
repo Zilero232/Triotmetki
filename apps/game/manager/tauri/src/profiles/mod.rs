@@ -6,10 +6,11 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
-pub use codec::{decode, encode, CODE_PREFIX};
+pub use codec::{decode, encode, Decoded, CODE_PREFIX};
 
 use crate::durable::{now_seconds, MirroredFile};
 use crate::error::{AppError, AppResult, ErrorCode};
+use crate::sets::{self, normalize_components, ComponentSet};
 
 pub const FILE_NAME: &str = "profiles.json";
 pub const CONFIG_JSON: &str = "config.json";
@@ -18,6 +19,7 @@ pub const FILE_VERSION: u32 = 1;
 pub const MAX_PROFILES: usize = 12;
 pub const NAME_MAX_LENGTH: usize = 40;
 pub const ID_BYTES: usize = 6;
+pub const CODE_FILE_EXTENSION: &str = "txt";
 pub const EXCLUDED_CONFIG_KEYS: [&str; 8] = [
     "server_url",
     "bind_code",
@@ -55,6 +57,8 @@ pub struct Profile {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub updated: Option<f64>,
     pub data: ProfileData,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub installed: Option<Vec<String>>,
     #[serde(flatten)]
     pub extra: Map<String, Value>,
 }
@@ -75,6 +79,7 @@ pub struct ProfileSummary {
     pub name: String,
     pub created: Option<f64>,
     pub updated: Option<f64>,
+    pub installed: Option<Vec<String>>,
     pub active: bool,
 }
 
@@ -84,6 +89,15 @@ pub struct ProfilesView {
     pub max: usize,
     pub active: Option<String>,
     pub profiles: Vec<ProfileSummary>,
+    pub pending_sets: usize,
+}
+
+pub struct Draft {
+    pub id: Option<String>,
+    pub name: String,
+    pub data: ProfileData,
+    pub installed: Option<Vec<String>>,
+    pub activate: bool,
 }
 
 impl Default for ProfilesFile {
@@ -143,10 +157,16 @@ impl ProfilesFile {
                     name: profile.name.clone(),
                     created: profile.created,
                     updated: profile.updated,
+                    installed: profile.installed.clone(),
                     active: self.active.as_deref() == Some(profile.id.as_str()),
                 })
                 .collect(),
+            pending_sets: 0,
         }
+    }
+
+    pub fn pending_sets<'a>(&self, sets: &'a [ComponentSet], migrated: &[String]) -> Vec<&'a ComponentSet> {
+        sets.iter().filter(|set| !migrated.contains(&set.id) && self.get(&set.id).is_err()).collect()
     }
 }
 
@@ -221,16 +241,27 @@ impl ProfileStore {
         ProfileData { config, components: as_object(self.file(COMPONENTS_JSON).read()) }
     }
 
-    fn add(file: &mut ProfilesFile, name: &str, data: ProfileData, activate: bool) -> AppResult<Profile> {
+    fn add(file: &mut ProfilesFile, draft: Draft) -> AppResult<Profile> {
         if file.profiles.len() >= MAX_PROFILES {
             return Err(AppError::coded(ErrorCode::ProfileLimit, format!("at most {MAX_PROFILES} profiles")));
         }
 
         let now = now_seconds();
-        let id = std::iter::repeat_with(new_id).find(|candidate| file.get(candidate).is_err()).unwrap_or_else(new_id);
-        let profile = Profile { id, name: normalize_name(name)?, created: Some(now), updated: Some(now), data, extra: Map::new() };
+        let id = draft
+            .id
+            .filter(|id| sets::is_set_id(id) && file.get(id).is_err())
+            .unwrap_or_else(|| std::iter::repeat_with(new_id).find(|candidate| file.get(candidate).is_err()).unwrap_or_else(new_id));
+        let profile = Profile {
+            id,
+            name: normalize_name(&draft.name)?,
+            created: Some(now),
+            updated: Some(now),
+            data: draft.data,
+            installed: draft.installed.map(|installed| normalize_components(&installed)),
+            extra: Map::new(),
+        };
 
-        if activate {
+        if draft.activate {
             file.active = Some(profile.id.clone());
         }
 
@@ -239,10 +270,10 @@ impl ProfileStore {
         Ok(profile)
     }
 
-    pub fn save_current(&self, name: &str) -> AppResult<Profile> {
+    pub fn save_current(&self, name: &str, installed: Option<Vec<String>>) -> AppResult<Profile> {
         let data = self.take_snapshot();
 
-        self.update(|file| Self::add(file, name, data, true))
+        self.update(|file| Self::add(file, Draft { id: None, name: name.to_owned(), data, installed, activate: true }))
     }
 
     pub fn rename(&self, id: &str, name: &str) -> AppResult<()> {
@@ -317,14 +348,97 @@ impl ProfileStore {
         let file = self.load()?;
         let profile = file.get(id)?;
 
-        encode(&profile.name, &profile.data)
+        encode(&profile.name, &profile.data, profile.installed.as_deref())
+    }
+
+    fn decoded_set(&self, name: String, components: Vec<String>) -> Decoded {
+        Decoded { name, data: self.take_snapshot(), installed: Some(components) }
+    }
+
+    fn import_decoded(&self, decoded: Decoded, name: Option<&str>) -> AppResult<Profile> {
+        let name = name.filter(|name| !name.trim().is_empty()).map_or(decoded.name, str::to_owned);
+        let draft = Draft { id: None, name, data: decoded.data, installed: decoded.installed, activate: false };
+
+        self.update(|file| Self::add(file, draft))
     }
 
     pub fn import(&self, code: &str, name: Option<&str>) -> AppResult<Profile> {
-        let (decoded_name, data) = decode(code)?;
-        let name = name.filter(|name| !name.trim().is_empty()).unwrap_or(&decoded_name).to_owned();
+        let decoded = if code.trim().starts_with(sets::CODE_PREFIX) {
+            let (set_name, components) = sets::decode(code)?;
 
-        self.update(|file| Self::add(file, &name, data, false))
+            self.decoded_set(set_name, components)
+        } else {
+            decode(code)?
+        };
+
+        self.import_decoded(decoded, name)
+    }
+
+    pub fn import_text(&self, text: &str) -> AppResult<usize> {
+        let trimmed = text.trim_start_matches('\u{feff}').trim();
+
+        if trimmed.starts_with(CODE_PREFIX) {
+            return self.import(trimmed, None).map(|_| 1);
+        }
+
+        let Some(library) = sets::library_from_text(trimmed) else {
+            let (name, components) = sets::from_file_text(trimmed)?;
+
+            return self.import_decoded(self.decoded_set(name, components), None).map(|_| 1);
+        };
+        let library = library.sanitized();
+        let data = self.take_snapshot();
+
+        self.update(|file| {
+            let room = MAX_PROFILES.saturating_sub(file.profiles.len());
+
+            if room == 0 && !library.sets.is_empty() {
+                return Err(AppError::coded(ErrorCode::ProfileLimit, format!("at most {MAX_PROFILES} profiles")));
+            }
+
+            let mut added = 0;
+
+            for set in library.sets.iter().take(room) {
+                let draft = Draft { id: None, name: set.name.clone(), data: data.clone(), installed: Some(set.components.clone()), activate: false };
+
+                Self::add(file, draft)?;
+                added += 1;
+            }
+
+            Ok(added)
+        })
+    }
+
+    pub fn migrate_sets(&self, sets: &[ComponentSet], migrated: &mut Vec<String>) -> AppResult<usize> {
+        let data = self.take_snapshot();
+
+        self.update(|file| {
+            let fresh: Vec<&ComponentSet> = sets.iter().filter(|set| !migrated.contains(&set.id)).collect();
+
+            for set in fresh {
+                if file.get(&set.id).is_ok() {
+                    migrated.push(set.id.clone());
+                    continue;
+                }
+
+                if file.profiles.len() >= MAX_PROFILES {
+                    continue;
+                }
+
+                let draft = Draft {
+                    id: Some(set.id.clone()),
+                    name: set.name.clone(),
+                    data: data.clone(),
+                    installed: Some(set.components.clone()),
+                    activate: false,
+                };
+
+                Self::add(file, draft)?;
+                migrated.push(set.id.clone());
+            }
+
+            Ok(file.pending_sets(sets, migrated).len())
+        })
     }
 }
 

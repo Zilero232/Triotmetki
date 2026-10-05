@@ -11,7 +11,6 @@ import installPlan from '@contract/install-plan.json';
 import installation from '@contract/installation.json';
 import patchReports from '@contract/patch-reports.json';
 import profiles from '@contract/profiles.json';
-import sets from '@contract/sets.json';
 import settings from '@contract/settings.json';
 import syncStatus from '@contract/sync-status.json';
 import whatsNew from '@contract/whats-new.json';
@@ -42,6 +41,17 @@ const scenarioClients = (scenario: DevIpcScenario) => (scenario === 'no-game' ? 
 const scenarioReport = (scenario: DevIpcScenario) =>
   patchReports.find((report) => report.status.kind === DEV_IPC.statusByScenario[scenario]) ?? patchReports[0];
 
+const presetMembers: Record<string, readonly string[] | undefined> = DEV_IPC.presetMembers;
+
+const devCatalog = {
+  ...catalog,
+  presets: DEV_IPC.presets,
+  components: catalog.components.map((component) => ({
+    ...component,
+    presets: presetMembers[component.id] ?? component.presets
+  }))
+};
+
 const isRequested = () => !('__TAURI_INTERNALS__' in window) && new URLSearchParams(window.location.search).has(DEV_IPC.queryFlag);
 
 export const installDevIpcOnRequest = () => {
@@ -53,18 +63,17 @@ export const installDevIpcOnRequest = () => {
   const responses: Record<string, unknown> = {
     [COMMANDS.appInfo]: appInfo,
     [COMMANDS.listClients]: scenarioClients(scenario),
-    [COMMANDS.getCatalog]: catalog,
+    [COMMANDS.getCatalog]: devCatalog,
     [COMMANDS.getInstallation]: scenarioInstallation(scenario),
     [COMMANDS.listProfiles]: profiles,
     [COMMANDS.getSettings]: { ...settings, autostartAsked: true },
     [COMMANDS.getPatchReport]: scenarioReport(scenario),
     [COMMANDS.checkNow]: scenarioReport(scenario),
-    [COMMANDS.prepareInstall]: installPlan,
+    [COMMANDS.prepareInstall]: { ...installPlan, catalog: devCatalog },
     [COMMANDS.installModpack]: installOutcome,
     [COMMANDS.getGamefaceStatus]: gamefaceStatus,
     [COMMANDS.takeDeepLink]: null,
     [COMMANDS.getConflicts]: conflicts,
-    [COMMANDS.listSets]: sets,
     [COMMANDS.scanCache]: cachePlan,
     [COMMANDS.getAccountLink]: accountLink,
     [COMMANDS.getSyncStatus]: syncStatus,

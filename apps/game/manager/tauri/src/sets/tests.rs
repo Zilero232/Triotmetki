@@ -1,6 +1,6 @@
 use std::fs;
 
-use super::codec::CODE_PREFIX;
+use super::codec::{encode, to_file_text};
 use super::*;
 use crate::error::ErrorCode;
 
@@ -8,104 +8,39 @@ fn ids(items: &[&str]) -> Vec<String> {
     items.iter().map(|item| (*item).to_owned()).collect()
 }
 
-fn store(root: &std::path::Path) -> SetStore {
+fn store(root: &Path) -> SetStore {
     SetStore::new(root.join("Роуминг").join("manager").join(FILE_NAME))
 }
 
-#[test]
-fn saves_renames_duplicates_and_deletes_sets() {
-    let root = tempfile::tempdir().unwrap();
-    let store = store(root.path());
-    let saved = store.update(|file| file.add("  Мой   стрим ", &ids(&["core", "marks_panel", "marks_panel", "Bad-Id", "damage_log"]))).unwrap();
-
-    assert_eq!(saved.name, "Мой стрим");
-    assert_eq!(saved.components, ids(&["core", "marks_panel", "damage_log"]));
-
-    store.update(|file| file.rename(&saved.id, "Турнир")).unwrap();
-
-    let copy = store.update(|file| file.duplicate(&saved.id, "Турнир (копия)")).unwrap();
-    let file = store.load();
-
-    assert_eq!(file.sets.iter().map(|set| set.name.as_str()).collect::<Vec<_>>(), vec!["Турнир", "Турнир (копия)"]);
-    assert_eq!(file.get(&copy.id).unwrap().components, saved.components);
-    assert_ne!(copy.id, saved.id);
-
-    store.update(|file| file.remove(&saved.id)).unwrap();
-
-    let file = store.load();
-
-    assert_eq!(file.sets.len(), 1);
-    assert_eq!(file.deleted[0].id, saved.id);
-    assert_eq!(store.update(|file| file.remove(&saved.id)).unwrap_err().code(), ErrorCode::SetMissing);
-}
-
-#[test]
-fn keeps_at_most_twelve_sets_and_refuses_empty_names() {
-    let root = tempfile::tempdir().unwrap();
-    let store = store(root.path());
-
-    for index in 0..MAX_SETS {
-        store.update(|file| file.add(&format!("Набор {index}"), &ids(&["core"]))).unwrap();
-    }
-
-    assert_eq!(store.update(|file| file.add("Лишний", &ids(&["core"]))).unwrap_err().code(), ErrorCode::SetLimit);
-    let first = store.load().sets[0].id.clone();
-
-    assert_eq!(store.update(|file| file.rename(&first, "   ")).unwrap_err().code(), ErrorCode::SetName);
-    assert_eq!(store.load().view().max, MAX_SETS);
+fn set(id: &str, name: &str, updated: f64) -> ComponentSet {
+    ComponentSet { id: id.into(), name: name.into(), components: ids(&["core"]), created: 1.0, updated }
 }
 
 #[test]
 fn codes_round_trip_and_reject_foreign_text() {
-    let root = tempfile::tempdir().unwrap();
-    let store = store(root.path());
-    let saved = store.update(|file| file.add("ПТ", &ids(&["core", "reload_timer"]))).unwrap();
-    let code = store.export_code(&saved.id).unwrap();
+    let code = encode("ПТ", &ids(&["core", "reload_timer"])).unwrap();
 
     assert!(code.starts_with(CODE_PREFIX));
     assert_eq!(decode(&code).unwrap(), ("ПТ".to_owned(), ids(&["core", "reload_timer"])));
-
-    let imported = store.import_code(&code, Some("ПТ на ноуте")).unwrap();
-
-    assert_eq!(imported.name, "ПТ на ноуте");
     assert_eq!(decode("TM1.abc").unwrap_err().code(), ErrorCode::SetCode);
     assert_eq!(decode(&encode("x", &ids(&["Bad-Id"])).unwrap()).unwrap_err().code(), ErrorCode::SetCode);
 }
 
 #[test]
-fn exports_and_imports_a_set_file_or_the_whole_library() {
-    let root = tempfile::tempdir().unwrap();
-    let store = store(root.path());
-    let saved = store.update(|file| file.add("Минимум", &ids(&["core", "sixth_sense"]))).unwrap();
-    let single = root.path().join("Минимум.tmset");
-    let library = root.path().join("все.json");
-
-    store.export_file(&saved.id, &single).unwrap();
-    store.export_library(&library).unwrap();
-
-    let text = fs::read_to_string(&single).unwrap();
+fn reads_a_set_file_or_a_code_saved_as_text() {
+    let text = to_file_text("Минимум", &ids(&["core", "sixth_sense"])).unwrap();
 
     assert!(text.contains("\"format\": \"triotmetki-component-set\""));
-
-    let other = SetStore::new(root.path().join("другой").join(FILE_NAME));
-
-    other.import_file(&single).unwrap();
-    other.import_file(&library).unwrap();
-
-    let names: Vec<String> = other.load().sets.into_iter().map(|set| set.name).collect();
-
-    assert_eq!(names, vec!["Минимум", "Минимум"]);
-    fs::write(root.path().join("code.txt"), store.export_code(&saved.id).unwrap()).unwrap();
-    other.import_file(&root.path().join("code.txt")).unwrap();
-    assert_eq!(other.load().sets.len(), 3);
-    fs::write(root.path().join("junk.tmset"), "{\"format\":\"other\",\"version\":1,\"name\":\"x\",\"components\":[\"core\"]}").unwrap();
-    assert_eq!(other.import_file(&root.path().join("junk.tmset")).unwrap_err().code(), ErrorCode::SetCode);
+    assert_eq!(from_file_text(&text).unwrap(), ("Минимум".to_owned(), ids(&["core", "sixth_sense"])));
+    assert_eq!(from_file_text(&encode("Код", &ids(&["core"])).unwrap()).unwrap().0, "Код");
+    assert_eq!(
+        from_file_text("{\"format\":\"other\",\"version\":1,\"name\":\"x\",\"components\":[\"core\"]}").unwrap_err().code(),
+        ErrorCode::SetCode
+    );
 }
 
 #[test]
 fn merging_keeps_the_newest_copy_and_honours_deletions() {
-    let set =
-        |id: &str, name: &str, updated: f64| ComponentSet { id: id.into(), name: name.into(), components: ids(&["core"]), created: 1.0, updated };
     let local = SetsFile {
         sets: vec![set("a", "Локальный", 5.0), set("b", "Удалённый позже", 2.0)],
         deleted: vec![Tombstone { id: "c".into(), deleted: 9.0 }],
@@ -125,34 +60,43 @@ fn merging_keeps_the_newest_copy_and_honours_deletions() {
 }
 
 #[test]
-fn an_imported_library_is_checked_like_our_own_sets() {
-    let root = tempfile::tempdir().unwrap();
-    let store = store(root.path());
+fn a_library_is_checked_like_our_own_sets() {
     let long_id = "a".repeat(MAX_ID_LENGTH + 1);
     let mut sets = vec![
         serde_json::json!({ "id": "ok", "name": "  Турнир  ", "components": ["core", long_id, "Bad"], "created": 1.0, "updated": 1.0 }),
         serde_json::json!({ "id": "ok", "name": "Двойник", "components": ["core"], "created": 1.0, "updated": 1.0 }),
         serde_json::json!({ "id": "../x", "name": "Путь", "components": ["core"], "created": 1.0, "updated": 1.0 }),
         serde_json::json!({ "id": "blank", "name": "   ", "components": ["core"], "created": 1.0, "updated": 1.0 }),
+        serde_json::json!({ "id": "empty", "name": "Пусто", "components": [], "created": 1.0, "updated": 1.0 }),
     ];
 
-    sets.extend(
-        (0..20)
-            .map(|index| serde_json::json!({ "id": format!("s{index}"), "name": "x".repeat(500), "components": [], "created": 2.0, "updated": 2.0 })),
-    );
+    sets.extend((0..20).map(
+        |index| serde_json::json!({ "id": format!("s{index}"), "name": "x".repeat(500), "components": ["core"], "created": 2.0, "updated": 2.0 }),
+    ));
 
-    let library = root.path().join("library.json");
+    let text = serde_json::json!({ "version": 1, "sets": sets, "deleted": [{ "id": "", "deleted": 1.0 }] }).to_string();
+    let library = library_from_text(&text).unwrap().sanitized();
+    let first = library.sets.iter().find(|set| set.id == "ok").unwrap();
 
-    fs::write(&library, serde_json::json!({ "version": 1, "sets": sets, "deleted": [{ "id": "", "deleted": 1.0 }] }).to_string()).unwrap();
-    store.import_file(&library).unwrap();
-
-    let file = store.load();
-    let first = file.get("ok").unwrap();
-
-    assert_eq!(file.sets.len(), MAX_SETS);
+    assert_eq!(library.sets.len(), MAX_SETS);
     assert_eq!((first.name.as_str(), first.components.clone()), ("Турнир", ids(&["core"])));
-    assert!(file.sets.iter().all(|set| is_set_id(&set.id) && set.name.chars().count() <= NAME_MAX_LENGTH));
-    assert!(file.deleted.is_empty());
+    assert!(library.sets.iter().all(|set| is_set_id(&set.id) && set.name.chars().count() <= NAME_MAX_LENGTH));
+    assert!(library.sets.iter().all(|set| set.id != "empty"));
+    assert!(library.deleted.is_empty());
+    assert!(library_from_text("{\"name\":\"x\"}").is_none());
+}
+
+#[test]
+fn absorbs_the_sets_kept_on_the_site() {
+    let root = tempfile::tempdir().unwrap();
+    let store = store(root.path());
+
+    store.absorb(&SetsFile { sets: vec![set("a", "С сайта", 7.0)], ..SetsFile::default() }).unwrap();
+    store.absorb(&SetsFile { sets: vec![set("b", "Ещё", 8.0)], ..SetsFile::default() }).unwrap();
+
+    let names: Vec<String> = store.load().sets.into_iter().map(|set| set.name).collect();
+
+    assert_eq!(names, vec!["С сайта", "Ещё"]);
 }
 
 #[test]
@@ -165,33 +109,32 @@ fn a_damaged_sets_file_is_kept_aside_not_overwritten() {
 
     assert!(store.load().sets.is_empty());
 
-    store.update(|file| file.add("Новый", &ids(&["core"]))).unwrap();
+    store.absorb(&SetsFile { sets: vec![set("a", "Новый", 1.0)], ..SetsFile::default() }).unwrap();
 
     assert_eq!(fs::read_to_string(crate::fsx::sibling(&store.path, DAMAGED_SUFFIX)).unwrap(), "{ \"sets\": [");
     assert_eq!(store.load().sets.len(), 1);
-
-    fs::write(&store.path, [0xff, 0xfe, b'{']).unwrap();
-    store.update(|file| file.add("Ещё", &ids(&["core"]))).unwrap();
-
-    assert_eq!(fs::read(crate::fsx::sibling(&store.path, DAMAGED_SUFFIX)).unwrap(), vec![0xff, 0xfe, b'{']);
 }
 
 #[test]
-fn exports_get_their_extension_and_oversized_imports_are_refused() {
+fn reads_at_most_a_small_file_and_adds_extensions() {
     let root = tempfile::tempdir().unwrap();
-    let store = store(root.path());
-    let saved = store.update(|file| file.add("Набор", &ids(&["core"]))).unwrap();
-
-    store.export_file(&saved.id, &root.path().join("game.exe")).unwrap();
-    store.export_library(&root.path().join("все")).unwrap();
-
-    assert!(root.path().join("game.exe.tmset").is_file() && !root.path().join("game.exe").exists());
-    assert!(root.path().join("все.json").is_file());
-    assert_eq!(with_extension(&root.path().join("a.TMSET"), SET_EXTENSION), root.path().join("a.TMSET"));
-
     let big = root.path().join("big.tmset");
 
     fs::write(&big, vec![b' '; usize::try_from(MAX_FILE_BYTES).unwrap() + 1]).unwrap();
 
-    assert_eq!(store.import_file(&big).unwrap_err().code(), ErrorCode::SetCode);
+    assert_eq!(read_limited(&big).unwrap_err().code(), ErrorCode::SetCode);
+    assert_eq!(with_extension(&root.path().join("a.TMSET"), SET_EXTENSION), root.path().join("a.TMSET"));
+    assert_eq!(with_extension(&root.path().join("game.exe"), SET_EXTENSION), root.path().join("game.exe.tmset"));
+}
+
+#[test]
+fn remembers_which_sets_a_client_already_moved_into_profiles() {
+    let root = tempfile::tempdir().unwrap();
+    let client_dir = root.path().join("clients").join("abc");
+
+    assert!(Migration::load(&client_dir).migrated.is_empty());
+
+    Migration { migrated: ids(&["a", "b"]) }.save(&client_dir).unwrap();
+
+    assert_eq!(Migration::load(&client_dir).migrated, ids(&["a", "b"]));
 }

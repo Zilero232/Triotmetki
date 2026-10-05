@@ -8,9 +8,9 @@ import { useSaveProfileForm } from '../model/hooks';
 
 import s from './SaveProfileForm.module.scss';
 
-export const SaveProfileForm = ({ clientPath, disabled }: SaveProfileFormProps) => {
+export const SaveProfileForm = ({ clientPath, components, disabled }: SaveProfileFormProps) => {
   const t = useTranslations('profiles');
-  const { field, error, isPending, onSubmit } = useSaveProfileForm(clientPath);
+  const { field, error, isPending, onSubmit } = useSaveProfileForm({ clientPath, components });
 
   return (
     <NameForm

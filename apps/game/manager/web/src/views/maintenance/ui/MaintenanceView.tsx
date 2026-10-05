@@ -1,0 +1,54 @@
+import { PackagePlus, SlidersHorizontal } from 'lucide-react';
+import { useId } from 'react';
+import { useTranslations } from 'use-intl';
+
+import { ClientPicker } from '@/features/client/client-picker';
+import { ClearCache } from '@/features/settings/clear-cache';
+import { UninstallModpackCard } from '@/features/setup/uninstall-modpack';
+import { Button, Card, HelpTip, PageHeader } from '@/ui-kit';
+import { PatchStatus } from '@/widgets/patch-status';
+import { SectionTabs } from '@/widgets/section-tabs';
+
+import { useMaintenanceView } from '../model/hooks';
+
+import s from './MaintenanceView.module.scss';
+
+export const MaintenanceView = () => {
+  const t = useTranslations();
+  const dangerId = useId();
+  const { clientPath, isInstalled, onChangeSelection } = useMaintenanceView();
+
+  return (
+    <>
+      <SectionTabs section='maintenance' />
+      <PageHeader
+        description={t('maintenance.description')}
+        help={<HelpTip label={t('help.tipLabel')}>{t('help.tips.maintenance')}</HelpTip>}
+        title={t('maintenance.title')}
+      />
+      <PatchStatus />
+      <Card
+        actions={
+          <Button variant='secondary' onClick={onChangeSelection}>
+            {isInstalled ? <SlidersHorizontal aria-hidden /> : <PackagePlus aria-hidden />}
+            {isInstalled ? t('home.changeSelection') : t('home.installCta')}
+          </Button>
+        }
+        description={t('maintenance.selectionDescription')}
+        title={t('maintenance.selectionTitle')}
+      />
+      <Card description={t('maintenance.gameDescription')} title={t('maintenance.gameTitle')}>
+        <ClientPicker />
+      </Card>
+      <Card title={t('settings.cache.title')}>
+        <ClearCache />
+      </Card>
+      <section aria-labelledby={dangerId} className={s.danger}>
+        <h2 className={s.dangerTitle} id={dangerId}>
+          {t('maintenance.dangerZone')}
+        </h2>
+        <UninstallModpackCard clientPath={clientPath} isInstalled={isInstalled} />
+      </section>
+    </>
+  );
+};

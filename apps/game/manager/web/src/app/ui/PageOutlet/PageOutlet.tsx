@@ -6,8 +6,8 @@ import { ComponentsView } from '@/views/components';
 import { HelpView } from '@/views/help';
 import { HomeView } from '@/views/home';
 import { InstallView } from '@/views/install';
+import { MaintenanceView } from '@/views/maintenance';
 import { ProfilesView } from '@/views/profiles';
-import { SetsView } from '@/views/sets';
 import { SettingsView } from '@/views/settings';
 import { AppShell } from '@/widgets/app-shell';
 
@@ -17,12 +17,12 @@ const VIEWS = {
   home: HomeView,
   install: InstallView,
   components: ComponentsView,
-  sets: SetsView,
   profiles: ProfilesView,
-  settings: SettingsView,
-  account: AccountView,
-  help: HelpView,
+  maintenance: MaintenanceView,
   changelog: ChangelogView,
+  account: AccountView,
+  settings: SettingsView,
+  help: HelpView,
   about: AboutView
 };
 

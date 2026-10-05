@@ -3,18 +3,18 @@
   "sections": {
     "home": "Home",
     "components": "Components",
-    "sets": "Builds",
     "profiles": "Profiles",
+    "maintenance": "Maintenance",
+    "account": "Account & site",
     "settings": "Settings",
     "help": "Help"
   },
   "tabs": {
     "label": "Section tabs",
-    "settings": "General",
-    "account": "Account & site",
-    "about": "About",
+    "maintenance": "Maintenance",
+    "changelog": "What’s new",
     "help": "Questions",
-    "changelog": "What’s new"
+    "about": "About"
   },
   "groups": {
     "overview": "Overview",
@@ -55,6 +55,7 @@
       "update": "Update to {latest}",
       "migrate": "Move the modpack"
     },
-    "installedDetail": "{state} · game {version}"
+    "installedDetail": "{state} · game {version}",
+    "available": "{version} available · game {game}"
   }
 }

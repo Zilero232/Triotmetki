@@ -33,9 +33,7 @@ export const useSyncNow = () => {
       }
 
       await Promise.all(
-        [QUERY_KEYS.sets, QUERY_KEYS.profiles(clientPath), QUERY_KEYS.syncStatus(clientPath)].map((queryKey) =>
-          queryClient.invalidateQueries({ queryKey })
-        )
+        [QUERY_KEYS.profiles(clientPath), QUERY_KEYS.syncStatus(clientPath)].map((queryKey) => queryClient.invalidateQueries({ queryKey }))
       );
     },
     onError: (error) => {

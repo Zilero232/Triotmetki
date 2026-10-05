@@ -9,7 +9,6 @@ const localSyncSchema = z.object({
 
 export const syncStatusSchema = z.object({
   linked: z.boolean(),
-  sets: localSyncSchema,
   profiles: localSyncSchema.nullable()
 });
 
@@ -26,6 +25,5 @@ const librarySyncSchema = z.object({
 });
 
 export const syncReportSchema = z.object({
-  sets: librarySyncSchema,
   profiles: librarySyncSchema.nullable()
 });

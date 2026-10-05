@@ -23,7 +23,7 @@ const wrapper = ({ children }: { children: ReactNode }) => (
   </QueryClientProvider>
 );
 
-const merged = { ...report, sets: { ...report.sets, outcome: 'merged' } };
+const merged = { profiles: { ...report.profiles, outcome: 'merged' } };
 
 describe('useSyncNow', () => {
   afterEach(() => {
@@ -54,8 +54,8 @@ describe('useSyncNow', () => {
 
     act(() => result.current.onSync());
     await waitFor(() => expect(result.current.isConflictOpen).toBe(true));
-    expect(result.current.conflicts.map((conflict) => conflict.library)).toEqual(['sets']);
-    expect(result.current.conflicts[0]?.text).toContain('Сборки');
+    expect(result.current.conflicts.map((conflict) => conflict.library)).toEqual(['profiles']);
+    expect(result.current.conflicts[0]?.text).toContain('Профили');
 
     act(() => result.current.onResolve('merge'));
     await waitFor(() => expect(result.current.isConflictOpen).toBe(false));

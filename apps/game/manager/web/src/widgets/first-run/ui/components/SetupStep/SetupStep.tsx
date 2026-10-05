@@ -1,16 +1,19 @@
-import { CircleCheck, CircleDashed } from 'lucide-react';
+import { Check } from 'lucide-react';
 
 import type { SetupStepProps } from './SetupStep.types';
 
 import s from './SetupStep.module.scss';
 
-export const SetupStep = ({ title, isDone = false, children }: SetupStepProps) => (
+export const SetupStep = ({ index, title, isDone = false, doneLabel, children }: SetupStepProps) => (
   <li className={s.step} data-done={isDone || undefined}>
     <span aria-hidden className={s.marker}>
-      {isDone ? <CircleCheck /> : <CircleDashed />}
+      {isDone ? <Check strokeWidth={3} /> : index}
     </span>
     <div className={s.body}>
-      <h3 className={s.title}>{title}</h3>
+      <h3 className={s.title}>
+        {title}
+        {isDone && <span className={s.srOnly}>{doneLabel}</span>}
+      </h3>
       {children}
     </div>
   </li>

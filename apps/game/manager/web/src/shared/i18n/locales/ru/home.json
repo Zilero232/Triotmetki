@@ -18,16 +18,21 @@
     "quickInstall": "Установить «{preset}»",
     "customize": "Выбрать компоненты вручную",
     "installHint": "Откроется последний шаг мастера со списком того, что будет установлено. Ничего не ставится без вашего нажатия «Установить».",
-    "chooseGameFirst": "Сначала найдите игру — шаг 1."
+    "chooseGameFirst": "Сначала найдите игру — шаг 1.",
+    "stepDone": "готово",
+    "release": "Модпак {version}",
+    "releaseMeta": "{count, plural, one {# компонент} few {# компонента} other {# компонентов}} для игры {game}"
   },
   "summary": {
     "game": "Игра",
     "modpack": "Модпак",
     "components": "Компоненты",
-    "latest": "Последняя версия {version}",
-    "latestSame": "Последняя версия",
+    "latest": "Доступна {version}",
     "enabled": "{enabled} из {total}",
     "enabledHint": "включено",
-    "noGame": "Не найдена"
+    "noGame": "Не найдена",
+    "upToDate": "Последняя {version}",
+    "latestUnknown": "Последняя версия неизвестна",
+    "notInstalled": "Не установлен"
   }
 }

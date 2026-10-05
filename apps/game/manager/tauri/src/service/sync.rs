@@ -14,8 +14,8 @@ use crate::profiles::ProfileStore;
 use crate::sets::SetsFile;
 use crate::site::{normalize_code, BindRequest, MOD_VERSION_PREFIX, REALM};
 use crate::sync::{
-    apply_profiles, decide, local_changes, local_profiles, remote_changes, Decision, LibrarySync, ProfileSyncState, PutProfiles, PutSets,
-    RemoteProfiles, RemoteSets, Resolution, Side, SignedBody, Step, SyncBase, PROFILES_PATH, SETS_PATH,
+    apply_profiles, decide, local_changes, local_profiles, remote_changes, Decision, LibrarySync, ProfileSyncState, PutProfiles, RemoteProfiles,
+    RemoteSets, Resolution, Side, SignedBody, Step, SyncBase, PROFILES_PATH, SETS_PATH,
 };
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -36,14 +36,12 @@ pub struct LocalSync {
 #[serde(rename_all = "camelCase")]
 pub struct SyncStatus {
     pub linked: bool,
-    pub sets: LocalSync,
     pub profiles: Option<LocalSync>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SyncReport {
-    pub sets: LibrarySync,
     pub profiles: Option<LibrarySync>,
 }
 
@@ -108,7 +106,6 @@ impl Manager {
     }
 
     pub fn sync_status(&self, client_path: Option<&Path>) -> SyncStatus {
-        let sets = self.set_store().load();
         let profiles = self.client(client_path).ok().map(|client| {
             let state = ProfileSyncState::load(&self.layout.client_dir(&client.path));
             let file = ProfileStore::new(configs_dir(&client.path), self.layout.durable_dir()).load().unwrap_or_default();
@@ -118,66 +115,29 @@ impl Manager {
             LocalSync { synced_at: state.synced_at, pending: local_changes(&Side { items: &local, deleted: &deleted }, state.synced_at) }
         });
 
-        SyncStatus {
-            linked: !self.credential_store().load().is_empty(),
-            sets: LocalSync {
-                synced_at: sets.synced_at,
-                pending: local_changes(&Side { items: &sets.sets, deleted: &sets.deleted }, sets.synced_at),
-            },
-            profiles,
-        }
+        SyncStatus { linked: !self.credential_store().load().is_empty(), profiles }
     }
 
     pub async fn sync_now(&self, client_path: Option<&Path>, resolution: Option<Resolution>) -> AppResult<SyncReport> {
         let credentials = self.sync_credentials()?;
         let _guard = self.write_guard().await?;
-        let sets = self.sync_sets(&credentials, resolution).await?;
         let profiles = match self.client(client_path) {
-            Ok(client) => Some(self.sync_profiles(&client, &credentials, resolution).await?),
+            Ok(client) => {
+                self.pull_sets(&credentials).await?;
+                self.migrate_sets(&client)?;
+                Some(self.sync_profiles(&client, &credentials, resolution).await?)
+            }
             Err(_) => None,
         };
 
-        Ok(SyncReport { sets, profiles })
+        Ok(SyncReport { profiles })
     }
 
-    async fn sync_sets(&self, credentials: &Credentials, resolution: Option<Resolution>) -> AppResult<LibrarySync> {
-        let store = self.set_store();
-        let local = store.load();
+    async fn pull_sets(&self, credentials: &Credentials) -> AppResult<()> {
         let signed = SignedBody { device_id: credentials.device_id.clone(), account_id: credentials.account_id };
         let remote: RemoteSets = self.site.signed(Method::POST, SETS_PATH, credentials, &signed).await?;
-        let base = base_after_reset(SyncBase { synced_at: local.synced_at, revision: local.revision }, remote.revision);
-        let local_side = Side { items: &local.sets, deleted: &local.deleted };
-        let remote_side = Side { items: &remote.sets, deleted: &remote.deleted };
-        let local_count = local_changes(&local_side, base.synced_at);
-        let remote_count = remote_changes(&local_side, &remote_side);
-        let Decision { step, outcome } = decide(local_count, remote_count, &base, remote.revision, resolution);
-        let summary =
-            LibrarySync { outcome, local: local.sets.len(), remote: remote.sets.len(), local_changes: local_count, remote_changes: remote_count };
-        let answer = match step {
-            Step::Ask => return Ok(summary),
-            Step::Nothing => RemoteSets { sets: local.sets.clone(), deleted: local.deleted.clone(), ..remote },
-            Step::TakeRemote => remote,
-            Step::Put(mode) => {
-                let body = PutSets { signed, sets: &local.sets, deleted: &local.deleted, mode };
 
-                self.site.signed(Method::PUT, SETS_PATH, credentials, &body).await?
-            }
-        };
-
-        store.update(|file| {
-            *file = SetsFile {
-                sets: answer.sets,
-                deleted: answer.deleted,
-                synced_at: Some(now_seconds()),
-                revision: Some(answer.revision),
-                ..file.clone()
-            }
-            .sanitized();
-
-            Ok(())
-        })?;
-
-        Ok(summary)
+        self.set_store().absorb(&SetsFile { sets: remote.sets, deleted: remote.deleted, ..SetsFile::default() })
     }
 
     async fn sync_profiles(&self, client: &GameClient, credentials: &Credentials, resolution: Option<Resolution>) -> AppResult<LibrarySync> {

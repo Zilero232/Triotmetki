@@ -108,15 +108,6 @@ pub struct SignedBody {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
-pub struct PutSets<'a> {
-    #[serde(flatten)]
-    pub signed: SignedBody,
-    pub sets: &'a [ComponentSet],
-    pub deleted: &'a [Tombstone],
-    pub mode: PutMode,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct PutProfiles<'a> {
     #[serde(flatten)]
     pub signed: SignedBody,

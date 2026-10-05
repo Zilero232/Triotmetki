@@ -1,6 +1,7 @@
 import { match } from 'ts-pattern';
 import { useTranslations } from 'use-intl';
 
+import { useCatalog } from '@/entities/catalog';
 import { useSelectedClient } from '@/entities/client';
 import { useInstallation } from '@/entities/installation';
 import { statusMessageValues, statusView, usePatchReport } from '@/entities/patch-report';
@@ -16,6 +17,7 @@ export const useStatusDock = () => {
   const { query, client, clientPath } = useSelectedClient();
   const { data: installation } = useInstallation(clientPath);
   const { data: report } = usePatchReport();
+  const { data: catalog } = useCatalog();
   const isInstalled = installation?.installed ?? false;
   const modpackVersion = isInstalled ? (installation?.modpackVersion ?? null) : null;
   const status = report?.status ?? { kind: 'idle' as const };
@@ -27,7 +29,7 @@ export const useStatusDock = () => {
 
   const runAction = () =>
     match(action)
-      .with('chooseGame', () => navigate({ page: 'settings' }))
+      .with('chooseGame', () => navigate({ page: 'maintenance' }))
       .with('install', () => navigate({ page: 'install' }))
       .with('update', 'migrate', () => patch.run())
       .with(null, () => undefined)
@@ -37,7 +39,12 @@ export const useStatusDock = () => {
   const stateText = t(`state.${state}`, values);
   const lines = match(state)
     .with('noGame', () => ({ primary: client ? t('game', { version: client.version }) : t('noGame'), secondary: stateText }))
-    .with('notInstalled', () => ({ primary: stateText, secondary: t('game', { version: client?.version ?? '' }) }))
+    .with('notInstalled', () => ({
+      primary: stateText,
+      secondary: catalog
+        ? t('available', { version: catalog.modpackVersion, game: client?.version ?? '' })
+        : t('game', { version: client?.version ?? '' })
+    }))
     .otherwise(() => ({
       primary: t('modpack', { version: modpackVersion ?? '' }),
       secondary: t('installedDetail', { state: stateText, version: client?.version ?? '' })

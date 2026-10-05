@@ -1,9 +1,21 @@
 @use '@/shared/styles/mixins' as *;
 
+.wrap {
+  @include stack(var(--space-4));
+}
+
 .root {
   @include stack(var(--space-4));
 
   > button {
     align-self: flex-start;
   }
+}
+
+.files {
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  gap: var(--space-3);
 }

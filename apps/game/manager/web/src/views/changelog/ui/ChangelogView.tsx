@@ -16,7 +16,7 @@ export const ChangelogView = () => {
 
   return (
     <>
-      <SectionTabs section='help' />
+      <SectionTabs section='maintenance' />
       <PageHeader description={t('description')} title={t('title')} />
       {isOffline && <Notice tone='warning'>{t('offline')}</Notice>}
       <QueryState {...queryLabels} query={whatsNewQuery}>

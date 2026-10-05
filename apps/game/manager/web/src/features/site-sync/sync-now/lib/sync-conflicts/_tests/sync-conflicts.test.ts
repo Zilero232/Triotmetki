@@ -9,17 +9,19 @@ const parsed = syncReportSchema.parse(report);
 
 describe('syncConflicts', () => {
   it('lists only the libraries changed on both sides', () => {
-    expect(syncConflicts(parsed)).toEqual([{ library: 'sets', localChanges: 1, remoteChanges: 2 }]);
+    expect(syncConflicts(parsed)).toEqual([{ library: 'profiles', localChanges: 1, remoteChanges: 2 }]);
   });
 
   it('is empty when nothing conflicts or profiles were not synced', () => {
-    expect(syncConflicts({ ...parsed, sets: { ...parsed.sets, outcome: 'merged' }, profiles: null })).toEqual([]);
+    expect(syncConflicts({ profiles: null })).toEqual([]);
   });
 });
 
 describe('syncBroughtChanges', () => {
   it('tells a sync that changed local data apart from a plain upload', () => {
-    expect(syncBroughtChanges(parsed)).toBe(false);
-    expect(syncBroughtChanges({ ...parsed, profiles: { ...parsed.sets, outcome: 'pulled' } })).toBe(true);
+    const profiles = { local: 1, remote: 1, localChanges: 1, remoteChanges: 0 };
+
+    expect(syncBroughtChanges({ profiles: { ...profiles, outcome: 'pushed' } })).toBe(false);
+    expect(syncBroughtChanges({ profiles: { ...profiles, outcome: 'pulled' } })).toBe(true);
   });
 });

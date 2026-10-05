@@ -77,6 +77,7 @@ fn profile(id: &str, updated: f64) -> Profile {
         created: Some(1.0),
         updated: Some(updated),
         data: ProfileData { config, components: Map::new() },
+        installed: None,
         extra: Map::new(),
     }
 }
@@ -98,7 +99,10 @@ fn profiles_leave_private_switches_out_and_keep_local_extras() {
 
     let applied = apply_profiles(
         &file,
-        &[remote_a, SyncProfile { id: "c".into(), name: "Новый".into(), created: None, updated: None, data: ProfileData::default() }],
+        &[
+            remote_a,
+            SyncProfile { id: "c".into(), name: "Новый".into(), created: None, updated: None, data: ProfileData::default(), installed: None },
+        ],
     );
 
     assert_eq!(applied.active.as_deref(), Some("a"));
@@ -129,10 +133,13 @@ fn profile_state_turns_vanished_profiles_into_tombstones() {
 
 #[test]
 fn builds_the_signed_bodies_the_server_expects() {
-    let sets = [set("a", 2.0)];
-    let body = serde_json::to_value(PutSets {
+    let mut synced = local_profiles(&ProfilesFile { profiles: vec![profile("a", 2.0)], ..ProfilesFile::default() });
+
+    synced[0].installed = Some(vec!["core".into()]);
+
+    let body = serde_json::to_value(PutProfiles {
         signed: SignedBody { device_id: "dev_1".into(), account_id: 42 },
-        sets: &sets,
+        profiles: &synced,
         deleted: &[],
         mode: PutMode::Replace,
     })
@@ -141,7 +148,8 @@ fn builds_the_signed_bodies_the_server_expects() {
     assert_eq!(body["device_id"], json!("dev_1"));
     assert_eq!(body["account_id"], json!(42));
     assert_eq!(body["mode"], json!("replace"));
-    assert_eq!(body["sets"][0]["updated"], json!(2.0));
+    assert_eq!(body["profiles"][0]["updated"], json!(2.0));
+    assert_eq!(body["profiles"][0]["installed"], json!(["core"]));
 
     let remote: RemoteProfiles = serde_json::from_value(json!({
         "profiles": [{ "id": "a", "name": "A", "created": null, "updated": 3.5, "data": { "config": {}, "components": {} } }],
@@ -153,4 +161,24 @@ fn builds_the_signed_bodies_the_server_expects() {
 
     assert_eq!(remote.revision, 4);
     assert_eq!(remote.profiles[0].updated(), 3.5);
+}
+
+#[test]
+fn a_profile_the_site_returns_without_its_component_list_keeps_the_local_one() {
+    let mut local = profile("a", 5.0);
+
+    local.installed = Some(vec!["core".into(), "marks_panel".into()]);
+
+    let file = ProfilesFile { profiles: vec![local], ..ProfilesFile::default() };
+    let ours = local_profiles(&file);
+    let mut from_site = ours[0].clone();
+
+    from_site.installed = None;
+
+    let local_side = Side { items: &ours, deleted: &[] };
+    let remote_side = Side { items: std::slice::from_ref(&from_site), deleted: &[] };
+
+    assert_eq!(from_site, ours[0]);
+    assert_eq!(remote_changes(&local_side, &remote_side), 0);
+    assert_eq!(apply_profiles(&file, &[from_site]).profiles[0].installed, Some(vec!["core".into(), "marks_panel".into()]));
 }

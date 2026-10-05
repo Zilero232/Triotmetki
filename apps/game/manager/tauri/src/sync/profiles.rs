@@ -13,7 +13,7 @@ use crate::sets::Tombstone;
 
 pub const PROFILE_STATE_FILE: &str = "profile-sync.json";
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SyncProfile {
     pub id: String,
     pub name: String,
@@ -22,6 +22,24 @@ pub struct SyncProfile {
     #[serde(default)]
     pub updated: Option<f64>,
     pub data: ProfileData,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub installed: Option<Vec<String>>,
+}
+
+impl PartialEq for SyncProfile {
+    fn eq(&self, other: &Self) -> bool {
+        let same_installed = match (&self.installed, &other.installed) {
+            (Some(left), Some(right)) => left == right,
+            _ => true,
+        };
+
+        self.id == other.id
+            && self.name == other.name
+            && self.created == other.created
+            && self.updated == other.updated
+            && self.data == other.data
+            && same_installed
+    }
 }
 
 impl Stamped for SyncProfile {
@@ -44,7 +62,14 @@ impl SyncProfile {
 
         data.config.retain(|key, _| !is_excluded(key));
 
-        Self { id: profile.id.clone(), name: profile.name.clone(), created: profile.created, updated: profile.updated, data }
+        Self {
+            id: profile.id.clone(),
+            name: profile.name.clone(),
+            created: profile.created,
+            updated: profile.updated,
+            data,
+            installed: profile.installed.clone(),
+        }
     }
 }
 
@@ -65,6 +90,7 @@ pub fn apply_profiles(file: &ProfilesFile, merged: &[SyncProfile]) -> ProfilesFi
                 created: item.created,
                 updated: item.updated,
                 data: item.data.clone(),
+                installed: item.installed.clone().or_else(|| known.and_then(|profile| profile.installed.clone())),
                 extra: known.map(|profile| profile.extra.clone()).unwrap_or_else(Map::new),
             }
         })

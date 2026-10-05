@@ -1,4 +1,4 @@
-import { Check, Copy, Pencil } from 'lucide-react';
+import { Check, Copy, PackageCheck, Pencil } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
 import { Button, DeleteButton, IconButton, NameDialog } from '@/ui-kit';
@@ -12,16 +12,23 @@ import s from './ProfileActions.module.scss';
 export const ProfileActions = ({ clientPath, profile }: ProfileActionsProps) => {
   const t = useTranslations('profiles');
   const common = useTranslations('common');
-  const { isRenameOpen, setRenameOpen, renameField, renameError, isPending, onActivate, onDelete, onCopyCode, onRename } = useProfileActions({
-    clientPath,
-    profile
-  });
+  const { isInstallNeeded, canApply, isRenameOpen, setRenameOpen, renameField, renameError, isPending, onApply, onDelete, onCopyCode, onRename } =
+    useProfileActions({
+      clientPath,
+      profile
+    });
 
   return (
     <div className={s.root}>
-      <Button disabled={profile.active || isPending} size='sm' variant='secondary' onClick={onActivate}>
-        <Check aria-hidden />
-        {t('activate')}
+      <Button
+        disabled={!canApply || isPending}
+        size='sm'
+        title={isInstallNeeded ? t('applyWithInstallHint') : undefined}
+        variant='secondary'
+        onClick={onApply}
+      >
+        {isInstallNeeded ? <PackageCheck aria-hidden /> : <Check aria-hidden />}
+        {isInstallNeeded ? t('applyWithInstall') : t('activate')}
       </Button>
       <IconButton disabled={isPending} label={t('export')} onClick={onCopyCode}>
         <Copy aria-hidden />

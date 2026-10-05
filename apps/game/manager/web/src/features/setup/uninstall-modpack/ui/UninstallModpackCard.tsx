@@ -7,7 +7,7 @@ import type { UninstallModpackCardProps } from './UninstallModpackCard.types';
 
 import { useUninstallModpack } from '../model/hooks';
 
-export const UninstallModpackCard = ({ clientPath }: UninstallModpackCardProps) => {
+export const UninstallModpackCard = ({ clientPath, isInstalled }: UninstallModpackCardProps) => {
   const t = useTranslations('uninstall');
   const common = useTranslations('common');
   const { removeConfig, isPending, setRemoveConfig, onUninstall } = useUninstallModpack(clientPath);
@@ -17,7 +17,7 @@ export const UninstallModpackCard = ({ clientPath }: UninstallModpackCardProps) 
       actions={
         <ConfirmDialog
           trigger={
-            <Button disabled={clientPath === null} isPending={isPending} variant='danger'>
+            <Button disabled={clientPath === null || !isInstalled} isPending={isPending} variant='danger'>
               {!isPending && <Trash2 aria-hidden />}
               {t('action')}
             </Button>
@@ -33,6 +33,7 @@ export const UninstallModpackCard = ({ clientPath }: UninstallModpackCardProps) 
       }
       description={t('description')}
       title={t('title')}
+      tone='danger'
     >
       <Checkbox checked={removeConfig} description={t('removeConfigDescription')} label={t('removeConfig')} onCheckedChange={setRemoveConfig} />
     </Card>

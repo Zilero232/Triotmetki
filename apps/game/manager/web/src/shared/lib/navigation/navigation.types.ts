@@ -9,6 +9,7 @@ export type TabbedSectionId = { [Section in SectionId]: (typeof PAGE_SECTIONS)[S
 export type NavigationParams = {
   preset?: string | null;
   profileCode?: string;
+  profileId?: string;
   components?: string[];
   review?: boolean;
 };

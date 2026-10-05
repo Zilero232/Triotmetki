@@ -5,9 +5,10 @@ import { useTranslations } from 'use-intl';
 
 import type { ProfilesView } from '@/entities/profile';
 
-import { activateProfile, deleteProfile, exportProfile, PROFILE, renameProfile } from '@/entities/profile';
+import { useInstallation } from '@/entities/installation';
+import { activateProfile, deleteProfile, exportProfile, needsInstall, PROFILE, renameProfile } from '@/entities/profile';
 import { QUERY_KEYS } from '@/shared/config';
-import { useErrorToast, useNameForm } from '@/shared/lib';
+import { useErrorToast, useNameForm, useNavigation } from '@/shared/lib';
 
 import type { UseProfileActionsInput } from './use-profile-actions.types';
 
@@ -15,6 +16,8 @@ export const useProfileActions = ({ clientPath, profile }: UseProfileActionsInpu
   const t = useTranslations('profiles');
   const queryClient = useQueryClient();
   const showError = useErrorToast();
+  const { navigate } = useNavigation();
+  const { data: installation } = useInstallation(clientPath);
   const [renameOpen, setRenameOpen] = useState(false);
   const target = { clientPath, id: profile.id };
   const renameForm = useNameForm({ name: profile.name, maxLength: PROFILE.nameMaxLength, message: t('validation.name') });
@@ -54,13 +57,26 @@ export const useProfileActions = ({ clientPath, profile }: UseProfileActionsInpu
     onError: showError
   });
 
+  const enabled = installation?.components.filter((component) => component.state === 'enabled').map((component) => component.id) ?? [];
+  const isInstallNeeded = needsInstall({ installed: profile.installed, enabled });
+
   return {
+    isInstallNeeded,
+    canApply: isInstallNeeded || !profile.active,
     isRenameOpen: renameOpen,
     setRenameOpen,
     renameField: renameForm.field,
     renameError: renameForm.error,
     isPending: activate.isPending || remove.isPending || rename.isPending || copyCode.isPending,
-    onActivate: () => activate.mutate(),
+    onApply: () => {
+      if (isInstallNeeded && profile.installed) {
+        navigate({ page: 'install', params: { components: profile.installed, profileId: profile.id, review: true } });
+
+        return;
+      }
+
+      activate.mutate();
+    },
     onDelete: () => remove.mutate(),
     onCopyCode: () => copyCode.mutate(),
     onRename: renameForm.submitWith((name) => rename.mutate(name))

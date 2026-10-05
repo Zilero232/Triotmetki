@@ -12,9 +12,9 @@
   "back": "Back",
   "install": "Install",
   "preset": "Preset",
-  "loadProfile": "Load an installer profile…",
-  "profileFilter": "Installer profile",
-  "profileLoaded": "The selection is loaded from the profile",
+  "loadProfile": "Load a selection from the old installer…",
+  "profileFilter": "Old installer selection file",
+  "profileLoaded": "The selection is loaded from the installer file",
   "selectedCount": "{count} of {total} selected",
   "required": "Required",
   "source": {
@@ -47,5 +47,6 @@
   "partial": {
     "other_mods": "Some of the other mods could not be removed — they are still in the game folder",
     "dependencies": "The libraries some components need were not installed — those components may not load"
-  }
+  },
+  "profileApplied": "The profile settings are applied"
 }

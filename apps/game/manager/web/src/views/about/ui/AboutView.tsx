@@ -17,7 +17,7 @@ export const AboutView = () => {
 
   return (
     <>
-      <SectionTabs section='settings' />
+      <SectionTabs section='help' />
       <PageHeader title={t('about.title')} />
       <Card tone='accent'>
         <div className={s.brand}>

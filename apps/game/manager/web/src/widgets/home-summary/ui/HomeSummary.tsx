@@ -9,7 +9,7 @@ import s from './HomeSummary.module.scss';
 
 export const HomeSummary = () => {
   const t = useTranslations();
-  const { client, installedVersion, latestVersion, hasUpdate, enabledCount, totalCount, onOpenComponents, onChangeSelection } = useHomeSummary();
+  const { client, installedVersion, versionBadge, enabledCount, totalCount, onOpenComponents, onChangeSelection } = useHomeSummary();
 
   return (
     <div className={s.root}>
@@ -26,18 +26,14 @@ export const HomeSummary = () => {
             </dd>
           )}
         </div>
-        <div className={s.tile} data-accent={hasUpdate || undefined}>
+        <div className={s.tile} data-accent={versionBadge.tone === 'premium' || undefined}>
           <dt className={s.label}>
             <Package aria-hidden />
             {t('home.summary.modpack')}
           </dt>
-          <dd className={s.value}>{installedVersion ?? '—'}</dd>
+          <dd className={s.value}>{installedVersion ?? t('home.summary.notInstalled')}</dd>
           <dd className={s.meta}>
-            {hasUpdate && latestVersion ? (
-              <Badge tone='premium'>{t('home.summary.latest', { version: latestVersion })}</Badge>
-            ) : (
-              <Badge tone='success'>{t('home.summary.latestSame')}</Badge>
-            )}
+            <Badge tone={versionBadge.tone}>{versionBadge.label}</Badge>
           </dd>
         </div>
         <div className={s.tile}>

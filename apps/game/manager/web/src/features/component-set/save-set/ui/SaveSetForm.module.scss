@@ -1,9 +1,0 @@
-.root {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--space-4);
-
-  > :first-child {
-    flex: 1;
-  }
-}

@@ -15,6 +15,10 @@
     border-left: 3px solid var(--color-warning);
   }
 
+  &[data-tone='danger'] {
+    border-color: color-mix(in srgb, var(--color-danger) 40%, var(--color-border-strong));
+  }
+
   &[data-tone='premium'] {
     border-color: color-mix(in srgb, var(--color-gold) 45%, var(--color-border-strong));
     box-shadow:

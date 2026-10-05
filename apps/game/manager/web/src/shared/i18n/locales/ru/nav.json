@@ -3,18 +3,18 @@
   "sections": {
     "home": "Главная",
     "components": "Компоненты",
-    "sets": "Сборки",
     "profiles": "Профили",
+    "maintenance": "Обслуживание",
+    "account": "Аккаунт и сайт",
     "settings": "Настройки",
     "help": "Помощь"
   },
   "tabs": {
     "label": "Вкладки раздела",
-    "settings": "Общие",
-    "account": "Аккаунт и сайт",
-    "about": "О программе",
+    "maintenance": "Обслуживание",
+    "changelog": "Что нового",
     "help": "Вопросы",
-    "changelog": "Что нового"
+    "about": "О программе"
   },
   "groups": {
     "overview": "Обзор",
@@ -55,6 +55,7 @@
       "update": "Обновить до {latest}",
       "migrate": "Перенести модпак"
     },
-    "installedDetail": "{state} · игра {version}"
+    "installedDetail": "{state} · игра {version}",
+    "available": "Доступна {version} · игра {game}"
   }
 }

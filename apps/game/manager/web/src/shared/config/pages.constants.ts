@@ -1,4 +1,4 @@
-export const PAGE_IDS = ['home', 'install', 'components', 'sets', 'profiles', 'settings', 'account', 'help', 'changelog', 'about'] as const;
+export const PAGE_IDS = ['home', 'install', 'components', 'profiles', 'maintenance', 'changelog', 'account', 'settings', 'help', 'about'] as const;
 
 export const PAGES = {
   initial: 'home'
@@ -7,8 +7,9 @@ export const PAGES = {
 export const PAGE_SECTIONS = {
   home: { pages: ['home', 'install'], tabs: false },
   components: { pages: ['components'], tabs: false },
-  sets: { pages: ['sets'], tabs: false },
   profiles: { pages: ['profiles'], tabs: false },
-  settings: { pages: ['settings', 'account', 'about'], tabs: true },
-  help: { pages: ['help', 'changelog'], tabs: true }
+  maintenance: { pages: ['maintenance', 'changelog'], tabs: true },
+  account: { pages: ['account'], tabs: false },
+  settings: { pages: ['settings'], tabs: false },
+  help: { pages: ['help', 'about'], tabs: true }
 } as const;

@@ -20,7 +20,7 @@
   },
   "hint": {
     "idle": "The manager checks the client on start and on the schedule from the settings.",
-    "no_client": "Choose a client on this page or in the settings.",
+    "no_client": "Choose a client under Maintenance.",
     "not_installed": "Install the modpack from the manager's Home screen.",
     "up_to_date": "Modpack {version} runs on client {gameVersion}.",
     "update_available": "Install it while the game is closed.",
@@ -29,7 +29,7 @@
     "migration_ready": "The client was updated from {from}. The installed version {version} works with it — move it while the game is closed.",
     "update_ready": "The client was updated from {from}. Automatic moving is off in the settings — install the new version with the button below.",
     "deferred": "The client was updated from {from}, but the game is running. The manager updates the modpack as soon as the game exits.",
-    "unsupported": "Client {gameVersion} is not supported: choose Lesta's Mir Tankov in the settings.",
+    "unsupported": "Client {gameVersion} is not supported: choose Lesta’s Mir Tankov under Maintenance.",
     "waiting": "The client was updated from {from}. The manager installs a compatible version as soon as it is out (when automatic moving is on).",
     "offline": "We will try again on schedule. The components of client {gameVersion} are untouched.",
     "failed": "{reason}. The details are in the log (About → Collect logs)."

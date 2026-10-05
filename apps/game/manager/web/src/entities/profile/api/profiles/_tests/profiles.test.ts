@@ -9,4 +9,11 @@ describe('profilesViewSchema', () => {
 
     expect(view.profiles.find((profile) => profile.active)?.id).toBe(view.active);
   });
+
+  it('parses the component list a profile keeps and the sets still waiting to move in', () => {
+    const view = profilesViewSchema.parse(profiles);
+
+    expect(view.profiles[0]?.installed).toEqual(['core', 'companion', 'marks_panel']);
+    expect(view.pendingSets).toBe(2);
+  });
 });

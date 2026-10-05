@@ -1,0 +1,9 @@
+{
+  "title": "Maintenance",
+  "description": "Modpack version and updates, the game folder, the cache and removal.",
+  "selectionTitle": "Component selection",
+  "selectionDescription": "Open the install wizard to add or remove components or to reinstall the modpack.",
+  "gameTitle": "Game folder",
+  "gameDescription": "The client the modpack is installed into. If the game was not installed through Lesta Game Center, pick the folder with Tanki.exe.",
+  "dangerZone": "Danger zone"
+}

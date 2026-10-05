@@ -1,12 +1,5 @@
 {
   "profiles": {
-    "local": 2,
-    "localChanges": 1,
-    "outcome": "pushed",
-    "remote": 1,
-    "remoteChanges": 0
-  },
-  "sets": {
     "local": 3,
     "localChanges": 1,
     "outcome": "conflict",

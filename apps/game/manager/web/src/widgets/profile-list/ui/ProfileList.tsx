@@ -20,14 +20,14 @@ export const ProfileList = () => {
         {() =>
           rows.length > 0 ? (
             <ul className={s.list}>
-              {rows.map(({ profile, updated }) => (
+              {rows.map(({ profile, meta }) => (
                 <li key={profile.id} className={s.row} data-active={profile.active || undefined}>
                   <div className={s.text}>
                     <span className={s.name}>
                       {profile.name}
                       {profile.active && <Badge tone='accent'>{t('profiles.active')}</Badge>}
                     </span>
-                    {updated && <span className={s.meta}>{t('profiles.updated', { date: updated })}</span>}
+                    <span className={s.meta}>{meta}</span>
                   </div>
                   <ProfileActions clientPath={clientPath} profile={profile} />
                 </li>

@@ -7,13 +7,12 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-pub use codec::{decode, encode, from_file_text, library_from_text, to_file_text, MAX_FILE_BYTES};
+pub use codec::{decode, from_file_text, library_from_text, CODE_PREFIX, MAX_FILE_BYTES};
 pub use merge::merge;
 
-use crate::durable::now_seconds;
 use crate::error::{AppError, AppResult, ErrorCode};
 use crate::fsx::{rename_file, sibling, write_atomic};
-use crate::profiles::{new_id, NAME_MAX_LENGTH};
+use crate::profiles::NAME_MAX_LENGTH;
 
 pub const FILE_NAME: &str = "sets.json";
 pub const FILE_VERSION: u32 = 1;
@@ -24,6 +23,7 @@ pub const MAX_ID_LENGTH: usize = 64;
 pub const SET_EXTENSION: &str = "tmset";
 pub const LIBRARY_EXTENSION: &str = "json";
 pub const DAMAGED_SUFFIX: &str = ".damaged";
+pub const MIGRATION_FILE: &str = "sets-migration.json";
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -62,13 +62,6 @@ impl Default for SetsFile {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SetsView {
-    pub max: usize,
-    pub sets: Vec<ComponentSet>,
-}
-
 pub fn normalize_name(name: &str) -> AppResult<String> {
     let collapsed = name.split_whitespace().collect::<Vec<_>>().join(" ");
     let clipped: String = collapsed.chars().take(NAME_MAX_LENGTH).collect();
@@ -102,7 +95,7 @@ pub fn with_extension(path: &Path, extension: &str) -> PathBuf {
     PathBuf::from(name)
 }
 
-fn read_limited(source: &Path) -> AppResult<String> {
+pub fn read_limited(source: &Path) -> AppResult<String> {
     let mut text = String::new();
 
     fs::File::open(source)?.take(MAX_FILE_BYTES + 1).read_to_string(&mut text)?;
@@ -145,7 +138,7 @@ impl SetsFile {
             set.name = name;
             set.components = normalize_components(&set.components);
 
-            true
+            !set.components.is_empty()
         });
         self.sets.truncate(MAX_SETS);
         self.deleted.retain(|tombstone| is_set_id(&tombstone.id));
@@ -155,60 +148,25 @@ impl SetsFile {
         self.deleted.drain(..excess);
         self
     }
+}
 
-    pub fn view(&self) -> SetsView {
-        SetsView { max: MAX_SETS, sets: self.sets.clone() }
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct Migration {
+    pub migrated: Vec<String>,
+}
+
+impl Migration {
+    pub fn path(client_dir: &Path) -> PathBuf {
+        client_dir.join(MIGRATION_FILE)
     }
 
-    pub fn get(&self, id: &str) -> AppResult<&ComponentSet> {
-        self.sets.iter().find(|set| set.id == id).ok_or_else(|| AppError::coded(ErrorCode::SetMissing, format!("no set {id}")))
+    pub fn load(client_dir: &Path) -> Self {
+        fs::read_to_string(Self::path(client_dir)).ok().and_then(|text| serde_json::from_str(&text).ok()).unwrap_or_default()
     }
 
-    fn get_mut(&mut self, id: &str) -> AppResult<&mut ComponentSet> {
-        self.sets.iter_mut().find(|set| set.id == id).ok_or_else(|| AppError::coded(ErrorCode::SetMissing, format!("no set {id}")))
-    }
-
-    pub fn add(&mut self, name: &str, components: &[String]) -> AppResult<ComponentSet> {
-        if self.sets.len() >= MAX_SETS {
-            return Err(AppError::coded(ErrorCode::SetLimit, format!("at most {MAX_SETS} sets")));
-        }
-
-        let now = now_seconds();
-        let id = std::iter::repeat_with(new_id).find(|candidate| self.get(candidate).is_err()).unwrap_or_else(new_id);
-        let set = ComponentSet { id, name: normalize_name(name)?, components: normalize_components(components), created: now, updated: now };
-
-        self.sets.push(set.clone());
-
-        Ok(set)
-    }
-
-    pub fn rename(&mut self, id: &str, name: &str) -> AppResult<()> {
-        let name = normalize_name(name)?;
-        let set = self.get_mut(id)?;
-
-        set.name = name;
-        set.updated = now_seconds();
-
-        Ok(())
-    }
-
-    pub fn duplicate(&mut self, id: &str, name: &str) -> AppResult<ComponentSet> {
-        let components = self.get(id)?.components.clone();
-
-        self.add(name, &components)
-    }
-
-    pub fn remove(&mut self, id: &str) -> AppResult<()> {
-        self.get(id)?;
-        self.sets.retain(|set| set.id != id);
-        self.deleted.retain(|tombstone| tombstone.id != id);
-        self.deleted.push(Tombstone { id: id.to_owned(), deleted: now_seconds() });
-
-        let excess = self.deleted.len().saturating_sub(MAX_TOMBSTONES);
-
-        self.deleted.drain(..excess);
-
-        Ok(())
+    pub fn save(&self, client_dir: &Path) -> AppResult<()> {
+        write_atomic(&Self::path(client_dir), serde_json::to_string_pretty(self)?.as_bytes())
     }
 }
 
@@ -247,8 +205,8 @@ impl SetStore {
         }
     }
 
-    pub fn update<T>(&self, change: impl FnOnce(&mut SetsFile) -> AppResult<T>) -> AppResult<T> {
-        let mut file = match self.read()? {
+    pub fn absorb(&self, remote: &SetsFile) -> AppResult<()> {
+        let local = match self.read()? {
             Stored::Read(file) => file,
             Stored::Damaged(reason) => {
                 log::warn!("sets: {} does not parse ({reason}), kept aside", self.path.display());
@@ -257,61 +215,19 @@ impl SetStore {
             }
             Stored::Missing => SetsFile::default(),
         };
-        let result = change(&mut file)?;
+        let merged = merge(&local, &remote.clone().sanitized());
 
-        write_atomic(&self.path, serde_json::to_string_pretty(&file)?.as_bytes())?;
-
-        Ok(result)
-    }
-
-    pub fn export_code(&self, id: &str) -> AppResult<String> {
-        let file = self.load();
-        let set = file.get(id)?;
-
-        encode(&set.name, &set.components)
-    }
-
-    pub fn import_code(&self, code: &str, name: Option<&str>) -> AppResult<ComponentSet> {
-        let (decoded_name, components) = decode(code)?;
-
-        self.update(|file| file.add(name.filter(|name| !name.trim().is_empty()).unwrap_or(&decoded_name), &components))
-    }
-
-    pub fn export_file(&self, id: &str, target: &Path) -> AppResult<PathBuf> {
-        let file = self.load();
-        let set = file.get(id)?;
-        let target = with_extension(target, SET_EXTENSION);
-
-        write_atomic(&target, to_file_text(&set.name, &set.components)?.as_bytes())?;
-
-        Ok(target)
-    }
-
-    pub fn export_library(&self, target: &Path) -> AppResult<PathBuf> {
-        let target = with_extension(target, LIBRARY_EXTENSION);
-
-        write_atomic(&target, format!("{}\n", serde_json::to_string_pretty(&self.load())?).as_bytes())?;
-
-        Ok(target)
-    }
-
-    pub fn import_file(&self, source: &Path) -> AppResult<()> {
-        let text = read_limited(source)?;
-
-        if let Some(library) = library_from_text(&text) {
-            let library = library.sanitized();
-
-            return self.update(|file| {
-                *file = merge(file, &library);
-
-                Ok(())
-            });
+        if merged == local {
+            return Ok(());
         }
 
-        let (name, components) = from_file_text(&text)?;
-
-        self.update(|file| file.add(&name, &components).map(drop))
+        write_atomic(&self.path, serde_json::to_string_pretty(&merged)?.as_bytes())
     }
+}
+
+#[cfg(test)]
+pub mod codec_for_tests {
+    pub use super::codec::{encode, to_file_text};
 }
 
 #[cfg(test)]

@@ -1,5 +1,5 @@
 export const PROFILE = {
   nameMaxLength: 40,
-  codePrefix: 'TM1.',
+  codePrefixes: ['TM1.', 'TS1.'],
   codeMaxLength: 48 * 1024
 } as const;

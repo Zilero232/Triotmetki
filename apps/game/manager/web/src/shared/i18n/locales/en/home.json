@@ -18,16 +18,21 @@
     "quickInstall": "Install “{preset}”",
     "customize": "Pick components by hand",
     "installHint": "The last wizard step opens with the list of what will be installed. Nothing is installed until you press “Install”.",
-    "chooseGameFirst": "Find the game first — step 1."
+    "chooseGameFirst": "Find the game first — step 1.",
+    "stepDone": "done",
+    "release": "Modpack {version}",
+    "releaseMeta": "{count, plural, one {# component} other {# components}} for game {game}"
   },
   "summary": {
     "game": "Game",
     "modpack": "Modpack",
     "components": "Components",
-    "latest": "Latest version {version}",
-    "latestSame": "Latest version",
+    "latest": "{version} available",
     "enabled": "{enabled} of {total}",
     "enabledHint": "turned on",
-    "noGame": "Not found"
+    "noGame": "Not found",
+    "upToDate": "Latest {version}",
+    "latestUnknown": "Latest version unknown",
+    "notInstalled": "Not installed"
   }
 }

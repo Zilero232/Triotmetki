@@ -9,7 +9,6 @@ export const QUERY_KEYS = {
   installPlan: (clientPath: string | null) => ['install-plan', clientPath],
   profiles: (clientPath: string | null) => ['profiles', clientPath],
   conflicts: (clientPath: string | null) => ['conflicts', clientPath],
-  sets: ['sets'],
   cachePlan: (clientPath: string | null) => ['cache-plan', clientPath],
   accountLink: ['account-link'],
   syncStatus: (clientPath: string | null) => ['sync-status', clientPath],

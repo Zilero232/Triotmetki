@@ -9,6 +9,7 @@ use serde_json::{json, Map, Value};
 
 use super::ProfileData;
 use crate::error::{AppError, AppResult, ErrorCode};
+use crate::sets::normalize_components;
 
 pub const CODE_PREFIX: &str = "TM1.";
 pub const CODE_MAX_CHARS: usize = 48 * 1024;
@@ -23,8 +24,18 @@ fn invalid() -> AppError {
     AppError::coded(ErrorCode::ProfileCode, "not a Three Marks profile code")
 }
 
-pub fn encode(name: &str, data: &ProfileData) -> AppResult<String> {
-    let payload = json!({ "name": name, "data": data });
+#[derive(Debug, Clone, PartialEq)]
+pub struct Decoded {
+    pub name: String,
+    pub data: ProfileData,
+    pub installed: Option<Vec<String>>,
+}
+
+pub fn encode(name: &str, data: &ProfileData, installed: Option<&[String]>) -> AppResult<String> {
+    let payload = match installed {
+        Some(installed) => json!({ "name": name, "data": data, "installed": installed }),
+        None => json!({ "name": name, "data": data }),
+    };
     let mut encoder = ZlibEncoder::new(Vec::new(), Compression::best());
 
     encoder.write_all(serde_json::to_string(&payload)?.as_bytes())?;
@@ -32,7 +43,7 @@ pub fn encode(name: &str, data: &ProfileData) -> AppResult<String> {
     Ok(format!("{CODE_PREFIX}{}", ENGINE.encode(encoder.finish()?)))
 }
 
-pub fn decode(code: &str) -> AppResult<(String, ProfileData)> {
+pub fn decode(code: &str) -> AppResult<Decoded> {
     let code = code.trim();
     let body = code.strip_prefix(CODE_PREFIX).filter(|_| code.len() <= CODE_MAX_CHARS).ok_or_else(invalid)?;
     let packed = ENGINE.decode(body).map_err(|_| invalid())?;
@@ -50,6 +61,11 @@ pub fn decode(code: &str) -> AppResult<(String, ProfileData)> {
         }
     };
     let name = payload.get("name").and_then(Value::as_str).unwrap_or_default().to_owned();
+    let installed = payload.get("installed").and_then(Value::as_array).map(|items| {
+        let ids: Vec<String> = items.iter().filter_map(Value::as_str).map(str::to_owned).collect();
 
-    Ok((name, ProfileData { config: section("config")?, components: section("components")? }))
+        normalize_components(&ids)
+    });
+
+    Ok(Decoded { name, data: ProfileData { config: section("config")?, components: section("components")? }, installed })
 }

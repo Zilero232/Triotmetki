@@ -24,9 +24,13 @@ export const ConfirmDialog = ({
       </DialogHeader>
       <DialogFooter>
         <DialogClose render={<Button variant='ghost'>{cancelLabel}</Button>} />
-        <Button isPending={isPending} variant={tone === 'danger' ? 'danger' : 'primary'} onClick={onConfirm}>
-          {confirmLabel}
-        </Button>
+        <DialogClose
+          render={
+            <Button isPending={isPending} variant={tone === 'danger' ? 'danger' : 'primary'} onClick={onConfirm}>
+              {confirmLabel}
+            </Button>
+          }
+        />
       </DialogFooter>
     </DialogContent>
   </Dialog>

@@ -24,7 +24,6 @@
     "ru": "Русский",
     "en": "English"
   },
-  "clientTitle": "Game client",
   "save": "Save",
   "saved": "Settings saved",
   "cache": {
@@ -42,5 +41,7 @@
       "app_data": "%APPDATA%",
       "game": "Game folder"
     }
-  }
+  },
+  "description": "How the manager itself behaves: starting with Windows, notifications, update checks and language.",
+  "interfaceTitle": "Interface"
 }

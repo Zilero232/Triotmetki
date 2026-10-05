@@ -1,11 +1,17 @@
 {
   "active": "a1b2c3d4e5f6",
   "max": 12,
+  "pendingSets": 2,
   "profiles": [
     {
       "active": true,
       "created": 1790000000.5,
       "id": "a1b2c3d4e5f6",
+      "installed": [
+        "core",
+        "companion",
+        "marks_panel"
+      ],
       "name": "Стрим",
       "updated": 1790000100.25
     }

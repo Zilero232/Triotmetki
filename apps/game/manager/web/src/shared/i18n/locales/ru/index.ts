@@ -10,11 +10,11 @@ import health from './health.json';
 import help from './help.json';
 import home from './home.json';
 import install from './install.json';
+import maintenance from './maintenance.json';
 import nav from './nav.json';
 import patch from './patch.json';
 import profiles from './profiles.json';
 import report from './report.json';
-import sets from './sets.json';
 import settings from './settings.json';
 import sync from './sync.json';
 import uninstall from './uninstall.json';
@@ -28,8 +28,8 @@ export const RU_MESSAGES = {
   patch,
   components,
   conflicts,
-  sets,
   profiles,
+  maintenance,
   settings,
   about,
   account,

@@ -4,8 +4,8 @@ import type { InstallWizardProps } from './InstallWizard.types';
 
 import { WizardBody } from './components';
 
-export const InstallWizard = ({ initialPreset, initialComponents, startAtReview }: InstallWizardProps) => (
-  <InstallWizardProvider initialComponents={initialComponents} initialPreset={initialPreset} startAtReview={startAtReview}>
+export const InstallWizard = ({ initialPreset, initialComponents, startAtReview, profileId }: InstallWizardProps) => (
+  <InstallWizardProvider initialComponents={initialComponents} initialPreset={initialPreset} profileId={profileId} startAtReview={startAtReview}>
     <WizardBody />
   </InstallWizardProvider>
 );

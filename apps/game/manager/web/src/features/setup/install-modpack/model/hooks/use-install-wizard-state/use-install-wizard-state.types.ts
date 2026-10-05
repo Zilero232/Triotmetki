@@ -4,6 +4,7 @@ export type UseInstallWizardStateInput = {
   initialPreset: string | null;
   initialComponents: string[] | null;
   startAtReview: boolean;
+  profileId: string | null;
 };
 
 export type ToggleInput = {

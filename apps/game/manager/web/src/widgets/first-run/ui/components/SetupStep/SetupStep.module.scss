@@ -1,23 +1,56 @@
 @use '@/shared/styles/mixins' as *;
 
 .step {
+  position: relative;
   display: grid;
-  gap: var(--space-4);
-  grid-template-columns: 24px minmax(0, 1fr);
+  padding-bottom: var(--space-7);
+  column-gap: var(--space-5);
+  grid-template-columns: 28px minmax(0, 1fr);
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+
+  &:not(:last-child):after {
+    position: absolute;
+    top: 36px;
+    bottom: var(--space-2);
+    left: 13px;
+    width: 2px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-border);
+    content: '';
+  }
+
+  &[data-done]:not(:last-child):after {
+    background-color: color-mix(in srgb, var(--color-success) 45%, var(--color-border));
+  }
 }
 
 .marker {
+  @include numeric;
+
   display: flex;
+  width: 28px;
+  height: 28px;
+  align-items: center;
   justify-content: center;
-  padding-top: 2px;
-  color: var(--color-text-dim);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface-sunken);
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
 
   :global(svg) {
-    width: 20px;
-    height: 20px;
+    width: 14px;
+    height: 14px;
   }
 
   .step[data-done] & {
+    border-color: var(--color-success);
+    background-color: color-mix(in srgb, var(--color-success) 16%, var(--color-surface-sunken));
     color: var(--color-success);
   }
 }
@@ -31,5 +64,12 @@
 .title {
   @include heading(var(--text-md));
 
+  display: flex;
+  min-height: 28px;
+  align-items: center;
   margin: 0;
+}
+
+.srOnly {
+  @include sr-only;
 }

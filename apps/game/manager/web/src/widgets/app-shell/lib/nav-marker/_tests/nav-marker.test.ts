@@ -20,6 +20,6 @@ describe('navMarker', () => {
   });
 
   it('leaves the other sections unmarked', () => {
-    expect(navMarker({ section: 'sets', statusKind: 'failed', failureCount: 3 })).toBeNull();
+    expect(navMarker({ section: 'profiles', statusKind: 'failed', failureCount: 3 })).toBeNull();
   });
 });

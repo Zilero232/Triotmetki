@@ -1,15 +1,18 @@
+import { PackagePlus } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
 import { ImportProfileForm } from '@/features/profile/import-profile';
 import { SaveProfileForm } from '@/features/profile/save-profile';
-import { Card, HelpTip, PageHeader } from '@/ui-kit';
+import { Button, Card, HelpTip, Notice, PageHeader } from '@/ui-kit';
 import { ProfileList } from '@/widgets/profile-list';
 
 import { useProfilesView } from '../model/hooks';
 
+import s from './ProfilesView.module.scss';
+
 export const ProfilesView = () => {
   const t = useTranslations();
-  const { clientPath, initialCode, isDisabled } = useProfilesView();
+  const { clientPath, initialCode, isDisabled, components, pendingSets, presets, onStartFromPreset } = useProfilesView();
 
   return (
     <>
@@ -18,11 +21,28 @@ export const ProfilesView = () => {
         help={<HelpTip label={t('help.tipLabel')}>{t('help.tips.profiles')}</HelpTip>}
         title={t('profiles.title')}
       />
+      {pendingSets > 0 && (
+        <Notice title={t('profiles.pendingSetsTitle', { count: pendingSets })} tone='warning'>
+          {t('profiles.pendingSetsHint')}
+        </Notice>
+      )}
       <ProfileList />
-      <Card title={t('profiles.saveTitle')}>
-        <SaveProfileForm clientPath={clientPath} disabled={isDisabled} />
+      <Card description={t('profiles.saveDescription')} title={t('profiles.saveTitle')}>
+        <SaveProfileForm clientPath={clientPath} components={components} disabled={isDisabled} />
       </Card>
-      <Card title={t('profiles.importTitle')}>
+      {presets.length > 0 && (
+        <Card description={t('profiles.presetsDescription')} title={t('profiles.presetsTitle')}>
+          <div className={s.presets}>
+            {presets.map((preset) => (
+              <Button key={preset.id} disabled={isDisabled} variant='secondary' onClick={() => onStartFromPreset(preset.id)}>
+                <PackagePlus aria-hidden />
+                {preset.title}
+              </Button>
+            ))}
+          </div>
+        </Card>
+      )}
+      <Card description={t('profiles.importDescription')} title={t('profiles.importTitle')}>
         <ImportProfileForm clientPath={clientPath} disabled={isDisabled} initialCode={initialCode} />
       </Card>
     </>
