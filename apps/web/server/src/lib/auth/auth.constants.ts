@@ -37,7 +37,7 @@ export const AUTH_RATE_LIMIT = {
 } as const;
 
 export const VK_MINI_APP_AUTH = {
-  maxAgeSeconds: 86_400,
+  maxAgeSeconds: 3_600,
   launchParamsMaxLength: 4096,
   fallbackName: 'VK {id}'
 } as const;

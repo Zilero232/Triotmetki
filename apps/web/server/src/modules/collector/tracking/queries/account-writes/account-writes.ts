@@ -72,7 +72,7 @@ export const upsertPlayerTanksSql = (rows: readonly PlayerTankUpsertRow[]): Pris
 
 export const updateMarksSql = (rows: readonly MarksRow[]): Prisma.Sql => Prisma.sql`
   UPDATE player_tank p
-  SET marks_on_gun = r.marks, updated_at = now()
+  SET marks_on_gun = r.marks, marks_source = 'lesta', updated_at = now()
   FROM jsonb_to_recordset(${toJson(rows.map((row) => ({ account_id: row.accountId, tank_id: row.tankId, marks: row.marks })))}::jsonb)
     AS r(account_id bigint, tank_id int, marks smallint)
   WHERE p.account_id = r.account_id AND p.tank_id = r.tank_id

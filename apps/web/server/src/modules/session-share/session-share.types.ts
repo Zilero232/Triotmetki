@@ -29,3 +29,8 @@ export type AssertLinkedInput = {
   userId: string;
   channels: readonly ShareChannel[];
 };
+
+export type SendDiscordOnceInput = {
+  key: string;
+  send: () => Promise<unknown>;
+};

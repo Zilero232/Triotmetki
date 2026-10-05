@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
+import { isPlainObject } from 'remeda';
 import { describe, expect, it } from 'vitest';
 
-import { MOD_INGEST } from '../../../config';
+import { MOD_BATTLE_LIMITS, MOD_INGEST } from '../../../config';
 import { ingestBatchSchema } from '../contract.schemas';
 
 const example: { events: Record<string, unknown>[] } = JSON.parse(
@@ -25,6 +26,44 @@ describe('ingestBatchSchema', () => {
 
   it('refuses an event that claims to happen in the future', () => {
     const batch = withEvent((event) => ({ ...event, occurred_at: nowSeconds() + MOD_INGEST.maxFutureSeconds + 3_600 }));
+
+    expect(ingestBatchSchema.safeParse(batch).success).toBe(false);
+  });
+});
+
+describe('battle stat bounds', () => {
+  const battle = example.events.find((event) => event.type === 'battle_result');
+  const recorded = battle?.stats;
+  const stats = isPlainObject(recorded) ? recorded : {};
+
+  const withStats = (patch: Record<string, unknown>) =>
+    withEvent((event) => (event.type === 'battle_result' ? { ...event, stats: { ...stats, ...patch } } : event));
+
+  it.each(Object.entries(MOD_BATTLE_LIMITS.stats))('refuses %s above its per-battle cap', (field, cap) => {
+    expect(ingestBatchSchema.safeParse(withStats({ [field]: cap + 1 })).success).toBe(false);
+  });
+
+  it.each(Object.entries(MOD_BATTLE_LIMITS.stats))('accepts %s exactly on its per-battle cap', (field, cap) => {
+    expect(ingestBatchSchema.safeParse(withStats({ [field]: cap })).success).toBe(true);
+  });
+
+  it('refuses credits outside the per-battle range in either direction', () => {
+    const { credits } = MOD_BATTLE_LIMITS;
+
+    expect(ingestBatchSchema.safeParse(withStats({ credits: credits + 1 })).success).toBe(false);
+    expect(ingestBatchSchema.safeParse(withStats({ factual_credits: -credits - 1 })).success).toBe(false);
+  });
+
+  it('refuses a battle that lasted longer than any game mode allows', () => {
+    const batch = withEvent((event) => (event.type === 'battle_result' ? { ...event, duration_s: MOD_BATTLE_LIMITS.durationSeconds + 1 } : event));
+
+    expect(ingestBatchSchema.safeParse(batch).success).toBe(false);
+  });
+
+  it('refuses a moving average damage above the per-battle damage cap', () => {
+    const batch = withEvent((event) =>
+      event.type === 'moe_snapshot' ? { ...event, moving_avg_damage: MOD_BATTLE_LIMITS.stats.damage_dealt + 1 } : event
+    );
 
     expect(ingestBatchSchema.safeParse(batch).success).toBe(false);
   });

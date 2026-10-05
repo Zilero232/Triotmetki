@@ -1,5 +1,5 @@
 import { sign } from '@telegram-apps/init-data-node';
-import { subSeconds } from 'date-fns';
+import { subHours, subSeconds } from 'date-fns';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { verifyWebAppInitData } from '../webapp-auth';
@@ -56,6 +56,12 @@ describe('verifyWebAppInitData', () => {
 
   it('rejects init data one second older than the allowed age', () => {
     const authDate = subSeconds(NOW, WEBAPP_AUTH.maxAgeSeconds + 1);
+
+    expect(verifyWebAppInitData({ initData: signed({ authDate }), botToken })).toBeNull();
+  });
+
+  it('rejects init data signed more than an hour ago, so a leaked link cannot sign in for a day', () => {
+    const authDate = subSeconds(subHours(NOW, 1), 1);
 
     expect(verifyWebAppInitData({ initData: signed({ authDate }), botToken })).toBeNull();
   });

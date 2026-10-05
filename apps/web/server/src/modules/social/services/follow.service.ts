@@ -60,8 +60,11 @@ export class FollowService {
     ]);
 
     const own = new Set(links.map((link) => link.accountId));
+    const candidates = unique([...own, ...follows.map((follow) => follow.targetId)]);
+    const hidden = await this.prisma.player.findMany({ where: { accountId: { in: candidates }, isHidden: true }, select: { accountId: true } });
+    const hiddenIds = new Set(hidden.map((player) => player.accountId));
 
-    return { accountIds: unique([...own, ...follows.map((follow) => follow.targetId)]), own };
+    return { accountIds: candidates.filter((accountId) => !hiddenIds.has(accountId)), own };
   }
 
   private async assertCanWatchTank({ userId, kind, targetId }: CreateFollowInput): Promise<void> {

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { MOD_AGGREGATES } from '@otmetki/schemas';
 import { subDays } from 'date-fns';
 
 import type { EconomySqlRow } from '../mappers';
@@ -75,6 +76,7 @@ export class TankEconomyService {
       FROM tagged
       GROUP BY tank_id, account
       HAVING count(*) >= ${minBattles}
+        AND count(DISTINCT account_id) >= ${MOD_AGGREGATES.minAccounts}
     `;
 
     await this.prisma.$transaction([

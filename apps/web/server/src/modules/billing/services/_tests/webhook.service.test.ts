@@ -194,7 +194,19 @@ describe('WebhookService.settle', () => {
 
     await service.settle('p1');
 
-    expect(promos.recordRedemption).toHaveBeenCalledWith(expect.objectContaining({ userId: 'u1', code: 'SPRING' }));
+    expect(promos.confirm).toHaveBeenCalledWith(expect.objectContaining({ userId: 'u1', code: 'SPRING' }));
+  });
+
+  it('gives the reserved promo use back when the payment is cancelled', async () => {
+    const { service, prisma, yookassa, promos } = createService();
+
+    prisma.payment.findUnique.mockResolvedValue({ ...pendingPayment, promoCode: 'SPRING' });
+    prisma.payment.updateMany.mockResolvedValue({ count: 1 });
+    yookassa.getPayment.mockResolvedValue(remote('canceled'));
+
+    await service.settle('p1');
+
+    expect(promos.release).toHaveBeenCalledWith(expect.objectContaining({ userId: 'u1', code: 'SPRING' }));
   });
 
   it('marks a failed renewal as past due', async () => {

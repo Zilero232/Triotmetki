@@ -8,7 +8,8 @@ export const PURGE = {
   blockingStatuses: ['pending', 'processing', 'completed', 'failed'] satisfies DeletionStatus[],
   claimableStatuses: ['pending', 'processing', 'failed'] satisfies DeletionStatus[],
   dispatchBatch: 50,
-  failedCooldownMs: 6 * 60 * 60 * 1_000
+  failedCooldownMs: 6 * 60 * 60 * 1_000,
+  anonymousReplayName: 'anonymous'
 } as const;
 
 export const RETENTION = {

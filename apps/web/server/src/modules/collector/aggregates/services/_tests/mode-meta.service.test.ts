@@ -1,11 +1,11 @@
-import { PLAY_MODES } from '@otmetki/schemas';
+import { MOD_AGGREGATES, PLAY_MODES } from '@otmetki/schemas';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { ModeSqlRow } from '../../mappers';
 
 import { MODE_META_AGGREGATE } from '../../config';
 import { ModeMetaService } from '../mode-meta.service';
-import { createPrisma, queryValues } from './aggregates.fixtures';
+import { createPrisma, queryText, queryValues } from './aggregates.fixtures';
 
 const NOW = new Date('2026-09-26T12:00:00Z');
 
@@ -70,5 +70,16 @@ describe('ModeMetaService.compute', () => {
     await service.compute();
 
     expect(prisma.modeTankAggregate.createMany.mock.calls.every(([args]) => Array.isArray(args?.data) && args.data.length === 0)).toBe(true);
+  });
+});
+
+describe('ModeMetaService.compute and distinct accounts', () => {
+  it('publishes a tank of a mode only when enough distinct accounts feed it', async () => {
+    const { prisma, service } = createMeta();
+
+    await service.compute();
+
+    expect(queryText(prisma)).toMatch(/HAVING count\(\*\) >= \?\s+AND count\(DISTINCT account_id\) >= \?/u);
+    expect(queryValues(prisma)).toContain(MOD_AGGREGATES.minAccounts);
   });
 });

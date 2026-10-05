@@ -42,3 +42,7 @@ export const MOD_HANGAR = {
   shareChannels: ['telegram', 'discord'],
   shareSessionIdPattern: /^[\da-f]{32}$/
 } as const;
+
+export const MOD_AGGREGATES = {
+  minAccounts: 10
+} as const;

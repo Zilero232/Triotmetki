@@ -149,7 +149,9 @@
           "$ref": "#/definitions/unixTime"
         },
         "duration_s": {
-          "$ref": "#/definitions/count"
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3600
         },
         "finish_reason": {
           "$ref": "#/definitions/count"
@@ -218,64 +220,104 @@
           ],
           "properties": {
             "damage_dealt": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 30000
             },
             "damage_assisted_radio": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 40000
             },
             "damage_assisted_track": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 40000
             },
             "damage_assisted_stun": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 40000
             },
             "damage_blocked": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 60000
             },
             "spotted": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 30
             },
             "frags": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 30
             },
             "damaged": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 30
             },
             "shots": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2000
             },
             "direct_hits": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2000
             },
             "direct_enemy_hits": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2000
             },
             "piercings": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2000
             },
             "piercing_enemy_hits": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2000
             },
             "xp": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000
             },
             "original_xp": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20000
             },
             "credits": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": -2000000,
+              "maximum": 2000000
             },
             "original_credits": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": -2000000,
+              "maximum": 2000000
             },
             "subtotal_credits": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": -2000000,
+              "maximum": 2000000
             },
             "factual_credits": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": -2000000,
+              "maximum": 2000000
             },
             "life_time_s": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3600
             },
             "is_alive": {
               "type": "boolean"
@@ -289,18 +331,27 @@
               "type": "boolean"
             },
             "free_xp": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20000
             },
             "repair_cost": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 500000
             },
             "ammo_cost": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 500000
             },
             "consumables_cost": {
-              "$ref": "#/definitions/count"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 200000
             }
-          }
+          },
+          "description": "Per-battle caps sit above every game-mode record (MOD_BATTLE_LIMITS on the server); a battle beyond them is refused so one forged report cannot skew a public aggregate."
         },
         "moe": {
           "description": "Post-battle marks-of-excellence state of this vehicle (tier 5+), null otherwise. damage_rating is percent * 100 (8512 = 85.12%). The (damage_rating, moving_avg_damage) pair is the raw data point for our own RU MoE thresholds.",
@@ -461,7 +512,9 @@
           "maximum": 10000
         },
         "moving_avg_damage": {
-          "$ref": "#/definitions/count"
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 30000
         }
       }
     },
@@ -489,7 +542,9 @@
           "maximum": 10000
         },
         "moving_avg_damage": {
-          "$ref": "#/definitions/count"
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 30000
         },
         "marks_on_gun": {
           "type": "integer",

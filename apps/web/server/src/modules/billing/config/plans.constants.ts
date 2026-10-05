@@ -30,6 +30,11 @@ export const PROMO_REJECTION_CODE = {
   alreadyRedeemed: 'PROMO_ALREADY_REDEEMED'
 } as const satisfies Record<PromoRejection, ApiErrorCode>;
 
+export const PROMO_RESERVATION = {
+  minutes: 60,
+  releaseBatch: 200
+} as const;
+
 export const ENTITLEMENTS = {
   cacheTtlMs: 60_000,
   cacheMaxEntries: 10_000,

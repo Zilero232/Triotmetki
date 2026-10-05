@@ -1,3 +1,4 @@
+import RedisMock from 'ioredis-mock';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
@@ -39,7 +40,7 @@ const createService = () => {
   prisma.notification.create.mockResolvedValue(mock<Notification>({ id: 'n1' }));
 
   return {
-    service: new SessionShareDeliveryService(prisma, config, telegram, discord, new NotificationLedgerService(prisma)),
+    service: new SessionShareDeliveryService(prisma, config, telegram, discord, new NotificationLedgerService(prisma), new RedisMock()),
     prisma,
     telegram,
     discord
@@ -90,6 +91,26 @@ describe('SessionShareDeliveryService.deliver', () => {
     await expect(service.deliver({ userId: 'user', sessionId: SESSION, channel: 'discord' })).resolves.toBe(true);
 
     expect(discord.sendDirect).toHaveBeenCalledWith(expect.objectContaining({ discordUserId: '998877', title: expect.any(String) }));
+  });
+
+  it('sends one Discord card per session even when the send is retried or repeated', async () => {
+    const { service, discord } = createService();
+
+    await service.deliver({ userId: 'user', sessionId: SESSION, channel: 'discord' });
+    await expect(service.deliver({ userId: 'user', sessionId: SESSION, channel: 'discord' })).resolves.toBe(true);
+
+    expect(discord.sendDirect).toHaveBeenCalledOnce();
+  });
+
+  it('lets a retry send the Discord card when the first attempt failed', async () => {
+    const { service, discord } = createService();
+
+    discord.sendDirect.mockRejectedValueOnce(new Error('discord down'));
+
+    await expect(service.deliver({ userId: 'user', sessionId: SESSION, channel: 'discord' })).rejects.toThrow('discord down');
+    await service.deliver({ userId: 'user', sessionId: SESSION, channel: 'discord' });
+
+    expect(discord.sendDirect).toHaveBeenCalledTimes(2);
   });
 
   it('sends nothing for a session of an account the user does not own', async () => {

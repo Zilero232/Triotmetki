@@ -2,6 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { describe, expect, it } from 'vitest';
 import { mockDeep } from 'vitest-mock-extended';
 
+import type { PushSubscription } from '../../../../../generated';
 import type { Env } from '../../../../config/env';
 import type { PrismaService } from '../../../../core';
 import type { WebPushEnv } from '../../lib';
@@ -12,6 +13,17 @@ import { PushSubscriptionsService } from '../push-subscriptions.service';
 const CONFIGURED: WebPushEnv = { VAPID_PUBLIC_KEY: 'BPublic', VAPID_PRIVATE_KEY: 'private', VAPID_SUBJECT: 'mailto:ops@example.com' };
 const UNCONFIGURED: WebPushEnv = { VAPID_PUBLIC_KEY: '', VAPID_PRIVATE_KEY: '', VAPID_SUBJECT: '' };
 const SUBSCRIPTION = { userId: 'b', endpoint: 'https://push.example/1', keys: { p256dh: 'k', auth: 'a' }, userAgent: null };
+
+const stored = (overrides: Partial<PushSubscription>): PushSubscription => ({
+  id: 's1',
+  userId: 'a',
+  endpoint: 'https://push.example/1',
+  p256dh: 'k',
+  auth: 'a',
+  userAgent: null,
+  createdAt: new Date('2026-09-01T00:00:00Z'),
+  ...overrides
+});
 
 const createService = (env: WebPushEnv = CONFIGURED) => {
   const prisma = mockDeep<PrismaService>();
@@ -38,16 +50,51 @@ describe('PushSubscriptionsService', () => {
       response: { code: 'INTEGRATION_UNAVAILABLE' }
     });
 
-    expect(prisma.pushSubscription.upsert).not.toHaveBeenCalled();
+    expect(prisma.pushSubscription.create).not.toHaveBeenCalled();
   });
 
-  it('moves an endpoint to the user that subscribed last', async () => {
+  it('stores a new endpoint for the subscribing user', async () => {
     const { service, prisma } = createService();
+
+    prisma.pushSubscription.findUnique.mockResolvedValue(null);
 
     await service.subscribe(SUBSCRIPTION);
 
-    expect(prisma.pushSubscription.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { endpoint: 'https://push.example/1' }, update: expect.objectContaining({ userId: 'b' }) })
+    expect(prisma.pushSubscription.create).toHaveBeenCalledWith({
+      data: { userId: 'b', endpoint: 'https://push.example/1', p256dh: 'k', auth: 'a', userAgent: null }
+    });
+  });
+
+  it('moves an endpoint to another user only when the browser proves it holds the same subscription keys', async () => {
+    const { service, prisma } = createService();
+
+    prisma.pushSubscription.findUnique.mockResolvedValue(stored({ userId: 'a', p256dh: 'k', auth: 'a' }));
+
+    await service.subscribe(SUBSCRIPTION);
+
+    expect(prisma.pushSubscription.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { endpoint: 'https://push.example/1' }, data: expect.objectContaining({ userId: 'b' }) })
+    );
+  });
+
+  it('refuses to take over an endpoint of another user with different subscription keys', async () => {
+    const { service, prisma } = createService();
+
+    prisma.pushSubscription.findUnique.mockResolvedValue(stored({ userId: 'a', p256dh: 'other', auth: 'other' }));
+
+    await expect(service.subscribe(SUBSCRIPTION)).rejects.toMatchObject({ status: 409, response: { code: 'CONFLICT' } });
+    expect(prisma.pushSubscription.update).not.toHaveBeenCalled();
+  });
+
+  it('lets the owner refresh the keys of their own endpoint', async () => {
+    const { service, prisma } = createService();
+
+    prisma.pushSubscription.findUnique.mockResolvedValue(stored({ userId: 'b', p256dh: 'old', auth: 'old' }));
+
+    await service.subscribe(SUBSCRIPTION);
+
+    expect(prisma.pushSubscription.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ p256dh: 'k', auth: 'a' }) })
     );
   });
 

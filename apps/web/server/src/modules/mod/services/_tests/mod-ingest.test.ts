@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { matches, mock, mockDeep } from 'vitest-mock-extended';
 
-import type { Battle, PlayerTank } from '../../../../../generated';
+import type { Battle, Player, PlayerTank } from '../../../../../generated';
 import type { BattleEventsSink, PrismaService, WebhookEmitter } from '../../../../core';
 import type { ExpectedValuesService } from '../../../reference';
 import type { IngestEvent } from '../../lib';
@@ -183,7 +183,54 @@ describe('ModIngestService', () => {
 
     const update = prisma.playerTank.upsert.mock.calls[0]?.[0].update ?? {};
 
-    expect(Object.keys(update).sort()).toEqual(['marksOnGun', 'moeMovingDamage', 'moePercent', 'moeUpdatedAt']);
+    expect(Object.keys(update).sort()).toEqual(['marksOnGun', 'marksSource', 'moeMovingDamage', 'moePercent', 'moeUpdatedAt']);
+  });
+
+  it('flags marks the mod changed as mod-reported', async () => {
+    const { service, prisma } = createService();
+    const { event, moe } = moeBattle();
+
+    prisma.playerTank.findUnique.mockResolvedValue(mock<PlayerTank>({ marksOnGun: moe.marks_on_gun - 1, moePercent: null }));
+
+    await service.ingest({ device, batch: { ...example, events: [event] } });
+
+    expect(prisma.playerTank.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({ create: expect.objectContaining({ marksSource: 'mod' }), update: expect.objectContaining({ marksSource: 'mod' }) })
+    );
+  });
+
+  it('keeps the stored marks source when the mod reports the marks already stored', async () => {
+    const { service, prisma } = createService();
+    const { event, moe } = moeBattle();
+
+    prisma.playerTank.findUnique.mockResolvedValue(mock<PlayerTank>({ marksOnGun: moe.marks_on_gun, moePercent: null }));
+
+    await service.ingest({ device, batch: { ...example, events: [event] } });
+
+    expect(prisma.playerTank.upsert.mock.calls[0]?.[0].update).not.toHaveProperty('marksSource');
+  });
+
+  it('flags marks a MoE snapshot changed as mod-reported', async () => {
+    const { service, prisma } = createService();
+    const snapshot = moeSnapshot();
+
+    prisma.playerTank.findUnique.mockResolvedValue(mock<PlayerTank>({ marksOnGun: snapshot.marks_on_gun + 1 }));
+
+    await service.ingest({ device, batch: { ...example, events: [snapshot] } });
+
+    expect(prisma.playerTank.upsert).toHaveBeenCalledWith(expect.objectContaining({ update: expect.objectContaining({ marksSource: 'mod' }) }));
+  });
+
+  it('does not announce a mark of a hidden player', async () => {
+    const { service, prisma, webhooks } = createService();
+    const { event, moe } = moeBattle();
+
+    prisma.playerTank.findUnique.mockResolvedValue(mock<PlayerTank>({ marksOnGun: moe.marks_on_gun - 1, moePercent: null }));
+    prisma.player.findUnique.mockResolvedValue(mock<Player>({ clanId: null, nickname: 'hidden', isHidden: true }));
+
+    await service.ingest({ device, batch: { ...example, events: [event] } });
+
+    expect(webhooks.emit).not.toHaveBeenCalled();
   });
 
   it('announces a mark the player did not have before', async () => {

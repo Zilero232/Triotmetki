@@ -11,7 +11,7 @@ import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { WORKSPACE_ROLES } from '../../clan-workspace';
 import { DISCORD_OPTIONS, DISCORD_TOKENS } from '../config';
-import { booleanOption, readTierRoles, stringOption } from '../lib';
+import { booleanOption, canManageGuild, readTierRoles, stringOption } from '../lib';
 import { DiscordCopyService } from './discord-copy.service';
 import { DiscordRolesService } from './discord-roles.service';
 
@@ -33,6 +33,10 @@ export class DiscordGuildsService {
 
     if (!guildId) {
       return this.copy.t({ locale, key: 'guild-only' });
+    }
+
+    if (!canManageGuild(interaction.member?.permissions)) {
+      return this.copy.t({ locale, key: 'setup-not-manager' });
     }
 
     if (!linked?.accountId) {

@@ -105,13 +105,15 @@ model PromoRedemption {
   code   String
   userId String @map("user_id")
 
-  redeemedAt DateTime @default(now()) @map("redeemed_at") @db.Timestamptz(3)
+  redeemedAt    DateTime  @default(now()) @map("redeemed_at") @db.Timestamptz(3)
+  reservedUntil DateTime? @map("reserved_until") @db.Timestamptz(3)
 
   promo PromoCode @relation(fields: [code], references: [code], onDelete: Cascade)
   user  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([code, userId])
   @@index([userId])
+  @@index([reservedUntil])
   @@map("promo_redemption")
 }
 

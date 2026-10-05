@@ -23,6 +23,26 @@ describe('readContainer', () => {
     expect((container.stream?.data.byteLength ?? 0) % 8).toBe(0);
   });
 
+  it('refuses JSON header blocks larger than a real replay ever carries before anything parses them', () => {
+    const bytes = buildReplay({ blocks: [{ padding: 'x'.repeat(REPLAY_CONTAINER.maxHeaderBytes) }] });
+
+    expect(() => readContainer(bytes)).toThrow(ReplayFormatError);
+  });
+
+  it('reads header blocks that together stay within the cap', () => {
+    const half = Math.floor(REPLAY_CONTAINER.maxHeaderBytes / 2) - 32;
+    const bytes = buildReplay({ blocks: [{ a: 'x'.repeat(half) }, { b: 'y'.repeat(half) }] });
+
+    expect(readContainer(bytes).blocks).toHaveLength(2);
+  });
+
+  it('refuses header blocks that only together go over the cap', () => {
+    const half = Math.floor(REPLAY_CONTAINER.maxHeaderBytes / 2) + 32;
+    const bytes = buildReplay({ blocks: [{ a: 'x'.repeat(half) }, { b: 'y'.repeat(half) }] });
+
+    expect(() => readContainer(bytes)).toThrow(ReplayFormatError);
+  });
+
   it('rejects a file with the wrong magic', () => {
     const bytes = buildReplay({ blocks: [{}] });
 

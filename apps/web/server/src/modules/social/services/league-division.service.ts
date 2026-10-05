@@ -84,7 +84,7 @@ export class LeagueDivisionService {
   async openWeek(now: Date): Promise<number> {
     const { weekStart } = weekWindow(now);
     const [links, existing] = await Promise.all([
-      this.prisma.userLestaAccount.findMany({ distinct: ['accountId'], select: { accountId: true } }),
+      this.prisma.userLestaAccount.findMany({ where: { player: { isHidden: false } }, distinct: ['accountId'], select: { accountId: true } }),
       this.prisma.leagueMembership.findMany({ where: { weekStart }, select: { accountId: true, tier: true, groupNo: true } })
     ]);
 

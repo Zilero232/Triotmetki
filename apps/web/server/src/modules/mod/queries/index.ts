@@ -1,4 +1,4 @@
-export { corroboratedBattleSql } from './battle-corroboration';
+export { corroboratedBattleSql, ownerTrustedBattleSql } from './battle-corroboration';
 export { openLiveSessionSql } from './live-session';
 export type { OpenLiveSessionSqlInput } from './live-session';
 export { tankRecordsSql } from './tank-records';

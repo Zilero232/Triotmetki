@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { Follow, UserLestaAccount } from '../../../../../generated';
+import type { Follow, Player, UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { EntitlementsService } from '../../../billing';
 
@@ -175,6 +175,19 @@ describe('FollowService.circle', () => {
 
     expect(circle.accountIds.toSorted()).toEqual([1n, 2n, 3n]);
     expect(circle.own).toEqual(new Set([1n, 2n]));
+  });
+
+  it('leaves a player who asked for deletion out of the circle', async () => {
+    const { service, prisma } = createService();
+
+    prisma.follow.findMany.mockResolvedValue([follow(2n), follow(3n)]);
+    prisma.userLestaAccount.findMany.mockResolvedValue([link(1n)]);
+    prisma.player.findMany.mockResolvedValue([mock<Player>({ accountId: 3n })]);
+
+    const circle = await service.circle('u1');
+
+    expect(circle.accountIds.toSorted()).toEqual([1n, 2n]);
+    expect(prisma.player.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { accountId: { in: [1n, 2n, 3n] }, isHidden: true } }));
   });
 
   it('only follows of players widen the circle', async () => {

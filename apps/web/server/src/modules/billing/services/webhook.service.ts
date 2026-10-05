@@ -117,6 +117,10 @@ export class WebhookService {
     if (remote.status === 'canceled') {
       await this.prisma.payment.updateMany({ where: { id: row.id, status: 'pending' }, data: { status: 'canceled' } });
 
+      if (row.promoCode) {
+        await this.promos.release({ db: this.prisma, userId: row.userId, code: row.promoCode });
+      }
+
       if (row.isAutoCharge && row.subscriptionId) {
         await this.prisma.subscription.update({ where: { id: row.subscriptionId }, data: { status: 'pastDue' } });
         this.entitlements.invalidate(row.userId);
@@ -146,7 +150,7 @@ export class WebhookService {
         await tx.payment.update({ where: { id: row.id }, data: { subscriptionId } });
 
         if (row.promoCode) {
-          await this.promos.recordRedemption({ db: tx, userId: row.userId, code: row.promoCode });
+          await this.promos.confirm({ db: tx, userId: row.userId, code: row.promoCode });
         }
 
         return { referrer: await this.referrals.reward({ db: tx, userId: row.userId, now }) };

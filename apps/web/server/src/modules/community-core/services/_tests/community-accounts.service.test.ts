@@ -69,7 +69,10 @@ describe('CommunityAccountsService.statsOf', () => {
     const stats = await service.statsOf([7n, 7n]);
 
     expect(stats.get(7n)).toEqual({ battles: 1000, wn8: 1500, winRate: 0.52 });
-    expect(prisma.accountRating.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { accountId: { in: [7n] }, period: 'overall' } }));
+
+    expect(prisma.accountRating.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { accountId: { in: [7n] }, period: 'overall', player: { isHidden: false } } })
+    );
   });
 });
 
@@ -80,5 +83,15 @@ describe('CommunityAccountsService.nicknamesOf', () => {
     prisma.player.findMany.mockResolvedValue([mock<Player>({ accountId: 7n, nickname: 'Tanker' })]);
 
     expect((await service.nicknamesOf([7n])).get(7n)).toBe('Tanker');
+  });
+
+  it('names no player who asked for deletion', async () => {
+    const { service, prisma } = createService();
+
+    prisma.player.findMany.mockResolvedValue([]);
+
+    await service.nicknamesOf([7n]);
+
+    expect(prisma.player.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { accountId: { in: [7n] }, isHidden: false } }));
   });
 });

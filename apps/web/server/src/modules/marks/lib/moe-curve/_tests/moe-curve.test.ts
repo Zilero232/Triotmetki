@@ -1,4 +1,4 @@
-import { MOE_CURVE } from '@otmetki/schemas';
+import { MOD_AGGREGATES, MOE_CURVE } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { curvePoints, curveSteps } from '../moe-curve';
@@ -34,5 +34,13 @@ describe('curvePoints', () => {
     ]);
 
     expect(points.map(({ percent }) => percent)).toEqual([50, 60]);
+  });
+});
+
+describe('curvePoints and public aggregates', () => {
+  it('drops a percent fed by fewer distinct accounts than any mod-fed public aggregate needs', () => {
+    const points = curvePoints([{ percent: 50, damage: 1_800, players: MOD_AGGREGATES.minAccounts - 1, battles: 400 }]);
+
+    expect(points).toEqual([]);
   });
 });

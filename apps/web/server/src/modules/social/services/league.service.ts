@@ -72,13 +72,19 @@ export class LeagueService {
       return { ...base, division: null, entries: [] };
     }
 
-    const group = await this.prisma.leagueMembership.findMany({ where: { weekStart: window.weekStart, tier: mine.tier, groupNo: mine.groupNo } });
+    const members = await this.prisma.leagueMembership.findMany({ where: { weekStart: window.weekStart, tier: mine.tier, groupNo: mine.groupNo } });
+    const players = await this.prisma.player.findMany({
+      where: { accountId: { in: members.map((member) => member.accountId) } },
+      select: { accountId: true, nickname: true, isHidden: true }
+    });
+
+    const hiddenIds = new Set(players.filter((player) => player.isHidden).map((player) => player.accountId));
+    const group = members.filter((member) => !hiddenIds.has(member.accountId));
     const accountIds = group.map((member) => member.accountId);
     const isClosed = group.every((member) => member.closedAt !== null);
-    const [players, weekStats] = await Promise.all([
-      this.prisma.player.findMany({ where: { accountId: { in: accountIds } }, select: { accountId: true, nickname: true } }),
-      isClosed ? null : this.stats.weekStats({ accountIds, start: window.start, end: window.end, withMarks: needsMarks(LEAGUE_DIVISION.metric) })
-    ]);
+    const weekStats = isClosed
+      ? null
+      : await this.stats.weekStats({ accountIds, start: window.start, end: window.end, withMarks: needsMarks(LEAGUE_DIVISION.metric) });
 
     const standings = weekStats
       ? divisionStandings({

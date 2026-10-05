@@ -88,11 +88,11 @@ export class ModIngestService {
         }
 
         if (event.moe) {
-          const values = toPlayerTankMoe(event.moe);
+          const values = toPlayerTankMoe({ moe: event.moe, previousMarks: previous?.marksOnGun });
 
           await tx.playerTank.upsert({
             where: { accountId_tankId: { accountId, tankId } },
-            create: { accountId, tankId, ...values },
+            create: { accountId, tankId, ...values, marksSource: 'mod' },
             update: values
           });
         }
@@ -131,13 +131,13 @@ export class ModIngestService {
       }
 
       if (event.type === 'moe_snapshot') {
-        const values = toPlayerTankMoe(event);
         const where = { accountId_tankId: { accountId: device.accountId, tankId: event.tank_id } };
         const previous = await this.prisma.playerTank.findUnique({ where, select: { marksOnGun: true } });
+        const values = toPlayerTankMoe({ moe: event, previousMarks: previous?.marksOnGun });
 
         await this.prisma.playerTank.upsert({
           where,
-          create: { accountId: device.accountId, tankId: event.tank_id, ...values },
+          create: { accountId: device.accountId, tankId: event.tank_id, ...values, marksSource: 'mod' },
           update: values
         });
 
@@ -163,7 +163,11 @@ export class ModIngestService {
       return;
     }
 
-    const player = await this.prisma.player.findUnique({ where: { accountId }, select: { clanId: true, nickname: true } });
+    const player = await this.prisma.player.findUnique({ where: { accountId }, select: { clanId: true, nickname: true, isHidden: true } });
+
+    if (player?.isHidden) {
+      return;
+    }
 
     try {
       await this.webhooks.emit({

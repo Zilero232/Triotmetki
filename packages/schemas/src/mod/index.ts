@@ -1,4 +1,4 @@
-export { MOD_ERROR_CODES, MOD_HANGAR, MOD_LOADOUT, MOD_RATINGS } from './mod.constants';
+export { MOD_AGGREGATES, MOD_ERROR_CODES, MOD_HANGAR, MOD_LOADOUT, MOD_RATINGS } from './mod.constants';
 export {
   bindCodeInputSchema,
   bindCodeSchema,

@@ -2,7 +2,7 @@ export { countsForSession, moePercent, sessionIncrement, sessionUuid } from './b
 export { bindCodePattern, bindRequestSchema, bindResponseSchema, ingestBatchSchema, ingestResponseSchema } from './contract';
 export type { BattleResultEvent, BindResponse, IngestBatch, IngestEvent, IngestResponse } from './contract';
 export { deviceSecret, hashSecret, matchesSecretHash, newDeviceId, normalizeBindCode } from './device-secret';
-export { modDeviceTracker } from './device-tracker';
+export { isModDeviceRequest, modDeviceTracker } from './device-tracker';
 export type { TrackedRequest } from './device-tracker';
 export { readStoredLoadout } from './loadout';
 export type { StoredLoadout } from './loadout';

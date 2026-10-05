@@ -83,15 +83,23 @@ model PlayerClanHistory {
   @@map("player_clan_history")
 }
 
+enum MarksSource {
+  lesta
+  mod
+
+  @@map("marks_source")
+}
+
 model PlayerTank {
   accountId BigInt @map("account_id")
   tankId    Int    @map("tank_id")
 
-  battles       Int      @default(0)
-  wins          Int      @default(0)
-  markOfMastery Int      @default(0) @map("mark_of_mastery") @db.SmallInt
-  marksOnGun    Int?     @map("marks_on_gun") @db.SmallInt
-  inGarage      Boolean? @map("in_garage")
+  battles       Int         @default(0)
+  wins          Int         @default(0)
+  markOfMastery Int         @default(0) @map("mark_of_mastery") @db.SmallInt
+  marksOnGun    Int?        @map("marks_on_gun") @db.SmallInt
+  marksSource   MarksSource @default(lesta) @map("marks_source")
+  inGarage      Boolean?    @map("in_garage")
 
   moePercent      Float?    @map("moe_percent")
   moeMovingDamage Float?    @map("moe_moving_damage")
@@ -110,5 +118,6 @@ model PlayerTank {
   @@index([tankId])
   @@index([accountId, progressXp(sort: Desc)])
   @@index([marksOnGun, accountId])
+  @@index([marksOnGun, marksSource])
   @@map("player_tank")
 }

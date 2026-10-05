@@ -9,8 +9,8 @@ import type { BindCode, BindCodeInput, BindInput, BindLinkInput } from '../mod.t
 import { AppForbiddenException, ModException } from '../../../common/exceptions';
 import { randomCode } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
-import { PrismaService, REDIS, USER_LESTA_ACCOUNT_ORDER } from '../../../core';
-import { BIND_CODE } from '../config';
+import { LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService, REDIS, USER_LESTA_ACCOUNT_ORDER } from '../../../core';
+import { BIND_CODE, MOD_DEVICE_LIMITS } from '../config';
 import { bindCodePattern, bindRequestSchema, deviceSecret, hashSecret, newDeviceId, normalizeBindCode } from '../lib';
 
 @Injectable()
@@ -94,21 +94,47 @@ export class ModBindService {
     const deviceId = newDeviceId();
     const secret = deviceSecret({ deviceId, serverSecret: this.config.get('MOD_INGEST_SECRET') });
 
-    await this.prisma.$transaction([
-      this.prisma.modDevice.create({
-        data: {
-          id: deviceId,
-          userId: stored.userId,
-          accountId: link.accountId,
-          secretHash: hashSecret(secret),
-          modVersion: request.mod_version,
-          gameVersion: request.client_version
-        }
-      }),
-      this.prisma.oneTimeCode.update({ where: { code: request.code }, data: { deviceId } })
-    ]);
+    const revoked = await lockedTransaction({
+      prisma: this.prisma,
+      scope: LIMIT_LOCK_SCOPE.modDevices,
+      key: stored.userId,
+      run: async (tx) => {
+        const active = await tx.modDevice.findMany({
+          where: { userId: stored.userId, revokedAt: null },
+          orderBy: { createdAt: 'desc' },
+          select: { id: true }
+        });
 
-    return { device_id: deviceId, secret, account_id: Number(link.accountId), nickname: link.player.nickname };
+        const overflow = active.slice(MOD_DEVICE_LIMITS.maxPerUser - 1).map((device) => device.id);
+
+        if (overflow.length > 0) {
+          await tx.modDevice.updateMany({ where: { id: { in: overflow }, userId: stored.userId, revokedAt: null }, data: { revokedAt: new Date() } });
+        }
+
+        await tx.modDevice.create({
+          data: {
+            id: deviceId,
+            userId: stored.userId,
+            accountId: link.accountId,
+            secretHash: hashSecret(secret),
+            modVersion: request.mod_version,
+            gameVersion: request.client_version
+          }
+        });
+
+        await tx.oneTimeCode.update({ where: { code: request.code }, data: { deviceId } });
+
+        return overflow;
+      }
+    });
+
+    return {
+      device_id: deviceId,
+      secret,
+      account_id: Number(link.accountId),
+      nickname: link.player.nickname,
+      ...(revoked.length > 0 ? { revoked_device_ids: revoked } : {})
+    };
   }
 
   private bindLink({ userId, accountId }: BindLinkInput) {

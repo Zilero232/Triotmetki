@@ -42,7 +42,7 @@ import { MapsModule } from './modules/maps';
 import { MarksModule } from './modules/marks';
 import { MeModule } from './modules/me';
 import { MissionsModule } from './modules/missions';
-import { ModModule } from './modules/mod';
+import { isModDeviceRequest, MOD_DEVICE_LIMITS, ModModule } from './modules/mod';
 import { ModReportsModule } from './modules/mod-reports';
 import { ModSyncModule } from './modules/mod-sync';
 import { ModerationModule } from './modules/moderation';
@@ -104,6 +104,11 @@ import { WatchlistModule } from './modules/watchlist';
 
         return {
           throttlers: [
+            {
+              ...MOD_DEVICE_LIMITS.ipThrottle,
+              skipIf: (context) => !isModDeviceRequest(context.switchToHttp().getRequest<Request>()),
+              getTracker: (_request, context) => subjectOf(context).tracker
+            },
             { name: THROTTLE.name, ttl: THROTTLE.ttl, limit: (context) => (subjectOf(context).isInternal ? THROTTLE.internalLimit : THROTTLE.limit) }
           ],
           getTracker: (_request, context) => subjectOf(context).tracker,

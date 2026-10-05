@@ -25,7 +25,8 @@ export const LIMIT_LOCK_SCOPE = {
   overlays: 'limit:overlays',
   goals: 'limit:goals',
   replays: 'limit:replays',
-  linkedAccounts: 'limit:linked-accounts'
+  linkedAccounts: 'limit:linked-accounts',
+  modDevices: 'limit:mod-devices'
 } as const;
 
 export const PRISMA_TIMEOUT = {

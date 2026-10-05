@@ -53,6 +53,16 @@ const createService = () => {
   return { service: new LeagueDivisionService(prisma, stats), prisma, stats };
 };
 
+describe('LeagueDivisionService.openWeek and hidden players', () => {
+  it('places only linked accounts whose player did not ask for deletion', async () => {
+    const { service, prisma } = createService();
+
+    await service.openWeek(new Date('2026-09-14T12:00:00Z'));
+
+    expect(prisma.userLestaAccount.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { player: { isHidden: false } } }));
+  });
+});
+
 describe('LeagueDivisionService.openWeek', () => {
   it('places nobody twice, so a second run changes nothing', async () => {
     const { service, prisma } = createService();

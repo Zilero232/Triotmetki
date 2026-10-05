@@ -3,8 +3,8 @@ import type { Queue } from 'bullmq';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { DataDeletionRequest } from '../../../../../../generated';
-import type { PrismaService } from '../../../../../core';
+import type { DataDeletionRequest, Replay } from '../../../../../../generated';
+import type { ObjectStorage, PrismaService } from '../../../../../core';
 
 import { HYPERTABLE } from '../../../../../core';
 import { JOB } from '../../../contracts';
@@ -17,12 +17,19 @@ const createPurge = () => {
   const prisma = mockDeep<PrismaService>();
 
   const queue = mock<Queue>();
+  const storage = mock<ObjectStorage>();
 
   prisma.$transaction.mockImplementation(async (run) => run(prisma));
   prisma.dataDeletionRequest.updateMany.mockResolvedValue({ count: 1 });
+  prisma.replay.findMany.mockResolvedValue([]);
 
-  return { prisma, queue, purge: new PurgeService(prisma, queue) };
+  return { prisma, queue, storage, purge: new PurgeService(prisma, queue, storage) };
 };
+
+const executedSql = (prisma: ReturnType<typeof createPurge>['prisma']) =>
+  prisma.$executeRaw.mock.calls.map(([query, ...values]) =>
+    'raw' in query ? { sql: query.join('?'), values } : { sql: query.sql, values: query.values }
+  );
 
 const statuses = (prisma: ReturnType<typeof createPurge>['prisma']) =>
   prisma.dataDeletionRequest.updateMany.mock.calls.map(([{ data }]) => data.status);
@@ -53,8 +60,55 @@ describe('PurgeService.purgeAccount', () => {
       expect(remove).toHaveBeenCalledWith({ where: { accountId: 5n } });
     }
 
-    expect(prisma.replay.updateMany).toHaveBeenCalledWith({ where: { accountId: 5n }, data: { accountId: null } });
     expect(prisma.$executeRaw).toHaveBeenCalled();
+  });
+
+  it('deletes the replays the account recorded together with their stored files', async () => {
+    const { prisma, storage, purge } = createPurge();
+
+    prisma.replay.findMany.mockResolvedValue([mock<Replay>({ id: 'r1', storageKey: 'replays/a.mtreplay', timelineKey: 'timelines/a.json' })]);
+
+    await purge.purgeAccount({ accountId: 5, isFinalAttempt: true });
+
+    expect(prisma.replay.deleteMany).toHaveBeenCalledWith({ where: { id: { in: ['r1'] } } });
+    expect(storage.remove.mock.calls.map(([key]) => key).sort()).toEqual(['replays/a.mtreplay', 'timelines/a.json']);
+  });
+
+  it('keeps the recorded replay files when a re-link cancels the purge', async () => {
+    const { prisma, storage, purge } = createPurge();
+
+    prisma.replay.findMany.mockResolvedValue([mock<Replay>({ id: 'r1', storageKey: 'replays/a.mtreplay', timelineKey: null })]);
+    prisma.dataDeletionRequest.updateMany.mockResolvedValueOnce({ count: 1 }).mockResolvedValueOnce({ count: 0 });
+
+    await purge.purgeAccount({ accountId: 5, requestId, isFinalAttempt: true });
+
+    expect(storage.remove).not.toHaveBeenCalled();
+  });
+
+  it('replaces the account with an anonymous placeholder in the summaries of other people replays', async () => {
+    const { prisma, purge } = createPurge();
+
+    await purge.purgeAccount({ accountId: 5, isFinalAttempt: true });
+
+    const scrubs = executedSql(prisma).filter(({ sql }) => sql.includes("'{players}'"));
+
+    expect(scrubs).toHaveLength(1);
+    expect(scrubs[0]?.sql).toContain("'accountId', NULL");
+    expect(scrubs[0]?.sql).toContain("'clanTag', NULL");
+    expect(scrubs[0]?.values).toContain(PURGE.anonymousReplayName);
+  });
+
+  it('scrubs the replay summaries before it drops the account from their player sets', async () => {
+    const { prisma, purge } = createPurge();
+
+    await purge.purgeAccount({ accountId: 5, isFinalAttempt: true });
+
+    const order = executedSql(prisma).map(({ sql }) => sql);
+    const scrub = order.findIndex((sql) => sql.includes("'{players}'"));
+    const remove = order.findIndex((sql) => sql.includes('player_account_ids = array_remove'));
+
+    expect(scrub).toBeGreaterThanOrEqual(0);
+    expect(scrub).toBeLessThan(remove);
   });
 
   it('removes the account id from the honest-rng daily player sets', async () => {

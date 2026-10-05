@@ -13,3 +13,5 @@ export const modDeviceTracker = ({ ip, headers }: TrackedRequest): string => {
 
   return normalizeIp(ip ?? '', DEFAULT_IPV6_SUBNET_PREFIX);
 };
+
+export const isModDeviceRequest = ({ headers }: TrackedRequest): boolean => headers?.[MOD_DEVICE.header] !== undefined;

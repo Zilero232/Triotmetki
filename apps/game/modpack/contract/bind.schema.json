@@ -37,7 +37,12 @@
           "minimum": 1,
           "description": "Echo of the bound account; the mod rejects the response if it differs from the request."
         },
-        "nickname": { "type": "string" }
+        "nickname": { "type": "string" },
+        "revoked_device_ids": {
+          "type": "array",
+          "items": { "type": "string", "maxLength": 64 },
+          "description": "Present when the bind pushed the user over the per-user device cap (5): the oldest active devices it revoked, so the mod can tell the player another install was signed out."
+        }
       }
     },
     "error": {

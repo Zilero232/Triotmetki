@@ -6,6 +6,7 @@ import { MODE_STATS_SQL } from '../../../../../../common/lib';
 import {
   markSyncedSql,
   touchNicknamesSql,
+  updateMarksSql,
   upsertAccountModeStatsSql,
   upsertLatestTanksSql,
   upsertPlayersSql,
@@ -144,5 +145,15 @@ describe('upsertTankModeStatsSql', () => {
     ]);
 
     expect(jsonParam(sql).map((record) => z.object({ mode: z.string() }).parse(record).mode)).toEqual([MODE_STATS_SQL.epic, MODE_STATS_SQL.ranked]);
+  });
+});
+
+describe('updateMarksSql', () => {
+  it('stamps the marks it writes as read from Lesta', () => {
+    expect(updateMarksSql([{ accountId: 1n, tankId: 10, marks: 0 }]).sql).toContain("marks_source = 'lesta'");
+  });
+
+  it('writes a zero mark instead of skipping it', () => {
+    expect(jsonParam(updateMarksSql([{ accountId: 1n, tankId: 10, marks: 0 }]))).toEqual([{ account_id: '1', tank_id: 10, marks: 0 }]);
   });
 });

@@ -2,7 +2,7 @@ import type { CheckoutResult } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 
-import type { CheckoutInput } from '../billing.types';
+import type { CheckoutInput, ReleasePromoInput } from '../billing.types';
 
 import { AppBadRequestException, AppForbiddenException } from '../../../common/exceptions';
 import { AppConfigService } from '../../../config';
@@ -39,18 +39,30 @@ export class CheckoutService {
 
     const amountRub = planPrice({ plan, discountPercent: promo?.discountPercent ?? null });
 
-    const payment = await this.yookassa.createPayment({
-      amountRub,
-      description: describePlan({ plan, isRenewal: false }),
-      returnUrl: new URL(BILLING_LINKS.returnPath, this.config.get('WEB_URL')).href,
-      idempotenceKey: checkoutIdempotenceKey({ userId, plan, promoCode: promo?.code, now: new Date() }),
-      savePaymentMethod: this.subscriptions.isRecurringEnabled,
-      metadata: { userId, plan, product: PLUS_SUBSCRIPTION.product }
-    });
+    if (promo) {
+      await this.promos.reserve({ userId, code: promo.code });
+    }
+
+    const payment = await this.yookassa
+      .createPayment({
+        amountRub,
+        description: describePlan({ plan, isRenewal: false }),
+        returnUrl: new URL(BILLING_LINKS.returnPath, this.config.get('WEB_URL')).href,
+        idempotenceKey: checkoutIdempotenceKey({ userId, plan, promoCode: promo?.code, now: new Date() }),
+        savePaymentMethod: this.subscriptions.isRecurringEnabled,
+        metadata: { userId, plan, product: PLUS_SUBSCRIPTION.product }
+      })
+      .catch(async (error: unknown) => {
+        await this.releasePromo({ userId, code: promo?.code });
+
+        throw error;
+      });
 
     const confirmationUrl = payment.confirmation?.confirmation_url;
 
     if (!confirmationUrl) {
+      await this.releasePromo({ userId, code: promo?.code });
+
       throw new AppBadRequestException('PAYMENT_FAILED', 'YooKassa returned no confirmation URL');
     }
 
@@ -68,5 +80,11 @@ export class CheckoutService {
     });
 
     return { confirmationUrl, paymentId: payment.id };
+  }
+
+  private async releasePromo({ userId, code }: ReleasePromoInput): Promise<void> {
+    if (code) {
+      await this.promos.release({ db: this.prisma, userId, code });
+    }
   }
 }

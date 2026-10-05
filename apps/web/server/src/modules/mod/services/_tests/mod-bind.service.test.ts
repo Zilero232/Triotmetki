@@ -5,13 +5,13 @@ import { omit } from 'remeda';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { OneTimeCode, Player, UserLestaAccount } from '../../../../../generated';
+import type { ModDevice, OneTimeCode, Player, UserLestaAccount } from '../../../../../generated';
 import type { AppConfigService } from '../../../../config';
 import type { PrismaService } from '../../../../core';
 
 import { AppForbiddenException } from '../../../../common/exceptions';
 import { USER_LESTA_ACCOUNT_ORDER } from '../../../../core';
-import { BIND_CODE, MOD_DEVICE } from '../../config';
+import { BIND_CODE, MOD_DEVICE, MOD_DEVICE_LIMITS } from '../../config';
 import { bindCodePattern, deviceSecret, hashSecret } from '../../lib';
 import { ModBindService } from '../mod-bind.service';
 
@@ -64,6 +64,7 @@ const readyToBind = (code: OneTimeCode = storedCode()) => {
   created.prisma.oneTimeCode.findUnique.mockResolvedValue(code);
   created.prisma.userLestaAccount.findFirst.mockResolvedValue(linkWithPlayer(ACCOUNT_ID));
   created.prisma.oneTimeCode.updateMany.mockResolvedValue({ count: 1 });
+  created.prisma.modDevice.findMany.mockResolvedValue([]);
 
   return created;
 };
@@ -279,6 +280,34 @@ describe('ModBindService.bind', () => {
         })
       })
     );
+  });
+
+  it('revokes the oldest active devices so the new one stays within the per-user cap', async () => {
+    const { service, prisma } = readyToBind();
+    const active = Array.from({ length: MOD_DEVICE_LIMITS.maxPerUser }, (_, index) => mock<ModDevice>({ id: `dev_${index}` }));
+
+    prisma.modDevice.findMany.mockResolvedValue(active);
+
+    const response = await service.bind({ body: bindBody(), requester: REQUESTER });
+    const oldest = active.slice(MOD_DEVICE_LIMITS.maxPerUser - 1).map((device) => device.id);
+
+    expect(prisma.modDevice.updateMany).toHaveBeenCalledWith({
+      where: { id: { in: oldest }, userId: 'user', revokedAt: null },
+      data: { revokedAt: NOW }
+    });
+
+    expect(response.revoked_device_ids).toEqual(oldest);
+  });
+
+  it('revokes nothing while the user is under the device cap', async () => {
+    const { service, prisma } = readyToBind();
+
+    prisma.modDevice.findMany.mockResolvedValue([mock<ModDevice>({ id: 'dev_0' })]);
+
+    const response = await service.bind({ body: bindBody(), requester: REQUESTER });
+
+    expect(prisma.modDevice.updateMany).not.toHaveBeenCalled();
+    expect(response.revoked_device_ids).toBeUndefined();
   });
 
   it('records which device consumed the code', async () => {

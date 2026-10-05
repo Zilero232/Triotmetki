@@ -1,3 +1,5 @@
+import { MOD_AGGREGATES } from '../mod/mod.constants';
+
 export const MOE_HISTORY = {
   maxBatch: 100,
   defaultDays: 30,
@@ -12,6 +14,6 @@ export const MOE_CURVE = {
   toPercent: 100,
   stepPercent: 5,
   bandPercent: 1,
-  minPlayers: 5,
+  minPlayers: MOD_AGGREGATES.minAccounts,
   officialPercents: [65, 85, 95, 100]
 } as const;

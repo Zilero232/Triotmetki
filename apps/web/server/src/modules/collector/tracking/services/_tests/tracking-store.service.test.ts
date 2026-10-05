@@ -491,3 +491,42 @@ describe('TrackingStoreService.accountStore writeAccountChanges', () => {
     });
   });
 });
+
+describe('TrackingStoreService.accountStore Lesta marks', () => {
+  it('writes every Lesta mark it is handed, even for a tank without a new snapshot', async () => {
+    const created = createStore();
+
+    created.prisma.playerTank.findMany.mockResolvedValue([]);
+
+    await created.store.accountStore({ tx: created.prisma, expected: new Map(), gained: [] }).writeAccountChanges({
+      accountId: 1,
+      accountSnapshots: [],
+      deltas: [],
+      baseline: [],
+      tankSnapshots: [],
+      lestaMarks: [{ accountId: 1n, tankId: 10, marks: 0 }]
+    });
+
+    const marksWrite = created.prisma.$executeRaw.mock.calls.find(([sql]) => !('raw' in sql) && sql.sql.includes('marks_source'));
+
+    expect(marksWrite).toBeDefined();
+  });
+
+  it('announces a gain measured against the Lesta marks it is handed', async () => {
+    const created = createStore();
+    const gained: GainedMark[] = [];
+
+    created.prisma.playerTank.findMany.mockResolvedValue([mock<PlayerTank>({ accountId: 1n, tankId: 10, marksOnGun: 1 })]);
+
+    await created.store.accountStore({ tx: created.prisma, expected: new Map(), gained }).writeAccountChanges({
+      accountId: 1,
+      accountSnapshots: [],
+      deltas: [],
+      baseline: [],
+      tankSnapshots: [],
+      lestaMarks: [{ accountId: 1n, tankId: 10, marks: 2 }]
+    });
+
+    expect(gained).toEqual([{ accountId: 1n, tankId: 10, marks: 2, previous: 1 }]);
+  });
+});

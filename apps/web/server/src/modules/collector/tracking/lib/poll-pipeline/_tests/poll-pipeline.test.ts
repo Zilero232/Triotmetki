@@ -207,3 +207,33 @@ describe('runPollPipeline concurrent runs', () => {
     expect(synced.map((entry) => entry.accountId).sort()).toEqual([1, 2]);
   });
 });
+
+describe('runPollPipeline Lesta marks', () => {
+  const input = () => ({
+    infos: { 1: accountInfo({ accountId: 1, battles: 150, lastBattleTime }) },
+    tanks: { 1: [accountTank({ tankId: 10, battles: 100 }), accountTank({ tankId: 20, battles: 50 })] },
+    stats: { 1: [tankStats({ tankId: 10, battles: 100 }), tankStats({ tankId: 20, battles: 50 })] },
+    marks: { 1: { 10: 2, 20: 0 } }
+  });
+
+  it('hands the store the Lesta marks of every tank the achievements call reported, zero included', async () => {
+    const lesta = createFakeLesta(input());
+    const { store, written } = createFakeStore({});
+
+    await runPollPipeline({ ports: { lesta, store }, accountIds: [1], tier: 'active', now });
+
+    expect(written[0]?.lestaMarks).toEqual([
+      { accountId: 1n, tankId: 10, marks: 2 },
+      { accountId: 1n, tankId: 20, marks: 0 }
+    ]);
+  });
+
+  it('hands no Lesta marks when the achievements call was not made', async () => {
+    const lesta = createFakeLesta(input());
+    const { store, written } = createFakeStore({});
+
+    await runPollPipeline({ ports: { lesta, store }, accountIds: [1], tier: 'population', now });
+
+    expect(written[0]?.lestaMarks).toBeUndefined();
+  });
+});

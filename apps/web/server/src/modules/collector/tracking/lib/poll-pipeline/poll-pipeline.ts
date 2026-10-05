@@ -87,9 +87,12 @@ const writeChanges = async ({ store, info, tanks, stats, marks, masteryOnlyTankI
 
   const modeStats = accountModeRows({ accountId: id, statistics: info.statistics });
   const tankModeStats = tankModeRows({ accountId: id, stats });
+  const lestaMarks = marks ? [...marks].map(([tankId, value]) => ({ accountId: id, tankId, marks: value })) : undefined;
+  const writes =
+    accountSnapshots.length + tankSnapshots.length + baseline.length + modeStats.length + tankModeStats.length + (lestaMarks?.length ?? 0);
 
-  if (accountSnapshots.length + tankSnapshots.length + baseline.length + modeStats.length + tankModeStats.length > 0) {
-    await store.writeAccountChanges({ accountId, accountSnapshots, tankSnapshots, deltas, baseline, modeStats, tankModeStats });
+  if (writes > 0) {
+    await store.writeAccountChanges({ accountId, accountSnapshots, tankSnapshots, deltas, baseline, modeStats, tankModeStats, lestaMarks });
   }
 
   return { snapshots: accountSnapshots.length + tankSnapshots.length, deltas: deltas.length };

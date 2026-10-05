@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { MODE_META, PLAY_MODES } from '@otmetki/schemas';
+import { MOD_AGGREGATES, MODE_META, PLAY_MODES } from '@otmetki/schemas';
 import { subDays } from 'date-fns';
 
 import type { ModeSqlRow } from '../mappers';
@@ -61,6 +61,7 @@ export class ModeMetaService {
         FROM all_rows
         GROUP BY GROUPING SETS ((tank_id), ())
         HAVING count(*) >= ${MODE_META_AGGREGATE.minBattles}
+          AND count(DISTINCT account_id) >= ${MOD_AGGREGATES.minAccounts}
       `;
 
       await this.prisma.$transaction([

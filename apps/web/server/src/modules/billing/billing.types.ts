@@ -40,6 +40,16 @@ export type RecordRedemptionInput = PromoCodeInput & {
 
 export type ClaimRedemptionInput = RecordRedemptionInput & {
   now: Date;
+  reservedUntil?: Date;
+};
+
+export type ReleasePromoInput = {
+  userId: string;
+  code: string | undefined;
+};
+
+export type ReleaseReservationInput = RecordRedemptionInput & {
+  lapsedBy?: Date;
 };
 
 export type RevokeRefundInput = {

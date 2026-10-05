@@ -17,3 +17,8 @@ export const MOD_REQUEST = {
   noncePrefix: 'otmetki:mod:nonce:',
   nonceTtlSeconds: 900
 } as const;
+
+export const MOD_DEVICE_LIMITS = {
+  maxPerUser: 5,
+  ipThrottle: { name: 'mod-ip', limit: 600, ttl: 60_000 }
+} as const;

@@ -40,6 +40,7 @@ export const readContainer = (bytes: Uint8Array): ReplayContainer => {
   }
 
   const blocks: Uint8Array[] = [];
+  let headerBytes = 0;
 
   for (let index = 0; index < blockCount; index += 1) {
     if (reader.remaining < 4) {
@@ -50,6 +51,12 @@ export const readContainer = (bytes: Uint8Array): ReplayContainer => {
 
     if (size > reader.remaining) {
       throw new ReplayFormatError(`JSON block #${index} (${size} bytes) does not fit in the file`);
+    }
+
+    headerBytes += size;
+
+    if (headerBytes > REPLAY_CONTAINER.maxHeaderBytes) {
+      throw new ReplayFormatError(`JSON blocks exceed ${REPLAY_CONTAINER.maxHeaderBytes} bytes`);
     }
 
     blocks.push(reader.take(size));

@@ -24,7 +24,7 @@ export { REDIS, RedisModule } from './redis';
 export { PageCrawlerService, ScrapeModule } from './scrape';
 export { SESSION_EVENTS } from './session-events';
 export type { SessionEndedEvent, SessionEventsSink } from './session-events';
-export { LocalDiskStorage, ObjectStorage, ObjectStorageModule, StorageObjectMissingError } from './storage';
+export { LocalDiskStorage, ObjectStorage, ObjectStorageModule, STORAGE_ROOT, StorageObjectMissingError } from './storage';
 export type { PutObjectInput } from './storage';
 export { TokenCipherModule, TokenCipherService } from './token-cipher';
 export { USER_LESTA_ACCOUNT_ORDER, UserLestaAccountsModule, UserLestaAccountsService } from './user-lesta-accounts';

@@ -1,4 +1,4 @@
 export const WEBAPP_AUTH = {
-  maxAgeSeconds: 86_400,
+  maxAgeSeconds: 3_600,
   initDataMaxLength: 4096
 } as const;

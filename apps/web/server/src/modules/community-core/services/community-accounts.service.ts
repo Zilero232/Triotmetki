@@ -34,7 +34,7 @@ export class CommunityAccountsService {
       ids.length === 0
         ? []
         : await this.prisma.accountRating.findMany({
-            where: { accountId: { in: ids }, period: 'overall' },
+            where: { accountId: { in: ids }, period: 'overall', player: { isHidden: false } },
             select: { accountId: true, battles: true, wn8: true, winRate: true }
           });
 
@@ -50,7 +50,9 @@ export class CommunityAccountsService {
   async nicknamesOf(accountIds: readonly bigint[]): Promise<Map<bigint, string>> {
     const ids = unique(accountIds);
     const players =
-      ids.length === 0 ? [] : await this.prisma.player.findMany({ where: { accountId: { in: ids } }, select: { accountId: true, nickname: true } });
+      ids.length === 0
+        ? []
+        : await this.prisma.player.findMany({ where: { accountId: { in: ids }, isHidden: false }, select: { accountId: true, nickname: true } });
 
     return new Map(players.map((player) => [player.accountId, player.nickname]));
   }

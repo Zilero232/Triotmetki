@@ -1,10 +1,11 @@
+import { MOD_AGGREGATES } from '@otmetki/schemas';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { EconomySqlRow } from '../../mappers';
 
 import { TANK_ECONOMY_AGGREGATE } from '../../config';
 import { TankEconomyService } from '../tank-economy.service';
-import { createPrisma, queryValues } from './aggregates.fixtures';
+import { createPrisma, queryText, queryValues } from './aggregates.fixtures';
 
 const NOW = new Date('2026-09-26T12:00:00Z');
 
@@ -66,5 +67,16 @@ describe('TankEconomyService.compute', () => {
     expect(prisma.tankEconomyAggregate.createMany.mock.calls[0]?.[0]?.data).toEqual([
       expect.objectContaining({ tankId: 1, repair: null, net: null, credits: Math.round(row.credits ?? 0), computedAt: NOW })
     ]);
+  });
+});
+
+describe('TankEconomyService.compute and distinct accounts', () => {
+  it('publishes a tank only when enough distinct accounts feed it', async () => {
+    const { prisma, service } = createEconomy([]);
+
+    await service.compute();
+
+    expect(queryText(prisma)).toMatch(/HAVING count\(\*\) >= \?\s+AND count\(DISTINCT account_id\) >= \?/u);
+    expect(queryValues(prisma)).toContain(MOD_AGGREGATES.minAccounts);
   });
 });

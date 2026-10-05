@@ -28,6 +28,7 @@ connect-button = Link Discord
 guild-only = This command only works on a server.
 setup-not-linked = Link Discord and your Lesta account in your profile on the site first.
 setup-not-officer = Only a clan officer can bind the server.
+setup-not-manager = Only a member with the Manage Server permission can bind the server.
 setup-plus-required = Rating roles and officer reports need the clan Plus — everything else is on.
 setup-done = The server is bound to [{ $tag }]. Event reminders go to { $channel }.
 roles-not-bound = This server is not bound to a clan yet: an officer can do it with /setup.

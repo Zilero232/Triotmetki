@@ -269,6 +269,20 @@ describe('LeagueService.league in the division scope', () => {
     expect(league.entries.find((entry) => entry.isMe)).toMatchObject({ accountId: 1, rank: size });
   });
 
+  it('leaves a member who asked for deletion out of the division table', async () => {
+    const { service, prisma } = divisionService(group);
+
+    prisma.player.findMany.mockResolvedValue([{ ...player(2n, 'Gone'), isHidden: true }]);
+
+    prisma.playSession.findMany.mockResolvedValue(
+      group.map((row) => session({ accountId: row.accountId, battles: LEAGUE_DIVISION.minBattles, damageDealt: 0, wn8: 1_000 }))
+    );
+
+    const league = await service.league({ userId: 'u1', scope: 'division', metric: 'damage', week });
+
+    expect(league.entries.map((entry) => entry.accountId)).not.toContain(2);
+  });
+
   it('reads a closed week from the stored results without recomputing', async () => {
     const closed = group.map((row, index) =>
       membership(row.accountId, { rank: index + 1, value: 100 - index, battles: 20, zone: index === 0 ? 'promotion' : 'stay', closedAt: weekStart })

@@ -1,4 +1,4 @@
-import { getUnixTime } from 'date-fns';
+import { getUnixTime, subHours } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 import { signLaunchParams } from 'vk-launch-params';
 
@@ -37,6 +37,12 @@ describe('verifyVkLaunchParams', () => {
     expect(verifyVkLaunchParams({ launchParams: signed(), appId: 0, appSecret: 'other-secret', now: NOW })).toBeNull();
     expect(verifyVkLaunchParams({ launchParams: signed(), appId: 1, appSecret: SECRET, now: NOW })).toBeNull();
     expect(verifyVkLaunchParams({ launchParams: signed({ vk_ts: getUnixTime(NOW) - 200_000 }), appId: 0, appSecret: SECRET, now: NOW })).toBeNull();
+  });
+
+  it('rejects launch params signed more than an hour ago', () => {
+    const vkTs = getUnixTime(subHours(NOW, 1)) - 1;
+
+    expect(verifyVkLaunchParams({ launchParams: signed({ vk_ts: vkTs }), appId: 0, appSecret: SECRET, now: NOW })).toBeNull();
   });
 
   it('rejects everything without a configured secret', () => {

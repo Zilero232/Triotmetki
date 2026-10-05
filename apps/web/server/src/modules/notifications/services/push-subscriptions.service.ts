@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 
 import type { SubscribePushInput, UnsubscribePushInput } from '../notifications.types';
 
-import { AppNotFoundException } from '../../../common/exceptions';
+import { AppConflictException, AppNotFoundException } from '../../../common/exceptions';
 import { AppConfigService } from '../../../config';
-import { PrismaService } from '../../../core';
+import { isUniqueViolation, PrismaService } from '../../../core';
 import { vapidDetails } from '../lib';
 
 @Injectable()
@@ -23,11 +23,33 @@ export class PushSubscriptionsService {
       throw new AppNotFoundException('INTEGRATION_UNAVAILABLE', 'Web push is not configured on this server');
     }
 
-    await this.prisma.pushSubscription.upsert({
-      where: { endpoint },
-      create: { userId, endpoint, p256dh: keys.p256dh, auth: keys.auth, userAgent },
-      update: { userId, p256dh: keys.p256dh, auth: keys.auth, userAgent }
-    });
+    const existing = await this.prisma.pushSubscription.findUnique({ where: { endpoint }, select: { userId: true, p256dh: true, auth: true } });
+
+    if (!existing) {
+      await this.create({ userId, endpoint, keys, userAgent });
+
+      return;
+    }
+
+    const holdsKeys = existing.p256dh === keys.p256dh && existing.auth === keys.auth;
+
+    if (existing.userId !== userId && !holdsKeys) {
+      throw new AppConflictException('CONFLICT', 'This push endpoint belongs to another account');
+    }
+
+    await this.prisma.pushSubscription.update({ where: { endpoint }, data: { userId, p256dh: keys.p256dh, auth: keys.auth, userAgent } });
+  }
+
+  private async create({ userId, endpoint, keys, userAgent }: SubscribePushInput): Promise<void> {
+    try {
+      await this.prisma.pushSubscription.create({ data: { userId, endpoint, p256dh: keys.p256dh, auth: keys.auth, userAgent } });
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        throw new AppConflictException('CONFLICT', 'This push endpoint was just subscribed');
+      }
+
+      throw error;
+    }
   }
 
   async unsubscribe({ userId, endpoint }: UnsubscribePushInput): Promise<void> {

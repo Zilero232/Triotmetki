@@ -86,6 +86,41 @@ describe('CheckoutService.createCheckout', () => {
     );
   });
 
+  it('reserves the promo code before asking YooKassa for the discounted payment', async () => {
+    const { service, yookassa, promos } = createService();
+
+    promos.usable.mockResolvedValue(mock<PromoCode>({ code: 'SPRING', discountPercent: 25 }));
+
+    await service.createCheckout({ userId: 'u1', plan: 'monthly', promoCode: 'spring' });
+
+    expect(promos.reserve).toHaveBeenCalledWith({ userId: 'u1', code: 'SPRING' });
+    expect(promos.reserve.mock.invocationCallOrder[0]).toBeLessThan(yookassa.createPayment.mock.invocationCallOrder[0] ?? 0);
+  });
+
+  it('gives the reserved promo use back when YooKassa returns no confirmation link', async () => {
+    const { service, yookassa, promos, prisma } = createService();
+
+    promos.usable.mockResolvedValue(mock<PromoCode>({ code: 'SPRING', discountPercent: 25 }));
+    yookassa.createPayment.mockResolvedValue(created({}));
+
+    await expect(service.createCheckout({ userId: 'u1', plan: 'monthly', promoCode: 'spring' })).rejects.toMatchObject({
+      response: { code: 'PAYMENT_FAILED' }
+    });
+
+    expect(promos.release).toHaveBeenCalledWith({ db: prisma, userId: 'u1', code: 'SPRING' });
+  });
+
+  it('gives the reserved promo use back when YooKassa refuses the payment', async () => {
+    const { service, yookassa, promos, prisma } = createService();
+
+    promos.usable.mockResolvedValue(mock<PromoCode>({ code: 'SPRING', discountPercent: 25 }));
+    yookassa.createPayment.mockRejectedValue(new Error('yookassa down'));
+
+    await expect(service.createCheckout({ userId: 'u1', plan: 'monthly', promoCode: 'spring' })).rejects.toThrow('yookassa down');
+
+    expect(promos.release).toHaveBeenCalledWith({ db: prisma, userId: 'u1', code: 'SPRING' });
+  });
+
   it('sends a free-days promo code to redemption instead of a payment', async () => {
     const { service, yookassa, promos } = createService();
 

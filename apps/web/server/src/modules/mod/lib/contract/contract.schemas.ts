@@ -1,7 +1,7 @@
 import { modBattleLoadoutSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
-import { BIND_CODE, MOD_ACHIEVEMENTS, MOD_INGEST, MOD_PLATOON, MOD_SHOTS } from '../../config';
+import { BIND_CODE, MOD_ACHIEVEMENTS, MOD_BATTLE_LIMITS, MOD_INGEST, MOD_PLATOON, MOD_SHOTS } from '../../config';
 
 const id = z
   .string()
@@ -17,6 +17,9 @@ const eventTime = unixTime.refine((seconds) => seconds <= Date.now() / 1000 + MO
 });
 
 const count = z.number().int().min(0);
+const capped = (field: keyof typeof MOD_BATTLE_LIMITS.stats) => count.max(MOD_BATTLE_LIMITS.stats[field]);
+const credits = z.number().int().min(-MOD_BATTLE_LIMITS.credits).max(MOD_BATTLE_LIMITS.credits);
+const movingAvgDamage = count.max(MOD_BATTLE_LIMITS.stats.damage_dealt);
 const damageRating = z.number().int().min(0).max(10_000);
 const marksOnGun = z.number().int().min(0).max(3);
 
@@ -38,13 +41,14 @@ export const bindResponseSchema = z.object({
     .regex(/^[\w-]+$/),
   secret: z.string().min(32).max(128),
   account_id: accountId,
-  nickname: z.string().optional()
+  nickname: z.string().optional(),
+  revoked_device_ids: z.array(z.string().max(64)).optional()
 });
 
 const moeValuesSchema = z.strictObject({
   marks_on_gun: marksOnGun,
   damage_rating: damageRating,
-  moving_avg_damage: count
+  moving_avg_damage: movingAvgDamage
 });
 
 const modShotSchema = z.strictObject({
@@ -70,7 +74,7 @@ export const battleResultEventSchema = z.strictObject({
   bonus_type: count,
   gui_type: count,
   arena_created_at: eventTime,
-  duration_s: count,
+  duration_s: count.max(MOD_BATTLE_LIMITS.durationSeconds),
   finish_reason: count,
   winner_team: z.number().int().min(0).max(2),
   team: z.number().int().min(0).max(2),
@@ -81,33 +85,33 @@ export const battleResultEventSchema = z.strictObject({
     tier: z.number().int().min(1).max(11).nullable()
   }),
   stats: z.strictObject({
-    damage_dealt: count,
-    damage_assisted_radio: count,
-    damage_assisted_track: count,
-    damage_assisted_stun: count,
-    damage_blocked: count,
-    spotted: count,
-    frags: count,
-    damaged: count,
-    shots: count,
-    direct_hits: count,
-    direct_enemy_hits: count,
-    piercings: count,
-    piercing_enemy_hits: count,
-    xp: count,
-    original_xp: count,
-    credits: z.number().int(),
-    original_credits: z.number().int(),
-    subtotal_credits: z.number().int(),
-    factual_credits: z.number().int(),
-    life_time_s: count,
+    damage_dealt: capped('damage_dealt'),
+    damage_assisted_radio: capped('damage_assisted_radio'),
+    damage_assisted_track: capped('damage_assisted_track'),
+    damage_assisted_stun: capped('damage_assisted_stun'),
+    damage_blocked: capped('damage_blocked'),
+    spotted: capped('spotted'),
+    frags: capped('frags'),
+    damaged: capped('damaged'),
+    shots: capped('shots'),
+    direct_hits: capped('direct_hits'),
+    direct_enemy_hits: capped('direct_enemy_hits'),
+    piercings: capped('piercings'),
+    piercing_enemy_hits: capped('piercing_enemy_hits'),
+    xp: capped('xp'),
+    original_xp: capped('original_xp'),
+    credits,
+    original_credits: credits,
+    subtotal_credits: credits,
+    factual_credits: credits,
+    life_time_s: capped('life_time_s'),
     is_alive: z.boolean(),
     death_reason: z.number().int().min(-1),
     is_premium: z.boolean(),
-    free_xp: count.optional(),
-    repair_cost: count.optional(),
-    ammo_cost: count.optional(),
-    consumables_cost: count.optional()
+    free_xp: capped('free_xp').optional(),
+    repair_cost: capped('repair_cost').optional(),
+    ammo_cost: capped('ammo_cost').optional(),
+    consumables_cost: capped('consumables_cost').optional()
   }),
   moe: moeValuesSchema.nullable(),
   queue_time_s: z.number().min(0).nullable(),
@@ -124,7 +128,7 @@ const moeSnapshotEventSchema = z.strictObject({
   occurred_at: eventTime,
   tank_id: tankId,
   damage_rating: damageRating,
-  moving_avg_damage: count,
+  moving_avg_damage: movingAvgDamage,
   marks_on_gun: marksOnGun,
   battles: count.nullable()
 });

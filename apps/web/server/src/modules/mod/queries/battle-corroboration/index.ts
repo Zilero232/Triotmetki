@@ -1,1 +1,1 @@
-export { corroboratedBattleSql } from './battle-corroboration';
+export { corroboratedBattleSql, ownerTrustedBattleSql } from './battle-corroboration';

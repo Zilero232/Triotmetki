@@ -6,9 +6,10 @@ import type { PurgeAccountPayload } from '../../contracts';
 import type { PurgeAccountInput } from '../purge.types';
 
 import { errorMessage } from '../../../../common/lib';
-import { HYPERTABLE, PrismaService } from '../../../../core';
+import { HYPERTABLE, ObjectStorage, PrismaService } from '../../../../core';
 import { JOB, QUEUE } from '../../contracts';
 import { PURGE } from '../config';
+import { scrubReplayPlayerSql } from '../queries';
 
 @Injectable()
 export class PurgeService {
@@ -16,7 +17,8 @@ export class PurgeService {
 
   constructor(
     private readonly prisma: PrismaService,
-    @InjectQueue(QUEUE.purge) private readonly queue: Queue
+    @InjectQueue(QUEUE.purge) private readonly queue: Queue,
+    private readonly storage: ObjectStorage
   ) {}
 
   async dispatch(): Promise<number> {
@@ -53,6 +55,8 @@ export class PurgeService {
         await this.prisma.$executeRawUnsafe(`DELETE FROM ${table} WHERE account_id = $1`, id);
       }
 
+      const recorded = await this.prisma.replay.findMany({ where: { accountId: id }, select: { id: true, storageKey: true, timelineKey: true } });
+
       const isPurged = await this.prisma.$transaction(async (tx) => {
         if (requestId) {
           const closed = await tx.dataDeletionRequest.updateMany({
@@ -70,13 +74,19 @@ export class PurgeService {
         await tx.clanAttendance.deleteMany({ where: { accountId: id } });
         await tx.recruitCandidate.deleteMany({ where: { accountId: id } });
         await tx.competitionEntry.deleteMany({ where: { accountId: id } });
+        await tx.replay.deleteMany({ where: { id: { in: recorded.map((replay) => replay.id) } } });
         await tx.replay.updateMany({ where: { accountId: id }, data: { accountId: null } });
+        await tx.$executeRaw(scrubReplayPlayerSql({ accountId: id, placeholder: PURGE.anonymousReplayName }));
         await tx.$executeRaw`UPDATE replay SET player_account_ids = array_remove(player_account_ids, ${id}) WHERE player_account_ids @> ARRAY[${id}]::bigint[]`;
         await tx.$executeRaw`UPDATE rng_daily SET players = array_remove(players, ${id}) WHERE players @> ARRAY[${id}]::bigint[]`;
         await tx.player.deleteMany({ where: { accountId: id } });
 
         return true;
       });
+
+      if (isPurged) {
+        await this.removeFiles(recorded.flatMap((replay) => (replay.timelineKey ? [replay.storageKey, replay.timelineKey] : [replay.storageKey])));
+      }
 
       this.logger.log(isPurged ? `purged account ${accountId}` : `kept account ${accountId}: it was re-linked while its purge ran`);
     } catch (error) {
@@ -90,6 +100,16 @@ export class PurgeService {
       }
 
       throw error;
+    }
+  }
+
+  private async removeFiles(keys: readonly string[]): Promise<void> {
+    for (const key of keys) {
+      try {
+        await this.storage.remove(key);
+      } catch (error) {
+        this.logger.warn(`purged replay file ${key} not removed: ${errorMessage(error)}`);
+      }
     }
   }
 

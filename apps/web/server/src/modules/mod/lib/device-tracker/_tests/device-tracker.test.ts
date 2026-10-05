@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { MOD_DEVICE } from '../../../config';
 import { newDeviceId } from '../../device-secret';
-import { modDeviceTracker } from '../device-tracker';
+import { isModDeviceRequest, modDeviceTracker } from '../device-tracker';
 
 const ip = '198.51.100.7';
 
@@ -19,5 +19,15 @@ describe('modDeviceTracker', () => {
 
     expect(modDeviceTracker({ ip, headers: { [MOD_DEVICE.header]: 'dev_<script>' } })).toBe(bare);
     expect(modDeviceTracker({ ip, headers: { [MOD_DEVICE.header]: `${newDeviceId()}x` } })).toBe(bare);
+  });
+});
+
+describe('isModDeviceRequest', () => {
+  it('puts a request that names any device, even a forged one, under the address throttle', () => {
+    expect(isModDeviceRequest({ ip, headers: { [MOD_DEVICE.header]: `${newDeviceId()}x` } })).toBe(true);
+  });
+
+  it('leaves a request without a device header to the default throttle alone', () => {
+    expect(isModDeviceRequest({ ip, headers: {} })).toBe(false);
   });
 });
