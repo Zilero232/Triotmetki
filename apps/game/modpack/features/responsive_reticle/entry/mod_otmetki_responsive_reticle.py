@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.responsive_reticle import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register responsive_reticle\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register responsive_reticle\n') + traceback.format_exc())

@@ -1,6 +1,6 @@
 import type { UiEditor, UiField } from '@/shared/api/protocol';
 
-export type EditorRowKind = 'control' | 'gallery' | 'swatches';
+export type EditorRowKind = 'chips' | 'control' | 'gallery' | 'select' | 'swatches' | 'text';
 
 export type EditorOption = {
   value: string;
@@ -13,7 +13,9 @@ export type EditorOption = {
 export type EditorRow = {
   field: UiField;
   kind: EditorRowKind;
+  stacked: boolean;
   options: EditorOption[];
+  optionRows: EditorOption[][];
 };
 
 export type EditorGroup = {
@@ -25,11 +27,13 @@ export type EditorGroup = {
 export type EditorRowInput = {
   field: UiField;
   editor: UiEditor;
+  rowWidth?: number;
 };
 
 export type EditorGroupsInput = {
   fields: UiField[];
   editor: UiEditor;
+  rowWidth?: number;
   otherLabel: string;
   advancedLabel: string;
 };

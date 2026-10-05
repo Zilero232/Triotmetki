@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.chat_filter import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register chat_filter\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register chat_filter\n') + traceback.format_exc())

@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'aim_info'
 PACKAGE_ID = 'net.triotmetki.aim_info'
 PACKAGE_NAME = 'Three Marks: aim and shells'
-VERSION = '0.1.1'
+VERSION = '0.1.2'
 
 
 def create(app):

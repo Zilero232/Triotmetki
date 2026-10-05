@@ -21,6 +21,8 @@ AIM_LIMIT = 7.0
 # RU 1.45 client source (vehicle_systems/tankStructure.TankPartIndexes): 0 chassis, 1 hull, 2 turret, 3 gun; higher
 # indices are the chassis' track pairs and wheels (VehicleEffects.DamageFromShotDecoder.convertComponentIndex).
 PART_NAMES = ('chassis', 'hull', 'turret', 'gun')
+# VehicleEffects.DamageFromShotDecoder.decodeSegment widens a decoded segment by this share of its length at both ends.
+SEGMENT_MARGIN = 0.01
 # RU 1.45 common/constants.VEHICLE_HIT_EFFECT: 0 pierced without damage, 1-2 ricochets, 3 not pierced, 4 pierced,
 # 5 critical hit, 6 pierced with a damaged device.
 OUTCOME_BY_CODE = {0: 'nodamage', 1: 'ricochet', 2: 'ricochet', 3: 'blocked', 4: 'pen', 5: 'crit', 6: 'crit'}
@@ -88,6 +90,7 @@ PAGE_LABELS = (
     ('armor', 'hv_col_armor'),
     ('empty', 'hv_empty'),
     ('no_battles', 'hv_no_battles'),
+    ('no_battles_title', 'hv_no_battles_title'),
     ('loading', 'hv_loading'),
     ('hint', 'hv_hint'),
     ('approx', 'hv_approx'),

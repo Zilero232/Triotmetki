@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.hud_layouts import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register hud_layouts\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register hud_layouts\n') + traceback.format_exc())

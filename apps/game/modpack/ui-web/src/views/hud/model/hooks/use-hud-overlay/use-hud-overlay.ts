@@ -11,13 +11,13 @@ import type { HudLabelModel } from './use-hud-overlay.types';
 import { HUD_OVERLAY } from '../../../config';
 import { layoutLabels } from '../../../lib/label-layout';
 import { createMouseReport } from '../../../lib/mouse-report';
+import { panelHint } from '../../../lib/panel-hint';
 import { useDrawnReport } from '../use-drawn-report';
 import { useHoveredPanel } from '../use-hovered-panel';
 import { useHudScreen } from '../use-hud-screen';
 import { useHudState } from '../use-hud-state';
 import { useInputArea } from '../use-input-area';
 import { usePanelContent } from '../use-panel-content';
-import { usePanelHint } from '../use-panel-hint';
 import { usePanelSizes } from '../use-panel-sizes';
 
 export const useHudOverlay = () => {
@@ -62,7 +62,7 @@ export const useHudOverlay = () => {
 
   useInputArea({ edit, hover: Boolean(state?.hover), dragging: live !== null, screen, clickable, targets: targetsRef.current, hovered, report });
 
-  const hint = usePanelHint(live === null ? layouts.find(({ id, panel }) => id === hovered && panel.visible) : undefined);
+  const hint = panelHint(live === null ? layouts.find(({ id, panel }) => id === hovered && panel.visible) : undefined);
 
   return {
     labels: layouts.map(labelOf),

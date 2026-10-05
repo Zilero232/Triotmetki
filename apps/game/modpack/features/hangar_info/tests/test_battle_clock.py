@@ -55,6 +55,14 @@ class FormatTest(unittest.TestCase):
     def test_a_moment_is_formatted_by_its_pattern(self):
         assert format_moment('%H:%M', moment()) == '21:47'
 
+    def test_the_twelve_hour_clock_marks_the_evening_whatever_the_locale(self):
+        assert format_moment('%I:%M %p', moment()) == '09:47 PM'
+
+    def test_the_twelve_hour_clock_marks_the_morning(self):
+        morning = time.strptime('2026-09-29 09:05:00', '%Y-%m-%d %H:%M:%S')
+
+        assert format_moment('%I:%M %p', morning) == '09:05 AM'
+
 
 class ClockTest(unittest.TestCase):
 

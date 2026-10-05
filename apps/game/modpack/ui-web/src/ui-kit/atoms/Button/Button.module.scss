@@ -6,6 +6,7 @@
   font-size: 13px;
   font-weight: 700;
   line-height: 30px;
+  white-space: nowrap;
 
   @include control;
 
@@ -37,7 +38,7 @@
   background-color: transparent;
   background-image: none;
   box-shadow: none;
-  color: token(color-text-muted);
+  color: token(win-text-label);
 
   &:hover {
     border-color: transparent;

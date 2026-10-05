@@ -10,7 +10,7 @@ import { MarksPanelWidget } from '../MarksPanelWidget';
 
 const data = marksPanelSchema.parse(readWidgetFixture('marks_panel'));
 
-const compact = { ...data, style: 'compact' as const, thresholds: [], step: null, average: null, battles: null };
+const compact = { ...data, style: 'compact' as const, thresholds: [], step: null, average: null };
 
 const rows = (html: HTMLElement) => html.firstElementChild?.children ?? [];
 
@@ -68,10 +68,10 @@ describe(MarksPanelWidget, () => {
     expect(html.querySelectorAll('[class*="lit"]')).toHaveLength(2);
   });
 
-  it('fills the tank silhouette in the silhouette style', () => {
-    const html = render(<MarksPanelWidget data={{ ...compact, look: 'silhouette', silhouette: 'heavy' }} />).container;
+  it('draws no tank silhouette in battle', () => {
+    const html = render(<MarksPanelWidget data={data} />).container;
 
-    expect(html.querySelectorAll('svg path').length).toBeGreaterThan(2);
+    expect(html.querySelector('circle')).toBeNull();
   });
 
   it('keeps the client marks icon in the minimal line', () => {

@@ -1,7 +1,7 @@
 """Small reads of client state shared by the companion glue and the features (all tolerate a missing API)."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import importlib  # novermin
+import importlib
 
 from ...compat import is_int, string_types
 from ...hooks import subscribe, unsubscribe
@@ -156,17 +156,30 @@ def vehicle_short_name(tank_id):
     return getattr(vehicle_type(tank_id), 'shortUserString', None)
 
 
+def _windows_manager():
+    from helpers import dependency
+    from skeletons.gui.impl import IGuiLoader
+    return getattr(dependency.instance(IGuiLoader), 'windowsManager', None)
+
+
 def main_window():
     """The client's main wulf window, the parent mods give their windows (IGuiLoader.windowsManager.getMainWindow(), as
     ModsList and Battle Observer do), or None before the GUI loader exists."""
     try:
-        from helpers import dependency
-        from skeletons.gui.impl import IGuiLoader
-        loader = dependency.instance(IGuiLoader)
-        manager = getattr(loader, 'windowsManager', None)
+        manager = _windows_manager()
         return manager.getMainWindow() if manager is not None else None
     except Exception:
         return None
+
+
+def focused_windows():
+    """The client's wulf windows that hold the focus (IGuiLoader.windowsManager.findWindows over Window.isFocused, RU
+    1.45 client source), or an empty list before the GUI loader exists."""
+    try:
+        manager = _windows_manager()
+        return list(manager.findWindows(lambda window: window.isFocused)) if manager is not None else []
+    except Exception:
+        return []
 
 
 def vehicle_class_tag(tank_id):

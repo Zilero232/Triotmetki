@@ -84,18 +84,18 @@ const scrollArea = () => {
   return { mock, area, onScrolled, unbind, wheel };
 };
 
-const nestedAreas = () => {
+const nestedAreas = ({ contain = false, innerContent = 900 }: { contain?: boolean; innerContent?: number } = {}) => {
   vi.useFakeTimers({ toFake: ['requestAnimationFrame'] });
   install(1);
 
   const outer = box({ content: 2000, height: 500 });
-  const inner = box({ content: 900, height: 300 });
+  const inner = box({ content: innerContent, height: 300 });
   const leaf = document.createElement('span');
 
   inner.append(leaf);
   outer.append(inner);
   document.body.append(outer);
-  unbinders.push(bindWheelScroll({ element: outer }), bindWheelScroll({ element: inner }));
+  unbinders.push(bindWheelScroll({ element: outer }), bindWheelScroll({ element: inner, contain }));
 
   const wheelDown = () => {
     leaf.dispatchEvent(notch(100));
@@ -288,6 +288,34 @@ describe(bindWheelScroll, () => {
 
     expect(inner.scrollTop).toBe(600);
     expect(outer.scrollTop).toBe(SCROLL_AREA.step);
+  });
+
+  it('keeps the wheel from the outer box at the inner end when the inner box contains it', () => {
+    const { outer, inner, wheelDown } = nestedAreas({ contain: true });
+
+    inner.scrollTop = 600;
+
+    wheelDown();
+
+    expect(inner.scrollTop).toBe(600);
+    expect(outer.scrollTop).toBe(0);
+  });
+
+  it('keeps the wheel from the outer box over a containing box whose content fits', () => {
+    const { outer, wheelDown } = nestedAreas({ contain: true, innerContent: 200 });
+
+    wheelDown();
+
+    expect(outer.scrollTop).toBe(0);
+  });
+
+  it('still scrolls a containing box while it can', () => {
+    const { outer, inner, wheelDown } = nestedAreas({ contain: true });
+
+    wheelDown();
+
+    expect(inner.scrollTop).toBe(SCROLL_AREA.step);
+    expect(outer.scrollTop).toBe(0);
   });
 });
 

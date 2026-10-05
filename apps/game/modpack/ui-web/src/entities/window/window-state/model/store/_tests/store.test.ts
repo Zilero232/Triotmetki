@@ -2,9 +2,10 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import stateSample from '@/shared/api/protocol/_tests/fixtures/state.sample.json?raw';
 
-import { CONTEXT_FILTER, SECTION, SECTION_NAV } from '../../../config';
+import { SECTION, SECTION_NAV } from '../../../config';
 import {
   $editor,
+  $editorFocus,
   $focusSeq,
   $hits,
   $invalid,
@@ -15,10 +16,9 @@ import {
   closeEditor,
   openEditor,
   openSection,
+  openSetting,
   receiveState,
-  setContextFilter,
-  setQuery,
-  toggleExpanded
+  setQuery
 } from '../store';
 
 const sample = stateSample;
@@ -33,7 +33,7 @@ beforeEach(() => {
   $query.set('');
   $focusSeq.set(0);
   $editor.set(null);
-  $view.set({ section: SECTION_NAV.first, expanded: [], context: CONTEXT_FILTER.all });
+  $view.set({ section: SECTION_NAV.first });
 });
 
 describe(receiveState, () => {
@@ -111,26 +111,13 @@ describe('$hits', () => {
 });
 
 describe(openSection, () => {
-  it('opens a page with its filter cleared and the search closed', () => {
+  it('opens a page with the search closed', () => {
     setQuery('zoom');
-    setContextFilter(CONTEXT_FILTER.hangar);
 
     openSection(SECTION.profiles);
 
     expect($query.get()).toBe('');
-    expect($view.get()).toMatchObject({ section: SECTION.profiles, context: CONTEXT_FILTER.all });
-  });
-});
-
-describe(toggleExpanded, () => {
-  it('opens and closes cards and remembers the open ones across pages', () => {
-    toggleExpanded('minimap');
-    toggleExpanded('damage_log');
-    toggleExpanded('minimap');
-
-    openSection(SECTION.profiles);
-
-    expect($view.get().expanded).toEqual(['damage_log']);
+    expect($view.get()).toMatchObject({ section: SECTION.profiles });
   });
 });
 
@@ -155,5 +142,29 @@ describe(openEditor, () => {
     openSection(SECTION.hud);
 
     expect($editor.get()).toBeNull();
+  });
+});
+
+describe(openSetting, () => {
+  it('opens the editor of a component on one of its settings', () => {
+    openSetting({ componentId: 'minimap', key: 'size' });
+
+    expect([$editor.get(), $editorFocus.get()]).toEqual(['minimap', 'size']);
+  });
+
+  it('forgets the setting when the editor closes', () => {
+    openSetting({ componentId: 'minimap', key: 'size' });
+
+    closeEditor();
+
+    expect($editorFocus.get()).toBeNull();
+  });
+
+  it('forgets the setting when a plain editor opens', () => {
+    openSetting({ componentId: 'minimap', key: 'size' });
+
+    openEditor('crosshair');
+
+    expect($editorFocus.get()).toBeNull();
   });
 });

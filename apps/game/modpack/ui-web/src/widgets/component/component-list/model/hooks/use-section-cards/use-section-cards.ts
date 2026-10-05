@@ -8,7 +8,7 @@ import { splitColumns } from '../../../lib/columns';
 
 export const useSectionCards = ({ section, columns }: UseSectionCardsInput) => {
   const components = useStore($components);
-  const shown = componentsOf({ components, section, context: 'all' });
+  const shown = componentsOf({ components, section });
 
   return {
     empty: shown.length === 0,

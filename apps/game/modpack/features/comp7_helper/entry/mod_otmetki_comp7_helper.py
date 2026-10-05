@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.comp7_helper import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register comp7_helper\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register comp7_helper\n') + traceback.format_exc())

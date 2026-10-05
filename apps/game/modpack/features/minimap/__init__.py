@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'minimap'
 PACKAGE_ID = 'net.triotmetki.minimap'
 PACKAGE_NAME = 'Three Marks: minimap'
-VERSION = '0.2.1'
+VERSION = '0.2.2'
 
 
 def create(app):

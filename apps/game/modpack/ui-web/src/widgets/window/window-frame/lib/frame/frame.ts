@@ -34,7 +34,16 @@ export const boundsOf = ({ screen, view }: BoundsInput): Bounds => {
   return span.width > 0 && span.height > 0 ? bounds : { left: 0, top: 0, right: screen.width, bottom: screen.height };
 };
 
-export const clampFrame = ({ frame, bounds }: ClampFrameInput): Frame => {
+const insetOf = (bounds: Bounds): Bounds => {
+  const span = spanOf(bounds);
+  const x = span.width > WINDOW_FRAME.margin * 2 ? WINDOW_FRAME.margin : 0;
+  const y = span.height > WINDOW_FRAME.margin * 2 ? WINDOW_FRAME.margin : 0;
+
+  return { left: bounds.left + x, top: bounds.top + y, right: bounds.right - x, bottom: bounds.bottom - y };
+};
+
+export const clampFrame = ({ frame, bounds: outer }: ClampFrameInput): Frame => {
+  const bounds = insetOf(outer);
   const span = spanOf(bounds);
   const width = clamp(frame.width, { min: Math.min(WINDOW_FRAME.minSize.width, span.width), max: span.width });
   const height = clamp(frame.height, { min: Math.min(WINDOW_FRAME.minSize.height, span.height), max: span.height });
@@ -49,9 +58,7 @@ export const clampFrame = ({ frame, bounds }: ClampFrameInput): Frame => {
 
 export const centredFrame = ({ bounds, size = WINDOW_FRAME.defaultSize }: CentredFrameInput): Frame => {
   const span = spanOf(bounds);
-  const width = Math.min(size.width, span.width - WINDOW_FRAME.margin * 2);
-  const height = Math.min(size.height, span.height - WINDOW_FRAME.margin * 2);
-  const frame = clampFrame({ frame: { x: bounds.left, y: bounds.top, width, height }, bounds });
+  const frame = clampFrame({ frame: { x: bounds.left, y: bounds.top, width: size.width, height: size.height }, bounds });
 
   return { ...frame, x: bounds.left + Math.round((span.width - frame.width) / 2), y: bounds.top + Math.round((span.height - frame.height) / 2) };
 };
@@ -71,8 +78,9 @@ export const moveFrame = ({ frame, dx, dy, bounds }: MoveFrameInput): Frame =>
   clampFrame({ frame: { ...frame, x: frame.x + dx, y: frame.y + dy }, bounds });
 
 export const resizeFrame = ({ frame, dx, dy, edge, bounds }: ResizeFrameInput): Frame => {
-  const width = edge === 'bottom' ? frame.width : Math.min(frame.width + dx, bounds.right - frame.x);
-  const height = edge === 'right' ? frame.height : Math.min(frame.height + dy, bounds.bottom - frame.y);
+  const room = insetOf(bounds);
+  const width = edge === 'bottom' ? frame.width : Math.min(frame.width + dx, room.right - frame.x);
+  const height = edge === 'right' ? frame.height : Math.min(frame.height + dy, room.bottom - frame.y);
 
   return clampFrame({ frame: { ...frame, width, height }, bounds });
 };

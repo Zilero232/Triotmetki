@@ -1,4 +1,4 @@
-import { useWheelScroll } from '@/shared/lib/use-wheel-scroll';
+import { ScrollArea } from '@/ui-kit';
 
 import type { ReplayDetailsProps } from './ReplayDetails.types';
 
@@ -6,13 +6,11 @@ import { ConfirmBox, DetailsFile, DetailsHero, DetailsStats, DetailsVehicle, Ren
 
 import s from './ReplayDetails.module.scss';
 
-export const ReplayDetails = ({ item, browser }: ReplayDetailsProps) => {
-  const scrollRef = useWheelScroll();
-
-  return (
-    <aside aria-label={item.title} className={s.details}>
+export const ReplayDetails = ({ item, browser }: ReplayDetailsProps) => (
+  <aside aria-label={item.title} className={s.details}>
+    <ScrollArea contain key={item.id}>
       <DetailsHero item={item} />
-      <div ref={scrollRef} className={s.scroll}>
+      <div className={s.body}>
         <DetailsVehicle item={item} />
         <DetailsStats item={item} />
         <div className={s.actions}>
@@ -24,6 +22,6 @@ export const ReplayDetails = ({ item, browser }: ReplayDetailsProps) => {
         </div>
         <DetailsFile item={item} />
       </div>
-    </aside>
-  );
-};
+    </ScrollArea>
+  </aside>
+);

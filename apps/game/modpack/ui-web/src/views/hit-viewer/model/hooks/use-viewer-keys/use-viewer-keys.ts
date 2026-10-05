@@ -3,19 +3,20 @@ import { useWindowEvent } from '@siberiacancode/reactuse';
 import type { UseViewerKeysInput } from './use-viewer-keys.types';
 
 import { HIT_VIEWER } from '../../../config';
+import { stepOfKey } from '../../../lib/hit-step';
 
 export const useViewerKeys = ({ onStep, onSwitchTab }: UseViewerKeysInput) => {
   useWindowEvent('keydown', (event) => {
-    const { keys } = HIT_VIEWER;
+    const step = stepOfKey(event.key);
 
-    if (event.key === keys.previous || event.key === keys.next) {
+    if (step !== null) {
       event.preventDefault();
-      onStep(event.key === keys.next ? 1 : -1);
+      onStep(step);
 
       return;
     }
 
-    if (event.key === keys.tab) {
+    if (event.key === HIT_VIEWER.keys.tab) {
       event.preventDefault();
       onSwitchTab();
     }

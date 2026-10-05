@@ -74,6 +74,7 @@
   @include ellipsis;
 
   max-width: 96px;
+  flex-shrink: 0;
   color: token(hud-text);
 }
 
@@ -97,7 +98,8 @@
   @include hud-type(caption);
   @include ellipsis;
 
-  max-width: 120px;
+  min-width: 0;
+  flex: 0 1 auto;
   margin-left: 8px;
   color: token(hud-muted);
 }

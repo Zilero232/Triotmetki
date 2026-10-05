@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'battle_loadout'
 PACKAGE_ID = 'net.triotmetki.battle_loadout'
 PACKAGE_NAME = 'Three Marks: battle loadout'
-VERSION = '0.7.1'
+VERSION = '0.7.2'
 
 
 def create(app):

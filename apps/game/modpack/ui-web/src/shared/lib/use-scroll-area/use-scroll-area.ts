@@ -11,12 +11,15 @@ import { bindWheelScroll, thumbOf } from '@/shared/lib/wheel-scroll';
 
 import type { UseScrollAreaInput } from './use-scroll-area.types';
 
-export const useScrollArea = ({ initialTop = 0, onScrollEnd }: UseScrollAreaInput = {}) => {
+export const useScrollArea = ({ initialTop = 0, contain = false, onScrollEnd, onMetrics }: UseScrollAreaInput = {}) => {
   const viewportRef = useRef<HTMLDivElement>(null);
   const scrollEndRef = useRef(onScrollEnd);
+  const metricsRef = useRef(onMetrics);
+  const lastRef = useRef<ScrollMetrics>(SCROLL_AREA.emptyMetrics);
   const [metrics, setMetrics] = useState<ScrollMetrics>(SCROLL_AREA.emptyMetrics);
 
   scrollEndRef.current = onScrollEnd;
+  metricsRef.current = onMetrics;
 
   const measureRef = useRef(() => {
     const element = viewportRef.current;
@@ -24,7 +27,11 @@ export const useScrollArea = ({ initialTop = 0, onScrollEnd }: UseScrollAreaInpu
     if (element) {
       const next = scrollMetricsOf(element);
 
-      setMetrics((current) => (isDeepEqual(current, next) ? current : next));
+      if (!isDeepEqual(lastRef.current, next)) {
+        lastRef.current = next;
+        setMetrics(next);
+        metricsRef.current?.(next);
+      }
     }
   });
 
@@ -55,7 +62,7 @@ export const useScrollArea = ({ initialTop = 0, onScrollEnd }: UseScrollAreaInpu
     };
 
     const listener = (): void => scrolledRef.current();
-    const unbindWheel = bindWheelScroll({ element, onScrolled: listener });
+    const unbindWheel = bindWheelScroll({ element, onScrolled: listener, contain });
 
     element.addEventListener('scroll', listener);
 
@@ -64,7 +71,7 @@ export const useScrollArea = ({ initialTop = 0, onScrollEnd }: UseScrollAreaInpu
       unbindWheel();
       element.removeEventListener('scroll', listener);
     };
-  }, [initialTop]);
+  }, [initialTop, contain]);
 
   return {
     viewportRef,

@@ -5,6 +5,7 @@ from ....core.client.game import values_by_name
 from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.native import ClientDefaults, NativeSettingsComponent, section_is_new
 from ....core.client.timer import Ticker
+from ....core.compat import is_int
 from ....core.shells import shell_code
 from ..i18n import STRINGS
 from ..model import mark_offset, mark_text, shows_in, to_native
@@ -47,10 +48,13 @@ def own_max_health():
 
 # RU 1.45 ammo_ctrl: the gun settings' clip (size, interval), getCurrentShells() (quantity, quantity in clip) and the
 # current shell's descriptor (`kind` of common/constants SHELL_TYPES, `isGold` for premium and improved shells).
+# getCurrentShellCD() is None until the client sets the shells, and GunSettings.getShellDescriptor looks a shell it
+# does not hold up with items.vehicles.getItemByCompactDescr, which logs an exception for None: asked only for a shell.
 def own_clip():
     settings = call(ammo(), 'getGunSettings')
     shells = call(ammo(), 'getCurrentShells', (None, None))
-    shell = call(settings, 'getShellDescriptor', None, call(ammo(), 'getCurrentShellCD'))
+    shell_cd = call(ammo(), 'getCurrentShellCD')
+    shell = call(settings, 'getShellDescriptor', None, shell_cd) if is_int(shell_cd) and shell_cd > 0 else None
     size = getattr(getattr(settings, 'clip', None), 'size', None)
     return size, shells[1], shell_code(getattr(shell, 'kind', None)), bool(getattr(shell, 'isGold', False))
 

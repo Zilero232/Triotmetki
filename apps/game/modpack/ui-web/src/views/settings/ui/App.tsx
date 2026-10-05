@@ -28,7 +28,14 @@ export const App = () => {
       <div className={s.body}>
         <Sidebar compact={app.compact} />
         <main className={s.content}>
-          <Content columns={app.columns} editing={app.editing} searching={app.searching} section={app.section} state={app.state} />
+          <Content
+            columns={app.columns}
+            compact={app.compact}
+            editing={app.editing}
+            searching={app.searching}
+            section={app.section}
+            state={app.state}
+          />
         </main>
       </div>
       <UndoToast />

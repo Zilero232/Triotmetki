@@ -1,6 +1,7 @@
 export {
   $components,
   $editor,
+  $editorFocus,
   $hits,
   $invalid,
   $query,
@@ -11,10 +12,9 @@ export {
   closeEditor,
   openEditor,
   openSection,
+  openSetting,
   receiveState,
-  setContextFilter,
-  setQuery,
-  toggleExpanded
+  setQuery
 } from './store';
 
-export type { ContextFilter, Section, UndoEntry, UndoKind, View } from './store.types';
+export type { Section, UndoEntry } from './store.types';

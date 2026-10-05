@@ -5,7 +5,7 @@ import sys
 import types
 import unittest
 
-import _support  # noqa: F401
+import _support
 
 STUBBED = ('BigWorld', 'gui', 'gui.battle_control', 'gui.battle_control.battle_constants', 'gui.Scaleform',
            'gui.Scaleform.daapi', 'gui.Scaleform.daapi.view', 'gui.Scaleform.daapi.view.battle',
@@ -99,8 +99,7 @@ def restore_stubs(saved):
             sys.modules.pop(name, None)
         else:
             sys.modules[name] = module
-    for name in [name for name in sys.modules if name.startswith('otmetki.core.client.battle')]:
-        del sys.modules[name]
+    _support.forget_modules('otmetki.core.client.battle')
 
 
 class BattleFieldFeedTest(unittest.TestCase):

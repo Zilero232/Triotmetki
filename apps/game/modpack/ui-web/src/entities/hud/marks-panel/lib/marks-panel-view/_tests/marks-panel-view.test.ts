@@ -94,12 +94,6 @@ describe(marksPanelView, () => {
     expect(view.average).toEqual({ label: 'среднее', from: '2 540', to: '2 551', direction: 'up' });
   });
 
-  it('writes the battles to the next mark', () => {
-    const view = marksPanelView(data);
-
-    expect(view.battles).toEqual({ label: 'до 95 %', value: '~45 боёв' });
-  });
-
   it('writes a dash for an unknown percent', () => {
     const view = marksPanelView({ ...data, percent: null, mark: null });
 

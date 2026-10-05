@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.ui import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register ui\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register ui\n') + traceback.format_exc())

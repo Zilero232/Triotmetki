@@ -72,7 +72,43 @@ describe(editorRow, () => {
   it('keeps any other field as a plain control', () => {
     const row = editorRow({ field: size, editor });
 
-    expect(row).toEqual({ field: size, kind: 'control', options: [] });
+    expect(row).toEqual({ field: size, kind: 'control', stacked: false, options: [], optionRows: [] });
+  });
+});
+
+describe('editorRow layout', () => {
+  const choice = (labels: string[]): UiField => ({
+    key: 'pick',
+    label: 'Pick',
+    hint: null,
+    type: 'choice',
+    value: labels[0] ?? '',
+    default: labels[0] ?? '',
+    choices: labels.map((label) => ({ value: label, label }))
+  });
+
+  it('keeps a choice that fits one row as chips', () => {
+    expect(editorRow({ field: choice(['On', 'Off']), editor }).kind).toBe('chips');
+  });
+
+  it('turns a choice that would wrap into a drop-down', () => {
+    expect(editorRow({ field: choice(['Как в игре', '0', '1', '2', '3', '4', '5']), editor }).kind).toBe('select');
+  });
+
+  it('stacks a text field under its label so the input takes the full width', () => {
+    const text: UiField = { key: 'text', label: 'Text', hint: null, type: 'text', value: '', default: '', max_length: 120 };
+
+    expect(editorRow({ field: text, editor })).toMatchObject({ kind: 'text', stacked: true });
+  });
+
+  it('lays a gallery out in rows that fit the column', () => {
+    const many: UiField = { ...mark, choices: Array.from({ length: 12 }, (_, index) => ({ value: String(index), label: String(index) })) };
+
+    expect(editorRow({ field: many, editor }).optionRows.map((row) => row.length)).toEqual([5, 5, 2]);
+  });
+
+  it('keeps a few swatches inline next to the label', () => {
+    expect(editorRow({ field: color, editor }).stacked).toBe(false);
   });
 });
 

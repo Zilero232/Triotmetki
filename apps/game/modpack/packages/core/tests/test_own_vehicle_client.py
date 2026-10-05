@@ -6,7 +6,7 @@ import sys
 import types
 import unittest
 
-import _support  # noqa: F401
+import _support
 
 CLIENT_PREFIX = 'otmetki.core.client'
 STUBBED = ('BigWorld', 'Vehicle')
@@ -53,8 +53,7 @@ def load_own_vehicle(vehicle):
     try:
         return importlib.import_module('otmetki.core.client.battle')
     finally:
-        for name in [name for name in sys.modules if name.startswith(CLIENT_PREFIX)]:
-            del sys.modules[name]
+        _support.forget_modules(CLIENT_PREFIX)
 
 
 def restore(saved):

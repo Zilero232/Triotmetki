@@ -4,37 +4,64 @@
   position: absolute;
   display: flex;
   overflow: hidden;
-  flex-direction: column;
-  padding: 2px 4px;
-  border: 1px solid token(color-text-dim);
-  background-color: token(shade-35);
+  box-sizing: border-box;
+  flex-direction: row;
+  padding: 0;
+  border: 1px solid token(hud-tick);
+  border-radius: token(radius-xs);
+  margin: 0;
+  background-color: token(shine-8);
   cursor: move;
   font-family: $font-family;
   text-align: left;
+
+  @include ease(border-color, background-color);
 }
 
-.panelOn {
+.fitLabel {
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 1px 4px 0;
+}
+
+.fitCentre {
+  align-items: center;
+  justify-content: center;
+}
+
+.panelActive {
   border-color: token(color-accent);
+  background-color: token(color-accent-soft);
 }
 
 .panelOff {
-  opacity: 0.45;
+  border-color: token(hud-rule);
+  background-color: token(shade-20);
 }
 
-.panelTitle {
-  color: token(color-accent);
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
+.panelOffActive {
+  border-color: token(color-accent);
 }
 
-.panelSample {
-  min-height: 0;
+.icon {
+  flex: 0 0 auto;
+}
+
+.label {
+  min-width: 0;
   flex: 1 1 auto;
+  margin-left: 4px;
+  color: token(hud-text);
+  font-size: 11px;
+  line-height: 14px;
+
+  @include ellipsis;
 }
 
-.panelOffNote {
+.labelActive {
   color: token(color-text);
-  font-size: 9px;
-  white-space: nowrap;
+}
+
+.labelOff {
+  color: token(color-text-dim);
 }

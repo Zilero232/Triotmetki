@@ -44,7 +44,7 @@ export const useApp = () => {
     reportOnce({ kind: 'engine', text: engineReport() });
   }, []);
 
-  const editing = state?.components.find(({ id, editor }) => id === editorId && editor) ?? null;
+  const editing = state?.components.find(({ id }) => id === editorId) ?? null;
   const placeholderKey: StringKey = invalid ? 'invalidState' : 'loading';
 
   return {

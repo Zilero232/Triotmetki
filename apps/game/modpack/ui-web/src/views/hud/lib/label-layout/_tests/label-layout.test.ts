@@ -108,4 +108,62 @@ describe(layoutLabels, () => {
 
     expect(layout?.drawn).toBe(false);
   });
+
+  describe('a docked column beside the panels that follow stock elements', () => {
+    const SMALL = { width: 1366, height: 768 };
+    const log = panel({
+      id: 'otmetki.hud.damage_log',
+      x: 232,
+      y: -6,
+      align_x: 'left',
+      align_y: 'bottom',
+      dock: { group: 'battle_left_bottom', order: 0, reserve: 560 }
+    });
+
+    const equipment = (overrides: Partial<HudPanel> = {}) =>
+      panel({ id: 'otmetki.hud.battle_loadout', align_y: 'bottom', attach: { kind: 'bar_left', bar: 399, minimap: 310 }, ...overrides });
+
+    const logTop = (shown: HudPanel[], moved: Partial<Record<string, { x: number; y: number; align_x: 'left'; align_y: 'top' }>> = {}) =>
+      layoutLabels({
+        panels: shown,
+        sizes: {
+          'otmetki.hud.damage_log': { lines: 6, width: 363, height: 145 },
+          'otmetki.hud.battle_loadout': { lines: 1, width: 298, height: 55 }
+        },
+        scales: {},
+        overrides: moved,
+        screen: SMALL,
+        live: null,
+        edit: false,
+        widgets: new Map()
+      }).find((layout) => layout.id === 'otmetki.hud.damage_log')?.rect.top;
+
+    it('lifts the damage log over the equipment row on a small screen', () => {
+      const equipmentTop = 768 - HUD_OVERLAY.attach.bar.height - HUD_OVERLAY.attach.bar.above - 55;
+
+      expect(logTop([log, equipment()])).toBe(equipmentTop - HUD_OVERLAY.dock.gap - 145);
+    });
+
+    it('lifts the damage log over the consumables panel while the equipment row is hidden', () => {
+      expect(logTop([log, equipment({ visible: false })])).toBe(768 - HUD_OVERLAY.attach.bar.height - HUD_OVERLAY.dock.gap - 145);
+    });
+
+    it('leaves the damage log at its anchor on a full HD screen', () => {
+      const [layout] = layoutLabels({
+        panels: [log, equipment()],
+        sizes: {
+          'otmetki.hud.damage_log': { lines: 6, width: 363, height: 145 },
+          'otmetki.hud.battle_loadout': { lines: 1, width: 298, height: 55 }
+        },
+        scales: {},
+        overrides: {},
+        screen: SCREEN,
+        live: null,
+        edit: false,
+        widgets: new Map()
+      });
+
+      expect(layout?.rect.top).toBe(1080 - 6 - 145);
+    });
+  });
 });

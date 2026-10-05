@@ -5,7 +5,7 @@ from ....core.client.hud.icons import client_file_exists
 from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.log import log, safe
 from ..i18n import STRINGS
-from ..model import format_panel, installed, loadout_summary, slot_items
+from ..model import format_panel, loadout_summary, slot_items
 from ..model.constants import PREVIEW_SIZE
 from ..model.preview import preview_text, preview_widget
 from ..model.widget import equipment_widget
@@ -58,14 +58,14 @@ class BattleLoadoutPanel(BattlePanel):
         if vehicle_id == getattr(player(), 'playerVehicleID', None):
             self._on_loadout()
 
-    # A read that finds nothing while the row already shows the own tank's slots (the arena entry or the setups being
-    # rebuilt) keeps the last row: the row never blinks or changes width for a transient read.
+    # A read that finds nothing while the row already shows the own tank's devices (the arena entry or the setups being
+    # rebuilt) keeps the last row: the row never blinks for a transient read.
     def _on_loadout(self, *args):
         loadout = own_loadout()
         items = slot_items(loadout['devices'], loadout['directives'])
-        if installed(items) or not installed(self.devices):
+        if items or not self.devices:
             self._update(items)
-        self.wait(None if installed(self.devices) else loadout['reason'])
+        self.wait(None if self.devices else loadout['reason'])
         self._report(loadout, items)
 
     def _update(self, items):
@@ -81,7 +81,7 @@ class BattleLoadoutPanel(BattlePanel):
 
     @safe
     def render(self):
-        if not installed(self.devices):
+        if not self.devices:
             self.hide()
             return
 

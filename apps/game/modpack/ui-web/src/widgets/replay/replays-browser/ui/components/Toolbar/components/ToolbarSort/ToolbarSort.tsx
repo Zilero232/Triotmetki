@@ -1,11 +1,11 @@
 import { useTooltip } from '@/shared/lib/use-tooltip';
+import { Icon } from '@/ui-kit';
 
 import type { ToolbarProps } from '../../Toolbar.types';
 
 import { sortOptions } from '../../../../../lib/filter-options';
 import { useReplaysT } from '../../../../../model/hooks';
 import { Dropdown } from '../../../Dropdown';
-import { ReplayIcon } from '../../../ReplayIcon';
 
 import s from './ToolbarSort.module.scss';
 
@@ -19,7 +19,7 @@ export const ToolbarSort = ({ browser }: ToolbarProps) => {
     <div className={s.sort}>
       <Dropdown label={t('sortBy')} options={sortOptions(t)} value={sort} onSelect={browser.sortBy} />
       <button aria-label={directionLabel} className={s.direction} type='button' onClick={() => browser.sortBy(sort)} {...directionTip}>
-        <ReplayIcon name={descending ? 'arrowDown' : 'arrowUp'} size={14} />
+        <Icon name={descending ? 'arrow-down' : 'arrow-up'} size={14} tone='text' />
       </button>
     </div>
   );

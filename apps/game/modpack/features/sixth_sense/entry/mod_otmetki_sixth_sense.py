@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.sixth_sense import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register sixth_sense\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register sixth_sense\n') + traceback.format_exc())

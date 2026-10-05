@@ -55,7 +55,7 @@ export const wheelDelta = (event: WheelDelta): number => {
 
 const stepPx = (): number => SCROLL_AREA.step * (gameface.remScale() ?? rootScale());
 
-export const bindWheelScroll = ({ element, onScrolled }: BindWheelScrollInput): (() => void) => {
+export const bindWheelScroll = ({ element, onScrolled, contain = false }: BindWheelScrollInput): (() => void) => {
   const glide = createSmoothScroll({ element, onFrame: onScrolled });
 
   const listener = (event: WheelEvent): void => {
@@ -66,7 +66,7 @@ export const bindWheelScroll = ({ element, onScrolled }: BindWheelScrollInput): 
 
     const moved = glide.scrollTo(next);
 
-    if (moved) {
+    if (moved || contain) {
       event.stopPropagation();
     }
 

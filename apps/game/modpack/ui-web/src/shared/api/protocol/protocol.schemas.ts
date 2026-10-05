@@ -49,7 +49,7 @@ export const actionSchema = z.object({
   input: optionalText
 });
 
-export const detailSchema = z.object({ label: text, value: text });
+const detailSchema = z.object({ label: text, value: text });
 
 export const figureSchema = z.object({
   shapes: z.array(z.object({ x: z.number(), y: z.number(), w: z.number(), h: z.number() })),

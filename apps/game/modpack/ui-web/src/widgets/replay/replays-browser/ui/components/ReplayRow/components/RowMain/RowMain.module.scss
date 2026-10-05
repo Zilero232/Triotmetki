@@ -34,8 +34,16 @@
 
 .meta {
   margin-top: 4px;
-  color: token(color-text-muted);
+  color: token(win-text-label);
   font-size: 12px;
+
+  @include ellipsis;
+}
+
+.date {
+  margin-top: 2px;
+  color: token(win-text-label);
+  font-size: 11px;
 
   @include ellipsis;
 }

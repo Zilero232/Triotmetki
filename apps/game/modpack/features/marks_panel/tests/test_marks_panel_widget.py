@@ -89,7 +89,6 @@ class CompactTest(unittest.TestCase):
         assert data['thresholds'] == []
         assert data['step'] is None
         assert data['average'] is None
-        assert data['battles'] is None
 
     def test_alt_adds_the_detail_rows(self):
         data = widget_data({'style': 'compact'}, held=True)
@@ -127,17 +126,14 @@ class ExtendedTest(unittest.TestCase):
 
         assert average == {'label': u'среднее', 'ema': 2540, 'ema_projected': 2551}
 
-    def test_counts_the_battles_to_the_next_mark(self):
-        battles = widget_data({'style': 'extended'})['battles']
-
-        assert battles == {'level': 95, 'text': u'~45 боёв'}
+    def test_leaves_the_battles_to_the_next_mark_to_the_tank_card(self):
+        assert 'battles' not in widget_data({'style': 'extended'}, held=True)
 
     def test_switches_hide_the_rows(self):
-        data = widget_data({'style': 'extended', 'show_targets': False, 'show_step': False, 'show_battles': False})
+        data = widget_data({'style': 'extended', 'show_targets': False, 'show_step': False})
 
         assert data['thresholds'] == []
         assert data['step'] is None
-        assert data['battles'] is None
 
 
 class CustomTest(unittest.TestCase):
@@ -218,28 +214,14 @@ class EmptyTest(unittest.TestCase):
 
 class LookTest(unittest.TestCase):
 
-    def test_the_default_plate_is_the_box(self):
-        assert widget_data({})['look'] == 'box'
+    def test_the_battle_plate_draws_no_tank_silhouette(self):
+        assert 'silhouette' not in widget_data({})
 
-    def test_the_silhouette_style_draws_the_own_class(self):
-        view = PanelView(Settings({'style': 'silhouette'}, SCHEMA))
-        data = marks_widget(preview_state(view), view, translator(), 'heavyTank')['data']
-
-        assert (data['look'], data['silhouette']) == ('silhouette', 'heavy')
-
-    def test_an_unknown_class_draws_the_medium_silhouette(self):
-        view = PanelView(Settings({'style': 'silhouette'}, SCHEMA))
-
-        assert marks_widget(preview_state(view), view, translator(), None)['data']['silhouette'] == 'medium'
-
-    def test_the_box_sends_no_silhouette(self):
-        assert widget_data({})['silhouette'] is None
+    def test_a_stored_silhouette_style_falls_back_to_compact(self):
+        assert Settings({'style': 'silhouette'}, SCHEMA).get('style') == 'compact'
 
     def test_the_index_lights_the_marks_on_the_gun(self):
         assert widget_data({})['stars'] == 2
-
-    def test_the_next_mark_is_the_scale_cursor_target(self):
-        assert widget_data({})['next']['level'] == 95
 
     def test_the_damage_row_compares_the_battle_with_the_average(self):
         assert widget_data({})['damage'] == {'label': u'урон', 'value': 3100, 'target': 2540}

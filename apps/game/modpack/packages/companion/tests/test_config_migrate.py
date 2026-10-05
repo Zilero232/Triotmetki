@@ -12,6 +12,8 @@ from otmetki.companion.config.constants import (
     MERGED_SECTIONS,
     MIGRATION_REVISION,
     RETIRED_VALUES,
+    SPLIT_KEYS,
+    SPLIT_REVISION,
 )
 from otmetki.companion.config.migrate import migrated
 
@@ -28,6 +30,17 @@ def stored(**switches):
 
 def migrate(config, components=None):
     return migrated(config, components or {}, schema_defaults)
+
+
+def before_split(**switches):
+    return dict(switches, defaults_revision=SPLIT_REVISION - 1)
+
+
+def split_place(section, key):
+    for (old_section, old_key), (new_section, new_key) in SPLIT_KEYS:
+        if (old_section, old_key) == (section, key):
+            return new_section, new_key
+    return section, key
 
 
 class MergedSwitchesTest(unittest.TestCase):
@@ -101,7 +114,8 @@ class SectionsTest(unittest.TestCase):
 
             _, components = migrate(stored(), {old_section: {old_key: changed}})
 
-            self.assertEqual(components[new_section][new_key], changed)
+            section, key = split_place(new_section, new_key)
+            self.assertEqual(components[section][key], changed)
 
     def test_a_moved_value_left_at_its_default_is_not_copied(self):
         for (old_section, old_key, old_default), (new_section, new_key) in MERGED_SECTIONS:
@@ -257,6 +271,121 @@ class SwitchedPartsTest(unittest.TestCase):
         _, components = migrate(stored(battle_main_gun=False))
 
         self.assertNotIn('battle_progress', components)
+
+
+class MarksSplitTest(unittest.TestCase):
+
+    def test_both_marks_parts_stay_on_for_a_player_who_had_them_on(self):
+        config, _ = migrate(before_split(battle_moe_panel=True), {'marks_panel': {'style': 'compact'}})
+
+        self.assertEqual((config['battle_moe_panel'], config['hangar_tank_card']), (True, True))
+
+    def test_the_battle_panel_switched_off_inside_the_marks_stays_off(self):
+        config, _ = migrate(before_split(battle_moe_panel=True), {'marks_panel': {'show_battle_panel': False}})
+
+        self.assertFalse(config['battle_moe_panel'])
+
+    def test_the_card_stays_on_when_only_the_battle_panel_was_off(self):
+        config, _ = migrate(before_split(battle_moe_panel=True), {'marks_panel': {'show_battle_panel': False}})
+
+        self.assertTrue(config['hangar_tank_card'])
+
+    def test_the_card_switched_off_inside_the_marks_stays_off(self):
+        config, _ = migrate(before_split(battle_moe_panel=True), {'marks_panel': {'hangar_card': False}})
+
+        self.assertFalse(config['hangar_tank_card'])
+
+    def test_the_marks_switched_off_keep_both_parts_off(self):
+        config, _ = migrate(before_split(battle_moe_panel=False))
+
+        self.assertEqual((config['battle_moe_panel'], config['hangar_tank_card']), (False, False))
+
+    def test_a_part_left_off_is_recorded_as_the_players_choice(self):
+        config, _ = migrate(before_split(battle_moe_panel=True), {'marks_panel': {'hangar_card': False}})
+
+        self.assertIn('hangar_tank_card', user_set_tokens(config['user_set']))
+
+    def test_a_part_left_on_is_not_recorded(self):
+        config, _ = migrate(before_split(battle_moe_panel=True))
+
+        self.assertNotIn('hangar_tank_card', user_set_tokens(config['user_set']))
+
+    def test_the_card_options_move_to_the_card_section(self):
+        stored_marks = {
+            'hangar_style': 'extended',
+            'show_trend': False,
+            'trend_battles': 12,
+            'show_tank_ratings': False,
+            'show_mastery': False,
+            'show_research': False,
+            'carousel_percent': True,
+        }
+
+        _, components = migrate(before_split(), {'marks_panel': stored_marks, 'hangar_marks': {'x': 40}})
+
+        self.assertEqual(components['hangar_marks'], {
+            'x': 40,
+            'style': 'extended',
+            'show_trend': False,
+            'trend_battles': 12,
+            'show_tank_ratings': False,
+            'show_mastery': False,
+            'show_research': False,
+            'carousel_percent': True,
+        })
+
+    def test_the_alt_detail_stays_with_the_battle_panel_and_joins_the_card(self):
+        _, components = migrate(before_split(), {'marks_panel': {'alt_detail': False}})
+
+        alt_details = (components['marks_panel']['alt_detail'], components['hangar_marks']['alt_detail'])
+        self.assertEqual(alt_details, (False, False))
+
+    def test_the_battle_panel_keeps_only_its_own_options(self):
+        stored_marks = {
+            'style': 'extended',
+            'color_mode': 'mark',
+            'show_battle_panel': True,
+            'hangar_card': True,
+            'hangar_style': 'compact',
+            'show_trend': True,
+            'trend_battles': 5,
+            'show_tank_ratings': True,
+            'show_mastery': True,
+            'show_research': True,
+            'carousel_percent': False,
+            'show_battles': True,
+        }
+
+        _, components = migrate(before_split(), {'marks_panel': stored_marks})
+
+        self.assertEqual(components['marks_panel'], {'style': 'extended', 'color_mode': 'mark'})
+
+    def test_a_card_option_the_file_does_not_hold_stays_at_the_card_default(self):
+        _, components = migrate(before_split(), {'marks_panel': {'show_trend': False}, 'hangar_marks': {'style': 'x'}})
+
+        self.assertNotIn('style', components['hangar_marks'])
+
+    def test_no_card_section_is_written_without_card_options(self):
+        _, components = migrate(before_split(), {'damage_log': {'x': 1}})
+
+        self.assertNotIn('hangar_marks', components)
+
+    def test_an_older_file_carries_the_hangar_marks_style_to_the_card(self):
+        _, components = migrate(stored(hangar_marks=True), {'hangar_marks': {'style': 'compact', 'x': 16}})
+
+        self.assertEqual(components['hangar_marks'], {'style': 'compact', 'x': 16})
+
+    def test_an_older_file_switched_off_the_marks_panel_but_kept_the_card(self):
+        config, _ = migrate(stored(battle_moe_panel=False, hangar_marks=True))
+
+        self.assertEqual((config['battle_moe_panel'], config['hangar_tank_card']), (False, True))
+
+    def test_a_file_at_the_revision_keeps_both_switches(self):
+        config = {'defaults_revision': DEFAULTS_REVISION, 'battle_moe_panel': True, 'hangar_tank_card': False}
+
+        migrated_config, _ = migrate(config, {'marks_panel': {'hangar_card': True}})
+
+        self.assertFalse(migrated_config['hangar_tank_card'])
 
 
 class ScopeTest(unittest.TestCase):

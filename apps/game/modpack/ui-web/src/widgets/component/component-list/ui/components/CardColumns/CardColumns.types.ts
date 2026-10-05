@@ -7,9 +7,7 @@ export type ColumnCard = {
   fields?: UiField[];
 };
 
-export type CardProps = ColumnCard & {
-  forceOpen?: boolean;
-};
+export type CardProps = ColumnCard;
 
 export type CardColumn = {
   id: string;
@@ -19,5 +17,4 @@ export type CardColumn = {
 export type CardColumnsProps = {
   columns: CardColumn[];
   card: ComponentType<CardProps>;
-  forceOpen?: boolean;
 };

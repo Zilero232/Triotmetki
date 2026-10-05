@@ -5,15 +5,27 @@ import json
 import os
 
 from ..codec import canonical_json
-from ..compat import to_bytes
-from .constants import PRETTY
+from ..compat import to_bytes, to_text
+from .constants import MOVE_REPLACE_FLAGS, PRETTY
+
+
+# Windows' MoveFileExW replaces in one step, which Python 2.7's os lacks (os.replace is 3.3+); False where it fails.
+def _move_over(src, dst):
+    try:
+        import ctypes
+        return bool(ctypes.windll.kernel32.MoveFileExW(to_text(src), to_text(dst), MOVE_REPLACE_FLAGS))
+    except Exception:
+        return False
 
 
 def replace_file(src, dst):
-    """Move `src` over `dst`, replacing it (os.replace where the Python has it)."""
+    """Move `src` over `dst`, replacing it in one step (os.replace, or MoveFileExW on Python 2.7 for Windows), so a
+    crash in between never leaves `dst` missing; elsewhere a remove and a rename."""
     replace = getattr(os, 'replace', None)
     if replace is not None:
         replace(src, dst)
+        return
+    if _move_over(src, dst):
         return
     if os.path.exists(dst):
         os.remove(dst)

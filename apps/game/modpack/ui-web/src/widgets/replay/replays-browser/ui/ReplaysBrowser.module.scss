@@ -2,10 +2,10 @@
 
 .browser {
   display: flex;
-  height: 600px;
-  min-height: 0;
+  min-height: 420px;
+  flex: 1 0 auto;
   flex-direction: column;
-  margin-top: 16px;
+  margin: 16px 0;
 }
 
 .body {
@@ -13,10 +13,4 @@
   min-height: 0;
   flex: 1 1 auto;
   flex-direction: row;
-}
-
-@media (min-height: 1000px) {
-  .browser {
-    height: 720px;
-  }
 }

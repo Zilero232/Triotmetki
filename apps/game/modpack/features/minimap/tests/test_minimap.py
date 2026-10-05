@@ -7,8 +7,13 @@ import _support  # noqa: F401
 from otmetki.core.native_settings import client_keys, native_choices, setting_names
 from otmetki.core.settings import Settings
 from otmetki.features.minimap.model import ACCOUNT_FIELDS, FIELDS, to_account, to_native
+from otmetki.features.minimap.model.constants import VEHICLE_NAMES
 from otmetki.features.minimap.settings import SCHEMA, SETTINGS
 
+# RU 1.45 account_helpers/settings_core/options.py MinimapVehModelsSetting: VEHICLE_MODELS_TYPES index of 'never', and
+# getDefaultValue (the index of 'always').
+VEHICLE_MODELS_NEVER = 0
+VEHICLE_MODELS_DEFAULT = 2
 FORBIDDEN = re.compile(r'enemy|lost|direction|barrel|gun|tracer|arty|destroy|spot|transparen(?!cy$)', re.I)
 
 
@@ -30,7 +35,7 @@ class MinimapTest(unittest.TestCase):
 
     def test_the_defaults_are_the_recommended_minimap(self):
         assert to_native(Settings(None, SCHEMA).to_dict()) == {
-            'showVehModelsOnMap': 1,
+            'showVehModelsOnMap': 2,
             'minimapViewRange': True,
             'minimapMaxViewRange': True,
             'minimapDrawRange': False,
@@ -82,6 +87,22 @@ class MinimapTest(unittest.TestCase):
 
     def test_an_out_of_range_size_falls_back_to_native(self):
         assert Settings({'size': '9', 'vehicle_names': 'enemies'}, SCHEMA).to_dict()['size'] == 'native'
+
+    def test_the_recommended_extended_features_are_the_games_default(self):
+        assert to_native(Settings(None, SCHEMA).to_dict())[VEHICLE_NAMES] == VEHICLE_MODELS_DEFAULT
+
+    def test_the_component_never_switches_the_extended_features_off(self):
+        for choice in SCHEMA.choices['vehicle_names']:
+            assert to_native(dict(chosen_values(), vehicle_names=choice)).get(VEHICLE_NAMES) != VEHICLE_MODELS_NEVER
+
+    def test_a_stored_never_keeps_the_games_own_value(self):
+        values = Settings(dict(chosen_values(), vehicle_names='never'), SCHEMA).to_dict()
+
+        assert values['vehicle_names'] == 'native'
+        assert VEHICLE_NAMES not in to_native(values)
+
+    def test_the_extended_features_map_to_the_client_indices(self):
+        assert to_native(dict(chosen_values(), vehicle_names='always'))[VEHICLE_NAMES] == 2
 
     def test_only_vanilla_minimap_options_are_written(self):
         expected = ('minimapAlpha', 'minimapDrawRange', 'minimapMaxViewRange', 'minimapViewRange', 'showVehModelsOnMap')

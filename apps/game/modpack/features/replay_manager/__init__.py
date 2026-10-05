@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'replay_manager'
 PACKAGE_ID = 'net.triotmetki.replay_manager'
 PACKAGE_NAME = 'Three Marks: replay manager'
-VERSION = '0.3.4'
+VERSION = '0.3.5'
 
 
 def create(app):

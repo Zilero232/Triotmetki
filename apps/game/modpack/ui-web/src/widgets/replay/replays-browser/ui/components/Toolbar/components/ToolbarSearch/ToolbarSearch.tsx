@@ -1,10 +1,10 @@
 import { useFieldEscape } from '@/shared/lib/use-field-escape';
+import { Icon } from '@/ui-kit';
 
 import type { ToolbarProps } from '../../Toolbar.types';
 
 import { REPLAYS_BROWSER } from '../../../../../config';
 import { useReplaysT } from '../../../../../model/hooks';
-import { ReplayIcon } from '../../../ReplayIcon';
 
 import s from './ToolbarSearch.module.scss';
 
@@ -16,7 +16,7 @@ export const ToolbarSearch = ({ browser }: ToolbarProps) => {
 
   return (
     <div className={s.search}>
-      <ReplayIcon className={s.searchIcon} name='search' size={16} />
+      <Icon className={s.searchIcon} name='search' size={16} />
       <input
         aria-label={t('search')}
         className={s.searchInput}
@@ -29,7 +29,7 @@ export const ToolbarSearch = ({ browser }: ToolbarProps) => {
       />
       {query !== '' && (
         <button aria-label={t('clearSearch')} className={s.clear} type='button' onClick={clearQuery}>
-          <ReplayIcon name='close' size={12} />
+          <Icon name='x' size={12} />
         </button>
       )}
     </div>

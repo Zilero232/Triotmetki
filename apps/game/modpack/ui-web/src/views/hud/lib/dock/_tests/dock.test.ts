@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import type { Rect } from '@/entities/hud/panel-layout';
 import type { HudDock } from '@/shared/api/hud-protocol';
 
 import type { DockItem } from '../dock.types';
@@ -38,7 +39,14 @@ const undocked = ({ id, box, align = 'left' }: { id: string; box: Box; align?: D
   rect: rect(box)
 });
 
-const layout = ({ items, ceiling = 80 }: { items: DockItem[]; ceiling?: number }) => ({ screen: SCREEN, gap: 6, reserve: 190, ceiling, items });
+const layout = ({ items, ceiling = 80, obstacles = [] }: { items: DockItem[]; ceiling?: number; obstacles?: Rect[] }) => ({
+  screen: SCREEN,
+  gap: 6,
+  reserve: 190,
+  ceiling,
+  items,
+  obstacles
+});
 
 const TALL_LEFT_COLUMN = [
   item({ id: 'a', order: 0, box: { left: 16, top: 440, height: 300 } }),
@@ -157,5 +165,43 @@ describe(stackDocks, () => {
 
     expect(placed.get('a')?.top).toBe(548);
     expect(placed.get('b')).toEqual({ left: 274, top: 548, width: 260, height: 120 });
+  });
+
+  it('lifts a bottom column over a panel that follows a stock element', () => {
+    const items = [item({ id: 'log', order: 0, box: { left: 232, top: 618, height: 143, width: 362 }, upward: true })];
+    const equipment = { left: 382, top: 647, width: 292, height: 56 };
+
+    const placed = stackDocks(layout({ items, obstacles: [equipment] }));
+
+    expect(placed.get('log')?.top).toBe(647 - 6 - 143);
+  });
+
+  it('drops a top column below a panel that follows a stock element', () => {
+    const items = [item({ id: 'platoon', order: 0, box: { left: 372, top: 60, height: 76, width: 248 } })];
+    const progress = { left: 559, top: 52, width: 248, height: 71 };
+
+    const placed = stackDocks(layout({ items, obstacles: [progress] }));
+
+    expect(placed.get('platoon')?.top).toBe(52 + 71 + 6);
+  });
+
+  it('keeps a column where it is when nothing is in its way', () => {
+    const items = [item({ id: 'log', order: 0, box: { left: 232, top: 930, height: 143, width: 362 }, upward: true })];
+
+    const placed = stackDocks(layout({ items, obstacles: [{ left: 760, top: 1022, width: 399, height: 58 }] }));
+
+    expect(placed.get('log')?.top).toBe(930);
+  });
+
+  it('steps past every obstacle in its way', () => {
+    const items = [item({ id: 'log', order: 0, box: { left: 232, top: 618, height: 143, width: 362 }, upward: true })];
+    const obstacles = [
+      { left: 483, top: 710, width: 400, height: 58 },
+      { left: 382, top: 600, width: 292, height: 56 }
+    ];
+
+    const placed = stackDocks(layout({ items, obstacles }));
+
+    expect(placed.get('log')?.top).toBe(600 - 6 - 143);
   });
 });

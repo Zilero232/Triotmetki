@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.gun_arc import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register gun_arc\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register gun_arc\n') + traceback.format_exc())

@@ -1,3 +1,3 @@
 export { stickySize, wheelScale } from './panel-size';
 
-export type { Measured, StickyInput, WheelScaleInput } from './panel-size.types';
+export type { Measured } from './panel-size.types';

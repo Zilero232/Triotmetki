@@ -33,8 +33,7 @@ def load_native_component():
             sys.modules.pop('BigWorld', None)
         else:
             sys.modules['BigWorld'] = saved
-        for name in [name for name in sys.modules if name.startswith(CLIENT_PREFIX)]:
-            del sys.modules[name]
+        _support.forget_modules(CLIENT_PREFIX)
 
 
 class Config(object):

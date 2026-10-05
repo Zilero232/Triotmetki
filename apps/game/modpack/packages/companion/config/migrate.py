@@ -15,6 +15,9 @@ from .constants import (
     PLACE_ORDER,
     PLACE_KEYS,
     RETIRED_VALUES,
+    SPLIT_KEYS,
+    SPLIT_REVISION,
+    SPLIT_SWITCHES,
     SWITCHED_OFF_PARTS,
     SWITCHED_PARTS,
     USER_SET_KEY,
@@ -126,6 +129,38 @@ def _apply(components, updates):
         components[section_name] = section
 
 
+def _split_switches(config, components):
+    switches = {}
+    for switch, parent, (section_name, key) in SPLIT_SWITCHES:
+        section = _section(components, section_name) or {}
+        switches[switch] = config.get(parent) is not False and section.get(key) is not False
+    return switches
+
+
+def _split_values(components):
+    for (old_section, old_key), (new_section, new_key) in SPLIT_KEYS:
+        stored = _section(components, old_section) or {}
+        section = dict(_section(components, new_section) or {})
+        if old_key in stored:
+            section[new_key] = stored[old_key]
+        else:
+            section.pop(new_key, None)
+        if section or new_section in components:
+            components[new_section] = section
+
+
+# The marks split into the battle panel and the Tank card: each switch is on while the player had its part on, an off
+# one is recorded as the player's choice, and the card's options move to its own section.
+def _split(config, components):
+    config = dict(config)
+    switches = _split_switches(config, components)
+    config.update(switches)
+    turned_off = sorted(switch for switch, is_on in switches.items() if not is_on)
+    config[USER_SET_KEY] = with_user_set(config.get(USER_SET_KEY), turned_off)
+    _split_values(components)
+    return config
+
+
 def _merged(config, components, schema_defaults):
     stored_switches = dict(config)
     config = dict(config)
@@ -139,8 +174,9 @@ def _merged(config, components, schema_defaults):
 
 def migrated(config, components, schema_defaults):
     """(config, components) of a stored install moved to the current revision. Below MIGRATION_REVISION merged switches
-    turn on when any of theirs was on and the merged values move; below DEFAULTS_REVISION a changed default moves only
-    when the player never changed it, and the sections of removed components go. `schema_defaults(section)` gives a
+    turn on when any of theirs was on and the merged values move; below SPLIT_REVISION the marks part switches and
+    the Tank card's options move to the card's own switch and section; below DEFAULTS_REVISION a changed default moves
+    only when the player never changed it, and the sections of removed components go. `schema_defaults(section)` gives a
     component's schema defaults, or None when it is not installed. A fresh install (no stored config) and a file already
     at the revision come back unchanged."""
     if not isinstance(config, dict) or not config:
@@ -152,6 +188,8 @@ def migrated(config, components, schema_defaults):
     components = dict(components) if isinstance(components, dict) else {}
     if revision < MIGRATION_REVISION:
         config = _merged(config, components, schema_defaults)
+    if revision < SPLIT_REVISION:
+        config = _split(config, components)
     _move_places(components, revision)
     chosen = user_set_tokens(config.get(USER_SET_KEY))
     _apply(components, _retired_values(components, chosen, revision))

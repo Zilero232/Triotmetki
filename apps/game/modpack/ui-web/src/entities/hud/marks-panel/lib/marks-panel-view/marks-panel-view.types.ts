@@ -12,7 +12,7 @@ export type MarksAverageView = { label: string; from: string; to: string; direct
 
 export type MarksPanelView = {
   text: string | null;
-  look: 'box' | 'line' | 'silhouette';
+  look: 'box' | 'line';
   mark: string;
   stars: number;
   approx: boolean;
@@ -25,9 +25,6 @@ export type MarksPanelView = {
   start: number | null;
   projected: number | null;
   milestone: number;
-  fillColor: string;
-  silhouette: string | null;
-  next: number | null;
   goal: LevelNeedView | null;
   target: MarksGoalView | null;
   bar: MarksBarView | null;
@@ -36,6 +33,5 @@ export type MarksPanelView = {
   damage: MarksDamageView | null;
   step: string | null;
   average: MarksAverageView | null;
-  battles: { label: string; value: string } | null;
   note: string | null;
 };

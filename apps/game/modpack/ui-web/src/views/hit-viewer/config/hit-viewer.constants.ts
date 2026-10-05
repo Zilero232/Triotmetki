@@ -7,5 +7,5 @@ export const HIT_VIEWER = {
   zoomStep: 200,
   dash: '—',
   table: { rowPx: 32, maxRows: 12 },
-  keys: { previous: 'ArrowLeft', next: 'ArrowRight', tab: 'Tab' }
+  keys: { previous: ['ArrowLeft', 'ArrowUp'], next: ['ArrowRight', 'ArrowDown'], tab: 'Tab' }
 } as const;

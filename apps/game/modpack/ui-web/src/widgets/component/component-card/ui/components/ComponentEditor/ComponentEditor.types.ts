@@ -1,6 +1,6 @@
-import type { UiComponent, UiEditor } from '@/shared/api/protocol';
+import type { UiComponent } from '@/shared/api/protocol';
 
 export type ComponentEditorProps = {
   component: UiComponent;
-  editor: UiEditor;
+  compact?: boolean;
 };

@@ -15,7 +15,7 @@ viewer at a recorded battle, `hit_viewer_battles(reply)` for the battles it can 
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from collections import OrderedDict  # novermin (2.7 has it; vermin counts 3.1 for the 3.x line)
+from collections import OrderedDict
 
 from ..log import log_exception
 from ..vendor.blinker import NamedSignal, Namespace

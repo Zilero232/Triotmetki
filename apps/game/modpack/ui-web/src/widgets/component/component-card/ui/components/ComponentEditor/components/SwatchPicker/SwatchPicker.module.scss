@@ -2,24 +2,37 @@
 
 .swatches {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.row {
+  display: flex;
+  height: 32px;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-shrink: 0;
+  align-items: center;
 }
 
 .swatch {
   display: flex;
   width: 26px;
   height: 26px;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
   padding: 0;
   border: 1px solid transparent;
   border-radius: token(radius-xs);
-  margin-left: 6px;
+  margin-right: 6px;
   background-color: transparent;
   cursor: pointer;
 
   @include ease(border-color);
+
+  &:last-child {
+    margin-right: 0;
+  }
 
   &:hover {
     border-color: token(color-text-muted);
@@ -37,7 +50,7 @@
 .chip {
   width: 20px;
   height: 20px;
-  border: 1px solid rgb(255 255 255 / 20%);
+  border: 1px solid token(color-border-strong);
   border-radius: token(radius-xs);
   background-color: token(color-text);
 }

@@ -3,7 +3,6 @@ import type * as z from 'zod/mini';
 import type {
   actionSchema,
   componentSchema,
-  detailSchema,
   editorSchema,
   feedSchema,
   fieldSchema,
@@ -31,7 +30,6 @@ export type UiEditor = z.infer<typeof editorSchema>;
 export type UiAction = z.infer<typeof actionSchema>;
 export type UiPage = z.infer<typeof pageSchema>;
 export type UiRow = z.infer<typeof rowSchema>;
-export type UiDetail = z.infer<typeof detailSchema>;
 export type UiFigure = z.infer<typeof figureSchema>;
 export type UiMarksReport = z.infer<typeof marksReportSchema>;
 export type UiPanel = z.infer<typeof panelSchema>;

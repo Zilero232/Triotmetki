@@ -20,16 +20,25 @@ MESSAGE_ARG = 'message'
 # BattleHits opens a LobbySubView with __background_alpha__ 0 the same way.
 BACKGROUND_ALPHA = 0.0
 
-# How often the markers follow the camera, and how long the camera flies to a hit.
+# How often the markers follow the camera, how long the camera flies to a hit and how long after the pose it starts
+# (the posed nodes move on the next frames).
 TICK_S = 0.04
 FOCUS_S = 0.5
+FOCUS_DELAY_S = 0.1
+# A loaded hangar vehicle may get its collision a few frames late (BattleHits HangarScene.__updateOutRicochet waits
+# for it the same way): the hits are placed and measured again this often, this many times, before the viewer gives up.
+SETTLE_S = 0.1
+SETTLE_ATTEMPTS = 20
 RESTORE_WAIT_S = 4.0
+EMPTY_SELECTION = {'battle': None, 'tab': None, 'index': None}
+# A page message the viewer did not understand is logged up to this long.
+LOGGED_MESSAGE_CHARS = 200
 # BattleHits HangarScene.__updateCamera: the camera orbits the hit point at 2.9-9 m, looking along the shell's path.
 FOCUS_DISTANCE_M = 5.5
 FOCUS_LIMITS_M = (2.9, 9.0)
-# The direction line of a marker: this far back along the shell's path, in metres; the plate probe reaches this far
+# The incoming path of a marker: this far back along the shell's path, in metres; the plate probe reaches this far
 # on both sides of the hit point.
-TAIL_M = 0.9
+TAIL_M = 2.5
 PROBE_M = 0.6
 
 # RU 1.45 client source: the stock modules a vehicle descriptor is rebuilt from, the hangar services and classes.
@@ -37,13 +46,10 @@ CAMERA_MANAGER_MODULE = 'cgf_components.hangar_camera_manager'
 CAMERA_MANAGER_CLASS = 'HangarCameraManager'
 PREVIEW_MODULE = 'CurrentVehicle'
 PREVIEW_NAME = 'g_currentPreviewVehicle'
-DECODER_MODULE = 'VehicleEffects'
-DECODER_CLASS = 'DamageFromShotDecoder'
 PROJECTION_MODULE = 'AvatarInputHandler.cameras'
 PROJECTION_FUNCTION = 'getViewProjectionMatrix'
 # vehicle_systems.tankStructure.TankPartIndexes: CHASSIS 0, HULL 1, TURRET 2, GUN 3; the materials of each part.
 MATERIAL_PARTS = ('chassis', 'hull', 'turret', 'gun')
-LAST_STRUCTURAL_INDEX = 3
 # vehicle_systems.tankStructure: TankPartNames.TURRET and TankNodeNames.GUN_INCLINATION, the nodes BattleHits poses.
 TURRET_NODE = 'turret'
 GUN_NODE = 'Gun'

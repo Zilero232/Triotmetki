@@ -2,10 +2,12 @@
 
 .switch {
   display: flex;
+  width: 96px;
   height: 36px;
+  flex: 0 0 auto;
   flex-direction: row;
-  flex-shrink: 0;
   align-items: center;
+  justify-content: flex-end;
   padding-left: 16px;
   border-left: 1px solid token(win-divider);
 }
@@ -16,6 +18,17 @@
   color: token(color-text-muted);
   font-size: 11px;
   text-align: right;
+
+  @include caps(0.5px);
+}
+
+.shared {
+  width: 78px;
+  color: token(color-text-muted);
+  font-size: 10px;
+  line-height: 12px;
+  text-align: right;
+  white-space: normal;
 
   @include caps(0.5px);
 }

@@ -1,3 +1,3 @@
 export { useHudEditor } from './use-hud-editor';
 
-export type { HudPanelModel, KeyPress, PointerPress } from './use-hud-editor.types';
+export type { HudPanelModel, PointerPress } from './use-hud-editor.types';

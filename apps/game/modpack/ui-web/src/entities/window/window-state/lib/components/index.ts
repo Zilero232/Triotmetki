@@ -12,4 +12,4 @@ export {
   valueOf
 } from './components';
 
-export type { ComponentsOfInput, ComponentValues, ContextFilterValue, FieldRef, SearchHit, SearchInput, SectionSummary } from './components.types';
+export type { ComponentValues } from './components.types';

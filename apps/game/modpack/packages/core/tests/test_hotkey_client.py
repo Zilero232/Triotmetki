@@ -5,7 +5,7 @@ import sys
 import types
 import unittest
 
-import _support  # noqa: F401
+import _support
 
 CLIENT_PREFIX = 'otmetki.core.client'
 KEY_H = 35
@@ -83,8 +83,7 @@ class HotkeyChatFocusTest(unittest.TestCase):
                 sys.modules.pop(name, None)
             else:
                 sys.modules[name] = module
-        for name in [name for name in sys.modules if name.startswith(CLIENT_PREFIX)]:
-            del sys.modules[name]
+        _support.forget_modules(CLIENT_PREFIX)
 
     def test_the_key_presses_the_hotkey(self):
         self.key_down(KeyEvent(KEY_H))

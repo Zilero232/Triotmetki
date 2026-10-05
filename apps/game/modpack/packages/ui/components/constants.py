@@ -62,7 +62,8 @@ SECTION_HUD = 'hud'
 SECTIONS = (SECTION_BATTLE, SECTION_HANGAR, SECTION_MARKS, SECTION_REPLAYS, SECTION_STREAMER, SECTION_DATA, SECTION_HUD)
 
 # Where a component shows anything: only in the hangar, only in battle, or in both. catalog/catalog.json carries the
-# same `context` for the manager (packages/ui/tests/test_placement.py keeps both in step).
+# `context` of each package for the manager: its component's, or `any` when its components (the feature's settings
+# PARTS) show in the hangar and in battle (packages/ui/tests/test_placement.py keeps both in step).
 CONTEXT_HANGAR = 'hangar'
 CONTEXT_BATTLE = 'battle'
 CONTEXT_ANY = 'any'
@@ -70,7 +71,7 @@ CONTEXTS = (CONTEXT_HANGAR, CONTEXT_BATTLE, CONTEXT_ANY)
 
 PLACEMENT = {
     'companion': (SECTION_DATA, CONTEXT_ANY),
-    'marks_panel': (SECTION_MARKS, CONTEXT_ANY),
+    'marks_panel': (SECTION_MARKS, CONTEXT_BATTLE),
     'battle_progress': (SECTION_MARKS, CONTEXT_BATTLE),
     'damage_log': (SECTION_BATTLE, CONTEXT_BATTLE),
     'team_hp': (SECTION_BATTLE, CONTEXT_BATTLE),

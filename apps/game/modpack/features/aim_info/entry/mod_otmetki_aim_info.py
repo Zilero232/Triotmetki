@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.aim_info import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register aim_info\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register aim_info\n') + traceback.format_exc())

@@ -1,8 +1,8 @@
-import type { UiComponent, UiEditor } from '@/shared/api/protocol';
+import type { UiComponent } from '@/shared/api/protocol';
 
 export type UseComponentEditorInput = {
   component: UiComponent;
-  editor: UiEditor;
+  compact: boolean;
 };
 
 export type EditorBackdrop = 'forest' | 'snow';

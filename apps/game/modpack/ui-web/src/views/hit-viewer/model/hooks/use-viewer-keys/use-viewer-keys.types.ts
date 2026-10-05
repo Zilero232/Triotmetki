@@ -1,4 +1,6 @@
+import type { HitStep } from '../../../lib/hit-step';
+
 export type UseViewerKeysInput = {
-  onStep: (step: -1 | 1) => void;
+  onStep: (step: HitStep) => void;
   onSwitchTab: () => void;
 };

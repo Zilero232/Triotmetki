@@ -11,11 +11,12 @@ import s from './SixthSenseWidget.module.scss';
 
 export const SixthSenseWidget = ({ data }: SixthSenseWidgetProps) => {
   const view = lampView(data);
+  const column = { width: `${String(view.ring)}rem` };
 
   return (
     <div className={s.lamp}>
-      <div className={clsx(view.lit && s.lit)} style={{ opacity: view.alpha }}>
-        <RadialTimer progress={view.progress} size={view.ring} stroke={SIXTH_SENSE.ring.stroke} tone='accent'>
+      <div className={clsx(s.ring, view.lit && s.lit)} style={{ ...column, height: `${String(view.ring)}rem`, opacity: view.alpha }}>
+        <RadialTimer inner={data.size} progress={view.progress} size={view.ring} stroke={SIXTH_SENSE.ring.stroke} tone='accent'>
           <ClientIcon icon={data.icon} size={data.size} />
         </RadialTimer>
       </div>
@@ -25,7 +26,7 @@ export const SixthSenseWidget = ({ data }: SixthSenseWidgetProps) => {
         </span>
       )}
       {view.seconds && (
-        <span className={clsx(s.seconds, toneClass(view.tone))} style={view.color}>
+        <span className={clsx(s.seconds, toneClass(view.tone))} style={{ ...view.color, ...column }}>
           {view.seconds}
         </span>
       )}

@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.companion.app.client import start
     start()
 except Exception:
-    print('[OTMETKI] failed to start\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to start\n') + traceback.format_exc())

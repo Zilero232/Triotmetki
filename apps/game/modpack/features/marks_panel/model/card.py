@@ -82,7 +82,7 @@ def _tank_facts(tank, translate):
 
 # A tank without marks has only the detail rows, so they show at rest.
 def _shows_detail(data, settings):
-    return data.held or data.state is None or settings.get('hangar_style') == 'extended'
+    return data.held or data.state is None or settings.get('style') == 'extended'
 
 
 def _shows_ratings(data, settings):

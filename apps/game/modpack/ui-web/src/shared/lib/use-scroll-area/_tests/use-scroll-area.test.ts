@@ -1,8 +1,14 @@
 // @vitest-environment jsdom
-import { act, renderHook } from '@testing-library/react';
+import type { ReactNode } from 'react';
+
+import { act, render, renderHook } from '@testing-library/react';
+import { createElement, Fragment } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import type { ScrollMetrics } from '@/shared/lib/scroll-metrics';
+
 import { SCROLL_AREA } from '@/shared/config';
+import { SMOOTH_SCROLL } from '@/shared/lib/smooth-scroll';
 
 import { useScrollArea } from '../use-scroll-area';
 
@@ -46,8 +52,33 @@ const measureBox = (element: HTMLDivElement) => {
 
 const measure = (box: Box) => measureBox(viewport(box));
 
+const Area = ({ box, contain, children }: { box: HTMLDivElement; contain: boolean; children?: ReactNode }) => {
+  const area = useScrollArea({ contain });
+
+  area.viewportRef.current = box;
+
+  return createElement(Fragment, null, children);
+};
+
+const wheelIn = ({ contain }: { contain: boolean }) => {
+  vi.useFakeTimers();
+
+  const outer = viewport({ content: 2000, height: 500 });
+  const inner = viewport({ content: 900, height: 300 });
+
+  outer.append(inner);
+  document.body.append(outer);
+
+  const view = render(createElement(Area, { box: outer, contain: false }, createElement(Area, { box: inner, contain })));
+
+  unmounts.push(view.unmount);
+
+  return { outer, inner };
+};
+
 afterEach(() => {
   unmounts.splice(0).forEach((unmount) => unmount());
+  document.body.replaceChildren();
   vi.useRealTimers();
 });
 
@@ -68,5 +99,41 @@ describe(useScrollArea, () => {
     const thumb = measure({ content: 300, height: 500 });
 
     expect(thumb.visible).toBe(false);
+  });
+
+  it('reports the measured metrics when they change', () => {
+    vi.useFakeTimers();
+
+    const reported: ScrollMetrics[] = [];
+    const hook = renderHook(() => useScrollArea({ onMetrics: (metrics) => reported.push(metrics) }));
+
+    unmounts.push(hook.unmount);
+    hook.result.current.viewportRef.current = viewport({ content: 1000, height: 500 });
+    act(() => vi.advanceTimersByTime(SCROLL_AREA.measureMs * 3));
+
+    expect(reported).toEqual([{ top: 0, content: 1000, viewport: 500 }]);
+  });
+});
+
+describe('useScrollArea wheel', () => {
+  const wheelAtInnerEnd = ({ contain }: { contain: boolean }) => {
+    const { outer, inner } = wheelIn({ contain });
+
+    inner.scrollTop = 600;
+
+    act(() => {
+      inner.dispatchEvent(new WheelEvent('wheel', { deltaY: 100, bubbles: true, cancelable: true }));
+      vi.advanceTimersByTime(SMOOTH_SCROLL.durationMs * 2);
+    });
+
+    return outer;
+  };
+
+  it('hands the wheel on to the page at its end by default', () => {
+    expect(wheelAtInnerEnd({ contain: false }).scrollTop).toBeGreaterThan(0);
+  });
+
+  it('keeps the wheel from the page at its end when it contains it', () => {
+    expect(wheelAtInnerEnd({ contain: true }).scrollTop).toBe(0);
   });
 });

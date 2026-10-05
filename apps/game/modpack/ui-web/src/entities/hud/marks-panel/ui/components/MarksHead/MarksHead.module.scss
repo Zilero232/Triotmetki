@@ -24,10 +24,6 @@
   align-items: center;
 }
 
-.hero {
-  height: 32px;
-}
-
 .index {
   margin-right: 6px;
 }
@@ -53,12 +49,6 @@
   min-width: 66px;
 
   @include hud-type(key);
-}
-
-.heroPercent {
-  min-width: 100px;
-
-  @include hud-type(hero);
 }
 
 .delta {

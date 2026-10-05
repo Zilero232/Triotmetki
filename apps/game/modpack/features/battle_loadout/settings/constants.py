@@ -4,13 +4,12 @@ SWITCH = 'battle_loadout'
 PANEL_ID = 'battle_loadout'
 GROUP = 'battle'
 
-# Beside the stock consumables panel at its height, as kurzdor's battleequipment (Lebwa, Jove) places the row: the page
-# puts its right edge 12 px left of the panel's live width, 8 px over the bottom edge, and above the panel when it would
-# meet the battle log (core/hud/panel ATTACHED bar_left); pinned there, the row belongs to the stock panel. This place
-# (centred 360 px left of the middle) is the one for the fallback width and the GUIFlash renderer.
+# Above the left half of the stock consumables panel, ending 6 px left of the screen centre (core/hud/panel ATTACHED
+# bar_left); the right half above the panel is the marks panel's when it lifts. Pinned there, the row belongs to the
+# stock panel. This place is the one for the GUIFlash renderer.
 DEFAULTS = {
-    'x': -360,
-    'y': -8,
+    'x': -120,
+    'y': -64,
     'align_x': 'center',
     'align_y': 'bottom',
     'pinned': True,
@@ -27,4 +26,5 @@ RETIRED_PLACES = (
     (-480, -14, 'center', 'bottom'),
     (0, -200, 'center', 'bottom'),
     (0, -64, 'center', 'bottom'),
+    (-360, -8, 'center', 'bottom'),
 )

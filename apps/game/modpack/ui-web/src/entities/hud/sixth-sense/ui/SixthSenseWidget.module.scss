@@ -18,12 +18,20 @@
   @include hud-stack;
 }
 
+.ring {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: row;
+  justify-content: center;
+}
+
 .lit {
   animation: lamp-pulse 0.6s ease-in-out infinite;
 }
 
 .text {
   margin-top: 2px;
+  text-align: center;
 
   @include hud-type(value);
 }
@@ -31,7 +39,6 @@
 .seconds {
   @include hud-type(key);
 
-  min-width: 28px;
   line-height: 20px;
   text-align: center;
 }

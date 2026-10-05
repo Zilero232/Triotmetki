@@ -1,12 +1,10 @@
 .radial {
   position: relative;
   display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
+  flex: 0 0 auto;
 }
 
-.ring {
+.layer {
   position: absolute;
   top: 0;
   left: 0;
@@ -14,8 +12,6 @@
 }
 
 .content {
-  position: relative;
+  position: absolute;
   display: flex;
-  align-items: center;
-  justify-content: center;
 }

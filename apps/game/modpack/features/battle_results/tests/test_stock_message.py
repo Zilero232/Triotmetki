@@ -8,7 +8,7 @@ import sys
 import types
 import unittest
 
-import _support  # noqa: F401
+import _support
 from otmetki.core.hooks import restore
 
 CLIENT_PACKAGE = 'otmetki.features.battle_results.client'
@@ -36,26 +36,27 @@ def load_hook():
 
 
 def forget_hook():
-    for name in [name for name in sys.modules if name.startswith(CLIENT_PACKAGE)]:
-        del sys.modules[name]
+    _support.forget_modules(CLIENT_PACKAGE)
 
 
 def install_formatter():
+    added = _support.stub_parents(FORMATTER_MODULE)
     module = types.ModuleType(str(FORMATTER_MODULE))
     module.BattleResultsFormatter = BattleResultsFormatter
     sys.modules[FORMATTER_MODULE] = module
+    return added + [FORMATTER_MODULE]
 
 
 class StockMessageHookTest(unittest.TestCase):
 
     def setUp(self):
-        install_formatter()
+        self.stubs = install_formatter()
         self.seen = []
         self.hook = load_hook().StockMessageHook(self.on_message)
 
     def tearDown(self):
         restore(BattleResultsFormatter, 'format')
-        sys.modules.pop(FORMATTER_MODULE, None)
+        _support.drop_modules(self.stubs)
         forget_hook()
 
     def on_message(self, arena, messages, callback):

@@ -5,7 +5,7 @@ import sys
 import types
 import unittest
 
-import _support  # noqa: F401
+import _support
 
 CLIENT_PREFIXES = ('otmetki.core.client', 'otmetki.features.bush_circle.client')
 OWN_ID = 3
@@ -44,8 +44,7 @@ class Hotkey(object):
 
 
 def forget_client():
-    for name in [name for name in sys.modules if name.startswith(CLIENT_PREFIXES)]:
-        del sys.modules[name]
+    _support.forget_modules(CLIENT_PREFIXES)
 
 
 class BushCircleClientTest(unittest.TestCase):

@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.battle_hotkeys import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register battle_hotkeys\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register battle_hotkeys\n') + traceback.format_exc())

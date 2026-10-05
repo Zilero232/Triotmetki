@@ -1,3 +1,9 @@
 import type { ReactNode } from 'react';
 
-export type FitBoxProps = { className?: string; children: ReactNode };
+export type FitBoxProps = {
+  className?: string;
+  max?: number;
+  minScale?: number;
+  fallback?: ReactNode;
+  children: ReactNode;
+};

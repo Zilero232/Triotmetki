@@ -1,0 +1,1 @@
+export { StageBackdrop } from './StageBackdrop';

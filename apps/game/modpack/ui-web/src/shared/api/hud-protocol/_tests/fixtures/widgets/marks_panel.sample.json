@@ -10,10 +10,6 @@
       "hold": 2540,
       "value": 3100
     },
-    "battles": {
-      "level": 95,
-      "text": "~45 боёв"
-    },
     "damage": {
       "label": "урон",
       "target": 2540,
@@ -26,15 +22,9 @@
       "need": 2107
     },
     "has_curve": true,
-    "look": "box",
     "mark": "img://gui/maps/icons/library/marksOnGun/mark_2.png|otmetki:target",
-    "next": {
-      "level": 95,
-      "need": 25195
-    },
     "note": null,
     "percent": 86.3,
-    "silhouette": null,
     "stars": 2,
     "step": {
       "need": 955,

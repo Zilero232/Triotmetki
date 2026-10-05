@@ -1,3 +1,3 @@
-export { reticleMarkPrimitives, reticleMarkSource } from './reticle-mark';
+export { reticleMarkPrimitives } from './reticle-mark';
 
-export type { ReticleMarkInput, ReticlePaint, ReticlePrimitive, ReticleShapeId } from './reticle-mark.types';
+export type { ReticleShapeId } from './reticle-mark.types';

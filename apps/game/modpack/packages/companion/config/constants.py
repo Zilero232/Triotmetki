@@ -13,6 +13,7 @@ FEATURES = (
     'send_loadouts',
     'send_shots',
     'battle_moe_panel',
+    'hangar_tank_card',
     'hangar_session_panel',
     'battle_damage_log',
     'battle_team_hp',
@@ -87,7 +88,7 @@ SHARE_CHANNELS = ('telegram', 'discord', 'both')
 # one when it still holds the old default and the file predates the change (`defaults_revision`).
 # (revision, key, old default, new default). A switch of a removed component is left out of DEFAULTS: Settings ignores
 # a key its schema does not know, so the leftover drops out of the file on the next save.
-DEFAULTS_REVISION = 4
+DEFAULTS_REVISION = 5
 RETIRED_DEFAULTS = (
     (1, 'battle_loadout', False, True),
     (3, 'hangar_tweaks', True, False),
@@ -195,6 +196,28 @@ MOVED_PLACES = (
     (3, 'hangar_info', (-16, 76, 'right', 'top'), (0, -196, 'left', 'bottom')),
     (4, 'hangar_info', (0, -196, 'left', 'bottom'), (50, 83, 'left', 'top')),
 )
+# Revision 5: the marks split into two components with their own options and settings page, as the packs keep the battle
+# marks panel apart from the hangar marks info: the battle panel (section marks_panel, switch battle_moe_panel) and the
+# hangar Tank card (section hangar_marks, switch hangar_tank_card). It runs on every file older than the revision.
+SPLIT_REVISION = 5
+# (switch, the switch it was under, (section, key) of its part's own switch): on only while both were on.
+SPLIT_SWITCHES = (
+    ('battle_moe_panel', 'battle_moe_panel', ('marks_panel', 'show_battle_panel')),
+    ('hangar_tank_card', 'battle_moe_panel', ('marks_panel', 'hangar_card')),
+)
+# ((old section, old key), (new section, new key)): the stored value goes to its new section as it was (the defaults
+# are the same); a key the old section does not hold leaves the new one at its default. The moved keys leave
+# marks_panel through DROPPED_KEYS; alt_detail stays in both.
+SPLIT_KEYS = (
+    (('marks_panel', 'hangar_style'), ('hangar_marks', 'style')),
+    (('marks_panel', 'alt_detail'), ('hangar_marks', 'alt_detail')),
+    (('marks_panel', 'show_trend'), ('hangar_marks', 'show_trend')),
+    (('marks_panel', 'trend_battles'), ('hangar_marks', 'trend_battles')),
+    (('marks_panel', 'show_tank_ratings'), ('hangar_marks', 'show_tank_ratings')),
+    (('marks_panel', 'show_mastery'), ('hangar_marks', 'show_mastery')),
+    (('marks_panel', 'show_research'), ('hangar_marks', 'show_research')),
+    (('marks_panel', 'carousel_percent'), ('hangar_marks', 'carousel_percent')),
+)
 # The sections of the removed components and panels (ComponentConfig keeps unknown sections, so they go here), dropped
 # from every file older than DEFAULTS_REVISION. Revision 4: battle_summary (the card of the battle being played) and
 # config_backup (the settings copy beside preferences.xml; core.durable keeps the files a wipe would lose).
@@ -222,7 +245,8 @@ DROPPED_SECTIONS = (
 # (a section of an installed component loses them on its next save anyway; this covers a component not installed).
 # Revision 4: the crosshair's repair timers (the stock damage panel shows them), the update notice's hangar card
 # (the ModsList badge and one message took its place) and aim_info's armour readout with the HUD panel only it drew
-# (fair play: Lesta forbids in-battle armour analysis).
+# (fair play: Lesta forbids in-battle armour analysis). Revision 5: the Tank card's options moved out of the battle
+# marks panel (SPLIT_KEYS), with the part switches and the battles row the battle panel no longer has.
 DROPPED_KEYS = (
     ('crosshair', 'repair_timers'),
     ('update_notice', 'show_card'),
@@ -238,6 +262,16 @@ DROPPED_KEYS = (
     ('aim_info', 'alpha'),
     ('aim_info', 'drag'),
     ('aim_info', 'scale'),
+    ('marks_panel', 'show_battle_panel'),
+    ('marks_panel', 'hangar_card'),
+    ('marks_panel', 'hangar_style'),
+    ('marks_panel', 'show_trend'),
+    ('marks_panel', 'trend_battles'),
+    ('marks_panel', 'show_tank_ratings'),
+    ('marks_panel', 'show_mastery'),
+    ('marks_panel', 'show_research'),
+    ('marks_panel', 'carousel_percent'),
+    ('marks_panel', 'show_battles'),
 )
 # Components that stay but are no HUD panel any more, so their battle-type places go (revision 4: aim_info).
 DROPPED_PANELS = ('aim_info',)
@@ -257,6 +291,7 @@ DEFAULTS = {
     'send_loadouts': True,
     'send_shots': True,
     'battle_moe_panel': True,
+    'hangar_tank_card': True,
     'hangar_session_panel': True,
     'battle_damage_log': True,
     'battle_team_hp': True,

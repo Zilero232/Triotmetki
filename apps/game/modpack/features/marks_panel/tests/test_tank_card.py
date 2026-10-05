@@ -34,11 +34,11 @@ def tank_data(summary=None, tank=None, held=False, **state_values):
 
 
 def widget(data, **values):
-    return tank_card(data, Settings(values, SCHEMA), translator())['data']
+    return tank_card(data, Settings(values, CARD_SCHEMA), translator())['data']
 
 
 def text_lines(data, **values):
-    return strip_tags(card_text(data, Settings(values, SCHEMA), translator())).split('\n')
+    return strip_tags(card_text(data, Settings(values, CARD_SCHEMA), translator())).split('\n')
 
 
 def row_texts(data, **values):
@@ -154,7 +154,7 @@ class RatingsTest(unittest.TestCase):
         assert row['detail'] == u'wins 56.25% · 213 battles'
 
     def test_extended_shows_the_ratings_without_alt(self):
-        row = widget(tank_data(tank=TANK), hangar_style='extended')['rows'][-1]
+        row = widget(tank_data(tank=TANK), style='extended')['rows'][-1]
 
         assert row['text'] == u'Tank WN8'
 
@@ -216,25 +216,39 @@ class SettingsTest(unittest.TestCase):
 
         assert (defaults['x'], defaults['y'], defaults['align_x'], defaults['align_y']) == (16, 440, 'left', 'top')
 
-    def test_the_hangar_keys_default_on(self):
-        settings = Settings({}, SCHEMA)
+    def test_the_card_rows_default_on(self):
+        settings = Settings({}, CARD_SCHEMA)
 
-        assert settings.get('hangar_card') is True
         assert settings.get('show_trend') is True
         assert settings.get('show_tank_ratings') is True
+        assert settings.get('alt_detail') is True
 
-    def test_the_hangar_style_is_compact_or_extended(self):
-        assert Settings({'hangar_style': 'custom'}, SCHEMA).get('hangar_style') == 'compact'
+    def test_the_card_style_is_compact_or_extended(self):
+        assert Settings({'style': 'custom'}, CARD_SCHEMA).get('style') == 'compact'
 
     def test_the_trend_takes_at_least_one_battle(self):
-        settings = Settings({'trend_battles': 0}, SCHEMA)
+        settings = Settings({'trend_battles': 0}, CARD_SCHEMA)
 
         assert settings.get('trend_battles') == 1
 
     def test_the_history_limits_are_fixed(self):
-        settings = Settings({'max_entries': 9999, 'page_rows': 1}, SCHEMA)
+        settings = Settings({'max_entries': 9999, 'page_rows': 1}, CARD_SCHEMA)
 
         assert (settings.get('max_entries'), settings.get('page_rows')) == (100, 50)
+
+    def test_the_carousel_percent_is_off_by_default(self):
+        assert Settings({}, CARD_SCHEMA).get('carousel_percent') is False
+
+    def test_the_battle_panel_has_no_card_options(self):
+        card_only = ('show_trend', 'trend_battles', 'show_tank_ratings', 'show_mastery', 'show_research',
+                     'carousel_percent')
+
+        assert [key for key in card_only if key in SCHEMA.defaults] == []
+
+    def test_the_card_has_no_battle_options(self):
+        battle_only = ('template', 'show_targets', 'show_battle', 'show_step', 'show_up', 'color_mode', 'bar')
+
+        assert [key for key in battle_only if key in CARD_SCHEMA.defaults] == []
 
 
 class HeroTest(unittest.TestCase):
@@ -255,12 +269,12 @@ class HeroTest(unittest.TestCase):
 class PreviewTest(unittest.TestCase):
 
     def test_preview_text_shows_the_sample_percent(self):
-        text = strip_tags(card_preview_text(Settings({}, SCHEMA), translator()))
+        text = strip_tags(card_preview_text(Settings({}, CARD_SCHEMA), translator()))
 
         assert text.startswith(u'MoE 86.12%')
 
     def test_preview_card_shows_every_part(self):
-        card = card_preview_widget(Settings({}, SCHEMA), translator())['data']
+        card = card_preview_widget(Settings({}, CARD_SCHEMA), translator())['data']
 
         assert card['value'] == u'86.12%'
         assert card['strip']

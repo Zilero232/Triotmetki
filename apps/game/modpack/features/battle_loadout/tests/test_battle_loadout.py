@@ -10,10 +10,8 @@ from otmetki.features.battle_loadout.i18n import STRINGS
 from otmetki.features.battle_loadout.model import (
     clean_device,
     clean_devices,
-    empty_slot,
     format_panel,
     icons_found,
-    installed,
     loadout_summary,
     overlay_of,
     slot_items,
@@ -201,16 +199,16 @@ class SettingsTest(unittest.TestCase):
     def test_switch(self):
         assert SETTINGS == ('battle_loadout',)
 
-    def test_placed_left_of_the_stock_consumables_at_their_height(self):
+    def test_placed_above_the_left_half_of_the_stock_consumables(self):
         defaults = SCHEMA.defaults
 
         place = (defaults['x'], defaults['y'], defaults['align_x'], defaults['align_y'])
 
-        assert place == (-360, -8, 'center', 'bottom')
+        assert place == (-120, -64, 'center', 'bottom')
         assert ATTACHED['otmetki.hud.battle_loadout'] == 'bar_left'
 
-    def test_a_row_left_on_top_of_the_consumables_moves_beside_them(self):
-        assert (0, -64, 'center', 'bottom') in SCHEMA.retired
+    def test_a_row_left_beside_the_consumables_moves_above_them(self):
+        assert (-360, -8, 'center', 'bottom') in SCHEMA.retired
 
     def test_pinned_by_default(self):
         assert SCHEMA.defaults['pinned'] is True
@@ -257,30 +255,39 @@ class SummaryTest(unittest.TestCase):
 
 class SlotTest(unittest.TestCase):
 
-    def test_every_device_slot_keeps_a_cell_when_one_is_empty(self):
-        items = slot_items([turbocharger(), None, ventilation()], [None])
+    def test_an_empty_device_slot_gets_no_cell(self):
+        items = slot_items([turbocharger(), None, ventilation()], [])
 
-        assert [item['empty'] for item in items] == [False, True, False, True]
+        assert [item['name'] for item in items] == [turbocharger()['name'], ventilation()['name']]
+
+    def test_an_empty_directive_slot_gets_no_cell(self):
+        items = slot_items([turbocharger(), ventilation(), turbocharger(icon='rammer')], [None])
+
+        assert len(items) == 3
+        assert all(item['kind'] == 'device' for item in items)
+
+    def test_no_cell_is_ever_empty(self):
+        items = slot_items([None, turbocharger(), None], [None, directive()])
+
+        assert [item['empty'] for item in items] == [False, False]
 
     def test_the_third_device_is_kept(self):
         items = slot_items([turbocharger(), ventilation(), turbocharger(icon='rammer')], [])
 
-        assert len(installed(items)) == 3
-
-    def test_an_empty_directive_slot_is_a_directive_cell(self):
-        items = slot_items([turbocharger()], [None])
-
-        assert items[1] == empty_slot('directive')
+        assert len(items) == 3
 
     def test_a_directive_is_a_directive_cell(self):
         items = slot_items([], [directive()])
 
         assert items[0]['kind'] == 'directive'
 
-    def test_a_nameless_device_leaves_its_slot_empty(self):
-        items = slot_items([{'name': u' ', 'icon': 'rammer'}], [])
+    def test_a_directive_follows_the_devices(self):
+        items = slot_items([turbocharger()], [directive()])
 
-        assert items[0]['empty'] is True
+        assert [item['kind'] for item in items] == ['device', 'directive']
+
+    def test_a_nameless_device_gets_no_cell(self):
+        assert slot_items([{'name': u' ', 'icon': 'rammer'}], []) == []
 
     def test_the_log_names_each_slot(self):
         line = slots_line('arena', [2305, 0])

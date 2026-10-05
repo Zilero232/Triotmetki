@@ -1,8 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import is_int
-from ....core.shot_points import drawn_points
 from .constants import MAX_SEGMENTS, OUTCOME_BY_CODE, PART_NAMES
+from .geometry import impact_point
 
 # Fair play: these are the packed points of a shot the client itself receives to draw its hit effects on a vehicle
 # (Vehicle.showDamageFromShot), only for the shots between the player's own tank and one other vehicle. A point says
@@ -20,8 +20,7 @@ def part_of(index):
 
 
 def impact(segments):
-    known = [point for point in drawn_points(segments) if point.code in OUTCOME_BY_CODE]
-    if not known:
+    last = impact_point(segments)
+    if last is None:
         return None
-    last = known[-1]
     return part_of(last.part), OUTCOME_BY_CODE[last.code]

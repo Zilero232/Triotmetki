@@ -1,11 +1,8 @@
 import type { SettingValue, UiComponent, UiField, UiSection } from '@/shared/api/protocol';
 
-export type ContextFilterValue = 'all' | 'battle' | 'hangar';
-
 export type ComponentsOfInput = {
   components: UiComponent[];
   section: string;
-  context: ContextFilterValue;
 };
 
 export type SectionSummary = {

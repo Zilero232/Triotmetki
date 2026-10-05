@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.damage_log import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register damage_log\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register damage_log\n') + traceback.format_exc())

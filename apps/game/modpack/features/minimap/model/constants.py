@@ -16,7 +16,8 @@ DRAW_RANGE = 'minimapDrawRange'
 # (gui/Scaleform/daapi/view/battle/shared/minimap/settings.py), the value its own +/- keys change.
 SIZE = 'minimapSize'
 
-VEHICLE_NAME_MODES = {'never': 0, 'alt': 1, 'always': 2}
+# MinimapVehModelsSetting.VEHICLE_MODELS_TYPES indices (never 0, alt 1, always 2); 'never' is never written.
+VEHICLE_NAME_MODES = {'alt': 1, 'always': 2}
 
 # The settings window's editor (docs/specs/2026-09-30-hud-consolidation-and-design.md section 12.3): its field groups
 # around a schematic minimap the window draws from the field values.

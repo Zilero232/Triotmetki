@@ -2,11 +2,12 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import importlib
+import json
 import sys
 import types
 import unittest
 
-import _support  # noqa: F401
+import _support
 from otmetki.core.events import EventBus
 from otmetki.core.storage import MemoryFile
 from otmetki.features.hit_viewer.model import HitBook
@@ -17,6 +18,8 @@ OWN_ID = 3
 ENEMY_ID = 7
 ALLY_ID = 9
 HULL_PEN = 4 | (1 << 8) | (120 << 16) | (100 << 24) | (250 << 32) | (130 << 40) | (110 << 48) | (255 << 56)
+HULL_BOXES = {1: ((0.0, 0.0, 0.0), (1.0, 1.0, 2.0))}
+ANALYSIS = {'angle': 30.0, 'armor': 115, 'nominal': 100}
 EFFECTS_INDEX = 12
 AIM = (0.5, -0.1)
 DAMAGE, RECEIVED_DAMAGE = 7, 10
@@ -138,8 +141,7 @@ def stub_client():
 
 
 def forget_client():
-    for name in [name for name in sys.modules if name.startswith(CLIENT_PREFIXES)]:
-        del sys.modules[name]
+    _support.forget_modules(CLIENT_PREFIXES)
 
 
 class RecorderTest(unittest.TestCase):
@@ -247,7 +249,7 @@ class RecorderTest(unittest.TestCase):
 
 
 def recorded_battle(battle_id, hits):
-    hit = {'target': 'own', 'side': 'received', 'outcome': 'pen', 'segments': []}
+    hit = {'target': 'own', 'side': 'received', 'outcome': 'pen', 'segments': [HULL_PEN]}
     return {'id': battle_id, 'hits': [dict(hit) for _ in range(hits)], 'targets': {'own': {'cd': 1}}}
 
 
@@ -259,8 +261,13 @@ class ScreenTest(unittest.TestCase):
         stub_client()
         screen_module = importlib.import_module('otmetki.features.hit_viewer.client.screen')
         self.screen_module = screen_module
+        self.callbacks = []
+        screen_module.BigWorld.callback = lambda delay, callback: self.callbacks.append(callback)
+        self.lines = []
+        screen_module.log = self.lines.append
         component = Component()
         component.app.in_battle = False
+        component.app.translate = lambda key, **values: key
         self.screen = screen_module.HitViewerScreen(component, Namespace(book=None))
         self.ended = []
         self.screen.stage.end = lambda: self.ended.append(True)
@@ -276,6 +283,10 @@ class ScreenTest(unittest.TestCase):
             else:
                 sys.modules[name] = module
 
+    def run_callbacks(self):
+        while self.callbacks:
+            self.callbacks.pop(0)()
+
     def opened_view(self):
         view = object()
         self.screen.window.is_open = True
@@ -283,12 +294,40 @@ class ScreenTest(unittest.TestCase):
         self.screen.ticker.start()
         return view
 
+    def openable_window(self):
+        self.pushed = []
+        self.screen.window.available = lambda: True
+        self.screen.window.open = lambda: setattr(self.screen.window, 'is_open', True) or True
+        self.screen.window.push_state = self.pushed.append
+        self.screen.stage.begin = lambda: True
+
     def test_a_window_the_client_destroyed_stops_the_ticker_and_gives_the_hangar_back(self):
         view = self.opened_view()
 
         self.screen.window.on_destroyed(view)
 
         assert (self.screen.ticker.running, self.ended) == (False, [True])
+
+    def test_the_viewer_opens_before_the_first_recorded_battle(self):
+        self.openable_window()
+
+        self.screen.open()
+
+        assert self.screen.is_open is True
+
+    def test_the_viewer_without_battles_shows_the_empty_state(self):
+        self.openable_window()
+
+        self.screen.open()
+
+        assert json.loads(self.pushed[-1])['battle'] is None
+
+    def test_an_opening_refused_in_a_battle_is_logged(self):
+        self.screen.component.app.in_battle = True
+
+        self.screen.open()
+
+        assert self.lines == ['hit viewer: not opened: hv_refused_battle']
 
     def screen_on_two_battles(self):
         book = HitBook(None, 20)
@@ -339,15 +378,49 @@ class ScreenTest(unittest.TestCase):
 
         assert self.hangar_shown == []
 
-    def test_a_model_no_hit_decodes_on_is_logged(self):
+    def test_a_vehicle_whose_hits_never_get_placed_is_logged_once_after_the_retries(self):
         self.screen_on_two_battles()
-        lines = []
-        self.screen_module.log = lines.append
 
         self.screen._on_model_loaded()
+        self.run_callbacks()
 
-        assert len(lines) == 1
-        assert 'decoded' in lines[0]
+        assert [line for line in self.lines if 'placed' in line] == [
+            'hit viewer: vehicle own: 0 of 3 hits placed, 0 measured, collision missing']
+
+    def collision_after(self, attempts):
+        answers = [None] * attempts + [HULL_BOXES]
+        self.screen.stage.boxes = lambda: answers.pop(0) if len(answers) > 1 else answers[0]
+        self.screen.stage.measure = lambda geometry, shell=None, caliber=None: dict(ANALYSIS)
+        self.screen.stage.pose = lambda aim: None
+        self.screen.stage.focus = lambda geometry, hit, duration: self.flown.append(geometry.part)
+        self.flown = []
+
+    def test_hits_are_placed_once_the_hangar_collision_arrives(self):
+        self.screen_on_two_battles()
+        self.collision_after(3)
+
+        self.screen._on_model_loaded()
+        self.run_callbacks()
+
+        assert sorted(self.screen.decoded) == [0, 1, 2]
+
+    def test_the_camera_flies_to_the_selected_hit_once_it_is_placed(self):
+        self.screen_on_two_battles()
+        self.collision_after(2)
+
+        self.screen._on_model_loaded()
+        self.run_callbacks()
+
+        assert self.flown == ['hull']
+
+    def test_a_placed_hit_keeps_its_measured_angle_and_armour(self):
+        book = self.screen_on_two_battles()
+        self.collision_after(0)
+
+        self.screen._on_model_loaded()
+        self.run_callbacks()
+
+        assert book.battle('a')['hits'][0]['armor'] == 115
 
     def test_the_old_view_going_away_after_a_reopen_does_not_close_the_new_opening(self):
         old = self.opened_view()

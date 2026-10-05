@@ -240,8 +240,7 @@ class FreeCameraClientTest(unittest.TestCase):
                 sys.modules.pop(name, None)
             else:
                 sys.modules[name] = value
-        for name in [name for name in sys.modules if name.startswith(DROPPED_PREFIXES)]:
-            del sys.modules[name]
+        _support.forget_modules(DROPPED_PREFIXES)
 
     def _camera(self, camera=None):
         if camera is not None:

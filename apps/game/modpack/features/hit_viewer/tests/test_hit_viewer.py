@@ -20,7 +20,9 @@ from otmetki.features.hit_viewer.model import (
     effect_model,
     first_plate,
     gun_shell,
+    hit_geometry,
     impact,
+    local_segment,
     marker,
     normalization,
     plate_analysis,
@@ -29,12 +31,18 @@ from otmetki.features.hit_viewer.model import (
     to_screen,
     viewer_state,
 )
+from otmetki.features.hit_viewer.model.geometry import impact_point
 from otmetki.features.hit_viewer.settings import SCHEMA, SETTINGS
 
 # RU 1.45 DamageFromShotDecoder.decodeSegment: effect code, part index, then a byte per axis for start and end.
 HULL_PEN = 4 | (1 << 8) | (120 << 16) | (100 << 24) | (250 << 32) | (130 << 40) | (110 << 48) | (255 << 56)
 TURRET_RICOCHET = 2 | (2 << 8) | (120 << 16) | (130 << 40)
 NO_LENGTH = 4 | (1 << 8)
+HULL_ALONG_Z = 4 | (1 << 8) | (255 << 56)
+CORNER_ALONG_Z = 4 | (1 << 8) | (255 << 16) | (255 << 24) | (255 << 40) | (255 << 48) | (255 << 56)
+WHEEL_PEN = 4 | (5 << 8) | (255 << 56)
+HULL_BOX = ((0.0, 0.0, 0.0), (1.0, 1.0, 2.0))
+UNIT_BOX = ((-1.0, -1.0, -1.0), (1.0, 1.0, 1.0))
 OWN = {'cd': 1, 'chassis': 11, 'turret': 12, 'gun': 13, 'name': u'ИС-7', 'class': 'heavy'}
 ENEMY = {'cd': 2, 'chassis': 21, 'turret': None, 'gun': None, 'name': u'Maus', 'class': 'heavy'}
 ATTACKER = 7
@@ -94,6 +102,57 @@ class ImpactTest(unittest.TestCase):
 
     def test_points_without_length_are_not_drawn(self):
         assert impact([NO_LENGTH]) is None
+
+
+def rounded(vector):
+    return tuple(round(value, 6) for value in vector)
+
+
+class GeometryTest(unittest.TestCase):
+
+    def test_a_segment_spans_its_part_box(self):
+        start, end = local_segment(impact_point([CORNER_ALONG_Z]), UNIT_BOX)
+
+        assert (rounded(start)[:2], rounded(end)[:2]) == ((1.0, 1.0), (1.0, 1.0))
+
+    def test_a_segment_is_widened_by_a_hundredth_at_both_ends(self):
+        start, end = local_segment(impact_point([HULL_ALONG_Z]), HULL_BOX)
+
+        assert (rounded(start), rounded(end)) == ((0.0, 0.0, -0.02), (0.0, 0.0, 2.02))
+
+    def test_the_hit_point_is_the_middle_of_the_segment(self):
+        found = hit_geometry([HULL_ALONG_Z], {1: HULL_BOX})
+
+        assert rounded(found.point) == (0.0, 0.0, 1.0)
+
+    def test_the_direction_runs_along_the_segment(self):
+        found = hit_geometry([HULL_ALONG_Z], {1: HULL_BOX})
+
+        assert rounded(found.direction) == (0.0, 0.0, 1.0)
+
+    def test_the_hit_is_placed_in_the_part_its_point_names(self):
+        found = hit_geometry([HULL_ALONG_Z], {1: HULL_BOX})
+
+        assert found.part == 'hull'
+
+    def test_the_last_drawn_point_is_the_one_placed(self):
+        found = hit_geometry([TURRET_RICOCHET, HULL_ALONG_Z], {1: HULL_BOX, 2: UNIT_BOX})
+
+        assert found.part == 'hull'
+
+    def test_a_part_without_a_box_is_not_placed(self):
+        assert hit_geometry([HULL_ALONG_Z], {}) is None
+
+    def test_a_wheel_beyond_the_four_parts_is_not_placed(self):
+        assert hit_geometry([WHEEL_PEN], {5: HULL_BOX}) is None
+
+    def test_a_shot_without_a_drawn_point_is_not_placed(self):
+        assert hit_geometry([NO_LENGTH], {1: HULL_BOX}) is None
+
+    def test_the_incoming_path_starts_behind_the_hit_point(self):
+        found = hit_geometry([HULL_ALONG_Z], {1: HULL_BOX})
+
+        assert rounded(along(found.point, found.direction, -2.5)) == (0.0, 0.0, -1.5)
 
 
 class BookTest(unittest.TestCase):

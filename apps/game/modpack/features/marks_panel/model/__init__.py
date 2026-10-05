@@ -147,8 +147,6 @@ def _extended(state, values, settings, translate):
         extra.append(render(translate('marks_panel_line_up'), values))
     if settings.get('show_step') and state['step_need'] is not None:
         extra.append(render(translate('marks_panel_line_step'), values))
-    if settings.get('show_battles') and state['next_level'] is not None:
-        extra.append(render(translate('marks_panel_line_battles'), values))
     if extra:
         lines.append(font(TARGET_SEPARATOR.join(extra), COLOR_MUTED, size))
     return lines
@@ -179,7 +177,7 @@ def format_panel(state, settings, translate):
         return font(render(translate('marks_panel_line_no_curve'), values), COLOR_MUTED, size)
     if style == 'minimal':
         return font(render(translate('marks_panel_line_minimal'), values), color, size)
-    if style in ('compact', 'silhouette'):
+    if style == 'compact':
         key = 'marks_panel_line_compact_up' if _shows_up(state, settings) else 'marks_panel_line_compact'
         return font(render(translate(key), values), color, size)
     return LINE_SEPARATOR.join(_extended(state, values, settings, translate))

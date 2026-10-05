@@ -1,0 +1,86 @@
+@use '@/shared/styles/gameface' as *;
+
+.picker {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-self: stretch;
+}
+
+.trigger {
+  display: flex;
+  min-width: 0;
+  height: 32px;
+  flex-direction: row;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  font-weight: 700;
+  text-align: left;
+
+  @include control;
+}
+
+.triggerOpen {
+  border-color: token(color-accent);
+}
+
+.value {
+  min-width: 0;
+  flex: 1 1 auto;
+  margin-right: 8px;
+  font-size: 13px;
+  line-height: 30px;
+
+  @include ellipsis;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  padding: 2px;
+  margin-top: 4px;
+
+  @include well;
+}
+
+.item {
+  display: flex;
+  min-width: 0;
+  height: 30px;
+  flex-direction: row;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  border: none;
+  border-radius: token(radius-sm);
+  background-color: transparent;
+  color: token(color-text-muted);
+  cursor: pointer;
+  text-align: left;
+
+  @include ease(background-color, color);
+
+  &:hover {
+    background-color: token(color-surface-hover);
+    color: token(color-text);
+  }
+}
+
+.itemOn {
+  background-color: token(win-selected);
+  color: token(color-text);
+}
+
+.itemLabel {
+  min-width: 0;
+  flex: 1 1 auto;
+  margin-right: 8px;
+  font-size: 13px;
+  line-height: 30px;
+
+  @include ellipsis;
+}

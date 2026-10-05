@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { UiComponent, UiEditor } from '@/shared/api/protocol';
 
-import { $editor, openEditor } from '@/entities/window/window-state';
+import { $editor, openEditor, openSetting } from '@/entities/window/window-state';
 import { send } from '@/shared/api/protocol/protocol';
 import { RU } from '@/shared/i18n/strings';
 import { stepBack } from '@/shared/lib/escape-stack';
@@ -76,7 +76,7 @@ const COMPONENT: UiComponent = {
   editor: EDITOR
 };
 
-const mountEditor = () => render(<ComponentEditor component={COMPONENT} editor={EDITOR} />);
+const mountEditor = () => render(<ComponentEditor component={COMPONENT} />);
 
 const hintBox = (): HTMLElement | null => document.querySelector('[aria-live="polite"]');
 
@@ -173,21 +173,21 @@ describe(ComponentEditor, () => {
   it('captions every sample after the panel preview', () => {
     const editor: UiEditor = { ...EDITOR, samples: [{ id: 'card', label: 'Tank card in the hangar', widget: { kind: 'unknown', v: 1, data: {} } }] };
 
-    render(<ComponentEditor component={{ ...COMPONENT, panel: false }} editor={editor} />);
+    render(<ComponentEditor component={{ ...COMPONENT, panel: false, editor }} />);
 
     expect(screen.getByText('Tank card in the hangar')).toBeTruthy();
   });
 
   it('draws the schematic of a stock element instead of a preview', () => {
-    render(<ComponentEditor component={{ ...COMPONENT, panel: false }} editor={{ ...EDITOR, schematic: 'minimap' }} />);
+    render(<ComponentEditor component={{ ...COMPONENT, panel: false, editor: { ...EDITOR, schematic: 'minimap' } }} />);
 
     expect(screen.getByText(RU.schematicCaption)).toBeTruthy();
   });
 
-  it('closes on its close button', () => {
+  it('goes back to the list on its back button', () => {
     mountEditor();
 
-    act(() => screen.getByRole('button', { name: RU.editorClose }).click());
+    act(() => screen.getByRole('button', { name: RU.editorBack }).click());
 
     expect($editor.get()).toBeNull();
   });
@@ -200,5 +200,35 @@ describe(ComponentEditor, () => {
     });
 
     expect($editor.get()).toBeNull();
+  });
+
+  it('opens a component without an editor as a page of its settings', () => {
+    render(<ComponentEditor component={{ ...COMPONENT, panel: false, editor: undefined }} />);
+
+    expect(screen.getByRole('group', { name: RU.editorSettings }).textContent).toContain('Mark size');
+  });
+
+  it('shows a choice whose options do not fit one row as a drop-down', () => {
+    const many = Array.from({ length: 9 }, (_, index) => ({ value: String(index), label: `Option ${String(index)}` }));
+    const field = { key: 'size', label: 'Size', hint: null, type: 'choice' as const, value: '0', default: '0', choices: many };
+
+    render(<ComponentEditor component={{ ...COMPONENT, panel: false, editor: undefined, fields: [field] }} />);
+    act(() => screen.getByRole('button', { name: 'Size' }).click());
+
+    expect(screen.getAllByRole('option')).toHaveLength(9);
+  });
+
+  it('keeps a short choice as one row of chips', () => {
+    mountEditor();
+
+    expect(screen.getByRole('button', { name: 'Both' }).getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('marks the setting a search led to', () => {
+    openSetting({ componentId: COMPONENT.id, key: 'mark_size' });
+
+    mountEditor();
+
+    expect(screen.getByText('Mark size').closest('[class*="focused"]')).not.toBeNull();
   });
 });

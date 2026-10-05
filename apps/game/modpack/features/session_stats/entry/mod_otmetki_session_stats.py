@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.session_stats import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register session_stats\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register session_stats\n') + traceback.format_exc())

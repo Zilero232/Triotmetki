@@ -1,4 +1,4 @@
-import { romanTier } from '@/entities/replay/replay';
+import { formatMoment, romanTier } from '@/entities/replay/replay';
 import { ClientIcon } from '@/ui-kit';
 
 import type { RowPartProps } from '../../ReplayRow.types';
@@ -20,6 +20,7 @@ export const RowMain = ({ item }: RowPartProps) => {
         {item.mastery_image && <ClientIcon className={s.mastery} icon={item.mastery_image} size={16} />}
       </span>
       <span className={s.meta}>{rowMeta({ item, typeLabel: t(`type_${item.type}`) })}</span>
+      <span className={s.date}>{formatMoment(item.time)}</span>
     </span>
   );
 };

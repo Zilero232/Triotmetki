@@ -2,16 +2,20 @@
 
 .chips {
   display: flex;
+  height: 28px;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-shrink: 0;
+  align-items: flex-start;
 }
 
 .chip {
-  min-height: 28px;
-  padding: 4px 12px;
+  min-width: 32px;
+  height: 28px;
+  flex: 0 0 auto;
+  padding: 0 10px;
   border: 1px solid token(color-border-strong);
-  border-radius: 14px;
-  margin: 0 8px 8px 0;
+  border-radius: token(radius-md);
+  margin-right: 6px;
   background-color: token(color-surface-sunken);
   background-image: token(win-control);
   box-shadow: token(win-control-shadow);
@@ -19,8 +23,14 @@
   cursor: pointer;
   font-size: 12px;
   font-weight: 700;
+  line-height: 26px;
+  white-space: nowrap;
 
   @include ease(background-color, border-color, color);
+
+  &:last-child {
+    margin-right: 0;
+  }
 
   &:hover {
     background-color: token(color-surface-hover);

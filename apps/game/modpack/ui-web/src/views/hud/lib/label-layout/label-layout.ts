@@ -1,11 +1,21 @@
+import type { Rect } from '@/entities/hud/panel-layout';
 import type { HudPanel } from '@/shared/api/hud-protocol';
 
 import type { DockItem } from '../dock';
-import type { DockItemInput, LabelLayout, LabelStyle, LabelStyleInput, LayoutLabelsInput, OpacityOfInput, ScaleOfInput } from './label-layout.types';
+import type {
+  DockItemInput,
+  LabelLayout,
+  LabelStyle,
+  LabelStyleInput,
+  LayoutLabelsInput,
+  ObstaclesInput,
+  OpacityOfInput,
+  ScaleOfInput
+} from './label-layout.types';
 
 import { HUD_OVERLAY } from '../../config';
 import { placeRect, rectStyle } from '../anchor';
-import { attachRect } from '../attach';
+import { attachRect, stockBarRect } from '../attach';
 import { settledPanels, stackDocks } from '../dock';
 
 const scaleOf = ({ panel, scales }: ScaleOfInput): number => scales[panel.id] ?? panel.scale;
@@ -23,6 +33,19 @@ const dockItem = ({ panel, scale, sizes, overrides, screen }: DockItemInput): Do
     align: panel.align_x,
     rect: attached ? attachRect({ attach: attached, size, screen }) : placeRect({ anchor: override ?? panel, size, screen })
   };
+};
+
+const obstaclesOf = ({ panels, items, overrides, screen }: ObstaclesInput): Rect[] => {
+  const attached = items.filter((item, index) => {
+    const panel = panels[index];
+
+    return panel !== undefined && panel.visible && Boolean(panel.attach) && !overrides[panel.id];
+  });
+
+  const attach = panels.find((panel) => panel.attach)?.attach;
+  const bar = attach ? stockBarRect({ attach, screen }) : null;
+
+  return [...attached.map((item) => item.rect), ...(bar ? [bar] : [])];
 };
 
 const opacityOf = ({ panel, settled }: OpacityOfInput): number => {
@@ -48,7 +71,8 @@ export const labelStyle = ({ rect, scale, opacity }: LabelStyleInput): LabelStyl
 export const layoutLabels = (input: LayoutLabelsInput): LabelLayout[] => {
   const { panels, sizes, scales, screen, live, edit, widgets } = input;
   const items = panels.map((panel) => dockItem({ ...input, panel, scale: scaleOf({ panel, scales }) }));
-  const stacked = stackDocks({ items, screen, ...HUD_OVERLAY.dock });
+  const obstacles = obstaclesOf({ panels, items, overrides: input.overrides, screen });
+  const stacked = stackDocks({ items, obstacles, screen, ...HUD_OVERLAY.dock });
   const settled = settledPanels({ items, measured: (id) => sizes[id] !== undefined });
 
   const layoutOf = (panel: HudPanel): LabelLayout => {

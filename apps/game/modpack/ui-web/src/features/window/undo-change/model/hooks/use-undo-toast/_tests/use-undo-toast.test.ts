@@ -61,6 +61,24 @@ describe(useUndoToast, () => {
     expect(hook.result.current.visible).toBe(false);
   });
 
+  it('hides after a while in an engine whose timers pass no extra arguments', async () => {
+    const native = globalThis.setTimeout;
+
+    vi.spyOn(globalThis, 'setTimeout').mockImplementation((handler, ms) =>
+      native(() => {
+        if (typeof handler === 'function') {
+          handler();
+        }
+      }, ms)
+    );
+
+    const hook = await showUndo([entry(1, 'Масштаб')]);
+
+    await advance(UNDO_TOAST.hideMs);
+
+    expect(hook.result.current.visible).toBe(false);
+  });
+
   it('hides on dismiss', async () => {
     const hook = await showUndo([entry(1, 'Масштаб')]);
 

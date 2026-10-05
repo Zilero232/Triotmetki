@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import importlib  # novermin
+import importlib
 
 from ....core.durable import open_config
 from ....core.log import log

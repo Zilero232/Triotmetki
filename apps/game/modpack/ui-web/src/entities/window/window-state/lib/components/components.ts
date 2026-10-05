@@ -23,11 +23,9 @@ export const isEnabled = (component: UiComponent): boolean => component.switch?.
 
 export const componentIcon = (componentId: string): UiIconName => COMPONENT_ICONS[componentId] ?? FALLBACK_COMPONENT_ICON;
 
-export const componentsOf = ({ components, section, context }: ComponentsOfInput): UiComponent[] =>
+export const componentsOf = ({ components, section }: ComponentsOfInput): UiComponent[] =>
   sortBy(
-    components.filter(
-      (component) => component.section === section && (context === 'all' || component.context === context || component.context === 'any')
-    ),
+    components.filter((component) => component.section === section),
     ({ title }) => scriptRank(title),
     ({ title }) => normalize(title)
   );

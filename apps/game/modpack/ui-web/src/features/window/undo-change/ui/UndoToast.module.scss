@@ -2,10 +2,11 @@
 
 .toast {
   position: absolute;
+  z-index: 30;
+  right: 24px;
   bottom: 24px;
-  left: 50%;
   display: flex;
-  width: 520px;
+  width: 440px;
   height: 44px;
   flex-direction: row;
   align-items: center;
@@ -13,7 +14,6 @@
   border: 1px solid token(win-line-strong);
   border-radius: token(win-radius);
   border-left: 3px solid token(win-index);
-  margin-left: -260px;
   background-color: token(color-surface-overlay);
   background-image: token(win-toast);
   box-shadow: token(win-shadow);

@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import type { UiSection } from '@/shared/api/protocol';
 
-import { $state, $view, CONTEXT_FILTER, receiveState, SECTION_NAV } from '@/entities/window/window-state';
+import { $state, $view, receiveState, SECTION_NAV } from '@/entities/window/window-state';
 import stateSample from '@/shared/api/protocol/_tests/fixtures/state.sample.json?raw';
 
 import { useSectionCards } from '../use-section-cards';
@@ -15,12 +15,12 @@ const cardsOf = (section: UiSection) => renderHook(() => useSectionCards({ secti
 
 beforeEach(() => {
   $state.set(null);
-  $view.set({ section: SECTION_NAV.first, expanded: [], context: CONTEXT_FILTER.hangar });
+  $view.set({ section: SECTION_NAV.first });
   receiveState(sample);
 });
 
 describe(useSectionCards, () => {
-  it('lists the cards of a tool page whatever the context filter says', () => {
+  it('lists the cards of a tool page', () => {
     const hud = cardsOf('hud');
 
     expect(hud.empty).toBe(false);

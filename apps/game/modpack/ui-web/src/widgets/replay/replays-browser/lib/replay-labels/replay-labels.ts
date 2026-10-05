@@ -13,7 +13,7 @@ export const replayName = (item: ReplayItem): string =>
   joined({ parts: [item.tank, item.map_title, formatMoment(item.time)], separator: REPLAYS_BROWSER.separators.name });
 
 export const rowMeta = ({ item, typeLabel }: RowMetaInput): string =>
-  joined({ parts: [item.map_title, typeLabel, formatMoment(item.time)], separator: REPLAYS_BROWSER.separators.meta });
+  joined({ parts: [item.map_title, typeLabel], separator: REPLAYS_BROWSER.separators.meta });
 
 export const uploadHintKey = ({ item, upload }: UploadHintInput): ReplaysStringKey | null =>
   item.arena === null ? 'uploadNoArena' : REPLAYS_BROWSER.uploadHints[upload];

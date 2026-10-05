@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { ScrollArea } from '@/ui-kit';
 
 import type { ReplayListProps } from './ReplayList.types';
 
@@ -10,14 +10,9 @@ import s from './ReplayList.module.scss';
 
 export const ReplayList = ({ items, selectedId, label, resetKey, onSelect }: ReplayListProps) => {
   const list = useVirtualList({ count: items.length, rowHeight: REPLAYS_BROWSER.rowHeight, overscan: REPLAYS_BROWSER.overscan });
-  const { toTop } = list;
-
-  useEffect(() => {
-    toTop();
-  }, [resetKey, toTop]);
 
   return (
-    <div ref={list.ref} aria-label={label} className={s.list} role='region' onScroll={list.onScroll}>
+    <ScrollArea contain key={resetKey} className={s.list} label={label} onMetrics={list.onMetrics}>
       <div ref={list.canvasRef} className={s.canvas} style={{ height: `${list.total}rem` }}>
         {items.slice(list.start, list.end).map((item, offset) => (
           <ReplayRow
@@ -30,6 +25,6 @@ export const ReplayList = ({ items, selectedId, label, resetKey, onSelect }: Rep
           />
         ))}
       </div>
-    </div>
+    </ScrollArea>
   );
 };

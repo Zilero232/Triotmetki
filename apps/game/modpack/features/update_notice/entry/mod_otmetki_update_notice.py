@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.update_notice import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register update_notice\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register update_notice\n') + traceback.format_exc())

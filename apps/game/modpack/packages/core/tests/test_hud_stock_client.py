@@ -5,7 +5,7 @@ import sys
 import types
 import unittest
 
-import _support  # noqa: F401
+import _support
 from otmetki.core.events import EventBus
 from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer, alias_of, panel_schema
 from otmetki.core.storage import MemoryFile
@@ -110,8 +110,7 @@ def restore_stubs(saved):
             sys.modules.pop(name, None)
         else:
             sys.modules[name] = module
-    for name in [name for name in sys.modules if name.startswith('otmetki.core.client.hud')]:
-        del sys.modules[name]
+    _support.forget_modules('otmetki.core.client.hud')
 
 
 class StockControlTest(unittest.TestCase):

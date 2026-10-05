@@ -7,4 +7,4 @@ try:
     register()
     boot()
 except Exception:
-    print('[OTMETKI] failed to register replay_manager\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register replay_manager\n') + traceback.format_exc())

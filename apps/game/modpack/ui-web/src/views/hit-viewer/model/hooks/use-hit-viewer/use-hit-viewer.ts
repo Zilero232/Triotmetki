@@ -4,6 +4,7 @@ import { gameface } from '@/shared/api/gameface';
 import { onDistinct } from '@/shared/lib/on-distinct';
 
 import type { CameraMove } from '../../../lib/camera-move';
+import type { HitStep } from '../../../lib/hit-step';
 import type { ViewerMarks, ViewerSide, ViewerState } from '../../../lib/viewer-protocol';
 
 import { hitStep } from '../../../lib/hit-step';
@@ -37,7 +38,7 @@ export const useHitViewer = () => {
   const pickHit = (index: number) => sendViewer({ command: 'select', index });
   const pickTab = (tab: ViewerSide) => sendViewer({ command: 'tab', tab });
 
-  const stepHit = (step: -1 | 1) => {
+  const stepHit = (step: HitStep) => {
     const next = state ? hitStep({ indexes: state.rows.map((row) => row.index), selected: state.selected, step }) : null;
 
     if (next !== null) {

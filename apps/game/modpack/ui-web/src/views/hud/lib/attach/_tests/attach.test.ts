@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { HudAttach } from '@/shared/api/hud-protocol';
 
 import { HUD_OVERLAY } from '../../../config';
-import { attachRect } from '../attach';
+import { attachRect, stockBarRect } from '../attach';
 
 const FULL_HD = { width: 1920, height: 1080 };
 
@@ -33,18 +33,18 @@ describe(attachRect, () => {
     expect(rect.top + rect.height).toBe(1080 - 58 - 6);
   });
 
-  it('puts the equipment row 12 px left of the consumables panel', () => {
+  it('puts the equipment row above the left half of the consumables panel', () => {
     const rect = attachRect({ attach: attach('bar_left'), size: SIZE, screen: FULL_HD });
-
-    expect(rect.left + rect.width).toBe(960 - 399 / 2 - 12);
-    expect(rect.top + rect.height).toBe(1080 - 8);
-  });
-
-  it('lifts the equipment row above the left half of the bar when it would meet the battle log', () => {
-    const rect = attachRect({ attach: attach('bar_left', 684), size: { width: 300, height: 44 }, screen: FULL_HD });
 
     expect(rect.left + rect.width).toBe(960 - 6);
     expect(rect.top + rect.height).toBe(1080 - 64);
+  });
+
+  it('keeps the equipment row above the bar however wide the bar is', () => {
+    const narrow = attachRect({ attach: attach('bar_left', 285), size: SIZE, screen: FULL_HD });
+    const wide = attachRect({ attach: attach('bar_left', 684), size: SIZE, screen: FULL_HD });
+
+    expect(wide).toStrictEqual(narrow);
   });
 
   it('keeps both lifted panels apart above the bar', () => {
@@ -70,11 +70,11 @@ describe(attachRect, () => {
     expect(rect.top + rect.height).toBe(960 - height - 6);
   });
 
-  it('keeps the equipment row clear of the post-mortem tips when the bar is gone', () => {
-    const { width } = HUD_OVERLAY.postmortemTips;
+  it('keeps the equipment row above the post-mortem tips when the bar is gone', () => {
+    const { height } = HUD_OVERLAY.postmortemTips;
     const rect = attachRect({ attach: attach('bar_left', 0), size: { width: 160, height: 44 }, screen: FULL_HD });
 
-    expect(rect.left + rect.width).toBe(960 - width / 2 - 12);
+    expect(rect.top + rect.height).toBe(1080 - height - 6);
   });
 
   it('drops the previous battle card to the corner when the minimap is gone', () => {
@@ -93,11 +93,26 @@ describe(attachRect, () => {
     expect(large.top + large.height).toBe(1080 - 490 - 12);
   });
 
-  it('puts battle progress right of the score strip, under it on a narrow screen', () => {
+  it('puts battle progress right of the score strip, under its right half on a narrow screen', () => {
     const wide = attachRect({ attach: attach('score_right'), size: SIZE, screen: FULL_HD });
     const narrow = attachRect({ attach: attach('score_right'), size: SIZE, screen: { width: 1600, height: 900 } });
 
     expect([wide.left, wide.top]).toStrictEqual([960 + 308, 4]);
-    expect([narrow.left, narrow.top]).toStrictEqual([(1600 - 230) / 2, 52]);
+    expect([narrow.left, narrow.top]).toStrictEqual([800 + 308 - 12 - 230, 52]);
+  });
+});
+
+describe(stockBarRect, () => {
+  it('is the consumables panel centred at the bottom of the screen', () => {
+    expect(stockBarRect({ attach: attach('bar_left'), screen: FULL_HD })).toEqual({
+      left: (1920 - 399) / 2,
+      top: 1080 - HUD_OVERLAY.attach.bar.height,
+      width: 399,
+      height: HUD_OVERLAY.attach.bar.height
+    });
+  });
+
+  it('is nothing while the consumables panel is off the screen', () => {
+    expect(stockBarRect({ attach: attach('bar_left', 0), screen: FULL_HD })).toBeNull();
   });
 });

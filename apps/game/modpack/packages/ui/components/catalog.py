@@ -33,6 +33,19 @@ class FeatureInfo(object):
     def editor(self):
         return getattr(self.editor_module, 'editor', None)
 
+    def parts(self):
+        return tuple(getattr(self.settings_module, 'PARTS', ()) or ())
+
+    def part_editor(self, part):
+        name = part.get('editor')
+        return getattr(self.editor_module, name, None) if name else None
+
+    def part_instance(self, part_id):
+        instance = self.instance
+        if instance is None or not hasattr(instance, 'ui_parts'):
+            return None
+        return instance.ui_parts().get(part_id)
+
     def group(self, panel):
         declared = getattr(self.settings_module, 'GROUP', None)
         if declared:
@@ -132,6 +145,30 @@ def _feature_component(feature, sources):
     )
 
 
+# A feature's other component (settings PARTS): a row of its own with its components.json section, config.json switch
+# and editor, for a feature that draws more than one thing (the marks: the battle panel and the hangar Tank card).
+def _part_component(feature, part, sources):
+    part_id = part['id']
+    section = sources.section(part_id)
+    if section is None:
+        return None
+
+    switch = part.get('switch')
+    has_config_switch = switch is not None and sources.has_config_key(switch)
+    return Component(
+        part_id,
+        part.get('group') or GROUP_HANGAR,
+        sources.section_source(part_id),
+        sorted(section.schema.defaults),
+        switch=switch if has_config_switch else section_switch(section),
+        switch_source=sources.config_source() if has_config_switch else None,
+        panel=part_id in sources.panels(),
+        instance=feature.part_instance(part_id),
+        advanced=tuple(part.get('advanced') or ()),
+        editor=feature.part_editor(part),
+    )
+
+
 def _panel_component(sources, panel_id, section):
     return Component(
         panel_id,
@@ -147,6 +184,7 @@ def _claimed_keys(features):
     claimed = set()
     for feature in features:
         claimed.update(feature.config_keys())
+        claimed.update(part.get('switch') for part in feature.parts())
     return claimed
 
 
@@ -157,8 +195,8 @@ def build_catalog(context, companion_instance=None):
 
     for feature in features:
         component = _feature_component(feature, sources)
-        if component is not None:
-            components.append(component)
+        parts = [_part_component(feature, part, sources) for part in feature.parts()]
+        components.extend(item for item in [component] + parts if item is not None)
 
     seen = set(component.id for component in components)
     for panel_id in sorted(sources.panels()):

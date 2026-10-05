@@ -5,16 +5,14 @@ import BigWorld
 from ....core.client.game import client_attr, service
 from ....core.hooks import subscribe, unsubscribe
 from ....core.log import log, log_exception, safe
-from ..model import MODULE_KEYS, along, effect_model, first_plate, shell_model
+from ..model import MODULE_KEYS, along, effect_model, first_plate, hit_geometry, shell_model
+from ..model.constants import PART_NAMES
 from .constants import (
     CAMERA_MANAGER_CLASS,
     CAMERA_MANAGER_MODULE,
-    DECODER_CLASS,
-    DECODER_MODULE,
     FOCUS_DISTANCE_M,
     FOCUS_LIMITS_M,
     GUN_NODE,
-    LAST_STRUCTURAL_INDEX,
     MATERIAL_PARTS,
     PREVIEW_MODULE,
     PREVIEW_NAME,
@@ -58,12 +56,6 @@ def is_exact(target):
     return all(target.get(key) for key in MODULE_KEYS)
 
 
-def _max_component_index(descriptor):
-    tracks = getattr(getattr(descriptor, 'chassis', None), 'tracks', None)
-    pairs = getattr(tracks, 'trackPairs', None) or ()
-    return LAST_STRUCTURAL_INDEX + max(len(pairs) - 1, 0)
-
-
 def _material(descriptor, part_index, material_kind):
     found = None
     if 0 <= part_index < len(MATERIAL_PARTS):
@@ -82,8 +74,8 @@ def _rotation(yaw, pitch):
     return matrix
 
 
-# poliroid BattleHits' own models (MIT, shipped unmodified), placed the way its HangarScene does it. UNVERIFIED on Lesta
-# 1.45: the models load and draw in the hangar space.
+# poliroid BattleHits' own models (MIT, shipped unmodified), placed the way its HangarScene does it: the shell at the
+# hit point turned along its path, the outcome marker at the same point.
 class SceneModels(object):
 
     def __init__(self):
@@ -103,16 +95,21 @@ class SceneModels(object):
         self.models[path] = (model, motor)
         return self.models[path]
 
-    def show(self, space_id, paths, point, direction):
+    # The models ride on the hit part's node (math_utils.MatrixProviders.product, as the hangar appearance links its
+    # gun collision), so they follow the turret and gun pose the model takes.
+    def show(self, space_id, paths, node, geometry):
+        import Math
+        import math_utils
         self.hide()
         self.space_id = space_id
+        direction = Math.Vector3(*geometry.direction)
         placement = _rotation(direction.yaw, direction.pitch)
-        placement.translation = point
+        placement.translation = Math.Vector3(*geometry.point)
         for path in paths:
             if path is None:
                 continue
             model, motor = self._model(path)
-            motor.signal = placement
+            motor.signal = math_utils.MatrixProviders.product(placement, node)
             model.visible = True
 
     def hide(self):
@@ -129,11 +126,10 @@ class SceneModels(object):
 # The hangar vehicle is swapped the way the client's own vehicle preview does it (CurrentVehicle.g_currentPreviewVehicle
 # .selectVehicle(intCD, strCD): HangarSpace.updatePreviewVehicle with the stock style; the stock EarlyAccessVehicleView,
 # a Gameface lobby sub view like ours, does the same), and given back with its selectNoVehicle(), which refreshes the
-# selected vehicle with its own outfit (RU 1.45 VehiclePreview._dispose). The hits are decoded on the loaded model by
-# the client's own decoder (VehicleEffects.DamageFromShotDecoder.decodeHitPoints on the hangar appearance's collisions),
-# so a marker sits where the battle drew the hit effect; the turret and gun take the pose the shot found them in, and
-# the camera flies to the hit the way BattleHits' HangarScene._setCameraData does. UNVERIFIED on Lesta 1.45: the
-# collision component of the hangar vehicle, the node pose and the camera flight.
+# selected vehicle with its own outfit (RU 1.45 VehiclePreview._dispose). A recorded point is placed in its part's
+# collision box on the loaded model (model.geometry), the turret and gun take the pose the shot found them in, and the
+# camera flies to the hit the way BattleHits' HangarScene._setCameraData does. Setting the stage up needs no battle:
+# it only follows the hangar's vehicle changes until a hit asks for a vehicle.
 class HangarStage(object):
 
     def __init__(self, on_loaded):
@@ -155,6 +151,9 @@ class HangarStage(object):
         self.generation += 1
         self.space = hangar_space()
         if self.space is None or self.preview() is None:
+            log('hit viewer: no hangar space or vehicle preview (%s), the hits cannot be shown on a model'
+                % ('space' if self.space is None else 'preview'))
+            self.space = None
             return False
         self.subscribed = subscribe(self.space, 'onVehicleChanged', self._on_vehicle_changed)
         if client_attr(CAMERA_MANAGER_MODULE, CAMERA_MANAGER_CLASS) is None:
@@ -162,6 +161,8 @@ class HangarStage(object):
         return True
 
     def show(self, target):
+        if self.space is None:
+            return
         self.loading = True
         self.shown = True
         self.scene.hide()
@@ -227,44 +228,58 @@ class HangarStage(object):
         model.node(TURRET_NODE, _rotation(yaw, 0.0))
         model.node(GUN_NODE, _rotation(0.0, pitch))
 
-    def decode(self, segments):
-        entity = self.entity()
-        decoder = client_attr(DECODER_MODULE, DECODER_CLASS)
-        appearance = getattr(entity, 'appearance', None)
-        collisions = getattr(appearance, 'collisions', None)
-        if decoder is None or collisions is None:
-            return None
-        descriptor = appearance.typeDescriptor
-        points = decoder.decodeHitPoints(segments, collisions, _max_component_index(descriptor), descriptor)
-        if not points:
-            return None
-        first, last = points[0], points[-1]
-        return last.componentName, last.matrix.translation, first.matrix.applyToAxis(2)
+    def collisions(self):
+        return getattr(getattr(self.entity(), 'appearance', None), 'collisions', None)
 
-    def world(self, decoded):
+    # The parts' collision boxes are all a recorded point needs to be placed: the client's decoder
+    # (DamageFromShotDecoder.decodeHitPoints) also ray-tests the collision, which the hangar vehicle may not answer on
+    # the frame it reports itself loaded, so a hit came back undecoded (python.log 2026-10-05: "no hit of the vehicle
+    # own decoded on the model").
+    def boxes(self):
+        collisions = self.collisions()
+        if collisions is None:
+            return None
+        found = {}
+        for index in range(len(PART_NAMES)):
+            box = collisions.getBoundingBox(index)
+            if box:
+                found[index] = (tuple(box[0]), tuple(box[1]))
+        return found
+
+    def geometry(self, segments, boxes):
+        return hit_geometry(segments, boxes) if boxes else None
+
+    def node(self, geometry):
+        return self.entity().model.node(geometry.part)
+
+    def world(self, geometry):
         import Math
-        name, point, direction = decoded
-        node = Math.Matrix(self.entity().model.node(name))
-        world_direction = node.applyVector(direction)
-        world_direction.normalise()
-        return node.applyPoint(point), world_direction
+        node = Math.Matrix(self.node(geometry))
+        direction = node.applyVector(Math.Vector3(*geometry.direction))
+        direction.normalise()
+        return node.applyPoint(Math.Vector3(*geometry.point)), direction
 
-    def measure(self, decoded, shell=None, caliber=None):
-        point, direction = self.world(decoded)
-        appearance = self.entity().appearance
-        found = appearance.collisions.collideAllWorld(point - direction * PROBE_M, point + direction * PROBE_M)
+    # The armour along the shell's path through the hit point, on the hangar model's collision: the plate's angle to
+    # the path and its material (the vehicle's own armour values, items.vehicles). None until the collision answers.
+    def measure(self, geometry, shell=None, caliber=None):
+        collisions = self.collisions()
+        if collisions is None:
+            return None
+        point, direction = self.world(geometry)
+        found = collisions.collideAllWorld(point - direction * PROBE_M, point + direction * PROBE_M)
+        descriptor = self.entity().appearance.typeDescriptor
         layers = []
         for _, hit_angle_cos, material_kind, part_index in found or ():
-            material = _material(appearance.typeDescriptor, part_index, material_kind)
+            material = _material(descriptor, part_index, material_kind)
             if material is not None and material.armor:
                 layers.append((hit_angle_cos, material.armor, material.useHitAngle))
         return first_plate(layers, shell, caliber)
 
-    def clip(self, decoded):
+    def clip(self, geometry):
         import Math
         project = client_attr(PROJECTION_MODULE, PROJECTION_FUNCTION)
         matrix = project()
-        point, direction = self.world(decoded)
+        point, direction = self.world(geometry)
         tail = Math.Vector3(*along(tuple(point), tuple(direction), -TAIL_M))
         return tuple(self._apply(matrix, Math.Vector4(value.x, value.y, value.z, 1.0)) for value in (point, tail))
 
@@ -273,13 +288,14 @@ class HangarStage(object):
         found = matrix.applyV4Point(vector)
         return found.x, found.y, found.z, found.w
 
-    def focus(self, decoded, hit, duration):
-        point, direction = self.world(decoded)
+    def focus(self, geometry, hit, duration):
         paths = (shell_model(hit.get('shell')), effect_model(hit['outcome'], hit.get('damage')))
         try:
-            self.scene.show(self.space.spaceID, paths, point, direction)
+            self.scene.show(self.space.spaceID, paths, self.node(geometry), geometry)
         except Exception:
             log_exception('hit viewer: scene models')
         manager = camera_manager(self.space)
-        if manager is not None:
-            manager.moveCamera(point, direction.yaw, -direction.pitch, FOCUS_DISTANCE_M, duration, FOCUS_LIMITS_M)
+        if manager is None:
+            return
+        point, direction = self.world(geometry)
+        manager.moveCamera(point, direction.yaw, -direction.pitch, FOCUS_DISTANCE_M, duration, FOCUS_LIMITS_M)

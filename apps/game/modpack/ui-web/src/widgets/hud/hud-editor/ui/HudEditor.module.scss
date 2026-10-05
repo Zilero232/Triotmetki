@@ -8,16 +8,31 @@
 .toolbar {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 4px;
+}
+
+.legend {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.legendLabel {
+  margin-right: 8px;
+  color: token(win-text-label);
+  font-size: 13px;
 }
 
 .stage {
   position: relative;
   overflow: hidden;
-  width: 640px;
-  height: 360px;
-  border: 1px solid token(color-border-strong);
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  border: 1px solid token(win-stage-line);
   border-radius: token(radius-md);
   margin-top: 8px;
   background-color: token(color-bg-deep);
+  background-image: token(win-stage);
 }

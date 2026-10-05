@@ -5,7 +5,7 @@ import sys
 import types
 import unittest
 
-import _support  # noqa: F401
+import _support
 from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer, panel_schema
 from otmetki.core.storage import MemoryFile
 
@@ -201,8 +201,7 @@ def restore_stubs(saved):
 
 
 def forget_client_modules():
-    for name in [name for name in sys.modules if name.startswith(CLIENT_MODULES)]:
-        del sys.modules[name]
+    _support.forget_modules(CLIENT_MODULES)
 
 
 class CoverWatchTest(unittest.TestCase):

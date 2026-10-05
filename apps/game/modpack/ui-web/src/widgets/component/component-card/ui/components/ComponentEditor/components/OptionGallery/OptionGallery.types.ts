@@ -2,7 +2,7 @@ import type { EditorOption } from '../../../../../lib/editor-layout';
 
 export type OptionPickerProps = {
   label: string;
-  options: EditorOption[];
+  rows: EditorOption[][];
   onSelect: (value: string) => void;
   onHint: (label: string) => void;
 };

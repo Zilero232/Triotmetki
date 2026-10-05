@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import imp
 import os
-import sys
 import unittest
 
 import _support
@@ -12,11 +12,7 @@ VENDOR_SCRIPT = os.path.join(_support.MODPACK_DIR, 'tools', 'vendor', 'vendor.py
 
 
 def pins():
-    import importlib.util
-    spec = importlib.util.spec_from_file_location('otmetki_vendor_script', VENDOR_SCRIPT)
-    script = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(script)
-    return script.PINS
+    return imp.load_source(str('otmetki_vendor_script'), VENDOR_SCRIPT).PINS
 
 
 def licence_path(name):
@@ -37,7 +33,6 @@ class VendorVersionTest(unittest.TestCase):
     def test_attrs_reports_its_vendored_version(self):
         self.assertEqual(attr.__version__, VENDORED['attrs'])
 
-    @unittest.skipIf(sys.version_info[0] < 3, 'the vendoring script is Python 3 tooling')
     def test_versions_match_the_pins(self):
         pinned = dict((pin[0], pin[1]) for pin in pins())
 

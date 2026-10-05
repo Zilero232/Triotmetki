@@ -4,6 +4,7 @@ import type { ClientSize } from '@/shared/api/gameface';
 import type { HudPanel } from '@/shared/api/hud-protocol';
 
 import type { AnchorStyle } from '../anchor';
+import type { DockItem } from '../dock';
 
 export type Overrides = Partial<Record<string, Placement>>;
 
@@ -33,3 +34,5 @@ export type DockItemInput = Pick<LayoutLabelsInput, 'overrides' | 'screen' | 'si
 export type OpacityOfInput = { panel: HudPanel; settled: boolean };
 
 export type LabelStyleInput = { rect: Rect; scale: number; opacity: number };
+
+export type ObstaclesInput = Pick<LayoutLabelsInput, 'overrides' | 'panels' | 'screen'> & { items: DockItem[] };

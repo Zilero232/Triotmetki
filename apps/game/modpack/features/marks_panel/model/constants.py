@@ -20,7 +20,7 @@ CURVE_SITE = 'site'
 CURVE_ESTIMATED = 'estimated'
 
 # The Alt view: every detail row on, whatever the switches say.
-DETAIL_SWITCHES = ('show_targets', 'show_battle', 'show_step', 'show_battles', 'show_up')
+DETAIL_SWITCHES = ('show_targets', 'show_battle', 'show_step', 'show_up')
 
 # The percent's tone on the battle plate: by the change, or by how many mark levels (65, 85, 95) it has passed.
 MARK_TONES = ('muted', 'text', 'text', 'gold')
@@ -28,14 +28,12 @@ MARK_TONES = ('muted', 'text', 'text', 'gold')
 KIND = 'marks_panel'
 # The battle plate's bar (settings `bar`, the gunmarks «progress bar logic»): this battle's damage, or the percent.
 BAR_DAMAGE = 'damage'
-# The two plates of the battle panel (model/view.py PanelView.look) and the mark levels the plate draws as stars.
-LOOK_BOX = 'box'
-LOOK_SILHOUETTE = 'silhouette'
+# The mark levels the battle plate draws as stars.
 MAX_STARS = 3
-# The silhouette of a vehicle whose class is unknown (core.classes keys; ui-web marks-panel draws one per class).
+# The silhouette of a vehicle whose class is unknown on the Tank card's hero (core.classes keys).
 DEFAULT_SHAPE = 'medium'
 # The detail rows of a plate that shows none (a style at rest, or no thresholds for the tank).
-NO_ROWS = {'thresholds': [], 'step': None, 'average': None, 'battles': None}
+NO_ROWS = {'thresholds': [], 'step': None, 'average': None}
 
 PREVIEW_SIZE = (230, 76)
 PREVIEW_SNAPSHOT = {'moving_avg_damage': 2540, 'damage_rating': 8612, 'marks_on_gun': 2}
@@ -144,11 +142,16 @@ DELTA_COLORS = {1: COLOR_UP, 0: COLOR_NEUTRAL, -1: COLOR_DOWN}
 DELTA_TONES = {1: 'good', 0: 'muted', -1: 'bad'}
 DELTA_GLYPHS = {1: 'trend_up', 0: 'dot', -1: 'trend_down'}
 
-# The settings window's editor: the battle panel, its numbers, then the hangar Tank card.
+# The settings window's editors: the battle panel (its look, then its numbers) and the hangar Tank card (its look, then
+# its rows, then the carousel tiles).
 EDITOR_GROUPS = (
-    ('battle', ('show_battle_panel', 'style', 'bar', 'color_mode', 'alt_detail')),
-    ('numbers', ('show_targets', 'show_battles')),
-    ('hangar', ('hangar_card', 'hangar_style', 'show_trend', 'show_tank_ratings', 'carousel_percent')),
+    ('battle', ('style', 'bar', 'color_mode', 'alt_detail')),
+    ('numbers', ('show_targets',)),
+)
+CARD_EDITOR_GROUPS = (
+    ('card', ('style', 'alt_detail')),
+    ('rows', ('show_trend', 'show_tank_ratings')),
+    ('carousel', ('carousel_percent',)),
 )
 
 # The percent joins the stock stats row of a carousel tile (mastery, wins, marks), after the stock gap between them.

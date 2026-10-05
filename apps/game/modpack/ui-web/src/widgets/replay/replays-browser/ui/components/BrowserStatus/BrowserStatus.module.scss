@@ -15,11 +15,11 @@
 }
 
 .icon {
+  display: flex;
   padding: 12px;
   border: 2px solid token(color-border-strong);
   border-radius: token(radius-full);
   margin-bottom: 14px;
-  color: token(color-text-dim);
 }
 
 .title {

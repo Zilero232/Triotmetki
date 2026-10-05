@@ -106,8 +106,7 @@ class SessionStatsClientTest(unittest.TestCase):
 
     @staticmethod
     def purge():
-        for name in [name for name in sys.modules if name.startswith(CLIENT_PREFIXES)]:
-            del sys.modules[name]
+        _support.forget_modules(CLIENT_PREFIXES)
 
     def test_a_battle_dropped_by_a_reset_leaves_the_new_session_marks_alone(self):
         self.app.bus.emit('battle_ready', Avatar())

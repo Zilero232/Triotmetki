@@ -78,10 +78,15 @@ export const UI_ICON_NAMES = [
   'download',
   'keyboard',
   'maximize-2',
-  'ellipsis'
+  'ellipsis',
+  'play',
+  'folder',
+  'arrow-down',
+  'arrow-up',
+  'arrow-left'
 ] as const;
 
-export const UI_ICON_TONES = ['muted', 'text', 'accent', 'contrast', 'success', 'danger'] as const;
+export const UI_ICON_TONES = ['muted', 'text', 'accent', 'contrast', 'success', 'danger', 'gold'] as const;
 
 export const UI_ICONS = {
   file: 'icons.png',
@@ -97,6 +102,7 @@ export const UI_ICONS = {
     accent: 'color-accent',
     contrast: 'color-accent-contrast',
     success: 'color-success',
-    danger: 'color-danger'
+    danger: 'color-danger',
+    gold: 'color-gold'
   }
 } as const;

@@ -388,23 +388,20 @@ describe(useHudOverlay, () => {
     expect(mock.inputAreas().at(-1)).toEqual([0, 0, 0, 0]);
   });
 
-  it('asks the client for its own tooltip instead of drawing one when it offers it', async () => {
-    const { hook, hover, mock } = await startInBattle({ tooltips: true });
+  it('draws its own readable hint even when the client offers its tooltip', async () => {
+    const { hook, hover } = await startInBattle({ tooltips: true });
 
     hover(ON_LABEL);
 
-    expect(hook.result.current.hint).toBeNull();
-    expect(mock.viewEvents()).toMatchObject([{ on: true, arguments: [{ name: 'header' }, { name: 'body', string: PANEL_HINT }] }]);
+    expect(hook.result.current.hint?.text).toBe(PANEL_HINT);
   });
 
-  it('takes the client tooltip away when the cursor leaves the panel', async () => {
+  it('never opens the client tooltip, whose body text is too dim over the battle', async () => {
     const { hover, mock } = await startInBattle({ tooltips: true });
 
     hover(ON_LABEL);
 
-    hover(OFF_EVERY_PANEL);
-
-    expect(mock.viewEvents().at(-1)).toMatchObject({ on: false });
+    expect(mock.viewEvents()).toEqual([]);
   });
 
   it('draws a known widget instead of the text', async () => {

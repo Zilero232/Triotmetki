@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.camera import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register camera\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register camera\n') + traceback.format_exc())

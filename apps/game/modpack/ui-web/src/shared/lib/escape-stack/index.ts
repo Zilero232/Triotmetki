@@ -1,3 +1,3 @@
 export { addEscapeLayer, stepBack } from './escape-stack';
 
-export type { EscapeLayer, EscapeLayerKind } from './escape-stack.types';
+export type { EscapeLayerKind } from './escape-stack.types';

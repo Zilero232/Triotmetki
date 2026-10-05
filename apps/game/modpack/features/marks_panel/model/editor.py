@@ -1,11 +1,15 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.editor import editor_spec, sample
-from ..settings import PANEL_ID
-from .constants import EDITOR_GROUPS
-from .preview import card_preview_widget
+from ....core.editor import editor_spec
+from ..settings import CARD_PANEL_ID, PANEL_ID
+from .constants import CARD_EDITOR_GROUPS, EDITOR_GROUPS
 
 
+# Each page previews only its own HUD panel: the window draws the battle panel and the Tank card from their HUD
+# previews (model/preview.py).
 def editor(settings, translate):
-    card = sample(PANEL_ID, 'card', card_preview_widget(settings, translate), translate)
-    return editor_spec(PANEL_ID, EDITOR_GROUPS, translate, samples=(card,))
+    return editor_spec(PANEL_ID, EDITOR_GROUPS, translate)
+
+
+def card_editor(settings, translate):
+    return editor_spec(CARD_PANEL_ID, CARD_EDITOR_GROUPS, translate)

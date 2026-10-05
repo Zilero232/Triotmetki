@@ -2,21 +2,15 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import is_number
-from ....core.format import counted
-from ....core.classes import class_key
 from ....core.hud.icons import mark_icon
 from ....core.hud.widget import widget
 from ....core.moe import MARK_LEVELS, moe_macros
 from ....core.templates import render
 from . import target_levels
 from .constants import (
-    APPROX,
     BAR_DAMAGE,
     CURVE_ESTIMATED,
-    DEFAULT_SHAPE,
     KIND,
-    LOOK_BOX,
-    LOOK_SILHOUETTE,
     MARK_TONES,
     MAX_STARS,
     NO_ROWS,
@@ -30,8 +24,8 @@ from .constants import (
 # average that holds the percent (the gunmarks «damage progress» bar, or the 0-100 % scale), the damage dealt against
 # that average and the damage for the next goal; in the extended style or while Alt is held, the thresholds row and the
 # average row under it. The page draws the rows it gets; the style only tells it a custom template's text from the
-# plate. The `look` picks the plate: the framed box with its bar, or the own tank's contour filled to the percent; both
-# mark the gun's marks as stars.
+# plate. The plate marks the gun's marks as stars. The battles to the next mark, the trend and the tank's silhouette are
+# the hangar Tank card's (model/card.py): in battle the panel keeps to this battle.
 
 
 def _shown_percent(state):
@@ -96,12 +90,6 @@ def _average(state, settings, translate):
     return _average_row(state, translate)
 
 
-def _battles(state, settings, translate):
-    if not settings.get('show_battles') or state['next_level'] is None or state['battles'] is None:
-        return None
-    return {'level': state['next_level'], 'text': APPROX + counted(state['battles'], 'battles', translate)}
-
-
 def _is_estimate(state):
     return state['source'] == SOURCE_ESTIMATED or state.get('curve') == CURVE_ESTIMATED
 
@@ -111,7 +99,6 @@ def _rows(state, settings, translate):
         'thresholds': thresholds(state) if settings.get('show_targets') else [],
         'step': _step(state, settings),
         'average': _average(state, settings, translate),
-        'battles': _battles(state, settings, translate),
     }
 
 
@@ -136,20 +123,9 @@ def _style(settings):
     return style
 
 
-def _look(settings):
-    return settings.look() if hasattr(settings, 'look') else LOOK_BOX
-
-
 def _stars(state):
     marks = state['marks']
     return int(max(0, min(MAX_STARS, marks))) if is_number(marks) else 0
-
-
-def _next_mark(state):
-    if not state['has_curve'] or state['next_level'] is None:
-        return None
-    need = state['need_next']
-    return {'level': state['next_level'], 'need': need if is_number(need) else None}
 
 
 # The battle's combined damage against the average the percent follows: above it the percent rises.
@@ -159,15 +135,11 @@ def _damage(state, translate):
     return {'label': translate('marks_panel_damage_short'), 'value': state['damage'], 'target': state['ema']}
 
 
-def marks_widget(state, settings, translate, class_tag=None):
+def marks_widget(state, settings, translate):
     style = _style(settings)
-    look = _look(settings)
     goal = _goal(state, settings)
     data = {
-        'look': look,
         'stars': _stars(state),
-        'silhouette': (class_key(class_tag) or DEFAULT_SHAPE) if look == LOOK_SILHOUETTE else None,
-        'next': _next_mark(state),
         'damage': _damage(state, translate),
         'style': style,
         'has_curve': bool(state['has_curve']),

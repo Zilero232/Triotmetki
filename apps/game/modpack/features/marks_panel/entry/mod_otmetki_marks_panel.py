@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.marks_panel import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register marks_panel\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register marks_panel\n') + traceback.format_exc())

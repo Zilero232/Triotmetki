@@ -6,7 +6,7 @@ import sys
 import types
 import unittest
 
-import _support  # noqa: F401
+import _support
 from otmetki.features.battle_results.model.battle import CardQueue
 
 CLIENT_PACKAGE = 'otmetki.features.battle_results.client'
@@ -34,8 +34,7 @@ def load_panel_module():
 
 
 def purge():
-    for name in [name for name in sys.modules if name.startswith(PREFIXES)]:
-        del sys.modules[name]
+    _support.forget_modules(PREFIXES)
 
 
 class OfferTest(unittest.TestCase):

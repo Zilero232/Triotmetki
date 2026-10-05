@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.hangar_cleaner import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register hangar_cleaner\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register hangar_cleaner\n') + traceback.format_exc())

@@ -10,30 +10,65 @@
 
 .head {
   display: flex;
-  min-height: 56px;
+  height: 56px;
   flex-direction: row;
   flex-shrink: 0;
   align-items: center;
-  padding: 8px 24px 8px 12px;
+  padding: 0 24px 0 12px;
   border-bottom: 1px solid token(color-border);
+}
+
+.back {
+  display: flex;
+  height: 32px;
+  flex: 0 0 auto;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 10px 0 8px;
+  border: 1px solid transparent;
+  border-radius: token(radius-md);
+  background-color: transparent;
+  color: token(color-text);
+  cursor: pointer;
+
+  @include ease(background-color, border-color);
+
+  &:hover {
+    border-color: token(color-border-strong);
+    background-color: token(color-surface-hover);
+  }
+}
+
+.backLabel {
+  margin-left: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .tile {
   display: flex;
-  margin: 0 12px 0 8px;
+  flex: 0 0 auto;
+  margin: 0 0 0 12px;
 }
 
 .title {
+  min-width: 0;
+  flex: 0 1 auto;
   margin-right: 12px;
   color: token(color-text);
   font-size: 20px;
   font-weight: 700;
   line-height: 24px;
+
+  @include ellipsis;
 }
 
 .changed {
+  flex: 0 0 auto;
   color: token(color-accent);
   font-size: 11px;
+  white-space: nowrap;
 }
 
 .spacer {
@@ -51,12 +86,22 @@
 .controls {
   display: flex;
   width: 380px;
-  min-width: 0;
   min-height: 0;
+  flex: 0 0 auto;
   flex-direction: column;
-  flex-shrink: 0;
+  margin-right: 24px;
+}
+
+.controlsCompact {
+  width: 320px;
+  margin-right: 16px;
 }
 
 .groups {
   padding: 0 16px 8px 0;
+}
+
+.frame {
+  display: flex;
+  flex-direction: column;
 }

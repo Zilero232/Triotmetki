@@ -6,10 +6,13 @@ from ..compat import to_text
 from .constants import DATE_TIME_FORMAT
 
 
+# The client sets LC_TIME from the system locale (RU 1.45 client/game.py), where Windows' Russian, Ukrainian and
+# Belarusian locales give `%p` no text at all, so the 12-hour clock's AM/PM marker is written here.
 def format_moment(fmt, moment):
     """`time.strftime` as text; '' for an empty format (a switched-off clock or date)."""
     if not fmt:
         return u''
+    fmt = to_text(fmt).replace(u'%p', u'AM' if moment.tm_hour < 12 else u'PM')
     return to_text(time.strftime(str(fmt), moment))
 
 

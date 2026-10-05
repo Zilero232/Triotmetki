@@ -32,10 +32,6 @@ class HistoryBook(object):
             log(LOG_REPAIRED % self.history.repaired)
             self.history.save()
 
-    def settings_changed(self):
-        if self.history is not None:
-            self.history.max_entries = self.settings.get('max_entries')
-
     def is_open(self):
         return self.history is not None and self.is_enabled()
 

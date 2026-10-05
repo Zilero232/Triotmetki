@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.crosshair import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register crosshair\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register crosshair\n') + traceback.format_exc())

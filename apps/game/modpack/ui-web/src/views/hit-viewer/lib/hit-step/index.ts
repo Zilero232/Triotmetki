@@ -1,3 +1,3 @@
-export { hitStep } from './hit-step';
+export { hitStep, stepOfKey } from './hit-step';
 
-export type { HitStepInput } from './hit-step.types';
+export type { HitStep } from './hit-step.types';

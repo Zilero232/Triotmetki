@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'comp7_helper'
 PACKAGE_ID = 'net.triotmetki.comp7_helper'
 PACKAGE_NAME = 'Three Marks: Onslaught divisions'
-VERSION = '0.4.0'
+VERSION = '0.4.1'
 
 
 def create(app):

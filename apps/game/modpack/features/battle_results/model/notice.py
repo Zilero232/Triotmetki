@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from collections import OrderedDict  # novermin (2.7 has it; vermin counts 3.1 for the 3.x line)
+from collections import OrderedDict
 
 from ....core.vendor import six
 from .constants import NOTICE_ARENAS_LIMIT, STOCK_WAIT_S, UNCLAIMED_AFTER_S

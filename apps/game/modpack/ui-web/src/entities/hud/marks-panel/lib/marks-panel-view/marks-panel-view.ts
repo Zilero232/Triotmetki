@@ -3,7 +3,6 @@ import { clamp } from 'remeda';
 import type { DeltaDirection, HudTone } from '@/ui-kit';
 
 import { formatNumber, formatPercent, NUMBER_FORMAT } from '@/shared/lib/format-number';
-import { shiftColor } from '@/shared/lib/shift-color';
 
 import type { MarksPanelData } from '../../model/schemas';
 import type { LevelNeedView, MarksAverageView, MarksBarView, MarksDamageView, MarksGoalView, MarksPanelView } from './marks-panel-view.types';
@@ -54,9 +53,6 @@ const averageView = (average: MarksPanelData['average']): MarksAverageView | nul
         direction: direction(average.ema_projected - average.ema)
       };
 
-const battlesView = (data: MarksPanelData): MarksPanelView['battles'] =>
-  data.battles === null ? null : { label: toLabel(data, data.battles.level), value: data.battles.text };
-
 const damageView = (damage: MarksPanelData['damage']): MarksDamageView | null =>
   damage
     ? {
@@ -95,13 +91,7 @@ const barTone = (bar: NonNullable<MarksPanelData['bar']>): MarksBarView['tone'] 
 const barView = (bar: MarksPanelData['bar']): MarksBarView | null =>
   bar ? { fill: share(bar.value, bar.end), hold: share(bar.hold, bar.end), tone: barTone(bar) } : null;
 
-const lookOf = (data: MarksPanelData): MarksPanelView['look'] => {
-  if (data.style === 'minimal' || !data.has_curve) {
-    return 'line';
-  }
-
-  return data.look === 'silhouette' ? 'silhouette' : 'box';
-};
+const lookOf = (data: MarksPanelData): MarksPanelView['look'] => (data.style === 'minimal' || !data.has_curve ? 'line' : 'box');
 
 const startOf = ({ percent, delta }: MarksPanelData): number | null => (percent === null ? null : percent - (delta ?? 0));
 
@@ -129,9 +119,6 @@ export const marksPanelView = (data: MarksPanelData): MarksPanelView => ({
   start: startOf(data),
   projected: data.percent,
   milestone: milestoneOf(data),
-  fillColor: shiftColor({ delta: data.delta, span: MARKS_PANEL.shiftSpan }),
-  silhouette: data.silhouette ?? null,
-  next: data.next?.level ?? null,
   goal: goalView(data),
   target: targetView(data),
   bar: barView(data.bar ?? null),
@@ -140,6 +127,5 @@ export const marksPanelView = (data: MarksPanelData): MarksPanelView => ({
   damage: damageView(data.damage ?? null),
   step: stepText(data.step),
   average: averageView(data.average),
-  battles: battlesView(data),
   note: data.note
 });

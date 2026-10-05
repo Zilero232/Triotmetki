@@ -10,13 +10,13 @@ import type { ContentProps } from './Content.types';
 import { ReplaysIntro } from '../ReplaysIntro';
 import { ToolPage } from '../ToolPage';
 
-export const Content = ({ state, section, searching, editing, columns }: ContentProps) => {
-  if (searching) {
-    return <SearchPage card={ComponentCard} columns={columns} />;
+export const Content = ({ state, section, searching, editing, columns, compact }: ContentProps) => {
+  if (editing) {
+    return <ComponentEditor key={editing.id} compact={compact} component={editing} />;
   }
 
-  if (editing?.editor) {
-    return <ComponentEditor key={editing.id} component={editing} editor={editing.editor} />;
+  if (searching) {
+    return <SearchPage card={ComponentCard} columns={columns} />;
   }
 
   if (section === SECTION.profiles) {
@@ -37,7 +37,7 @@ export const Content = ({ state, section, searching, editing, columns }: Content
   }
 
   if (section === SECTION.replays) {
-    return <SectionPage key={section} card={ComponentCard} columns={columns} intro={<ReplaysIntro />} section={section} />;
+    return <SectionPage fill key={section} card={ComponentCard} columns={columns} intro={<ReplaysIntro />} section={section} />;
   }
 
   return <SectionPage key={section} card={ComponentCard} columns={columns} intro={section === SECTION.data && <AccountCard />} section={section} />;

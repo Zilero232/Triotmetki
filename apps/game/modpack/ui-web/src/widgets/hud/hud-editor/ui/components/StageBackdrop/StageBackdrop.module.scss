@@ -1,0 +1,68 @@
+@use '@/shared/styles/gameface' as *;
+
+.backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.guideX {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: token(win-stage-line);
+}
+
+.guideY {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 100%;
+  background-color: token(win-stage-line);
+}
+
+.reticle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 36px;
+  height: 36px;
+  box-sizing: border-box;
+  border: 1px solid token(hud-rule);
+  border-radius: 50%;
+  margin-top: -18px;
+  margin-left: -18px;
+}
+
+.reticleDot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  margin-top: -2px;
+  margin-left: -2px;
+  background-color: token(hud-tick);
+}
+
+.stock {
+  position: absolute;
+  box-sizing: border-box;
+  border: 1px solid token(win-stage-line);
+  background-color: token(shade-20);
+}
+
+.minimap {
+  background-image: token(win-stage-grid), token(win-stage-forest);
+  background-size:
+    12.5% 12.5%,
+    12.5% 12.5%,
+    100% 100%;
+  opacity: 0.6;
+}

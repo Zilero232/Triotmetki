@@ -24,3 +24,8 @@ READY_SPACES = ('LOBBY', 'BATTLE')
 # openwg_gameface.RESTART_FLAG_FILE (1.2.2, Lesta): the file in the client's working folder that marks the restart it
 # triggered after writing a new res_map.json.
 RESTART_FLAG_FILE = 'res_map_restart'
+
+# How many mouse presses after the HUD window opens in the hangar are logged with the client's answer and the focused
+# windows: enough to tell a press the stock GUI took from one nothing took (game.handleKeyEvent, RU 1.45 client source:
+# GUI.handleKeyEvent gets a mouse button first) on the way back from a battle.
+CLICK_REPORTS = 3

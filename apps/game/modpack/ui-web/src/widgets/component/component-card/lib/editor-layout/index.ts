@@ -1,3 +1,3 @@
-export { editorGroups, editorRow } from './editor-layout';
+export { editorGroups } from './editor-layout';
 
-export type { EditorGroup, EditorOption, EditorRow, EditorRowKind } from './editor-layout.types';
+export type { EditorGroup, EditorOption, EditorRow } from './editor-layout.types';

@@ -4,20 +4,21 @@ import type { UiState } from '@/shared/api/protocol';
 
 import { parseState } from '@/shared/api/protocol';
 
-import type { ContextFilter, Section, UndoEntry, View } from './store.types';
+import type { OpenSettingInput, Section, UndoEntry, View } from './store.types';
 
-import { CONTEXT_FILTER, SECTION_NAV } from '../../config';
+import { SECTION_NAV } from '../../config';
 import { searchComponents, summarize } from '../../lib/components';
 import { fontSafeState } from '../../lib/font-safe-state';
 import { seedScroll } from '../scroll';
 
 export const $state = atom<UiState | null>(null);
 export const $invalid = atom(false);
-export const $view = map<View>({ section: SECTION_NAV.first, expanded: [], context: CONTEXT_FILTER.all });
+export const $view = map<View>({ section: SECTION_NAV.first });
 export const $query = atom('');
 export const $undo = atom<UndoEntry[]>([]);
 export const $focusSeq = atom(0);
 export const $editor = atom<string | null>(null);
+export const $editorFocus = atom<string | null>(null);
 
 export const $components = computed($state, (state) => state?.components ?? []);
 export const $summaries = computed($components, summarize);
@@ -26,7 +27,8 @@ export const $hits = computed([$components, $query], (components, query) => sear
 export const openSection = (section: Section): void => {
   $query.set('');
   $editor.set(null);
-  $view.set({ ...$view.get(), section, context: CONTEXT_FILTER.all });
+  $editorFocus.set(null);
+  $view.set({ ...$view.get(), section });
 };
 
 export const receiveState = (raw: string | null): boolean => {
@@ -62,23 +64,19 @@ export const receiveState = (raw: string | null): boolean => {
   return true;
 };
 
-export const setContextFilter = (context: ContextFilter): void => {
-  $view.setKey('context', context);
-};
-
-export const toggleExpanded = (componentId: string): void => {
-  const view = $view.get();
-  const open = view.expanded.includes(componentId);
-
-  $view.setKey('expanded', open ? view.expanded.filter((id) => id !== componentId) : [...view.expanded, componentId]);
-};
-
 export const openEditor = (componentId: string): void => {
+  $editorFocus.set(null);
+  $editor.set(componentId);
+};
+
+export const openSetting = ({ componentId, key }: OpenSettingInput): void => {
+  $editorFocus.set(key);
   $editor.set(componentId);
 };
 
 export const closeEditor = (): void => {
   $editor.set(null);
+  $editorFocus.set(null);
 };
 
 export const setQuery = (query: string): void => {

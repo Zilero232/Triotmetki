@@ -1,0 +1,24 @@
+@use '@/shared/styles/gameface' as *;
+
+.card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  width: 420px;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 24px;
+  border: 1px solid token(color-border);
+  border-radius: token(radius-md);
+  background-color: token(color-surface-overlay);
+  transform: translate(-50%, -50%);
+}
+
+.title {
+  margin-bottom: 8px;
+  color: token(color-text);
+  font-size: 18px;
+
+  @include caps;
+}

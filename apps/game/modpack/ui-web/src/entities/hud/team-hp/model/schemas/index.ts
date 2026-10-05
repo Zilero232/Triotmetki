@@ -1,3 +1,3 @@
 export { teamHpSchema } from './team-hp.schemas';
 
-export type { TeamHpData, TeamHpSide, TeamHpVehicle } from './team-hp.types';
+export type { TeamHpData, TeamHpVehicle } from './team-hp.types';

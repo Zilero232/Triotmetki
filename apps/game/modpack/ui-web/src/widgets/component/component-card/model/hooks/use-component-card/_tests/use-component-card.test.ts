@@ -2,9 +2,9 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { UiAction, UiComponent } from '@/shared/api/protocol';
+import type { UiAction, UiComponent, UiField } from '@/shared/api/protocol';
 
-import { $editor } from '@/entities/window/window-state';
+import { $editor, $editorFocus } from '@/entities/window/window-state';
 import { send } from '@/shared/api/protocol/protocol';
 
 import { useComponentCard } from '../use-component-card';
@@ -42,12 +42,29 @@ beforeEach(() => {
 });
 
 describe(useComponentCard, () => {
-  it('opens the editor of a card that has one instead of expanding it', () => {
+  it('opens the page of a card with an editor', () => {
     const card = mountCard({ component: component({ editor: { groups: [], icons: {}, swatches: {} } }) });
 
-    act(() => card.result.current.toggleOpen());
+    act(() => card.result.current.open());
 
     expect($editor.get()).toBe('replay_manager');
+  });
+
+  it('opens the page of a card without an editor too', () => {
+    const card = mountCard({ component: component({ actions: [action()] }) });
+
+    act(() => card.result.current.open());
+
+    expect($editor.get()).toBe('replay_manager');
+  });
+
+  it('opens a search result on the setting it found', () => {
+    const size: UiField = { key: 'size', label: 'Size', hint: null, type: 'bool', value: true, default: true };
+    const card = mountCard({ component: component({ fields: [size] }), fields: [size] });
+
+    act(() => card.result.current.open());
+
+    expect($editorFocus.get()).toBe('size');
   });
 
   it('runs an action without a confirmation at once', () => {
@@ -103,18 +120,6 @@ describe(useComponentCard, () => {
     const withPage = component({ page: { kind: 'list', empty: '', rows: [] } });
 
     expect(mountCard({ component: withPage }).result.current.showEmpty).toBe(false);
-  });
-
-  it('never opens a card with nothing inside', () => {
-    expect(mountCard({ component: component() }).result.current.expandable).toBe(false);
-  });
-
-  it('keeps a card with something inside closed at first', () => {
-    expect(mountCard({ component: component({ actions: [action()] }) }).result.current.open).toBe(false);
-  });
-
-  it('opens a search result at once', () => {
-    expect(mountCard({ component: component({ actions: [action()] }), forceOpen: true }).result.current.open).toBe(true);
   });
 
   it('marks where the component works', () => {

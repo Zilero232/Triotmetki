@@ -1,3 +1,3 @@
-export { fitScale } from './fit-scale';
+export { fitPlacement } from './fit-scale';
 
-export type { FitScaleInput } from './fit-scale.types';
+export type { FitPlacement } from './fit-scale.types';

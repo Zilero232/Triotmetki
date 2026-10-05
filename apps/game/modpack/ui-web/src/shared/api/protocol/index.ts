@@ -8,7 +8,6 @@ export type {
   UiAction,
   UiComponent,
   UiContext,
-  UiDetail,
   UiEditor,
   UiFeed,
   UiFeedItem,

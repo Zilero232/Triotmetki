@@ -5,4 +5,5 @@ import type { ComponentEditorModel } from '../../../../ComponentCard.types';
 export type EditorStageProps = {
   component: UiComponent;
   model: ComponentEditorModel;
+  compact: boolean;
 };

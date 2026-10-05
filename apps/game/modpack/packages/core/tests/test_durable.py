@@ -311,7 +311,20 @@ class PathTextTest(unittest.TestCase):
     def test_text_stays_text(self):
         self.assertEqual(to_path_text('путь'), 'путь')
 
-    def test_utf8_bytes_decode_to_text(self):
+    def setUp(self):
+        self.filesystem_encoding = sys.getfilesystemencoding
+
+    def tearDown(self):
+        sys.getfilesystemencoding = self.filesystem_encoding
+
+    def test_bytes_decode_in_the_filesystem_encoding(self):
+        sys.getfilesystemencoding = lambda: 'cp1251'
+
+        self.assertEqual(to_path_text('путь'.encode('cp1251')), 'путь')
+
+    def test_utf8_bytes_decode_when_the_filesystem_encoding_cannot(self):
+        sys.getfilesystemencoding = lambda: 'ascii'
+
         self.assertEqual(to_path_text('путь'.encode('utf-8')), 'путь')
 
 

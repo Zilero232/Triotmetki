@@ -7,4 +7,5 @@ export type ContentProps = {
   searching: boolean;
   editing: UiComponent | null;
   columns: number;
+  compact: boolean;
 };

@@ -15,7 +15,7 @@ from ..model.card import TankCard, card_text, tank_card
 from ..model.constants import CARD_PREVIEW_SIZE
 from ..model.preview import card_preview_text, card_preview_widget
 from ..model.research import research_state
-from ..settings import CARD_PANEL_ID, CARD_SCHEMA, SWITCH
+from ..settings import CARD_PANEL_ID, CARD_SCHEMA, CARD_SWITCH
 from .carousel import CarouselPercent
 from .history import HistoryBook
 from .research import selected_research
@@ -25,27 +25,27 @@ def _ignore_key():
     pass
 
 
-# The hangar Tank card of the selected tank. Its own components.json section (panel `hangar_marks`) holds only its
-# place; what it shows follows the marks_panel section (`options`). Alt is read from the game's own key events, as the
-# HUD edit modifier is, since the hangar has no extended-info key of its own.
+# The hangar Tank card of the selected tank, a component of its own: its components.json section (panel
+# `hangar_marks`) holds its place and what it shows, its config.json switch turns it, the marks history it keeps and
+# the carousel percent on and off. Alt is read from the game's own key events, as the HUD edit modifier is, since the
+# hangar has no extended-info key of its own.
 class TankCardPanel(FeatureComponent):
 
-    def __init__(self, app, options):
+    def __init__(self, app):
         self.hud = hud_layer(app)
         self.moe = moe_service(app)
         self.tanks = tank_ratings(app)
-        self.options = options
         self.selected = None
         self.in_view = True
         self.alt = ModifierWatch(self._on_alt, _ignore_key)
-        FeatureComponent.__init__(self, app, CARD_PANEL_ID, CARD_SCHEMA, SWITCH, STRINGS)
-        self.history = HistoryBook(app, options, self.enabled)
-        self.carousel = CarouselPercent(lambda: self.enabled() and bool(options.get('carousel_percent')))
+        FeatureComponent.__init__(self, app, CARD_PANEL_ID, CARD_SCHEMA, CARD_SWITCH, STRINGS)
+        self.history = HistoryBook(app, self.settings, self.enabled)
+        self.carousel = CarouselPercent(self._shows_carousel_percent)
         self.preview = HudPreview(
             self.hud,
             CARD_PANEL_ID,
             self.preview_text,
-            self.shows_card,
+            self.enabled,
             self.enabled_in_hangar,
             CARD_PREVIEW_SIZE,
             self.preview_widget,
@@ -63,14 +63,14 @@ class TankCardPanel(FeatureComponent):
     def register(self, schema):
         return self.hud.register(self.component_id, schema)
 
-    def shows_card(self):
-        return self.enabled() and bool(self.options.get('hangar_card'))
+    def _shows_carousel_percent(self):
+        return self.enabled() and bool(self.settings.get('carousel_percent'))
 
     def preview_text(self):
-        return card_preview_text(self.options, self.app.translate)
+        return card_preview_text(self.settings, self.app.translate)
 
     def preview_widget(self):
-        return card_preview_widget(self.options, self.app.translate)
+        return card_preview_widget(self.settings, self.app.translate)
 
     def _on_view(self, visible):
         self.in_view = visible
@@ -89,7 +89,7 @@ class TankCardPanel(FeatureComponent):
 
     def _select(self, tank_id):
         self.selected = tank_id
-        if tank_id and self.options.get('show_tank_ratings'):
+        if tank_id and self.settings.get('show_tank_ratings'):
             self.tanks.ensure(tank_id)
         self.render()
 
@@ -101,10 +101,6 @@ class TankCardPanel(FeatureComponent):
         self.render()
 
     def settings_changed(self, changed):
-        self.render()
-
-    def options_changed(self):
-        self.history.settings_changed()
         self._select(self.selected)
 
     def _on_edit(self, active):
@@ -122,19 +118,20 @@ class TankCardPanel(FeatureComponent):
     def render(self):
         if self.preview.previewing:
             return
-        data = self._card() if self.shows_card() and self.enabled_in_hangar() and self.in_view else None
+        data = self._card() if self.enabled_in_hangar() and self.in_view else None
         if data is None:
             self.hide()
             return
 
         translate = self.app.translate
-        self.hud.show(CARD_PANEL_ID, card_text(data, self.options, translate), tank_card(data, self.options, translate))
+        text = card_text(data, self.settings, translate)
+        self.hud.show(CARD_PANEL_ID, text, tank_card(data, self.settings, translate))
 
     def _card(self):
         if self.selected is None:
             return None
         snapshot = self.moe.snapshot(self.selected)
-        tank = self.tanks.row(self.selected) if self.options.get('show_tank_ratings') else None
+        tank = self.tanks.row(self.selected) if self.settings.get('show_tank_ratings') else None
         mastery = self.moe.mastery(self.selected)
         research = self._research()
         if snapshot is None and tank is None and mastery is None and research is None:
@@ -144,7 +141,7 @@ class TankCardPanel(FeatureComponent):
             vehicle_short_name(self.selected),
             self.history.summary(self.selected),
             tank,
-            self.alt.held and bool(self.options.get('alt_detail')),
+            self.alt.held and bool(self.settings.get('alt_detail')),
             mastery=mastery,
             own_mastery=(snapshot or {}).get('mastery'),
             research=research,
@@ -157,9 +154,21 @@ class TankCardPanel(FeatureComponent):
         return hangar_state(snapshot, self.moe.curve(self.selected), self.moe.pace(self.selected))
 
     def _research(self):
-        if not self.options.get('show_research'):
+        if not self.settings.get('show_research'):
             return None
         info = selected_research()
         if info is None or info['tank_id'] != self.selected:
             return None
         return research_state(info)
+
+    def ui_actions(self):
+        return self.history.actions()
+
+    def ui_page(self):
+        return self.history.page()
+
+    def ui_action(self, action, row=None, value=None):
+        if not self.history.clear(action, row):
+            return None
+        self.render()
+        return self.notice_info('marks_panel_history_cleared')

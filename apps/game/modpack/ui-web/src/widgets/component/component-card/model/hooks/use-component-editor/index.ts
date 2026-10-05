@@ -1,3 +1,3 @@
 export { useComponentEditor } from './use-component-editor';
 
-export type { EditorHint, UseComponentEditorInput } from './use-component-editor.types';
+export type { EditorHint } from './use-component-editor.types';

@@ -5,6 +5,7 @@ import type { Rect } from '@/entities/hud/panel-layout';
 import { clampRect } from '@/entities/hud/panel-layout';
 
 import type {
+  ClearInput,
   Column,
   ColumnItemInput,
   LiftInput,
@@ -40,6 +41,22 @@ const bottomLimit = ({ item, screen, reserve }: LimitInput): number => screen.he
 
 const overlapsX = ({ rect, other }: OverlapInput): boolean => rect.left < other.left + other.width && other.left < rect.left + rect.width;
 
+const overlaps = ({ rect, other }: OverlapInput): boolean =>
+  overlapsX({ rect, other }) && rect.top < other.top + other.height && other.top < rect.top + rect.height;
+
+const clearOf = ({ rect, upward, obstacles, gap, screen }: ClearInput): Rect => {
+  const blocker = obstacles.find((other) => overlaps({ rect, other }));
+
+  if (!blocker) {
+    return rect;
+  }
+
+  const top = upward ? blocker.top - gap - rect.height : blocker.top + blocker.height + gap;
+  const rest = obstacles.filter((other) => other !== blocker);
+
+  return clearOf({ rect: clampRect({ rect: { ...rect, top }, screen }), upward, obstacles: rest, gap, screen });
+};
+
 const roofOf = ({ first, free, gap, ceiling }: RoofInput): number =>
   free
     .filter((rect) => overlapsX({ rect, other: first.rect }) && rect.top < first.rect.top)
@@ -68,14 +85,14 @@ const placeNext = ({ column, item, gap, screen, reserve }: PlaceNextInput): Colu
   return wraps ? startColumn(rect) : { ...column, previous: rect, widest: Math.max(column.widest, rect.width) };
 };
 
-const stackGroup = ({ members, lifted, placed, screen, gap, reserve }: StackGroupInput): void => {
+const stackGroup = ({ members, lifted, obstacles, placed, screen, gap, reserve }: StackGroupInput): void => {
   const [first, ...rest] = members;
 
   if (!first) {
     return;
   }
 
-  const start = lifted === null ? first.rect : { ...first.rect, top: lifted };
+  const start = clearOf({ rect: lifted === null ? first.rect : { ...first.rect, top: lifted }, upward: first.upward, obstacles, gap, screen });
 
   placed.set(first.id, start);
 
@@ -88,7 +105,7 @@ const stackGroup = ({ members, lifted, placed, screen, gap, reserve }: StackGrou
   }, startColumn(start));
 };
 
-export const stackDocks = ({ items, screen, gap, reserve, ceiling }: StackDocksInput): Map<string, Rect> => {
+export const stackDocks = ({ items, obstacles = [], screen, gap, reserve, ceiling }: StackDocksInput): Map<string, Rect> => {
   const placed = new Map(items.map((item) => [item.id, item.rect]));
   const docked = items.filter((item) => item.dock !== null);
   const free = items.filter((item) => item.dock === null).map((item) => item.rect);
@@ -98,7 +115,7 @@ export const stackDocks = ({ items, screen, gap, reserve, ceiling }: StackDocksI
     const members = sortBy(unsorted, (item) => item.dock?.order ?? 0);
     const lifted = liftedTop({ members, free, screen, gap, reserve, ceiling });
 
-    stackGroup({ members, lifted, placed, screen, gap, reserve });
+    stackGroup({ members, lifted, obstacles, placed, screen, gap, reserve });
   });
 
   return placed;

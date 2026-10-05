@@ -1,1 +1,1 @@
-export { applyMarks, startPresetAdvisor } from './preset-advisor';
+export { startPresetAdvisor } from './preset-advisor';

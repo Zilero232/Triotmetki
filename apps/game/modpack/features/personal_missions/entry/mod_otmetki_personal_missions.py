@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.personal_missions import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register personal_missions\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register personal_missions\n') + traceback.format_exc())

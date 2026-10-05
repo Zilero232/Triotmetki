@@ -1,1 +1,1 @@
-export { HUD_EDITOR } from './hud-editor.constants';
+export { HUD_EDITOR, STAGE_STOCK } from './hud-editor.constants';

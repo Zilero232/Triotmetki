@@ -1,11 +1,52 @@
 @use '@/shared/styles/gameface' as *;
 
-.screen {
-  position: relative;
+.block {
   display: flex;
-  min-height: 180px;
+  min-height: 0;
   flex: 1 1 auto;
   flex-direction: column;
+}
+
+.bar {
+  display: flex;
+  height: 34px;
+  flex-direction: row;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.caption {
+  min-width: 0;
+  flex: 1 1 0;
+  margin-right: 8px;
+  color: token(color-text-muted);
+  font-size: 10px;
+
+  @include caps(0.5px);
+  @include ellipsis;
+}
+
+.tools {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: row;
+}
+
+.tool {
+  margin-right: 8px;
+}
+
+.screen {
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  padding: 16px;
   border: 1px solid token(win-stage-line);
   border-radius: token(radius-md);
   background-color: token(color-bg-deep);
@@ -23,48 +64,13 @@
   background-image: token(win-stage-grid), token(win-stage-snow);
 }
 
-.caption {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  padding: 2px 6px;
-  border-radius: token(radius-xs);
-  background-color: token(color-bg-deep);
-  color: token(color-text-dim);
-  font-size: 10px;
-
-  @include caps(0.5px);
-}
-
-.tools {
-  position: absolute;
-  z-index: 1;
-  top: 8px;
-  right: 8px;
-  display: flex;
-  flex-direction: row;
-}
-
-.tool {
-  margin-right: 8px;
-}
-
-.view {
-  display: flex;
-  overflow: hidden;
-  min-height: 0;
-  flex: 1 1 auto;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 16px 16px;
-}
-
 .sample {
   display: flex;
+  min-height: 0;
+  flex: 1 1 0;
   flex-direction: column;
-  align-items: center;
-  margin-top: 16px;
+  align-items: stretch;
+  margin-top: 12px;
 
   &:first-child {
     margin-top: 0;
@@ -72,19 +78,19 @@
 }
 
 .sampleLabel {
+  flex-shrink: 0;
+  align-self: center;
   padding: 2px 6px;
   border-radius: token(radius-xs);
   margin-bottom: 8px;
   background-color: token(color-bg-deep);
-  color: token(color-text-dim);
+  color: token(color-text-muted);
   font-size: 10px;
 
   @include caps(0.5px);
 }
 
-.zoomed {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform-origin: 50% 50%;
+.view {
+  min-height: 0;
+  flex: 1 1 0;
 }

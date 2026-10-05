@@ -1,9 +1,10 @@
 import clsx from 'clsx';
 
+import { Icon } from '@/ui-kit';
+
 import type { DropdownProps } from './Dropdown.types';
 
 import { useDropdown } from '../../../model/hooks';
-import { ReplayIcon } from '../ReplayIcon';
 
 import s from './Dropdown.module.scss';
 
@@ -16,7 +17,7 @@ export const Dropdown = <Value,>({ label, value, options, active = false, onSele
       <button aria-expanded={dropdown.open} className={clsx(s.trigger, active && s.triggerActive)} type='button' onClick={dropdown.toggle}>
         <span className={s.label}>{label}</span>
         <span className={s.value}>{current?.label ?? ''}</span>
-        <ReplayIcon className={s.chevron} name='chevron' size={14} />
+        <Icon className={s.chevron} name='chevron-down' size={14} />
       </button>
       {dropdown.open && (
         <>

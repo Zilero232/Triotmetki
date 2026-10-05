@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
-import { act, renderHook } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import type { UiSection } from '@/shared/api/protocol';
 
-import { $state, $view, CONTEXT_FILTER, receiveState, SECTION_NAV } from '@/entities/window/window-state';
+import { $state, $view, receiveState, SECTION_NAV } from '@/entities/window/window-state';
 import stateSample from '@/shared/api/protocol/_tests/fixtures/state.sample.json?raw';
 
 import { useSectionPage } from '../use-section-page';
@@ -22,7 +22,7 @@ const mountPage = (section: UiSection, columns = 1) => renderHook(() => useSecti
 
 beforeEach(() => {
   $state.set(null);
-  $view.set({ section: SECTION_NAV.first, expanded: [], context: CONTEXT_FILTER.all });
+  $view.set({ section: SECTION_NAV.first });
   receiveState(sample);
 });
 
@@ -35,31 +35,20 @@ describe(useSectionPage, () => {
     expect(ids).toEqual([['marks_panel'], ['session_stats']]);
   });
 
-  it('offers the context filter on a page with hangar and battle cards', () => {
+  it('lists the hangar and the battle cards of a page together', () => {
     receiveState(withBattleMarksCard());
 
-    expect(mountPage('marks').result.current.showFilter).toBe(true);
-  });
+    const ids = mountPage('marks').result.current.columns[0]?.items.map(({ component }) => component.id);
 
-  it('hides the context filter when the other cards work anywhere', () => {
-    expect(mountPage('marks').result.current.showFilter).toBe(false);
+    expect(ids).toHaveLength(3);
+    expect(ids).toContain('battle_progress');
   });
 
   it('counts the page components and the enabled ones', () => {
     expect(mountPage('battle').result.current).toMatchObject({ total: 2, enabled: 1, empty: false });
   });
 
-  it('filters the cards by where a component works', async () => {
-    receiveState(withBattleMarksCard());
-    const marks = mountPage('marks');
-
-    act(() => marks.result.current.setContext(CONTEXT_FILTER.hangar));
-    await act(async () => {});
-
-    expect(marks.result.current.columns[0]?.items.map(({ component }) => component.id)).toEqual(['marks_panel', 'session_stats']);
-  });
-
-  it('tells an empty page from an empty filter', () => {
-    expect(mountPage('streamer').result.current).toMatchObject({ empty: true, filteredEmpty: false });
+  it('reports a page with no cards as empty', () => {
+    expect(mountPage('streamer').result.current.empty).toBe(true);
   });
 });

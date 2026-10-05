@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { hitStep } from '..';
+import { hitStep, stepOfKey } from '..';
 
 describe('hitStep', () => {
   it('moves to the next hit of the list', () => {
@@ -21,5 +21,27 @@ describe('hitStep', () => {
 
   it('gives nothing for an empty list', () => {
     expect(hitStep({ indexes: [], selected: null, step: 1 })).toBeNull();
+  });
+});
+
+describe('stepOfKey', () => {
+  it('steps forward on the down arrow, like the table rows below', () => {
+    expect(stepOfKey('ArrowDown')).toBe(1);
+  });
+
+  it('steps forward on the right arrow', () => {
+    expect(stepOfKey('ArrowRight')).toBe(1);
+  });
+
+  it('steps back on the up arrow', () => {
+    expect(stepOfKey('ArrowUp')).toBe(-1);
+  });
+
+  it('steps back on the left arrow', () => {
+    expect(stepOfKey('ArrowLeft')).toBe(-1);
+  });
+
+  it('ignores any other key', () => {
+    expect(stepOfKey('Enter')).toBeNull();
   });
 });

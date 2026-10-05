@@ -2,6 +2,7 @@
 
 .stepper {
   display: flex;
+  flex: 0 0 auto;
   flex-direction: row;
   align-items: center;
 }
@@ -15,6 +16,7 @@
 
 .value {
   width: 56px;
+  flex: 0 0 auto;
   margin: 0 4px;
   text-align: center;
 }

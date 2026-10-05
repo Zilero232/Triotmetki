@@ -17,7 +17,7 @@ export const SearchPage = ({ columns, card }: SearchPageProps) => {
       <PageHeader hint={t('searchHint')} icon='search' title={`${t('searchTitle')}: ${search.query}`} />
       <ScrollArea contentClassName={s.content} label={t('searchTitle')}>
         {search.empty && <Empty>{t('searchEmpty')}</Empty>}
-        <CardColumns forceOpen card={card} columns={search.columns} />
+        <CardColumns card={card} columns={search.columns} />
       </ScrollArea>
     </div>
   );

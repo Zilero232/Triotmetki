@@ -7,7 +7,7 @@ import type { UseDropdownInput } from './use-dropdown.types';
 
 export const useDropdown = <Value>({ onSelect }: UseDropdownInput<Value>) => {
   const [open, setOpen] = useState(false);
-  const menuRef = useWheelScroll();
+  const menuRef = useWheelScroll({ contain: true });
   const close = (): void => setOpen(false);
 
   useEscapeLayer({ kind: 'popover', active: open, onEscape: close });

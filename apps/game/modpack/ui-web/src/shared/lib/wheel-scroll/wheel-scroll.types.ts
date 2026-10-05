@@ -32,4 +32,5 @@ export type WheelRoot = Pick<Document, 'addEventListener' | 'removeEventListener
 export type BindWheelScrollInput = {
   element: HTMLElement;
   onScrolled?: () => void;
+  contain?: boolean;
 };

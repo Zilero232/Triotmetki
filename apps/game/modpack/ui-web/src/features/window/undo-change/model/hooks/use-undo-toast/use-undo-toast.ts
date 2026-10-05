@@ -27,7 +27,7 @@ export const useUndoToast = () => {
       return;
     }
 
-    const timer = setTimeout(setHiddenId, UNDO_TOAST.hideMs, lastId);
+    const timer = setTimeout(() => setHiddenId(lastId), UNDO_TOAST.hideMs);
 
     return () => clearTimeout(timer);
   }, [lastId]);

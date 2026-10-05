@@ -11,7 +11,7 @@ from otmetki.features.marks_panel.i18n import STRINGS
 from otmetki.features.marks_panel.model import hangar_state
 from otmetki.features.marks_panel.model.card import TankCard, card_text, tank_card
 from otmetki.features.marks_panel.model.research import battles_left, next_vehicles, research_state, to_elite
-from otmetki.features.marks_panel.settings import SCHEMA
+from otmetki.features.marks_panel.settings import CARD_SCHEMA
 
 CURVE = {'thresholds': {'65': 2000, '85': 2600, '95': 3100, '100': 4000}}
 SNAPSHOT = {'tank_id': 1, 'moving_avg_damage': 2500, 'damage_rating': 8150, 'marks_on_gun': 1, 'mastery': 2}
@@ -33,7 +33,7 @@ def tank(held=True, mastery=MASTERY, own_mastery=2, research=RESEARCH):
 
 
 def rows(data, **values):
-    return tank_card(data, Settings(values, SCHEMA), translator())['data']['rows']
+    return tank_card(data, Settings(values, CARD_SCHEMA), translator())['data']['rows']
 
 
 def texts(data, **values):
@@ -106,7 +106,7 @@ class CardTest(unittest.TestCase):
         assert u'1st' not in shown
 
     def test_the_alt_hint_shows_while_progress_rows_are_hidden(self):
-        card = tank_card(tank(held=False), Settings({}, SCHEMA), translator())['data']
+        card = tank_card(tank(held=False), Settings({}, CARD_SCHEMA), translator())['data']
 
         assert card['footer'] == u'Alt: more'
 
@@ -120,7 +120,7 @@ class CardTest(unittest.TestCase):
         assert u'Badge' not in [row['label'] for row in rows(tank(mastery=None))]
 
     def test_the_text_card_carries_the_same_lines(self):
-        text = strip_tags(card_text(tank(), Settings({}, SCHEMA), translator()))
+        text = strip_tags(card_text(tank(), Settings({}, CARD_SCHEMA), translator()))
 
         assert u'Mastery badges, XP per battle: 3rd 540' in text
         assert u'To elite 110 000 (~110 battles)' in text

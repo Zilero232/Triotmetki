@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.auto_reserves import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register auto_reserves\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register auto_reserves\n') + traceback.format_exc())

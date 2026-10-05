@@ -9,6 +9,7 @@ import { BattlePicker } from './components/BattlePicker';
 import { HitDetails } from './components/HitDetails';
 import { HitMarkers } from './components/HitMarkers';
 import { HitTable } from './components/HitTable';
+import { ViewerEmpty } from './components/ViewerEmpty';
 
 import s from './HitViewer.module.scss';
 
@@ -47,17 +48,21 @@ export const HitViewer = () => {
           </div>
         )}
       </div>
-      {battle && (
-        <div className={s.list}>
-          <HitTable labels={labels} rows={state.rows} selected={state.selected} onPick={viewer.pickHit} />
-        </div>
+      {battle ? (
+        <>
+          <div className={s.list}>
+            <HitTable labels={labels} rows={state.rows} selected={state.selected} onPick={viewer.pickHit} />
+          </div>
+          {selectedRow && (
+            <div className={s.details}>
+              <HitDetails labels={labels} row={selectedRow} />
+            </div>
+          )}
+          <div className={s.footer}>{viewer.footer}</div>
+        </>
+      ) : (
+        <ViewerEmpty labels={labels} onClose={viewer.close} />
       )}
-      {selectedRow && (
-        <div className={s.details}>
-          <HitDetails labels={labels} row={selectedRow} />
-        </div>
-      )}
-      <div className={s.footer}>{viewer.footer}</div>
     </div>
   );
 };

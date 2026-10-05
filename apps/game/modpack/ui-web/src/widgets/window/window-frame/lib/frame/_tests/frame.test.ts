@@ -78,19 +78,31 @@ describe(centredFrame, () => {
 
 describe(clampFrame, () => {
   it('keeps the minimum size', () => {
-    expect(clampFrame({ frame: frameOf(100, 100), bounds: FULL_HD })).toEqual({ x: 0, y: 0, width: 760, height: 480 });
+    expect(clampFrame({ frame: frameOf(100, 100), bounds: FULL_HD })).toEqual({ x: 24, y: 24, width: 760, height: 480 });
   });
 
-  it('goes under the minimum size on a screen smaller than it', () => {
+  it('goes under the minimum size on a screen smaller than it, keeping the margin', () => {
     const frame = clampFrame({ frame: frameOf(100, 100), bounds: { left: 0, top: 0, right: 640, bottom: 400 } });
 
-    expect(frame).toEqual({ x: 0, y: 0, width: 640, height: 400 });
+    expect(frame).toEqual({ x: 24, y: 24, width: 592, height: 352 });
   });
 
-  it('never leaves the visible part of the view', () => {
+  it('never leaves the visible part of the view, keeping the margin', () => {
     const frame = clampFrame({ frame: frameOf(1000, 700), bounds: { left: 100, top: 50, right: 1663, bottom: 962 } });
 
-    expect(frame).toEqual({ x: 100, y: 50, width: 1000, height: 700 });
+    expect(frame).toEqual({ x: 124, y: 74, width: 1000, height: 700 });
+  });
+
+  it('shrinks a restored size larger than the screen to fit inside the margin', () => {
+    const frame = clampFrame({ frame: { x: -40, y: -40, width: 2560, height: 1440 }, bounds: FULL_HD });
+
+    expect(frame).toEqual({ x: 24, y: 24, width: 1872, height: 1032 });
+  });
+
+  it('drops the margin on a view too small to keep it', () => {
+    const frame = clampFrame({ frame: frameOf(100, 100), bounds: { left: 0, top: 0, right: 40, bottom: 40 } });
+
+    expect(frame).toEqual({ x: 0, y: 0, width: 40, height: 40 });
   });
 });
 
@@ -99,8 +111,8 @@ describe(moveFrame, () => {
     expect(moveFrame({ frame: FRAME, dx: 50, dy: -30, bounds: FULL_HD })).toEqual({ x: 150, y: 70, width: 1000, height: 700 });
   });
 
-  it('stops the window at the screen edges', () => {
-    expect(moveFrame({ frame: FRAME, dx: 5000, dy: -5000, bounds: FULL_HD })).toEqual({ x: 920, y: 0, width: 1000, height: 700 });
+  it('stops the window at the margin from the screen edges', () => {
+    expect(moveFrame({ frame: FRAME, dx: 5000, dy: -5000, bounds: FULL_HD })).toEqual({ x: 896, y: 24, width: 1000, height: 700 });
   });
 });
 
@@ -113,10 +125,10 @@ describe(resizeFrame, () => {
     expect(resizeFrame({ frame: FRAME, dx: 40, dy: 30, edge, bounds: FULL_HD })).toEqual(expected);
   });
 
-  it('never grows past the screen', () => {
+  it('never grows past the margin from the screen edges', () => {
     const frame = resizeFrame({ frame: FRAME, dx: 5000, dy: 5000, edge: 'corner', bounds: FULL_HD });
 
-    expect(frame).toEqual({ x: 100, y: 100, width: 1820, height: 980 });
+    expect(frame).toEqual({ x: 100, y: 100, width: 1796, height: 956 });
   });
 
   it('never shrinks under the minimum size', () => {

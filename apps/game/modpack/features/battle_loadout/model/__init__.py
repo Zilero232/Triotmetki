@@ -69,25 +69,11 @@ def clean_devices(raw):
     return [device for device in cleaned if device is not None]
 
 
-def empty_slot(kind):
-    slot = {'name': u'', 'effect': u'', 'icon': None, 'overlay': None, 'kind': kind, 'empty': True}
-    slot.update((flag, False) for flag in FLAGS)
-    return slot
-
-
-def _slot(raw, kind):
-    return clean_device(raw) or empty_slot(kind)
-
-
-# The row of a read: one cell per device slot and per directive slot, installed or not, so the row keeps its width
-# while the client fills or changes a slot.
+# The row of a read: the installed devices, then the installed directives, as kurzdor's battleequipment (Lebwa, Jove)
+# draws them; an empty slot gets no cell.
 def slot_items(devices, directives):
-    slots = [(raw, KIND_DEVICE) for raw in devices or []] + [(raw, KIND_DIRECTIVE) for raw in directives or []]
-    return [_slot(raw, kind) for raw, kind in slots[:MAX_ITEMS]]
-
-
-def installed(items):
-    return [item for item in items if not item['empty']]
+    cleaned = (clean_device(raw) for raw in list(devices or []) + list(directives or []))
+    return [item for item in cleaned if item is not None][:MAX_ITEMS]
 
 
 def _mark(device):
@@ -109,11 +95,11 @@ def icon_size(settings):
 
 def format_panel(devices, settings):
     size = icon_size(settings)
-    return u' '.join(_icon_markup(device, size) + _mark(device) for device in installed(devices))
+    return u' '.join(_icon_markup(device, size) + _mark(device) for device in devices)
 
 
 def icons_found(devices, exists):
-    paths = (split(device['icon'])[0] for device in installed(devices))
+    paths = (split(device['icon'])[0] for device in devices)
     return sum(1 for path in paths if path and exists(path))
 
 

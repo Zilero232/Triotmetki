@@ -2,7 +2,6 @@
 
 .marks {
   display: flex;
-  width: 110px;
   flex: 0 0 auto;
   flex-direction: row;
   align-items: center;
@@ -22,5 +21,4 @@
 
 .star {
   margin-left: 6px;
-  color: token(color-gold);
 }

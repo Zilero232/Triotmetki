@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'responsive_reticle'
 PACKAGE_ID = 'net.triotmetki.responsive_reticle'
 PACKAGE_NAME = 'Three Marks: responsive reticle'
-VERSION = '0.1.0'
+VERSION = '0.1.1'
 
 
 def create(app):

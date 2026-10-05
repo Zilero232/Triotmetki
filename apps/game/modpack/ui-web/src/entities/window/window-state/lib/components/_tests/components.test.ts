@@ -44,7 +44,7 @@ const searchKeys = (query: string) =>
 
 describe(componentsOf, () => {
   it('keeps a page to its own cards, sorted by title', () => {
-    const titles = componentsOf({ components: components(), section: 'battle', context: 'all' }).map(({ title }) => title);
+    const titles = componentsOf({ components: components(), section: 'battle' }).map(({ title }) => title);
 
     expect(titles).toEqual(['Журнал боя', 'minimap']);
   });
@@ -53,27 +53,15 @@ describe(componentsOf, () => {
     const titled = (title: string): UiComponent => ({ ...byId('minimap'), title });
     const list = ['zoom', 'Жук', 'Ёж', 'арта', 'Alpha'].map(titled);
 
-    const titles = componentsOf({ components: list, section: 'battle', context: 'all' }).map(({ title }) => title);
+    const titles = componentsOf({ components: list, section: 'battle' }).map(({ title }) => title);
 
     expect(titles).toEqual(['арта', 'Ёж', 'Жук', 'Alpha', 'zoom']);
   });
 
-  it('keeps the hangar filter to the cards shown in the hangar', () => {
-    const cards = componentsOf({ components: components(), section: 'marks', context: 'hangar' });
+  it('lists the hangar and the battle cards of a page together', () => {
+    const cards = componentsOf({ components: components(), section: 'marks' });
 
-    expect(idsOf(cards)).toEqual(['marks_panel', 'session_stats']);
-  });
-
-  it('keeps the battle filter to the cards shown in battle', () => {
-    const cards = componentsOf({ components: components(), section: 'marks', context: 'battle' });
-
-    expect(idsOf(cards)).toEqual(['marks_panel']);
-  });
-
-  it('keeps a card shown everywhere under the battle filter', () => {
-    const cards = componentsOf({ components: components(), section: 'data', context: 'battle' });
-
-    expect(idsOf(cards)).toEqual(['companion']);
+    expect(new Set(idsOf(cards))).toEqual(new Set(['marks_panel', 'session_stats']));
   });
 });
 

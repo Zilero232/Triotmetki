@@ -1,40 +1,27 @@
-import clsx from 'clsx';
-
 import { CardSwitch } from '@/features/component/toggle-component';
 import { Icon } from '@/ui-kit';
 
 import type { ComponentCardProps } from './ComponentCard.types';
 
 import { useComponentCard } from '../model/hooks';
-import { CardBody, CardThumb, CardTile, CardTitles } from './components';
+import { CardThumb, CardTile, CardTitles } from './components';
 
 import s from './ComponentCard.module.scss';
 
-export const ComponentCard = ({ component, fields, forceOpen }: ComponentCardProps) => {
-  const card = useComponentCard({ component, fields, forceOpen });
+export const ComponentCard = ({ component, fields }: ComponentCardProps) => {
+  const card = useComponentCard({ component, fields });
 
   return (
-    <article className={clsx(s.card, card.open && s.open)}>
-      <div className={s.head}>
-        <button
-          aria-expanded={card.expandable && !card.hasEditor ? card.open : undefined}
-          aria-haspopup={card.hasEditor ? 'dialog' : undefined}
-          className={s.main}
-          type='button'
-          onClick={card.toggleOpen}
-        >
-          <CardTile enabled={card.enabled} icon={card.icon} />
-          <CardTitles card={card} component={component} />
-          {!card.open && <CardThumb card={card} />}
-          {card.expandable && (
-            <span className={s.chevron}>
-              <Icon name={card.chevron} tone='text' />
-            </span>
-          )}
-        </button>
-        <CardSwitch component={component} />
-      </div>
-      {card.open && <CardBody card={card} component={component} />}
+    <article className={s.card}>
+      <button aria-haspopup='dialog' className={s.main} type='button' onClick={card.open}>
+        <CardTile enabled={card.enabled} icon={card.icon} />
+        <CardTitles card={card} component={component} />
+        <CardThumb card={card} />
+        <span className={s.chevron}>
+          <Icon name='chevron-right' tone='text' />
+        </span>
+      </button>
+      <CardSwitch component={component} />
     </article>
   );
 };

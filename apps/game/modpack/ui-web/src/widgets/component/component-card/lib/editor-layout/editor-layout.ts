@@ -1,10 +1,25 @@
-import { indexBy, isNonNullish } from 'remeda';
+import { chunk, indexBy, isNonNullish, sumBy } from 'remeda';
 
-import type { EditorGroup, EditorGroupsInput, EditorRow, EditorRowInput, EditorRowKind } from './editor-layout.types';
+import type { UiField } from '@/shared/api/protocol';
+
+import type { EditorGroup, EditorGroupsInput, EditorOption, EditorRow, EditorRowInput, EditorRowKind } from './editor-layout.types';
 
 import { EDITOR } from '../../config';
 
-const rowKind = ({ field, editor }: EditorRowInput): EditorRowKind => {
+const { row: ROW, chip: CHIP, swatch: SWATCH, tile: TILE } = EDITOR;
+
+const chipWidth = (label: string): number => Math.max(CHIP.minWidth, label.length * CHIP.charWidth + CHIP.padding) + CHIP.margin;
+
+const stackedWidth = (rowWidth: number): number => rowWidth - ROW.indent;
+
+const chipsFit = (field: UiField, rowWidth: number): boolean =>
+  field.type === 'choice' && sumBy(field.choices, ({ label }) => chipWidth(label)) <= stackedWidth(rowWidth);
+
+const rowKind = ({ field, editor, rowWidth = ROW.width }: EditorRowInput): EditorRowKind => {
+  if (field.type === 'text') {
+    return 'text';
+  }
+
   if (field.type !== 'choice') {
     return 'control';
   }
@@ -13,33 +28,50 @@ const rowKind = ({ field, editor }: EditorRowInput): EditorRowKind => {
     return 'gallery';
   }
 
-  return editor.swatches[field.key] ? 'swatches' : 'control';
+  if (editor.swatches[field.key]) {
+    return 'swatches';
+  }
+
+  return chipsFit(field, rowWidth) ? 'chips' : 'select';
 };
 
-export const editorRow = ({ field, editor }: EditorRowInput): EditorRow => {
-  const kind = rowKind({ field, editor });
+const perRow = (kind: EditorRowKind, rowWidth: number): number => {
+  const { size, gap } = kind === 'gallery' ? TILE : SWATCH;
 
-  if (field.type !== 'choice' || kind === 'control') {
-    return { field, kind, options: [] };
+  return Math.max(1, Math.floor((stackedWidth(rowWidth) + gap) / size));
+};
+
+const isStacked = (kind: EditorRowKind, options: EditorOption[]): boolean => {
+  if (kind === 'control') {
+    return false;
+  }
+
+  return kind !== 'swatches' || options.length > SWATCH.inlineMax;
+};
+
+export const editorRow = ({ field, editor, rowWidth = ROW.width }: EditorRowInput): EditorRow => {
+  const kind = rowKind({ field, editor, rowWidth });
+
+  if (field.type !== 'choice') {
+    return { field, kind, stacked: isStacked(kind, []), options: [], optionRows: [] };
   }
 
   const icons = editor.icons[field.key] ?? {};
   const swatches = editor.swatches[field.key] ?? {};
+  const options = field.choices.map(({ value, label }) => ({
+    value,
+    label,
+    icon: icons[value] ?? null,
+    swatch: swatches[value] ?? null,
+    selected: value === field.value
+  }));
 
-  return {
-    field,
-    kind,
-    options: field.choices.map(({ value, label }) => ({
-      value,
-      label,
-      icon: icons[value] ?? null,
-      swatch: swatches[value] ?? null,
-      selected: value === field.value
-    }))
-  };
+  const isGrid = kind === 'gallery' || kind === 'swatches';
+
+  return { field, kind, stacked: isStacked(kind, options), options, optionRows: isGrid ? chunk(options, perRow(kind, rowWidth)) : [] };
 };
 
-export const editorGroups = ({ fields, editor, otherLabel, advancedLabel }: EditorGroupsInput): EditorGroup[] => {
+export const editorGroups = ({ fields, editor, rowWidth, otherLabel, advancedLabel }: EditorGroupsInput): EditorGroup[] => {
   const byKey = indexBy(fields, ({ key }) => key);
   const placed = new Set(editor.groups.flatMap(({ keys }) => keys));
   const rest = fields.filter(({ key, advanced }) => !placed.has(key) && !advanced);
@@ -52,13 +84,13 @@ export const editorGroups = ({ fields, editor, otherLabel, advancedLabel }: Edit
       rows: keys
         .map((key) => byKey[key])
         .filter(isNonNullish)
-        .map((field) => editorRow({ field, editor }))
+        .map((field) => editorRow({ field, editor, rowWidth }))
     }))
     .filter(({ rows }) => rows.length > 0);
 
   const extra = [
-    { id: EDITOR.otherGroup, label: otherLabel, rows: rest.map((field) => editorRow({ field, editor })) },
-    { id: EDITOR.advancedGroup, label: advancedLabel, rows: folded.map((field) => editorRow({ field, editor })) }
+    { id: EDITOR.otherGroup, label: otherLabel, rows: rest.map((field) => editorRow({ field, editor, rowWidth })) },
+    { id: EDITOR.advancedGroup, label: advancedLabel, rows: folded.map((field) => editorRow({ field, editor, rowWidth })) }
   ];
 
   return [...groups, ...extra.filter(({ rows }) => rows.length > 0)];

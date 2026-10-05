@@ -93,6 +93,36 @@ class Ammo(object):
         return 24.6
 
 
+# RU 1.45 ammo_ctrl: getCurrentShellCD() is None until the client sets the shells; GunSettings.getShellDescriptor(intCD)
+# looks an unknown intCD up with items.vehicles.getItemByCompactDescr, which logs an exception for None.
+class RecordingGunSettings(GunSettings):
+
+    def __init__(self):
+        self.asked = []
+
+    def getShellDescriptor(self, intCD):
+        self.asked.append(intCD)
+        return GunSettings.getShellDescriptor(self, intCD)
+
+
+class NoShellAmmo(Ammo):
+
+    def __init__(self, settings):
+        self.settings = settings
+
+    def getGunSettings(self):
+        return self.settings
+
+    def getCurrentShellCD(self):
+        return None
+
+
+class ShellAmmo(NoShellAmmo):
+
+    def getCurrentShellCD(self):
+        return 101
+
+
 class Layer(object):
 
     def __init__(self):
@@ -126,8 +156,7 @@ class Stock(object):
 
 
 def forget_client():
-    for name in [name for name in sys.modules if name.startswith(CLIENT_PREFIXES)]:
-        del sys.modules[name]
+    _support.forget_modules(CLIENT_PREFIXES)
 
 
 class CrosshairNativeTest(unittest.TestCase):
@@ -304,6 +333,22 @@ class CrosshairStockTest(unittest.TestCase):
         assert (clip['size'], clip['loaded'], clip['shell'], clip['gold']) == (6, 4, 'apcr', True)
         assert self.drawn_readouts()['reload']['full'] == '24.6'
         assert self.hidden() == (RETICLE_RELOAD_TIMER, RETICLE_CASSETTE)
+
+    def test_no_current_shell_never_asks_the_client_for_a_descriptor(self):
+        settings = RecordingGunSettings()
+        self.module.ammo = lambda: NoShellAmmo(settings)
+
+        size, _, shell, gold = self.module.own_clip()
+
+        assert settings.asked == []
+        assert (size, shell, gold) == (6, None, False)
+
+    def test_the_current_shell_names_its_descriptor(self):
+        settings = RecordingGunSettings()
+        self.module.ammo = lambda: ShellAmmo(settings)
+
+        assert self.module.own_clip()[3] is True
+        assert settings.asked == [101]
 
     def test_the_stock_magazine_stays_with_the_drum_off(self):
         self.module.ammo = Ammo

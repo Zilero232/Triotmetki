@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.replay_upload import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register replay_upload\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register replay_upload\n') + traceback.format_exc())

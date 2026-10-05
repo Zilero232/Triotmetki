@@ -14,10 +14,10 @@ export const CardTitles = ({ component, card }: CardTitlesProps) => {
     <span className={s.titles}>
       <span className={s.titleRow}>
         <span className={clsx(s.title, !card.enabled && s.titleOff)}>{component.title}</span>
-        {tags.length > 0 && <span className={s.tags}>{tags.join(' · ')}</span>}
         {card.changedCount > 0 && <span className={s.changed}>{`${card.changedCount} ${t('changedShort')}`}</span>}
+        {tags.length > 0 && <span className={s.tags}>{tags.join(' · ')}</span>}
       </span>
-      {component.hint && <span className={clsx(s.hint, card.open && s.hintFull)}>{component.hint}</span>}
+      {component.hint && <span className={s.hint}>{component.hint}</span>}
     </span>
   );
 };

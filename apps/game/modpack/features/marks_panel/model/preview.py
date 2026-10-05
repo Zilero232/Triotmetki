@@ -36,7 +36,7 @@ def preview_text(settings, translate):
 
 def preview_widget(settings, translate):
     view = PanelView(settings, held=True)
-    return marks_widget(preview_state(view), view, translate, PREVIEW_CLASS)
+    return marks_widget(preview_state(view), view, translate)
 
 
 def card_preview():

@@ -6,7 +6,7 @@ import sys
 import types
 import unittest
 
-import _support  # noqa: F401
+import _support
 from otmetki.core.hud.panel import dock_layout
 from otmetki.core.i18n import Catalog, Translator
 
@@ -23,8 +23,7 @@ def load_ui():
             sys.modules.pop('BigWorld', None)
         else:
             sys.modules['BigWorld'] = saved
-        for name in [name for name in sys.modules if name.startswith(CLIENT_PREFIX)]:
-            del sys.modules[name]
+        _support.forget_modules(CLIENT_PREFIX)
 
 
 class Backend(object):

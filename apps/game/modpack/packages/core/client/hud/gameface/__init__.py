@@ -21,6 +21,7 @@ import os
 
 import BigWorld
 
+from ....hooks import override
 from ....hud import HudBackend
 from ....hud.icons import resolve
 from ....hud.surface import (
@@ -34,11 +35,11 @@ from ....hud.surface import (
     HudSurface,
 )
 from ....log import log, log_exception, safe
-from ...game import main_window
+from ...game import focused_windows, main_window
 from ..icons import client_file_exists
 from ..modifier import ModifierWatch
 from ..space import current_space, cursor_events, cursor_visible, gui_spaces
-from .constants import INVALID_RES_ID, READY_SPACES, RESTART_FLAG_FILE, WINDOW_LAYER
+from .constants import CLICK_REPORTS, INVALID_RES_ID, READY_SPACES, RESTART_FLAG_FILE, WINDOW_LAYER
 
 try:
     from frameworks.wulf import ViewFlags, ViewModel, ViewSettings, WindowFlags, WindowLayer, WindowStatus
@@ -119,14 +120,19 @@ if IMPORT_ERROR is None:
     class HudWindow(WindowImpl):
 
         def __init__(self, layout, backend):
+            self.backend = backend
             super(HudWindow, self).__init__(wndFlags=WindowFlags.WINDOW, content=HudView(layout, backend),
                                             layer=getattr(WindowLayer, WINDOW_LAYER), parent=main_window())
 
         # RU 1.45 client source: frameworks/wulf/windows_system/window.py `_onReady` calls `self.show()`, whose `focus`
-        # defaults to True. The HUD window took the keyboard from the battle page (chat no longer opened) and, closed
-        # while focused on the way back, left the hangar deaf to clicks until the game window lost and regained focus.
+        # defaults to True. The HUD window took the keyboard from the battle page (chat no longer opened). UNVERIFIED on
+        # Lesta 1.45: whether a press on the page still focuses it; `_onFocus` logs every change.
         def _onReady(self):
             self.show(focus=False)
+
+        def _onFocus(self, focused):
+            super(HudWindow, self)._onFocus(focused)
+            self.backend.on_window_focus(self, focused)
 
 else:
     HudWindow = None
@@ -134,6 +140,11 @@ else:
 
 def _next_frame(callback):
     BigWorld.callback(0, safe(callback))
+
+
+def focus_text():
+    names = ['%s %s' % (type(window).__name__, window.uniqueID) for window in focused_windows()]
+    return ', '.join(names) or 'no window'
 
 
 class GamefaceBackend(HudBackend):
@@ -159,8 +170,10 @@ class GamefaceBackend(HudBackend):
         self.waiting = False
         self.settling = False
         self.answered = False
+        self.clicks_left = 0
         self._listen_cursor()
         self._listen_spaces()
+        self._watch_clicks()
         if self.usable() and restart_pending():
             log(
                 'HUD: OpenWG Gameface is restarting the client to apply its res_map '
@@ -297,7 +310,9 @@ class GamefaceBackend(HudBackend):
         self.waiting = False
         self.seen_edit = False
         self.seen_mouse = set()
-        log('HUD: Gameface window %s opened in the %s (layout %s)' % (self.window.uniqueID, current_space(), layout))
+        self.clicks_left = CLICK_REPORTS if current_space() == SPACE_LOBBY else 0
+        log('HUD: Gameface window %s opened in the %s (layout %s, focus: %s)'
+            % (self.window.uniqueID, current_space(), layout, focus_text()))
         self._check_cursor()
         return True
 
@@ -306,13 +321,34 @@ class GamefaceBackend(HudBackend):
         window, self.window, self.view = self.window, None, None
         self._set_drawn(None)
         if window is not None:
-            log('HUD: Gameface window %s closed' % window.uniqueID)
+            log('HUD: Gameface window %s closed (focused: %s)' % (window.uniqueID, getattr(window, 'isFocused', None)))
             window.destroy()
 
     @safe
     def _on_window_status(self, status):
         window = self.window
         log('HUD: Gameface window %s status %s' % (window.uniqueID if window is not None else '?', status))
+
+    @safe
+    def on_window_focus(self, window, focused):
+        verb = 'took' if focused else 'lost'
+        log('HUD: Gameface window %s %s the focus in the %s (focus: %s)'
+            % (window.uniqueID, verb, current_space(), focus_text()))
+
+    def _watch_clicks(self):
+        try:
+            import game
+        except ImportError:
+            return
+        if getattr(game, 'handleKeyEvent', None) is not None:
+            override(game, 'handleKeyEvent')(self._on_client_key)
+
+    def _on_client_key(self, original, event, *args, **kwargs):
+        handled = original(event, *args, **kwargs)
+        if self.clicks_left > 0 and event.isMouseButton() and event.isKeyDown():
+            self.clicks_left -= 1
+            log('HUD: a press in the hangar, taken by the client: %s (focus: %s)' % (bool(handled), focus_text()))
+        return handled
 
     @safe
     def on_loaded(self, view):

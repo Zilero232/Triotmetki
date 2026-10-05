@@ -9,5 +9,4 @@ export type ComponentEditorModel = ReturnType<typeof useComponentEditor>;
 export type ComponentCardProps = {
   component: UiComponent;
   fields?: UiField[];
-  forceOpen?: boolean;
 };

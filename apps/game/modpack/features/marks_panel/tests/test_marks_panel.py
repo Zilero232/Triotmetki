@@ -103,18 +103,18 @@ class PanelTest(unittest.TestCase):
             u'MoE 81.50% → 83.15% (+1.65)',
             u'damage 5 000 · average 2 500 → 2 550',
             u'65%: ✓   85%: 2 550   95%: 27 800',
-            u'for 82%: ✓   +0.5%: ✓   to 85%: ~6 battles',
+            u'for 82%: ✓   +0.5%: ✓',
         ]
 
     def test_extended_view_of_a_weak_battle(self):
         lines = panel_text(combined=0, style='extended').split('\n')
 
         assert lines[0] == u'MoE 81.50% → 79.85% (-1.65)'
-        assert lines[3] == u'for 82%: 3 258   +0.5%: 3 258   to 85%: ~16 battles'
+        assert lines[3] == u'for 82%: 3 258   +0.5%: 3 258'
 
     def test_switches_leave_the_head_only(self):
         text = panel_text(
-            style='extended', show_battle=False, show_targets=False, show_step=False, show_battles=False, show_up=False,
+            style='extended', show_battle=False, show_targets=False, show_step=False, show_up=False,
         )
 
         assert text == u'MoE 81.50% → 81.24% (-0.26)'
@@ -214,7 +214,7 @@ class AltTest(unittest.TestCase):
             u'MoE 81.50% → 81.24% (-0.26)',
             u'damage 2 100 · average 2 500 → 2 492',
             u'65%: ✓   85%: 5 450   95%: 30 700',
-            u'for 82%: 1 158   +0.5%: 1 158   to 85%: ~12 battles',
+            u'for 82%: 1 158   +0.5%: 1 158',
         ]
 
     def test_alt_held_changes_nothing_with_alt_mode_off(self):

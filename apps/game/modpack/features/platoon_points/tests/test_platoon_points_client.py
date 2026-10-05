@@ -5,7 +5,7 @@ import sys
 import types
 import unittest
 
-import _support  # noqa: F401
+import _support
 
 STUBBED = ('BigWorld', 'BattleFeedbackCommon')
 CLIENT_PREFIXES = ('otmetki.core.client', 'otmetki.features.platoon_points.client')
@@ -41,8 +41,7 @@ class ArenaData(object):
 
 
 def forget_client():
-    for name in [name for name in sys.modules if name.startswith(CLIENT_PREFIXES)]:
-        del sys.modules[name]
+    _support.forget_modules(CLIENT_PREFIXES)
 
 
 def stub_client():

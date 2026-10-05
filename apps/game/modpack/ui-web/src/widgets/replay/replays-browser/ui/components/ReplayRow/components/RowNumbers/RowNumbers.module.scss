@@ -2,7 +2,7 @@
 
 .numbers {
   display: flex;
-  width: 120px;
+  min-width: 64px;
   flex: 0 0 auto;
   flex-direction: column;
   align-items: flex-end;
@@ -16,13 +16,12 @@
 }
 
 .unknown {
-  color: token(color-text-dim);
+  color: token(win-text-label);
 }
 
 .minor {
   margin-top: 2px;
-  color: token(color-text-muted);
+  color: token(win-text-label);
   font-size: 11px;
-
-  @include ellipsis;
+  white-space: nowrap;
 }

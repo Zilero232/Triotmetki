@@ -1,3 +1,3 @@
 export { defineHudWidget } from './define-widget';
 
-export type { DefineHudWidgetInput, ParsedHudWidget } from './define-widget.types';
+export type { ParsedHudWidget } from './define-widget.types';

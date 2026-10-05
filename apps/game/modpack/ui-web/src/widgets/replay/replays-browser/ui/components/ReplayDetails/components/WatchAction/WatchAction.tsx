@@ -1,11 +1,10 @@
 import clsx from 'clsx';
 
-import { Button } from '@/ui-kit';
+import { Button, Icon } from '@/ui-kit';
 
 import type { DetailsActionProps } from '../../ReplayDetails.types';
 
 import { useReplaysT } from '../../../../../model/hooks';
-import { ReplayIcon } from '../../../ReplayIcon';
 import { ConfirmBox } from '../ConfirmBox';
 
 import s from './WatchAction.module.scss';
@@ -22,7 +21,7 @@ export const WatchAction = ({ item, browser }: DetailsActionProps) => {
         variant='accent'
         onClick={() => browser.askWatch(item)}
       >
-        <ReplayIcon className={s.buttonIcon} name='play' size={18} />
+        <Icon className={s.buttonIcon} name='play' size={18} tone={item.playable ? 'contrast' : 'muted'} />
         {t('watch')}
       </Button>
       <ConfirmBox browser={browser} item={item} kind='watch' />

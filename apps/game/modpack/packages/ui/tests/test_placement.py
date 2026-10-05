@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import importlib
 import io
 import json
 import os
@@ -28,6 +29,19 @@ def placed_components():
     return dict((component_id, contexts[component_id]) for component_id in placed)
 
 
+def part_ids(package_id):
+    try:
+        settings = importlib.import_module('otmetki.features.%s.settings' % package_id)
+    except ImportError:
+        return []
+    return [part['id'] for part in getattr(settings, 'PARTS', ())]
+
+
+def window_context(package_id):
+    contexts = set(PLACEMENT[component_id][1] for component_id in [package_id] + part_ids(package_id))
+    return contexts.pop() if len(contexts) == 1 else 'any'
+
+
 class PlacementTest(unittest.TestCase):
 
     def test_every_catalogued_component_has_a_page(self):
@@ -35,16 +49,25 @@ class PlacementTest(unittest.TestCase):
 
         assert missing == []
 
-    def test_every_page_placement_has_the_catalog_context(self):
+    def test_every_part_of_a_catalogued_package_has_a_page(self):
+        missing = [part_id for package_id in placed_components() for part_id in part_ids(package_id)
+                   if part_id not in PLACEMENT]
+
+        assert missing == []
+
+    def test_every_catalogued_package_has_the_context_of_its_pages(self):
         contexts = placed_components()
 
         mismatched = [
-            (component_id, PLACEMENT[component_id][1], context)
+            (component_id, window_context(component_id), context)
             for component_id, context in contexts.items()
-            if component_id in PLACEMENT and PLACEMENT[component_id][1] != context
+            if component_id in PLACEMENT and window_context(component_id) != context
         ]
 
         assert mismatched == []
+
+    def test_the_marks_package_shows_in_the_hangar_and_in_battle(self):
+        assert window_context('marks_panel') == 'any'
 
     def test_placements_use_known_sections(self):
         unknown = [component_id for component_id, (section, _) in PLACEMENT.items() if section not in SECTIONS]
@@ -66,7 +89,10 @@ class PlacementTest(unittest.TestCase):
         assert placement_of('new_share', 'data') == ('data', 'hangar')
 
     def test_a_known_component_keeps_its_placement_whatever_its_group(self):
-        assert placement_of('marks_panel', 'hangar') == ('marks', 'any')
+        assert placement_of('marks_panel', 'hangar') == ('marks', 'battle')
+
+    def test_the_tank_card_is_a_hangar_component_of_the_marks_page(self):
+        assert placement_of('hangar_marks', 'battle', panel=True) == ('marks', 'hangar')
 
 
 class HangarButtonLayoutTest(unittest.TestCase):

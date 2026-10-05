@@ -1,3 +1,3 @@
 export { useReplaysBrowser } from './use-replays-browser';
 
-export type { FilterPatch, ReplaysBrowserModel, UseReplaysBrowserInput } from './use-replays-browser.types';
+export type { ReplaysBrowserModel } from './use-replays-browser.types';

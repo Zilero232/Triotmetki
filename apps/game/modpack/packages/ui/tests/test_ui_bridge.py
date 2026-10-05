@@ -21,6 +21,7 @@ from otmetki.core.settings import Schema
 from otmetki.core.storage import MemoryFile
 from otmetki.features.damage_log.i18n import STRINGS as DAMAGE_LOG_STRINGS
 from otmetki.features.marks_panel.i18n import STRINGS as MARKS_STRINGS
+from otmetki.features.marks_panel.settings import CARD_SCHEMA, PARTS
 from otmetki.features.session_stats.i18n import STRINGS as SESSION_STRINGS
 from otmetki.ui.bridge import SettingsBridge, site_link, site_url
 from otmetki.ui.components import COMPANION_ID, COMPANION_KEYS, FeatureInfo, load_features, root_package
@@ -497,7 +498,7 @@ class BridgeStateTest(BridgeTestCase):
         state = self.bridge.state()
 
         assert placement(state, COMPANION_ID) == ('data', 'any')
-        assert placement(state, 'marks_panel') == ('marks', 'any')
+        assert placement(state, 'marks_panel') == ('marks', 'battle')
         assert placement(state, 'replay_manager') == ('replays', 'hangar')
 
     def test_window_layout_defaults_to_centred(self):
@@ -520,6 +521,114 @@ class Titles(object):
     @staticmethod
     def title(panel_id):
         return panel_id
+
+
+class FakeTankCard(object):
+
+    def __init__(self):
+        self.actions = []
+
+    def ui_actions(self):
+        return [{'id': 'clear', 'label': 'Clear', 'confirm': None}]
+
+    def ui_action(self, action, row=None, value=None):
+        self.actions.append((action, row))
+
+
+class FakeMarks(object):
+
+    def __init__(self):
+        self.card = FakeTankCard()
+
+    def ui_parts(self):
+        return {'hangar_marks': self.card}
+
+
+def card_editor(settings, translate):
+    return {'groups': [{'id': 'card', 'label': translate('hangar_marks_group_card'), 'keys': ['style']}]}
+
+
+class PartsContext(FakeContext):
+
+    def __init__(self):
+        self.marks = FakeMarks()
+        FakeContext.__init__(self)
+        self.layer.register('hangar_marks', CARD_SCHEMA)
+
+    def features(self):
+        marks_settings = settings_module(SETTINGS=('battle_moe_panel',), GROUP='battle', PARTS=PARTS)
+        editors = settings_module(card_editor=card_editor)
+        return [FeatureInfo('marks_panel', marks_settings, instance=self.marks, editor_module=editors)]
+
+
+class FeaturePartsTest(unittest.TestCase):
+
+    def setUp(self):
+        self.context = PartsContext()
+        self.bridge = SettingsBridge(self.context)
+
+    def test_a_part_is_a_row_after_its_feature(self):
+        ids = [item['id'] for item in self.bridge.state()['components']]
+
+        assert ids[:3] == [COMPANION_ID, 'marks_panel', 'hangar_marks']
+
+    def test_the_part_panel_is_listed_once(self):
+        ids = [item['id'] for item in self.bridge.state()['components']]
+
+        assert ids.count('hangar_marks') == 1
+
+    def test_the_part_has_its_own_config_switch(self):
+        assert card(self.bridge.state(), 'hangar_marks')['switch'] == {'key': 'hangar_tank_card', 'value': True}
+
+    def test_the_feature_keeps_its_own_switch(self):
+        assert card(self.bridge.state(), 'marks_panel')['switch'] == {'key': 'battle_moe_panel', 'value': True}
+
+    def test_the_part_shows_its_own_section_fields(self):
+        keys = field_keys(card(self.bridge.state(), 'hangar_marks'))
+
+        assert 'show_trend' in keys
+        assert 'hangar_tank_card' not in keys
+
+    def test_the_part_folds_its_advanced_fields(self):
+        fields = card(self.bridge.state(), 'hangar_marks')['fields']
+
+        advanced = sorted(field['key'] for field in fields if field.get('advanced'))
+        assert advanced == ['alpha', 'show_mastery', 'show_research', 'trend_battles']
+
+    def test_the_part_is_a_hud_panel_of_the_hangar(self):
+        described = card(self.bridge.state(), 'hangar_marks')
+
+        assert (described['group'], described['panel'], described['context']) == ('hangar', True, 'hangar')
+
+    def test_the_part_opens_its_own_editor(self):
+        editor = card(self.bridge.state(), 'hangar_marks')['editor']
+
+        assert [group['id'] for group in editor['groups']] == ['card']
+
+    def test_the_part_carries_the_actions_of_its_instance(self):
+        actions = card(self.bridge.state(), 'hangar_marks')['actions']
+
+        assert [action['id'] for action in actions] == ['clear']
+
+    def test_an_action_of_the_part_reaches_its_instance(self):
+        send(self.bridge, type='action', component='hangar_marks', action='clear', row='1')
+
+        assert self.context.marks.card.actions == [('clear', '1')]
+
+    def test_switching_the_part_off_writes_its_config_switch(self):
+        send(self.bridge, type='set', component='hangar_marks', key='hangar_tank_card', value=False)
+
+        assert self.context.config.get('hangar_tank_card') is False
+
+    def test_a_part_setting_reaches_its_own_section(self):
+        send(self.bridge, type='set', component='hangar_marks', key='show_trend', value=False)
+
+        assert self.context.component_config.get('hangar_marks').get('show_trend') is False
+
+    def test_a_part_setting_tells_the_part(self):
+        send(self.bridge, type='set', component='hangar_marks', key='show_trend', value=False)
+
+        assert ('hangar_marks', ['show_trend']) in self.context.events
 
 
 class HudEditorPreviewTest(unittest.TestCase):

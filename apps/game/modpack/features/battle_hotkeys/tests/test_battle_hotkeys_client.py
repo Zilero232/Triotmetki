@@ -144,8 +144,7 @@ class BattleHotkeysClientTest(unittest.TestCase):
 
     @staticmethod
     def purge():
-        for name in [name for name in sys.modules if name.startswith(CLIENT_PREFIXES)]:
-            del sys.modules[name]
+        _support.forget_modules(CLIENT_PREFIXES)
 
     def press(self, key):
         self.key_down(Namespace(key=KEYS[key], isRepeatedEvent=lambda: False))

@@ -5,7 +5,7 @@ import BigWorld
 
 from ....core.client.component import FeatureComponent
 from ....core.events import EVENT_HIT_VIEWER_BATTLES, EVENT_HIT_VIEWER_OPEN
-from ....core.log import safe
+from ....core.log import log, safe
 from .. import FEATURE_ID
 from ..i18n import STRINGS
 from ..model import ACTION_CLEAR, ACTION_OPEN, settings_page
@@ -16,10 +16,10 @@ from .screen import HitViewerScreen
 
 
 # «Просмотр попаданий»: the recorder keeps the hits between the own tank and other vehicles of the last battles, the
-# screen shows them on the vehicle model in the hangar. It opens from its own ModsList entry (the latest battle; greyed
-# out in a battle queue, as BattleHits does), its card and page in the settings window and on
-# `hit_viewer_open(battle_id)` from another package (a battle results or a replay row), which first asks
-# `hit_viewer_battles(reply)` for the battles it can open.
+# screen shows them on the vehicle model in the hangar. It opens from its own ModsList entry (the latest battle, or the
+# empty state before the first one; greyed out in a battle queue, as BattleHits does), its card and page in the
+# settings window and on `hit_viewer_open(battle_id)` from another package (a battle results or a replay row), which
+# first asks `hit_viewer_battles(reply)` for the battles it can open.
 class HitViewer(FeatureComponent):
 
     def __init__(self, app):
@@ -59,8 +59,10 @@ class HitViewer(FeatureComponent):
         self.mods_list.set_available(self._can_open())
 
     def open_battle(self, battle_id=None):
-        if self._can_open():
-            BigWorld.callback(0, safe(lambda: self.screen.open(battle_id)))
+        if not self._can_open():
+            log('hit viewer: not opened: %s' % ('in a battle queue' if self.queued else 'switched off'))
+            return
+        BigWorld.callback(0, safe(lambda: self.screen.open(battle_id)))
 
     def _answer_battles(self, reply):
         if self.enabled_in_hangar():
@@ -89,7 +91,7 @@ class HitViewer(FeatureComponent):
             return self.notice_info('hv_cleared')
         if action != ACTION_OPEN:
             return None
-        refusal = self.screen.refusal(row)
+        refusal = self.screen.refusal()
         if refusal is not None:
             return self.notice_error(refusal)
         self.open_battle(row)

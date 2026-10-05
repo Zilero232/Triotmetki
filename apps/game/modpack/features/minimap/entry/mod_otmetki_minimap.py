@@ -6,4 +6,4 @@ try:
     from gui.mods.otmetki.features.minimap import register
     register()
 except Exception:
-    print('[OTMETKI] failed to register minimap\n%s' % traceback.format_exc())
+    print(str('[OTMETKI] failed to register minimap\n') + traceback.format_exc())

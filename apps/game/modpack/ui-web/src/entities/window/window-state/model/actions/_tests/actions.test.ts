@@ -100,7 +100,7 @@ describe(toggleSwitch, () => {
 
     toggleSwitch(component('marks_panel'));
 
-    expect(undoEntries()).toEqual([['switch', 'marks_panel', 'Отметки', false, { battle_moe_panel: true }]]);
+    expect(undoEntries()).toEqual([['switch', 'marks_panel', 'Отметки в бою', false, { battle_moe_panel: true }]]);
   });
 });
 

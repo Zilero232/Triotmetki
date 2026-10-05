@@ -3,18 +3,25 @@
 .section {
   display: flex;
   flex-direction: column;
-  padding: 12px 16px 8px;
+  flex-shrink: 0;
+  padding: 12px 16px 4px;
   margin-bottom: 12px;
 
   @include raised(radius-lg);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .title {
+  flex-shrink: 0;
   padding-bottom: 6px;
   border-bottom: 1px solid token(win-divider);
   margin-bottom: 4px;
   color: token(win-text-caption);
   font-size: 11px;
+  line-height: 14px;
 
   @include caps(0.6px);
 }

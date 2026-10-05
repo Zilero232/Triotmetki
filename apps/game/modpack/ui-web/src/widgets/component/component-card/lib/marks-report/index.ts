@@ -1,3 +1,3 @@
 export { marksReportView } from './marks-report';
 
-export type { MarksReportView, ReportCard, ReportRow, ReportTone } from './marks-report.types';
+export type { MarksReportView, ReportCard, ReportRow } from './marks-report.types';

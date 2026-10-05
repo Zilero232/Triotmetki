@@ -1,3 +1,3 @@
 export { parseRichText } from './rich-text';
 
-export type { RichImageRun, RichLine, RichRun, RichStyle, RichTextRun } from './rich-text.types';
+export type { RichImageRun, RichLine, RichRun, RichTextRun } from './rich-text.types';

@@ -118,8 +118,7 @@ class ChatFilterClientTest(unittest.TestCase):
 
     @staticmethod
     def purge():
-        for name in [name for name in sys.modules if name.startswith(CLIENT_PREFIXES)]:
-            del sys.modules[name]
+        _support.forget_modules(CLIENT_PREFIXES)
 
     def switch(self, on):
         self.app.config.switched_on = on

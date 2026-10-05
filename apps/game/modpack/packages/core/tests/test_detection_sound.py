@@ -5,7 +5,7 @@ import sys
 import types
 import unittest
 
-import _support  # noqa: F401
+import _support
 
 CLIENT_PREFIX = 'otmetki.core.client'
 STUBBED = (
@@ -28,8 +28,7 @@ def load_repair():
             sys.modules.pop('BigWorld', None)
         else:
             sys.modules['BigWorld'] = saved
-        for name in [name for name in sys.modules if name.startswith(CLIENT_PREFIX)]:
-            del sys.modules[name]
+        _support.forget_modules(CLIENT_PREFIX)
 
 
 repair_detection_sound = load_repair()
@@ -76,8 +75,9 @@ class DetectionSoundRepairTest(unittest.TestCase):
         skeleton = type(str('ISettingsCore'), (object,), {})
         instances = {skeleton: self.core}
         sys.modules['ResMgr'] = module('ResMgr', isFile=lambda path: path in self.files)
-        sys.modules['helpers'] = module('helpers')
-        sys.modules['helpers.dependency'] = module('helpers.dependency', instance=instances.get)
+        dependency = module('helpers.dependency', instance=instances.get)
+        sys.modules['helpers'] = module('helpers', dependency=dependency)
+        sys.modules['helpers.dependency'] = dependency
         sys.modules['skeletons'] = module('skeletons')
         sys.modules['skeletons.account_helpers'] = module('skeletons.account_helpers')
         sys.modules['skeletons.account_helpers.settings_core'] = module(

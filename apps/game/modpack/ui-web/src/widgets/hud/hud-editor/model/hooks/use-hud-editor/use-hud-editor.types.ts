@@ -1,13 +1,10 @@
+import type { Rect } from '@/entities/hud/panel-layout';
 import type { UiPanel } from '@/shared/api/protocol';
 
 import type { useHudEditor } from './use-hud-editor';
 
-export type PointerPress = Pick<MouseEvent, 'clientX' | 'clientY'>;
-
-export type KeyPress = Pick<KeyboardEvent, 'key' | 'preventDefault'>;
+export type { KeyPress, PointerPress } from '../use-panel-moves';
 
 export type HudPanelModel = ReturnType<typeof useHudEditor>['panels'][number];
 
-export type PressPanelInput = { panel: UiPanel; press: PointerPress };
-
-export type NudgePanelInput = { panel: UiPanel; event: KeyPress };
+export type PlacedPanel = { panel: UiPanel; rect: Rect };

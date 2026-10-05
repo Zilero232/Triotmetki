@@ -204,6 +204,7 @@ class PresetAdvisorClientTest(unittest.TestCase):
         sys.modules['frameworks'] = module('frameworks')
         sys.modules['frameworks.wulf'] = module('frameworks.wulf', ViewModel=ViewModel)
         sys.modules['openwg_gameface'] = module('openwg_gameface', gf_mod_inject=gf_mod_inject)
+        self.parents = _support.stub_parents(STOCK_MODULE)
         sys.modules[STOCK_MODULE] = module(STOCK_MODULE, AmmunitionSetupViewModel=self.stock)
         hud = importlib.import_module('otmetki.core.client.hud')
         hud._state['config'] = ComponentConfig(MemoryFile())
@@ -217,8 +218,8 @@ class PresetAdvisorClientTest(unittest.TestCase):
                 sys.modules.pop(name, None)
             else:
                 sys.modules[name] = value
-        for name in [name for name in sys.modules if name.startswith(DROPPED_PREFIXES)]:
-            del sys.modules[name]
+        _support.drop_modules(self.parents)
+        _support.forget_modules(DROPPED_PREFIXES)
 
     def payload(self, model):
         return json.loads(model.prop('otmetkiPresetAdvisor').prop('payload'))

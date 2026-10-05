@@ -165,8 +165,7 @@ class ResponsiveReticleClientTest(unittest.TestCase):
 
     @staticmethod
     def purge():
-        for name in [name for name in sys.modules if name.startswith(CLIENT_PREFIXES)]:
-            del sys.modules[name]
+        _support.forget_modules(CLIENT_PREFIXES)
 
     def start(self, **client_options):
         self.client = Client(**client_options)
