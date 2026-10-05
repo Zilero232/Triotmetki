@@ -6,7 +6,7 @@ import { mock } from 'vitest-mock-extended';
 
 import type { AppConfigService, Env } from '../../../../config';
 
-import { STREAMERS_SCHEDULES } from '../../config';
+import { STREAMERS_SCHEDULES } from '../../config/queue.constants';
 import { StreamersSchedulesService } from '../streamers-schedules.service';
 
 const createService = (nodeEnv: Env['NODE_ENV']) => {

@@ -4,9 +4,12 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../../collector/metrics';
-import type { ChallengeFeedService, LiveStatusService, SettingsAggregateService, TwitchPredictionsService } from '../../services';
+import type { ChallengeFeedService } from '../../challenges';
+import type { LiveStatusService } from '../../live';
+import type { TwitchPredictionsService } from '../../predictions';
+import type { SettingsAggregateService } from '../../settings';
 
-import { STREAMERS_QUEUE } from '../../config';
+import { STREAMERS_QUEUE } from '../../config/queue.constants';
 import { StreamersProcessor } from '../streamers.processor';
 
 const trackingMetrics = () => mock<MetricsService>({ track: async ({ run }) => run() });

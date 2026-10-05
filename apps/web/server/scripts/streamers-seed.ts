@@ -6,8 +6,7 @@ import { isIncludedIn } from 'remeda';
 import { readRecord } from '../src/common/lib';
 import { validateEnv } from '../src/config';
 import { createPrismaClient } from '../src/core/prisma';
-import { STREAMER_INVITATIONS } from '../src/modules/streamers/config';
-import { parseChannel } from '../src/modules/streamers/lib';
+import { parseChannel, STREAMER_INVITATIONS } from '../src/modules/streamers/profiles';
 
 const env = validateEnv(process.env);
 const prisma = createPrismaClient({ url: env.DATABASE_URL, pool: { max: 2 } });

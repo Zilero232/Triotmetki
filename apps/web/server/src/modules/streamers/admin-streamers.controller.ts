@@ -5,16 +5,17 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId } from '../../common/decorators';
 import { MODERATION } from '../moderation';
+import { IdParamsDto, SlugParamsDto } from './dto/params.dto';
 import {
   AdminClaimListDto,
   EditorialStreamerDto,
-  IdParamsDto,
   ResolveClaimDto,
-  SaveStreamerSettingsDto,
-  SlugParamsDto,
-  StreamerInvitationListDto
-} from './dto';
-import { StreamerClaimService, StreamerInvitationService, StreamerModerationService, StreamerSettingsService } from './services';
+  StreamerClaimService,
+  StreamerInvitationListDto,
+  StreamerInvitationService,
+  StreamerModerationService
+} from './profiles';
+import { SaveStreamerSettingsDto, StreamerSettingsService } from './settings';
 
 @ApiTags('streamers')
 @Roles([...MODERATION.roles])
