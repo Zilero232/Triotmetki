@@ -16,7 +16,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/replays/
   const locale = resolveLocale(await rootParams.locale());
   const id = decodeRouteParam((await params).id);
   const t = await getTranslations({ locale, namespace: 'replays.detailMeta' });
-  const meta = await replayRouteMeta(id);
+  const { meta } = await replayRouteMeta(id);
   const named = meta?.player && meta.mapName ? { player: meta.player, map: meta.mapName, damage: meta.damageDealt ?? 0 } : null;
 
   return createPageMetadata({

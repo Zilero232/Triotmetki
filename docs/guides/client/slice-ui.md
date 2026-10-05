@@ -225,9 +225,8 @@ This keeps effects from bloating the body of the main component; each one is iso
 and can be reasoned about on its own. The alternative — a pile of `useEffect` inside
 `CommandPalette.tsx` — is forbidden (it blows past the 100-line limit, [section 4](component-size.md)).
 
-`useCommandPaletteHotkey` (`features/search/command-palette`), `useRatingPatternsSync`
-(`features/app/rating-patterns`) and `useHeaderCompact` (`widgets/site/site-header`) each live
-in their slice's `model/hooks/`.
+`useCommandPaletteHotkey` (`features/search/command-palette`) and `useRatingPatternsSync`
+(`features/app/rating-patterns`) each live in their slice's `model/hooks/`.
 
 ### Examples
 

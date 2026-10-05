@@ -1,0 +1,1 @@
+export { CommandPaletteHost } from './CommandPaletteHost';

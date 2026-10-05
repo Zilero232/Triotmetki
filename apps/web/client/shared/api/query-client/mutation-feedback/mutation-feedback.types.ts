@@ -8,3 +8,5 @@ export type MutationFeedbackMeta = {
   errorKey?: ((error: Error) => MessageKey) | MessageKey;
   invalidates?: readonly QueryKey[];
 };
+
+export type MutationTranslator = (key: MessageKey) => string;

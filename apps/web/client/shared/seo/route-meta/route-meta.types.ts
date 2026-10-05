@@ -17,6 +17,15 @@ export type RouteLookup = RouteEntity & {
   isAvailable: boolean;
 };
 
+export type RouteMeta<T> = {
+  meta: T | null;
+  isFound: boolean;
+};
+
+export type RouteMetaLookup<T> = RouteMeta<T> & {
+  isAvailable: boolean;
+};
+
 export type RouteLookupInput = Pick<RouteEntityInput, 'key'> & {
   lookup: (key: string) => Promise<RouteLookup>;
 };

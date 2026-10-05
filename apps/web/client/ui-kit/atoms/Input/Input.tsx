@@ -13,7 +13,7 @@ export const Input = ({ icon, trailing, size = 'md', isInvalid = false, classNam
   const control = useFormControl();
 
   return (
-    <span className={clsx(s.root, s[size], wrapperClassName)} data-invalid={isInvalid}>
+    <span className={clsx(s.root, s[size], wrapperClassName)} data-invalid={isInvalid || control['aria-invalid'] || undefined}>
       {icon && (
         <span aria-hidden className={s.icon}>
           {icon}

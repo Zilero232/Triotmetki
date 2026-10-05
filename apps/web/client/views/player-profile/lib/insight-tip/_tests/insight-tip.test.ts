@@ -52,10 +52,10 @@ describe('tipValues', () => {
     expect(values.damageRatio).toBe(80);
   });
 
-  it('shows a negative win-rate gap as positive percentage points', () => {
+  it('passes a negative win-rate gap as a positive number for the message to format in the page locale', () => {
     const values = tipValues({ tip: { code: 'weak_class', params: { type: 'heavyTank', winRateDelta: -3.4 } }, insights: INSIGHTS });
 
-    expect(values.winRateDelta).toBe('3.4');
+    expect(values.winRateDelta).toBe(3.4);
   });
 
   it('writes the tier as a roman numeral', () => {

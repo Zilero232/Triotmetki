@@ -20,7 +20,9 @@ export const PodiumCard = ({ rank, rankLabel, name, metricLabel, value, tone, me
           <span className={s.srOnly}>{rankLabel}</span>
           <span aria-hidden>{rank}</span>
         </span>
-        <span className={s.name}>{name}</span>
+        <span className={s.name} title={typeof name === 'string' ? name : undefined}>
+          {name}
+        </span>
       </span>
       <span className={s.figure}>
         <span className={s.label}>{metricLabel}</span>

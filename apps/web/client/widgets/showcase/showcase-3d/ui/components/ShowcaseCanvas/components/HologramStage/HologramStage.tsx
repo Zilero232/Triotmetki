@@ -2,7 +2,7 @@
 
 import type { HologramStageProps } from './HologramStage.types';
 
-import { useHologramStage } from '../../../../../model/hooks';
+import { useHologramStage } from '../../../../../model/hooks/use-hologram-stage';
 import { FloorGrid } from '../FloorGrid';
 import { HologramPart } from '../HologramPart';
 

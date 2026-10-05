@@ -3,7 +3,7 @@
 import { NumberField as BaseNumberField } from '@base-ui/react/number-field';
 import { clsx } from 'clsx';
 import { Minus, Plus } from 'lucide-react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useId } from 'react';
 
 import { useFormControl } from '@/shared/lib';
@@ -25,6 +25,7 @@ export const NumberField = ({
   'aria-label': ariaLabel,
   onValueChange
 }: NumberFieldProps) => {
+  const t = useTranslations('common.numberField');
   const ownId = useId();
   const locale = useLocale();
   const control = useFormControl();
@@ -48,13 +49,18 @@ export const NumberField = ({
           {label}
         </label>
       )}
-      <BaseNumberField.Group className={s.group}>
-        <BaseNumberField.Decrement aria-label='−' className={s.step}>
+      <BaseNumberField.Group className={s.group} data-invalid={control['aria-invalid'] || undefined}>
+        <BaseNumberField.Decrement aria-label={t('decrement')} className={s.step}>
           <Minus size={14} />
         </BaseNumberField.Decrement>
-        <BaseNumberField.Input aria-describedby={control['aria-describedby']} aria-label={ariaLabel} className={s.input} />
+        <BaseNumberField.Input
+          aria-describedby={control['aria-describedby']}
+          aria-invalid={control['aria-invalid']}
+          aria-label={ariaLabel}
+          className={s.input}
+        />
         {suffix && <span className={s.suffix}>{suffix}</span>}
-        <BaseNumberField.Increment aria-label='+' className={s.step}>
+        <BaseNumberField.Increment aria-label={t('increment')} className={s.step}>
           <Plus size={14} />
         </BaseNumberField.Increment>
       </BaseNumberField.Group>

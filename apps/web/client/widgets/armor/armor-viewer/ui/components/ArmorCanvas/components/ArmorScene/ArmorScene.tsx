@@ -2,7 +2,7 @@
 
 import type { ArmorSceneProps } from './ArmorScene.types';
 
-import { useArmorScene } from '../../../../../model/hooks';
+import { useArmorScene } from '../../../../../model/hooks/use-armor-scene';
 import { ArmorPieceMesh } from '../ArmorPieceMesh';
 
 export const ArmorScene = ({ parts, shader, onHover, onLeave }: ArmorSceneProps) => {

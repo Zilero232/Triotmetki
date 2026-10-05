@@ -48,6 +48,7 @@
 
 .step {
   @include reset-button;
+  @include touch-target;
 
   display: inline-flex;
   width: 28px;
@@ -65,7 +66,7 @@
     border-left: none;
   }
 
-  &:hover {
+  @include hover {
     background-color: var(--color-surface-hover);
     color: var(--color-text);
   }

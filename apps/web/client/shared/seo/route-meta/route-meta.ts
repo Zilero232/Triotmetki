@@ -4,7 +4,7 @@ import { connection } from 'next/server';
 import { UNAVAILABLE_CACHE_LIFE } from '@/shared/api/query-client';
 import { isNotFoundError } from '@/shared/api/source';
 
-import type { RouteEntity, RouteEntityInput, RouteLookup, RouteLookupInput, RouteSlugsInput } from './route-meta.types';
+import type { RouteEntity, RouteEntityInput, RouteLookup, RouteLookupInput, RouteMeta, RouteMetaLookup, RouteSlugsInput } from './route-meta.types';
 
 export const lookupRouteEntity = async ({ key, load }: RouteEntityInput): Promise<RouteLookup> => {
   try {
@@ -20,16 +20,28 @@ export const lookupRouteEntity = async ({ key, load }: RouteEntityInput): Promis
   }
 };
 
-export const lookupRouteMeta = async <T>(load: () => Promise<T>): Promise<T | null> => {
+export const lookupRouteMeta = async <T>(load: () => Promise<T>): Promise<RouteMetaLookup<T>> => {
   try {
-    return await load();
+    return { meta: await load(), isFound: true, isAvailable: true };
   } catch (error) {
-    if (!isNotFoundError(error)) {
-      cacheLife('seconds');
+    if (isNotFoundError(error)) {
+      return { meta: null, isFound: false, isAvailable: true };
     }
 
-    return null;
+    cacheLife(UNAVAILABLE_CACHE_LIFE);
+
+    return { meta: null, isFound: true, isAvailable: false };
   }
+};
+
+export const routeMeta = async <T>(lookup: Promise<RouteMetaLookup<T>>): Promise<RouteMeta<T>> => {
+  const { meta, isFound, isAvailable } = await lookup.catch((): RouteMetaLookup<T> => ({ meta: null, isFound: true, isAvailable: false }));
+
+  if (!isAvailable) {
+    await connection();
+  }
+
+  return { meta, isFound };
 };
 
 const settledLookup = async ({ key, lookup }: RouteLookupInput): Promise<RouteLookup> => {

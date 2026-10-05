@@ -9,7 +9,7 @@ import { HitReadout } from '@/features/armor/armor-inspect';
 import type { ArmorCanvasProps } from './ArmorCanvas.types';
 
 import { ARMOR_CAMERA } from '../../../config';
-import { useArmorCanvas } from '../../../model/hooks';
+import { useArmorCanvas } from '../../../model/hooks/use-armor-canvas';
 import { ArmorScene, CameraBridge } from './components';
 
 import s from './ArmorCanvas.module.scss';

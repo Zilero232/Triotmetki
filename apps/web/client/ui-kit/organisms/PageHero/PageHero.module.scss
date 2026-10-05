@@ -73,6 +73,9 @@
 .title {
   @include display(var(--display-lg));
 
+  hyphens: auto;
+  overflow-wrap: anywhere;
+
   @include below(lg) {
     font-size: 2rem;
   }

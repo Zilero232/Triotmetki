@@ -108,6 +108,10 @@ $status-tones: (
   color: var(--color-text);
   transition: border-color var(--duration-fast) ease;
 
+  &[data-invalid]:not([data-invalid='false'], :focus-within) {
+    border-color: var(--color-danger);
+  }
+
   &:focus-within {
     border-color: var(--color-accent);
   }
@@ -581,13 +585,15 @@ $status-tones: (
     transform var(--duration-lift) var(--ease-out),
     box-shadow var(--duration-lift) var(--ease-out);
 
-  &:hover {
+  @include hover {
     box-shadow: var(--elev-2);
     transform: translateY(-3px);
   }
 
-  &:active {
-    transform: translateY(-1px);
+  @media (hover: hover) {
+    &:active {
+      transform: translateY(-1px);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

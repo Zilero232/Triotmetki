@@ -1,4 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
+import { createTranslator } from 'next-intl';
 import { toast } from 'sonner';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -6,7 +7,7 @@ import { messages } from '@/shared/i18n';
 
 import type { MutationFeedbackMeta } from '..';
 
-import { createMutationCache } from '..';
+import { createMutationCache, setMutationTranslator } from '..';
 
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
@@ -19,15 +20,17 @@ const run = ({ meta, mutationFn }: { meta?: MutationFeedbackMeta; mutationFn: ()
 };
 
 beforeEach(() => {
-  document.documentElement.lang = 'en';
+  const t = createTranslator({ locale: 'en', messages: messages.en });
+
+  setMutationTranslator((key) => t(key));
 });
 
 afterEach(() => {
-  document.documentElement.lang = '';
+  setMutationTranslator(null);
 });
 
 describe('createMutationCache', () => {
-  it('toasts the success key in the page locale and invalidates every listed query', async () => {
+  it('toasts the success key through the registered translator and invalidates every listed query', async () => {
     const { execution, invalidate } = run({
       mutationFn: async () => 'ok',
       meta: {
@@ -46,12 +49,18 @@ describe('createMutationCache', () => {
     expect(invalidate).toHaveBeenCalledWith({ queryKey: ['me', 'overview'] });
   });
 
-  it('falls back to the default locale when the page has no known language', async () => {
-    document.documentElement.lang = 'de';
+  it('stays silent but still invalidates before a translator is registered', async () => {
+    setMutationTranslator(null);
 
-    await run({ mutationFn: async () => 'ok', meta: { successKey: 'me.toast.goalAdded' } }).execution;
+    const { execution, invalidate } = run({
+      mutationFn: async () => 'ok',
+      meta: { successKey: 'me.toast.goalAdded', invalidates: [['me', 'goals']] }
+    });
 
-    expect(toast.success).toHaveBeenCalledWith(messages.ru.me.toast.goalAdded);
+    await execution;
+
+    expect(toast.success).not.toHaveBeenCalled();
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: ['me', 'goals'] });
   });
 
   it('toasts a static error key', async () => {

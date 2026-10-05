@@ -10,7 +10,7 @@
   "emptyTitle": "Add at least two players",
   "errorTitle": "The comparison did not load",
   "missingTitle": "Players not found",
-  "remove": "Remove from comparison",
+  "removeNamed": "Remove {name} from comparison",
   "slotError": "Player #{id} not found",
   "broneIndex": "Bronya Index",
   "caption": "Player metrics",

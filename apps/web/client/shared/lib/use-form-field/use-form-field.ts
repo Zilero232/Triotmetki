@@ -9,7 +9,8 @@ export const useFormField = ({ htmlFor, hasHint, hasError }: UseFormFieldInput) 
   const labelId = `${baseId}-label`;
   const hintId = `${baseId}-hint`;
   const errorId = `${baseId}-error`;
-  const describedBy = hasError ? errorId : hasHint ? hintId : undefined;
+  const describedIds = [hasError ? errorId : null, hasHint ? hintId : null].filter((value) => value !== null);
+  const describedBy = describedIds.length > 0 ? describedIds.join(' ') : undefined;
   const control: FormControlA11y = {
     ...(htmlFor ? {} : { id: controlId }),
     ...(describedBy ? { 'aria-describedby': describedBy } : {}),

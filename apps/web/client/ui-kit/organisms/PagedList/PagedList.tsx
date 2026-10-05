@@ -7,7 +7,7 @@ import { useReservedHeight } from '@/shared/lib';
 import type { PagedListProps } from './PagedList.types';
 
 import { Button, Skeleton } from '../../atoms';
-import { ErrorState } from '../../molecules';
+import { ErrorState, RetryButton } from '../../molecules';
 import { pagedListVariants } from './PagedList.variants';
 
 import s from './PagedList.module.scss';
@@ -59,7 +59,7 @@ export const PagedList = <TItem,>({
   }
 
   return (
-    <section aria-label={label} className={rootClassName}>
+    <section aria-busy={isFetchingNextPage || undefined} aria-label={label} className={rootClassName}>
       {header && <p className={s.header}>{header}</p>}
       <ul className={s.list}>
         {items.map((item) => (
@@ -68,12 +68,19 @@ export const PagedList = <TItem,>({
           </li>
         ))}
       </ul>
-      {hasNextPage && (
-        <div className={s.more}>
-          <Button disabled={isFetchingNextPage} size='sm' variant='secondary' onClick={loadMore}>
-            {moreLabel ?? t('showMore')}
-          </Button>
+      {isError ? (
+        <div className={s.more} role='alert'>
+          <span className={s.moreError}>{t('loadMoreError')}</span>
+          <RetryButton disabled={isFetchingNextPage} variant='ghost' onClick={loadMore} />
         </div>
+      ) : (
+        hasNextPage && (
+          <div className={s.more}>
+            <Button disabled={isFetchingNextPage} size='sm' variant='secondary' onClick={loadMore}>
+              {moreLabel ?? t('showMore')}
+            </Button>
+          </div>
+        )
       )}
     </section>
   );

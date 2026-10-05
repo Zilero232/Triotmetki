@@ -7,7 +7,7 @@ const SRC = 'https://api.tanki.su/static/clans/emblems/KOPM_64.png';
 
 describe('ClanEmblem', () => {
   it('shows the API emblem at its native size', () => {
-    render(<ClanEmblem size='md' src={SRC} tag='KOPM' />);
+    render(<ClanEmblem isDecorative={false} size='md' src={SRC} tag='KOPM' />);
 
     const image = screen.getByRole('img', { name: 'KOPM' });
 
@@ -16,19 +16,26 @@ describe('ClanEmblem', () => {
   });
 
   it('renders the header size without scaling', () => {
-    render(<ClanEmblem size='lg' src={SRC} tag='KOPM' />);
+    render(<ClanEmblem isDecorative={false} size='lg' src={SRC} tag='KOPM' />);
 
     expect(screen.getByRole('img', { name: 'KOPM' }).getAttribute('width')).toBe('96');
   });
 
   it('falls back to the tag letters without an emblem or when it fails', () => {
-    const { container, rerender } = render(<ClanEmblem src={null} tag='KOPM' />);
+    const { container, rerender } = render(<ClanEmblem isDecorative={false} src={null} tag='KOPM' />);
 
     expect(screen.getByRole('img', { name: 'KOPM' }).textContent).toBe('KO');
 
-    rerender(<ClanEmblem src={SRC} tag='KOPM' />);
+    rerender(<ClanEmblem isDecorative={false} src={SRC} tag='KOPM' />);
     fireEvent.error(screen.getByRole('img', { name: 'KOPM' }));
 
     expect(container.firstElementChild?.getAttribute('data-state')).toBe('fallback');
+  });
+
+  it('stays out of the accessibility tree by default, since the clan tag is always written next to it', () => {
+    const { container } = render(<ClanEmblem src={SRC} tag='KOPM' />);
+
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+    expect(container.firstElementChild).toHaveAttribute('aria-hidden', 'true');
   });
 });

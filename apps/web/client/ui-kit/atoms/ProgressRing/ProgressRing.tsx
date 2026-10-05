@@ -4,7 +4,7 @@ import { Progress } from '@base-ui/react/progress';
 import { clsx } from 'clsx';
 import { useLocale } from 'next-intl';
 
-import { ringGeometry, useRevealOnce } from '@/shared/lib';
+import { ringGeometry, useScrollReveal } from '@/shared/lib';
 
 import type { ProgressRingProps } from './ProgressRing.types';
 
@@ -22,7 +22,7 @@ export const ProgressRing = ({
   className
 }: ProgressRingProps) => {
   const locale = useLocale();
-  const { ref, isRevealed } = useRevealOnce<HTMLDivElement>();
+  const ref = useScrollReveal<HTMLDivElement>();
 
   const { ratio, radius, center } = ringGeometry({ value, max, size, thickness });
 
@@ -32,7 +32,6 @@ export const ProgressRing = ({
       aria-label={label}
       className={clsx(s.root, className)}
       data-marks={marks}
-      data-reveal={isRevealed || undefined}
       data-tone={tone}
       locale={locale}
       max={max}

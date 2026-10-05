@@ -9,7 +9,6 @@ import {
   CloudUpload,
   Coins,
   Crosshair,
-  DatabaseBackup,
   EyeOff,
   Film,
   Focus,
@@ -82,8 +81,7 @@ export const MOD_SHOWCASE = [
       { id: 'hangar_space', icon: House, context: 'hangar', isDefault: false },
       { id: 'hit_viewer', icon: Crosshair, context: 'hangar', isDefault: true },
       { id: 'update_notice', icon: BellRing, context: 'hangar', isDefault: true },
-      { id: 'preset_advisor', icon: BadgeCheck, context: 'hangar', isDefault: true },
-      { id: 'config_backup', icon: DatabaseBackup, context: 'any', isDefault: true }
+      { id: 'preset_advisor', icon: BadgeCheck, context: 'hangar', isDefault: true }
     ]
   },
   {

@@ -2,8 +2,10 @@
 
 import { Tabs as BaseTabs } from '@base-ui/react/tabs';
 import { clsx } from 'clsx';
+import * as m from 'motion/react-m';
+import { useId } from 'react';
 
-import { useActiveTabScroll } from '@/shared/lib';
+import { MOTION_TRANSITION, useActiveTabScroll } from '@/shared/lib';
 
 import type { TabsProps } from './Tabs.types';
 
@@ -22,6 +24,7 @@ export const Tabs = <T extends string>({
   onValueChange
 }: TabsProps<T>) => {
   const listRef = useActiveTabScroll(value);
+  const indicatorId = useId();
 
   return (
     <BaseTabs.Root
@@ -34,13 +37,24 @@ export const Tabs = <T extends string>({
       <div className={s.bar}>
         <BaseTabs.List ref={listRef} aria-label={ariaLabel} className={s.list}>
           {items.map((item) => (
-            <BaseTabs.Tab key={item.value} className={s.tab} value={item.value}>
+            <BaseTabs.Tab
+              key={item.value}
+              render={(props, { active }) => (
+                <button {...props}>
+                  {props.children}
+                  {variant === 'sticky' && active && (
+                    <m.span aria-hidden className={s.indicator} layoutId={indicatorId} transition={MOTION_TRANSITION.layout} />
+                  )}
+                </button>
+              )}
+              className={s.tab}
+              value={item.value}
+            >
               {item.icon && <span className={s.icon}>{item.icon}</span>}
               {item.label}
               {item.count !== undefined && <span className={s.count}>{item.count}</span>}
             </BaseTabs.Tab>
           ))}
-          {variant === 'sticky' && <BaseTabs.Indicator className={s.indicator} />}
         </BaseTabs.List>
         {aside && <div className={s.aside}>{aside}</div>}
       </div>

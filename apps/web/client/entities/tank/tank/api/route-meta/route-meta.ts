@@ -5,13 +5,14 @@ import { lookupRouteEntity, routeEntity, routeSlugs } from '@/shared/seo/server'
 
 import type { TankCollectionSlug } from '../../lib/tank-collections';
 
+import { TANK_DETAIL } from '../../config';
 import { collectionVehicles } from '../../lib/tank-collections';
 import { getTank, listTankStats, listVehicles } from '../tanks';
 
 const lookupTank = async (idOrSlug: string) => {
   'use cache';
 
-  return lookupRouteEntity({ key: idOrSlug, load: async () => (await getTank({ idOrSlug })).vehicle.name });
+  return lookupRouteEntity({ key: idOrSlug, load: async () => (await getTank({ idOrSlug, period: TANK_DETAIL.period })).vehicle.name });
 };
 
 export const tankRouteEntity = async (idOrSlug: string) => routeEntity({ key: idOrSlug, lookup: lookupTank });

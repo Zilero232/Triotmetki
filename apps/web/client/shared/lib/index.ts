@@ -70,7 +70,6 @@ export type { OffsetInfiniteList } from './use-offset-infinite-list';
 export { useRelativeTime } from './use-relative-time';
 export type { RelativeTimeValue } from './use-relative-time';
 export { useReservedHeight } from './use-reserved-height';
-export { useRevealOnce } from './use-reveal-once';
 export { useRouteParam } from './use-route-param';
 export { useScrollReveal } from './use-scroll-reveal';
 export { useStoredStore } from './use-stored-store';

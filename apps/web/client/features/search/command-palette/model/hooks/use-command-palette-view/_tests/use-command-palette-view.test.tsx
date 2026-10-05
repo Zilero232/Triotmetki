@@ -28,7 +28,7 @@ const renderView = () => {
 
   const wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={client}>
-      <CommandPaletteContext value={{ isOpen: true, setOpen }}>{children}</CommandPaletteContext>
+      <CommandPaletteContext value={{ isOpen: true, hasOpened: true, setOpen }}>{children}</CommandPaletteContext>
     </QueryClientProvider>
   );
 

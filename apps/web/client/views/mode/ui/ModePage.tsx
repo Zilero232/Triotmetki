@@ -16,7 +16,7 @@ import s from './ModePage.module.scss';
 
 export const ModePage = ({ mode }: ModePageProps) => {
   const t = useTranslations('modes');
-  const { data, isPending } = useModeMeta(mode);
+  const { data } = useModeMeta(mode);
 
   return (
     <div className={s.root}>
@@ -26,14 +26,12 @@ export const ModePage = ({ mode }: ModePageProps) => {
         meta={data?.season && <ModeSeason season={data.season} />}
         title={t(`names.${mode}`)}
       >
-        {(isPending || (data && data.battles > 0)) && (
-          <KeyFigures>
-            <KeyFigure label={t('figures.battles')} value={data?.battles} />
-            <KeyFigure label={t('figures.players')} value={data?.players} />
-            <KeyFigure label={t('figures.tanks')} value={data?.tanks.length} />
-            <KeyFigure format={MODE_FIGURES.winRate} label={t('figures.winRate')} suffix='%' value={data?.winRate} />
-          </KeyFigures>
-        )}
+        <KeyFigures>
+          <KeyFigure label={t('figures.battles')} value={data?.battles} />
+          <KeyFigure label={t('figures.players')} value={data?.players} />
+          <KeyFigure label={t('figures.tanks')} value={data?.tanks.length} />
+          <KeyFigure format={MODE_FIGURES.winRate} label={t('figures.winRate')} suffix='%' value={data?.winRate} />
+        </KeyFigures>
       </PageHeader>
       <MyModePanel mode={mode} />
       <ModeTanks mode={mode} />

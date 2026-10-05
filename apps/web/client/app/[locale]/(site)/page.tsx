@@ -20,7 +20,7 @@ export const generateMetadata = async () => {
 const Page = async () => (
   <>
     <JsonLd data={siteJsonLd(resolveLocale(await rootParams.locale()))} />
-    <Suspense>
+    <Suspense fallback={<HomePage />}>
       <PrefetchBoundary state={homePageState()}>
         <HomePage />
       </PrefetchBoundary>

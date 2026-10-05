@@ -9,7 +9,7 @@ import { botRows } from '../../../lib/bot-rows';
 import { useMeSection } from '../use-me-section';
 
 export const useBotsCard = () => {
-  const { data, isPending, isError, isFetching, refetch } = useMeSection({ section: 'bots', fetcher: getBotLinks });
+  const query = useMeSection({ section: 'bots', fetcher: getBotLinks });
   const unlink = useMutation({
     mutationFn: unlinkBotAccount,
     meta: { successKey: 'me.toast.botUnlinked', errorKey: 'me.toast.failed', invalidates: [QUERY_KEYS.me.section('bots')] }
@@ -25,10 +25,11 @@ export const useBotsCard = () => {
     meta: { errorKey: 'me.toast.failed' }
   });
 
+  const { data, isFetching, refetch } = query;
+
   return {
+    query,
     rows: data ? botRows(data) : [],
-    isPending,
-    isError,
     isRetrying: isFetching,
     isBusy: link.isPending || unlink.isPending,
     onRetry: () => void refetch(),

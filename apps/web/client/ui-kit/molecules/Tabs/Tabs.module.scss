@@ -171,17 +171,11 @@
 
 .indicator {
   position: absolute;
+  right: 0;
   bottom: 0;
-  left: var(--active-tab-left);
-  width: var(--active-tab-width);
+  left: 0;
   height: 2px;
   background-color: var(--color-accent);
-
-  @media (prefers-reduced-motion: no-preference) {
-    transition:
-      left 220ms var(--ease-out),
-      width 220ms var(--ease-out);
-  }
 }
 
 @property --tabs-fade-start {

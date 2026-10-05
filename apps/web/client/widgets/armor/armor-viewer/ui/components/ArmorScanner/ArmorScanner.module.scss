@@ -16,10 +16,8 @@
 
 .sweep {
   position: absolute;
-  right: 0;
-  left: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+  background: linear-gradient(90deg, transparent, var(--color-accent), transparent) top / 100% 2px no-repeat;
+  inset: 0;
 }
 
 .label {

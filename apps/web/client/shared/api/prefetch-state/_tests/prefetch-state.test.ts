@@ -22,11 +22,35 @@ describe('prefetchState', () => {
     ]);
   });
 
-  it('returns no state when a fetch fails, so the page loads on the client and the build never needs the API', async () => {
+  it('keeps the queries that succeeded when another fetch fails', async () => {
     const missing = { queryKey: ['clan', 'NONE'], queryFn: () => Promise.reject(new Error('not found')) };
 
-    await expect(prefetchState((client) => [client.fetchQuery(clanQuery), client.fetchQuery(missing)])).resolves.toBeNull();
+    const state = await prefetchState((client) => [client.fetchQuery(clanQuery), client.fetchQuery(missing)]);
+
+    expect(state?.queries.map((query) => query.queryKey)).toEqual([clanQuery.queryKey]);
+  });
+
+  it('caches a partial prefetch only briefly, so the failed query is retried soon', async () => {
+    const missing = { queryKey: ['clan', 'NONE'], queryFn: () => Promise.reject(new Error('not found')) };
+
+    await prefetchState((client) => [client.fetchQuery(clanQuery), client.fetchQuery(missing)]);
+
     expect(cacheLife).toHaveBeenCalledWith(UNAVAILABLE_CACHE_LIFE);
+  });
+
+  it('returns no state when every fetch fails, so the page loads on the client and the build never needs the API', async () => {
+    const missing = { queryKey: ['clan', 'NONE'], queryFn: () => Promise.reject(new Error('not found')) };
+    const down = { queryKey: ['clan', 'DOWN'], queryFn: () => Promise.reject(new Error('down')) };
+
+    await expect(prefetchState((client) => [client.fetchQuery(missing), client.fetchQuery(down)])).resolves.toBeNull();
+  });
+
+  it('keeps the regular cache life when every fetch succeeds', async () => {
+    vi.mocked(cacheLife).mockClear();
+
+    await prefetchState((client) => [client.fetchQuery(clanQuery)]);
+
+    expect(cacheLife).not.toHaveBeenCalled();
   });
 
   it('never retries a failed fetch on the server', async () => {

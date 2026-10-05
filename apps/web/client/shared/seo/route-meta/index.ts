@@ -1,2 +1,2 @@
-export { lookupRouteEntity, lookupRouteMeta, routeEntity, routeSlugs } from './route-meta';
-export type { RouteEntity } from './route-meta.types';
+export { lookupRouteEntity, lookupRouteMeta, routeEntity, routeMeta, routeSlugs } from './route-meta';
+export type { RouteEntity, RouteMeta } from './route-meta.types';

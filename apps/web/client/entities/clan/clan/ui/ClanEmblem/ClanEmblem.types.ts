@@ -5,5 +5,6 @@ export type ClanEmblemProps = {
   src: string | null;
   size?: ClanEmblemSize;
   color?: string | null;
+  isDecorative?: boolean;
   className?: string;
 };

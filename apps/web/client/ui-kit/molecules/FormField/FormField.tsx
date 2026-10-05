@@ -17,16 +17,15 @@ export const FormField = ({ label, children, hint, error, htmlFor, className }: 
         {label}
       </label>
       <FormControlContext value={control}>{children}</FormControlContext>
-      {error ? (
+      {error && (
         <p className={s.error} id={errorId} role='alert'>
           {error}
         </p>
-      ) : (
-        hint && (
-          <p className={s.hint} id={hintId}>
-            {hint}
-          </p>
-        )
+      )}
+      {hint && (
+        <p className={s.hint} id={hintId}>
+          {hint}
+        </p>
       )}
     </div>
   );

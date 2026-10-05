@@ -9,10 +9,6 @@
   height: var(--control-h);
   align-items: center;
   padding-right: var(--space-1);
-
-  &[data-invalid] {
-    border-color: var(--color-danger);
-  }
 }
 
 .trigger {

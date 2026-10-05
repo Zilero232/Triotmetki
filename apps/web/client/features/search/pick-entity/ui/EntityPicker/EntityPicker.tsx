@@ -37,9 +37,14 @@ export const EntityPicker = <K extends PickableKind>({
       <div className={s.field} data-busy={isFetching}>
         <Search aria-hidden className={s.icon} size={size === 'lg' ? 16 : 14} />
         <Command.Input
+          autoCapitalize='off'
+          autoComplete='off'
+          autoCorrect='off'
           className={s.input}
           disabled={isDisabled}
+          enterKeyHint='search'
           placeholder={placeholder}
+          spellCheck={false}
           value={query}
           onBlur={onClose}
           onFocus={onOpen}

@@ -11,7 +11,7 @@ export const HeroStage = () => {
   const { rows, lead, hasShowcase, isPending } = useHeroTanks();
 
   return (
-    <div className={s.root} data-nation={lead?.vehicle.nation} data-pending={isPending} data-slot='showcase-3d'>
+    <div className={s.root} data-nation={lead?.vehicle.nation} data-slot='showcase-3d'>
       {hasShowcase && (
         <>
           <span aria-hidden className={s.backdrop} />

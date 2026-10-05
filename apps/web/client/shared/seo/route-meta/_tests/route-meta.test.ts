@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { UNAVAILABLE_CACHE_LIFE } from '@/shared/api/query-client';
 import { NotFoundError } from '@/shared/api/source';
 
-import { lookupRouteEntity, lookupRouteMeta, routeEntity, routeSlugs } from '../route-meta';
+import { lookupRouteEntity, lookupRouteMeta, routeEntity, routeMeta, routeSlugs } from '../route-meta';
 
 vi.mock('next/cache', () => ({ cacheLife: vi.fn() }));
 vi.mock('next/server', () => ({ connection: vi.fn(() => Promise.resolve()) }));
@@ -42,21 +42,51 @@ describe('lookupRouteEntity', () => {
 
 describe('lookupRouteMeta', () => {
   it('returns the loaded meta', async () => {
-    await expect(lookupRouteMeta(async () => ({ title: 'Гайд' }))).resolves.toEqual({ title: 'Гайд' });
+    await expect(lookupRouteMeta(async () => ({ title: 'Гайд' }))).resolves.toEqual({ meta: { title: 'Гайд' }, isFound: true, isAvailable: true });
   });
 
-  it('returns null for a missing entity without shortening the cache', async () => {
+  it('reports a missing entity without shortening the cache', async () => {
     vi.mocked(cacheLife).mockClear();
 
-    await expect(lookupRouteMeta(() => Promise.reject(new NotFoundError('404')))).resolves.toBeNull();
+    await expect(lookupRouteMeta(() => Promise.reject(new NotFoundError('404')))).resolves.toEqual({ meta: null, isFound: false, isAvailable: true });
     expect(cacheLife).not.toHaveBeenCalled();
   });
 
-  it('returns null for a transient failure and keeps it in the cache only for seconds', async () => {
+  it('marks a transient failure as unavailable, not missing', async () => {
+    await expect(lookupRouteMeta(fail)).resolves.toEqual({ meta: null, isFound: true, isAvailable: false });
+  });
+
+  it('keeps a transient failure in the cache only briefly but long enough to prerender', async () => {
     vi.mocked(cacheLife).mockClear();
 
-    await expect(lookupRouteMeta(fail)).resolves.toBeNull();
-    expect(cacheLife).toHaveBeenCalledWith('seconds');
+    await lookupRouteMeta(fail);
+
+    expect(cacheLife).toHaveBeenCalledWith(UNAVAILABLE_CACHE_LIFE);
+  });
+});
+
+describe('routeMeta', () => {
+  beforeEach(() => {
+    vi.mocked(connection).mockClear();
+  });
+
+  it('passes a found entity through and stays static', async () => {
+    await expect(routeMeta(Promise.resolve({ meta: { title: 'Гайд' }, isFound: true, isAvailable: true }))).resolves.toEqual({
+      meta: { title: 'Гайд' },
+      isFound: true
+    });
+
+    expect(connection).not.toHaveBeenCalled();
+  });
+
+  it('renders at request time when the API was unavailable', async () => {
+    await routeMeta(Promise.resolve({ meta: null, isFound: true, isAvailable: false }));
+
+    expect(connection).toHaveBeenCalledOnce();
+  });
+
+  it('treats a lookup that throws as an outage, never as a missing entity', async () => {
+    await expect(routeMeta(Promise.reject(new Error('down')))).resolves.toEqual({ meta: null, isFound: true });
   });
 });
 

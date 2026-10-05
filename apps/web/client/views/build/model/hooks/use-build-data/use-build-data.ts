@@ -2,10 +2,12 @@
 
 import { useQuery } from '@tanstack/react-query';
 
+import { TANK_DETAIL } from '@/entities/tank/tank';
+
 import { buildQueries } from '../../../api';
 
 export const useBuildData = (slug: string) => {
-  const tankQuery = useQuery(buildQueries.tank({ idOrSlug: slug }));
+  const tankQuery = useQuery(buildQueries.tank({ idOrSlug: slug, period: TANK_DETAIL.period }));
   const vehicle = tankQuery.data?.vehicle;
   const optionsQuery = useQuery({ ...buildQueries.options(vehicle?.tankId ?? 0), enabled: vehicle !== undefined });
 

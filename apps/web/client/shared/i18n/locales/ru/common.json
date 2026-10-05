@@ -1,6 +1,7 @@
 {
   "loadErrorTitle": "Сервер статистики не отвечает",
   "loadErrorDescription": "Проверьте соединение и повторите попытку.",
+  "loadMoreError": "Не удалось загрузить продолжение списка",
   "resetFilters": "Сбросить фильтры",
   "retry": "Повторить",
   "copy": "Скопировать",
@@ -71,6 +72,10 @@
     "atMost": "до {value}",
     "between": "{from}–{to}",
     "pair": "{label} {value}"
+  },
+  "numberField": {
+    "increment": "Увеличить",
+    "decrement": "Уменьшить"
   },
   "dateTime": {
     "placeholder": "Любое время",

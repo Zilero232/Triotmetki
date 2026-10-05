@@ -8,8 +8,20 @@ import { useCommandPaletteHotkey } from '../use-command-palette-hotkey';
 
 export const useCommandPaletteState = (): CommandPaletteContextValue => {
   const [isOpen, toggleOpen] = useBoolean(false);
+  const [hasOpened, markOpened] = useBoolean(false);
 
-  useCommandPaletteHotkey(() => toggleOpen());
+  useCommandPaletteHotkey(() => {
+    markOpened(true);
+    toggleOpen();
+  });
 
-  return { isOpen, setOpen: toggleOpen };
+  const setOpen = (next: boolean) => {
+    if (next) {
+      markOpened(true);
+    }
+
+    toggleOpen(next);
+  };
+
+  return { isOpen, hasOpened, setOpen };
 };

@@ -14,7 +14,7 @@ export const tipValues = ({ tip, insights }: TipValuesInput): TipValues => {
 
   return {
     ...params,
-    winRateDelta: Math.abs(numberParam(params.winRateDelta)).toFixed(1),
+    winRateDelta: Math.abs(numberParam(params.winRateDelta)),
     damageRatio: Math.round(numberParam(params.damageRatio) * INSIGHT_TIP.ratioPercent),
     tank: tank?.shortName ?? tank?.name ?? '—',
     tierRoman: tier ? toRoman(tier) : String(params.tier ?? '')

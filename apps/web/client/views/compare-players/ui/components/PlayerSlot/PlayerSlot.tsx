@@ -44,7 +44,7 @@ export const PlayerSlot = ({ accountId, index, onRemove }: PlayerSlotProps) => {
           </>
         )}
       </div>
-      <IconButton aria-label={t('remove')} size='sm' onClick={onRemove}>
+      <IconButton aria-label={t('removeNamed', { name: summary?.nickname ?? `#${accountId}` })} size='sm' onClick={onRemove}>
         <X size={14} />
       </IconButton>
     </article>

@@ -13,8 +13,6 @@ export const NAV_MENU = {
   openDelay: 80,
   closeDelay: 120,
   sideOffset: 0,
-  compactAbove: 80,
-  expandBelow: 16,
   featuredTier: 10,
   featuredLimit: 10,
   featuredPeriod: '7d',

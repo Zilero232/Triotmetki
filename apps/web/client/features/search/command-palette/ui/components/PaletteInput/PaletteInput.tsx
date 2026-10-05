@@ -17,7 +17,17 @@ export const PaletteInput = ({ value, isFetching, onValueChange, onClose }: Pale
       <span aria-hidden className={s.icon} data-busy={isFetching}>
         <Search size={16} />
       </span>
-      <Command.Input className={s.input} placeholder={t('placeholder')} value={value} onValueChange={onValueChange} />
+      <Command.Input
+        autoCapitalize='off'
+        autoComplete='off'
+        autoCorrect='off'
+        className={s.input}
+        enterKeyHint='search'
+        placeholder={t('placeholder')}
+        spellCheck={false}
+        value={value}
+        onValueChange={onValueChange}
+      />
       <Kbd className={s.esc}>{tCommon('kbd.esc')}</Kbd>
       <IconButton aria-label={tCommon('close')} className={s.close} size='lg' onClick={onClose}>
         <X size={18} />

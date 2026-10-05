@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 import { render, screen } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { ProgressRing } from '../ProgressRing';
 
@@ -64,5 +64,19 @@ describe('ProgressRing', () => {
     rerender(<ProgressRing label='Отметка' max={100} value={-5} />);
 
     expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0');
+  });
+
+  it('never hides or replays a ring that mounts in the first viewport', () => {
+    render(<ProgressRing label='Отметка' value={42} />, { wrapper });
+
+    expect(screen.getByRole('progressbar')).not.toHaveAttribute('data-reveal');
+  });
+
+  it('holds a ring that mounts below the fold empty until it scrolls into view', () => {
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(new DOMRect(0, window.innerHeight + 200, 48, 48));
+
+    render(<ProgressRing label='Отметка' value={42} />, { wrapper });
+
+    expect(screen.getByRole('progressbar')).toHaveAttribute('data-reveal', 'hidden');
   });
 });

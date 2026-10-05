@@ -1,8 +1,9 @@
 import { clsx } from 'clsx';
+import { NextIntlClientProvider } from 'next-intl';
 import { getLocale } from 'next-intl/server';
 
 import { FONT_VARIABLES } from '@/shared/config';
-import { resolveLocale, routing } from '@/shared/i18n';
+import { FORMATS, messages, resolveLocale, routing, TIME_ZONE } from '@/shared/i18n';
 import { defaultMetadata, defaultViewport } from '@/shared/seo';
 
 import { AppProviders } from '../providers/AppProviders';
@@ -22,7 +23,9 @@ const LocaleLayout = async ({ children }: Pick<LayoutProps<'/[locale]'>, 'childr
   return (
     <html suppressHydrationWarning className={clsx(FONT_VARIABLES)} data-theme='dark' lang={locale}>
       <body>
-        <AppProviders locale={locale}>{children}</AppProviders>
+        <NextIntlClientProvider formats={FORMATS} locale={locale} messages={messages[locale]} timeZone={TIME_ZONE}>
+          <AppProviders>{children}</AppProviders>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

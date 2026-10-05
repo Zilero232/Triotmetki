@@ -1,10 +1,12 @@
-import { lookupRouteMeta } from '@/shared/seo/server';
+import type { RouteMeta } from '@/shared/seo';
+
+import { lookupRouteMeta, routeMeta } from '@/shared/seo/server';
 
 import type { CompetitionRouteMeta } from './route-meta.types';
 
 import { getCompetition } from '../competitions';
 
-export const competitionRouteMeta = async (slug: string): Promise<CompetitionRouteMeta | null> => {
+const lookupCompetitionMeta = async (slug: string) => {
   'use cache';
 
   return lookupRouteMeta(async () => {
@@ -13,3 +15,5 @@ export const competitionRouteMeta = async (slug: string): Promise<CompetitionRou
     return { title, isPublic: visibility === 'public' };
   });
 };
+
+export const competitionRouteMeta = async (slug: string): Promise<RouteMeta<CompetitionRouteMeta>> => routeMeta(lookupCompetitionMeta(slug));

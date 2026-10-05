@@ -1,1 +1,1 @@
-export { requireRouteEntity } from './require-route-entity';
+export { requireRouteEntity, requireRouteMeta } from './require-route-entity';

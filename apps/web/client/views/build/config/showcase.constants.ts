@@ -7,7 +7,6 @@ export const SHOWCASE = {
   plusFeature: 'analytics',
   otherSource: { top10: 'all', all: 'top10', top1: 'all' },
   views: ['showcase', 'editor'],
-  period: '30d',
   mode: BUILD_USAGE.defaultMode,
   statsCohort: 'all',
   statsMode: 'random',

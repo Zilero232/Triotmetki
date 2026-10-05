@@ -46,7 +46,6 @@ export const ApplySettingsForm = ({ form, groupOptions, options, isPending, onSu
       <ul className={s.notes}>
         <li>{t('notes.hangar')}</li>
         <li>{t('notes.backup')}</li>
-        <li>{t('notes.restore')}</li>
       </ul>
       <DialogFooter>
         <DialogClose className={buttonVariants({ variant: 'ghost', size: 'sm' })}>{t('cancel')}</DialogClose>

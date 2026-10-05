@@ -98,10 +98,28 @@ describe('PagedList', () => {
   });
 
   it('keeps showing loaded items when a later page failed', () => {
-    renderWithIntl(<PagedList {...BASE} list={withList({ isError: true })} />);
+    renderWithIntl(<PagedList {...BASE} list={withList({ isError: true, hasNextPage: true })} />);
 
     expect(within(region()).getAllByRole('listitem')).toHaveLength(ITEMS.length);
-    expect(screen.queryByRole('button', { name: messages.en.common.retry })).not.toBeInTheDocument();
+  });
+
+  it('reports a failed later page inline and retries that page', async () => {
+    const user = userEvent.setup();
+    const onLoadMore = vi.fn<() => undefined>();
+
+    renderWithIntl(<PagedList {...BASE} list={withList({ isError: true, hasNextPage: true, loadMore: onLoadMore })} />);
+
+    expect(screen.getByRole('alert')).toHaveTextContent(messages.en.common.loadMoreError);
+
+    await user.click(screen.getByRole('button', { name: messages.en.common.retry }));
+
+    expect(onLoadMore).toHaveBeenCalledTimes(1);
+  });
+
+  it('marks itself busy while the next page loads', () => {
+    renderWithIntl(<PagedList {...BASE} list={withList({ hasNextPage: true, isFetchingNextPage: true })} />);
+
+    expect(region()).toHaveAttribute('aria-busy', 'true');
   });
 
   it('loads the next page on demand', async () => {

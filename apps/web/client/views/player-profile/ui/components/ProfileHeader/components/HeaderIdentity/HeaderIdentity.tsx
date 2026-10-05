@@ -27,7 +27,9 @@ export const HeaderIdentity = ({ summary, badge, kinds, isKindsLoading = false, 
           <Link className={s.clan} href={ROUTES.clans.detail(clan.tag)}>
             <ClanEmblem size='xs' src={clan.emblem} tag={clan.tag} />
             <span className={s.tag}>{clanLabel({ tag: clan.tag })}</span>
-            <span className={s.clanName}>{clan.name}</span>
+            <span className={s.clanName} title={clan.name}>
+              {clan.name}
+            </span>
           </Link>
         ) : (
           <span className={s.muted}>{t('noClan')}</span>

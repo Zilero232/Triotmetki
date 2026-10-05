@@ -204,10 +204,6 @@
         "title": "New mod version",
         "text": "A hangar card when a release is out, with «Skip this version»."
       },
-      "config_backup": {
-        "title": "Settings backup",
-        "text": "A copy of the mod settings next to the game's preferences.xml. An installer wiped mods/configs? The files come back."
-      },
       "preset_advisor": {
         "title": "Build hints in the loadout",
         "text": "Marks the site's recommended equipment and directives for your tank in the loadout window."

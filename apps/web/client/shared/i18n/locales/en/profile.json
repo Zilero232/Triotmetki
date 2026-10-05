@@ -203,11 +203,11 @@
     "tips": {
       "weak_class": {
         "title": "Weak class",
-        "body": "In {type} vehicles your win rate is {winRateDelta} pp below the server average."
+        "body": "In {type} vehicles your win rate is {winRateDelta, number, ::.0} pp below the server average."
       },
       "weak_tier": {
         "title": "Weak tier",
-        "body": "At tier {tierRoman} you win {winRateDelta} pp less often than the server — worth revisiting those vehicles."
+        "body": "At tier {tierRoman} you win {winRateDelta, number, ::.0} pp less often than the server — worth revisiting those vehicles."
       },
       "low_damage_tank": {
         "title": "Damage shortfall",

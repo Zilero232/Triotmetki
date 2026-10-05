@@ -15,7 +15,7 @@ export default defineConfig({
     { name: '@hey-api/client-axios', runtimeConfigPath: './shared/api/http/client-config', throwOnError: true },
     '@hey-api/typescript',
     'zod',
-    { name: '@hey-api/sdk', validator: { response: 'zod' } },
+    '@hey-api/sdk',
     '@tanstack/react-query'
   ]
 });

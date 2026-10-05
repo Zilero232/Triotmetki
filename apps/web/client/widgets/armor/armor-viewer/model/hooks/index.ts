@@ -1,10 +1,3 @@
-export { useArmorCanvas } from './use-armor-canvas';
 export type { ArmorHoverEvent } from './use-armor-hover';
-export { useArmorPieceGeometry } from './use-armor-piece-geometry';
-export { useArmorScene } from './use-armor-scene';
 export { useArmorViewer } from './use-armor-viewer';
-export { useArmorZones } from './use-armor-zones';
-export type { UseArmorZonesInput } from './use-armor-zones';
 export { useAttackerPicker } from './use-attacker-picker';
-export { useCameraBridge } from './use-camera-bridge';
-export type { UseCameraBridgeInput } from './use-camera-bridge';

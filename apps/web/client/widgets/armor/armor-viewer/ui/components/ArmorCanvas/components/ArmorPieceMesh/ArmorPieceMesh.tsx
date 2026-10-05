@@ -2,7 +2,7 @@
 
 import type { ArmorPieceMeshProps } from './ArmorPieceMesh.types';
 
-import { useArmorPieceGeometry } from '../../../../../model/hooks';
+import { useArmorPieceGeometry } from '../../../../../model/hooks/use-armor-piece-geometry';
 
 export const ArmorPieceMesh = ({ part, material, onPointerMove, onPointerOut }: ArmorPieceMeshProps) => {
   'use no memo';

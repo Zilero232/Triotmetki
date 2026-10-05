@@ -16,7 +16,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/tourname
   const locale = resolveLocale(await rootParams.locale());
   const slug = decodeRouteParam((await params).slug);
   const t = await getTranslations({ locale, namespace: 'tournaments.detailMeta' });
-  const meta = await tournamentRouteMeta(slug);
+  const { meta } = await tournamentRouteMeta(slug);
 
   return createPageMetadata({
     title: meta ? t('titleNamed', { title: meta.title }) : t('title'),

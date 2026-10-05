@@ -1,13 +1,13 @@
-import type { RouteStaticParamsInput } from '@/shared/seo';
+import type { RouteMeta, RouteStaticParamsInput } from '@/shared/seo';
 
 import { ROUTE_STATIC_PARAMS } from '@/shared/seo';
-import { lookupRouteMeta, routeSlugs } from '@/shared/seo/server';
+import { lookupRouteMeta, routeMeta, routeSlugs } from '@/shared/seo/server';
 
 import type { CoachRouteMeta } from './route-meta.types';
 
 import { getCoach, listCoaches } from '../coaching';
 
-export const coachRouteMeta = async (userId: string): Promise<CoachRouteMeta | null> => {
+const lookupCoachMeta = async (userId: string) => {
   'use cache';
 
   return lookupRouteMeta(async () => {
@@ -16,6 +16,8 @@ export const coachRouteMeta = async (userId: string): Promise<CoachRouteMeta | n
     return { name, headline, isActive };
   });
 };
+
+export const coachRouteMeta = async (userId: string): Promise<RouteMeta<CoachRouteMeta>> => routeMeta(lookupCoachMeta(userId));
 
 export const coachIds = async ({ limit = ROUTE_STATIC_PARAMS.limit }: RouteStaticParamsInput) => {
   'use cache';

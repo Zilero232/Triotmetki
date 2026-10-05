@@ -16,7 +16,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/coaching
   const locale = resolveLocale(await rootParams.locale());
   const id = decodeRouteParam((await params).id);
   const t = await getTranslations({ locale, namespace: 'coaching.coachMeta' });
-  const meta = await coachRouteMeta(id);
+  const { meta } = await coachRouteMeta(id);
 
   return createPageMetadata({
     title: meta ? t('titleNamed', { name: meta.name }) : t('title'),

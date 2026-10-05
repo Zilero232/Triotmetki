@@ -4,13 +4,13 @@ import { useQuery } from '@tanstack/react-query';
 
 import { pulseQueries } from '@/entities/pulse/pulse';
 import { gameStatusQueries } from '@/entities/reference/game-status';
+import { PREFETCHED_STALE_TIME } from '@/shared/api/query-client';
 
-import { HOME } from '../../../config';
 import { serverFiguresState } from '../../../lib/server-figures';
 
 export const useServerStatus = () => {
-  const { data: version } = useQuery({ ...gameStatusQueries.version(), staleTime: HOME.staleMs });
-  const { data: servers } = useQuery({ ...gameStatusQueries.servers(), staleTime: HOME.staleMs });
+  const { data: version } = useQuery({ ...gameStatusQueries.version(), staleTime: PREFETCHED_STALE_TIME });
+  const { data: servers } = useQuery({ ...gameStatusQueries.servers(), staleTime: PREFETCHED_STALE_TIME });
   const { data: pulse, isPending, isError, isRefetching, refetch } = useQuery(pulseQueries.current());
 
   const activity = pulse?.series.map((point) => point.players) ?? [];

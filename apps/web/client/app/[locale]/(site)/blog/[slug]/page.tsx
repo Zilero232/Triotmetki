@@ -10,6 +10,7 @@ import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
 import { articleJsonLd, breadcrumbJsonLd, JsonLd } from '@/shared/seo/json-ld';
+import { requireRouteMeta } from '@/shared/seo/require-route-entity';
 import { PageHeroFallback } from '@/ui-kit';
 import { BlogPostPage } from '@/views/blog-post';
 
@@ -17,7 +18,7 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/blog/[sl
   const locale = resolveLocale(await rootParams.locale());
   const slug = decodeRouteParam((await params).slug);
   const t = await getTranslations({ locale, namespace: 'blog.detailMeta' });
-  const meta = await blogRouteMeta(slug);
+  const meta = await requireRouteMeta(blogRouteMeta(slug));
   const metadata = createPageMetadata({
     title: meta?.seoTitle ?? t('title'),
     description: meta?.description ?? t('description'),
@@ -42,7 +43,7 @@ const BlogArticleSchema = async ({ params }: Pick<PageProps<'/[locale]/blog/[slu
   const locale = resolveLocale(await rootParams.locale());
   const slug = decodeRouteParam((await params).slug);
   const t = await getTranslations({ locale, namespace: 'blog.article' });
-  const meta = await blogRouteMeta(slug);
+  const { meta } = await blogRouteMeta(slug);
   const path = ROUTES.blog.detail(slug);
 
   return meta ? (
@@ -65,9 +66,11 @@ const BlogArticleSchema = async ({ params }: Pick<PageProps<'/[locale]/blog/[slu
 };
 
 const BlogPostRoute = async ({ params }: Pick<PageProps<'/[locale]/blog/[slug]'>, 'params'>) => {
-  const { slug } = await params;
+  const slug = decodeRouteParam((await params).slug);
 
-  return <BlogPostPage slug={decodeRouteParam(slug)} />;
+  await requireRouteMeta(blogRouteMeta(slug));
+
+  return <BlogPostPage slug={slug} />;
 };
 
 const Page = ({ params }: PageProps<'/[locale]/blog/[slug]'>) => (

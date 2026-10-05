@@ -1,13 +1,13 @@
-import type { RouteStaticParamsInput } from '@/shared/seo';
+import type { RouteMeta, RouteStaticParamsInput } from '@/shared/seo';
 
 import { ROUTE_STATIC_PARAMS } from '@/shared/seo';
-import { lookupRouteMeta } from '@/shared/seo/server';
+import { lookupRouteMeta, routeMeta } from '@/shared/seo/server';
 
 import type { BlogRouteMeta, BlogSitemapItem } from './route-meta.types';
 
 import { getBlogArticle, listBlogPosts } from '../posts';
 
-export const blogRouteMeta = async (slug: string): Promise<BlogRouteMeta | null> => {
+const lookupBlogMeta = async (slug: string) => {
   'use cache';
 
   return lookupRouteMeta(async () => {
@@ -26,6 +26,8 @@ export const blogRouteMeta = async (slug: string): Promise<BlogRouteMeta | null>
     };
   });
 };
+
+export const blogRouteMeta = async (slug: string): Promise<RouteMeta<BlogRouteMeta>> => routeMeta(lookupBlogMeta(slug));
 
 export const blogSitemapItems = async ({ limit = ROUTE_STATIC_PARAMS.limit }: RouteStaticParamsInput): Promise<BlogSitemapItem[]> => {
   'use cache';

@@ -15,7 +15,7 @@ export {
 export type { TankDetailInput, TankEconomyTableInput, TankStatsInput, TierListInput } from './api';
 export { economyView } from './api';
 export type { EconomyView } from './api';
-export { ECONOMY_VIEW, TANK_COLLECTION_SLUGS, TANK_SPEC_GROUPS, TANK_SPEC_KEYS, TANK_SPECS } from './config';
+export { ECONOMY_VIEW, TANK_COLLECTION_SLUGS, TANK_DETAIL, TANK_SPEC_GROUPS, TANK_SPEC_KEYS, TANK_SPECS } from './config';
 export { pickVehicles, vehicleIndex } from './lib/pick-vehicles';
 export { isLowerBetter, specBest, specDelta } from './lib/spec-rank';
 export type { SpecVerdict } from './lib/spec-rank';

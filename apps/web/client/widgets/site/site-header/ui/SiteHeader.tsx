@@ -11,7 +11,6 @@ import { SITE_NAV } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { IconButton, Skeleton } from '@/ui-kit';
 
-import { useHeaderCompact } from '../model/hooks';
 import { AccountMenu, MobileNav, SiteBrand, SiteNav, UtilityBar } from './components';
 
 import s from './SiteHeader.module.scss';
@@ -19,12 +18,11 @@ import s from './SiteHeader.module.scss';
 export const SiteHeader = () => {
   const t = useTranslations('nav');
   const [isMenuOpen, toggleMenu] = useBoolean(false);
-  const isCompact = useHeaderCompact();
 
   return (
     <>
       <UtilityBar />
-      <header className={s.root} data-header-compact={isCompact}>
+      <header className={s.root}>
         <div className={s.inner}>
           <SiteBrand />
           <Suspense fallback={<span className={s.nav} />}>

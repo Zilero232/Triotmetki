@@ -1,13 +1,13 @@
-import type { RouteStaticParamsInput } from '@/shared/seo';
+import type { RouteMeta, RouteStaticParamsInput } from '@/shared/seo';
 
 import { ROUTE_STATIC_PARAMS } from '@/shared/seo';
-import { lookupRouteMeta, routeSlugs } from '@/shared/seo/server';
+import { lookupRouteMeta, routeMeta, routeSlugs } from '@/shared/seo/server';
 
 import type { ReplayRouteMeta } from './route-meta.types';
 
 import { getReplay, listReplays } from '../replays';
 
-export const replayRouteMeta = async (id: string): Promise<ReplayRouteMeta | null> => {
+const lookupReplayMeta = async (id: string) => {
   'use cache';
 
   return lookupRouteMeta(async () => {
@@ -16,6 +16,8 @@ export const replayRouteMeta = async (id: string): Promise<ReplayRouteMeta | nul
     return { isPublic: visibility === 'public' && status === 'parsed', player: owner?.nickname ?? null, mapName, damageDealt };
   });
 };
+
+export const replayRouteMeta = async (id: string): Promise<RouteMeta<ReplayRouteMeta>> => routeMeta(lookupReplayMeta(id));
 
 export const publicReplayIds = async ({ limit = ROUTE_STATIC_PARAMS.limit }: RouteStaticParamsInput) => {
   'use cache';

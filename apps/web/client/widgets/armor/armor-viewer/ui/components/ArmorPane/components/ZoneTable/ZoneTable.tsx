@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import type { ZoneTableProps } from './ZoneTable.types';
 
-import { useArmorZones } from '../../../../../model/hooks';
+import { useArmorZones } from '../../../../../model/hooks/use-armor-zones';
 
 import s from './ZoneTable.module.scss';
 
