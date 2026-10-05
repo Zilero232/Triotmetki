@@ -11,8 +11,6 @@ def sample_readouts():
     readouts.set_reload(SAMPLE_READOUTS['reload_left'], SAMPLE_READOUTS['reload_base'])
     readouts.set_clip(*SAMPLE_READOUTS['clip'])
     readouts.set_health(SAMPLE_READOUTS['health'], SAMPLE_READOUTS['max_health'])
-    for device, seconds in SAMPLE_READOUTS['repairs'].items():
-        readouts.set_repair(device, seconds)
     return readouts
 
 

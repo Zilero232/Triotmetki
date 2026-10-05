@@ -9,30 +9,31 @@ import { GunArcWidget } from '../GunArcWidget';
 
 const data = gunArcSchema.parse(readWidgetFixture('gun_arc'));
 
-const placed = (html: HTMLElement) => [...html.querySelectorAll<HTMLElement>('[style]')].map((element) => element.style.left).filter(Boolean);
+const markers = (html: HTMLElement) => [...html.querySelectorAll('svg')].map((svg) => svg.parentElement).filter((marker) => marker !== null);
 
 describe(GunArcWidget, () => {
-  it('writes the degrees left to each limit at the ends of the scale and the gun angle after them', () => {
+  it('draws a marker on each side of the reticle', () => {
     const html = render(<GunArcWidget data={data} />).container;
 
-    expect(html.textContent).toBe(`‹ 36°4° ›${data.yaw}`);
+    expect(markers(html)).toHaveLength(2);
   });
 
-  it('leaves the gun angle out when it is switched off', () => {
-    const html = render(<GunArcWidget data={{ ...data, yaw: '' }} />).container;
-
-    expect(html.textContent).toBe('‹ 36°4° ›');
-  });
-
-  it('places the hull axis tick and the gun dot along the scale', () => {
+  it('places the left marker left of the right one', () => {
     const html = render(<GunArcWidget data={data} />).container;
+    const [left, right] = markers(html).map((marker) => Number.parseFloat(marker.style.left));
 
-    expect(placed(html)).toEqual(['60rem', '105rem']);
+    expect(left).toBeLessThan(right);
   });
 
-  it('leaves the scale out when it is switched off', () => {
-    const html = render(<GunArcWidget data={{ ...data, scale: false }} />).container;
+  it('adds the centre marker when it has a style', () => {
+    const html = render(<GunArcWidget data={{ ...data, centre_marker: 'dot', centre: { x: -32, y: 0 } }} />).container;
 
-    expect(placed(html)).toEqual([]);
+    expect(markers(html)).toHaveLength(3);
+  });
+
+  it('leaves out a marker that is off the screen', () => {
+    const html = render(<GunArcWidget data={{ ...data, right: null }} />).container;
+
+    expect(markers(html)).toHaveLength(1);
   });
 });

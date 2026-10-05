@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ...core.compat import is_int
 from .constants import (
     DEFAULTS_REVISION,
+    DROPPED_KEYS,
     DROPPED_SECTIONS,
     GUARDED_SWITCHES,
     LAYOUT_PLACES_SECTION,
@@ -109,6 +110,13 @@ def _without_dropped_places(places):
     return kept
 
 
+def _drop_keys(components):
+    for section_name, key in DROPPED_KEYS:
+        section = _section(components, section_name)
+        if section is not None and key in section:
+            components[section_name] = dict((name, value) for name, value in section.items() if name != key)
+
+
 def _apply(components, updates):
     for section_name, values in updates.items():
         section = dict(_section(components, section_name) or {})
@@ -147,6 +155,7 @@ def migrated(config, components, schema_defaults):
     _apply(components, _retired_values(components, chosen, revision))
     for name in DROPPED_SECTIONS:
         components.pop(name, None)
+    _drop_keys(components)
     if LAYOUT_PLACES_SECTION in components:
         components[LAYOUT_PLACES_SECTION] = _without_dropped_places(components[LAYOUT_PLACES_SECTION])
     return config, components

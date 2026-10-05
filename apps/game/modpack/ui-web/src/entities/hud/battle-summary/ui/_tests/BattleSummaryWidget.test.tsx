@@ -59,7 +59,7 @@ describe(BattleSummaryWidget, () => {
   });
 
   it('draws a progress bar only for a row with progress', () => {
-    const row = { icon: null, text: 'Осн. калибр', value: '1 500', note: '/ 2 940', tone: 'text' as const, progress_tone: 'gold' as const };
+    const row = { icon: null, text: 'Осн. калибр', value: '−1 440', note: null, tone: 'text' as const, progress_tone: 'gold' as const };
     const plain = render(<BattleSummaryWidget data={{ ...data, rows: [{ ...row, progress: null }] }} />).container;
     const barred = render(<BattleSummaryWidget data={{ ...data, rows: [{ ...row, progress: 0.5 }] }} />).container;
 

@@ -1,14 +1,16 @@
 {
   "data": {
-    "centre": 0.5,
-    "gun_tone": "warning",
-    "left": "36°",
-    "left_tone": "text",
-    "position": 0.9,
-    "right": "4°",
-    "right_tone": "warning",
-    "scale": true,
-    "yaw": "+16°"
+    "centre": null,
+    "centre_marker": "none",
+    "left": {
+      "x": -212,
+      "y": 2
+    },
+    "marker": "corner",
+    "right": {
+      "x": 148,
+      "y": -2
+    }
   },
   "kind": "gun_arc",
   "v": 1

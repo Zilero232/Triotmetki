@@ -6,7 +6,7 @@ import unittest
 import _support
 from otmetki.core.settings import Settings
 from otmetki.features.comp7_helper.i18n import STRINGS
-from otmetki.features.comp7_helper.model import clean_state, format_hangar, next_text, progress, thresholds
+from otmetki.features.comp7_helper.model import clean_state, format_hangar, thresholds
 from otmetki.features.comp7_helper.model.widget import hangar_widget
 from otmetki.features.comp7_helper.settings import SCHEMA, SETTINGS
 
@@ -61,33 +61,8 @@ class CleanStateTest(unittest.TestCase):
     def test_no_reads_is_none(self):
         assert clean_state(None) is None
 
-    def test_a_non_number_rating_is_zero(self):
-        assert clean_state({'rating': True})['rating'] == 0
-
-
-class ProgressTest(unittest.TestCase):
-
-    def test_the_next_division_and_the_points_left(self):
-        target, left, share = progress(champion_b())
-
-        assert target['rank'] == 5
-        assert target['index'] == 1
-        assert left == 350
-        assert round(share, 2) == 0.3
-
-    def test_next_text_names_the_division_and_the_points(self):
-        assert next_text(champion_b(), translator()) == u'До «Чемпион A»: 350 очков'
-
-    def test_next_text_in_the_legend_ranks_points_to_the_leaderboard(self):
-        text = next_text(state(4200, division(6, 2, 4000, 5)), translator())
-
-        assert text == u'«Легенда A» — по месту в таблице лидеров'
-
-    def test_no_progress_from_the_top_division(self):
-        assert progress(state(4500, division(6, 1, 4000, 1))) is None
-
-    def test_no_progress_in_qualification(self):
-        assert progress(qualification()) is None
+    def test_the_rating_the_stock_header_shows_is_not_kept(self):
+        assert 'rating' not in champion_b()
 
 
 class ThresholdsTest(unittest.TestCase):
@@ -105,20 +80,21 @@ class ThresholdsTest(unittest.TestCase):
 
 class HangarTextTest(unittest.TestCase):
 
-    def test_title_thresholds_and_skill(self):
+    def test_thresholds_and_skill(self):
         text = format_hangar(champion_b(), Settings({}, SCHEMA), translator())
 
-        assert u'Натиск: Чемпион B, 3 150 очков' in text
         assert u'Легенда A: от 4 000 · топ-1%' in text
         assert u'Навык роли: Точка сбора' in text
 
-    def test_qualification_is_one_line(self):
-        settings = Settings({'show_thresholds': False}, SCHEMA)
+    def test_the_rating_and_the_division_are_left_to_the_stock_header(self):
+        text = format_hangar(champion_b(), Settings({}, SCHEMA), translator())
 
-        text = format_hangar(qualification(skill=None), settings, translator())
+        assert u'Натиск: ' not in text
 
-        assert text.count('\n') == 0
-        assert u'Квалификация' in text
+    def test_nothing_to_show_is_no_text(self):
+        settings = Settings({'show_thresholds': False, 'show_battles': False}, SCHEMA)
+
+        assert format_hangar(qualification(skill=None), settings, translator()) is None
 
     def test_outside_onslaught_no_text(self):
         assert format_hangar(None, Settings({}, SCHEMA), translator()) is None
@@ -126,18 +102,17 @@ class HangarTextTest(unittest.TestCase):
 
 class HangarWidgetTest(unittest.TestCase):
 
-    def test_card_shows_the_rating_and_the_division(self):
+    def test_card_has_no_rating_or_division_of_its_own(self):
         widget = champion_b_widget()
 
         assert widget['kind'] == 'card'
-        assert widget['data']['value'] == '3 150'
-        assert widget['data']['subtitle'] == 'Champion B'
+        assert widget['data'].get('value') is None
+        assert widget['data'].get('subtitle') is None
 
-    def test_first_row_is_the_progress_to_the_next_division(self):
+    def test_first_row_is_the_first_threshold(self):
         row = champion_b_widget()['data']['rows'][0]
 
-        assert row['text'] == u'To «Champion A»: 350 points'
-        assert row['progress'] == 0.3
+        assert row['text'] == u'Champion C'
 
     def test_last_row_is_the_role_skill(self):
         row = champion_b_widget()['data']['rows'][-1]

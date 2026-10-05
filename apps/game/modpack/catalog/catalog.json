@@ -344,12 +344,12 @@
         "en": "Battle progress"
       },
       "description": {
-        "ru": "Одна плашка со строкой на каждую цель боя: урон до порога «Основного калибра», рекорд танка и WN8 этого боя. Строка видна, пока цель актуальна.",
-        "en": "One plate with a row per battle target: damage to the High Caliber threshold, the tank record and this battle's WN8. A row shows while its target applies."
+        "ru": "Одна плашка со строкой на каждую цель боя: сколько урона ещё нужно до «Основного калибра» (только в случайных боях, как у Battle Observer) и WN8 этого боя. Нанесённый урон не повторяется — его считает «Журнал боя». Строка видна, пока цель актуальна.",
+        "en": "One plate with a row per battle target: the damage still needed for High Caliber (random battles only, as in Battle Observer) and this battle's WN8. The damage dealt is not repeated: the battle log counts it. A row shows while its target applies."
       },
       "fairPlay": {
-        "ru": "Только свои данные: свой урон, помощь и фраги из событий клиента, ХП команды противника как в стандартной полосе счёта, свои рекорды из досье, итогов боя и сайта.",
-        "en": "Own data only: own damage, assist and frags from the client's feedback, the enemy team HP as the stock score strip shows it, own records from the dossier, battle results and the site."
+        "ru": "Только свои данные: свой урон, фраги и засвет из событий клиента, ХП команды противника как в стандартной полосе счёта.",
+        "en": "Own data only: own damage, frags and spotting from the client's feedback, the enemy team HP as the stock score strip shows it."
       },
       "perf": "low",
       "preview": {
@@ -406,16 +406,16 @@
       "context": "battle",
       "presets": [],
       "title": {
-        "ru": "Углы наводки",
-        "en": "Gun traverse"
+        "ru": "УГН (углы горизонтальной наводки)",
+        "en": "Gun traverse limits"
       },
       "description": {
-        "ru": "Шкала под прицелом для машин с ограниченной горизонтальной наводкой: где орудие между упорами, сколько градусов до каждого и текущий угол орудия от оси корпуса. Сторона у упора жёлтая, в упоре — красная. Шкала держится под прицелом в аркадном, снайперском и артиллерийском режимах, у каждого свой отступ.",
-        "en": "A scale under the reticle for vehicles with limited traverse: where the gun sits between its limits, the degrees to each and the gun's current angle from the hull axis. The side near its limit turns yellow, at the limit red. The scale stays under the reticle in arcade, sniper and artillery view, each with its own offset."
+        "ru": "Маркеры слева и справа от прицела там, где орудие упрётся в предел горизонтальной наводки, — как «УГН» в сборках: пять видов маркеров (уголок, скобки, большой полукруг, полукруг, восьмиугольник) и по желанию маркер середины сектора. Для машин с ограниченной наводкой, в любом режиме камеры.",
+        "en": "Markers left and right of the reticle where the gun stops at its horizontal traverse limits, as the packs' «УГН» draws them: five marker styles (corner, brackets, big semicircle, semicircle, octagon) and an optional marker in the middle of the sector. For limited-traverse vehicles, in every camera mode."
       },
       "fairPlay": {
-        "ru": "Только параметры своей машины и положение своей башни; ничего не наводит и не меняет.",
-        "en": "Only your own vehicle's parameters and your own turret position; aims and changes nothing."
+        "ru": "Только параметры своей машины, свой маркер орудия и своя камера; ничего не наводит и не меняет.",
+        "en": "Only your own vehicle's parameters, your own gun marker and your own camera; aims and changes nothing."
       },
       "perf": "medium",
       "preview": {
@@ -630,8 +630,8 @@
         "en": "Crosshairs"
       },
       "description": {
-        "ru": "Пресеты стандартного прицела игры (сетка, центральная метка, круг сведения, индикаторы) для аркадного и снайперского режимов, серверный прицел и 20 центральных меток на выбор: 10 своих (среди них зелёные дуги, рамка с засечками и уголки поправки), 5 своих одноцветных в шести цветах и 5 из CC0-набора Kenney; по умолчанию центр прицела — стандартный. Таймер перезарядки и ремонт модулей у прицела; пока таймер на экране, стандартный таймер перезарядки прицела скрыт.",
-        "en": "Presets for the game's own reticle (net, central marker, aiming circle, indicators) in arcade and sniper modes, the server reticle and 20 centre marks to pick from: 10 of our own (green arcs, a box with ticks and stacked chevrons among them), 5 one-colour marks of ours in six colours and 5 from Kenney's CC0 pack; the game's own centre stays by default. A reload timer and module repairs by the reticle; while the timer is on screen the stock reticle's reload timer hides."
+        "ru": "Пресеты стандартного прицела игры (сетка, центральная метка, круг сведения, индикаторы) для аркадного и снайперского режимов, серверный прицел и 20 центральных меток на выбор: 10 своих (среди них зелёные дуги, рамка с засечками и уголки поправки), 5 своих одноцветных в шести цветах и 5 из CC0-набора Kenney; по умолчанию центр прицела — стандартный. Таймер перезарядки у прицела; пока он на экране, стандартный таймер перезарядки прицела скрыт. Ремонт модулей остаётся на стандартной панели повреждений.",
+        "en": "Presets for the game's own reticle (net, central marker, aiming circle, indicators) in arcade and sniper modes, the server reticle and 20 centre marks to pick from: 10 of our own (green arcs, a box with ticks and stacked chevrons among them), 5 one-colour marks of ours in six colours and 5 from Kenney's CC0 pack; the game's own centre stays by default. A reload timer by the reticle; while it is on screen the stock reticle's reload timer hides. Module repairs stay on the stock damage panel."
       },
       "fairPlay": {
         "ru": "Только внешний вид: без автоприцела, калькулятора пробития и чужих данных.",
@@ -828,12 +828,12 @@
         "en": "Onslaught: divisions"
       },
       "description": {
-        "ru": "Карточка в ангаре «Натиска»: ваш рейтинг и дивизион, сколько очков до следующего, пороги «Чемпиона» и «Легенды» (C, B, A) и навык роли выбранной машины.",
-        "en": "A card in the Onslaught hangar: your rating and division, the points to the next one, the Champion and Legend thresholds (C, B, A) and the role skill of the selected vehicle."
+        "ru": "Карточка в ангаре «Натиска»: пороги «Чемпиона» и «Легенды» (C, B, A), навык роли выбранной машины, ваша серия и последние бои. Рейтинг и дивизион показывает сама игра в шапке «Натиска».",
+        "en": "A card in the Onslaught hangar: the Champion and Legend thresholds (C, B, A), the role skill of the selected vehicle, your streak and last battles. The game's own Onslaught header shows the rating and the division."
       },
       "fairPlay": {
-        "ru": "Только ваш рейтинг и то, что игра уже показывает в подсказках рангов; о других игроках ничего.",
-        "en": "Only your own rating and what the game already shows in its rank tooltips; nothing about other players."
+        "ru": "Только ваш дивизион, ваши бои и то, что игра уже показывает в подсказках рангов; о других игроках ничего.",
+        "en": "Only your own division, your own battles and what the game already shows in its rank tooltips; nothing about other players."
       },
       "perf": "low",
       "preview": {
@@ -982,8 +982,8 @@
         "en": "New mod version"
       },
       "description": {
-        "ru": "Карточка в ангаре и одно уведомление, когда для вашего клиента вышла новая версия «Трёх отметок», с кнопкой «Пропустить эту версию». Включён по умолчанию: раз за запуск спрашивает публичный список релизов, передавая только версию игры.",
-        "en": "A hangar card and one notification when a new Three Marks version for your client is out, with «Skip this version». On by default: once per game start it asks the public release list, sending only the game version."
+        "ru": "Значок на строке мода в списке модов ModsList и одно уведомление, когда для вашего клиента вышла новая версия «Трёх отметок»; в окне мода — «Скачать на сайте» и «Пропустить эту версию». Включён по умолчанию: раз за запуск спрашивает публичный список релизов, передавая только версию игры.",
+        "en": "A badge on the mod row of the ModsList mods list and one notification when a new Three Marks version for your client is out; the mod window offers «Download on the site» and «Skip this version». On by default: once per game start it asks the public release list, sending only the game version."
       },
       "fairPlay": {
         "ru": "Ничего не читает из боя и не отправляет о вас: только версия игры в запросе.",
@@ -1216,7 +1216,6 @@
         "event_trackers",
         "crew_xp",
         "hit_viewer",
-        "update_notice",
         "hangar_info",
         "free_camera"
       ],
@@ -1269,7 +1268,6 @@
         "comp7_helper",
         "event_trackers",
         "crew_xp",
-        "update_notice",
         "hangar_info",
         "free_camera"
       ],

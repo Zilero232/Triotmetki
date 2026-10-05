@@ -44,7 +44,6 @@ def battle(arena, result, delta=None):
 
 def state(history):
     return {
-        'rating': 3150,
         'division': None,
         'divisions': [],
         'qualification': True,
@@ -128,12 +127,12 @@ class CardTest(unittest.TestCase):
         assert u'Streak: 2 wins in a row' in texts
         assert widget['data']['strip'] == ['good', 'good']
 
-    def test_the_battles_can_be_switched_off(self):
+    def test_the_battles_switched_off_leave_no_card_when_nothing_else_shows(self):
         history = [battle(1, 'win', 20)]
         settings = Settings({'show_battles': False}, SCHEMA)
 
-        assert hangar_widget(state(history), settings, translator())['data']['strip'] == []
-        assert u'подряд' not in format_hangar(state(history), settings, translator())
+        assert hangar_widget(state(history), settings, translator()) is None
+        assert format_hangar(state(history), settings, translator()) is None
 
 
 if __name__ == '__main__':

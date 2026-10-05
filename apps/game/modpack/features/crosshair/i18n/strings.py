@@ -46,7 +46,6 @@ STRINGS = {
         'crosshair_mark_outline': u'Тёмная обводка',
         'crosshair_reload_box': u'Таймер перезарядки у прицела',
         'crosshair_reload_arcs': u'Дуги перезарядки и прочности',
-        'crosshair_repair_timers': u'Ремонт модулей',
         'crosshair_group_readouts': u'У прицела',
         'crosshair_ready': u'ГОТОВ',
         'crosshair_mark_color_white': u'Белый',
@@ -79,7 +78,6 @@ STRINGS = {
                                      u'Стандартный таймер перезарядки прицела на это время скрыт.',
         'crosshair_reload_arcs_hint': u'Дуга слева — перезарядка своего орудия, справа — прочность своего танка. '
                                       u'Стандартные индикаторы перезарядки и прочности на это время скрыты.',
-        'crosshair_repair_timers_hint': u'Значок и секунды ремонта своего повреждённого модуля.',
         'crosshair_mark_size_hint': u'Сторона метки в пикселях экрана, от 16 до 128. Тонкие линии чётче всего на 32 и 64.',
         'crosshair_mark_hides_centre_hint': u'Прячет центральный маркер игры, чтобы он не наслаивался на метку.',
         'crosshair_preset_hint': u'Прозрачность и стиль частей прицела из вкладки «Прицел» настроек игры. '
@@ -131,7 +129,6 @@ STRINGS = {
         'crosshair_mark_outline': u'Dark outline',
         'crosshair_reload_box': u'Reload timer by the reticle',
         'crosshair_reload_arcs': u'Reload and HP arcs',
-        'crosshair_repair_timers': u'Module repairs',
         'crosshair_group_readouts': u'By the reticle',
         'crosshair_ready': u'READY',
         'crosshair_mark_color_white': u'White',
@@ -164,7 +161,6 @@ STRINGS = {
                                      u'The stock reticle\'s reload timer hides meanwhile.',
         'crosshair_reload_arcs_hint': u'The left arc is your gun\'s reload, the right one your tank\'s HP. '
                                       u'The stock reload and HP indicators hide meanwhile.',
-        'crosshair_repair_timers_hint': u'An icon and the repair seconds of your damaged module.',
         'crosshair_mark_size_hint': u'The side of the mark in screen pixels, 16 to 128. Thin lines are crispest at 32 and 64.',
         'crosshair_mark_hides_centre_hint': u'Hides the game\'s centre marker so it does not overlap the mark.',
         'crosshair_preset_hint': u'Opacity and style of the reticle parts from the game\'s Reticle settings tab. '

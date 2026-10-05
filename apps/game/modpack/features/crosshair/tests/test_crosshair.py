@@ -68,7 +68,6 @@ FIELD_KEYS = (
     'mark_hides_centre',
     'reload_box',
     'reload_arcs',
-    'repair_timers',
 )
 STYLE_COUNTS = {'netType': 4, 'centralTagType': 14, 'mixingType': 4, 'gunTagType': 15}
 
@@ -366,25 +365,18 @@ class ReadoutsTest(unittest.TestCase):
 
         assert data['arcs'] == {'reload': 0.579, 'health': 0.65}
 
-    def test_a_repair_shows_its_seconds_and_a_track_glyph(self):
+    def test_the_module_repairs_are_left_to_the_stock_damage_panel(self):
         data = readouts_data(sample_readouts(), Settings(None, SCHEMA), str)
 
-        assert data['repairs'] == [{'glyph': 'track', 'seconds': '6'}]
-
-    def test_a_finished_repair_drops_out(self):
-        readouts = sample_readouts()
-
-        readouts.tick(7.0)
-
-        assert readouts.repairs == {}
+        assert 'repairs' not in data
 
     def test_nothing_is_sent_with_every_readout_off(self):
-        settings = Settings({'reload_box': False, 'repair_timers': False}, SCHEMA)
+        settings = Settings({'reload_box': False}, SCHEMA)
 
         assert readouts_data(sample_readouts(), settings, str) is None
 
     def test_nothing_is_read_with_every_readout_off(self):
-        assert not wants_readouts(Settings({'reload_box': False, 'repair_timers': False}, SCHEMA))
+        assert not wants_readouts(Settings({'reload_box': False}, SCHEMA))
 
 
 class PreviewWidgetTest(unittest.TestCase):
@@ -474,11 +466,6 @@ class ReplacedReticlePartsTest(unittest.TestCase):
         parts = replaced_reticle_parts(settings, Readouts())
 
         assert parts == (RETICLE_RELOAD, RETICLE_CONDITION)
-
-    def test_repair_timers_alone_keep_the_whole_stock_reticle(self):
-        settings = Settings({'reload_box': False, 'reload_arcs': False, 'repair_timers': True}, SCHEMA)
-
-        assert replaced_reticle_parts(settings, Readouts()) == ()
 
     def test_nothing_is_replaced_while_the_readouts_are_not_drawn(self):
         assert replaced_reticle_parts(Settings(None, SCHEMA), None) == ()

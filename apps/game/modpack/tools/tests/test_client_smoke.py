@@ -265,6 +265,8 @@ CLIENT_VERSION = u'Мир танков 1.45.0.5231'
 OWN_VEHICLE = 101
 ENEMY_VEHICLE = 202
 ALLY_VEHICLE = 303
+# RU 1.45 common/constants.py ARENA_GUI_TYPE.TRAINING: no High Caliber medal there.
+TRAINING_GUI_TYPE = 2
 HIT_STATES = (
     'VEHICLE_HEALTH', 'VEHICLE_HIT', 'VEHICLE_RICOCHET', 'VEHICLE_ARMOR_PIERCED', 'VEHICLE_CRITICAL_HIT',
     'VEHICLE_DEAD',
@@ -538,16 +540,6 @@ class DossierStats(object):
 
     def getMaxXp(self):
         return 1100
-
-
-class DossierCaps(object):
-    DOSSIER_MAX15X15 = str('DOSSIER_MAX15X15')
-
-    @staticmethod
-    def checkAny(bonus_type, *caps):
-        # RU 1.45 arena_bonus_type_caps.checkAny: a cap given by name must be a native str.
-        has_native_cap = any(type(cap) is str and cap == 'DOSSIER_MAX15X15' for cap in caps)
-        return bonus_type in (1, 29) and has_native_cap
 
 
 class GarageDevice(object):
@@ -2147,9 +2139,7 @@ class GunAndWoundsTest(StoryTest):
         game.vehicle.item = None
 
         session = game.enter_battle_with_gun((-0.26, 0.26))
-        game.player.gunRotator.turretYaw = 0.2
-        instances['gun_arc'].render()
-        cls.gun_arc = game.hud_text('gun_arc')
+        cls.play_gun_arc(game, app, session)
         cls.play_bush_circle(game, session)
 
         game.own_vehicle.showDamageFromShot(ENEMY_VEHICLE, [FRONT_HULL_PEN], 0, 1.0, False)
@@ -2161,6 +2151,18 @@ class GunAndWoundsTest(StoryTest):
         cls.is_wounds_file_saved = os.path.isfile(os.path.join(app.config_dir, 'battle_hits_%d.json' % ACCOUNT))
         instances['battle_results'].ui_action('clear')
         cls.wounds_rows_cleared = instances['battle_results'].ui_page()['rows']
+
+    @classmethod
+    def play_gun_arc(cls, game, app, session):
+        session.shared.crosshair = crosshair_proxy()
+        package('AvatarInputHandler')
+        module('AvatarInputHandler.cameras', getViewProjectionMatrix=CameraAlongZ)
+        sys.modules['Math'].Matrix = HullAtOrigin
+        sys.modules['Math'].Vector4 = Vector4
+        game.player.getOwnVehicleStabilisedMatrix = lambda: 'own-matrix'
+        game.player.gunRotator.markerInfo = (Vector(0.0, 0.0, 300.0), Vector(0.0, 0.0, 1.0), 1.0)
+        game.instances()['gun_arc'].render()
+        cls.gun_arc = copy.deepcopy(game.hud_module().hud_layer(app).widgets.get('otmetki.hud.gun_arc'))
 
     @classmethod
     def play_bush_circle(cls, game, session):
@@ -2180,10 +2182,13 @@ class GunAndWoundsTest(StoryTest):
     def test_hangar_info_links_the_armor_page_of_the_selected_tank(self):
         self.assertEqual(self.hangar_info_actions[0]['link'], '/t/r04-t-34/armor')
 
-    def test_the_gun_arc_shows_the_traverse_left_each_way(self):
-        self.assertIn(u'УГН', self.gun_arc)
-        self.assertIn(u'◄ 26°', self.gun_arc)
-        self.assertIn(u'3° ►', self.gun_arc)
+    def test_the_gun_arc_marks_both_traverse_limits_beside_the_reticle(self):
+        data = self.gun_arc['data']
+
+        self.assertEqual((data['left'], data['right']), ({'x': -255, 'y': 0}, {'x': 255, 'y': 0}))
+
+    def test_the_gun_arc_draws_the_corner_markers_by_default(self):
+        self.assertEqual(self.gun_arc['data']['marker'], 'corner')
 
     def test_the_bush_circle_hotkey_draws_the_circle_on_the_own_tank(self):
         self.assertEqual(self.models_before, [])
@@ -2277,15 +2282,13 @@ class SiteRecordsTest(StoryTest):
         goals = contract_example('goals.example.json')
         game.answer('tanks', contract_example('ratings-tanks.example.json'))
         game.answer('goals', goals)
-        cls.book = game.instances()['battle_progress'].book.get(1)
         cls.goals_label = game.components['otmetki.session']['text']
         cls.hangar_sounds = list(game.sounds)
-        cls.play_battle(game, app)
+        cls.play_battle(game)
         cls.play_results(game, app, goals)
 
     @classmethod
-    def play_battle(cls, game, app):
-        layer = game.hud_module().hud_layer(app)
+    def play_battle(cls, game):
         session = game.enter_battle(1, tank_id=1)
         session.own_feedback(
             Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(1500)),
@@ -2294,13 +2297,10 @@ class SiteRecordsTest(StoryTest):
         )
         cls.battle_panels = copy.deepcopy(game.hud_components())
         cls.components_in_battle = sorted(game.components)
-        # RU 1.45 dossiers2 battle_results_processors: maxAssisted is track + radio + stun, so an artillery player's
-        # stun assist counts in battle; BattleSummaryFeedbackEvent keeps stun apart from getTotalAssistDamage().
-        layer.update_settings('battle_progress', {'record_metric': 'assist'})
-        session.own_feedback(Feedback(KINDS.STUN_ASSIST, ENEMY_VEHICLE, Extra(600)))
-        cls.record_after_stun = game.hud_text('battle_progress')
-        session.feedback.onPlayerSummaryFeedbackReceived(summary_with_stun(5000))
-        cls.record_after_summary = game.hud_text('battle_progress')
+        game.events.onAvatarBecomeNonPlayer()
+        session = game.enter_battle(1, tank_id=1, gui_type=TRAINING_GUI_TYPE)
+        session.own_feedback(Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(1500)))
+        cls.training_progress = game.hud_text('battle_progress')
         game.events.onAvatarBecomeNonPlayer()
 
     @classmethod
@@ -2308,10 +2308,7 @@ class SiteRecordsTest(StoryTest):
         game.player = Player(ACCOUNT)
         game.events.onAccountShowGUI()
         results = _support.battle_results()
-        results['personal'][1]['damageDealt'] = 7050
         game.events.onBattleResultsReceived(True, results)
-        cls.record_notices = game.messages_with(u'новый рекорд')
-        cls.stored = _support.load_json(os.path.join(app.config_dir, 'personal_best_%d.json' % ACCOUNT))
         for step in range(1, 30):
             app.bus.emit('tick', time.time() + step * 5)
         achieved = dict(goals['goals'][0], current=3050.0, status='achieved')
@@ -2320,29 +2317,26 @@ class SiteRecordsTest(StoryTest):
         cls.sounds_after_goal = list(game.sounds)
         cls.messages = list(game.messages)
 
-    def test_site_records_fill_the_record_book(self):
-        self.assertEqual(self.book, {'damage': 6812, 'assist': 5120, 'frags': 6, 'xp': 2740})
-
     def test_site_goals_show_in_the_hangar_without_a_sound(self):
         self.assertIn(u'Ср. урон 3 000', self.goals_label)
         self.assertEqual(self.hangar_sounds, [])
 
-    def test_battle_panels_count_the_record_efficiency_and_goals_so_far(self):
-        panels = self.battle_panels
+    def test_battle_progress_shows_the_main_gun_and_the_battle_wn8(self):
+        text = self.battle_panels['battle_progress']['text']
 
-        self.assertIn(u'1 500 / 6 812', panels['battle_progress']['text'])
-        self.assertIn(u'WN8 боя', panels['battle_progress']['text'])
+        self.assertIn(u'Осн. калибр', text)
+        self.assertIn(u'WN8 боя', text)
         self.assertNotIn('otmetki.session', self.components_in_battle)
 
-    def test_stun_assist_counts_towards_the_assist_record(self):
-        self.assertIn(u'600 / 5 120', self.record_after_stun)
+    def test_the_main_gun_shows_the_damage_past_the_threshold_not_the_damage_dealt(self):
+        text = self.battle_panels['battle_progress']['text']
 
-    def test_the_battle_summary_beats_the_assist_record_with_the_stun(self):
-        self.assertIn(u'5 950 +830', self.record_after_summary)
+        self.assertIn(u'+500', text)
+        self.assertNotIn(u'1 500', text)
 
-    def test_a_new_record_is_stored_after_the_battle_without_a_notice(self):
-        self.assertEqual(self.record_notices, [])
-        self.assertEqual(self.stored['tanks']['1']['damage'], 7050)
+    def test_the_main_gun_stays_out_of_a_training_room(self):
+        self.assertIn(u'WN8 боя', self.training_progress)
+        self.assertNotIn(u'Осн. калибр', self.training_progress)
 
     def test_an_achieved_goal_is_announced(self):
         self.assertTrue(self.goal_messages, self.messages)
@@ -2385,31 +2379,6 @@ class PlatoonTest(StoryTest):
 
     def test_platoon_points_total_the_own_damage_and_assist(self):
         self.assertEqual(self.own_totals, (2150, 5950))
-
-
-class DossierBonusTypesTest(StoryTest):
-
-    @classmethod
-    def play(cls, game):
-        game.install_hud_stubs()
-        game.load(list(ENTRY_MODULES))
-        counts = sys.modules['gui.mods.otmetki.features.battle_progress.client'].counts_in_dossier
-        cls.without_caps = (counts(1), counts(29))
-        module('arena_bonus_type_caps', ARENA_BONUS_TYPE_CAPS=DossierCaps)
-        cls.with_caps = (counts(29), counts(22), counts(None))
-
-    def test_the_record_counts_random_battles_without_the_caps_module(self):
-        counts_random, counts_29 = self.without_caps
-
-        self.assertTrue(counts_random)
-        self.assertFalse(counts_29)
-
-    def test_the_record_asks_the_caps_module_by_the_native_cap_name(self):
-        counts_29, counts_22, counts_none = self.with_caps
-
-        self.assertTrue(counts_29)
-        self.assertFalse(counts_22)
-        self.assertFalse(counts_none)
 
 
 class ReplayAndShareTest(StoryTest):
@@ -2542,10 +2511,10 @@ class OnslaughtAndEventCardsTest(StoryTest):
         instances['comp7_helper'].refresh()
         cls.components_outside_queue = sorted(game.components)
 
-    def test_the_onslaught_card_shows_the_division_the_next_one_and_the_skill(self):
+    def test_the_onslaught_card_shows_the_thresholds_and_the_skill_but_not_the_stock_header_rating(self):
         self.assertIn(u'Чемпион B', self.comp7_text)
-        self.assertIn(u'До «Чемпион A»: 350 очков', self.comp7_text)
         self.assertIn(u'Точка сбора', self.comp7_text)
+        self.assertNotIn(u'До «Чемпион A»', self.comp7_text)
 
     def test_event_cards_show_the_caravan_tokens_and_the_triathlon(self):
         self.assertIn(u'12 жетонов', self.caravan_text)
@@ -3201,6 +3170,8 @@ class AccountExtrasTest(StoryTest):
         folder = os.path.join(game.game_dir, 'mods', '1.45.0.0')
         os.makedirs(folder)
         open(os.path.join(folder, 'net.triotmetki.core_0.1.0.mtmod'), 'w').close()
+        cls.update_alerts = []
+        notice.app.bus.on('mods_list_alert', cls.update_alerts.append)
         notice.check()
         fetches = game.fetches_to('/modpack/releases/latest?game=1.45.0.0')
         cls.update_fetches = len(fetches)
@@ -3209,9 +3180,9 @@ class AccountExtrasTest(StoryTest):
         ]}
         fetches[0][4](response_json({'status': 'compatible', 'release': release}))
         game.run_callbacks()
-        cls.update_label = game.components.get('otmetki.update_notice', {}).get('text')
+        cls.update_messages = [text for text in game.messages if '0.2.0' in text]
+        cls.update_card = 'otmetki.update_notice' in game.components
         cls.skip_notice = notice.ui_action('skip_version')
-        cls.label_after_skip = 'otmetki.update_notice' in game.components
 
     @classmethod
     def play_onslaught_battle(cls, game, helper):
@@ -3241,17 +3212,40 @@ class AccountExtrasTest(StoryTest):
     def test_the_update_notice_needs_installed_packages(self):
         self.assertFalse(self.check_without_mods)
 
-    def test_the_update_notice_asks_the_release_index_once_and_shows_the_version(self):
+    def test_the_update_notice_asks_the_release_index_once_and_sends_one_message_without_a_card(self):
         self.assertEqual(self.update_fetches, 1)
-        self.assertIn('0.2.0', self.update_label)
+        self.assertEqual(len(self.update_messages), 1)
+        self.assertFalse(self.update_card)
 
-    def test_a_skipped_version_takes_the_card_off(self):
+    def test_the_update_puts_the_mods_list_badge_on_and_a_skipped_version_takes_it_off(self):
         self.assertEqual(self.skip_notice['kind'], 'info')
-        self.assertFalse(self.label_after_skip)
+        self.assertEqual(self.update_alerts, [True, False])
 
     def test_an_onslaught_battle_is_kept_for_the_card(self):
         self.assertEqual(len(self.comp7_history), 1)
         self.assertIn('+', self.comp7_text)
+
+
+class Vector4(object):
+
+    def __init__(self, x, y, z, w):
+        self.x, self.y, self.z, self.w = x, y, z, w
+
+
+class HullAtOrigin(object):
+    # RU 1.45 Math.Matrix over the own vehicle's matrix provider: here the hull stands at the origin facing +z.
+
+    def __init__(self, provider):
+        self.translation = Vector(0.0, 0.0, 0.0)
+        self.yaw = 0.0
+
+
+class CameraAlongZ(object):
+    # A camera at the origin looking along +z: the clip-space w is the depth, so a point lands at x / z of the screen.
+
+    @staticmethod
+    def applyV4Point(point):
+        return Vector4(point.x, point.y, point.z, point.z)
 
 
 class Vector(object):

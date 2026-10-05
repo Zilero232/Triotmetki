@@ -56,51 +56,38 @@ WN8_SCALE = (
     (2900, '#D75BD9'),
 )
 
-# This battle's own counts: WN8 reads damage, spotted, frags and capture points reset; the record row damage, assist
-# and frags. The dossier's maxAssisted is track + radio + stun assist
-# (dossiers2/custom/battle_results_processors.py:437, RU 1.45), so stun counts as assist.
-COUNT_KEYS = ('damage', 'assist', 'frags', 'spot', 'def')
+# Battle Observer shows its main gun only in the battle types that award the medal (view_settings.isRandomBattle or
+# isMapbox: ARENA_GUI_TYPE RANDOM 1, EPIC_RANDOM 19, MAPBOX 24, RU 1.45 common/constants.py); an arena that names no
+# gui type counts as a random battle, as core.hud.modes reads it.
+MAIN_GUN_GUI_TYPES = (1, 19, 24)
+
+# This battle's own counts the WN8 estimate reads: damage, frags, spotted and capture points reset.
+COUNT_KEYS = ('damage', 'frags', 'spot', 'def')
 KIND_BY_EVENT = (
-    ('RADIO_ASSIST', 'assist'),
-    ('TRACK_ASSIST', 'assist'),
-    ('STUN_ASSIST', 'assist'),
     ('KILL', 'frags'),
     ('SPOTTED', 'spot'),
     ('BASE_CAPTURE_DROPPED', 'def'),
 )
 # Counted whoever the event names: the target of BASE_CAPTURE_DROPPED is no enemy vehicle.
 ANY_TARGET_KEYS = ('def',)
-# Counted by the damage the event's extra carries; the other keys count one per event.
-AMOUNT_KEYS = ('assist',)
 
-# The per-tank records: the own dossier's max15x15 block, the site's career records and the own battle results. XP is
-# known only from the battle results, so a row counts toward the other three.
-METRICS = ('damage', 'assist', 'frags', 'xp')
-LIVE_METRICS = ('damage', 'assist', 'frags')
-ASSIST_STATS = ('damage_assisted_radio', 'damage_assisted_track', 'damage_assisted_stun')
-# The fallback when the client's bonus caps cannot be read: the random battle, the main type the dossier's max15x15
-# counts.
-RANDOM_BONUS_TYPE = 1
-# The file name and format of the personal_best component this one replaced, so the records survive the update.
-STORE_FILE = 'personal_best_%d.json'
-MAX_TANKS = 500
-
-# The plate: one row per target in this order, each with its glyph; GUIFlash text colours of the row tones.
-ROWS = ('main_gun', 'record', 'wn8')
-ROW_GLYPHS = {'main_gun': 'target', 'record': 'record', 'wn8': 'wn8'}
+# The plate: one row per target in this order, each with its glyph; GUIFlash text colours of the row tones. The main
+# gun row shows the damage still needed, as Battle Observer's main gun does (MainGunUI.as_gunData: the threshold minus
+# the damage, «++» and the done icon past it), never the damage dealt: the battle log already counts it.
+ROWS = ('main_gun', 'wn8')
+ROW_GLYPHS = {'main_gun': 'target', 'wn8': 'wn8'}
 TEXT_COLORS = {'text': COLOR_NEUTRAL, 'muted': COLOR_MUTED, 'good': COLOR_UP, 'bad': COLOR_DOWN}
-OF_TARGET = u'/ %s'
-BEATEN_BY = u'+%s'
+STILL_NEEDED = u'−%s'
+PAST_THRESHOLD = u'+%s'
 ESTIMATE = u'~%s'
 DETAIL_SIZE_STEP = 2
 MIN_DETAIL_SIZE = 8
 CARD_WIDTH = 230
 
-PREVIEW_SIZE = (320, 90)
+PREVIEW_SIZE = (320, 70)
 PREVIEW_ENEMY_MAX = 14700
 PREVIEW_ENEMY_HP = 8580
-PREVIEW_COUNTS = {'damage': 1850, 'assist': 840, 'frags': 1, 'spot': 2, 'def': 0}
-PREVIEW_RECORD = {'damage': 6812, 'assist': 5120, 'frags': 6, 'xp': 2740}
+PREVIEW_COUNTS = {'damage': 1850, 'frags': 1, 'spot': 2, 'def': 0}
 PREVIEW_ROW = {
     'avg_damage': 1720.0,
     'wn8': {'value': 2104.9, 'tier': 'very_good'},
@@ -109,5 +96,5 @@ PREVIEW_ROW = {
 
 # The settings window editor: field groups (spec 2026-09-30 section 12.3).
 EDITOR_GROUPS = (
-    ('rows', ('row_main_gun', 'row_record', 'record_metric', 'row_wn8')),
+    ('rows', ('row_main_gun', 'row_wn8')),
 )

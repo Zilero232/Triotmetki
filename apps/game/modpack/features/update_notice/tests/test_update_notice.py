@@ -9,14 +9,11 @@ from otmetki.features.update_notice.i18n import STRINGS
 from otmetki.features.update_notice.model import (
     clean_release,
     find_update,
-    format_hangar,
     game_folder,
     installed_packages,
     is_shown,
-    notes_line,
     version_key,
 )
-from otmetki.features.update_notice.model.widget import hangar_widget
 from otmetki.features.update_notice.settings import SCHEMA, SETTINGS
 
 SPLIT_INSTALL = [
@@ -106,17 +103,8 @@ class NoticeTest(unittest.TestCase):
         assert is_shown(self.update(), '0.1.8')
         assert not is_shown(None, None)
 
-    def test_the_notes_line_skips_markdown_headers(self):
-        assert notes_line(self.update(), 'ru') == u'Что нового'
-        assert notes_line(self.update(), 'en') == u'Depot seller'
-
-    def test_the_card_names_the_version(self):
-        text = format_hangar(self.update(), Settings(None, SCHEMA), translator())
-
-        assert u'Доступна версия 0.1.9' in text
-
-    def test_the_widget_shows_the_version_as_its_value(self):
-        assert hangar_widget(self.update(), translator('en'))['data']['value'] == '0.1.9'
+    def test_the_message_names_the_version(self):
+        assert u'0.1.9' in translator()('update_notice_notify_text', version=self.update()['version'])
 
 
 class SettingsTest(unittest.TestCase):
@@ -127,12 +115,9 @@ class SettingsTest(unittest.TestCase):
     def test_both_languages_have_the_same_strings(self):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
 
-
-class FixedSettingsTest(unittest.TestCase):
-
-    def test_the_font_size_is_fixed(self):
-        assert 'font_size' not in SCHEMA.defaults
-        assert Settings({'font_size': 30}, SCHEMA).get('font_size') == 14
+    def test_there_is_no_hangar_card_to_set_up(self):
+        assert sorted(SCHEMA.defaults) == ['notify']
+        assert Settings({'show_card': True}, SCHEMA).to_dict() == {'notify': True}
 
 
 if __name__ == '__main__':

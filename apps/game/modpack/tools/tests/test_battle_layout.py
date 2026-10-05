@@ -215,7 +215,8 @@ STOCK_RECTS = (
 # info and destroy timers under the reticle and the consumables popup (H - 110): they show for a moment.
 HUD_RESOLUTIONS = ((1920, 1080), (2560, 1440))
 # The largest default size of each panel (design px); a docked column is one box from its anchor to its reserve. The
-# reticle panels (aim_info, gun_arc) follow the reticle and are checked only against each other.
+# reticle panels (aim_info, gun_arc) follow the reticle and are checked only against each other; the traverse limit
+# markers stand at the reticle's height across the width of their canvas (32 px tall).
 PANEL_SIZES = {
     'battle_clock': (90, 24),
     'battle_hotkeys': (300, 30),
@@ -227,7 +228,7 @@ PANEL_SIZES = {
 }
 COLUMN_WIDTH = 340
 DAMAGE_LOG_SIZE = (330, 260)
-RETICLE_SIZES = (('aim_info', (220, 40)), ('gun_arc', (160, 20)))
+RETICLE_SIZES = (('aim_info', (220, 40)), ('gun_arc', (1280, 32)))
 DOCKED = (
     ('platoon_points', 'battle_left_top'),
     ('damage_log', 'battle_left_bottom'),

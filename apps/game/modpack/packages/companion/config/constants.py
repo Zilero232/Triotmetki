@@ -109,7 +109,6 @@ ONE_TIME_SWITCHES = (
 # revisions (RETIRED_VALUES, DROPPED_SECTIONS) run on every file older than DEFAULTS_REVISION.
 MIGRATION_REVISION = 3
 COMPONENTS_FILE = 'components.json'
-COMPONENTS_BACKUP = 'components.json.r2.bak'
 # The features' package next to the companion's (`gui.mods.otmetki` in the client), whose settings give the schema
 # defaults.
 FEATURES_PACKAGE = 'features'
@@ -127,7 +126,7 @@ GUARDED_SWITCHES = (
 MERGED_SWITCHES = (
     ('battle_damage_log', ('battle_hit_log', 'battle_received_hits')),
     ('battle_moe_panel', ('hangar_marks', 'hangar_marks_history')),
-    ('battle_progress', ('battle_main_gun', 'battle_efficiency', 'battle_personal_best')),
+    ('battle_progress', ('battle_main_gun', 'battle_efficiency')),
     ('hangar_session_panel', ('hangar_session_goals', 'hangar_ratings')),
     ('hangar_battle_results', ('hangar_battle_hits',)),
     ('hangar_info', ('battle_clock',)),
@@ -164,7 +163,6 @@ MERGED_SECTIONS = (
 SWITCHED_PARTS = (
     ('battle_progress', (
         ('battle_main_gun', 'row_main_gun'),
-        ('battle_personal_best', 'row_record'),
         ('battle_efficiency', 'row_wn8'),
     )),
 )
@@ -219,6 +217,14 @@ DROPPED_SECTIONS = (
     'battle_sounds',
     'battle_summary',
     'config_backup',
+)
+# (section, key) of the removed options of components that stay, dropped from every file older than DEFAULTS_REVISION
+# (a section of an installed component loses them on its next save anyway; this covers a component not installed).
+# Revision 4: the crosshair's repair timers (the stock damage panel shows them) and the update notice's hangar card
+# (the ModsList badge and one message took its place).
+DROPPED_KEYS = (
+    ('crosshair', 'repair_timers'),
+    ('update_notice', 'show_card'),
 )
 # The keys the player set in the settings window (config switches by name, component values as `<section>.<key>`),
 # space-separated: a later default change never moves them.

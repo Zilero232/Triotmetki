@@ -17,13 +17,7 @@
         "full": "7.6",
         "state": "reloading",
         "value": "3.2"
-      },
-      "repairs": [
-        {
-          "glyph": "track",
-          "seconds": "6"
-        }
-      ]
+      }
     },
     "shape": null,
     "size": 32,

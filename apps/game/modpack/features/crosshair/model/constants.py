@@ -139,7 +139,7 @@ EDITOR_GROUPS = (
     ('shape', ('mark',)),
     ('colour', ('mark_color', 'mark_outline')),
     ('size', ('mark_size', 'mark_hides_centre')),
-    ('readouts', ('reload_box', 'reload_arcs', 'repair_timers')),
+    ('readouts', ('reload_box', 'reload_arcs')),
     ('reticle', ('preset', 'modes', 'server_reticle')),
 )
 EDITOR_GALLERY_KEY = 'mark'
@@ -156,24 +156,20 @@ MARK_SWATCHES = {
     'red': '#ff4a3d',
 }
 # The readouts beside the reticle (ui-web crosshair widget, docs/research/design/2026-10-03-competitor-ui.md B.2.13):
-# the own gun's reload, the own HP and the repair of the own modules, counted down every READOUT_TICK_S between the
-# client's updates. A reload of -1 is the client's "no shells" (ammo_ctrl.preprocessGunReloadTime, RU 1.45 client
-# source). The last FINAL_S of a reload take the index colour; a finished reload shows «ready» for READY_HOLD_S, then
-# the box hides. A magazine shows one cell per shell up to MAX_CLIP_CELLS.
+# the own gun's reload and the own HP, counted down every READOUT_TICK_S between the client's updates. A reload of -1
+# is the client's "no shells" (ammo_ctrl.preprocessGunReloadTime, RU 1.45 client source). The last FINAL_S of a reload
+# take the index colour; a finished reload shows «ready» for READY_HOLD_S, then the box hides. A magazine shows one cell
+# per shell up to MAX_CLIP_CELLS.
 READOUT_TICK_S = 0.1
 NO_SHELLS = -1
 FINAL_S = 1.0
 READY_HOLD_S = 1.0
 MAX_CLIP_CELLS = 8
-MAX_REPAIRS = 3
-TRACK_DEVICES = ('leftTrack', 'rightTrack', 'wheel', 'chassis')
-# The sample the settings previews show: 3.2 s left of a 7.6 s reload with 3 of 4 shells in the magazine, 65 % HP, a
-# track repaired in 6 s.
+# The sample the settings previews show: 3.2 s left of a 7.6 s reload with 3 of 4 shells in the magazine, 65 % HP.
 SAMPLE_READOUTS = {
     'reload_left': 3.2,
     'reload_base': 7.6,
     'clip': (4, 3),
     'health': 650,
     'max_health': 1000,
-    'repairs': {'leftTrack0': 6.0},
 }

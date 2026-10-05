@@ -42,6 +42,11 @@ class MergedSwitchesTest(unittest.TestCase):
 
         self.assertTrue(config['battle_progress'])
 
+    def test_the_personal_best_panel_alone_leaves_the_progress_plate_off(self):
+        config, _ = migrate(stored(battle_personal_best=True))
+
+        self.assertNotIn('battle_progress', config)
+
     def test_the_progress_plate_stays_off_when_none_of_its_panels_was_on(self):
         config, _ = migrate(stored(battle_main_gun=False, battle_efficiency=False, battle_personal_best=False))
 
@@ -163,6 +168,22 @@ class SectionsTest(unittest.TestCase):
 
         self.assertEqual(components, {'damage_log': {'x': 2}})
 
+    def test_a_file_at_revision_three_loses_the_removed_options_of_the_components_that_stay(self):
+        config = {'defaults_revision': MIGRATION_REVISION}
+        components = {'crosshair': {'repair_timers': True, 'reload_box': True}, 'update_notice': {'show_card': True}}
+
+        _, migrated_components = migrate(config, components)
+
+        self.assertEqual(migrated_components, {'crosshair': {'reload_box': True}, 'update_notice': {}})
+
+    def test_a_file_at_the_revision_keeps_what_it_holds(self):
+        config = {'defaults_revision': DEFAULTS_REVISION}
+        components = {'crosshair': {'repair_timers': True}}
+
+        _, migrated_components = migrate(config, components)
+
+        self.assertEqual(migrated_components, components)
+
     def test_a_crosshair_left_at_the_chevron_takes_the_stock_centre(self):
         config = {'defaults_revision': MIGRATION_REVISION}
 
@@ -208,12 +229,9 @@ class SwitchedPartsTest(unittest.TestCase):
         self.assertFalse(components['session_stats']['show_goals'])
 
     def test_the_progress_rows_follow_the_panels_the_player_had_on(self):
-        _, components = migrate(stored(battle_main_gun=True, battle_efficiency=False, battle_personal_best=False))
+        _, components = migrate(stored(battle_main_gun=True, battle_efficiency=False))
 
-        self.assertEqual(
-            components['battle_progress'],
-            {'row_main_gun': True, 'row_record': False, 'row_wn8': False},
-        )
+        self.assertEqual(components['battle_progress'], {'row_main_gun': True, 'row_wn8': False})
 
     def test_the_progress_rows_keep_their_defaults_when_no_panel_was_on(self):
         _, components = migrate(stored(battle_main_gun=False))

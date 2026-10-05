@@ -97,7 +97,6 @@ DOCKS = {
     'otmetki.comp7_helper': ('hangar_right', 1),
     'otmetki.event_trackers.triathlon': ('hangar_right', 2),
     'otmetki.event_trackers.caravan': ('hangar_right', 3),
-    'otmetki.update_notice': ('hangar_right', 4),
 }
 # Panels whose default place follows a stock battle element (docs/research/competitors/2026-10-05-behavior-parity.md,
 # the places Battle Observer, Lebwa, PROTanki and kurzdor's battleequipment use): while a panel sits at its default

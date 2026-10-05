@@ -21,6 +21,8 @@ Add the new entry on top of the component's previous ones when you bump a `VERSI
 - Звук засвета снова играет: версии до 0.2.0 ставили в настройках игры «Звук засвета» на свой звук (файл `sixthSense.mp3`), а 0.2.0 убрала этот файл, и лампа замолчала. Если файла нет, мод при входе в ангар один раз возвращает стандартную лампу.
 - Панели боя скрываются вместе со стандартным интерфейсом под любым окном игры поверх боя, а не только под Tab: статистика на любой вкладке (Tab, задачи ЛБЗ, личные резервы, статистика событий), экраны возрождения и обзорная карта «Линии фронта», выбор точки высадки и экран победителя «Стального охотника», полноэкранные окна событий. Как в XVM, мод следит за тем, когда экран боя сам прячет свой интерфейс, а не за клавишами, поэтому новая вкладка или режим тоже работают, а Tab, который игра не открыла (поверх меню или радиального меню), панели не трогает. Под Tab панели теперь скрываются полностью, а не гаснут. Наложенные окна не заставляют панели мигать, пропущенное закрытие окна исправляется проверкой раз в секунду, в начале и в конце боя всё сбрасывается. Меню Esc, помощь F1, настройки, диалоги, радиальное меню, чат и панель снарядов перед боем панели не трогают — как стандартный интерфейс, Battle Observer и XVM. Пока панель скрыта режимом стримера или камерой убийцы, стандартный элемент, который она заменяет, возвращается на экран. Переключатель «Убирать панели под окнами игры» (включён) — в «Дополнительно» карточки «Данные и сайт»; V, экран загрузки и камера убийцы скрывают панели всегда.
 - Убраны лишние резервные копии: компонент «Резервная копия настроек» (копия файлов мода рядом с `preferences.xml` игры) и точка восстановления перед применением настроек с сайта (кнопка «Вернуть мои настройки», файл `settings_backup_<аккаунт>.json`). Применение настроек с сайта работает как раньше, только без копии прежних значений. Чтобы вернуться к своим настройкам мода, сохраните профиль. Привязка, настройки, компоненты, профили и состояние по-прежнему копируются в `%APPDATA%\TriOtmetki` и переживают очистку `mods/configs`. Переключатель удалённого компонента и его секция уходят из настроек сами; оставшиеся папка `otmetki_backup` и файлы `settings_backup_*.json` больше не читаются, их можно удалить.
+- Повторы стандартного интерфейса убраны: «Прицел» больше не показывает ремонт модулей (его показывает стандартная панель повреждений), карточка «Натиска» — рейтинг, дивизион и очки до следующего (их показывает шапка «Натиска»), а «Новая версия мода» вместо карточки в ангаре ставит значок на строку мода в списке модов ModsList и присылает одно уведомление; значок гаснет, когда вы открываете окно мода. Настройки убранных частей удаляются из файлов сами.
+- Перенос настроек больше не оставляет копию `components.json.r2.bak` рядом с файлом настроек.
 
 ### en
 
@@ -37,6 +39,8 @@ Add the new entry on top of the component's previous ones when you bump a `VERSI
 - The detection sound plays again: versions before 0.2.0 set the game's «Detection alert sound» to the user sound (the `sixthSense.mp3` file), 0.2.0 removed that file and the lamp went silent. When the file is missing, the mod puts the stock lamp back once on entering the hangar.
 - The battle panels hide with the stock interface under every game window over the battle, not only Tab: the statistics on any tab (Tab, personal missions, personal reserves, the event statistics), the Frontline respawn screens and overview map, the Steel Hunter drop point choice and winner screen, full-screen event windows. As in XVM, the mod follows the battle screen hiding its own interface, not the keys, so a new tab or mode works too, and a Tab the game did not open (over a menu or the radial menu) leaves the panels alone. Under Tab the panels now hide fully instead of fading. Stacked windows never make the panels flicker, a missed close is put right by a check every second, and everything resets when a battle starts and ends. The Esc menu, the F1 help, the settings, dialogs, the radial menu, the chat and the pre-battle shell panel leave the panels alone, as they leave the stock interface, Battle Observer and XVM. While a panel is hidden by the streamer mode or the killer camera, the stock element it replaces comes back. A «Hide panels under game windows» switch (on) sits under «Advanced» on the «Data and site» card; V, the loading screen and the killer camera always hide the panels.
 - The extra backups are gone: the «Settings backup» component (a copy of the mod files next to the game's `preferences.xml`) and the restore point before settings are applied from the site (the «Restore my settings» button, the `settings_backup_<account>.json` file). Applying settings from the site works as before, without a copy of the previous values. Save a profile to come back to your mod settings. The binding, settings, components, profiles and state are still mirrored into `%APPDATA%\TriOtmetki` and survive a wiped `mods/configs`. The removed component's switch and section leave the settings by themselves; a leftover `otmetki_backup` folder and `settings_backup_*.json` files are no longer read and can be deleted.
+- Repeats of the stock interface are gone: «Crosshair» no longer shows module repairs (the stock damage panel does), the Onslaught card no longer shows the rating, the division and the points to the next one (the Onslaught header does), and «New mod version» puts a badge on the mod row of the ModsList mods list and sends one notification instead of a hangar card; the badge goes out once you open the mod window. The settings of the removed parts leave the files by themselves.
+- The settings migration no longer leaves a `components.json.r2.bak` copy next to the settings file.
 
 ## 0.2.0
 
@@ -270,11 +274,15 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 
 - Новый компонент «Прогресс боя»: одна плашка без заголовка вместо трёх карточек — строка «Основной калибр» (порог, провален, недостижим; доля команды на Alt), рекорд танка (урон, помощь или фраги) и WN8 боя цветом шкалы рейтинга. Заменяет «Основной калибр», «Эффективность боя» и «Личный рекорд»; рекорды танков сохранены, карточка и звук нового рекорда после боя убраны. Выключен по умолчанию.
 - Плашка стоит справа от полосы ХП команд (308 px от центра, 4 px сверху), где Battle Observer держит «Основной калибр»; на экране уже 1700 px — под полосой ХП. Плашка, стоявшая в правой колонке по умолчанию, переезжает.
+- «Основной калибр» показывает, сколько урона ещё нужно до медали («−1 090»), а после порога — превышение («+160»), как у Battle Observer; нанесённый урон больше не повторяется (его считает «Журнал боя»). Строка только в случайных боях (а также в «Генеральном сражении» и Mapbox), как у Battle Observer, — в тренировочных и прочих режимах её нет.
+- Строка рекорда танка убрана: ни одна сборка не показывает рекорд в бою, а урон в ней совпадал с «Журналом боя». Файл рекордов `personal_best_<аккаунт>.json` больше не читается, его можно удалить.
 
 ### en
 
 - New component «Battle progress»: one titleless plate instead of three cards — the High Caliber row (threshold, failed, out of reach; team share on Alt), the tank record (damage, assist or frags) and this battle’s WN8 in the rating scale colour. Replaces High Caliber, Battle efficiency and Personal best; tank records are kept, the post-battle new-record card and sound are gone. Off by default.
 - The plate sits right of the team HP strip (308 px from the middle, 4 px from the top), where Battle Observer keeps its main gun; on a screen narrower than 1700 px it goes under the strip. A plate left at its old right-column default moves.
+- High Caliber shows the damage still needed for the medal («−1 090»), and past the threshold the excess («+160»), as Battle Observer does; the damage dealt is no longer repeated (the battle log counts it). The row shows only in random battles (and Grand Battles and Mapbox), as in Battle Observer; training rooms and other modes have none.
+- The tank record row is gone: no pack shows a record in battle, and its damage was the battle log's number again. The records file `personal_best_<account>.json` is no longer read and can be deleted.
 
 ## preset_advisor 0.1.0
 
@@ -475,6 +483,7 @@ A new component: Hangar switcher.
 - Раз за запуск игры сверяет установленные пакеты с опубликованными релизами для вашего клиента и, если вышла новая версия, показывает карточку в ангаре и одно уведомление.
 - «Пропустить эту версию» в окне мода прячет её до следующего релиза, «Скачать на сайте» открывает страницу загрузки, «Проверить сейчас» спрашивает снова.
 - В запросе только версия игры.
+- Вместо карточки в ангаре — значок на строке мода в списке модов ModsList (гаснет, когда вы открываете окно мода или пропускаете версию) и одно уведомление, как у других сборок; настройка «Карточка в ангаре» удалена.
 
 ### en
 
@@ -483,6 +492,7 @@ A new component: New mod version.
 - Once per game start it compares the installed packages with the published releases for your client and, when a new version is out, shows a hangar card and one notification.
 - «Skip this version» in the mod window hides it until the next release, «Download on the site» opens the download page, «Check now» asks again.
 - The request carries only the game version.
+- A badge on the mod row of the ModsList mods list (it goes out when you open the mod window or skip the version) and one notification replace the hangar card, as in other packs; the «Hangar card» option is removed.
 
 ## comp7_helper 0.3.0
 
@@ -490,11 +500,13 @@ A new component: New mod version.
 
 - Статистика «Натиска»: серия побед или поражений и последние 5 боёв с изменением рейтинга, полосой отметок на карточке. Бои записываются из ваших итогов боёв, по аккаунту.
 - Настройка «Серия и последние 5 боёв».
+- Рейтинг, дивизион и очки до следующего дивизиона убраны с карточки: их показывает шапка «Натиска». Остались пороги «Чемпиона» и «Легенды», навык роли и ваша серия с последними боями.
 
 ### en
 
 - Onslaught statistics: the win or loss streak and the last 5 battles with the rating change, as a strip of marks on the card. Battles are recorded from your own battle results, per account.
 - A «Streak and the last 5 battles» setting.
+- The rating, the division and the points to the next division are off the card: the Onslaught header shows them. The Champion and Legend thresholds, the role skill and your streak with the last battles stay.
 
 ## comp7_helper 0.2.1
 
@@ -599,10 +611,12 @@ A new component: Event trackers (off by default).
 ### ru
 
 - Шкала без плашки: жёлтая у упора, красная в упоре; компонент выключен по умолчанию, нужен только машинам с ограниченной наводкой.
+- «УГН» теперь как в сборках (GunConstraints из списка Левши): вместо шкалы под прицелом — маркеры слева и справа от прицела там, где орудие упрётся в предел горизонтальной наводки; они стоят на своих местах в любом режиме камеры и сходятся с маркером орудия в упоре. Вид граничных маркеров: уголок (по умолчанию), квадратные скобки, большой полукруг, полукруг, восьмиугольник; маркер середины сектора: нет (по умолчанию), вертикальная черта, точка, треугольник, восьмиугольник; «Ускоренная отрисовка» (выкл., в «Дополнительно») — каждый кадр вместо 20 раз в секунду. Настройки шкалы (шкала, градусы, угол орудия, «Где шкала») убраны и уходят из настроек сами. Линий на мини-карте нет: сектор САУ там уже рисует сама игра (настройка «Сектор обзора на мини-карте»).
 
 ### en
 
 - The scale has no plate: yellow near a limit, red at it; the component is off by default, it only matters for limited-traverse vehicles.
+- «УГН» now works as in the packs (GunConstraints from Lebwa's list): instead of a scale under the reticle, markers left and right of the reticle where the gun stops at its horizontal traverse limits; they stay in place in every camera mode and meet the gun marker at a limit. Limit marker style: corner (default), square brackets, big semicircle, semicircle, octagon; a centre marker of the sector: none (default), vertical line, dot, triangle, octagon; «Faster redraw» (off, under «Advanced») redraws every frame instead of 20 times a second. The scale's settings (scale, degrees, gun angle, «Where the scale sits») are gone and leave the settings by themselves. No minimap lines: the game itself draws the SPG's sector there (the «sector on the minimap» option).
 
 ## gun_arc 0.3.0
 
@@ -895,12 +909,14 @@ A new component: Event trackers (off by default).
 - На новой установке один раз ставится пресет «Минимальный» (без сетки); прежний прицел сохраняется, кнопка «Вернуть как было». Тем, кто уже играл с модом, ничего не меняется, в карточке есть кнопка «Рекомендуемые настройки».
 - По умолчанию центр прицела — стандартный: метки — выбор игрока, ни один модпак не ставит свою вместо центра игры. Оранжевый шеврон остаётся в галерее; у кого он стоял по умолчанию и не выбирался вручную, возвращается стандартный центр.
 - Таймер перезарядки у прицела больше не дублирует стандартный: пока рамка перезарядки на экране, стандартный таймер перезарядки прицела скрыт (и индикатор магазина, пока рамка показывает ячейки магазина); дуги перезарядки и прочности так же скрывают стандартные индикаторы перезарядки и прочности. Выключите показатель — стандартный вернётся сразу, настройки прицела в игре не меняются.
+- Ремонт модулей у прицела убран: его показывает стандартная панель повреждений, как во всех сборках; настройка «Ремонт модулей» удалена.
 
 ### en
 
 - A fresh install sets the Minimal preset (no grid) once; the previous reticle is kept and «Restore my settings» brings it back. Existing players keep theirs, with a «Recommended settings» button on the card.
 - The game's own reticle centre stays by default: a centre mark is the player's pick and no modpack replaces the stock centre. The orange chevron stays in the gallery; where it was the untouched default, the stock centre comes back.
 - The reload timer by the reticle no longer doubles the stock one: while the reload frame is on screen the stock reticle's reload timer is hidden (and its magazine indicator while the frame shows the magazine cells); the reload and HP arcs hide the stock reload and HP indicators the same way. Switch a readout off and the stock part is back at once; the game's reticle settings are never changed.
+- The module repairs by the reticle are gone: the stock damage panel shows them, as in every pack; the «Module repairs» option is removed.
 
 ## crosshair 0.3.2
 

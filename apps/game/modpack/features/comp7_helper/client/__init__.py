@@ -21,9 +21,9 @@ CARD_SPEC = CardSpec(
 )
 
 
-# The Onslaught hangar card: the own rating against the division thresholds, the role skill of the selected vehicle
-# and the own streak and last battles (kept per account from the own battle results); read every REFRESH_EVERY_S in
-# the hangar and when the vehicle changes, hidden outside Onslaught.
+# The Onslaught hangar card: the Champion and Legend thresholds against the own division, the role skill of the
+# selected vehicle and the own streak and last battles (kept per account from the own battle results); read every
+# REFRESH_EVERY_S in the hangar and when the vehicle changes, hidden outside Onslaught.
 class Comp7Helper(PolledHangarCard):
 
     def __init__(self, app):
@@ -52,4 +52,6 @@ class Comp7Helper(PolledHangarCard):
         if state is not None:
             state['battles'] = self.history
         text = format_hangar(state, self.settings, translate)
+        if text is None:
+            return None
         return text, hangar_widget(state, self.settings, translate)

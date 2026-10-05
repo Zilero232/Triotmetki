@@ -284,6 +284,7 @@ class UiSmokeTest(unittest.TestCase):
         self.windows = []
         self.injected = []
         self.mods_list = []
+        self.mods_alerts = []
         self.messages = []
         self.pressed = set()
         self.opened = []
@@ -347,7 +348,11 @@ class UiSmokeTest(unittest.TestCase):
             pushMessage=lambda text, type=None: test.messages.append(text),
         )
         module('gui.InputHandler', g_instance=self.input)
-        mods_list_api = Namespace(addModification=lambda **kwargs: test.mods_list.append(kwargs))
+        mods_list_api = Namespace(
+            addModification=lambda **kwargs: test.mods_list.append(kwargs),
+            alertModification=lambda id: test.mods_alerts.append((id, True)),
+            clearModificationAlert=lambda id: test.mods_alerts.append((id, False)),
+        )
         module('gui.modsListApi', g_modsListApi=mods_list_api)
         install_gameface_stubs(self)
 
@@ -410,6 +415,14 @@ class UiSmokeTest(unittest.TestCase):
             assert [view.name for view in app.settings_ui.views] == ['gameface']
             assert len(self.mods_list) == 1
             assert self.mods_list[0]['id'] == 'otmetki'
+
+    def test_the_mods_list_badge_a_package_asks_for_goes_out_when_the_window_opens(self):
+        app = self.open_hangar(0)
+        app.bus.emit('mods_list_alert', True)
+
+        self.mods_list[0]['callback']()
+
+        assert self.mods_alerts == [('otmetki', True), ('otmetki', False)]
 
     def test_every_load_order_opens_one_fullscreen_overlay_window_however_often_asked(self):
         for seed in LOAD_ORDER_SEEDS:

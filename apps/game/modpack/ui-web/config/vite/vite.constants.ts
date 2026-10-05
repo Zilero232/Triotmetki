@@ -11,9 +11,10 @@ export const UI_BUILD = {
   advisorMode: 'advisor',
   viewerMode: 'viewer',
   pages: {
-    settings: path.resolve(UI_WEB_ROOT, 'index.html'),
-    hud: path.resolve(UI_WEB_ROOT, 'hud.html'),
-    viewer: path.resolve(UI_WEB_ROOT, 'viewer.html')
+    dir: 'pages',
+    settings: path.resolve(UI_WEB_ROOT, 'pages/index.html'),
+    hud: path.resolve(UI_WEB_ROOT, 'pages/hud.html'),
+    viewer: path.resolve(UI_WEB_ROOT, 'pages/viewer.html')
   },
   scripts: {
     advisor: { entry: path.resolve(UI_WEB_ROOT, 'src/advisor.ts'), file: 'preset_advisor.js' }
@@ -22,7 +23,8 @@ export const UI_BUILD = {
     target: 'chrome94'
   },
   dev: {
-    mockEntry: '/src/dev.ts'
+    mockEntry: '/src/dev.ts',
+    page: '/pages/index.html'
   },
   html: {
     extension: '.html',

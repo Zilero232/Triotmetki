@@ -1,110 +1,80 @@
-# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import math
 
 from ....core.compat import is_number
-from ....core.format import COLOR_MUTED, font
-from .constants import (
-    ARROW_LEFT,
-    ARROW_RIGHT,
-    BAR_CELLS,
-    BAR_LEFT,
-    BAR_MARK,
-    BAR_RIGHT,
-    BAR_TRACK,
-    LIMIT_REACHED_DEG,
-    TONE_COLORS,
-    VIEW_OFFSETS,
-    YAW_DEGREES,
-    ZERO_YAW,
-)
+from .constants import CANVAS, MARK_NAMES, MIN_DISTANCE_M
 
-# Fair play: the own gun's traverse limits (the vehicle's own parameters, VehicleDescriptor.gun.turretYawLimits) and
-# the own turret's yaw. Nothing is aimed or changed, nothing about other vehicles is read.
+# Fair play: the own gun's traverse limits (the vehicle's own parameters, VehicleDescriptor.gun.turretYawLimits), the
+# own hull's yaw and the own gun marker's point, projected with the camera the player looks through. Nothing is aimed
+# or changed, nothing about other vehicles is read.
 
 
-# None for a turret that turns all the way round: it has no limits.
-def arc_state(yaw, limits):
-    if not is_number(yaw) or not isinstance(limits, (tuple, list)):
-        return None
-    if len(limits) != 2:
+def _is_point(value, size):
+    return isinstance(value, (tuple, list)) and len(value) == size and all(is_number(part) for part in value)
+
+
+# The yaw of the left limit, the right limit and the middle of the sector from the hull axis (radians); None for a
+# turret that turns all the way round. UNVERIFIED on Lesta 1.45: a negative yaw is to the left (the lower limit first).
+def sector_angles(limits):
+    if not _is_point(limits, 2):
         return None
     low, high = limits
-    if not is_number(low) or not is_number(high) or high <= low:
+    if high <= low:
         return None
-    # UNVERIFIED on Lesta 1.45: a negative yaw is to the left (the lower limit comes first).
-    yaw = min(high, max(low, yaw))
-    return {
-        'left': math.degrees(yaw - low),
-        'right': math.degrees(high - yaw),
-        'position': (yaw - low) / (high - low),
-        'centre': -low / (high - low),
-        'yaw': math.degrees(yaw),
-    }
+    return low, high, (low + high) / 2.0
 
 
-def side_tone(degrees, warn):
-    if degrees < LIMIT_REACHED_DEG:
-        return 'bad'
-    if degrees <= warn:
-        return 'warning'
-    return 'text'
+def _ahead(pivot, yaw, distance, height):
+    return pivot[0] + distance * math.sin(yaw), height, pivot[2] + distance * math.cos(yaw)
 
 
-def side_color(degrees, warn):
-    return TONE_COLORS[side_tone(degrees, warn)]
+# The world points the markers stand for: the gun turned to each limit (and to the sector's middle), as far out as the
+# gun marker and at its height. BigWorld's yaw turns from +z towards +x.
+def sector_points(pivot, hull_yaw, aim, limits):
+    angles = sector_angles(limits)
+    if angles is None or not _is_point(pivot, 3) or not _is_point(aim, 3) or not is_number(hull_yaw):
+        return None
+    distance = max(MIN_DISTANCE_M, math.hypot(aim[0] - pivot[0], aim[2] - pivot[2]))
+    return dict((name, _ahead(pivot, hull_yaw + angle, distance, aim[1])) for name, angle in zip(MARK_NAMES, angles))
 
 
-def left_label(degrees):
-    return u'%s %d°' % (ARROW_LEFT, int(round(degrees)))
+# The design-px offset from the screen centre of a clip-space point (x, y, z, w) the client's view-projection matrix
+# gives (AvatarInputHandler.cameras.projectPoint, RU 1.45); None behind the camera.
+def screen_offset(clip, screen):
+    if not _is_point(clip, 4) or clip[3] <= 0:
+        return None
+    x, y, _, w = clip
+    width, height = screen
+    return x / w * width / 2.0, -y / w * height / 2.0
 
 
-def right_label(degrees):
-    return u'%d° %s' % (int(round(degrees)), ARROW_RIGHT)
-
-
-def yaw_label(degrees):
-    rounded = int(round(degrees))
-    return YAW_DEGREES % rounded if rounded else ZERO_YAW
-
-
-def view_offset(view, settings):
-    key = VIEW_OFFSETS.get(view)
-    return settings.get(key) if key is not None else None
-
-
-# The panel is centre-aligned, so its x/y is the reticle's scaled position (CrosshairDataProxy.getScaledPosition,
-# RU 1.45) relative to the screen centre, `offset` design px under it.
-def reticle_place(position, size, scale, offset):
-    width, height = size
+def screen_size(size, scale):
     factor = max(scale, 1.0)
-    reticle_x, reticle_y = position
-    return reticle_x - int(0.5 * width / factor), reticle_y - int(0.5 * height / factor) + offset
+    return size[0] / factor, size[1] / factor
 
 
-def bar(position):
-    cell = int(round(position * (BAR_CELLS - 1)))
-    cells_after = BAR_CELLS - 1 - cell
-    return BAR_LEFT + BAR_TRACK * cell + BAR_MARK + BAR_TRACK * cells_after + BAR_RIGHT
+# The reticle's offset from the screen centre (design px): CrosshairDataProxy.getScaledPosition is in design px from
+# the top left, getSize in screen px (RU 1.45).
+def reticle_offset(position, size, scale):
+    width, height = screen_size(size, scale)
+    return position[0] - width / 2.0, position[1] - height / 2.0
 
 
-def format_panel(state, settings, translate):
-    if state is None:
+def _on_canvas(offset):
+    return abs(offset[0]) <= CANVAS[0] / 2.0 and abs(offset[1]) <= CANVAS[1] / 2.0
+
+
+def _from_reticle(point, reticle):
+    if point is None:
         return None
-    size = settings.get('font_size')
-    warn = settings.get('warn_deg')
-    left = state['left']
-    right = state['right']
-    shows_degrees = settings.get('show_degrees')
+    offset = (point[0] - reticle[0], point[1] - reticle[1])
+    if not _on_canvas(offset):
+        return None
+    return int(round(offset[0])), int(round(offset[1]))
 
-    parts = [font(translate('gun_arc_label'), COLOR_MUTED, size)]
-    if shows_degrees:
-        parts.append(font(left_label(left), side_color(left, warn), size))
-    if settings.get('show_bar'):
-        parts.append(font(bar(state['position']), COLOR_MUTED, size))
-    if shows_degrees:
-        parts.append(font(right_label(right), side_color(right, warn), size))
-    if settings.get('show_yaw'):
-        parts.append(font(yaw_label(state['yaw']), COLOR_MUTED, size))
-    return u' '.join(parts)
+
+# Each marker's offset from the reticle (design px), or None off the canvas or behind the camera.
+def marker_offsets(points, reticle):
+    known = points or {}
+    return dict((name, _from_reticle(known.get(name), reticle)) for name in MARK_NAMES)

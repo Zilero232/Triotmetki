@@ -16,15 +16,9 @@ const arcsSchema = z.object({
   health: z.nullable(z.number())
 });
 
-const repairSchema = z.object({
-  glyph: z.enum(RETICLE_READOUTS.repairGlyphs),
-  seconds: z.string()
-});
-
 export const readoutsSchema = z.object({
   reload: z.nullable(reloadSchema),
-  arcs: z.nullable(arcsSchema),
-  repairs: z.array(repairSchema)
+  arcs: z.nullable(arcsSchema)
 });
 
 export const crosshairSchema = z.object({

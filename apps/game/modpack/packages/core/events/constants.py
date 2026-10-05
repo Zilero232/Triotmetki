@@ -10,6 +10,9 @@ EVENT_REPLAY_UPLOAD_REQUEST = 'replay_upload_request'
 EVENT_SETTINGS_OPEN = 'settings_open'
 # settings_close(): a package asks the in-game settings window to close (the hit viewer opens over the hangar instead).
 EVENT_SETTINGS_CLOSE = 'settings_close'
+# mods_list_alert(on): a package asks for the badge on the mod's ModsList entry (a one-off notice, as ModsList's own
+# alertModification is meant for) or for it to go out; the ui package answers, nobody does without it.
+EVENT_MODS_LIST_ALERT = 'mods_list_alert'
 # hit_viewer_open(battle_id): a package asks the hit viewer to open at one recorded battle (an arenaUniqueID as text,
 # or None for the latest); nobody answers without the hit viewer.
 EVENT_HIT_VIEWER_OPEN = 'hit_viewer_open'

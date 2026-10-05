@@ -2,12 +2,14 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import is_int, string_types, to_text
-from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, counted, font, format_number
+from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, font, format_number
 from .battles import battle_lines
 from .constants import DIVISION_LETTERS, LEGEND_RANK, MAX_SKILL, RANK_IDS, THRESHOLD_RANKS, TITLE_SIZE_STEP
 
-# Fair play: only what the Onslaught hangar already shows the player: their own rating, their division, the division
-# ranges of the client's rank tooltips and the role skill chosen for the selected vehicle. Nothing about other players.
+# Fair play: only what the Onslaught hangar already shows the player: their own division, the division ranges of the
+# client's rank tooltips and the role skill chosen for the selected vehicle. Nothing about other players. The own rating
+# and division are left to the stock Onslaught header, which shows them (docs/research/competitors/
+# 2026-10-05-stock-replacement.md).
 
 
 def _int(value, low=None):
@@ -44,7 +46,6 @@ def clean_state(raw):
         return None
     divisions = [clean_division(item) for item in raw.get('divisions') or ()]
     return {
-        'rating': _int(raw.get('rating'), 0) or 0,
         'division': clean_division(raw.get('division')),
         'divisions': sorted((step for step in divisions if step), key=division_key),
         'qualification': bool(raw.get('qualification')),
@@ -54,33 +55,6 @@ def clean_state(raw):
 
 def division_name(step, translate):
     return u'%s %s' % (translate('comp7_helper_rank_%d' % step['rank']), DIVISION_LETTERS[step['index']])
-
-
-def next_division(state):
-    current = state['division']
-    if current is None or state['qualification']:
-        return None
-    for step in state['divisions']:
-        if division_key(step) > division_key(current):
-            return step
-    return None
-
-
-# (the next division, points left to its lower bound, the share of the way there from the current one) or None.
-def progress(state):
-    target = next_division(state)
-    if target is None:
-        return None
-    current = state['division']
-    left = max(0, target['begin'] - state['rating'])
-    return target, left, _share(state['rating'], current['begin'], target['begin'])
-
-
-def _share(rating, begin, end):
-    span = end - begin
-    if span <= 0:
-        return 1.0
-    return max(0.0, min(1.0, float(rating - begin) / span))
 
 
 def threshold_status(step, state):
@@ -105,34 +79,11 @@ def threshold_value(step, translate):
     return value
 
 
-def next_text(state, translate):
-    found = progress(state)
-    if found is None:
-        return None
-    target, left, _share_done = found
-    name = division_name(target, translate)
-    if state['division']['rank'] == LEGEND_RANK:
-        return translate('comp7_helper_next_legend', name=name)
-    return translate('comp7_helper_next', name=name, points=counted(left, 'points', translate))
-
-
-def status_text(state, translate):
-    if state['qualification'] or state['division'] is None:
-        return translate('comp7_helper_qualification')
-    return division_name(state['division'], translate)
-
-
 def format_hangar(state, settings, translate):
     if state is None:
         return None
     size = settings.get('font_size')
-    points = counted(state['rating'], 'points', translate)
-    title = translate('comp7_helper_title', status=status_text(state, translate), points=points)
-
-    lines = [font(title, COLOR_NEUTRAL, size + TITLE_SIZE_STEP)]
-    upcoming = next_text(state, translate)
-    if upcoming:
-        lines.append(font(upcoming, COLOR_UP, size))
+    lines = []
     if settings.get('show_thresholds'):
         for step, status in thresholds(state):
             line = u'%s: %s' % (division_name(step, translate), threshold_value(step, translate))
@@ -141,4 +92,7 @@ def format_hangar(state, settings, translate):
         lines.append(font(translate('comp7_helper_skill_line', skill=state['skill']), COLOR_MUTED, size))
     if settings.get('show_battles'):
         lines.extend(font(line, COLOR_MUTED, size) for line in battle_lines(state.get('battles') or [], translate))
-    return u'\n'.join(lines)
+    if not lines:
+        return None
+    title = font(translate('comp7_helper_card_title'), COLOR_NEUTRAL, size + TITLE_SIZE_STEP)
+    return u'\n'.join([title] + lines)

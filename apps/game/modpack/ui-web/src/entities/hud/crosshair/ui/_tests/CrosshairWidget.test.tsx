@@ -33,12 +33,6 @@ describe(CrosshairWidget, () => {
     expect(html.querySelector('[class*="final"]')).not.toBeNull();
   });
 
-  it('lists the repair seconds of the own modules', () => {
-    const html = mount(data);
-
-    expect(html.textContent).toContain('6');
-  });
-
   it('draws nothing beside the mark without readouts', () => {
     const html = mount({ ...data, readouts: null });
 

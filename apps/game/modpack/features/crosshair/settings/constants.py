@@ -17,8 +17,8 @@ MARKS = ('none',) + VECTOR_MARKS + FULL_COLOUR_MARKS
 # preset: the recommended client value (core.client.native.ClientDefaults), the game's own reticle without the grid.
 # mark: the game's own centre; a centre mark is a reticle pack the player picks, no pack replaces the stock centre by
 # default (docs/research/competitors/2026-10-05-behavior-parity.md section 2), so the chevron and the others wait in
-# the gallery, each with its colour and outline below. The readouts beside the reticle show the own reload and
-# repairs, the arcs are opt-in.
+# the gallery, each with its colour and outline below. The readouts beside the reticle show the own reload, the arcs
+# are opt-in; the repair of the own modules stays on the stock damage panel, which every pack keeps.
 # x/y are the mark's offset from the reticle centre, not a screen position: the mark follows the reticle,
 # so it is not dragged (a drag would save a screen position).
 DEFAULTS = {
@@ -32,7 +32,6 @@ DEFAULTS = {
     'mark_hides_centre': True,
     'reload_box': True,
     'reload_arcs': False,
-    'repair_timers': True,
     'x': 0,
     'y': 0,
     'align_x': 'center',

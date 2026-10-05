@@ -11,10 +11,9 @@ class BattleCounts(Counters):
         Counters.__init__(self, COUNT_KEYS)
 
 
-def progress_state(counts, main_gun=None, record=None, row=None, settled=False):
+def progress_state(counts, main_gun=None, row=None, settled=False):
     return {
         'main_gun': main_gun,
-        'record': dict(record or {}),
         'counts': dict(counts),
         'wn8': wn8_state(counts, row),
         'settled': settled,

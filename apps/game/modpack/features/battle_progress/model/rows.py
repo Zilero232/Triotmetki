@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.format import format_number
-from .constants import BEATEN_BY, ESTIMATE, MAIN_GUN_LOOKS, OF_TARGET, REACHED, ROWS
+from .constants import ESTIMATE, MAIN_GUN_LOOKS, PAST_THRESHOLD, REACHED, ROWS, STILL_NEEDED
 from .wn8 import rating_color
 
 # One row per target, as plain data both renderers read: the card row of the Gameface page (model/widget.py) and the
@@ -28,6 +28,13 @@ def _share(state, translate):
     return translate('bp_share', share=state['share'], team=format_number(state['team']))
 
 
+def _main_gun_value(main_gun):
+    damage, need = main_gun['damage'], main_gun['need']
+    if damage >= need:
+        return PAST_THRESHOLD % format_number(damage - need)
+    return STILL_NEEDED % format_number(need - damage)
+
+
 def main_gun_row(state, settings, translate, view):
     main_gun = state['main_gun']
     if main_gun is None:
@@ -38,43 +45,15 @@ def main_gun_row(state, settings, translate, view):
     if look['word'] is not None:
         return _row('main_gun', text, translate(look['word']), tone=look['tone'], detail=detail)
 
-    damage, need = main_gun['damage'], main_gun['need']
     settled = main_gun['status'] == REACHED and view['settled']
     return _row(
         'main_gun',
         text,
-        format_number(damage),
+        _main_gun_value(main_gun),
         tone=look['tone'],
-        note=OF_TARGET % format_number(need),
         detail=detail,
-        progress=None if settled else min(1.0, float(damage) / need),
+        progress=None if settled else min(1.0, float(main_gun['damage']) / main_gun['need']),
         progress_tone=look['bar'],
-    )
-
-
-def record_row(state, settings, translate, view):
-    metric = settings.get('record_metric')
-    best = state['record'].get(metric)
-    if not best:
-        return None
-    current = state['counts'].get(metric, 0)
-    text = translate('bp_record_' + metric)
-    if current > best:
-        return _row(
-            'record',
-            text,
-            format_number(current),
-            tone='good',
-            note=BEATEN_BY % format_number(current - best),
-            progress=1.0,
-            progress_tone='good',
-        )
-    return _row(
-        'record',
-        text,
-        format_number(current),
-        note=OF_TARGET % format_number(best),
-        progress=float(current) / best,
     )
 
 
@@ -92,7 +71,7 @@ def wn8_row(state, settings, translate, view):
     )
 
 
-ROW_BUILDERS = {'main_gun': main_gun_row, 'record': record_row, 'wn8': wn8_row}
+ROW_BUILDERS = {'main_gun': main_gun_row, 'wn8': wn8_row}
 
 
 def progress_rows(state, settings, translate, extended=False):

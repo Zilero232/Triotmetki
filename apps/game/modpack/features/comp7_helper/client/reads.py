@@ -4,8 +4,8 @@ from ....core.client.game import client_attr, selected_vehicle, service
 from ....core.compat import call, to_text
 from ....core.log import log_exception
 
-# RU 1.45 client source: IComp7Controller (gui/game_control/comp7_controller.py) keeps the own rating (`rating`, from
-# the account entitlements) and `isComp7PrbActive()` (the hangar is in Onslaught); the ranks config
+# RU 1.45 client source: IComp7Controller (gui/game_control/comp7_controller.py) keeps `isComp7PrbActive()` (the
+# hangar is in Onslaught); the ranks config
 # (ILobbyContext.getServerSettings().comp7RanksConfig.divisions, comp7_ranks_common.Comp7Division) holds the division
 # ranges the rank tooltips show; gui/impl/lobby/comp7/comp7_shared.getPlayerDivision() is the division the Onslaught
 # widget shows (the Legend one from the elite entitlement); getVehicleSkillEquipment(vehicle) is the role skill chosen
@@ -54,7 +54,6 @@ def comp7_state():
             return None
         qualification = bool(call(controller, 'isQualificationActive', False))
         return {
-            'rating': getattr(controller, 'rating', 0),
             'division': None if qualification else _player_division(),
             'divisions': _divisions(),
             'qualification': qualification,

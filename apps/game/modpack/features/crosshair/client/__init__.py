@@ -13,7 +13,7 @@ from ..model.preview import preview_text, preview_widget
 from ..model.readouts import Readouts, readouts_data, readouts_text, replaced_reticle_parts, wants_readouts
 from ..model.widget import crosshair_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
-from .constants import CLIP_EVENTS, DEVICE_DESTROYED, READOUT_STATES, VIEW_ARCADE, VIEW_SNIPER
+from .constants import CLIP_EVENTS, READOUT_STATES, VIEW_ARCADE, VIEW_SNIPER
 
 try:
     from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
@@ -51,8 +51,8 @@ def own_health():
 
 # The presets are the player's client settings, written only on the player's change in the hangar; the centre mark
 # and the readouts follow the client's own reticle position (CrosshairDataProxy). Fair play: the readouts are the own
-# gun's reload (the ammo controller the stock reticle's reload indicator reads) and the own damage panel's HP and
-# repairs; every update is dropped while the camera follows an ally (controls_own_vehicle). While the readouts are
+# gun's reload (the ammo controller the stock reticle's reload indicator reads) and the own damage panel's HP; every
+# update is dropped while the camera follows an ally (controls_own_vehicle). While the readouts are
 # drawn the stock reticle parts they stand in for are hidden (core.hud.stock reticle parts), only for this battle.
 class CrosshairComponent(BattlePanel):
 
@@ -155,14 +155,7 @@ class CrosshairComponent(BattlePanel):
     def _apply_state(self, name, value):
         if name == 'health':
             return self.readouts.set_health(value, own_max_health())
-        if name == 'destroyed':
-            self.readouts.clear_repairs()
-            return self.readouts.set_health(0)
-        if not isinstance(value, (list, tuple)) or len(value) < 3:
-            return False
-        if name == 'repairing':
-            return self.readouts.set_repair(value[0], value[2])
-        return value[1] != DEVICE_DESTROYED and self.readouts.end_repair(value[0])
+        return self.readouts.set_health(0)
 
     def _count(self):
         if self.readouts.is_counting():

@@ -1,3 +1,3 @@
-export { gunArcSchema } from './gun-arc.schemas';
+export { gunArcPointSchema, gunArcSchema } from './gun-arc.schemas';
 
-export type { GunArcData } from './gun-arc.types';
+export type { GunArcData, GunArcPoint } from './gun-arc.types';

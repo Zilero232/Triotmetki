@@ -1,29 +1,23 @@
-# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.hud.widget import widget
-from . import side_tone, yaw_label
-from .constants import DEGREES, KIND
+from .constants import KIND, MARK_NAMES
 
 
-def _degrees(value, settings):
-    return DEGREES % int(round(value)) if settings.get('show_degrees') else u''
-
-
-def panel_widget(state, settings):
-    if state is None:
+def _mark(offset):
+    if offset is None:
         return None
-    warn = settings.get('warn_deg')
-    left = state['left']
-    right = state['right']
+    return {'x': offset[0], 'y': offset[1]}
+
+
+def panel_widget(marks, settings):
+    if not marks or not any(marks.get(name) for name in MARK_NAMES):
+        return None
+    centre_marker = settings.get('centre_marker')
     return widget(KIND, {
-        'scale': bool(settings.get('show_bar')),
-        'position': round(state['position'], 3),
-        'centre': round(state['centre'], 3),
-        'left': _degrees(left, settings),
-        'right': _degrees(right, settings),
-        'left_tone': side_tone(left, warn),
-        'right_tone': side_tone(right, warn),
-        'gun_tone': side_tone(min(left, right), warn),
-        'yaw': yaw_label(state['yaw']) if settings.get('show_yaw') else u'',
+        'marker': settings.get('marker'),
+        'centre_marker': centre_marker,
+        'left': _mark(marks.get('left')),
+        'right': _mark(marks.get('right')),
+        'centre': _mark(marks.get('centre')) if centre_marker != 'none' else None,
     })

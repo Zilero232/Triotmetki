@@ -4,13 +4,17 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import math
 
 from ....core.compat import is_number
-from .constants import FAILED, MIN_DAMAGE, MIN_SHARE_OF_ENEMY_HP, PROGRESS, REACHED, UNREACHABLE
+from .constants import FAILED, MAIN_GUN_GUI_TYPES, MIN_DAMAGE, MIN_SHARE_OF_ENEMY_HP, PROGRESS, REACHED, UNREACHABLE
 
 # Fair play: the own damage from the player's feedback, the enemy team's HP as the stock score strip shows it (max HP
 # from the player panels' arena data, the HP left the client's BattleFieldCtrl counts), and whether an own shot hit an
 # ally from the client's own «Попадание в союзника» message, never who. The team's damage is the HP the enemies lost,
 # one number; who dealt it stays unknown, so the row never claims the medal: the server alone knows the team's top
 # damage.
+
+
+def main_gun_applies(gui_type):
+    return gui_type is None or gui_type in MAIN_GUN_GUI_TYPES
 
 
 def threshold(enemy_max):

@@ -4,12 +4,12 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import math
 
 from ....core.hud.stock import RETICLE_CASSETTE, RETICLE_CONDITION, RETICLE_RELOAD, RETICLE_RELOAD_TIMER
-from .constants import FINAL_S, MAX_CLIP_CELLS, MAX_REPAIRS, NO_SHELLS, READY_HOLD_S, TRACK_DEVICES
+from .constants import FINAL_S, MAX_CLIP_CELLS, NO_SHELLS, READY_HOLD_S
 
 # Fair play: the own vehicle only. The reload and the magazine are the own gun's (the stock reticle's reload indicator
-# reads the same ammo controller), the HP and the repairs are the own damage panel's (VEHICLE_VIEW_STATE.HEALTH,
-# REPAIRING, DEVICES); nothing here reads another vehicle, and the client glue drops every update while the camera
-# follows an ally.
+# reads the same ammo controller), the HP is the own damage panel's (VEHICLE_VIEW_STATE.HEALTH); nothing here reads
+# another vehicle, and the client glue drops every update while the camera follows an ally. The repair timers of the
+# own modules are left out: the stock damage panel shows them.
 
 
 def _seconds(value):
@@ -29,13 +29,6 @@ def _tenths(seconds):
     return u'%.1f' % (math.ceil(round(seconds * 10, 6)) / 10.0)
 
 
-def device_glyph(device):
-    for prefix in TRACK_DEVICES:
-        if device.startswith(prefix):
-            return 'track'
-    return 'module'
-
-
 class Readouts(object):
 
     def __init__(self):
@@ -45,7 +38,6 @@ class Readouts(object):
         self.clip = None
         self.health = None
         self.max_health = None
-        self.repairs = {}
 
     def set_reload(self, left, base):
         left, base = _seconds(left), _seconds(base)
@@ -75,33 +67,14 @@ class Readouts(object):
         self.health = max(0, health)
         return True
 
-    def set_repair(self, device, seconds):
-        seconds = _seconds(seconds)
-        if not device or seconds is None or seconds <= 0:
-            return self.end_repair(device)
-        self.repairs[device] = seconds
-        return True
-
-    def end_repair(self, device):
-        return self.repairs.pop(device, None) is not None
-
-    def clear_repairs(self):
-        self.repairs = {}
-
     def is_counting(self):
-        return self.is_reloading() or self.ready_left > 0 or bool(self.repairs)
+        return self.is_reloading() or self.ready_left > 0
 
     def is_reloading(self):
         return self.reload_left is not None and self.reload_left > 0
 
     def tick(self, elapsed):
         self._tick_reload(elapsed)
-        for device in list(self.repairs):
-            left = self.repairs[device] - elapsed
-            if left > 0:
-                self.repairs[device] = left
-            else:
-                del self.repairs[device]
         return self.is_counting()
 
     def _tick_reload(self, elapsed):
@@ -161,23 +134,14 @@ def _arcs(readouts):
     return {'reload': reload_part, 'health': health}
 
 
-def _repairs(readouts):
-    ordered = sorted(readouts.repairs.items(), key=lambda item: (item[1], item[0]))
-    return [
-        {'glyph': device_glyph(device), 'seconds': u'%d' % int(math.ceil(seconds))}
-        for device, seconds in ordered[:MAX_REPAIRS]
-    ]
-
-
 def readouts_data(readouts, settings, translate):
     if readouts is None:
         return None
     data = {
         'reload': _reload_box(readouts, translate) if settings.get('reload_box') else None,
         'arcs': _arcs(readouts) if settings.get('reload_arcs') else None,
-        'repairs': _repairs(readouts) if settings.get('repair_timers') else [],
     }
-    if data['reload'] is None and data['arcs'] is None and not data['repairs']:
+    if data['reload'] is None and data['arcs'] is None:
         return None
     return data
 
@@ -189,13 +153,12 @@ def readouts_text(data):
 
 
 def wants_readouts(settings):
-    return any(settings.get(key) for key in ('reload_box', 'reload_arcs', 'repair_timers'))
+    return any(settings.get(key) for key in ('reload_box', 'reload_arcs'))
 
 
 # The stock reticle parts the readouts stand in for while they are drawn, so the player never sees both: the reload
 # box the stock reload timer, and the stock magazine indicator while the box shows the magazine cells; the arcs the
-# stock reload indicator and the stock HP indicator. The repair timers keep the stock damage panel, which every pack
-# keeps.
+# stock reload indicator and the stock HP indicator.
 def replaced_reticle_parts(settings, readouts):
     if readouts is None:
         return ()
