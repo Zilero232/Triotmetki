@@ -2,7 +2,7 @@
   "name": "@otmetki/icons",
   "version": "0.1.0",
   "private": true,
-  "description": "Three Marks custom SVG icon set as React components, stroke-matched to lucide.",
+  "description": "Three Marks custom SVG icon set as React components, stroke-matched to lucide, with framework-free geometry in @otmetki/icons/shapes.",
   "homepage": "https://triotmetki.ru",
   "bugs": {
     "url": "https://github.com/Zilero232/Triotmetki/issues"

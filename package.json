@@ -2,7 +2,7 @@
   "name": "otmetki",
   "version": "0.1.1",
   "private": true,
-  "description": "Три отметки — the all-in-one companion platform for «Мир танков» (Lesta RU): stats, marks of excellence, tank analytics, builds, replays, clans, streamer tools and a developer API. Bun-workspaces monorepo.",
+  "description": "Three Marks (triotmetki.ru): the companion platform for Mir Tankov (Lesta, RU realm), with the site, the API and collector, the game modpack and its manager in one Bun-workspaces monorepo.",
   "homepage": "https://triotmetki.ru",
   "bugs": {
     "url": "https://github.com/Zilero232/Triotmetki/issues"
@@ -152,9 +152,5 @@
     "stylelint-order": "^8.1.1",
     "typescript": "catalog:",
     "vitest": "^5.0.2"
-  },
-  "packageManager": "bun@1.3.1",
-  "engines": {
-    "bun": ">=1.3.0"
   }
 }

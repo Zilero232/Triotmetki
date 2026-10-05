@@ -2,7 +2,7 @@
   "name": "@otmetki/design-tokens",
   "version": "0.1.0",
   "private": true,
-  "description": "Three Marks design tokens: colours (dark and light), spacing, radii, typography, motion and textures as SCSS maps and mixins, plus a Node reader of their values.",
+  "description": "Three Marks design tokens as SCSS maps and mixins (theme colours, scale, motion, surfaces, textures), plus a Node reader of their values.",
   "homepage": "https://triotmetki.ru",
   "bugs": {
     "url": "https://github.com/Zilero232/Triotmetki/issues"

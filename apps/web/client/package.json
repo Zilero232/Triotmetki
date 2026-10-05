@@ -2,7 +2,7 @@
   "name": "@otmetki/client",
   "version": "0.1.0",
   "private": true,
-  "description": "Три отметки web — Next.js 16 / React 19, Feature-Sliced Design.",
+  "description": "Three Marks website: a Next.js 16 / React 19 app in Feature-Sliced Design with next-intl (ru/en), SCSS modules and visx charts.",
   "homepage": "https://triotmetki.ru",
   "bugs": {
     "url": "https://github.com/Zilero232/Triotmetki/issues"

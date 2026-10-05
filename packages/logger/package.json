@@ -2,7 +2,7 @@
   "name": "@otmetki/logger",
   "version": "0.1.0",
   "private": true,
-  "description": "One pino configuration shared by every Three Marks app.",
+  "description": "The pino logger configuration shared by the Three Marks apps.",
   "homepage": "https://triotmetki.ru",
   "bugs": {
     "url": "https://github.com/Zilero232/Triotmetki/issues"

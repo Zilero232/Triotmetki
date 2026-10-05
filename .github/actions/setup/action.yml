@@ -5,10 +5,10 @@ runs:
   using: composite
 
   steps:
-    # packageManager in the root package.json pins the Bun version.
-    - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+    # mise.toml pins the Bun version; only Bun is installed here (Python and Rust come from their own setup actions).
+    - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
       with:
-        bun-version-file: package.json
+        install_args: bun
 
     - name: Cache bun packages
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6

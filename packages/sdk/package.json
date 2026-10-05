@@ -2,7 +2,7 @@
   "name": "@otmetki/sdk",
   "version": "0.1.0",
   "private": true,
-  "description": "TypeScript client for the Three Marks public API (/v1): generated from the OpenAPI spec with @hey-api/openapi-ts, on the ky client with an API-key, base-URL and retry wrapper, plus a Standard Webhooks verifier.",
+  "description": "TypeScript client for the Three Marks public API (/v1), generated from its OpenAPI spec, with API-key, base-URL and retry handling and a Standard Webhooks verifier.",
   "homepage": "https://triotmetki.ru",
   "bugs": {
     "url": "https://github.com/Zilero232/Triotmetki/issues"
@@ -12,7 +12,7 @@
     "url": "git+https://github.com/Zilero232/Triotmetki.git",
     "directory": "packages/sdk"
   },
-  "license": "UNLICENSED",
+  "license": "MIT",
   "author": "Alexandr Artemev",
   "sideEffects": false,
   "type": "module",

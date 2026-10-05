@@ -2,7 +2,7 @@
   "name": "@otmetki/ratings",
   "version": "0.1.0",
   "private": true,
-  "description": "Pure rating math for «Мир танков»: WN8, EFF, Броня-Индекс, recent periods, marks of excellence and mastery.",
+  "description": "Pure rating math for Mir Tankov: WN8, EFF, Броня-Индекс, rating tiers, recent periods and the marks-of-excellence projection.",
   "homepage": "https://triotmetki.ru",
   "bugs": {
     "url": "https://github.com/Zilero232/Triotmetki/issues"

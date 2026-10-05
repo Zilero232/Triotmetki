@@ -2,7 +2,7 @@
   "name": "@otmetki/gamedata",
   "version": "0.1.0",
   "private": true,
-  "description": "Pure «Мир танков» loadout calculator: the game-data model (vehicles, modules, equipment, crew, field modifications), the modifier model and calculateLoadout for final vehicle stats.",
+  "description": "Pure Mir Tankov loadout calculator (calculateLoadout) and the game-data model it reads: vehicles, modules, equipment, crew and field modifications.",
   "homepage": "https://triotmetki.ru",
   "bugs": {
     "url": "https://github.com/Zilero232/Triotmetki/issues"

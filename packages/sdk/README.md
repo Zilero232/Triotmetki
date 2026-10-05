@@ -91,3 +91,9 @@ OTMETKI_OPENAPI_URL=http://localhost:4000/v1/docs/openapi.json bun run --filter 
 ```
 
 `sdk:generate` runs the server's `openapi:export` script, which boots the Nest application without an HTTP port (it needs the database and Redis from `bun run dev:infra`).
+
+## Licence
+
+MIT, see [LICENSE](LICENSE). The rest of the repository is proprietary ([../../LICENSE](../../LICENSE)).
+
+The package is still `"private": true` and exports TypeScript sources; publishing it to npm needs a build to JavaScript and a `publishConfig` first.

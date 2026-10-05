@@ -2,7 +2,7 @@
   "name": "@otmetki/schemas",
   "version": "0.1.0",
   "private": true,
-  "description": "Zod contracts shared by the Three Marks web, api and collector.",
+  "description": "Zod contracts shared by the Three Marks client and server.",
   "homepage": "https://triotmetki.ru",
   "bugs": {
     "url": "https://github.com/Zilero232/Triotmetki/issues"

@@ -1,0 +1,35 @@
+Copyright (c) 2026 Alexandr Artemev. All rights reserved.
+
+This repository and everything in it (source code, documentation, design,
+artwork, data and build tooling of the «Три отметки» site, server, game
+modpack, modpack manager and workspace packages) is proprietary and
+confidential, except where a file or directory carries its own licence.
+
+No permission is granted to use, copy, modify, merge, publish, distribute,
+sublicense, sell or create derivative works of this software, in whole or in
+part, without the prior written permission of the copyright holder.
+
+Being able to view the source code (for example on GitHub) does not grant any
+licence or right to it. Forking a public repository on GitHub is allowed only
+to the extent required by the GitHub Terms of Service, and grants no other
+rights.
+
+Parts of this repository are licensed separately:
+
+- packages/sdk (the @otmetki/sdk client for the public API) is released under
+  the MIT License, see packages/sdk/LICENSE;
+- third-party works bundled with our artefacts keep their own licences, see
+  THIRD_PARTY_NOTICES.md.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHOR OR COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+«Мир танков» and all related game content are the property of Lesta Games.
+This is an independent fan project, not affiliated with Lesta Games.
+
+Contact: https://triotmetki.ru

@@ -18,6 +18,7 @@ Design specs, one per initiative, dated.
 - [specs/2026-09-29-derived-data-rules.md](specs/2026-09-29-derived-data-rules.md) — the rules behind automatic replay tags, tank × map win rates and the fine mark curve, and where each hides thin data.
 - [specs/2026-09-29-hud-visual-redesign.md](specs/2026-09-29-hud-visual-redesign.md) — the modpack HUD look: client icons, panel placement, which stock elements each panel replaces.
 - [specs/2026-09-30-hud-consolidation-and-design.md](specs/2026-09-30-hud-consolidation-and-design.md) — merging the duplicate modpack components (47 → 32), defaults and default values, the settings migration, and the HUD design system (plate, type, spacing, tones) with a spec per block.
+- [specs/2026-10-05-server-refactor.md](specs/2026-10-05-server-refactor.md) — the server refactor plan: one way to write queries, simpler structure, the bug and inconsistency items it found.
 
 ## Architecture
 
@@ -37,9 +38,9 @@ The style guide, split by stack. Index and tooling: [guides/README.md](guides/RE
 
 - `research/client/` — [client 1.45 hooks and events](research/client/2026-09-29-client-1.45-hooks.md) the modpack uses, checked against the RU sources; [battle overlays](research/client/2026-10-05-battle-overlays.md): every stock overlay over the battle view, its client signal and whether our panels give way.
 - `research/data/` — [Lesta API reference and terms](research/data/lesta-api.md), [ЛБЗ in the client files](research/data/lbz.md), [3D armor viewer](research/data/armor-viewer.md), [modpack fair-play audit 2026-10-05](research/data/2026-10-05-fair-play-audit.md).
-- `research/design/` — [visual language](research/design/visual-language.md), [design v2](research/design/design-v2.md), [v3](research/design/design-v3.md), [v4](research/design/design-v4.md).
-- `research/competitors/` — [market](research/competitors/market.md), [competitors v2](research/competitors/competitors-v2.md), [sites gap analysis](research/competitors/2026-09-29-sites-gap-analysis.md), [modpacks round 3](research/competitors/2026-09-29-modpacks-round3.md), [round 4](research/competitors/2026-09-30-round4.md), [replay managers](research/competitors/2026-09-30-replays.md), [modpacks code study](research/competitors/2026-09-30-modpacks-code.md), [stock elements we replace](research/competitors/2026-10-05-stock-replacement.md).
-- `research/tooling/` — [ready-made packages](research/tooling/packages.md), [modpack UI packages](research/tooling/2026-09-30-modpack-ui-packages.md) (Gameface engine V8 9.4, what replaces custom ui-web code).
+- `research/design/` — [visual language](research/design/visual-language.md), [design v2](research/design/design-v2.md), [v3](research/design/design-v3.md), [v4](research/design/design-v4.md), [competitor UI and the in-game design language](research/design/2026-10-03-competitor-ui.md).
+- `research/competitors/` — [market](research/competitors/market.md), [competitors v2](research/competitors/competitors-v2.md), [sites gap analysis](research/competitors/2026-09-29-sites-gap-analysis.md), [modpacks round 3](research/competitors/2026-09-29-modpacks-round3.md), [round 4](research/competitors/2026-09-30-round4.md), [replay managers](research/competitors/2026-09-30-replays.md), [modpacks code study](research/competitors/2026-09-30-modpacks-code.md), [stock elements we replace](research/competitors/2026-10-05-stock-replacement.md), [behaviour parity with the established packs](research/competitors/2026-10-05-behavior-parity.md), [modpacks source-level deep dive](research/competitors/2026-10-05-modpacks-deep-dive.md).
+- `research/tooling/` — [ready-made packages](research/tooling/packages.md), [modpack UI packages](research/tooling/2026-09-30-modpack-ui-packages.md) (Gameface engine V8 9.4, what replaces custom ui-web code), [modpack library audit](research/tooling/2026-09-30-library-audit.md) (ui-web and Python).
 
 ## Ops
 
@@ -47,3 +48,8 @@ The style guide, split by stack. Index and tooling: [guides/README.md](guides/RE
 - [ops/moe-thresholds.md](ops/moe-thresholds.md) — where the MoE thresholds come from, how to check and trigger the fill in production.
 - [ops/most-publishing.md](ops/most-publishing.md) — publishing the modpack in МОСТ.
 - [ops/mod-authors-outreach.md](ops/mod-authors-outreach.md) — asking mod authors for permission to ship their assets.
+
+## Licensing
+
+- [LICENSE](../LICENSE) — the repository is proprietary; [packages/sdk/LICENSE](../packages/sdk/LICENSE) — the public API client is MIT.
+- [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md) — third-party works that ship with the site, the modpack and the manager.

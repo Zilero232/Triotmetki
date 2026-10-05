@@ -2,7 +2,7 @@
   "name": "@otmetki/server",
   "version": "0.1.0",
   "private": true,
-  "description": "Three Marks server — NestJS on Bun: the site API, auth (Lesta ID, Telegram, magic link), public /v1, the mod ingest and the collector worker that pulls the Lesta API into TimescaleDB.",
+  "description": "Three Marks server: NestJS 11 on Bun serving the site API, auth, the public /v1 API and the mod ingest, plus the BullMQ collector worker that pulls the Lesta API into TimescaleDB.",
   "homepage": "https://triotmetki.ru",
   "bugs": {
     "url": "https://github.com/Zilero232/Triotmetki/issues"
