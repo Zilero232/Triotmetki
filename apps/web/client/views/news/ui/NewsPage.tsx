@@ -4,6 +4,7 @@ import { Newspaper } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { TankPicker } from '@/features/tank/pick-tank';
+import { ROUTES } from '@/shared/constants';
 import { Button, Card, DataSourceNote, FilteredEmptyState, PageHeader, QueryState, SegmentedControl } from '@/ui-kit';
 import { LeadFeed, LeadFeedSkeleton } from '@/widgets/content/lead-feed';
 
@@ -15,11 +16,17 @@ import s from './NewsPage.module.scss';
 
 export const NewsPage = () => {
   const t = useTranslations('news');
+  const tCommon = useTranslations('common');
   const feed = useNewsFeed();
 
   return (
     <div className={s.root}>
-      <PageHeader description={t('head.description')} emblem={<Newspaper />} title={t('head.title')} />
+      <PageHeader
+        breadcrumbs={[{ label: tCommon('home'), href: ROUTES.home }, { label: t('head.title') }]}
+        description={t('head.description')}
+        emblem={<Newspaper />}
+        title={t('head.title')}
+      />
       <div className={s.controls}>
         <SegmentedControl
           aria-label={t('filters.label')}

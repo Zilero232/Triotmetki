@@ -10,6 +10,10 @@
     "label": "Tech tree: {nation}",
     "tier": "Tier {tier}"
   },
+  "list": {
+    "label": "Vehicles by tier",
+    "count": "{count, plural, one {# vehicle} other {# vehicles}}"
+  },
   "controls": {
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",

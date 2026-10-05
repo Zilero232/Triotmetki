@@ -15,7 +15,8 @@ export const TREE_VIEW = {
   initialMaxZoom: 1,
   edgePadding: 24,
   fitDuration: 200,
-  compactQuery: '(width <= 1100px)'
+  compactQuery: '(width <= 1100px)',
+  listQuery: '(width < 560px)'
 } as const;
 
 export const TREE_EDGE = {

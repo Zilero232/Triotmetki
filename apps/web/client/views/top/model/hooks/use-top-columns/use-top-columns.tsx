@@ -47,7 +47,7 @@ export const useTopColumns = ({ filter, tank, entries }: UseTopColumnsInput): Ta
               original.accountId === null ? null : (
                 <CompareToggle entry={{ kind: 'player', item: { accountId: original.accountId, nickname: original.name } }} />
               ),
-            meta: { width: 40 }
+            meta: { width: 40, hideBelow: 'md' }
           })
         ];
 

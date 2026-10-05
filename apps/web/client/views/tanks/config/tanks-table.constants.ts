@@ -1,5 +1,6 @@
 export const TANKS_TABLE = {
   numeric: { align: 'end', isNumeric: true },
+  secondary: { align: 'end', isNumeric: true, hideBelow: 'md' },
   rankWidth: 48,
   pinWidth: 40,
   tankWidth: '28%',

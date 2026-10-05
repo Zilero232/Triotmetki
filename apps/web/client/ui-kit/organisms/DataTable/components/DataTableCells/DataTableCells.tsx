@@ -11,7 +11,7 @@ import s from '../../DataTable.module.scss';
 
 export const DataTableCells = <T,>({ row, barMax, link = null }: DataTableCellsProps<T>) =>
   row.getVisibleCells().map((cell, index) => {
-    const { align, isNumeric, isMedia, isSticky, isRank, hideBelow, isSorted, medal, bar } = dataTableCell({ cell, barMax });
+    const { align, isNumeric, isMedia, isSticky, isRank, hideBelow, showBelow, isSorted, medal, bar } = dataTableCell({ cell, barMax });
     const content = flexRender(cell.column.columnDef.cell, cell.getContext());
 
     return (
@@ -24,6 +24,7 @@ export const DataTableCells = <T,>({ row, barMax, link = null }: DataTableCellsP
         data-media={isMedia}
         data-numeric={isNumeric}
         data-rank={isRank}
+        data-show-below={showBelow}
         data-sorted={isSorted || undefined}
         data-sticky={isSticky}
       >

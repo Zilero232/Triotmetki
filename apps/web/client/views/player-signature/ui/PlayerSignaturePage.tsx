@@ -48,7 +48,9 @@ export const PlayerSignaturePage = ({ nickname: requested }: PlayerSignaturePage
                     unoptimized
                     alt={t('alt', { nickname })}
                     className={s.image}
+                    fetchPriority='high'
                     height={SIGNATURE_IMAGE.height}
+                    loading='eager'
                     src={links.imageUrl}
                     width={SIGNATURE_IMAGE.width}
                     onError={onImageError}

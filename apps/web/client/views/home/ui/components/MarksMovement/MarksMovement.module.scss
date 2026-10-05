@@ -1,5 +1,9 @@
 @use '@/shared/styles/mixins' as *;
 
+.band[data-empty='true'] {
+  padding-block: var(--space-6);
+}
+
 .inner {
   @include stack(var(--space-5));
 }

@@ -46,7 +46,7 @@ export const usePopularColumns = (): TableColumn<PopularPlayer>[] => {
       id: 'compare',
       header: tCompare('column'),
       cell: ({ row: { original } }) => <CompareToggle entry={{ kind: 'player', item: original }} />,
-      meta: { width: 40 }
+      meta: { width: 40, hideBelow: 'md' }
     })
   ];
 };

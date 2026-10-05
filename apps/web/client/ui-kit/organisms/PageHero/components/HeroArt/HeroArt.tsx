@@ -15,7 +15,7 @@ export const HeroArt = ({ art }: HeroArtProps) => (
         <div className={s.tanks}>
           {tanks.slice(0, PAGE_HERO.maxTanks).map((tank) => (
             <span key={`${tank.nation}-${tank.name}`} className={s.tank} data-nation={tank.nation}>
-              <TankImage isDecorative className={s.render} size='large' tank={tank} withTint={false} />
+              <TankImage isDecorative isPriority className={s.render} size='large' tank={tank} withTint={false} />
             </span>
           ))}
         </div>

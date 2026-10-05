@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { PlusGate } from '@/features/plus/plus-gate';
+import { TanksHubNav } from '@/widgets/tank/tanks-hub-nav';
 
 import { useTanksState } from '../model/hooks';
 import { EconomyTable, MyEconomy, StatsControls, StatsTable, TanksFilters, TanksHero, TierList } from './components';
@@ -17,6 +18,7 @@ export const TanksPage = () => {
     <div className={s.root}>
       <TanksHero />
       <div className={s.body}>
+        <TanksHubNav current='stats' />
         <TanksFilters />
         <StatsControls />
         {view === 'table' && <StatsTable />}

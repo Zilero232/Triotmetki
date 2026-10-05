@@ -49,8 +49,14 @@
     "title": "Mir Tankov data is not connected yet.",
     "description": "We are waiting for Lesta to open data access. Player, clan and vehicle stats will appear as soon as it is connected."
   },
+  "rowActions": {
+    "column": "Actions",
+    "open": "Actions for “{name}”"
+  },
   "pin": {
     "column": "Pin",
+    "button": "Pin",
+    "buttonOn": "Unpin",
     "pin": "Pin “{name}” to the top",
     "unpin": "Unpin “{name}”"
   },

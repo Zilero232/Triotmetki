@@ -1,7 +1,11 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include page(var(--space-5));
+  @include stack(0);
+}
+
+.content {
+  @include page(var(--space-5), var(--space-6));
 }
 
 .grid {

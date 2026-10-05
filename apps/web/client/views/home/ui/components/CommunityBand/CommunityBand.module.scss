@@ -26,23 +26,65 @@
   min-width: 0;
 }
 
-.media {
+.tile {
+  @include panel;
+  @include lift-hover;
+
   --art: var(--color-accent);
 
-  position: absolute;
-  background: radial-gradient(circle at 70% 45%, color-mix(in srgb, var(--art) 18%, transparent), transparent 60%), var(--color-band);
-  inset: 0;
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  min-height: 112px;
+  align-items: center;
+  padding: var(--space-5) var(--space-6);
+  background: radial-gradient(circle at 85% 50%, color-mix(in srgb, var(--art) 16%, transparent), transparent 55%), var(--color-surface);
+  color: inherit;
+  gap: var(--space-4);
+  text-decoration: none;
 
   &[data-kind='clans'] {
     --art: var(--color-steel);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  @include below(md) {
+    padding: var(--space-4);
   }
 }
 
 .emblem {
   position: absolute;
   top: 50%;
-  right: var(--space-8);
+  right: var(--space-6);
   color: var(--art);
-  opacity: 0.16;
+  opacity: 0.18;
+  pointer-events: none;
   transform: translateY(-50%) rotate(-8deg);
+}
+
+.copy {
+  @include stack(var(--space-1));
+
+  position: relative;
+  min-width: 0;
+  flex: 1;
+}
+
+.tileTitle {
+  @include heading(var(--text-lg));
+}
+
+.description {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.arrow {
+  position: relative;
+  flex-shrink: 0;
+  color: var(--art);
 }

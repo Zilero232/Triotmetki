@@ -82,21 +82,29 @@
       }
     },
     "collector": {
-      "title": "Data updates by task",
-      "lead": "When each job last finished without an error. “Not yet” means the job has never completed.",
-      "queuesTitle": "Background tasks",
-      "never": "not yet",
+      "title": "Data freshness",
+      "lead": "When each source last updated without an error.",
+      "queuesTitle": "Technical details: background queues",
+      "never": "not updated yet",
       "version": "version {version}",
       "lastModBattle": "Latest battle from the mod",
       "noQueues": "The background tasks have not reported yet.",
       "queue": "Queue",
       "counted": "Counted",
       "jobs": {
-        "lestaSync": "Lesta data update",
-        "tankStats": "Server tank statistics",
-        "moeImport": "Mark thresholds update",
-        "xvmExpected": "WN8 expected values (XVM)",
-        "gameFiles": "Game files update"
+        "lestaSync": "Player statistics",
+        "tankStats": "Tank statistics",
+        "moeImport": "Mark thresholds",
+        "xvmExpected": "WN8 expected values",
+        "gameFiles": "Tanks and maps from the game files"
+      },
+      "updated": {
+        "lestaSync": "updated",
+        "tankStats": "updated",
+        "moeImport": "updated",
+        "xvmExpected": "updated",
+        "gameFiles": "updated",
+        "lastModBattle": "received"
       },
       "counts": {
         "waiting": "Waiting",

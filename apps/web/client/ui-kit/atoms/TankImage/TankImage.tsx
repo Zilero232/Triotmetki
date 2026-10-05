@@ -42,8 +42,9 @@ export const TankImage = ({
         <Image
           alt={isDecorative ? '' : tank.name}
           className={s.image}
+          fetchPriority={isPriority ? 'high' : undefined}
           height={height}
-          priority={isPriority}
+          loading={isPriority ? 'eager' : undefined}
           sizes={sizes}
           src={image}
           unoptimized={!isOptimized}

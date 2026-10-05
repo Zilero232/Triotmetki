@@ -8,6 +8,6 @@ import s from './TankLinkCell.module.scss';
 
 export const TankLinkCell = ({ vehicle }: TankLinkCellProps) => (
   <Link className={s.root} href={ROUTES.tanks.detail(vehicle.slug)}>
-    <TankCell vehicle={vehicle} />
+    <TankCell imageHideBelow='md' vehicle={vehicle} />
   </Link>
 );

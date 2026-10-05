@@ -1,1 +1,1 @@
-export { serverFiguresState } from './server-figures';
+export { isActivityStale, serverFiguresState } from './server-figures';

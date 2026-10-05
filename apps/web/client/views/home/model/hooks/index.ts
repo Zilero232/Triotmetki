@@ -7,6 +7,7 @@ export { useGameNews } from './use-game-news';
 export { useHeroTanks } from './use-hero-tanks';
 export { useMarksMovement } from './use-marks-movement';
 export { useMarksMovementColumns } from './use-marks-movement-columns';
+export { useModpackPromo } from './use-modpack-promo';
 export { useMyDashboard } from './use-my-dashboard';
 export { usePopularTanks } from './use-popular-tanks';
 export { useRecentSearches } from './use-recent-searches';

@@ -44,8 +44,10 @@ export const StatusPage = () => {
           <section className={s.section}>
             <SectionHeader as='h2' description={t('collector.lead')} title={t('collector.title')} />
             <CollectorJobs jobs={collector.jobs} lastModBattleAt={collector.lastModBattleAt} />
-            <SectionHeader as='h3' className={s.subsection} title={t('collector.queuesTitle')} />
-            <QueueBacklog collectedAt={collector.queuesCollectedAt} queues={collector.queues} />
+            <details className={s.details}>
+              <summary className={s.detailsSummary}>{t('collector.queuesTitle')}</summary>
+              <QueueBacklog collectedAt={collector.queuesCollectedAt} queues={collector.queues} />
+            </details>
           </section>
         )}
         <section className={s.section}>

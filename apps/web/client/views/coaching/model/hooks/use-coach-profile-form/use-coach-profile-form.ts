@@ -15,7 +15,7 @@ import { coachFormSchema, toCoachFormValues, toUpsertCoach } from '../../../lib/
 
 export const useCoachProfileForm = () => {
   const t = useTranslations('coaching');
-  const { userId, accounts } = useCommunityViewer();
+  const { userId, isSignedIn, accounts } = useCommunityViewer();
   const { data: own, isPending, isError, error } = useQuery({ ...coachQueries.detail(userId ?? ''), enabled: userId !== null });
   const dialog = useFormDialog({
     schema: coachFormSchema,
@@ -29,6 +29,7 @@ export const useCoachProfileForm = () => {
   return {
     dialog,
     accounts,
+    isSignedIn,
     hasProfile: Boolean(own),
     isLoading: userId !== null && (isPending || (isError && !isNotFoundError(error)))
   };

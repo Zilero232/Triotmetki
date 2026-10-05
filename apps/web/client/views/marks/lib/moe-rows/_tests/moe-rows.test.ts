@@ -2,7 +2,7 @@ import type { MoeRow } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 
-import { filterByName, latestUpdate } from '../moe-rows';
+import { areThresholdsMissing, filterByName, latestUpdate } from '../moe-rows';
 
 const row = (name: string, slug: string, updatedAt: string | null): MoeRow => ({
   vehicle: {
@@ -52,5 +52,32 @@ describe('latestUpdate', () => {
 
   it('has no date when nothing was ever updated', () => {
     expect(latestUpdate([ROWS[2]])).toBeNull();
+  });
+});
+
+describe('areThresholdsMissing', () => {
+  const tracked: MoeRow = {
+    ...ROWS[0],
+    moe: { tankId: 6, date: '2026-09-20', source: 'otmetki', p65: 2100, p85: 2900, p95: 3600, p100: 4400 }
+  };
+
+  it('reports missing thresholds when a threshold sort puts an untracked tank first', () => {
+    expect(areThresholdsMissing({ rows: ROWS, sort: 'p95', isComplete: false })).toBe(true);
+  });
+
+  it('waits for every page when the sort does not push untracked tanks last', () => {
+    expect(areThresholdsMissing({ rows: ROWS, sort: 'tier', isComplete: false })).toBe(false);
+  });
+
+  it('reports missing thresholds once every page is loaded without one', () => {
+    expect(areThresholdsMissing({ rows: ROWS, sort: 'tier', isComplete: true })).toBe(true);
+  });
+
+  it('sees thresholds as soon as one tank has them', () => {
+    expect(areThresholdsMissing({ rows: [...ROWS, tracked], sort: 'tier', isComplete: true })).toBe(false);
+  });
+
+  it('leaves an empty list to the empty state', () => {
+    expect(areThresholdsMissing({ rows: [], sort: 'p95', isComplete: true })).toBe(false);
   });
 });

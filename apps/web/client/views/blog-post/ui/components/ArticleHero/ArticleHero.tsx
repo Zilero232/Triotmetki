@@ -21,7 +21,19 @@ export const ArticleHero = () => {
 
   return (
     <header className={s.root} data-cover={post.cover !== null} data-tone={BLOG_CATEGORY_TONE[post.category]}>
-      {post.cover && <Image fill priority unoptimized alt='' className={s.cover} referrerPolicy='no-referrer' sizes='100vw' src={post.cover} />}
+      {post.cover && (
+        <Image
+          fill
+          unoptimized
+          alt=''
+          className={s.cover}
+          fetchPriority='high'
+          loading='eager'
+          referrerPolicy='no-referrer'
+          sizes='100vw'
+          src={post.cover}
+        />
+      )}
       <span aria-hidden className={s.scrim} />
       <div className={s.inner}>
         <Breadcrumbs className={s.crumbs} items={[{ label: t('breadcrumb'), href: ROUTES.blog.list }, { label: post.title }]} />

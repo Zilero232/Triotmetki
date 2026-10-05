@@ -24,4 +24,10 @@ describe('isInteractiveTarget', () => {
     expect(isInteractiveTarget(root.querySelector('#plain'))).toBe(false);
     expect(isInteractiveTarget(null)).toBe(false);
   });
+
+  it('flags a click inside a popover that a row opened', () => {
+    const root = build('<div role="dialog"><p id="padding">menu</p></div>');
+
+    expect(isInteractiveTarget(root.querySelector('#padding'))).toBe(true);
+  });
 });

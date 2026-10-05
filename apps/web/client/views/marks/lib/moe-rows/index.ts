@@ -1,1 +1,1 @@
-export { filterByName, latestUpdate } from './moe-rows';
+export { areThresholdsMissing, filterByName, latestUpdate } from './moe-rows';

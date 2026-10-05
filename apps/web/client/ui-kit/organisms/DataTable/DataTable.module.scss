@@ -98,6 +98,11 @@
 
   height: 34px;
   padding: 0 var(--space-4);
+
+  @include below(md) {
+    padding: 0 var(--space-3);
+  }
+
   border-bottom: 1px solid var(--color-border-strong);
   background: linear-gradient(180deg, color-mix(in srgb, var(--color-text) 3%, transparent), transparent), var(--color-surface-raised);
   text-align: left;
@@ -209,6 +214,11 @@
 .td {
   height: var(--table-row-h);
   padding: 0 var(--space-4);
+
+  @include below(md) {
+    padding: 0 var(--space-3);
+  }
+
   border-bottom: 1px solid var(--color-border);
   white-space: nowrap;
 
@@ -330,6 +340,13 @@
   @include below($step) {
     .th[data-hide-below='#{$step}'],
     .td[data-hide-below='#{$step}'] {
+      display: none;
+    }
+  }
+
+  @include from($step) {
+    .th[data-show-below='#{$step}'],
+    .td[data-show-below='#{$step}'] {
       display: none;
     }
   }

@@ -16,6 +16,7 @@ import s from './BlogPage.module.scss';
 
 export const BlogPage = () => {
   const t = useTranslations('blog');
+  const tCommon = useTranslations('common');
   const feed = useBlogFeed();
 
   return (
@@ -35,6 +36,7 @@ export const BlogPage = () => {
             )}
           </div>
         }
+        breadcrumbs={[{ label: tCommon('home'), href: ROUTES.home }, { label: t('head.title') }]}
         description={t('head.description')}
         emblem={<NotebookPen />}
         title={t('head.title')}

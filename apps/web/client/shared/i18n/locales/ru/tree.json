@@ -10,6 +10,10 @@
     "label": "Дерево исследований: {nation}",
     "tier": "Уровень {tier}"
   },
+  "list": {
+    "label": "Танки по уровням",
+    "count": "{count, plural, one {# танк} few {# танка} many {# танков} other {# танка}}"
+  },
   "controls": {
     "zoomIn": "Приблизить",
     "zoomOut": "Отдалить",

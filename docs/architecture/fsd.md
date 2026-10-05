@@ -98,7 +98,8 @@ widgets/
 ├── site/     # data-notice, resource-missing, site-footer, site-header, tab-bar
 ├── social/   # social-shell
 ├── streamer/ # streamers-hub
-└── tank/     # tank-best-battles, tank-math
+├── table/    # row-actions
+└── tank/     # tank-best-battles, tank-math, tanks-hub-nav
 ```
 
 `views/` does not group by domain — the 97 route screens sit directly in it:

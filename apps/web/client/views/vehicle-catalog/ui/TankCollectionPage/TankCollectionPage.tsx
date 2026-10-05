@@ -16,6 +16,7 @@ import s from './TankCollectionPage.module.scss';
 
 export const TankCollectionPage = ({ slug }: TankCollectionPageProps) => {
   const t = useTranslations('vehicleCatalog');
+  const tNav = useTranslations('nav');
   const query = useTankCollectionPage(slug);
 
   return (
@@ -24,7 +25,8 @@ export const TankCollectionPage = ({ slug }: TankCollectionPageProps) => {
         <PageHero
           breadcrumbs={[
             { label: t('head.home'), href: ROUTES.home },
-            { label: t('head.title'), href: ROUTES.tanks.catalog },
+            { label: tNav('groups.vehicles'), href: ROUTES.tanks.list },
+            { label: tNav('tanksHub.catalog'), href: ROUTES.tanks.catalog },
             { label: t(`collections.items.${slug}.short`) }
           ]}
           art={{ kind: 'emblem', glyph: <HeavyTankIcon size={VEHICLE_CATALOG_VIEW.emblemSize} strokeWidth={VEHICLE_CATALOG_VIEW.emblemStroke} /> }}

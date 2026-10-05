@@ -41,7 +41,17 @@ export const HeroFigures = () => {
               value={status.trackedPlayers}
               variant='tile'
             />
-            {status.online === null ? (
+            {status.online === null && status.isActivityStale ? (
+              <KeyFigure
+                className={s.figure}
+                hint={t('activityStaleHint')}
+                icon={<HOME_FIGURES.online.icon size={HOME_ICON.figure} />}
+                label={t('activityStale')}
+                tone={HOME_FIGURES.online.tone}
+                value={status.lastActiveAt ? <RelativeTime value={status.lastActiveAt} /> : t('activityPending')}
+                variant='tile'
+              />
+            ) : status.online === null ? (
               <KeyFigure
                 className={s.figure}
                 hint={t('estimateHint')}

@@ -1,0 +1,109 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include list-reset;
+  @include stack(var(--space-2));
+}
+
+.tier {
+  @include panel;
+
+  overflow: hidden;
+}
+
+.summary {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 0 var(--space-3);
+  cursor: pointer;
+  gap: var(--space-2);
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.tierLabel {
+  @include heading(var(--text-md));
+}
+
+.count {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.chevron {
+  margin-left: auto;
+  color: var(--color-text-muted);
+  transition: transform var(--duration-base) var(--ease-out);
+
+  .tier[open] & {
+    transform: rotate(180deg);
+  }
+}
+
+.nodes {
+  @include list-reset;
+
+  border-top: 1px solid var(--color-border);
+}
+
+.node {
+  @include reset-button;
+
+  display: flex;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  padding: 0 var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-2);
+  text-align: start;
+
+  li:last-child > & {
+    border-bottom: none;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &[data-state='path'] {
+    box-shadow: inset 2px 0 0 color-mix(in srgb, var(--color-accent) 50%, transparent);
+  }
+
+  &[data-state='selected'] {
+    background-color: color-mix(in srgb, var(--color-accent) 8%, transparent);
+    box-shadow: inset 3px 0 0 var(--color-accent);
+  }
+}
+
+.icon {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+
+  .node[data-premium='true'] & {
+    color: var(--color-premium);
+  }
+}
+
+.name {
+  min-width: 0;
+  flex: 1;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.cost {
+  @include numeric;
+
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}

@@ -70,6 +70,7 @@ export {
   RangeField,
   RangeSlider,
   RetryButton,
+  RowMenu,
   SectionHeader,
   SegmentedControl,
   Select,

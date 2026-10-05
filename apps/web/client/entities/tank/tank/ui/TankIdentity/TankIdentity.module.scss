@@ -9,6 +9,12 @@
 
 .image {
   margin-right: var(--space-1);
+
+  @include below(md) {
+    .root[data-image-hide-below='md'] & {
+      display: none;
+    }
+  }
 }
 
 .class {

@@ -49,7 +49,7 @@
     "developers": "Developers",
     "pulse": "Server pulse",
     "design": "Design system",
-    "mod": "Download the mod",
+    "mod": "Modpack",
     "ratings": "Rating methodology",
     "status": "Data status",
     "hub": "All sections"
@@ -116,6 +116,11 @@
     "drawerSignIn": "Sign in",
     "drawerHint": "Sessions, goals and marks in your account",
     "profile": "My account"
+  },
+  "tanksHub": {
+    "label": "Tanks sections",
+    "stats": "Server statistics",
+    "catalog": "Vehicle catalog"
   },
   "allSections": "All sections",
   "tabBar": {

@@ -7,5 +7,6 @@ export type TankIdentityProps = {
   size?: 'lg' | 'md';
   withNation?: boolean;
   image?: Exclude<TankImageSize, 'big'>;
+  imageHideBelow?: 'md';
   className?: string;
 };

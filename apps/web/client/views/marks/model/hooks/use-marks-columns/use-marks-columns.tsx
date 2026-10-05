@@ -12,6 +12,7 @@ import { PinToggle } from '@/features/app/pin-rows';
 import { CompareToggle } from '@/features/compare/compare-selection';
 import { isPinnedCell } from '@/shared/lib';
 import { DeltaCell } from '@/ui-kit';
+import { ROW_ACTIONS, RowActions, RowActionsHeader } from '@/widgets/table/row-actions';
 
 import { DRAWER_THRESHOLDS, MOE_LIST, NUMERIC_COLUMN } from '../../../config';
 import { DetailsCell, DetailsHeaderCell, SweatCell, TankLinkCell, ThresholdCell } from '../../../ui/components/MarksTable/components';
@@ -28,13 +29,13 @@ export const useMarksColumns = (onSelect: (row: MoeRow) => void): TableColumn<Mo
       id: 'pin',
       header: tPin('column'),
       cell: ({ row, table }) => <PinToggle id={row.id} isOn={isPinnedCell({ row, table })} name={row.original.vehicle.name} scope='tanks' />,
-      meta: { width: MOE_LIST.pinWidth }
+      meta: { width: MOE_LIST.pinWidth, hideBelow: ROW_ACTIONS.showBelow }
     }),
     column.display({
       id: 'compare',
       header: tCompare('column'),
       cell: ({ row }) => <CompareToggle entry={{ kind: 'tank', item: row.original.vehicle }} />,
-      meta: { width: MOE_LIST.pinWidth }
+      meta: { width: MOE_LIST.pinWidth, hideBelow: ROW_ACTIONS.showBelow }
     }),
     column.accessor((row) => row.vehicle.name, {
       id: 'tank',
@@ -60,7 +61,7 @@ export const useMarksColumns = (onSelect: (row: MoeRow) => void): TableColumn<Mo
       id: 'delta',
       header: t('delta'),
       cell: ({ row }) => <DeltaCell isLowerBetter value={row.original.trend.p95Delta30d} />,
-      meta: NUMERIC_COLUMN
+      meta: { ...NUMERIC_COLUMN, hideBelow: 'sm' }
     }),
     column.accessor((row) => row.sweat.moe ?? 0, {
       id: 'sweat',
@@ -73,6 +74,18 @@ export const useMarksColumns = (onSelect: (row: MoeRow) => void): TableColumn<Mo
       header: () => <DetailsHeaderCell />,
       cell: ({ row }) => <DetailsCell tank={row.original.vehicle.name} onClick={() => onSelect(row.original)} />,
       meta: { align: 'end' }
+    }),
+    column.display({
+      id: ROW_ACTIONS.id,
+      header: () => <RowActionsHeader />,
+      cell: ({ row, table }) => (
+        <RowActions
+          compare={{ kind: 'tank', item: row.original.vehicle }}
+          name={row.original.vehicle.name}
+          pin={{ id: row.id, isOn: isPinnedCell({ row, table }), scope: 'tanks' }}
+        />
+      ),
+      meta: { align: 'end', width: ROW_ACTIONS.width, showBelow: ROW_ACTIONS.showBelow }
     })
   ];
 };

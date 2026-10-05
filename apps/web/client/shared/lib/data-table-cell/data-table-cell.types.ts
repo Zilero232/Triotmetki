@@ -13,7 +13,7 @@ export type DataTableCellBar = {
   tone: NonNullable<ColumnMeta<unknown, unknown>['bar']>['tone'];
 };
 
-export type DataTableCellView = Pick<ColumnMeta<unknown, unknown>, 'hideBelow' | 'isMedia' | 'isNumeric' | 'isRank' | 'isSticky'> & {
+export type DataTableCellView = Pick<ColumnMeta<unknown, unknown>, 'hideBelow' | 'isMedia' | 'isNumeric' | 'isRank' | 'isSticky' | 'showBelow'> & {
   align: NonNullable<ColumnMeta<unknown, unknown>['align']>;
   isSorted: boolean;
   medal: RankMedal | undefined;

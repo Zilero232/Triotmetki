@@ -11,7 +11,11 @@ import { CoachAboutFields, CoachActiveField, CoachContactsFields, CoachTanksFiel
 
 export const CoachProfileDialog = () => {
   const t = useTranslations('coaching.profile');
-  const { dialog, accounts, hasProfile, isLoading } = useCoachProfileForm();
+  const { dialog, accounts, isSignedIn, hasProfile, isLoading } = useCoachProfileForm();
+
+  if (!isSignedIn) {
+    return null;
+  }
 
   return (
     <FormDialog

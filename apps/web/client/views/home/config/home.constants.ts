@@ -1,3 +1,5 @@
+import { hoursToMilliseconds } from 'date-fns';
+
 export const HOME = {
   period: { server: '7d', rating: '7d' },
   garage: { sort: 'battles', order: 'desc', limit: 10, skeletons: 6, skeletonHeight: 128 },
@@ -27,5 +29,6 @@ export const HOME = {
     skeleton: { marks: [20, 48, 48], session: [20, 64, 20] }
   },
   league: { scope: 'division', metric: null, week: null },
-  staleMs: 60_000
+  staleMs: 60_000,
+  activityStaleMs: hoursToMilliseconds(2)
 } as const;

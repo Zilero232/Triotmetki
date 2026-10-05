@@ -1,0 +1,14 @@
+@use '@/shared/styles/mixins' as *;
+
+.popup {
+  width: min(260px, calc(100vw - 32px));
+}
+
+.actions {
+  @include stack(var(--space-2));
+
+  > * {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

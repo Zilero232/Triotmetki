@@ -29,6 +29,7 @@ declare module '@tanstack/react-table' {
     isNumeric?: boolean;
     isRank?: boolean;
     isSticky?: boolean;
+    showBelow?: 'lg' | 'md' | 'sm' | 'xl';
     width?: number | string;
   }
 

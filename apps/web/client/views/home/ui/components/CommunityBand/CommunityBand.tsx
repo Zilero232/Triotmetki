@@ -2,7 +2,8 @@ import { ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
-import { Band, MediaCard } from '@/ui-kit';
+import { Link } from '@/shared/i18n/navigation';
+import { Band } from '@/ui-kit';
 
 import { HOME_COMMUNITY, HOME_ICON } from '../../../config';
 
@@ -20,18 +21,14 @@ export const CommunityBand = () => {
       <ul className={s.grid}>
         {HOME_COMMUNITY.map(({ key, href, icon: Icon }) => (
           <li key={key} className={s.item}>
-            <MediaCard
-              media={
-                <span className={s.media} data-kind={key}>
-                  <Icon className={s.emblem} size={HOME_ICON.community} />
-                </span>
-              }
-              aspect='wide'
-              href={href}
-              sub={t(`${key}.description`)}
-              subIcon={<ArrowRight size={HOME_ICON.communityArrow} />}
-              title={t(`${key}.title`)}
-            />
+            <Link className={s.tile} data-kind={key} href={href}>
+              <Icon aria-hidden className={s.emblem} size={HOME_ICON.community} />
+              <span className={s.copy}>
+                <span className={s.tileTitle}>{t(`${key}.title`)}</span>
+                <span className={s.description}>{t(`${key}.description`)}</span>
+              </span>
+              <ArrowRight aria-hidden className={s.arrow} size={HOME_ICON.communityArrow} />
+            </Link>
           </li>
         ))}
       </ul>

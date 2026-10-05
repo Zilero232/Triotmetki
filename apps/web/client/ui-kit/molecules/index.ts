@@ -39,6 +39,7 @@ export { RangeField } from './RangeField';
 export { RangeSlider } from './RangeSlider';
 export type { RangeSliderProps } from './RangeSlider';
 export { RetryButton } from './RetryButton';
+export { RowMenu } from './RowMenu';
 export { SectionHeader } from './SectionHeader';
 export { SegmentedControl } from './SegmentedControl';
 export type { SegmentedOption } from './SegmentedControl';

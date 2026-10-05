@@ -1,9 +1,10 @@
 'use client';
 
 import { Pin, PinOff } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { memo } from 'react';
 
-import { IconButton } from '@/ui-kit';
+import { Button, IconButton } from '@/ui-kit';
 
 import type { PinToggleProps } from './PinToggle.types';
 
@@ -12,8 +13,20 @@ import { usePinToggle } from '../../model/hooks';
 
 import s from './PinToggle.module.scss';
 
-export const PinToggle = memo((props: PinToggleProps) => {
+export const PinToggle = memo(({ variant = 'icon', ...props }: PinToggleProps) => {
+  const t = useTranslations('common.pin');
   const { label, onToggle } = usePinToggle(props);
+
+  const Icon = props.isOn ? PinOff : Pin;
+
+  if (variant === 'button') {
+    return (
+      <Button aria-pressed={props.isOn} className={s.root} data-on={props.isOn} size='sm' title={label} variant='secondary' onClick={onToggle}>
+        <Icon aria-hidden size={PIN_ROWS.iconSize} />
+        {props.isOn ? t('buttonOn') : t('button')}
+      </Button>
+    );
+  }
 
   return (
     <IconButton
@@ -26,7 +39,7 @@ export const PinToggle = memo((props: PinToggleProps) => {
       title={label}
       onClick={onToggle}
     >
-      {props.isOn ? <PinOff aria-hidden size={PIN_ROWS.iconSize} /> : <Pin aria-hidden size={PIN_ROWS.iconSize} />}
+      <Icon aria-hidden size={PIN_ROWS.iconSize} />
     </IconButton>
   );
 });

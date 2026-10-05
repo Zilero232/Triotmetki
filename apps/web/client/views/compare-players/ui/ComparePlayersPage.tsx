@@ -7,6 +7,7 @@ import * as m from 'motion/react-m';
 import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
+import { ROUTES } from '@/shared/constants';
 import { MOTION_VARIANTS } from '@/shared/lib';
 import { Card, CardHeader, DataSourceNote, EmptyState, PageHeader, QueryState, SegmentedControl } from '@/ui-kit';
 
@@ -17,13 +18,23 @@ import s from './ComparePlayersPage.module.scss';
 
 export const ComparePlayersPage = () => {
   const t = useTranslations('compare');
+  const tCommon = useTranslations('common');
+  const tNav = useTranslations('nav');
   const titleId = useId();
   const tPeriods = useTranslations('periods');
   const { ids, period, setPeriod, periodOptions, canAdd, add, remove, query, isIdle, isMissing } = useComparePage();
 
   return (
     <div className={s.root}>
-      <PageHeader description={t('description')} title={t('title')}>
+      <PageHeader
+        breadcrumbs={[
+          { label: tCommon('home'), href: ROUTES.home },
+          { label: tNav('items.players'), href: ROUTES.players.list },
+          { label: t('title') }
+        ]}
+        description={t('description')}
+        title={t('title')}
+      >
         <div className={s.slots}>
           <AnimatePresence initial={false} mode='popLayout'>
             {ids.map((id, index) => (

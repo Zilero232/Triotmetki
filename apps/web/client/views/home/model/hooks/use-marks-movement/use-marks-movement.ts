@@ -32,6 +32,7 @@ export const useMarksMovement = () => {
   return {
     query,
     updatedAt: query.data?.rows[0]?.updatedAt ?? null,
+    isEmpty: query.data?.rows.length === 0,
     leaderFigures: (row: MoeRow) => [
       { id: 'p95', label: t('threeMarks'), value: moeText(row.moe?.p95), delta: row.trend.p95Delta30d, isDeltaLowerBetter: true },
       { id: 'p65', label: t('oneMark'), value: moeText(row.moe?.p65) },

@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
+import { ROUTES } from '@/shared/constants';
 import { PageHeader, Tabs } from '@/ui-kit';
 
 import type { TournamentsPageProps } from './TournamentsPage.types';
@@ -13,12 +14,14 @@ import s from './TournamentsPage.module.scss';
 
 export const TournamentsPage = ({ points, pointsAction }: TournamentsPageProps) => {
   const t = useTranslations('tournaments');
+  const tCommon = useTranslations('common');
   const { tab, onTabChange } = useTournamentsTab();
 
   return (
     <div className={s.root}>
       <PageHeader
         actions={tab === 'points' ? pointsAction : <CreateTournamentDialog />}
+        breadcrumbs={[{ label: tCommon('home'), href: ROUTES.home }, { label: t('head.title') }]}
         description={t('head.description')}
         title={t('head.title')}
       />

@@ -12,6 +12,7 @@ import { PinToggle } from '@/features/app/pin-rows';
 import { CompareToggle } from '@/features/compare/compare-selection';
 import { isPinnedCell, percentText } from '@/shared/lib';
 import { DeltaValue } from '@/ui-kit';
+import { ROW_ACTIONS, RowActions, RowActionsHeader } from '@/widgets/table/row-actions';
 
 import type { UseTankColumnsInput } from './use-tank-columns.types';
 
@@ -33,24 +34,36 @@ export const useTankColumns = ({ hidden }: UseTankColumnsInput): TableColumn<Tan
       id: 'pin',
       header: tPin('column'),
       cell: ({ row, table }) => <PinToggle id={row.id} isOn={isPinnedCell({ row, table })} name={row.original.vehicle.name} scope='tanks' />,
-      meta: { width: TANKS_TABLE.pinWidth }
+      meta: { width: TANKS_TABLE.pinWidth, hideBelow: ROW_ACTIONS.showBelow }
     }),
     column.display({
       id: 'compare',
       header: tCompare('column'),
       cell: ({ row }) => <CompareToggle entry={{ kind: 'tank', item: row.original.vehicle }} />,
-      meta: { width: TANKS_TABLE.pinWidth }
+      meta: { width: TANKS_TABLE.pinWidth, hideBelow: ROW_ACTIONS.showBelow }
+    }),
+    column.display({
+      id: ROW_ACTIONS.id,
+      header: () => <RowActionsHeader />,
+      cell: ({ row, table }) => (
+        <RowActions
+          compare={{ kind: 'tank', item: row.original.vehicle }}
+          name={row.original.vehicle.name}
+          pin={{ id: row.id, isOn: isPinnedCell({ row, table }), scope: 'tanks' }}
+        />
+      ),
+      meta: { width: ROW_ACTIONS.width, showBelow: ROW_ACTIONS.showBelow }
     }),
     column.accessor((row) => row.popularityRank ?? undefined, {
       id: 'rank',
       header: '#',
       sortUndefined: 'last',
-      meta: { align: 'end', isRank: true, width: TANKS_TABLE.rankWidth }
+      meta: { align: 'end', isRank: true, width: TANKS_TABLE.rankWidth, hideBelow: 'sm' }
     }),
     column.accessor((row) => row.vehicle.name, {
       id: 'tank',
       header: t('tank'),
-      cell: (info) => <TankCell vehicle={info.row.original.vehicle} />,
+      cell: (info) => <TankCell imageHideBelow='md' vehicle={info.row.original.vehicle} />,
       meta: { width: TANKS_TABLE.tankWidth, isSticky: true }
     }),
     column.accessor((row) => row.vehicle.tier, {
@@ -89,14 +102,19 @@ export const useTankColumns = ({ hidden }: UseTankColumnsInput): TableColumn<Tan
       cell: (info) => percentText({ format, value: info.getValue() }),
       meta: { ...TANKS_TABLE.numeric, hideBelow: 'xl' }
     }),
-    column.accessor('players', { id: 'players', header: t('players'), cell: (info) => integer(info.getValue()), meta: TANKS_TABLE.numeric }),
-    column.accessor('avgXp', { id: 'avgXp', header: t('avgXp'), cell: (info) => integer(info.getValue()), meta: TANKS_TABLE.numeric }),
-    column.accessor('avgBlocked', { id: 'avgBlocked', header: t('avgBlocked'), cell: (info) => integer(info.getValue()), meta: TANKS_TABLE.numeric }),
+    column.accessor('players', { id: 'players', header: t('players'), cell: (info) => integer(info.getValue()), meta: TANKS_TABLE.secondary }),
+    column.accessor('avgXp', { id: 'avgXp', header: t('avgXp'), cell: (info) => integer(info.getValue()), meta: TANKS_TABLE.secondary }),
+    column.accessor('avgBlocked', {
+      id: 'avgBlocked',
+      header: t('avgBlocked'),
+      cell: (info) => integer(info.getValue()),
+      meta: TANKS_TABLE.secondary
+    }),
     column.accessor('accuracy', {
       id: 'accuracy',
       header: t('accuracy'),
       cell: (info) => percentText({ format, value: info.getValue() }),
-      meta: TANKS_TABLE.numeric
+      meta: TANKS_TABLE.secondary
     }),
     column.accessor('battles', {
       header: t('battles'),

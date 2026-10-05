@@ -15,11 +15,11 @@ import s from './MarksMovement.module.scss';
 export const MarksMovement = () => {
   const t = useTranslations('home.marks');
   const titleId = useId();
-  const { query, updatedAt, leaderFigures } = useMarksMovement();
+  const { query, updatedAt, isEmpty, leaderFigures } = useMarksMovement();
   const columns = useMarksMovementColumns();
 
   return (
-    <Band aria-labelledby={titleId} innerClassName={s.inner}>
+    <Band aria-labelledby={titleId} className={s.band} data-empty={isEmpty} innerClassName={s.inner}>
       <SectionHeader id={titleId} meta={t('period')} more={{ href: ROUTES.marks, label: t('all') }} title={t('title')} variant='display' />
       <QueryState
         isCompact
@@ -34,7 +34,7 @@ export const MarksMovement = () => {
             </div>
           </div>
         }
-        empty={<EmptyState isCompact isFramed title={t('empty')} />}
+        empty={<EmptyState isCompact title={t('empty')} />}
         isEmpty={({ rows }) => rows.length === 0}
         query={query}
       >
@@ -59,7 +59,7 @@ export const MarksMovement = () => {
           </div>
         )}
       </QueryState>
-      <DataSourceNote updatedAt={updatedAt} />
+      {!isEmpty && <DataSourceNote updatedAt={updatedAt} />}
     </Band>
   );
 };

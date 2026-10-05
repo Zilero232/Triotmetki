@@ -33,8 +33,26 @@
   }
 }
 
-.subsection {
+.details {
+  @include stack(var(--space-3));
+
   margin-top: var(--space-5);
+}
+
+.detailsSummary {
+  @include label;
+
+  width: fit-content;
+  color: var(--color-text-muted);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
 }
 
 .grid {
