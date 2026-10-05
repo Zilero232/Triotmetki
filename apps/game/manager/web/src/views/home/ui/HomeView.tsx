@@ -12,7 +12,7 @@ import { useHomeView } from '../model/hooks';
 
 export const HomeView = () => {
   const t = useTranslations();
-  const { isLoading, isInstalled } = useHomeView();
+  const { isLoading, isInstalled, isPatchUrgent } = useHomeView();
 
   return (
     <>
@@ -25,10 +25,11 @@ export const HomeView = () => {
       {!isLoading && !isInstalled && <FirstRun />}
       {!isLoading && isInstalled && (
         <>
+          {isPatchUrgent && <PatchStatus />}
           <HomeSummary />
-          <WhatsNewCard />
           <GameHealthCard />
-          <PatchStatus />
+          <WhatsNewCard />
+          {!isPatchUrgent && <PatchStatus />}
           <ConflictReport hideWhenClean />
         </>
       )}

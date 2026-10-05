@@ -26,6 +26,7 @@ cd apps/game/manager
 bun run dev               # tauri dev: Vite on :1420 + the Rust app (debug)
 bun run build             # tauri build: web/dist + release exe + NSIS installer (needs the updater key, see Releases)
 bun run build:ui          # the UI bundle only (web/dist)
+bun run dev:ui            # the UI alone in a browser; open http://localhost:1420/?mock=<scenario> for fake IPC
 bun run typecheck         # tsc -p web
 bun run cargo:check       # cargo check --all-targets
 bun run cargo:clippy      # clippy, warnings are errors
@@ -277,6 +278,9 @@ The dialog shows each part with its size and how many fragments were hidden, and
 - React 19, TanStack Query for every Rust call, react-hook-form + zod for forms, `use-intl` (next-intl's core) with ru/en catalogues in `web/src/shared/i18n/locales`, Base UI primitives, SCSS modules on `@otmetki/design-tokens` (dark graphite, orange accent, gold for updates), `@otmetki/icons` + lucide, sonner toasts.
 - Every command goes through `shared/api/tauri/invokeCommand({ command, schema, args })`: the response is parsed with the entity's zod schema, a rejection becomes a `ManagerError` with the Rust `ErrorCode` (title in `errors.json`, hint in `errorHelp.json`). Events (`patch-report`, `deep-link`) go through `listenEvent`.
 - The Rust side is the source of truth for shapes: `cargo test` writes nothing but compares `tauri/contract/*.json` with the serialised command outputs, and each entity's `api/**/_tests` parses the same file with its schema, so a drift fails one side or the other.
+- Navigation: «Главная» stands alone at the top, then «Модпак» (Компоненты, Сборки, Профили) and «Приложение» (Настройки, Помощь). Ctrl+1…6 open the sections in that order; arrow keys, Home and End move the focus inside the menu; a tooltip names each section and its shortcut (the only label in the 64 px rail below 980 px). A section is marked only when there is something to fix there: «Главная» when the update check failed or the client is unsupported, «Компоненты» with the number of components that failed to load at the last game start (the load-failure card is shown on that page too). The content scrolls back to the top on every page change.
+- The status dock at the bottom of the sidebar shows the modpack version, its state and the game version, opens «Главная» on click and carries the one action the state needs: «Обновить до X», «Перенести модпак», «Установить модпак» (opens the wizard) or «Выбрать игру» (opens Настройки). The install and choose-game actions are hidden on «Главная», where the first-run card already offers them. On «Главная» the «Обновления» card moves to the top while it offers an action or reports an error.
+- `bun run dev:ui` with `?mock=fresh|installed|update|migrate|offline|no-game` replaces Tauri IPC with `@tauri-apps/api/mocks` answering from `tauri/contract/*.json` (`web/src/app/lib/dev-ipc`). It is loaded only under `import.meta.env.DEV`, outside Tauri and with the query flag, so it never reaches a build.
 
 ## Releases
 

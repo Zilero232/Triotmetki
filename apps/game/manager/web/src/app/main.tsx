@@ -9,8 +9,19 @@ import '@fontsource/fira-sans-condensed/700.css';
 import '@fontsource/jetbrains-mono/400.css';
 import './styles/global.scss';
 
-const root = document.getElementById('root');
+const mount = () => {
+  const root = document.getElementById('root');
 
-if (root) {
-  createRoot(root).render(<App />);
+  if (root) {
+    createRoot(root).render(<App />);
+  }
+};
+
+if (import.meta.env.DEV) {
+  void import('./lib').then(({ installDevIpcOnRequest }) => {
+    installDevIpcOnRequest();
+    mount();
+  });
+} else {
+  mount();
 }

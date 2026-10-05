@@ -1,7 +1,5 @@
 @use '@/shared/styles/mixins' as *;
 
-$rail-breakpoint: 980px;
-
 .root {
   display: grid;
   overflow: hidden;
@@ -9,7 +7,7 @@ $rail-breakpoint: 980px;
   grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
 
-  @media (max-width: $rail-breakpoint) {
+  @include sidebar-rail {
     grid-template-columns: 64px minmax(0, 1fr);
   }
 }
@@ -26,7 +24,7 @@ $rail-breakpoint: 980px;
   background: linear-gradient(180deg, color-mix(in srgb, var(--color-accent) 7%, transparent) 0%, transparent 200px), var(--color-bg-deep);
   gap: var(--space-6);
 
-  @media (max-width: $rail-breakpoint) {
+  @include sidebar-rail {
     align-items: center;
     padding: var(--space-5) var(--space-2);
   }
@@ -38,7 +36,7 @@ $rail-breakpoint: 980px;
   padding: 0 var(--space-3);
   gap: var(--space-4);
 
-  @media (max-width: $rail-breakpoint) {
+  @include sidebar-rail {
     padding: 0;
   }
 }
@@ -53,7 +51,7 @@ $rail-breakpoint: 980px;
   min-width: 0;
   flex-direction: column;
 
-  @media (max-width: $rail-breakpoint) {
+  @include sidebar-rail {
     @include sr-only;
   }
 }
@@ -83,7 +81,7 @@ $rail-breakpoint: 980px;
   margin-bottom: var(--space-1);
   color: var(--color-text-dim);
 
-  @media (max-width: $rail-breakpoint) {
+  @include sidebar-rail {
     overflow: hidden;
     height: 1px;
     padding: 0;
@@ -138,7 +136,7 @@ $rail-breakpoint: 980px;
     }
   }
 
-  @media (max-width: $rail-breakpoint) {
+  @include sidebar-rail {
     justify-content: center;
     padding: 0;
   }
@@ -151,95 +149,43 @@ $rail-breakpoint: 980px;
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  @media (max-width: $rail-breakpoint) {
+  @include sidebar-rail {
     @include sr-only;
   }
 }
 
 .marker {
-  width: 8px;
-  height: 8px;
+  display: inline-flex;
+  min-width: 18px;
+  height: 18px;
   flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--space-2);
   border-radius: var(--radius-full);
-  background-color: var(--color-accent);
-  box-shadow: 0 0 8px var(--color-accent);
+  background-color: var(--color-danger);
+  color: var(--color-bg-deep);
+  font-family: var(--font-display);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  line-height: 1;
 
-  &[data-marker='update'] {
-    background-color: var(--color-gold);
-    box-shadow: 0 0 8px var(--color-gold);
-  }
-
-  &[data-marker='problem'] {
-    background-color: var(--color-danger);
-    box-shadow: 0 0 8px var(--color-danger);
-  }
-
-  @media (max-width: $rail-breakpoint) {
+  @include sidebar-rail {
     position: absolute;
-    top: 6px;
-    right: 8px;
+    top: 2px;
+    right: 4px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 var(--space-1);
   }
+}
+
+.markerCount {
+  @include numeric;
 }
 
 .srOnly {
   @include sr-only;
-}
-
-.status {
-  display: flex;
-  align-items: flex-start;
-  padding: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  margin-top: auto;
-  background-color: var(--color-surface-sunken);
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
-  gap: var(--space-3);
-
-  @media (max-width: $rail-breakpoint) {
-    padding: var(--space-3);
-  }
-}
-
-.statusText {
-  @include stack(var(--space-1));
-
-  min-width: 0;
-
-  @media (max-width: $rail-breakpoint) {
-    @include sr-only;
-  }
-}
-
-.statusDot {
-  width: 8px;
-  height: 8px;
-  flex-shrink: 0;
-  border-radius: var(--radius-full);
-  margin-top: 4px;
-  background-color: var(--color-text-dim);
-
-  .status[data-tone='success'] & {
-    background-color: var(--color-success);
-  }
-
-  .status[data-tone='premium'] &,
-  .status[data-tone='accent'] & {
-    background-color: var(--color-gold);
-  }
-
-  .status[data-tone='warning'] & {
-    background-color: var(--color-warning);
-  }
-
-  .status[data-tone='danger'] & {
-    background-color: var(--color-danger);
-  }
-
-  @media (max-width: $rail-breakpoint) {
-    margin-top: 0;
-  }
 }
 
 .main {
@@ -260,7 +206,7 @@ $rail-breakpoint: 980px;
   padding: var(--space-8) var(--space-8) var(--space-9);
   margin: 0 auto;
 
-  @media (max-width: $rail-breakpoint) {
+  @include sidebar-rail {
     padding: var(--space-6) var(--space-5) var(--space-8);
   }
 }

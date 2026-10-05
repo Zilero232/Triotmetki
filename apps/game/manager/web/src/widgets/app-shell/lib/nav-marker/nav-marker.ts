@@ -1,25 +1,19 @@
+import type { PatchStatusKind } from '@/entities/patch-report';
+
 import type { NavMarker, NavMarkerInput } from './nav-marker.types';
 
 import { NAV_MARKER } from '../../config';
 
-const problemTones = new Set<string>(NAV_MARKER.problemTones);
+const problemKinds = new Set<PatchStatusKind>(NAV_MARKER.problemKinds);
 
-export const navMarker = ({ section, view, canInstall }: NavMarkerInput): NavMarker | null => {
-  if (section !== 'home') {
-    return null;
+export const navMarker = ({ section, statusKind, failureCount }: NavMarkerInput): NavMarker | null => {
+  if (section === 'home' && statusKind !== null && problemKinds.has(statusKind)) {
+    return { kind: 'problem', count: null };
   }
 
-  if (canInstall) {
-    return 'new';
+  if (section === 'components' && failureCount > 0) {
+    return { kind: 'failures', count: failureCount };
   }
 
-  if (view === null) {
-    return null;
-  }
-
-  if (view.action !== null) {
-    return 'update';
-  }
-
-  return problemTones.has(view.tone) ? 'problem' : null;
+  return null;
 };

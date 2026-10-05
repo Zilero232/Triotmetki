@@ -17,18 +17,44 @@
     "changelog": "Что нового"
   },
   "groups": {
+    "overview": "Обзор",
     "modpack": "Модпак",
     "app": "Приложение"
   },
   "marker": {
-    "new": "Можно установить",
-    "update": "Есть обновление",
-    "problem": "Требует внимания"
+    "problem": "Требует внимания",
+    "failures": "{count, plural, one {# компонент не загрузился} few {# компонента не загрузились} other {# компонентов не загрузились}}"
   },
-  "status": {
+  "itemHint": "{label} ({shortcut})",
+  "dock": {
+    "label": "Состояние модпака",
     "game": "Игра {version}",
     "noGame": "Игра не найдена",
     "modpack": "Модпак {version}",
-    "notInstalled": "Модпак не установлен"
+    "state": {
+      "noGame": "Выберите папку с игрой",
+      "notInstalled": "Модпак не установлен",
+      "idle": "Ещё не проверялся",
+      "no_client": "Игра не найдена",
+      "not_installed": "Не установлен",
+      "up_to_date": "Актуален",
+      "update_available": "Доступна {latest}",
+      "migrated": "Перенесён под {to}",
+      "updated": "Обновлён до {to}",
+      "migration_ready": "Нужен перенос под {gameVersion}",
+      "update_ready": "Доступна {latest} под {gameVersion}",
+      "deferred": "Обновится после выхода из игры",
+      "unsupported": "Клиент не поддерживается",
+      "waiting": "Ждём версию под {gameVersion}",
+      "offline": "Сервер недоступен",
+      "failed": "Обновление не удалось"
+    },
+    "action": {
+      "chooseGame": "Выбрать игру",
+      "install": "Установить модпак",
+      "update": "Обновить до {latest}",
+      "migrate": "Перенести модпак"
+    },
+    "installedDetail": "{state} · игра {version}"
   }
 }

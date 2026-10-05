@@ -2,16 +2,18 @@ import { OtmetkiLogoIcon } from '@otmetki/icons';
 import { useTranslations } from 'use-intl';
 
 import { AutostartPrompt } from '@/features/settings/autostart-prompt';
+import { Tooltip } from '@/ui-kit';
 
 import type { AppShellProps } from './AppShell.types';
 
 import { useAppShell } from '../model/hooks';
+import { StatusDock } from './components';
 
 import s from './AppShell.module.scss';
 
 export const AppShell = ({ children }: AppShellProps) => {
   const t = useTranslations();
-  const { groups, gameVersion, modpackVersion, tone } = useAppShell();
+  const { mainRef, groups, onNavKeyDown } = useAppShell();
 
   return (
     <div className={s.root}>
@@ -25,33 +27,42 @@ export const AppShell = ({ children }: AppShellProps) => {
         </div>
         <nav aria-label={t('nav.label')} className={s.nav}>
           {groups.map((group) => (
-            <div key={group.id} aria-label={group.label} className={s.group} role='group'>
-              <span aria-hidden className={s.groupLabel}>
-                {group.label}
-              </span>
-              {group.items.map(({ id, label, icon: Icon, isActive, marker, onSelect }) => (
-                <button key={id} aria-current={isActive ? 'page' : undefined} className={s.navItem} title={label} type='button' onClick={onSelect}>
-                  <Icon aria-hidden />
-                  <span className={s.navLabel}>{label}</span>
-                  {marker && (
-                    <span className={s.marker} data-marker={marker}>
-                      <span className={s.srOnly}>{t(`nav.marker.${marker}`)}</span>
-                    </span>
-                  )}
-                </button>
+            <div key={group.id} aria-label={group.label ?? undefined} className={s.group} role='group'>
+              {group.label && (
+                <span aria-hidden className={s.groupLabel}>
+                  {group.label}
+                </span>
+              )}
+              {group.items.map(({ id, label, ariaShortcut, hint, icon: Icon, isActive, marker, markerLabel, onSelect }) => (
+                <Tooltip key={id} content={hint} side='right'>
+                  <button
+                    data-nav-item
+                    aria-current={isActive ? 'page' : undefined}
+                    aria-keyshortcuts={ariaShortcut}
+                    className={s.navItem}
+                    type='button'
+                    onClick={onSelect}
+                    onKeyDown={onNavKeyDown}
+                  >
+                    <Icon aria-hidden />
+                    <span className={s.navLabel}>{label}</span>
+                    {marker && (
+                      <span className={s.marker} data-marker={marker.kind}>
+                        <span aria-hidden className={s.markerCount}>
+                          {marker.count ?? '!'}
+                        </span>
+                        <span className={s.srOnly}>{markerLabel}</span>
+                      </span>
+                    )}
+                  </button>
+                </Tooltip>
               ))}
             </div>
           ))}
         </nav>
-        <div className={s.status} data-tone={tone}>
-          <span aria-hidden className={s.statusDot} />
-          <span className={s.statusText}>
-            <span>{gameVersion ? t('nav.status.game', { version: gameVersion }) : t('nav.status.noGame')}</span>
-            {gameVersion && <span>{modpackVersion ? t('nav.status.modpack', { version: modpackVersion }) : t('nav.status.notInstalled')}</span>}
-          </span>
-        </div>
+        <StatusDock />
       </aside>
-      <main className={s.main}>
+      <main ref={mainRef} className={s.main}>
         <div className={s.content}>{children}</div>
       </main>
       <AutostartPrompt />

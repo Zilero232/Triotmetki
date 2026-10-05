@@ -17,18 +17,44 @@
     "changelog": "What’s new"
   },
   "groups": {
+    "overview": "Overview",
     "modpack": "Modpack",
     "app": "App"
   },
   "marker": {
-    "new": "Ready to install",
-    "update": "Update available",
-    "problem": "Needs attention"
+    "problem": "Needs attention",
+    "failures": "{count, plural, one {# component failed to load} other {# components failed to load}}"
   },
-  "status": {
+  "itemHint": "{label} ({shortcut})",
+  "dock": {
+    "label": "Modpack status",
     "game": "Game {version}",
     "noGame": "Game not found",
     "modpack": "Modpack {version}",
-    "notInstalled": "Modpack not installed"
+    "state": {
+      "noGame": "Choose the game folder",
+      "notInstalled": "Modpack not installed",
+      "idle": "Not checked yet",
+      "no_client": "Game not found",
+      "not_installed": "Not installed",
+      "up_to_date": "Up to date",
+      "update_available": "{latest} available",
+      "migrated": "Moved to {to}",
+      "updated": "Updated to {to}",
+      "migration_ready": "Needs moving to {gameVersion}",
+      "update_ready": "{latest} ready for {gameVersion}",
+      "deferred": "Updates after you quit the game",
+      "unsupported": "Client not supported",
+      "waiting": "Waiting for a {gameVersion} build",
+      "offline": "Server unreachable",
+      "failed": "Update failed"
+    },
+    "action": {
+      "chooseGame": "Choose the game",
+      "install": "Install the modpack",
+      "update": "Update to {latest}",
+      "migrate": "Move the modpack"
+    },
+    "installedDetail": "{state} · game {version}"
   }
 }

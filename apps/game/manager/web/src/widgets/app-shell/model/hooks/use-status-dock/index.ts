@@ -1,2 +1,1 @@
-export { useAppShell } from './use-app-shell';
 export { useStatusDock } from './use-status-dock';

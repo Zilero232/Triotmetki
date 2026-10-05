@@ -170,3 +170,9 @@
     scrollbar-color: var(--color-text-dim) transparent;
   }
 }
+
+@mixin sidebar-rail {
+  @media (width <= 980px) {
+    @content;
+  }
+}

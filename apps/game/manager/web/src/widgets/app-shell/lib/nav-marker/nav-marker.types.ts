@@ -1,10 +1,13 @@
-import type { StatusView } from '@/entities/patch-report';
+import type { PatchStatusKind } from '@/entities/patch-report';
 import type { SectionId } from '@/shared/lib';
 
-export type NavMarker = 'new' | 'problem' | 'update';
+export type NavMarker = {
+  kind: 'failures' | 'problem';
+  count: number | null;
+};
 
 export type NavMarkerInput = {
   section: SectionId;
-  view: StatusView | null;
-  canInstall: boolean;
+  statusKind: PatchStatusKind | null;
+  failureCount: number;
 };

@@ -1,0 +1,149 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  --dock-tone: var(--color-text-dim);
+
+  @include well;
+  @include stack(var(--space-3));
+
+  width: 100%;
+  padding: var(--space-3);
+  margin-top: auto;
+
+  &[data-tone='success'] {
+    --dock-tone: var(--color-success);
+  }
+
+  &[data-tone='premium'],
+  &[data-tone='accent'] {
+    --dock-tone: var(--color-gold);
+  }
+
+  &[data-tone='warning'] {
+    --dock-tone: var(--color-warning);
+  }
+
+  &[data-tone='danger'] {
+    --dock-tone: var(--color-danger);
+  }
+
+  @include sidebar-rail {
+    align-items: center;
+    padding: var(--space-2);
+  }
+}
+
+.summary {
+  @include reset-button;
+
+  display: flex;
+  min-height: 40px;
+  align-items: flex-start;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  margin: calc(var(--space-2) * -1);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  gap: var(--space-3);
+  text-align: left;
+  transition: background-color var(--duration-fast) ease;
+
+  &:hover {
+    background-color: var(--color-surface-hover);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  @include sidebar-rail {
+    min-width: 40px;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+  }
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  margin-top: 5px;
+  background-color: var(--dock-tone);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--dock-tone) 18%, transparent);
+
+  @include sidebar-rail {
+    margin-top: 0;
+  }
+}
+
+.lines {
+  @include stack(var(--space-1));
+
+  min-width: 0;
+  flex: 1;
+
+  @include sidebar-rail {
+    @include sr-only;
+  }
+}
+
+.primary {
+  @include numeric;
+
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.secondary {
+  line-height: var(--leading-body);
+}
+
+.skeleton {
+  display: block;
+  width: 70%;
+  height: 10px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-hover);
+  margin-block: 4px;
+
+  & + & {
+    width: 90%;
+  }
+}
+
+.action {
+  width: 100%;
+  transition-property: color, background-color, border-color, box-shadow, transform, opacity, translate;
+  transition-timing-function: var(--ease-out);
+
+  @starting-style {
+    opacity: 0;
+    translate: 0 4px;
+  }
+
+  @include sidebar-rail {
+    width: 40px;
+    padding: 0;
+  }
+
+  @include reduced-motion {
+    @starting-style {
+      translate: none;
+    }
+  }
+}
+
+.actionLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @include sidebar-rail {
+    @include sr-only;
+  }
+}
