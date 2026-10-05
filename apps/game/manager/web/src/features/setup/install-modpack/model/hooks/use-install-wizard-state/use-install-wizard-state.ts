@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { open } from '@tauri-apps/plugin-dialog';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useLocale, useTranslations } from 'use-intl';
@@ -103,11 +102,7 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
   });
 
   const loadProfile = useMutation({
-    mutationFn: async () => {
-      const path = await open({ multiple: false, filters: [{ name: t('profileFilter'), extensions: [...INSTALL_WIZARD.profileExtensions] }] });
-
-      return path ? readInstallerProfile(path) : null;
-    },
+    mutationFn: () => readInstallerProfile({ filter: t('profileFilter') }),
     onSuccess: (ids) => {
       if (ids) {
         setChosen(closeDependencies({ components, ids }));

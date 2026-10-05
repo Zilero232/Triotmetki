@@ -151,3 +151,27 @@ fn the_release_client_refuses_a_dependency_from_elsewhere() {
         );
     });
 }
+
+#[test]
+fn matches_a_game_version_like_the_server() {
+    assert!(matches_game("1.46.*", "1.46.0.8259"));
+    assert!(!matches_game("1.46.*", "1.47.0.0"));
+    assert!(matches_game("1.46", "1.46.0.0"));
+    assert!(!matches_game("1.46", "1.46.1.0"));
+    assert!(!matches_game("1.5.*", "1.50.0.0"));
+    assert!(matches_game("1.050.0.0", "1.50.0.0"));
+}
+
+#[test]
+fn a_signed_release_for_another_game_is_not_installable() {
+    let offered = crate::releases::fixtures::latest("1.47.0.0", Some(crate::releases::fixtures::release("0.2.0")));
+
+    assert_eq!(for_game(offered, "1.47.0.0").status, ReleaseStatus::Waiting);
+}
+
+#[test]
+fn a_release_listing_the_game_stays_compatible() {
+    let offered = crate::releases::fixtures::latest("1.46.0.0", Some(crate::releases::fixtures::release("0.2.0")));
+
+    assert_eq!(for_game(offered, "1.46.0.0").status, ReleaseStatus::Compatible);
+}

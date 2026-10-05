@@ -297,3 +297,28 @@ fn an_oversized_packaged_config_is_unreadable_instead_of_read_whole() {
 
     assert!(matches!(result, Err(SkipReason::Unreadable(_))));
 }
+
+#[test]
+fn a_config_nested_too_deep_is_refused_instead_of_overflowing_the_stack() {
+    let deep = format!("{}{}", "[".repeat(100_000), "]".repeat(100_000));
+
+    assert!(matches!(pyjson::parse(deep.as_bytes()), Err(MergeError::Syntax(_))));
+}
+
+#[test]
+fn a_config_nested_within_the_limit_still_parses() {
+    let nested = format!("{}{}", "[".repeat(pyjson::MAX_DEPTH), "]".repeat(pyjson::MAX_DEPTH));
+
+    assert!(pyjson::parse(nested.as_bytes()).is_ok());
+}
+
+#[test]
+fn never_writes_the_res_map_into_the_game_own_folders() {
+    let game = Game::new().with_gameface("1.2.2").with_ui("net.triotmetki.ui_0.2.0.mtmod", UI_CONFIG);
+    let res_first = PATHS_XML_TEXT.replacen("<Paths>", "<Paths>\n    <Path>./res</Path>", 1);
+
+    fs::write(game.client.path.join(PATHS_XML), res_first).unwrap();
+
+    assert_eq!(premerge(&game.client), Err(SkipReason::NoResModsDir));
+    assert!(!game.client.path.join("res").join(RES_MAP_FILE).exists());
+}

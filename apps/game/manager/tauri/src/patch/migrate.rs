@@ -1,10 +1,10 @@
 use std::fs;
 use std::path::Path;
 
-use super::stage::{stage, StagedFile};
+use super::stage::{commit_journal, stage, StagedFile};
 use crate::components::{is_owned, sync_manifest, ClientContext};
 use crate::dependencies::{carry, CarryInput};
-use crate::error::AppResult;
+use crate::error::{AppError, AppResult, ErrorCode};
 use crate::fsx::{list_files, same_content};
 use crate::releases::sha256_hex;
 use crate::state::save_client_state;
@@ -36,7 +36,23 @@ fn packages_to_carry(input: &MigrateInput) -> AppResult<Vec<Carried>> {
         .collect()
 }
 
+fn holds_owned(dir: &Path, input: &MigrateInput) -> bool {
+    list_files(dir).iter().filter_map(|file| file.file_name()).any(|name| is_owned(input.context.catalog, &name.to_string_lossy()))
+}
+
+fn ensure_source(input: &MigrateInput) -> AppResult<()> {
+    let carried = input.from_mods_dir.is_absolute() && holds_owned(input.from_mods_dir, input);
+
+    if !carried && !holds_owned(&input.context.client.mods_dir, input) {
+        return Err(AppError::coded(ErrorCode::NotInstalled, format!("no modpack files in {} to carry", input.from_mods_dir.display())));
+    }
+
+    Ok(())
+}
+
 pub fn migrate(input: MigrateInput) -> AppResult<Vec<String>> {
+    ensure_source(&input)?;
+
     let target = &input.context.client.mods_dir;
     let packages = packages_to_carry(&input)?;
     let files: Vec<StagedFile> =
@@ -52,7 +68,7 @@ pub fn migrate(input: MigrateInput) -> AppResult<Vec<String>> {
         return Err(error);
     }
 
-    staging.commit(&[])?;
+    staging.commit(&commit_journal(input.context.client_dir), &[])?;
     sync_manifest(input.context)?;
     save_client_state(input.context.client_dir, input.context.client)?;
 

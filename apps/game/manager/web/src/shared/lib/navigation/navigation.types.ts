@@ -21,5 +21,6 @@ export type NavigationTarget = {
 export type NavigationValue = {
   page: PageId;
   params: NavigationParams;
+  visit: number;
   navigate: (target: NavigationTarget) => void;
 };

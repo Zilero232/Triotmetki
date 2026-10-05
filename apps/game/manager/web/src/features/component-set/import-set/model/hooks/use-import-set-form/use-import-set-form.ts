@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { open, save } from '@tauri-apps/plugin-dialog';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useTranslations } from 'use-intl';
@@ -35,14 +34,7 @@ export const useImportSetForm = () => {
   });
 
   const fromFile = useMutation({
-    mutationFn: async () => {
-      const path = await open({
-        multiple: false,
-        filters: [{ name: t('fileFilter'), extensions: [COMPONENT_SET.fileExtension, COMPONENT_SET.libraryExtension] }]
-      });
-
-      return path ? importSetFile(path) : null;
-    },
+    mutationFn: () => importSetFile({ filter: t('fileFilter') }),
     onSuccess: (view) => {
       if (view) {
         store(view);
@@ -53,18 +45,7 @@ export const useImportSetForm = () => {
   });
 
   const exportAll = useMutation({
-    mutationFn: async () => {
-      const path = await save({
-        defaultPath: t('libraryFileName'),
-        filters: [{ name: t('libraryFilter'), extensions: [COMPONENT_SET.libraryExtension] }]
-      });
-
-      if (path) {
-        await exportSetsLibrary(path);
-      }
-
-      return path;
-    },
+    mutationFn: () => exportSetsLibrary({ filter: t('libraryFilter'), fileName: t('libraryFileName') }),
     onSuccess: (path) => {
       if (path) {
         toast.success(t('exported'));

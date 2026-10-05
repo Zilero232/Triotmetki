@@ -100,6 +100,10 @@ pub fn run() {
         .setup(move |app| {
             let manager = Manager::new(layout, ReleasesClient::new(api_url())?)?;
             let settings = manager.settings();
+
+            for client_dir in manager.recover_commits() {
+                log::warn!("rolled back an unfinished commit in {}", client_dir.display());
+            }
             let handle = app.handle().clone();
 
             if let Err(error) = app.asset_protocol_scope().allow_directory(manager.layout.manager_dir().join(previews::DIR), true) {

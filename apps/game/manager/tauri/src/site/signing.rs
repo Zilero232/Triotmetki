@@ -2,6 +2,7 @@ use hmac::{Hmac, Mac};
 use sha2::Sha256;
 
 use super::{NONCE_BYTES, SIGNATURE_PREFIX, SIGNATURE_VERSION};
+use crate::error::{AppError, AppResult, ErrorCode};
 
 pub struct SignedMessage<'a> {
     pub method: &'a str,
@@ -19,12 +20,12 @@ pub fn signed_message(message: &SignedMessage) -> Vec<u8> {
     bytes
 }
 
-pub fn sign(secret: &str, message: &[u8]) -> String {
-    let mut mac = Hmac::<Sha256>::new_from_slice(secret.as_bytes()).expect("HMAC accepts a key of any length");
+pub fn sign(secret: &str, message: &[u8]) -> AppResult<String> {
+    let mut mac = Hmac::<Sha256>::new_from_slice(secret.as_bytes()).map_err(|error| AppError::coded(ErrorCode::NotLinked, error.to_string()))?;
 
     mac.update(message);
 
-    format!("{SIGNATURE_PREFIX}{}", hex::encode(mac.finalize().into_bytes()))
+    Ok(format!("{SIGNATURE_PREFIX}{}", hex::encode(mac.finalize().into_bytes())))
 }
 
 pub fn new_nonce() -> String {

@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import type { DialogText } from '@/shared/api';
+
 import { invokeCommand } from '@/shared/api';
 import { COMMANDS } from '@/shared/config';
 
@@ -24,9 +26,11 @@ export const exportSet = (id: string) => invokeCommand({ command: COMMANDS.expor
 export const importSet = ({ code, name }: ImportSetInput) =>
   invokeCommand({ command: COMMANDS.importSet, schema: setsViewSchema, args: { code, name } });
 
-export const exportSetFile = ({ id, path }: ExportSetFileInput) =>
-  invokeCommand({ command: COMMANDS.exportSetFile, schema: z.null(), args: { id, path } });
+export const exportSetFile = ({ id, text }: ExportSetFileInput) =>
+  invokeCommand({ command: COMMANDS.exportSetFile, schema: z.string().nullable(), args: { id, text } });
 
-export const exportSetsLibrary = (path: string) => invokeCommand({ command: COMMANDS.exportSetsLibrary, schema: z.null(), args: { path } });
+export const exportSetsLibrary = (text: DialogText) =>
+  invokeCommand({ command: COMMANDS.exportSetsLibrary, schema: z.string().nullable(), args: { text } });
 
-export const importSetFile = (path: string) => invokeCommand({ command: COMMANDS.importSetFile, schema: setsViewSchema, args: { path } });
+export const importSetFile = (text: DialogText) =>
+  invokeCommand({ command: COMMANDS.importSetFile, schema: setsViewSchema.nullable(), args: { text } });

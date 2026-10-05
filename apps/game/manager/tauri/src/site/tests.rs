@@ -14,7 +14,7 @@ fn signs_the_v2_message_like_the_mod_and_the_server() {
     });
 
     assert!(message.starts_with(b"v2\nPOST\n/mod/me/sets\n1790000000\n0123456789abcdef0123456789abcdef\n{"));
-    assert_eq!(sign(&"x".repeat(32), &message), "sha256=2185502b403fb27313d3df3109444c81a613dca4eaf23bcb443f6a7df7d9d9c9");
+    assert_eq!(sign(&"x".repeat(32), &message).unwrap(), "sha256=2185502b403fb27313d3df3109444c81a613dca4eaf23bcb443f6a7df7d9d9c9");
 }
 
 #[test]

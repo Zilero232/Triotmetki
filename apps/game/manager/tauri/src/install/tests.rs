@@ -369,3 +369,49 @@ fn an_other_mod_that_cannot_be_removed_does_not_fail_the_install() {
     assert_eq!(installed.written, vec!["core", "companion", "marks_panel"]);
     assert!(reviewed.exists());
 }
+
+#[test]
+fn a_tampered_manifest_cannot_point_the_uninstall_outside_the_mods_folders() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.45.0.0");
+    let client_dir = root.path().join("state");
+    let catalog = catalog();
+    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
+    let outside = root.path().join("Документы").join("otmetki.companion_0.1.0.mtmod");
+
+    install(InstallInput { context, packages: &base_packages(), modpack_version: "0.1.0", remove_others: &[], parked: &BTreeSet::new() }).unwrap();
+    fs::create_dir_all(outside.parent().unwrap()).unwrap();
+    fs::write(&outside, "not ours to delete").unwrap();
+
+    let mut manifest = Manifest::read(&client_dir).unwrap().unwrap();
+
+    manifest.files.push(outside.clone());
+    manifest.write(&client_dir).unwrap();
+
+    uninstall(UninstallInput { context, remove_config: false, durable_dir: &root.path().join("Roaming"), shared_elsewhere: false }).unwrap();
+
+    assert_eq!(fs::read_to_string(&outside).unwrap(), "not ours to delete");
+}
+
+#[test]
+fn the_uninstall_still_removes_packages_left_in_an_older_version_folder() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.45.0.0");
+    let client_dir = root.path().join("state");
+    let catalog = catalog();
+    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
+    let older = client.path.join("mods").join("1.44.0.0").join("otmetki.companion_0.1.0.mtmod");
+
+    install(InstallInput { context, packages: &base_packages(), modpack_version: "0.1.0", remove_others: &[], parked: &BTreeSet::new() }).unwrap();
+    fs::create_dir_all(older.parent().unwrap()).unwrap();
+    fs::write(&older, "older").unwrap();
+
+    let mut manifest = Manifest::read(&client_dir).unwrap().unwrap();
+
+    manifest.files.push(older.clone());
+    manifest.write(&client_dir).unwrap();
+
+    uninstall(UninstallInput { context, remove_config: false, durable_dir: &root.path().join("Roaming"), shared_elsewhere: false }).unwrap();
+
+    assert!(!older.exists());
+}

@@ -288,11 +288,11 @@ impl Manager {
 
         ensure_closed(&scope.client.path)?;
 
-        let changed = components::set_enabled(ToggleInput { context: scope.context(), component_id, enabled })?;
-
         if !wanted.is_empty() {
             dependencies::install(InstallDependenciesInput { context: scope.context(), wanted: &wanted, fetched: &fetched })?;
         }
+
+        let changed = components::set_enabled(ToggleInput { context: scope.context(), component_id, enabled })?;
 
         self.sync_res_map(&scope.client);
 

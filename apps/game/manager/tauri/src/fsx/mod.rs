@@ -16,7 +16,11 @@ pub const MIN_SAFE_PATH_LENGTH: usize = 4;
 
 pub fn write_file(path: &Path, bytes: &[u8]) -> AppResult<()> {
     faults::check(path)?;
-    fs::write(path, bytes)?;
+
+    let mut file = fs::File::create(path)?;
+
+    file.write_all(bytes)?;
+    file.sync_all()?;
 
     Ok(())
 }

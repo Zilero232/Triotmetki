@@ -5,10 +5,10 @@ use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
 use crate::catalog::{Catalog, DependencyComponent, PACKAGE_EXTENSIONS};
-use crate::components::{sync_manifest, ClientContext};
+use crate::components::{in_mod_folders, sync_manifest, ClientContext};
 use crate::error::AppResult;
 use crate::fsx::{copy_verified, file_sha256, remove_path, write_atomic};
-use crate::patch::{stage, StagedFile};
+use crate::patch::{commit_journal, stage, StagedFile};
 use crate::paths::same_path;
 use crate::releases::{safe_file_name, verify_sha256, FetchLimits, ReleasesClient, MAX_NOTICE_BYTES, MAX_PACKAGE_BYTES};
 use crate::state::{DependencyOwner, DependencyRecord, Manifest};
@@ -245,12 +245,11 @@ pub fn install(input: InstallDependenciesInput) -> AppResult<Vec<String>> {
         .map(|fetched| StagedFile { dir: mods_dir, name: &fetched.dependency.file, bytes: &fetched.bytes, sha256: &fetched.dependency.sha256 })
         .collect();
 
-    stage(&files)?.commit(&retire)?;
+    stage(&files)?.commit(&commit_journal(context.client_dir), &retire)?;
 
     for fetched in &placing {
         let dependency = &fetched.dependency;
 
-        write_atomic(&notice_path(context.client_dir, &dependency.id)?, &fetched.licence)?;
         manifest.set_dependency(DependencyRecord {
             id: dependency.id.clone(),
             owner: DependencyOwner::Ours,
@@ -260,6 +259,10 @@ pub fn install(input: InstallDependenciesInput) -> AppResult<Vec<String>> {
     }
 
     manifest.write(context.client_dir)?;
+
+    for fetched in &placing {
+        write_atomic(&notice_path(context.client_dir, &fetched.dependency.id)?, &fetched.licence)?;
+    }
 
     Ok(placing.iter().map(|fetched| fetched.dependency.id.clone()).collect())
 }
@@ -272,7 +275,8 @@ pub fn remove_owned(context: ClientContext) -> AppResult<Vec<PathBuf>> {
     let mut removed: Vec<PathBuf> = Vec::new();
 
     for record in manifest.dependencies.iter().filter(|record| record.owner == DependencyOwner::Ours) {
-        for path in dirs.iter().filter(|dir| dir.is_absolute()).filter_map(|dir| owned_file(dir, record)) {
+        for path in dirs.iter().filter(|dir| dir.is_absolute()).filter_map(|dir| owned_file(dir, record)).filter(|path| in_mod_folders(context, path))
+        {
             if !removed.iter().any(|known| same_path(known, &path)) {
                 remove_path(&path)?;
                 removed.push(path);

@@ -1,5 +1,7 @@
 import type { z } from 'zod';
 
+import type { DialogText } from '@/shared/api';
+
 import type { reportItemSchema, reportPartSchema, reportPreviewSchema, reportReceiptSchema } from './report.schemas';
 
 export type ReportPart = z.infer<typeof reportPartSchema>;
@@ -17,5 +19,5 @@ export type SendReportInput = {
 };
 
 export type SaveReportInput = SendReportInput & {
-  path: string;
+  text: DialogText;
 };

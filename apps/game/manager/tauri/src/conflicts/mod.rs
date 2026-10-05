@@ -156,7 +156,9 @@ pub fn scan(context: ClientContext) -> AppResult<ConflictReport> {
 
     for component in &installation.components {
         match (component.state, component.file.as_deref()) {
-            (ComponentState::Missing, _) => report.missing.push(MissingComponent { id: component.id.clone() }),
+            (ComponentState::Missing, _) if catalog.component(&component.id).is_some() => {
+                report.missing.push(MissingComponent { id: component.id.clone() })
+            }
             (ComponentState::Enabled, Some(file)) => {
                 let Some(expected) = expected_sha256(catalog, &component.id, component.version.as_deref()) else {
                     continue;

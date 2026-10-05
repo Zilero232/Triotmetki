@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { open } from '@tauri-apps/plugin-dialog';
 import { toast } from 'sonner';
 import { useTranslations } from 'use-intl';
 
@@ -23,11 +22,7 @@ export const useClientPicker = () => {
   const selectMutation = useMutation({ mutationFn: selectClient, onSuccess: applyView, onError: showError });
 
   const addMutation = useMutation({
-    mutationFn: async () => {
-      const path = await open({ directory: true, multiple: false, title: t('addTitle') });
-
-      return path ? addClient(path) : null;
-    },
+    mutationFn: () => addClient({ title: t('addTitle') }),
     onSuccess: async (view) => {
       if (view) {
         await applyView(view);

@@ -1,7 +1,6 @@
 export const INSTALL_WIZARD = {
   steps: ['client', 'components', 'otherMods', 'review'],
-  customPreset: 'custom',
-  profileExtensions: ['ini']
+  customPreset: 'custom'
 } as const;
 
 export const BLOCKER_MESSAGES = {

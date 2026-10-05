@@ -23,6 +23,7 @@ pub const MESSAGE_MAX_CHARS: usize = 2000;
 pub const PYTHON_TAIL_BYTES: u64 = 160 * 1024;
 pub const OTMETKI_TAIL_BYTES: u64 = 128 * 1024;
 pub const MANAGER_TAIL_BYTES: u64 = 64 * 1024;
+pub const ZIP_EXTENSION: &str = "zip";
 pub const TRUNCATED_MARK: &str = "…\n";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -134,7 +135,7 @@ pub fn upload<'a>(preview: &'a ReportPreview, parts: &[ReportPart], message: &st
 }
 
 pub fn write_zip(target: &Path, preview: &ReportPreview, parts: &[ReportPart], message: &str) -> AppResult<PathBuf> {
-    let target = crate::sets::with_extension(target, "zip");
+    let target = crate::sets::with_extension(target, ZIP_EXTENSION);
     let parent = target.parent().filter(|parent| !parent.as_os_str().is_empty()).unwrap_or(Path::new("."));
     let mut writer = ZipWriter::new(tempfile::Builder::new().suffix(TEMP_SUFFIX).tempfile_in(parent)?);
     let options = SimpleFileOptions::default().compression_method(CompressionMethod::Deflated);

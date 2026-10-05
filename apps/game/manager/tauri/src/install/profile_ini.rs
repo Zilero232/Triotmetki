@@ -6,6 +6,7 @@ use crate::state::{component_id, split_csv};
 
 pub const SECTION: &str = "Setup";
 pub const KEY: &str = "Components";
+pub const PROFILE_EXTENSION: &str = "ini";
 
 pub fn read_component_profile(path: &Path) -> AppResult<Vec<String>> {
     let ini = ini_file::read(path)?.ok_or_else(|| AppError::coded(ErrorCode::ProfileMissing, format!("no file {}", path.display())))?;

@@ -198,3 +198,35 @@ fn a_partial_install_lists_only_the_steps_that_failed() {
 
     assert_eq!(warnings, vec![setup::InstallWarning { step: setup::InstallStep::Dependencies, code: ErrorCode::Http }]);
 }
+
+#[test]
+fn reveals_only_paths_the_manager_wrote() {
+    let root = tempfile::tempdir().unwrap();
+    let manager = manager(root.path());
+    let saved = root.path().join("Отчёты").join("report.zip");
+
+    assert_eq!(manager.ensure_revealable(&saved).unwrap_err().code(), ErrorCode::InvalidPath);
+
+    manager.allow_reveal(&saved);
+
+    assert!(manager.ensure_revealable(&root.path().join("отчёты").join("REPORT.zip")).is_ok());
+    assert_eq!(manager.ensure_revealable(Path::new(r"C:\Windows\System32")).unwrap_err().code(), ErrorCode::InvalidPath);
+}
+
+#[test]
+fn replays_the_unfinished_commits_at_startup() {
+    let root = tempfile::tempdir().unwrap();
+    let manager = manager(root.path());
+    let client_dir = manager.layout.clients_dir().join("клиент");
+    let mods_dir = root.path().join("Мир танков").join("mods");
+    let core = mods_dir.join("net.triotmetki.core_0.1.0.mtmod");
+    let core_old = crate::fsx::sibling(&core, crate::fsx::RETIRED_SUFFIX);
+
+    fs::create_dir_all(&mods_dir).unwrap();
+    fs::create_dir_all(&client_dir).unwrap();
+    fs::write(&core_old, "old core").unwrap();
+    fs::write(crate::patch::commit_journal(&client_dir), serde_json::json!({ "retired": [[core, core_old]], "placed": [] }).to_string()).unwrap();
+
+    assert_eq!(manager.recover_commits(), vec![client_dir]);
+    assert_eq!(fs::read_to_string(&core).unwrap(), "old core");
+}

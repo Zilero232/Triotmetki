@@ -26,7 +26,7 @@ use crate::detect::{self, DetectInput, GameClient};
 use crate::error::{AppError, AppResult, ErrorCode};
 use crate::gameface::{self, GamefaceStatus, ResMapOutcome};
 use crate::install::owned_patterns_catalog;
-use crate::patch::{PatchReport, PatchStatus};
+use crate::patch::{commit_journal, recover_commit, PatchReport, PatchStatus};
 use crate::paths::{normalized, same_path, Layout};
 use crate::releases::ReleasesClient;
 use crate::report::ReportPreview;
@@ -52,6 +52,8 @@ pub struct Manager {
     others: Mutex<HashMap<String, PatchStatus>>,
     res_maps: Mutex<HashMap<String, ResMapOutcome>>,
     pending_link: Mutex<Option<DeepLink>>,
+    revealable: Mutex<Vec<PathBuf>>,
+    state_lock: Mutex<()>,
     check_lock: tokio::sync::Mutex<()>,
     write_lock: tokio::sync::Mutex<()>,
 }
@@ -99,6 +101,8 @@ impl Manager {
             others: Mutex::new(HashMap::new()),
             res_maps: Mutex::new(HashMap::new()),
             pending_link: Mutex::new(None),
+            revealable: Mutex::new(Vec::new()),
+            state_lock: Mutex::new(()),
             check_lock: tokio::sync::Mutex::new(()),
             write_lock: tokio::sync::Mutex::new(()),
         })
@@ -109,6 +113,7 @@ impl Manager {
     }
 
     pub fn change_state(&self, change: impl FnOnce(&mut ManagerState)) -> AppResult<ManagerState> {
+        let _guard = self.state_lock.lock().map_err(|_| AppError::coded(ErrorCode::Io, "the state lock is poisoned"))?;
         let mut state = self.state();
 
         change(&mut state);
@@ -143,6 +148,42 @@ impl Manager {
 
     pub fn take_pending_link(&self) -> Option<DeepLink> {
         self.pending_link.lock().ok().and_then(|mut pending| pending.take())
+    }
+
+    pub fn recover_commits(&self) -> Vec<PathBuf> {
+        let client_dirs = std::fs::read_dir(self.layout.clients_dir())
+            .map(|entries| entries.filter_map(Result::ok).map(|entry| entry.path()).filter(|path| path.is_dir()).collect())
+            .unwrap_or_else(|_| Vec::new());
+
+        client_dirs
+            .into_iter()
+            .filter(|dir| match recover_commit(&commit_journal(dir)) {
+                Ok(replayed) => replayed,
+                Err(error) => {
+                    log::warn!("replay the commit journal in {}: {error}", dir.display());
+
+                    false
+                }
+            })
+            .collect()
+    }
+
+    pub fn allow_reveal(&self, path: &Path) {
+        if let Ok(mut revealable) = self.revealable.lock() {
+            if !revealable.iter().any(|known| same_path(known, path)) {
+                revealable.push(path.to_path_buf());
+            }
+        }
+    }
+
+    pub fn ensure_revealable(&self, path: &Path) -> AppResult<()> {
+        let known = self.revealable.lock().is_ok_and(|revealable| revealable.iter().any(|known| same_path(known, path)));
+
+        if !known {
+            return Err(AppError::coded(ErrorCode::InvalidPath, format!("{} was not written by the manager", path.display())));
+        }
+
+        Ok(())
     }
 
     pub fn settings(&self) -> ManagerSettings {

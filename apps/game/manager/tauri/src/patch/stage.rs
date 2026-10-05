@@ -1,9 +1,13 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use serde::{Deserialize, Serialize};
+
 use crate::error::{AppError, AppResult, ErrorCode};
-use crate::fsx::{file_sha256, list_files, remove_path, rename_file, sibling, write_file, PART_SUFFIX, RETIRED_SUFFIX};
+use crate::fsx::{file_sha256, remove_path, rename_file, sibling, write_atomic, write_file, PART_SUFFIX, RETIRED_SUFFIX};
 use crate::releases::safe_file_name;
+
+pub const COMMIT_JOURNAL: &str = "commit-journal.json";
 
 pub struct StagedFile<'a> {
     pub dir: &'a Path,
@@ -17,10 +21,10 @@ pub struct Staging {
     parts: Vec<(PathBuf, PathBuf)>,
 }
 
-#[derive(Default)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 struct Journal {
     retired: Vec<(PathBuf, PathBuf)>,
-    placed: Vec<PathBuf>,
+    placed: Vec<(PathBuf, PathBuf)>,
 }
 
 fn verify_written(part: &Path, sha256: &str) -> AppResult<()> {
@@ -68,7 +72,7 @@ pub fn stage(files: &[StagedFile]) -> AppResult<Staging> {
     Ok(staging)
 }
 
-fn apply(parts: &[(PathBuf, PathBuf)], retire: &[PathBuf], journal: &mut Journal) -> AppResult<()> {
+fn plan(parts: &[(PathBuf, PathBuf)], retire: &[PathBuf]) -> Journal {
     let mut pending: Vec<PathBuf> = retire.to_vec();
 
     for (_, target) in parts {
@@ -77,17 +81,30 @@ fn apply(parts: &[(PathBuf, PathBuf)], retire: &[PathBuf], journal: &mut Journal
         }
     }
 
-    for path in pending.into_iter().filter(|path| path.is_file()) {
-        let old = sibling(&path, RETIRED_SUFFIX);
+    Journal {
+        retired: pending
+            .into_iter()
+            .filter(|path| path.is_file())
+            .map(|path| {
+                let old = sibling(&path, RETIRED_SUFFIX);
 
-        remove_path(&old)?;
-        rename_file(&path, &old)?;
-        journal.retired.push((path, old));
+                (path, old)
+            })
+            .collect(),
+        placed: parts.to_vec(),
+    }
+}
+
+fn apply(plan: &Journal, progress: &mut Journal) -> AppResult<()> {
+    for (path, old) in &plan.retired {
+        remove_path(old)?;
+        rename_file(path, old)?;
+        progress.retired.push((path.clone(), old.clone()));
     }
 
-    for (part, target) in parts {
+    for (part, target) in &plan.placed {
         rename_file(part, target)?;
-        journal.placed.push(target.clone());
+        progress.placed.push((part.clone(), target.clone()));
     }
 
     Ok(())
@@ -96,7 +113,7 @@ fn apply(parts: &[(PathBuf, PathBuf)], retire: &[PathBuf], journal: &mut Journal
 fn rollback(journal: &Journal) -> bool {
     let mut clean = true;
 
-    for placed in journal.placed.iter().rev() {
+    for (_, placed) in journal.placed.iter().rev() {
         if let Err(error) = fs::remove_file(placed) {
             log::warn!("rollback: remove {}: {error}", placed.display());
             clean = false;
@@ -113,26 +130,60 @@ fn rollback(journal: &Journal) -> bool {
     clean
 }
 
-pub fn recover_retired(dirs: &[PathBuf]) -> Vec<PathBuf> {
-    let mut recovered = Vec::new();
+pub fn commit_journal(client_dir: &Path) -> PathBuf {
+    client_dir.join(COMMIT_JOURNAL)
+}
 
-    for retired in dirs.iter().flat_map(|dir| list_files(dir)) {
-        let name = retired.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
-        let Some(original) = name.strip_suffix(RETIRED_SUFFIX).map(|original| retired.with_file_name(original)) else {
-            continue;
-        };
-
-        if original.exists() {
-            continue;
-        }
-
-        match rename_file(&retired, &original) {
-            Ok(()) => recovered.push(original),
-            Err(error) => log::warn!("put back {}: {error}", original.display()),
-        }
+fn undo_placed(part: &Path, target: &Path) -> AppResult<()> {
+    if sibling(target, PART_SUFFIX) != part {
+        return Ok(());
     }
 
-    recovered
+    if part.is_file() {
+        fs::remove_file(part)?;
+    } else if target.is_file() {
+        fs::remove_file(target)?;
+    }
+
+    Ok(())
+}
+
+fn undo_retired(original: &Path, old: &Path) -> AppResult<()> {
+    if sibling(original, RETIRED_SUFFIX) != old || !old.is_file() {
+        return Ok(());
+    }
+
+    if original.exists() {
+        fs::remove_file(old)?;
+    } else {
+        fs::rename(old, original)?;
+    }
+
+    Ok(())
+}
+
+pub fn recover_commit(journal_path: &Path) -> AppResult<bool> {
+    let bytes = match fs::read(journal_path) {
+        Ok(bytes) => bytes,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(false),
+        Err(error) => return Err(error.into()),
+    };
+
+    if let Ok(journal) = serde_json::from_slice::<Journal>(&bytes) {
+        for (part, target) in journal.placed.iter().rev() {
+            undo_placed(part, target)?;
+        }
+
+        for (original, old) in journal.retired.iter().rev() {
+            undo_retired(original, old)?;
+        }
+    } else {
+        log::warn!("unreadable commit journal {}", journal_path.display());
+    }
+
+    remove_path(journal_path)?;
+
+    Ok(true)
 }
 
 impl Staging {
@@ -146,11 +197,19 @@ impl Staging {
         }
     }
 
-    pub fn commit(self, retire: &[PathBuf]) -> AppResult<Vec<PathBuf>> {
-        let mut journal = Journal::default();
+    pub fn commit(self, journal_path: &Path, retire: &[PathBuf]) -> AppResult<Vec<PathBuf>> {
+        let plan = plan(&self.parts, retire);
 
-        if let Err(error) = apply(&self.parts, retire, &mut journal) {
-            let clean = rollback(&journal);
+        if let Err(error) = recover_commit(journal_path).and_then(|_| write_atomic(journal_path, &serde_json::to_vec(&plan)?)) {
+            self.discard();
+
+            return Err(error);
+        }
+
+        let mut progress = Journal::default();
+
+        if let Err(error) = apply(&plan, &mut progress) {
+            let clean = rollback(&progress);
 
             self.discard();
 
@@ -158,15 +217,23 @@ impl Staging {
                 return Err(AppError::coded(ErrorCode::RollbackFailed, error.to_string()));
             }
 
+            if let Err(cleanup) = remove_path(journal_path) {
+                log::warn!("remove the commit journal: {cleanup}");
+            }
+
             return Err(error);
         }
 
-        for (_, old) in &journal.retired {
+        if let Err(error) = remove_path(journal_path) {
+            log::warn!("remove the commit journal: {error}");
+        }
+
+        for (_, old) in &progress.retired {
             if let Err(error) = fs::remove_file(old) {
                 log::warn!("remove the retired {}: {error}", old.display());
             }
         }
 
-        Ok(journal.placed)
+        Ok(progress.placed.into_iter().map(|(_, target)| target).collect())
     }
 }

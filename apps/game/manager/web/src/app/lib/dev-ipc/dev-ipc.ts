@@ -17,6 +17,8 @@ import syncStatus from '@contract/sync-status.json';
 import whatsNew from '@contract/whats-new.json';
 import { mockConvertFileSrc, mockIPC, mockWindows } from '@tauri-apps/api/mocks';
 
+import { COMMANDS } from '@/shared/config';
+
 import type { DevIpcScenario } from './dev-ipc.types';
 
 import { DEV_IPC } from '../../config';
@@ -49,25 +51,25 @@ export const installDevIpcOnRequest = () => {
 
   const scenario = scenarioFromUrl();
   const responses: Record<string, unknown> = {
-    app_info: appInfo,
-    list_clients: scenarioClients(scenario),
-    get_catalog: catalog,
-    get_installation: scenarioInstallation(scenario),
-    list_profiles: profiles,
-    get_settings: { ...settings, autostartAsked: true },
-    get_patch_report: scenarioReport(scenario),
-    check_now: scenarioReport(scenario),
-    prepare_install: installPlan,
-    install_modpack: installOutcome,
-    get_gameface_status: gamefaceStatus,
-    take_deep_link: null,
-    get_conflicts: conflicts,
-    list_sets: sets,
-    scan_cache: cachePlan,
-    get_account_link: accountLink,
-    get_sync_status: syncStatus,
-    get_whats_new: whatsNew,
-    get_game_health: gameHealth
+    [COMMANDS.appInfo]: appInfo,
+    [COMMANDS.listClients]: scenarioClients(scenario),
+    [COMMANDS.getCatalog]: catalog,
+    [COMMANDS.getInstallation]: scenarioInstallation(scenario),
+    [COMMANDS.listProfiles]: profiles,
+    [COMMANDS.getSettings]: { ...settings, autostartAsked: true },
+    [COMMANDS.getPatchReport]: scenarioReport(scenario),
+    [COMMANDS.checkNow]: scenarioReport(scenario),
+    [COMMANDS.prepareInstall]: installPlan,
+    [COMMANDS.installModpack]: installOutcome,
+    [COMMANDS.getGamefaceStatus]: gamefaceStatus,
+    [COMMANDS.takeDeepLink]: null,
+    [COMMANDS.getConflicts]: conflicts,
+    [COMMANDS.listSets]: sets,
+    [COMMANDS.scanCache]: cachePlan,
+    [COMMANDS.getAccountLink]: accountLink,
+    [COMMANDS.getSyncStatus]: syncStatus,
+    [COMMANDS.getWhatsNew]: whatsNew,
+    [COMMANDS.getGameHealth]: gameHealth
   };
 
   mockWindows('main');

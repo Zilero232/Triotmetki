@@ -1,12 +1,10 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "The main window: our own commands, events, the file pickers (open, save), links (ours, videos, the runtime dependencies' authors and licences), self-update and restart.",
+  "description": "The main window: our own commands and events (file pickers open from Rust, so the webview never names a path), links (ours, videos, the runtime dependencies' authors and licences), self-update and restart.",
   "windows": ["main"],
   "permissions": [
     "core:default",
-    "dialog:allow-open",
-    "dialog:allow-save",
     {
       "identifier": "opener:allow-open-url",
       "allow": [

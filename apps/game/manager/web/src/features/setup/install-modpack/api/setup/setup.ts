@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import type { DialogText } from '@/shared/api';
+
 import { invokeCommand } from '@/shared/api';
 import { COMMANDS } from '@/shared/config';
 
@@ -13,5 +15,5 @@ export const prepareInstall = (clientPath: string | null) =>
 export const installModpack = (request: InstallRequest) =>
   invokeCommand({ command: COMMANDS.installModpack, schema: installOutcomeSchema, args: { request } });
 
-export const readInstallerProfile = (path: string) =>
-  invokeCommand({ command: COMMANDS.readInstallerProfile, schema: z.array(z.string()), args: { path } });
+export const readInstallerProfile = (text: DialogText) =>
+  invokeCommand({ command: COMMANDS.readInstallerProfile, schema: z.array(z.string()).nullable(), args: { text } });

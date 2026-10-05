@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { save } from '@tauri-apps/plugin-dialog';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useTranslations } from 'use-intl';
@@ -52,18 +51,11 @@ export const useSetActions = ({ set }: UseSetActionsInput) => {
   });
 
   const exportFile = useMutation({
-    mutationFn: async () => {
-      const path = await save({
-        defaultPath: setFileName({ name: set.name, extension: COMPONENT_SET.fileExtension }),
-        filters: [{ name: t('fileFilter'), extensions: [COMPONENT_SET.fileExtension] }]
-      });
-
-      if (path) {
-        await exportSetFile({ id: set.id, path });
-      }
-
-      return path;
-    },
+    mutationFn: () =>
+      exportSetFile({
+        id: set.id,
+        text: { filter: t('fileFilter'), fileName: setFileName({ name: set.name, extension: COMPONENT_SET.fileExtension }) }
+      }),
     onSuccess: (path) => {
       if (path) {
         toast.success(t('exported'));

@@ -77,6 +77,37 @@ pub struct LatestRelease {
     pub release: Option<Release>,
 }
 
+pub const GAME_WILDCARD: &str = "*";
+
+pub fn matches_game(pattern: &str, game: &str) -> bool {
+    let number = |part: &str| part.trim().parse::<u64>().ok();
+    let wanted: Vec<&str> = pattern.trim().split('.').collect();
+    let actual: Vec<&str> = game.trim().split('.').collect();
+
+    for (index, part) in wanted.iter().enumerate() {
+        if *part == GAME_WILDCARD {
+            return true;
+        }
+
+        if number(part).is_none() || number(part) != number(actual.get(index).copied().unwrap_or("0")) {
+            return false;
+        }
+    }
+
+    actual.iter().skip(wanted.len()).all(|part| number(part) == Some(0))
+}
+
+pub fn for_game(mut latest: LatestRelease, game: &str) -> LatestRelease {
+    let supported = latest.release.as_ref().is_some_and(|release| release.games.iter().any(|pattern| matches_game(pattern, game)));
+
+    if latest.status == ReleaseStatus::Compatible && !supported {
+        log::warn!("the release offered for {game} does not list it among its games");
+        latest.status = ReleaseStatus::Waiting;
+    }
+
+    latest
+}
+
 impl Release {
     pub fn package(&self, id: &str) -> Option<&ReleasePackage> {
         self.packages.iter().find(|package| package.id == id)
@@ -206,7 +237,7 @@ impl ReleasesClient {
             verify_release(release)?;
         }
 
-        Ok(latest)
+        Ok(for_game(latest, game))
     }
 
     pub async fn changelog(&self) -> AppResult<Changelog> {

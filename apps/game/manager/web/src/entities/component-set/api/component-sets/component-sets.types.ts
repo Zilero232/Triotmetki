@@ -1,5 +1,7 @@
 import type { z } from 'zod';
 
+import type { DialogText } from '@/shared/api';
+
 import type { componentSetSchema, setsViewSchema } from './component-sets.schemas';
 
 export type ComponentSet = z.infer<typeof componentSetSchema>;
@@ -23,5 +25,5 @@ export type ImportSetInput = {
 
 export type ExportSetFileInput = {
   id: string;
-  path: string;
+  text: DialogText;
 };

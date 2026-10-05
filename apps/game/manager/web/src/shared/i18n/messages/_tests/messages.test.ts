@@ -40,4 +40,8 @@ describe('MESSAGES', () => {
   it('explains every error code the app can report', () => {
     expect(MANAGER_ERROR_CODES.every((code) => code in MESSAGES.ru.errors)).toBe(true);
   });
+
+  it('gives every error code a hint', () => {
+    expect(MANAGER_ERROR_CODES.every((code) => code in MESSAGES.ru.errorHelp)).toBe(true);
+  });
 });

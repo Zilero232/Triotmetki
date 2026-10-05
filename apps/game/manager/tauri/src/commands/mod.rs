@@ -1,3 +1,5 @@
+mod dialogs;
+
 use std::path::PathBuf;
 
 use serde::Serialize;
@@ -25,6 +27,16 @@ use crate::service::{
 use crate::sets::SetsView;
 use crate::settings::ManagerSettings;
 use crate::sync::Resolution;
+
+pub use dialogs::DialogText;
+use dialogs::{ask_path, DialogKind, FileDialog};
+
+pub const SET_FILE_EXTENSIONS: [&str; 1] = [crate::sets::SET_EXTENSION];
+pub const LIBRARY_FILE_EXTENSIONS: [&str; 1] = [crate::sets::LIBRARY_EXTENSION];
+pub const IMPORT_FILE_EXTENSIONS: [&str; 2] = [crate::sets::SET_EXTENSION, crate::sets::LIBRARY_EXTENSION];
+pub const REPORT_FILE_EXTENSIONS: [&str; 1] = [crate::report::ZIP_EXTENSION];
+pub const PROFILE_FILE_EXTENSIONS: [&str; 1] = [crate::install::PROFILE_EXTENSION];
+pub const FALLBACK_FILE_NAME: &str = "triotmetki";
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -71,10 +83,15 @@ pub async fn list_clients(manager: State<'_, Manager>) -> AppResult<ClientsView>
 }
 
 #[tauri::command]
-pub async fn add_client(manager: State<'_, Manager>, path: PathBuf) -> AppResult<ClientsView> {
+pub async fn add_client(app: AppHandle, manager: State<'_, Manager>, text: DialogText) -> AppResult<Option<ClientsView>> {
+    let dialog = FileDialog { kind: DialogKind::Folder, text, extensions: &[], fallback_name: FALLBACK_FILE_NAME };
+    let Some(path) = ask_path(&app, dialog).await? else {
+        return Ok(None);
+    };
+
     manager.add_client(&path)?;
 
-    Ok(manager.clients_view())
+    Ok(Some(manager.clients_view()))
 }
 
 #[tauri::command]
@@ -189,12 +206,18 @@ pub async fn migrate_modpack(app: AppHandle, manager: State<'_, Manager>, client
 #[tauri::command]
 pub async fn collect_logs(manager: State<'_, Manager>) -> AppResult<PathBuf> {
     let output_dir = dirs::desktop_dir().or_else(dirs::home_dir).ok_or_else(|| AppError::coded(ErrorCode::InvalidPath, "no desktop folder"))?;
+    let path =
+        logs::collect(CollectInput { layout: &manager.layout, clients: &manager.detect(), output_dir: &output_dir, now: chrono::Local::now() })?;
 
-    logs::collect(CollectInput { layout: &manager.layout, clients: &manager.detect(), output_dir: &output_dir, now: chrono::Local::now() })
+    manager.allow_reveal(&path);
+
+    Ok(path)
 }
 
 #[tauri::command]
-pub async fn reveal_path(path: PathBuf) -> AppResult<()> {
+pub async fn reveal_path(manager: State<'_, Manager>, path: PathBuf) -> AppResult<()> {
+    manager.ensure_revealable(&path)?;
+
     tauri_plugin_opener::reveal_item_in_dir(&path).map_err(|error| AppError::coded(ErrorCode::InvalidPath, error.to_string()))
 }
 
@@ -225,8 +248,10 @@ pub async fn get_gameface_status(manager: State<'_, Manager>, client_path: Optio
 }
 
 #[tauri::command]
-pub async fn read_installer_profile(path: PathBuf) -> AppResult<Vec<String>> {
-    read_component_profile(&path)
+pub async fn read_installer_profile(app: AppHandle, text: DialogText) -> AppResult<Option<Vec<String>>> {
+    let dialog = FileDialog { kind: DialogKind::Open, text, extensions: &PROFILE_FILE_EXTENSIONS, fallback_name: FALLBACK_FILE_NAME };
+
+    ask_path(&app, dialog).await?.map(|path| read_component_profile(&path)).transpose()
 }
 
 #[tauri::command]
@@ -284,22 +309,32 @@ pub async fn import_set(manager: State<'_, Manager>, code: String, name: Option<
 }
 
 #[tauri::command]
-pub async fn export_set_file(manager: State<'_, Manager>, id: String, path: PathBuf) -> AppResult<()> {
-    manager.set_store().export_file(&id, &path)
+pub async fn export_set_file(app: AppHandle, manager: State<'_, Manager>, id: String, text: DialogText) -> AppResult<Option<PathBuf>> {
+    manager.set_store().load().get(&id)?;
+
+    let dialog = FileDialog { kind: DialogKind::Save, text, extensions: &SET_FILE_EXTENSIONS, fallback_name: FALLBACK_FILE_NAME };
+
+    ask_path(&app, dialog).await?.map(|path| manager.set_store().export_file(&id, &path)).transpose()
 }
 
 #[tauri::command]
-pub async fn export_sets_library(manager: State<'_, Manager>, path: PathBuf) -> AppResult<()> {
-    manager.set_store().export_library(&path)
+pub async fn export_sets_library(app: AppHandle, manager: State<'_, Manager>, text: DialogText) -> AppResult<Option<PathBuf>> {
+    let dialog = FileDialog { kind: DialogKind::Save, text, extensions: &LIBRARY_FILE_EXTENSIONS, fallback_name: FALLBACK_FILE_NAME };
+
+    ask_path(&app, dialog).await?.map(|path| manager.set_store().export_library(&path)).transpose()
 }
 
 #[tauri::command]
-pub async fn import_set_file(manager: State<'_, Manager>, path: PathBuf) -> AppResult<SetsView> {
+pub async fn import_set_file(app: AppHandle, manager: State<'_, Manager>, text: DialogText) -> AppResult<Option<SetsView>> {
+    let dialog = FileDialog { kind: DialogKind::Open, text, extensions: &IMPORT_FILE_EXTENSIONS, fallback_name: FALLBACK_FILE_NAME };
+    let Some(path) = ask_path(&app, dialog).await? else {
+        return Ok(None);
+    };
     let _guard = manager.write_guard().await?;
 
     manager.set_store().import_file(&path)?;
 
-    Ok(manager.sets_view())
+    Ok(Some(manager.sets_view()))
 }
 
 #[tauri::command]
@@ -359,13 +394,22 @@ pub async fn send_report(manager: State<'_, Manager>, preview_id: String, parts:
 
 #[tauri::command]
 pub async fn save_report(
+    app: AppHandle,
     manager: State<'_, Manager>,
     preview_id: String,
     parts: Vec<ReportPart>,
     message: String,
-    path: PathBuf,
-) -> AppResult<PathBuf> {
-    manager.save_report(&preview_id, &parts, &message, &path)
+    text: DialogText,
+) -> AppResult<Option<PathBuf>> {
+    let dialog = FileDialog { kind: DialogKind::Save, text, extensions: &REPORT_FILE_EXTENSIONS, fallback_name: FALLBACK_FILE_NAME };
+    let Some(target) = ask_path(&app, dialog).await? else {
+        return Ok(None);
+    };
+    let path = manager.save_report(&preview_id, &parts, &message, &target)?;
+
+    manager.allow_reveal(&path);
+
+    Ok(Some(path))
 }
 
 #[tauri::command]

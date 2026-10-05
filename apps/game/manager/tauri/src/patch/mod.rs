@@ -8,7 +8,7 @@ use serde::Serialize;
 
 pub use install::{apply_packages, fetch_packages, install_targets, ApplyInput, FetchedPackage};
 pub use migrate::{migrate, MigrateInput};
-pub use stage::{recover_retired, stage, StagedFile};
+pub use stage::{commit_journal, recover_commit, stage, StagedFile};
 
 use crate::catalog::Localized;
 use crate::detect::GameVersion;

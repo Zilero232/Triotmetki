@@ -277,15 +277,22 @@ impl SetStore {
         self.update(|file| file.add(name.filter(|name| !name.trim().is_empty()).unwrap_or(&decoded_name), &components))
     }
 
-    pub fn export_file(&self, id: &str, target: &Path) -> AppResult<()> {
+    pub fn export_file(&self, id: &str, target: &Path) -> AppResult<PathBuf> {
         let file = self.load();
         let set = file.get(id)?;
+        let target = with_extension(target, SET_EXTENSION);
 
-        write_atomic(&with_extension(target, SET_EXTENSION), to_file_text(&set.name, &set.components)?.as_bytes())
+        write_atomic(&target, to_file_text(&set.name, &set.components)?.as_bytes())?;
+
+        Ok(target)
     }
 
-    pub fn export_library(&self, target: &Path) -> AppResult<()> {
-        write_atomic(&with_extension(target, LIBRARY_EXTENSION), format!("{}\n", serde_json::to_string_pretty(&self.load())?).as_bytes())
+    pub fn export_library(&self, target: &Path) -> AppResult<PathBuf> {
+        let target = with_extension(target, LIBRARY_EXTENSION);
+
+        write_atomic(&target, format!("{}\n", serde_json::to_string_pretty(&self.load())?).as_bytes())?;
+
+        Ok(target)
     }
 
     pub fn import_file(&self, source: &Path) -> AppResult<()> {

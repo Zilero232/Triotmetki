@@ -1,3 +1,4 @@
+export type { DialogText } from './dialog-text';
 export { invokeCommand } from './invoke-command';
 export type { InvokeCommandInput, ManagerCommand } from './invoke-command';
 export { listenEvent } from './listen-event';

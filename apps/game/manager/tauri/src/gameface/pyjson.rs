@@ -4,6 +4,7 @@ use serde::Deserialize;
 
 pub const MAX_HEX_KEY_DIGITS: usize = 30;
 pub const INDEXED_DICT_LEN: usize = 16;
+pub const MAX_DEPTH: usize = 128;
 pub const KNOWN_KEY_ORDERS: &str = include_str!("key_orders.json");
 
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
@@ -189,6 +190,7 @@ impl KeyOrders {
 struct Parser<'a> {
     bytes: &'a [u8],
     at: usize,
+    depth: usize,
 }
 
 impl Parser<'_> {
@@ -236,8 +238,8 @@ impl Parser<'_> {
         self.skip_whitespace();
 
         match self.bytes.get(self.at) {
-            Some(b'{') => self.object(),
-            Some(b'[') => self.array(),
+            Some(b'{') => self.nested(Self::object),
+            Some(b'[') => self.nested(Self::array),
             Some(b'"') => self.string().map(PyValue::Str),
             Some(b'n') => self.literal("null", PyValue::Null),
             Some(b't') => self.literal("true", PyValue::Bool(true)),
@@ -246,6 +248,19 @@ impl Parser<'_> {
             Some(b'N' | b'I') => Err(MergeError::Float),
             _ => Err(self.error()),
         }
+    }
+
+    fn nested(&mut self, parse: fn(&mut Self) -> Result<PyValue, MergeError>) -> Result<PyValue, MergeError> {
+        if self.depth >= MAX_DEPTH {
+            return Err(self.error());
+        }
+
+        self.depth += 1;
+
+        let parsed = parse(self);
+
+        self.depth -= 1;
+        parsed
     }
 
     fn object(&mut self) -> Result<PyValue, MergeError> {
@@ -380,7 +395,7 @@ impl Parser<'_> {
 }
 
 pub fn parse(bytes: &[u8]) -> Result<PyValue, MergeError> {
-    let mut parser = Parser { bytes, at: 0 };
+    let mut parser = Parser { bytes, at: 0, depth: 0 };
     let value = parser.value()?;
 
     parser.skip_whitespace();

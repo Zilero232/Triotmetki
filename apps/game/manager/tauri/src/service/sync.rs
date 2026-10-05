@@ -204,6 +204,7 @@ impl Manager {
             Step::Put(mode) => {
                 let body = PutProfiles { signed, profiles: &local, deleted: &deleted, mode };
 
+                ensure_closed(&client.path)?;
                 self.site.signed(Method::PUT, PROFILES_PATH, credentials, &body).await?
             }
         };

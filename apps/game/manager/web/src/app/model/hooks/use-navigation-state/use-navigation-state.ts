@@ -1,11 +1,19 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import type { NavigationTarget, NavigationValue } from '@/shared/lib';
 
 import { PAGES } from '@/shared/config';
 
-export const useNavigationState = (): NavigationValue => {
-  const [target, setTarget] = useState<NavigationTarget>({ page: PAGES.initial });
+import type { NavigationState } from './use-navigation-state.types';
 
-  return { page: target.page, params: target.params ?? {}, navigate: setTarget };
+export const useNavigationState = (): NavigationValue => {
+  const [state, setState] = useState<NavigationState>({ target: { page: PAGES.initial }, visit: 0 });
+  const navigate = useCallback((target: NavigationTarget) => setState((current) => ({ target, visit: current.visit + 1 })), []);
+
+  return {
+    page: state.target.page,
+    params: state.target.params ?? {},
+    visit: state.visit,
+    navigate
+  };
 };

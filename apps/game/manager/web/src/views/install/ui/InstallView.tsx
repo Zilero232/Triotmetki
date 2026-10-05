@@ -6,7 +6,7 @@ import { InstallWizard } from '@/widgets/install-wizard';
 
 export const InstallView = () => {
   const t = useTranslations();
-  const { params } = useNavigation();
+  const { params, visit } = useNavigation();
 
   return (
     <>
@@ -15,7 +15,12 @@ export const InstallView = () => {
         help={<HelpTip label={t('help.tipLabel')}>{t('help.tips.install')}</HelpTip>}
         title={t('install.title')}
       />
-      <InstallWizard initialComponents={params.components ?? null} initialPreset={params.preset ?? null} startAtReview={params.review ?? false} />
+      <InstallWizard
+        key={visit}
+        initialComponents={params.components ?? null}
+        initialPreset={params.preset ?? null}
+        startAtReview={params.review ?? false}
+      />
     </>
   );
 };

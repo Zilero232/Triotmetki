@@ -7,17 +7,17 @@ use std::path::{Path, PathBuf};
 use serde::Serialize;
 use walkdir::WalkDir;
 
-pub use profile_ini::read_component_profile;
+pub use profile_ini::{read_component_profile, PROFILE_EXTENSION};
 
 use crate::catalog::Catalog;
-use crate::components::{is_owned, ClientContext};
+use crate::components::{in_mod_folders, is_owned, ClientContext};
 use crate::dependencies::remove_owned;
 use crate::detect::GameClient;
 use crate::durable::remove_durable_copies;
 use crate::error::{AppError, AppResult, ErrorCode};
 use crate::fsx::{list_files, remove_path};
 use crate::gameface::RES_MAP_FILE;
-use crate::patch::{apply_packages, recover_retired, ApplyInput, FetchedPackage};
+use crate::patch::{apply_packages, commit_journal, recover_commit, ApplyInput, FetchedPackage};
 use crate::paths::{configs_dir, same_path};
 use crate::state::{disabled_dir, Manifest, CLIENT_INI, MANIFEST_INI};
 
@@ -122,17 +122,18 @@ pub fn remove_our_files(context: ClientContext) -> AppResult<Vec<PathBuf>> {
     let catalog = context.catalog;
     let manifest_files = Manifest::read(context.client_dir)?.map(|manifest| manifest.files).unwrap_or_default();
     let in_mods = list_files(&context.client.mods_dir);
-    let mut removed = remove_owned(context)?;
+    let mut removed = Vec::new();
 
     for path in manifest_files.iter().chain(in_mods.iter()) {
         let name = path.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
 
-        if path.is_file() && is_owned(catalog, &name) {
+        if path.is_file() && is_owned(catalog, &name) && in_mod_folders(context, path) {
             remove_path(path)?;
             removed.push(path.clone());
         }
     }
 
+    removed.extend(remove_owned(context)?);
     remove_path(&disabled_dir(context.client_dir))?;
 
     Ok(removed)
@@ -157,9 +158,10 @@ pub fn restore_after_failure(context: ClientContext, error: AppError) -> AppErro
         return error;
     }
 
-    let recovered = recover_retired(&[context.client.mods_dir.clone(), disabled_dir(context.client_dir)]);
-
-    log::warn!("the rollback failed, put back {} retired files: {error}", recovered.len());
+    match recover_commit(&commit_journal(context.client_dir)) {
+        Ok(_) => log::warn!("the rollback failed, replayed the commit journal: {error}"),
+        Err(recovery) => log::warn!("the rollback failed and the commit journal could not be replayed yet: {recovery}"),
+    }
 
     error
 }

@@ -1,8 +1,8 @@
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
-use super::stage::{stage, StagedFile};
-use crate::components::{is_owned, sync_manifest, ClientContext};
+use super::stage::{commit_journal, stage, StagedFile};
+use crate::components::{in_mod_folders, is_owned, sync_manifest, ClientContext};
 use crate::error::AppResult;
 use crate::fsx::list_files;
 use crate::releases::{FetchLimits, Release, ReleasePackage, ReleasesClient, MAX_PACKAGE_BYTES};
@@ -99,7 +99,7 @@ pub fn our_files(context: ClientContext) -> AppResult<Vec<PathBuf>> {
     for path in candidates {
         let name = path.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
 
-        if path.is_file() && is_owned(catalog, &name) && !found.contains(&path) {
+        if path.is_file() && is_owned(catalog, &name) && in_mod_folders(context, &path) && !found.contains(&path) {
             found.push(path);
         }
     }
@@ -120,7 +120,6 @@ pub fn apply_packages(input: ApplyInput) -> AppResult<Vec<String>> {
             sha256: &fetched.package.sha256,
         })
         .collect();
-    let staging = stage(&files)?;
     let retired = if input.drop_retired { retired_files(input.context) } else { Vec::new() };
     let retire: Vec<PathBuf> = if input.replace_all {
         our_files(input.context)?
@@ -133,7 +132,7 @@ pub fn apply_packages(input: ApplyInput) -> AppResult<Vec<String>> {
             .collect()
     };
 
-    staging.commit(&retire)?;
+    stage(&files)?.commit(&commit_journal(input.context.client_dir), &retire)?;
 
     if input.replace_all || !retired.is_empty() {
         if let Some(mut manifest) = Manifest::read(input.context.client_dir)? {

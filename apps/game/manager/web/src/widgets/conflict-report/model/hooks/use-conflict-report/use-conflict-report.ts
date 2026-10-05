@@ -14,7 +14,7 @@ export const useConflictReport = ({ hideWhenClean }: UseConflictReportInput) => 
   const { clientPath } = useSelectedClient();
   const { data: installation } = useInstallation(clientPath);
   const isInstalled = installation?.installed ?? false;
-  const conflictsQuery = useConflicts(clientPath, isInstalled);
+  const conflictsQuery = useConflicts({ clientPath, enabled: isInstalled });
   const { data: catalog } = useCatalog();
   const report = conflictsQuery.data ?? null;
   const items = report ? conflictItems({ report, catalog: catalog ?? null, locale }) : [];

@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { save } from '@tauri-apps/plugin-dialog';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -58,11 +57,8 @@ export const useReportForm = () => {
   });
 
   const saveZip = useMutation({
-    mutationFn: async () => {
-      const path = await save({ defaultPath: REPORT.fileName, filters: [{ name: t('zipFilter'), extensions: [REPORT.zipExtension] }] });
-
-      return path ? saveReport({ previewId, parts, message: form.getValues('message'), path }) : null;
-    },
+    mutationFn: () =>
+      saveReport({ previewId, parts, message: form.getValues('message'), text: { filter: t('zipFilter'), fileName: REPORT.fileName } }),
     onSuccess: (path) => {
       if (path) {
         toast.success(t('saved'), { description: path, action: { label: t('reveal'), onClick: () => void revealPath(path).catch(showError) } });

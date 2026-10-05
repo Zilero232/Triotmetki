@@ -26,7 +26,7 @@ const RESPONSES: Record<string, unknown> = {
 const setup = () => {
   const calls: { command: string; args: unknown }[] = [];
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
-  const navigation = { page: 'install' as const, params: {}, navigate: vi.fn() };
+  const navigation = { page: 'install' as const, params: {}, visit: 0, navigate: vi.fn() };
   const wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>
       <IntlProvider locale='ru' messages={MESSAGES.ru}>

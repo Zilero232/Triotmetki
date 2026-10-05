@@ -451,21 +451,116 @@ fn a_failed_migration_keeps_a_different_copy_already_in_the_new_folder() {
     assert_eq!(fs::read_to_string(patched.mods_dir.join(core)).unwrap(), "core from the old folder");
 }
 
+fn write_journal(client_dir: &std::path::Path, journal: &serde_json::Value) -> std::path::PathBuf {
+    let path = commit_journal(client_dir);
+
+    fs::create_dir_all(client_dir).unwrap();
+    fs::write(&path, journal.to_string()).unwrap();
+
+    path
+}
+
 #[test]
-fn puts_back_the_files_a_failed_rollback_left_retired() {
+fn replays_a_commit_the_process_did_not_finish() {
     let root = tempfile::tempdir().unwrap();
-    let mods_dir = root.path().join("моды");
-    let lost = mods_dir.join("net.triotmetki.core_0.1.0.mtmod");
-    let placed = mods_dir.join("otmetki.companion_0.2.0.mtmod");
+    let mods_dir = root.path().join("Мир танков").join("mods").join("1.45.0.0");
+    let client_dir = root.path().join("clients").join("ключ");
+    let core = mods_dir.join("net.triotmetki.core_0.1.0.mtmod");
+    let companion = mods_dir.join("otmetki.companion_0.2.0.mtmod");
+    let core_old = crate::fsx::sibling(&core, crate::fsx::RETIRED_SUFFIX);
+    let core_part = crate::fsx::sibling(&core, crate::fsx::PART_SUFFIX);
+    let companion_part = crate::fsx::sibling(&companion, crate::fsx::PART_SUFFIX);
 
     fs::create_dir_all(&mods_dir).unwrap();
-    fs::write(crate::fsx::sibling(&lost, crate::fsx::RETIRED_SUFFIX), "old core").unwrap();
-    fs::write(&placed, "new companion").unwrap();
-    fs::write(crate::fsx::sibling(&placed, crate::fsx::RETIRED_SUFFIX), "old companion").unwrap();
+    fs::write(&core_old, "old core").unwrap();
+    fs::write(&core_part, "new core").unwrap();
+    fs::write(&companion, "new companion").unwrap();
 
-    let recovered = recover_retired(std::slice::from_ref(&mods_dir));
+    let journal =
+        write_journal(&client_dir, &serde_json::json!({ "retired": [[core, core_old]], "placed": [[companion_part, companion], [core_part, core]] }));
 
-    assert_eq!(recovered, vec![lost.clone()]);
-    assert_eq!(fs::read_to_string(&lost).unwrap(), "old core");
-    assert_eq!(fs::read_to_string(&placed).unwrap(), "new companion");
+    assert!(recover_commit(&journal).unwrap());
+
+    assert_eq!(fs::read_to_string(&core).unwrap(), "old core");
+    assert_eq!(crate::fsx::list_files(&mods_dir), vec![core.clone()]);
+    assert!(!journal.exists());
+}
+
+#[test]
+fn a_retired_file_the_journal_does_not_name_stays_retired() {
+    let root = tempfile::tempdir().unwrap();
+    let mods_dir = root.path().join("моды");
+    let stale = mods_dir.join("net.triotmetki.core_0.0.9.mtmod");
+    let stale_old = crate::fsx::sibling(&stale, crate::fsx::RETIRED_SUFFIX);
+
+    fs::create_dir_all(&mods_dir).unwrap();
+    fs::write(&stale_old, "stale").unwrap();
+
+    let journal = write_journal(&root.path().join("clients"), &serde_json::json!({ "retired": [], "placed": [] }));
+
+    assert!(recover_commit(&journal).unwrap());
+
+    assert!(!stale.exists());
+    assert!(stale_old.exists());
+}
+
+#[test]
+fn a_journal_entry_that_is_not_a_staged_pair_is_ignored() {
+    let root = tempfile::tempdir().unwrap();
+    let victim = root.path().join("Документы").join("важное.txt");
+
+    fs::create_dir_all(victim.parent().unwrap()).unwrap();
+    fs::write(&victim, "keep").unwrap();
+
+    let journal = write_journal(
+        &root.path().join("clients"),
+        &serde_json::json!({ "retired": [[root.path().join("x"), victim]], "placed": [[root.path().join("other.part"), victim]] }),
+    );
+
+    assert!(recover_commit(&journal).unwrap());
+
+    assert_eq!(fs::read_to_string(&victim).unwrap(), "keep");
+}
+
+#[test]
+fn no_journal_means_nothing_to_replay() {
+    let root = tempfile::tempdir().unwrap();
+
+    assert!(!recover_commit(&commit_journal(root.path())).unwrap());
+}
+
+#[test]
+fn a_migration_from_a_vanished_folder_fails_and_keeps_the_manifest() {
+    let root = tempfile::tempdir().unwrap();
+    let old = lesta_client(root.path(), "1.45.0.0");
+    let client_dir = root.path().join("состояние");
+    let catalog = catalog();
+
+    fs::write(old.mods_dir.join("net.triotmetki.core_0.1.0.mtmod"), "core").unwrap();
+    sync_manifest(ClientContext { client_dir: &client_dir, client: &old, catalog: &catalog }).unwrap();
+    fs::remove_dir_all(&old.mods_dir).unwrap();
+
+    let patched = patch_client(&old.path, "1.46.0.0");
+    let context = ClientContext { client_dir: &client_dir, client: &patched, catalog: &catalog };
+    let result = migrate(MigrateInput { context, from_mods_dir: &old.mods_dir });
+
+    assert_eq!(result.unwrap_err().code(), crate::error::ErrorCode::NotInstalled);
+    assert_eq!(Manifest::read(&client_dir).unwrap().unwrap().version, "1.45.0.0");
+}
+
+#[test]
+fn a_finished_migration_leaves_no_commit_journal() {
+    let root = tempfile::tempdir().unwrap();
+    let old = lesta_client(root.path(), "1.45.0.0");
+    let client_dir = root.path().join("состояние");
+    let catalog = catalog();
+
+    fs::write(old.mods_dir.join("net.triotmetki.core_0.1.0.mtmod"), "core").unwrap();
+
+    let patched = patch_client(&old.path, "1.46.0.0");
+    let context = ClientContext { client_dir: &client_dir, client: &patched, catalog: &catalog };
+
+    migrate(MigrateInput { context, from_mods_dir: &old.mods_dir }).unwrap();
+
+    assert!(!commit_journal(&client_dir).exists());
 }

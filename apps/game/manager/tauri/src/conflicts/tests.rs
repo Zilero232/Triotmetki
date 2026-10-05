@@ -166,3 +166,23 @@ fn reads_the_package_id_from_meta_xml_or_the_file_name() {
     assert_eq!(id_from_name("SixthSense.mtmod"), "sixthsense");
     assert_eq!(read_package(&root.path().join("broken.mtmod")).package_id, "broken");
 }
+
+#[test]
+fn a_component_that_left_the_catalog_is_not_restored() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.45.0.0");
+    let client_dir = root.path().join("Состояние");
+    let catalog = catalog();
+    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
+
+    install(&client, &[CORE, COMPANION, MARKS_PANEL]);
+    sync_manifest(context).unwrap();
+
+    let mut manifest = crate::state::Manifest::read(&client_dir).unwrap().unwrap();
+
+    manifest.components.push("hud\retired_widget".into());
+    manifest.write(&client_dir).unwrap();
+    fs::remove_file(client.mods_dir.join(COMPANION)).unwrap();
+
+    assert_eq!(scan(context).unwrap().to_restore(), vec!["companion"]);
+}

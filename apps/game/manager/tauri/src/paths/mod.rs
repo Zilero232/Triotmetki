@@ -100,3 +100,21 @@ pub fn normalized(path: &Path) -> String {
 
     trimmed.to_lowercase()
 }
+
+pub const FILE_NAME_MAX_CHARS: usize = 120;
+pub const RESERVED_FILE_CHARS: [char; 9] = ['<', '>', ':', '"', '/', '\\', '|', '?', '*'];
+
+pub fn safe_file_name(name: &str, fallback: &str) -> String {
+    let cleaned: String =
+        name.chars().filter(|c| !c.is_control()).map(|c| if RESERVED_FILE_CHARS.contains(&c) { '_' } else { c }).take(FILE_NAME_MAX_CHARS).collect();
+    let trimmed = cleaned.trim().trim_end_matches(['.', ' ']).trim_start_matches('.');
+
+    if trimmed.is_empty() {
+        fallback.to_owned()
+    } else {
+        trimmed.to_owned()
+    }
+}
+
+#[cfg(test)]
+mod tests;

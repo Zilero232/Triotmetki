@@ -137,6 +137,7 @@ impl SiteClient {
         let timestamp = self.timestamp();
         let nonce = new_nonce();
         let message = signed_message(&SignedMessage { method: method.as_str(), path, timestamp: &timestamp, nonce: &nonce, body });
+        let signature = sign(&credentials.secret, &message)?;
 
         self.http
             .request(method.clone(), self.url(path))
@@ -144,7 +145,7 @@ impl SiteClient {
             .header(DEVICE_HEADER, &credentials.device_id)
             .header(TIMESTAMP_HEADER, &timestamp)
             .header(NONCE_HEADER, &nonce)
-            .header(SIGNATURE_HEADER, sign(&credentials.secret, &message))
+            .header(SIGNATURE_HEADER, signature)
             .body(body.to_vec())
             .send()
             .await

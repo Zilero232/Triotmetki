@@ -13,7 +13,7 @@ use crate::detect::client::{Branch, PATHS_XML};
 use crate::detect::GameClient;
 use crate::fsx::{remove_path, write_atomic};
 use crate::ini_file::decode_text;
-use crate::paths::join_relative;
+use crate::paths::{join_relative, same_path};
 
 pub const GAMEFACE_PACKAGE_ID: &str = "net.openwg.gameface";
 pub const SUPPORTED_VERSIONS: [&str; 1] = ["1.2.2"];
@@ -317,7 +317,10 @@ pub fn premerge(client: &GameClient) -> Result<ResMapOutcome, SkipReason> {
         return Err(SkipReason::NotLesta);
     }
 
-    let target = res_map_dir(&client.path).ok_or(SkipReason::NoResModsDir)?.join(RES_MAP_FILE);
+    let target = res_map_dir(&client.path)
+        .filter(|dir| same_path(dir, &client.res_mods_dir) || same_path(dir, &client.mods_dir))
+        .ok_or(SkipReason::NoResModsDir)?
+        .join(RES_MAP_FILE);
     let configs = configs(ConfigSources {
         game_dir: &client.path,
         res_mods_dir: &client.res_mods_dir,
