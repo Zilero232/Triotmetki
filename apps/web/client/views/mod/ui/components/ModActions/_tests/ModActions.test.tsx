@@ -14,7 +14,6 @@ vi.mock('../../../../model/hooks', () => ({ useModDownloads: vi.fn() }));
 type ModDownloads = ReturnType<typeof useModDownloads>;
 
 const COPY = messages.en.mod.hero;
-const MOST_URL = 'https://most.example/otmetki';
 const PUBLISHED: Omit<ModDownloads, 'distribution'> = {
   isPreparing: false,
   manager: { version: '0.2.0', size: '8.4 MB' },
@@ -83,17 +82,5 @@ describe('ModActions', () => {
 
     expect(screen.getByRole('button', { name: COPY.download })).toBeDisabled();
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
-  });
-
-  it('shows the MOST badge until the MOST link is set', () => {
-    renderActions({ distribution: { mostUrl: null } });
-
-    expect(screen.getByText(COPY.mostPending)).toBeInTheDocument();
-  });
-
-  it('links to MOST once the entry is live', () => {
-    renderActions({ distribution: { mostUrl: MOST_URL } });
-
-    expect(screen.getByRole('link', { name: COPY.most })).toHaveAttribute('href', MOST_URL);
   });
 });

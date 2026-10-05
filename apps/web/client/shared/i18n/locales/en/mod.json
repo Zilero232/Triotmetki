@@ -12,8 +12,6 @@
     "download": "Download the manager",
     "inside": "What's inside",
     "manual": "Packages by hand",
-    "most": "Open on MOST",
-    "mostPending": "Coming to MOST",
     "preparing": "The first release is on its way — the button works as soon as the files are on the server.",
     "file": "Version {version} · {size} · Windows 10 and 11",
     "game": "Client {game}",
@@ -415,7 +413,7 @@
     "items": {
       "ban": {
         "question": "Can the modpack get me banned?",
-        "answer": "Bans are for mods that reveal enemies, help aiming or change vehicle stats. The modpack has none of that: its components work with your own data and with what the client already shows. It is being prepared for MOST, Lesta's official mod portal."
+        "answer": "Bans are for mods that reveal enemies, help aiming or change vehicle stats. The modpack has none of that: its components work with your own data and with what the client already shows. Every component is checked against Lesta's list of forbidden mods."
       },
       "free": {
         "question": "How much is it?",

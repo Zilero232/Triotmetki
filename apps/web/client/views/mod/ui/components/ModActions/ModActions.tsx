@@ -1,10 +1,10 @@
 'use client';
 
-import { Download, ExternalLink, LayoutGrid } from 'lucide-react';
+import { Download, LayoutGrid } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ROUTE_ANCHORS } from '@/shared/constants';
-import { Badge, buttonVariants } from '@/ui-kit';
+import { buttonVariants } from '@/ui-kit';
 
 import { MOD_PAGE } from '../../../config';
 import { useModDownloads } from '../../../model/hooks';
@@ -54,16 +54,6 @@ export const ModActions = () => {
               {t('manualFile', { file: distribution.packagesFileName, ...modpack })}
             </span>
           )}
-          <span className={s.most}>
-            {distribution.mostUrl ? (
-              <a className={s.link} href={distribution.mostUrl} rel='noreferrer' target='_blank'>
-                {t('most')}
-                <ExternalLink aria-hidden size={MOD_PAGE.smallIconSize} />
-              </a>
-            ) : (
-              <Badge tone='steel'>{t('mostPending')}</Badge>
-            )}
-          </span>
         </p>
       </div>
     </div>

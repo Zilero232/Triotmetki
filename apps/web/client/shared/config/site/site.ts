@@ -46,7 +46,6 @@ export const SUPPORT = {
 export const MOD_DISTRIBUTION: ModDistribution = {
   managerUrl: 'https://triotmetki.ru/downloads/otmetki-manager-setup.exe',
   managerFileName: 'otmetki-manager-setup.exe',
-  mostUrl: null,
   packagesUrl: 'https://triotmetki.ru/downloads/otmetki.mtmod',
   packagesFileName: 'otmetki.mtmod'
 };

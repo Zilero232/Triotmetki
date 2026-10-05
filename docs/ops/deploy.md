@@ -208,7 +208,6 @@ One minisign key signs the manager's self-update and each modpack release (the m
 - [ ] The secrets are set: deploy.yml's `NEXT_PUBLIC_SITE_URL` and `DEPLOY_*`, plus `TAURI_SIGNING_PRIVATE_KEY` (+ `_PASSWORD`).
 - [ ] Set the supported clients in `otmetki.games` of `apps/game/modpack/package.json`, commit, push, then run **release** (Actions → release → Run workflow; no inputs needed).
 - [ ] Check `https://triotmetki.ru/downloads/releases.json`, `https://api.triotmetki.ru/modpack/releases/latest?game=1.46.0.0` (`compatible`) and the /mod page's two downloads (disabled with a «first release» note until `GET /modpack/releases/status` reports the files).
-- [ ] Publish through МОСТ as well ([most-publishing.md](most-publishing.md)) and set `MOD_DISTRIBUTION.mostUrl` once the entry is live.
 - [ ] Users bind their devices again with a code from `/me`. Devices bound in development do not exist in production.
 
 Later releases: bump the versions, commit, push and run the workflow again. Only a version `releases.json` does not list is built and published; older releases stay in the index, so clients still on an older game version keep their compatible release. The manager is released on its own when only `version` in `apps/game/manager/package.json` changed (the self-update only offers a newer version), and a modpack-only release leaves the `manager` block as it is.
