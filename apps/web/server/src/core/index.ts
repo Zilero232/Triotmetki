@@ -10,6 +10,7 @@ export {
   isPrismaRequestError,
   isTransactionConflict,
   isUniqueViolation,
+  isUniqueViolationOn,
   LIMIT_LOCK_SCOPE,
   lockedTransaction,
   PRISMA_CODE,
@@ -25,6 +26,7 @@ export { SESSION_EVENTS } from './session-events';
 export type { SessionEndedEvent, SessionEventsSink } from './session-events';
 export { LocalDiskStorage, ObjectStorage, ObjectStorageModule, StorageObjectMissingError } from './storage';
 export type { PutObjectInput } from './storage';
+export { TokenCipherModule, TokenCipherService } from './token-cipher';
 export { USER_LESTA_ACCOUNT_ORDER, UserLestaAccountsModule, UserLestaAccountsService } from './user-lesta-accounts';
 export type { RequirePrimaryInput } from './user-lesta-accounts';
 export { markGainedKey, WEBHOOK_EMITTER } from './webhooks';

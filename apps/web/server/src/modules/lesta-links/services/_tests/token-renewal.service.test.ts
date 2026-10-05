@@ -6,6 +6,7 @@ import type { UserLestaAccount } from '../../../../../generated';
 import type { LestaClients, PrismaService } from '../../../../core';
 import type { NotificationService } from '../../../notifications';
 
+import { createTokenCipher } from '../../../../core/token-cipher/_tests/token-cipher.fixtures';
 import { LestaApiError } from '../../../../lib/lesta';
 import { relinkDedupeKey } from '../../lib';
 import { TokenRenewalService } from '../token-renewal.service';
@@ -23,24 +24,29 @@ const createService = () => {
   const clients = mockDeep<LestaClients>();
   const notifications = mock<NotificationService>();
 
-  return { service: new TokenRenewalService(prisma, clients, notifications), prisma, clients, notifications };
+  const cipher = createTokenCipher();
+
+  return { service: new TokenRenewalService(prisma, clients, notifications, cipher), prisma, clients, notifications, cipher };
 };
 
 describe('TokenRenewalService.run', () => {
-  it('stores the renewed token and its new expiry', async () => {
-    const { service, prisma, clients, notifications } = createService();
+  it('stores the renewed token encrypted with its new expiry', async () => {
+    const { service, prisma, clients, notifications, cipher } = createService();
     const expiresAt = Math.floor(addDays(NOW, 13).getTime() / 1000);
 
-    prisma.userLestaAccount.findMany.mockResolvedValue([due()]);
+    prisma.userLestaAccount.findMany.mockResolvedValue([due({ accessToken: await cipher.seal('old-token') })]);
     clients.priority.auth.prolongate.mockResolvedValue({ access_token: 'new-token', account_id: 7, expires_at: expiresAt });
 
     await expect(service.run(NOW)).resolves.toMatchObject({ due: 1, renewed: 1, stale: 0 });
     expect(clients.priority.auth.prolongate).toHaveBeenCalledWith(expect.objectContaining({ accessToken: 'old-token' }));
 
-    expect(prisma.userLestaAccount.update).toHaveBeenCalledWith({
-      where: { accountId: 7n },
-      data: { accessToken: 'new-token', tokenExpiresAt: fromUnixTime(expiresAt) }
-    });
+    const [update] = prisma.userLestaAccount.update.mock.calls[0] ?? [];
+    const stored = update?.data.accessToken;
+
+    expect(update?.where).toEqual({ accountId: 7n });
+    expect(update?.data.tokenExpiresAt).toEqual(fromUnixTime(expiresAt));
+    expect(stored).not.toBe('new-token');
+    expect(typeof stored === 'string' ? await cipher.open(stored) : null).toBe('new-token');
 
     expect(notifications.notify).not.toHaveBeenCalled();
   });

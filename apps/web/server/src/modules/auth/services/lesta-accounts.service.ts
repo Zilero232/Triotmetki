@@ -4,7 +4,7 @@ import type { LestaAccountStore, LinkLestaAccountInput } from '../../../lib/auth
 import type { LestaClient } from '../../../lib/lesta';
 
 import { errorMessage } from '../../../common/lib';
-import { LESTA_CLIENT, LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService, USER_LESTA_ACCOUNT_ORDER } from '../../../core';
+import { LESTA_CLIENT, LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService, TokenCipherService, USER_LESTA_ACCOUNT_ORDER } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { CollectorProducerService } from '../../collector';
 
@@ -16,7 +16,8 @@ export class LestaAccountsService implements LestaAccountStore {
     private readonly prisma: PrismaService,
     private readonly collector: CollectorProducerService,
     private readonly entitlements: EntitlementsService,
-    @Inject(LESTA_CLIENT) private readonly lesta: LestaClient
+    @Inject(LESTA_CLIENT) private readonly lesta: LestaClient,
+    private readonly cipher: TokenCipherService
   ) {}
 
   async findUserId(accountId: number): Promise<string | null> {
@@ -38,6 +39,7 @@ export class LestaAccountsService implements LestaAccountStore {
   async link({ userId, accountId, nickname, accessToken, expiresAt }: LinkLestaAccountInput): Promise<boolean> {
     const id = BigInt(accountId);
     const limit = await this.entitlements.limit({ userId, key: 'linkedAccounts' });
+    const sealedToken = await this.cipher.seal(accessToken);
 
     const isLinked = await lockedTransaction({
       prisma: this.prisma,
@@ -67,8 +69,8 @@ export class LestaAccountsService implements LestaAccountStore {
 
         await tx.userLestaAccount.upsert({
           where: { accountId: id },
-          create: { userId, accountId: id, accessToken, tokenExpiresAt: expiresAt, isPrimary: hasPrimary === 0 },
-          update: { userId, accessToken, tokenExpiresAt: expiresAt, tokenStaleAt: null, garageSyncedAt: null }
+          create: { userId, accountId: id, accessToken: sealedToken, tokenExpiresAt: expiresAt, isPrimary: hasPrimary === 0 },
+          update: { userId, accessToken: sealedToken, tokenExpiresAt: expiresAt, tokenStaleAt: null, garageSyncedAt: null }
         });
 
         return true;
@@ -89,7 +91,7 @@ export class LestaAccountsService implements LestaAccountStore {
     await Promise.allSettled(
       links.map(async (link) => {
         if (link.accessToken) {
-          await this.lesta.auth.logout({ accessToken: link.accessToken }).catch((error: unknown) => {
+          await this.lesta.auth.logout({ accessToken: await this.cipher.open(link.accessToken) }).catch((error: unknown) => {
             this.logger.warn(`Lesta token of ${link.accountId} was not revoked: ${errorMessage(error)}`);
           });
         }

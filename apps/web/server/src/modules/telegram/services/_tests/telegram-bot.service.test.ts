@@ -3,7 +3,8 @@ import type { Bot } from 'grammy';
 import type { Update } from 'grammy/types';
 
 import { ConfigService } from '@nestjs/config';
-import { describe, expect, it } from 'vitest';
+import RedisMock from 'ioredis-mock';
+import { describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Env } from '../../../../config/env';
@@ -30,7 +31,8 @@ const createBot = (secret = SECRET) => {
     mock<TelegramCommandsService>({ commands: [] }),
     mock<TelegramInlineService>(),
     mock<TelegramSettingsService>(),
-    mock<TelegramCommandRegistry>()
+    mock<TelegramCommandRegistry>(),
+    new RedisMock()
   );
 
   return { bot, service };
@@ -42,7 +44,34 @@ describe('TelegramBotService.handleWebhook', () => {
 
     await service.handleWebhook({ update, secret: SECRET });
 
-    expect(bot.handleUpdate).toHaveBeenCalledWith(update);
+    await vi.waitFor(() => expect(bot.handleUpdate).toHaveBeenCalledWith(update));
+  });
+
+  it('acknowledges the webhook without waiting for the bot to finish the update', async () => {
+    const { bot, service } = createBot();
+
+    bot.handleUpdate.mockReturnValue(new Promise<void>(() => undefined));
+
+    await expect(service.handleWebhook({ update: mock<Update>({ update_id: 2 }), secret: SECRET })).resolves.toBeUndefined();
+  });
+
+  it('handles an update once when Telegram delivers it again', async () => {
+    const { bot, service } = createBot();
+    const repeated = mock<Update>({ update_id: 3 });
+
+    await service.handleWebhook({ update: repeated, secret: SECRET });
+    await service.handleWebhook({ update: repeated, secret: SECRET });
+
+    await vi.waitFor(() => expect(bot.handleUpdate).toHaveBeenCalled());
+    expect(bot.handleUpdate).toHaveBeenCalledOnce();
+  });
+
+  it('keeps acknowledging when the bot fails on an update', async () => {
+    const { bot, service } = createBot();
+
+    bot.handleUpdate.mockRejectedValue(new Error('telegram down'));
+
+    await expect(service.handleWebhook({ update: mock<Update>({ update_id: 4 }), secret: SECRET })).resolves.toBeUndefined();
   });
 
   it('drops an update with a wrong or missing secret', async () => {

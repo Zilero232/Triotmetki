@@ -45,7 +45,7 @@ This is the status of every area at the last audit. **Ready** means the piece is
 | **DNS**: `A`/`AAAA` for `triotmetki.ru` and `api.triotmetki.ru`; ports 80, 443/tcp and 443/udp open | Blocked | The registrar and the VPS firewall |
 | **GitHub secrets**: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL`, `DEPLOY_SSH_HOST`, `DEPLOY_SSH_USER`, `DEPLOY_SSH_PASSWORD`, `DEPLOY_PATH`, `TAURI_SIGNING_PRIVATE_KEY` (+ `_PASSWORD`) | Blocked | Settings → Secrets and variables (§1) |
 | **VPS downloads folder** `DEPLOY_PATH/downloads` | Blocked | `mkdir -p` once before the first deploy (§1) |
-| **VPS `.env` secrets and switches**: `BETTER_AUTH_SECRET`, `MOD_INGEST_SECRET`, `INTERNAL_API_TOKEN`, `POSTGRES_PASSWORD`, `BULL_BOARD_PASSWORD`, `LESTA_NOTICE` | Blocked | Generate them on the VPS (§1) |
+| **VPS `.env` secrets and switches**: `BETTER_AUTH_SECRET`, `MOD_INGEST_SECRET`, `INTERNAL_API_TOKEN`, `TOKEN_ENCRYPTION_SECRET`, `POSTGRES_PASSWORD`, `BULL_BOARD_PASSWORD`, `LESTA_NOTICE` | Blocked | Generate them on the VPS (§1) |
 | ghcr access from the VPS | Blocked | Make the packages public, or run `docker login ghcr.io` with a read-only token |
 | **YooKassa**: `YOOKASSA_*`, the webhook | Blocked, not needed for launch | Checkout stays off (`PLUS.checkoutEnabled`) until Lesta confirms the model (§5) |
 | **Bots and streamer integrations**: Telegram, Discord, VK, Twitch, DonationAlerts, VK Video Live, YouTube | Blocked, optional | Each one is off while its token is empty |
@@ -104,7 +104,9 @@ Start from [.env.example](../../.env.example). The server and worker containers 
 - [ ] `NODE_ENV=production`. Once `API_URL` is not a local host, `validateEnv` refuses to boot while `NODE_ENV` is unset.
 - [ ] **Secrets.** Generate fresh values with `openssl rand -base64 32`:
   - `BETTER_AUTH_SECRET`: at least 32 characters.
-  - `MOD_INGEST_SECRET`: the root of every mod device key. Rotating it unbinds every device.
+  - `BETTER_AUTH_SECRET` also encrypts the OAuth tokens better-auth stores in `account` (`encryptOAuthTokens`); rotating it makes them unreadable, so social sign-ins re-consent.
+  - `MOD_INGEST_SECRET`: at least 32 characters, the root of every mod device key. Rotating it unbinds every device.
+  - `TOKEN_ENCRYPTION_SECRET`: at least 32 characters, no default. Encrypts the tokens stored outside better-auth (`user_lesta_account.access_token`, `streamer_integration.access_token` / `refresh_token`). Rotating it makes them unreadable: Lesta links go stale and streamers reconnect their integrations.
   - `INTERNAL_API_TOKEN`: at least 32 characters, no default. Compose passes the same value to the client container (server-only, never `NEXT_PUBLIC_`); the Next server sends it as `x-otmetki-internal-token` with the visitor's IP (`x-otmetki-client-ip`) on every server-side API call, so SSR, prefetches and the entity-presence check are rate-limited per visitor instead of sharing the Next server's bucket. A signed call without a visitor IP (cached renders) gets the separate internal bucket (`THROTTLE.internalLimit`). The API accepts the token only from a loopback/private peer or a `TRUSTED_PROXIES` entry, and Caddy drops the header from its access log. `docker compose` refuses to start without it; rotating it means restarting the client and the server together.
   - In production, the server **refuses to start** when any of these secrets still looks like a development placeholder. The check matches `change-me`, `changeme`, `dev-secret`, `dev-mod-secret`, `test-secret`, `example` or `placeholder` (`ENV_GUARD` in `apps/web/server/src/config/env/env.constants.ts`), so copying `.env.example` unchanged fails loudly.
 - [ ] `API_URL=https://api.triotmetki.ru`, `WEB_URL=https://triotmetki.ru`. `CORS_ORIGINS` stays empty unless another origin needs the API.

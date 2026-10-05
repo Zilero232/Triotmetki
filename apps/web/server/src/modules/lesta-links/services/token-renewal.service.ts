@@ -5,7 +5,7 @@ import type { LestaClients } from '../../../core';
 import type { MarkStaleInput, TokenRenewalResult } from '../lesta-links.types';
 
 import { errorMessage } from '../../../common/lib';
-import { LESTA_CLIENTS, PrismaService } from '../../../core';
+import { LESTA_CLIENTS, PrismaService, TokenCipherService } from '../../../core';
 import { NotificationService } from '../../notifications';
 import { LESTA_LINKS } from '../config';
 import { hasExpired, isTokenRejected, relinkDedupeKey, renewedExpiry } from '../lib';
@@ -17,7 +17,8 @@ export class TokenRenewalService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(LESTA_CLIENTS) private readonly clients: LestaClients,
-    private readonly notifications: NotificationService
+    private readonly notifications: NotificationService,
+    private readonly cipher: TokenCipherService
   ) {}
 
   async run(now = new Date()): Promise<TokenRenewalResult> {
@@ -36,11 +37,12 @@ export class TokenRenewalService {
       }
 
       try {
-        const renewed = await this.clients.priority.auth.prolongate({ accessToken: link.accessToken, expiresAt: renewedExpiry(now) });
+        const accessToken = await this.cipher.open(link.accessToken);
+        const renewed = await this.clients.priority.auth.prolongate({ accessToken, expiresAt: renewedExpiry(now) });
 
         await this.prisma.userLestaAccount.update({
           where: { accountId: link.accountId },
-          data: { accessToken: renewed.access_token, tokenExpiresAt: fromUnixTime(renewed.expires_at) }
+          data: { accessToken: await this.cipher.seal(renewed.access_token), tokenExpiresAt: fromUnixTime(renewed.expires_at) }
         });
 
         result.renewed += 1;

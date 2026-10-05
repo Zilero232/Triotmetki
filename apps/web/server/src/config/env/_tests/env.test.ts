@@ -10,7 +10,8 @@ const base = {
   WEB_URL: 'http://localhost:3000',
   BETTER_AUTH_SECRET: 'x'.repeat(32),
   INTERNAL_API_TOKEN: 'i'.repeat(32),
-  MOD_INGEST_SECRET: 'mod-secret'
+  MOD_INGEST_SECRET: 'm'.repeat(32),
+  TOKEN_ENCRYPTION_SECRET: 't'.repeat(32)
 };
 
 describe('validateEnv', () => {
@@ -48,6 +49,15 @@ describe('validateEnv', () => {
     expect(() => validateEnv({ ...base, BETTER_AUTH_SECRET: 'short' })).toThrow(/BETTER_AUTH_SECRET/);
   });
 
+  it('rejects a mod ingest secret too short to key device secrets', () => {
+    expect(() => validateEnv({ ...base, MOD_INGEST_SECRET: 'm'.repeat(31) })).toThrow(/MOD_INGEST_SECRET/);
+  });
+
+  it('requires a token encryption secret long enough to be safe, with no fallback', () => {
+    expect(() => validateEnv({ ...base, TOKEN_ENCRYPTION_SECRET: undefined })).toThrow(/TOKEN_ENCRYPTION_SECRET/);
+    expect(() => validateEnv({ ...base, TOKEN_ENCRYPTION_SECRET: 'short' })).toThrow(/TOKEN_ENCRYPTION_SECRET/);
+  });
+
   it('requires an internal API token long enough to be safe, with no fallback', () => {
     expect(() => validateEnv({ ...base, INTERNAL_API_TOKEN: undefined })).toThrow(/INTERNAL_API_TOKEN/);
     expect(() => validateEnv({ ...base, INTERNAL_API_TOKEN: 'short' })).toThrow(/INTERNAL_API_TOKEN/);
@@ -65,9 +75,12 @@ describe('validateEnv fail-closed guards', () => {
     expect(validateEnv(base).NODE_ENV).toBe('development');
   });
 
-  it.each(['BETTER_AUTH_SECRET', 'MOD_INGEST_SECRET', 'INTERNAL_API_TOKEN'])('refuses a development placeholder %s in production', (name) => {
-    expect(() => validateEnv({ ...deployed, NODE_ENV: 'production', [name]: 'dev-secret-change-me-min-32-chars-000' })).toThrow(name);
-  });
+  it.each(['BETTER_AUTH_SECRET', 'MOD_INGEST_SECRET', 'INTERNAL_API_TOKEN', 'TOKEN_ENCRYPTION_SECRET'])(
+    'refuses a development placeholder %s in production',
+    (name) => {
+      expect(() => validateEnv({ ...deployed, NODE_ENV: 'production', [name]: 'dev-secret-change-me-min-32-chars-000' })).toThrow(name);
+    }
+  );
 
   it('accepts real secrets in production', () => {
     expect(validateEnv({ ...deployed, NODE_ENV: 'production' }).NODE_ENV).toBe('production');

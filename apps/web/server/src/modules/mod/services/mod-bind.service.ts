@@ -59,7 +59,7 @@ export class ModBindService {
     }
 
     const request = parsed.data;
-    const failureKey = `${BIND_CODE.failurePrefix}${request.account_id ?? BIND_CODE.anyAccount}:${requester}`;
+    const failureKey = `${BIND_CODE.failurePrefix}${requester}`;
     const failures = Number((await this.redis.get(failureKey)) ?? 0);
 
     if (failures >= BIND_CODE.maxFailuresPerRequester) {

@@ -38,7 +38,9 @@ export const playersSql = ({ query, minBattles, filter = Prisma.empty }: Players
 
 export const tankPlayersSql = ({ query, minBattles }: LeaderboardSqlInput): LeaderboardSql => {
   const column = Prisma.raw(TANK_RATING_COLUMN[query.metric]);
-  const type = query.type ?? null;
+  const tankFilter = query.tankId === undefined ? Prisma.empty : Prisma.sql`AND atr.tank_id = ${query.tankId}`;
+  const tierFilter = query.tier === undefined ? Prisma.empty : Prisma.sql`AND v.tier = ${query.tier}`;
+  const typeFilter = query.type === undefined ? Prisma.empty : Prisma.sql`AND v.type::text = ${query.type}`;
   const ranked = Prisma.sql`
     WITH agg AS (
       SELECT atr.account_id,
@@ -47,10 +49,7 @@ export const tankPlayersSql = ({ query, minBattles }: LeaderboardSqlInput): Lead
                / nullif(sum(atr.battles) FILTER (WHERE atr.${column} IS NOT NULL), 0))::float8 AS value
       FROM account_tank_rating atr
       JOIN vehicle v ON v.tank_id = atr.tank_id
-      WHERE atr.period = ${RATING_PERIOD_SQL[query.period]}::rating_period
-        AND (${query.tankId ?? null}::int IS NULL OR atr.tank_id = ${query.tankId ?? null}::int)
-        AND (${query.tier ?? null}::int IS NULL OR v.tier = ${query.tier ?? null}::int)
-        AND (${type}::text IS NULL OR v.type::text = ${type}::text)
+      WHERE atr.period = ${RATING_PERIOD_SQL[query.period]}::rating_period ${tankFilter} ${tierFilter} ${typeFilter}
       GROUP BY atr.account_id
       HAVING sum(atr.battles) >= ${minBattles}
     )

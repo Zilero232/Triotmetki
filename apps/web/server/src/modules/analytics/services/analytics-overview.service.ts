@@ -6,6 +6,7 @@ import type { PlaytimeRow } from '../../players';
 import type { AnalyticsInput, PeriodWindow, SessionsInput, TrendInput, TrendRow, WindowInput } from '../analytics.types';
 import type { RawTankRow } from '../lib';
 
+import { Prisma } from '../../../../generated';
 import { percentOf } from '../../../common/lib';
 import { TIME } from '../../../config';
 import { PrismaService } from '../../../core';
@@ -78,6 +79,8 @@ export class AnalyticsOverviewService {
   }
 
   async trend({ accountId, from, granularity, tankId }: TrendInput): Promise<TrendRow[]> {
+    const tankFilter = tankId === undefined ? Prisma.empty : Prisma.sql`AND tank_id = ${tankId}`;
+
     return this.prisma.$queryRaw<TrendRow[]>`
       SELECT (date_trunc(${granularity}, captured_at AT TIME ZONE ${TIME.zone}) AT TIME ZONE ${TIME.zone}) AS bucket,
              tank_id,
@@ -85,8 +88,7 @@ export class AnalyticsOverviewService {
              sum(frags)::float8 AS frags, sum(spotted)::float8 AS spotted, sum(capture_points)::float8 AS cap,
              sum(dropped_capture_points)::float8 AS def, sum(survived_battles)::float8 AS survived
       FROM tank_battle_delta
-      WHERE account_id = ${accountId} AND mode = 'random'::stats_mode AND captured_at >= ${from ?? ANALYTICS_SQL.epoch}
-        AND (${tankId ?? null}::int IS NULL OR tank_id = ${tankId ?? null}::int)
+      WHERE account_id = ${accountId} AND mode = 'random'::stats_mode AND captured_at >= ${from ?? ANALYTICS_SQL.epoch} ${tankFilter}
       GROUP BY 1, 2
     `;
   }

@@ -22,7 +22,10 @@ export class PurgeProcessor extends TrackedWorkerHost {
       .with(JOB.purge.dispatch, async () => ({ dispatched: await this.purge.dispatch() }))
       .with(JOB.purge.retention, async () => ({ deleted: await this.retention.purgeExpired() }))
       .otherwise(async () => {
-        await this.purge.purgeAccount(purgeAccountPayloadSchema.parse(job.data));
+        await this.purge.purgeAccount({
+          ...purgeAccountPayloadSchema.parse(job.data),
+          isFinalAttempt: job.attemptsMade + 1 >= (job.opts.attempts ?? 1)
+        });
 
         return { purged: true };
       });

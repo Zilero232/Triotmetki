@@ -1,5 +1,6 @@
 import type {
   AccountModeRow,
+  LatestRandomModeStatsSqlInput,
   LatestTanksSqlInput,
   MarksRow,
   PlayerIdentityRow,
@@ -10,7 +11,7 @@ import type {
 
 import { Prisma } from '../../../../../../generated';
 import { MODE_STATS_SQL } from '../../../../../common/lib';
-import { TANK_SNAPSHOT_COLUMNS } from './account-writes.constants';
+import { MODE_RECORD_COLUMNS, TANK_SNAPSHOT_COLUMNS } from './account-writes.constants';
 
 const toJson = (rows: readonly object[]): string =>
   JSON.stringify(rows, (_, value: unknown) => (typeof value === 'bigint' ? value.toString() : value));
@@ -21,6 +22,21 @@ const updates = Prisma.raw(
   TANK_SNAPSHOT_COLUMNS.filter((column) => !['account_id', 'mode', 'tank_id'].includes(column))
     .map((column) => `${column} = EXCLUDED.${column}`)
     .join(', ')
+);
+
+const recordAtColumns = Prisma.raw(MODE_RECORD_COLUMNS.map((column) => `${column}_at`).join(', '));
+
+const recordAtValues = (at: Prisma.Sql): Prisma.Sql =>
+  Prisma.join(
+    MODE_RECORD_COLUMNS.map((column) => Prisma.sql`CASE WHEN ${Prisma.raw(`r.${column}`)} IS NOT NULL THEN ${at} END`),
+    ', '
+  );
+
+const recordAtUpdates = Prisma.raw(
+  MODE_RECORD_COLUMNS.map(
+    (column) =>
+      `${column}_at = CASE WHEN EXCLUDED.${column} > coalesce(account_mode_stats.${column}, -1) THEN EXCLUDED.${column}_at ELSE account_mode_stats.${column}_at END`
+  ).join(', ')
 );
 
 export const upsertPlayerTanksSql = (rows: readonly PlayerTankUpsertRow[]): Prisma.Sql => Prisma.sql`
@@ -88,12 +104,13 @@ export const markSyncedSql = (rows: readonly SyncedRow[]): Prisma.Sql => Prisma.
 export const upsertAccountModeStatsSql = (rows: readonly AccountModeRow[]): Prisma.Sql => Prisma.sql`
   INSERT INTO account_mode_stats (
     account_id, mode, battles, wins, losses, draws, damage_dealt, damage_received, frags, spotted, xp, survived_battles,
-    hits, shots, capture_points, dropped_capture_points, avg_damage_blocked, avg_damage_assisted, max_damage, max_xp, max_frags, updated_at
+    hits, shots, capture_points, dropped_capture_points, avg_damage_blocked, avg_damage_assisted, max_damage, max_xp, max_frags, updated_at,
+    ${recordAtColumns}
   )
   SELECT
     r.account_id, r.mode::stats_mode, r.battles, r.wins, r.losses, r.draws, r.damage_dealt, r.damage_received, r.frags, r.spotted, r.xp,
     r.survived_battles, r.hits, r.shots, r.capture_points, r.dropped_capture_points, r.avg_damage_blocked, r.avg_damage_assisted,
-    r.max_damage, r.max_xp, r.max_frags, now()
+    r.max_damage, r.max_xp, r.max_frags, now(), ${recordAtValues(Prisma.sql`now()`)}
   FROM jsonb_to_recordset(${toJson(
     rows.map((row) => ({
       account_id: row.accountId,
@@ -130,7 +147,29 @@ export const upsertAccountModeStatsSql = (rows: readonly AccountModeRow[]): Pris
     xp = EXCLUDED.xp, survived_battles = EXCLUDED.survived_battles, hits = EXCLUDED.hits, shots = EXCLUDED.shots,
     capture_points = EXCLUDED.capture_points, dropped_capture_points = EXCLUDED.dropped_capture_points,
     avg_damage_blocked = EXCLUDED.avg_damage_blocked, avg_damage_assisted = EXCLUDED.avg_damage_assisted,
-    max_damage = EXCLUDED.max_damage, max_xp = EXCLUDED.max_xp, max_frags = EXCLUDED.max_frags, updated_at = now()
+    ${recordAtUpdates}, max_damage = EXCLUDED.max_damage, max_xp = EXCLUDED.max_xp, max_frags = EXCLUDED.max_frags, updated_at = now()
+  WHERE account_mode_stats.battles <= EXCLUDED.battles
+`;
+
+export const upsertRandomModeStatsSql = ({ accountId, capturedAt }: LatestRandomModeStatsSqlInput): Prisma.Sql => Prisma.sql`
+  INSERT INTO account_mode_stats (
+    account_id, mode, battles, wins, losses, draws, damage_dealt, damage_received, frags, spotted, xp, survived_battles,
+    hits, shots, capture_points, dropped_capture_points, avg_damage_blocked, avg_damage_assisted, max_damage, max_xp, max_frags, updated_at,
+    ${recordAtColumns}
+  )
+  SELECT
+    r.account_id, r.mode, r.battles, r.wins, r.losses, r.draws, r.damage_dealt, r.damage_received, r.frags, r.spotted, r.xp,
+    r.survived_battles, r.hits, r.shots, r.capture_points, r.dropped_capture_points, r.avg_damage_blocked, r.avg_damage_assisted,
+    r.max_damage, r.max_xp, r.max_frags, now(), ${recordAtValues(Prisma.sql`r.captured_at`)}
+  FROM account_snapshot r
+  WHERE r.account_id = ${accountId} AND r.mode = 'random'::stats_mode AND r.captured_at = ${capturedAt}
+  ON CONFLICT (account_id, mode) DO UPDATE SET
+    battles = EXCLUDED.battles, wins = EXCLUDED.wins, losses = EXCLUDED.losses, draws = EXCLUDED.draws,
+    damage_dealt = EXCLUDED.damage_dealt, damage_received = EXCLUDED.damage_received, frags = EXCLUDED.frags, spotted = EXCLUDED.spotted,
+    xp = EXCLUDED.xp, survived_battles = EXCLUDED.survived_battles, hits = EXCLUDED.hits, shots = EXCLUDED.shots,
+    capture_points = EXCLUDED.capture_points, dropped_capture_points = EXCLUDED.dropped_capture_points,
+    avg_damage_blocked = EXCLUDED.avg_damage_blocked, avg_damage_assisted = EXCLUDED.avg_damage_assisted,
+    ${recordAtUpdates}, max_damage = EXCLUDED.max_damage, max_xp = EXCLUDED.max_xp, max_frags = EXCLUDED.max_frags, updated_at = now()
   WHERE account_mode_stats.battles <= EXCLUDED.battles
 `;
 

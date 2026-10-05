@@ -3,7 +3,8 @@ import { GAME_MODE_BONUS_TYPES } from '../../../common/lib';
 export const MOD_INGEST = {
   ledgerPrefix: 'mod:event:',
   ledgerTtlSeconds: 30 * 86_400,
-  throttle: { limit: 120, ttl: 60_000 }
+  throttle: { limit: 120, ttl: 60_000 },
+  battleUniqueConstraint: 'battle_account_id_arena_unique_id_key'
 } as const;
 
 export const BATTLE_CORROBORATION = {

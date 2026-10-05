@@ -20,7 +20,7 @@ const createService = (linked: bigint[]) => {
   prisma.userLestaAccount.findMany.mockResolvedValue(linked.map((accountId) => mock<UserLestaAccount>({ accountId })));
   prisma.player.findMany.mockResolvedValue(linked.map(player));
   prisma.playerTank.findMany.mockResolvedValue([]);
-  prisma.accountSnapshot.findMany.mockResolvedValue([]);
+  prisma.accountSnapshot.findFirst.mockResolvedValue(null);
   prisma.playSession.findMany.mockResolvedValue([]);
   prisma.battle.findMany.mockResolvedValue([]);
 
@@ -47,7 +47,7 @@ describe('DataExportService.raw', () => {
     expect(prisma.userLestaAccount.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'user' } }));
     expect(prisma.player.findMany.mock.calls[0]?.[0]?.where).toEqual(accountFilter);
     expect(prisma.playerTank.findMany.mock.calls[0]?.[0]?.where).toEqual(accountFilter);
-    expect(prisma.accountSnapshot.findMany.mock.calls[0]?.[0]?.where).toMatchObject(accountFilter);
+    expect(prisma.accountSnapshot.findFirst.mock.calls.map(([query]) => query?.where?.accountId)).toEqual([7n, 8n]);
   });
 
   it('includes the component sets and profiles the user synced from the modpack', async () => {
@@ -71,7 +71,7 @@ describe('DataExportService.raw', () => {
   it('exports an account without a snapshot with empty overall stats', async () => {
     const { service, prisma } = createService([7n, 8n]);
 
-    prisma.accountSnapshot.findMany.mockResolvedValue([
+    prisma.accountSnapshot.findFirst.mockResolvedValueOnce(
       mock<AccountSnapshot>({
         accountId: 7n,
         capturedAt: NOW,
@@ -91,7 +91,7 @@ describe('DataExportService.raw', () => {
         droppedCapturePoints: 0,
         globalRating: null
       })
-    ]);
+    );
 
     const { accounts, generatedAt } = await service.raw('user');
 

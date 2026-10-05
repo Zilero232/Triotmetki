@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
+import type { UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { EntitlementsService } from '../../../billing';
+import type { PurgeGuardService } from '../../../collector';
 import type { CommunityContentService } from '../../../community-core';
 
 import { AccountPurgeService } from '../account-purge.service';
@@ -13,10 +15,12 @@ const createService = () => {
   const prisma = mockDeep<PrismaService>();
   const communityContent = mock<CommunityContentService>();
   const entitlements = mock<EntitlementsService>();
+  const purgeGuard = mock<PurgeGuardService>();
 
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
+  prisma.userLestaAccount.findMany.mockResolvedValue([]);
 
-  return { service: new AccountPurgeService(prisma, communityContent, entitlements), prisma, communityContent, entitlements };
+  return { service: new AccountPurgeService(prisma, communityContent, entitlements, purgeGuard), prisma, communityContent, entitlements, purgeGuard };
 };
 
 describe('AccountPurgeService.purgeAccount', () => {
@@ -66,15 +70,16 @@ describe('AccountPurgeService.purgeAccount', () => {
     }
   });
 
-  it('unlinks the Lesta accounts but keeps their public game data', async () => {
-    const { service, prisma } = createService();
+  it('opens a user deletion request for every linked Lesta account before unlinking them', async () => {
+    const { service, prisma, purgeGuard } = createService();
+
+    prisma.userLestaAccount.findMany.mockResolvedValue([mock<UserLestaAccount>({ accountId: 7n }), mock<UserLestaAccount>({ accountId: 9n })]);
 
     await service.purgeAccount({ userId: USER_ID });
 
+    expect(purgeGuard.open).toHaveBeenCalledWith(expect.objectContaining({ db: prisma, accountIds: [7n, 9n], source: 'user' }));
+    expect(purgeGuard.open.mock.invocationCallOrder[0]).toBeLessThan(prisma.userLestaAccount.deleteMany.mock.invocationCallOrder[0] ?? 0);
     expect(prisma.userLestaAccount.deleteMany).toHaveBeenCalledWith({ where: { userId: USER_ID } });
-    expect(prisma.player.deleteMany).not.toHaveBeenCalled();
-    expect(prisma.player.delete).not.toHaveBeenCalled();
-    expect(prisma.playerTank.deleteMany).not.toHaveBeenCalled();
   });
 
   it('drops the cached Plus state only after the purge committed', async () => {

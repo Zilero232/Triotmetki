@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
+import type { OpenDeletionRequestsInput } from '../purge.types';
+
 import { PrismaService } from '../../../../core';
 import { PURGE } from '../config';
 
@@ -23,5 +25,14 @@ export class PurgeGuardService {
     });
 
     return new Set(requests.map((request) => Number(request.accountId)));
+  }
+
+  async open({ db, accountIds, source, reason }: OpenDeletionRequestsInput): Promise<void> {
+    if (accountIds.length === 0) {
+      return;
+    }
+
+    await db.dataDeletionRequest.createMany({ data: accountIds.map((accountId) => ({ accountId, source, reason })) });
+    await db.player.updateMany({ where: { accountId: { in: [...accountIds] } }, data: { isHidden: true } });
   }
 }

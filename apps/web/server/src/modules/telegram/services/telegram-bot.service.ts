@@ -4,13 +4,15 @@ import type { Update } from 'grammy/types';
 import { I18n } from '@grammyjs/i18n';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Bot } from 'grammy';
+import { Redis } from 'ioredis';
 import pRetry from 'p-retry';
 
 import type { BotContext, TelegramWebhookInput } from '../telegram.types';
 
 import { errorMessage, timingSafeEqual } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
-import { BOT, BOT_API, BOT_COMMANDS, EXTERNAL_BOT_COMMANDS, TELEGRAM_TOKENS } from '../config';
+import { REDIS } from '../../../core';
+import { BOT, BOT_API, BOT_COMMANDS, EXTERNAL_BOT_COMMANDS, TELEGRAM_TOKENS, WEBHOOK } from '../config';
 import { LINK_CONFIRM_DATA, looksLikeLinkCode, webhookUrl } from '../lib';
 import { TelegramChatService } from './telegram-chat.service';
 import { TelegramCommandRegistry } from './telegram-command-registry.service';
@@ -32,7 +34,8 @@ export class TelegramBotService implements OnApplicationBootstrap, OnModuleDestr
     private readonly commands: TelegramCommandsService,
     private readonly inline: TelegramInlineService,
     private readonly settings: TelegramSettingsService,
-    private readonly registry: TelegramCommandRegistry
+    private readonly registry: TelegramCommandRegistry,
+    @Inject(REDIS) private readonly redis: Redis
   ) {
     if (this.bot) {
       this.register(this.bot);
@@ -74,7 +77,25 @@ export class TelegramBotService implements OnApplicationBootstrap, OnModuleDestr
       return;
     }
 
-    await this.handleUpdate(update);
+    if (!(await this.claimUpdate(update.update_id))) {
+      return;
+    }
+
+    void this.handleUpdate(update).catch((error: unknown) => {
+      this.logger.error(`telegram update ${update.update_id} failed: ${errorMessage(error)}`);
+    });
+  }
+
+  private async claimUpdate(updateId: number): Promise<boolean> {
+    const claimed = await this.redis
+      .set(`${WEBHOOK.seenPrefix}${updateId}`, WEBHOOK.seenMarker, 'EX', WEBHOOK.seenTtlSeconds, 'NX')
+      .catch((error: unknown) => {
+        this.logger.warn(`telegram update ${updateId} not deduplicated: ${errorMessage(error)}`);
+
+        return 'OK';
+      });
+
+    return claimed !== null;
   }
 
   private async handleUpdate(update: Update): Promise<void> {

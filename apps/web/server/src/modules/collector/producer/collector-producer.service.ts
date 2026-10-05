@@ -36,7 +36,7 @@ export class CollectorProducerService {
         ids.map((accountId) => ({
           name: JOB.enrol.enrol,
           data: { accountId, reason },
-          opts: { jobId: `${PRODUCER.enrolJobPrefix}-${accountId}`, priority: ENROL_PRIORITY[priority], removeOnComplete: true }
+          opts: { jobId: `${PRODUCER.enrolJobPrefix}-${accountId}`, priority: ENROL_PRIORITY[priority], removeOnComplete: true, removeOnFail: true }
         }))
       );
     } catch (error) {

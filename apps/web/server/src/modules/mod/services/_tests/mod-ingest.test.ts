@@ -11,6 +11,7 @@ import type { AuthenticatedDevice } from '../../mod.types';
 
 import { EventLedgerService, ModIngestService } from '..';
 import { Prisma } from '../../../../../generated';
+import { MOD_INGEST } from '../../config';
 import { ingestBatchSchema, moePercent } from '../../lib';
 
 const example = ingestBatchSchema.parse(
@@ -52,7 +53,14 @@ const device: AuthenticatedDevice = {
   createdAt: new Date()
 };
 
-const duplicate = () => new Prisma.PrismaClientKnownRequestError('duplicate', { code: 'P2002', clientVersion: 'test' });
+const uniqueViolation = (index: string) =>
+  new Prisma.PrismaClientKnownRequestError('duplicate', {
+    code: 'P2002',
+    clientVersion: 'test',
+    meta: { driverAdapterError: { cause: { kind: 'UniqueConstraintViolation', constraint: { index } } } }
+  });
+
+const duplicate = () => uniqueViolation(MOD_INGEST.battleUniqueConstraint);
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
@@ -109,6 +117,27 @@ describe('ModIngestService', () => {
     expect(replay.accepted).toBe(0);
     expect(replay.duplicates).toBe(example.events.length);
     expect(incrementedSessions(prisma)).toBe(sessionIncrements);
+  });
+
+  it('fails the batch instead of dropping the battle when another unique constraint is violated', async () => {
+    const { service, prisma } = createService();
+    const [battle] = battleEvents;
+
+    prisma.battle.create.mockRejectedValue(uniqueViolation('play_session_pkey'));
+
+    await expect(service.ingest({ device, batch: { ...example, events: battle ? [battle] : [] } })).rejects.toBeInstanceOf(
+      Prisma.PrismaClientKnownRequestError
+    );
+  });
+
+  it('opens the live session without a read-then-insert that a concurrent batch could race', async () => {
+    const { service, prisma } = createService();
+    const [battle] = battleEvents;
+
+    await service.ingest({ device, batch: { ...example, events: battle ? [battle] : [] } });
+
+    expect(prisma.playSession.upsert).not.toHaveBeenCalled();
+    expect(prisma.$executeRaw).toHaveBeenCalledOnce();
   });
 
   it('accepts only the new events of a partly seen batch', async () => {

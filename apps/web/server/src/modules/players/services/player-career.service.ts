@@ -3,17 +3,19 @@ import type { CareerModeLine, CareerModes, PlayerCareer, PlayerRecord } from '@o
 import { Injectable, Logger } from '@nestjs/common';
 import { MODE_META } from '@otmetki/schemas';
 import { entries, groupBy, sortBy } from 'remeda';
-import { match } from 'ts-pattern';
 
 import type { CareerSource } from '../../../common/lib';
-import type { CareerModesInput, CareerRecordInput, CareerRecordsInput, RecordAchievedAtInput, StoredCareerLineInput } from '../players.types';
+import type { CareerModesInput, CareerRecordInput, CareerRecordsInput, StoredCareerLineInput } from '../players.types';
+import type { CareerRecordTimes } from '../selects';
 
 import { AppNotFoundException } from '../../../common/exceptions';
 import { ACCOUNT_MODE_SOURCES, careerSourceFromBlock, errorMessage, MODE_STATS_MODES, modeBlockOf, toIso, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
 import { PLAYER_STATS } from '../config';
+import { achievedAt } from '../lib';
 import { careerRecordRefs, careerTotalsFromBlock, careerTotalsFromStored, toCareerModeLine, toCareerModeTank, toPlayerAssist } from '../mappers';
+import { CAREER_RECORD_TIMES_SELECT } from '../selects';
 import { PlayerResolverService } from './player-resolver.service';
 
 @Injectable()
@@ -51,7 +53,7 @@ export class PlayerCareerService {
 
   async modes({ accountId, allowLive }: CareerModesInput): Promise<CareerModes> {
     const [stored, tankRows] = await Promise.all([
-      this.prisma.accountModeStats.findMany({ where: { accountId } }),
+      this.prisma.accountModeStats.findMany({ where: { accountId, mode: { in: MODE_STATS_MODES } } }),
       this.prisma.tankModeStats.findMany({ where: { accountId }, orderBy: { battles: 'desc' } })
     ]);
 
@@ -116,36 +118,26 @@ export class PlayerCareerService {
   }
 
   private async records({ accountId, source, isStored }: CareerRecordsInput): Promise<PlayerCareer['records']> {
+    const times = isStored ? await this.recordTimes(accountId) : null;
     const found = new Map(
-      await Promise.all(
-        (source ? careerRecordRefs(source) : []).map(async (ref) => [ref.key, await this.record({ accountId, ref, isStored })] as const)
-      )
+      await Promise.all((source ? careerRecordRefs(source) : []).map(async (ref) => [ref.key, await this.record({ ref, times })] as const))
     );
 
     return { maxDamage: found.get('maxDamage') ?? null, maxXp: found.get('maxXp') ?? null, maxFrags: found.get('maxFrags') ?? null };
   }
 
-  private async record({ accountId, ref, isStored }: CareerRecordInput): Promise<PlayerRecord> {
+  private async record({ ref, times }: CareerRecordInput): Promise<PlayerRecord> {
     return {
       value: ref.value,
       vehicle: ref.tankId === null ? null : await this.catalog.summary(ref.tankId),
-      achievedAt: isStored ? await this.achievedAt({ accountId, key: ref.key, value: ref.value }) : null
+      achievedAt: times ? achievedAt({ key: ref.key, value: ref.value, times }) : null
     };
   }
 
-  private async achievedAt({ accountId, key, value }: RecordAchievedAtInput): Promise<string | null> {
-    const record = match(key)
-      .with('maxDamage', () => ({ maxDamage: value }))
-      .with('maxXp', () => ({ maxXp: value }))
-      .with('maxFrags', () => ({ maxFrags: value }))
-      .exhaustive();
-
-    const first = await this.prisma.accountSnapshot.findFirst({
-      where: { accountId, mode: PLAYER_STATS.snapshotMode, ...record },
-      orderBy: { capturedAt: 'asc' },
-      select: { capturedAt: true }
+  private async recordTimes(accountId: bigint): Promise<CareerRecordTimes | null> {
+    return this.prisma.accountModeStats.findUnique({
+      where: { accountId_mode: { accountId, mode: PLAYER_STATS.snapshotMode } },
+      select: CAREER_RECORD_TIMES_SELECT
     });
-
-    return toIso(first?.capturedAt);
   }
 }

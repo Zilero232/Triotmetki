@@ -22,8 +22,7 @@ model Player {
   progressionProcessedUntil DateTime?    @map("progression_processed_until") @db.Timestamptz(3)
   lastViewedAt              DateTime?    @map("last_viewed_at") @db.Timestamptz(3)
 
-  isHidden   Boolean   @default(false) @map("is_hidden")
-  purgeAfter DateTime? @map("purge_after") @db.Timestamptz(3)
+  isHidden Boolean @default(false) @map("is_hidden")
 
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
@@ -48,7 +47,6 @@ model Player {
   @@index([clanId])
   @@index([trackingTier, nextPollAt])
   @@index([lastBattleAt])
-  @@index([purgeAfter])
   @@map("player")
 }
 

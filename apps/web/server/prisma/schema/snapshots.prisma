@@ -196,6 +196,10 @@ model AccountModeStats {
   maxXp     Int? @map("max_xp")
   maxFrags  Int? @map("max_frags")
 
+  maxDamageAt DateTime? @map("max_damage_at") @db.Timestamptz(3)
+  maxXpAt     DateTime? @map("max_xp_at") @db.Timestamptz(3)
+  maxFragsAt  DateTime? @map("max_frags_at") @db.Timestamptz(3)
+
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   player Player @relation(fields: [accountId], references: [accountId], onDelete: Cascade)

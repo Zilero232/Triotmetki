@@ -6,6 +6,7 @@ export { missingPlayerKey } from './missing-player';
 export type { MissingPlayerLookup } from './missing-player';
 export { combinedSource, nextMark } from './next-mark';
 export { PLAYTIME, playtimeCells } from './playtime';
+export { achievedAt } from './record-times';
 export { statsBlockFromRating, statsBlockFromTotals, totalsFromLestaBlock } from './stats-block';
 export { clampMastery, marksSummary } from './tank-marks';
 export { seriesPoints } from './time-series';

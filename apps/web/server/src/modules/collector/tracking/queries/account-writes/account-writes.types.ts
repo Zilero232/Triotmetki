@@ -14,6 +14,11 @@ export type LatestTanksSqlInput = {
   capturedAt: Date;
 };
 
+export type LatestRandomModeStatsSqlInput = {
+  accountId: bigint;
+  capturedAt: Date;
+};
+
 export type SyncedRow = {
   accountId: number;
   lastBattleAt: Date | null;

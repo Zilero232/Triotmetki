@@ -6,5 +6,5 @@ export const ACHIEVEMENTS_FETCH = {
   refreshDays: 7,
   tiers: ['active', 'population'] satisfies TrackingTier[],
   blockingSources: ['user', 'lesta'] satisfies DeletionSource[],
-  blockingStatuses: ['pending', 'processing', 'completed'] satisfies DeletionStatus[]
+  blockingStatuses: ['pending', 'processing', 'completed', 'failed'] satisfies DeletionStatus[]
 } as const;

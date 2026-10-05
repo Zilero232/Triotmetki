@@ -22,9 +22,8 @@ export class TankLearningService {
 
   async place({ accountId, tankId }: AccountLearningLookup): Promise<MyTankLearning> {
     const [snapshot, curve] = await Promise.all([
-      this.prisma.tankSnapshot.findFirst({
-        where: { accountId, tankId, mode: 'random' },
-        orderBy: { capturedAt: 'desc' },
+      this.prisma.tankSnapshotLatest.findUnique({
+        where: { accountId_tankId_mode: { accountId, tankId, mode: 'random' } },
         select: { battles: true, wins: true }
       }),
       this.forTank(tankId)

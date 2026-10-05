@@ -1,6 +1,8 @@
 export const MOD_DEVICE = {
   idPrefix: 'dev_',
   idBytes: 12,
+  idPattern: /^dev_[\w-]{16}$/u,
+  trackerPrefix: 'mod-device:',
   secretContext: 'otmetki-mod-device:',
   header: 'x-otmetki-device',
   signatureHeader: 'x-otmetki-signature',

@@ -5,7 +5,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { Player } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { BattleStatsBlock, LestaClient } from '../../../../lib/lesta';
-import type { CollectorProducerService } from '../../../collector';
+import type { CollectorProducerService, PurgeGuardService } from '../../../collector';
 import type { LestaPlayerInfo } from '../../players.types';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
@@ -51,10 +51,12 @@ const createService = () => {
   const collector = mock<CollectorProducerService>();
   const lesta = mockDeep<LestaClient>();
   const redis = new RedisMock();
+  const purgeGuard = mock<PurgeGuardService>();
 
   prisma.player.update.mockResolvedValue(mock<Player>());
+  purgeGuard.blocked.mockResolvedValue(new Set());
 
-  return { service: new PlayerResolverService(prisma, collector, lesta, redis), prisma, collector, lesta, redis };
+  return { service: new PlayerResolverService(prisma, collector, lesta, redis, purgeGuard), prisma, collector, lesta, redis, purgeGuard };
 };
 
 describe('PlayerResolverService.resolve', () => {
@@ -173,6 +175,18 @@ describe('PlayerResolverService.ensure', () => {
 
     await expect(service.ensure(42n)).rejects.toMatchObject({ response: { code: 'LESTA_ACCOUNT_HIDDEN' } });
     expect(prisma.player.update).not.toHaveBeenCalled();
+  });
+
+  it('refuses to bring back a purged account that has a deletion request', async () => {
+    const { service, prisma, collector, lesta, purgeGuard } = createService();
+
+    prisma.player.findUnique.mockResolvedValue(null);
+    purgeGuard.blocked.mockResolvedValue(new Set([42]));
+
+    await expect(service.ensure(42n)).rejects.toMatchObject({ response: { code: 'LESTA_ACCOUNT_HIDDEN' } });
+    expect(lesta.account.info).not.toHaveBeenCalled();
+    expect(prisma.player.upsert).not.toHaveBeenCalled();
+    expect(collector.enrol).not.toHaveBeenCalled();
   });
 
   it('records the view of a known player without enrolling it again', async () => {

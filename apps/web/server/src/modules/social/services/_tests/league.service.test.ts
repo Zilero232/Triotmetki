@@ -55,7 +55,6 @@ const player = (accountId: bigint, nickname: string): Player => ({
   nextPollAt: null,
   lastViewedAt: null,
   isHidden: false,
-  purgeAfter: null,
   logoutAt: null,
   progressionProcessedUntil: null,
   updatedAt: startedAt

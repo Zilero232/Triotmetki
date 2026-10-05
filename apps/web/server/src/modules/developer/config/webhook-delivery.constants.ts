@@ -7,6 +7,7 @@ export const WEBHOOK_DELIVERY = {
   secretBytes: 32,
   blockedResponse: 'refused: the webhook host resolves to a non-public address',
   retiredEventResponse: 'skipped: the API no longer publishes this event',
+  inactiveEndpointResponse: 'skipped: the endpoint is switched off',
   userAgent: 'Otmetki-Webhooks/1.0 (+https://triotmetki.ru)',
   deliveriesShown: 50,
   redriveAfterMinutes: 15,

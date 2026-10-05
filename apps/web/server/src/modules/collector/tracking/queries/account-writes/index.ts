@@ -6,6 +6,14 @@ export {
   upsertLatestTanksSql,
   upsertPlayersSql,
   upsertPlayerTanksSql,
+  upsertRandomModeStatsSql,
   upsertTankModeStatsSql
 } from './account-writes';
-export type { LatestTanksSqlInput, MarksRow, PlayerIdentityRow, PlayerTankUpsertRow, SyncedRow } from './account-writes.types';
+export type {
+  LatestRandomModeStatsSqlInput,
+  LatestTanksSqlInput,
+  MarksRow,
+  PlayerIdentityRow,
+  PlayerTankUpsertRow,
+  SyncedRow
+} from './account-writes.types';

@@ -34,6 +34,11 @@ export type PeriodCutoffInput = {
   now: Date;
 };
 
+export type RatingHistoryBounds = {
+  since: Date;
+  battles: number;
+};
+
 export type PeriodCutoff = {
   cutoff: Date;
   isPartial: boolean;

@@ -2,7 +2,7 @@ import { LEARNING_CURVE } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { TankSnapshot } from '../../../../../generated';
+import type { TankSnapshotLatest } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
@@ -19,12 +19,12 @@ const createService = () => {
     learningRow({ tankId: 1, bucket: lastBucket, wins: 520 })
   ]);
 
-  prisma.tankSnapshot.findFirst.mockResolvedValue(null);
+  prisma.tankSnapshotLatest.findUnique.mockResolvedValue(null);
 
   return { service: new TankLearningService(prisma), prisma };
 };
 
-const snapshot = (battles: number, wins: number) => mock<TankSnapshot>({ battles, wins });
+const snapshot = (battles: number, wins: number) => mock<TankSnapshotLatest>({ battles, wins });
 
 describe('TankLearningService.forTank', () => {
   it('builds every bucket of the curve for the tank', async () => {
@@ -47,7 +47,7 @@ describe('TankLearningService.place', () => {
   it('refuses a snapshot with zero battles', async () => {
     const { service, prisma } = createService();
 
-    prisma.tankSnapshot.findFirst.mockResolvedValue(snapshot(0, 0));
+    prisma.tankSnapshotLatest.findUnique.mockResolvedValue(snapshot(0, 0));
 
     await expect(service.place({ accountId: 7n, tankId: 1 })).rejects.toBeInstanceOf(AppNotFoundException);
   });
@@ -55,7 +55,7 @@ describe('TankLearningService.place', () => {
   it('compares the player with the bucket of their battle count', async () => {
     const { service, prisma } = createService();
 
-    prisma.tankSnapshot.findFirst.mockResolvedValue(snapshot(1_000, 600));
+    prisma.tankSnapshotLatest.findUnique.mockResolvedValue(snapshot(1_000, 600));
 
     const place = await service.place({ accountId: 7n, tankId: 1 });
 
@@ -66,7 +66,7 @@ describe('TankLearningService.place', () => {
   it('puts a player exactly on a bucket start into that bucket', async () => {
     const { service, prisma } = createService();
 
-    prisma.tankSnapshot.findFirst.mockResolvedValue(snapshot(LEARNING_CURVE.bucketStarts[1], 25));
+    prisma.tankSnapshotLatest.findUnique.mockResolvedValue(snapshot(LEARNING_CURVE.bucketStarts[1], 25));
 
     expect((await service.place({ accountId: 7n, tankId: 1 })).bucket).toBe(1);
   });
@@ -74,7 +74,7 @@ describe('TankLearningService.place', () => {
   it('has no delta when the bucket has no data', async () => {
     const { service, prisma } = createService();
 
-    prisma.tankSnapshot.findFirst.mockResolvedValue(snapshot(LEARNING_CURVE.bucketStarts[1], 25));
+    prisma.tankSnapshotLatest.findUnique.mockResolvedValue(snapshot(LEARNING_CURVE.bucketStarts[1], 25));
 
     expect(await service.place({ accountId: 7n, tankId: 1 })).toMatchObject({ bucketWinRate: null, delta: null });
   });

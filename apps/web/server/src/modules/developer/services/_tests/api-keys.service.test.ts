@@ -84,7 +84,9 @@ describe('ApiKeysService.create', () => {
     const created = await service.create({ userId: 'user', name: 'bot' });
     const body = auth.api.createApiKey.mock.calls[0]?.[0]?.body;
 
-    expect(body).toMatchObject({ userId: 'user', name: 'bot', refillAmount: API_TIERS.plus.requestsPerDay, metadata: { tier: 'plus' } });
+    expect(body).toMatchObject({ userId: 'user', name: 'bot', metadata: { tier: 'plus' } });
+    expect(body?.refillAmount).toBeUndefined();
+    expect(body?.remaining ?? null).toBeNull();
     expect(created.secret).toBe('otm_secret');
     expect(created.key.tier).toBe('plus');
   });

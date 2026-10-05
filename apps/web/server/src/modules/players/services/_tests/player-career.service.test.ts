@@ -61,7 +61,7 @@ const createService = () => {
 };
 
 describe('PlayerCareerService.career', () => {
-  it('reads records and the assist split from the latest snapshot and dates each record', async () => {
+  it('reads records and the assist split from the latest snapshot and dates each record from the stored record times', async () => {
     const { service, prisma } = createService();
     const firstSeen = new Date('2026-08-01T10:00:00Z');
 
@@ -80,7 +80,9 @@ describe('PlayerCareerService.career', () => {
       })
     );
 
-    prisma.accountSnapshot.findFirst.mockResolvedValueOnce(mock<AccountSnapshot>({ capturedAt: firstSeen }));
+    prisma.accountModeStats.findUnique.mockResolvedValue(
+      mock<AccountModeStats>({ maxDamage: 9100, maxDamageAt: firstSeen, maxXp: null, maxXpAt: null, maxFrags: 0, maxFragsAt: null })
+    );
 
     const career = await service.career(1n);
 
@@ -109,7 +111,7 @@ describe('PlayerCareerService.career', () => {
 
     expect(career.source).toBe('live');
     expect(career.records.maxXp).toEqual({ value: 2500, vehicle: vehicle(3), achievedAt: null });
-    expect(prisma.accountSnapshot.findFirst).toHaveBeenCalledOnce();
+    expect(prisma.accountModeStats.findUnique).not.toHaveBeenCalled();
   });
 
   it('answers with empty records when Lesta is down', async () => {

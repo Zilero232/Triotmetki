@@ -9,7 +9,7 @@ import type { ApplyTierInput } from '../developer.types';
 import { errorMessage } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { EntitlementsBusService } from '../../billing';
-import { keyTierOf, rebasedRemaining, tierQuota } from '../lib';
+import { keyTierOf, tierMetadata } from '../lib';
 import { ApiTierService } from './api-tier.service';
 import { WebhookEndpointsService } from './webhook-endpoints.service';
 
@@ -55,12 +55,12 @@ export class ApiTierSyncService implements OnModuleInit, OnModuleDestroy {
       select: { id: true, metadata: true, remaining: true, refillAmount: true }
     });
 
-    for (const key of keys.filter(({ metadata }) => keyTierOf(metadata) !== tier)) {
-      const { refillAmount, refillInterval, metadata } = tierQuota(tier);
-
+    for (const key of keys.filter(
+      ({ metadata, remaining, refillAmount }) => keyTierOf(metadata) !== tier || remaining !== null || refillAmount !== null
+    )) {
       await this.prisma.apiKey.update({
         where: { id: key.id },
-        data: { refillAmount, refillInterval, metadata: JSON.stringify(metadata), remaining: rebasedRemaining({ tier, ...key }) }
+        data: { metadata: JSON.stringify(tierMetadata(tier)), remaining: null, refillAmount: null, refillInterval: null }
       });
     }
 

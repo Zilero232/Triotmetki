@@ -1,17 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { mock, mockDeep } from 'vitest-mock-extended';
+import { mockDeep } from 'vitest-mock-extended';
 
-import type { Wn8ExpectedValue } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
+import type { ExpectedValueRow } from '../expected-values.types';
 
 import { ExpectedValuesService } from '../expected-values.service';
 
-const ROW = mock<Wn8ExpectedValue>({ tankId: 1, expDamage: 1800, expSpotted: 1.2, expFrags: 0.9, expDefense: 0.6, expWinRate: 52 });
+const ROW: ExpectedValueRow = { tankId: 1, expDamage: 1800, expSpotted: 1.2, expFrags: 0.9, expDefense: 0.6, expWinRate: 52 };
 
-const createService = (rows: Wn8ExpectedValue[]) => {
+const createService = (rows: ExpectedValueRow[]) => {
   const prisma = mockDeep<PrismaService>();
 
-  prisma.wn8ExpectedValue.findMany.mockResolvedValue(rows);
+  prisma.$queryRaw.mockResolvedValue(rows);
 
   return { service: new ExpectedValuesService(prisma), prisma };
 };
@@ -29,7 +29,7 @@ describe('ExpectedValuesService.all', () => {
     await service.all();
     await service.all();
 
-    expect(prisma.wn8ExpectedValue.findMany).toHaveBeenCalledOnce();
+    expect(prisma.$queryRaw).toHaveBeenCalledOnce();
   });
 
   it('returns an empty table and retries later when nothing is stored', async () => {
@@ -38,6 +38,6 @@ describe('ExpectedValuesService.all', () => {
     expect((await service.all()).size).toBe(0);
     await service.all();
 
-    expect(prisma.wn8ExpectedValue.findMany).toHaveBeenCalledTimes(2);
+    expect(prisma.$queryRaw).toHaveBeenCalledTimes(2);
   });
 });

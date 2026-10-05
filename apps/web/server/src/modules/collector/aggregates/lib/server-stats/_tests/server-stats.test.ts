@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { DailyStatsRow } from '../server-stats.types';
 
-import { buildServerStats } from '../server-stats';
+import { buildServerStats, periodPlayersAt } from '../server-stats';
 
 type RowInput = {
   tankId: number;
@@ -77,5 +77,23 @@ describe('buildServerStats', () => {
   it('derives accuracy and survival as percentages', () => {
     expect(find(2, 'good')?.accuracy).toBeCloseTo(75);
     expect(find(2, 'good')?.survivalRate).toBeCloseTo(50);
+  });
+});
+
+describe('periodPlayersAt', () => {
+  const counts = [
+    { tankId: 1, cohort: 'all', players: [3, 9] },
+    { tankId: 2, cohort: 'all', players: [0, 4] }
+  ];
+
+  it('reads the player count of the requested period', () => {
+    expect(periodPlayersAt({ rows: counts, index: 1 })).toEqual([
+      { tankId: 1, cohort: 'all', players: 9 },
+      { tankId: 2, cohort: 'all', players: 4 }
+    ]);
+  });
+
+  it('leaves out a tank nobody played within the period', () => {
+    expect(periodPlayersAt({ rows: counts, index: 0 }).map((row) => row.tankId)).toEqual([1]);
   });
 });

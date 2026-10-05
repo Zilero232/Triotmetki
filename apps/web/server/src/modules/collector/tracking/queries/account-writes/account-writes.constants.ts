@@ -23,3 +23,5 @@ export const TANK_SNAPSHOT_COLUMNS = [
   'max_frags',
   'max_xp'
 ] as const;
+
+export const MODE_RECORD_COLUMNS = ['max_damage', 'max_xp', 'max_frags'] as const;

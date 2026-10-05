@@ -111,6 +111,9 @@ model AccountRating {
   @@id([accountId, period])
   @@index([period, wn8(sort: Desc)])
   @@index([period, broneIndex(sort: Desc)])
+  @@index([period, eff(sort: Desc)])
+  @@index([period, winRate(sort: Desc)])
+  @@index([period, avgDamage(sort: Desc)])
   @@map("account_rating")
 }
 
@@ -161,6 +164,7 @@ model TankPercentile {
   percentiles Json
 
   @@id([tankId, distribution, date])
+  @@index([date])
   @@map("tank_percentile")
 }
 
@@ -237,5 +241,6 @@ model BuildUsageAggregate {
   @@id([tankId, mode, cohort, gameVersion])
   @@index([mode, cohort, computedAt(sort: Desc)])
   @@index([tankId, mode, cohort, computedAt(sort: Desc)])
+  @@index([computedAt])
   @@map("build_usage_aggregate")
 }

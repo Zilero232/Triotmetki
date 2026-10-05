@@ -19,6 +19,11 @@ export class WebhookRedriveService {
   async redrive(now = new Date()): Promise<number> {
     const stale = subMinutes(now, WEBHOOK_DELIVERY.redriveAfterMinutes);
 
+    await this.prisma.webhookDelivery.updateMany({
+      where: { status: 'pending', endpoint: { isActive: false } },
+      data: { status: 'failed', responseBody: WEBHOOK_DELIVERY.inactiveEndpointResponse, nextAttemptAt: null }
+    });
+
     const stuck = await this.prisma.webhookDelivery.findMany({
       where: {
         status: 'pending',

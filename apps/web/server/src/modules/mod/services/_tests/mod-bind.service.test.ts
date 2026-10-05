@@ -311,18 +311,18 @@ describe('ModBindService.bind', () => {
     expect(prisma.oneTimeCode.findUnique).toHaveBeenCalledTimes(BIND_CODE.maxFailuresPerRequester);
   });
 
-  it('counts failures per account, so guessing for one account does not lock another', async () => {
+  it('counts failures per requester, so naming a different account each time does not reset the budget', async () => {
     const { service, prisma } = createService();
 
     prisma.oneTimeCode.findUnique.mockResolvedValue(null);
 
     for (let attempt = 0; attempt < BIND_CODE.maxFailuresPerRequester; attempt += 1) {
-      await service.bind({ body: bindBody(), requester: REQUESTER }).catch(() => undefined);
+      await service.bind({ body: bindBody({ account_id: ACCOUNT_ID + attempt }), requester: REQUESTER }).catch(() => undefined);
     }
 
-    await expect(service.bind({ body: bindBody({ account_id: ACCOUNT_ID + 1 }), requester: REQUESTER })).rejects.toMatchObject({
-      status: HttpStatus.BAD_REQUEST,
-      response: { error: 'invalid_code' }
+    await expect(service.bind({ body: bindBody({ account_id: ACCOUNT_ID - 1 }), requester: REQUESTER })).rejects.toMatchObject({
+      status: HttpStatus.TOO_MANY_REQUESTS,
+      response: { error: 'rate_limited' }
     });
   });
 

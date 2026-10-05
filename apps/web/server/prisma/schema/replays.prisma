@@ -80,6 +80,7 @@ model Replay {
   @@index([visibility, status, playedAt(sort: Desc)])
   @@index([tags], type: Gin)
   @@index([status, tagsVersion])
+  @@index([deviceId])
   @@map("replay")
 }
 

@@ -23,11 +23,9 @@ export class TankPercentilesService {
 
     const rows = await this.prisma.$queryRaw<PercentileRow[]>`
       WITH latest AS (
-        SELECT DISTINCT ON (account_id, tank_id)
-          tank_id, battles, wins, damage_dealt, frags, spotted, dropped_capture_points
-        FROM tank_snapshot
+        SELECT tank_id, battles, wins, damage_dealt, frags, spotted, dropped_capture_points
+        FROM tank_snapshot_latest
         WHERE mode = 'random' AND captured_at > ${subDays(now, BRONYA_REFERENCE.windowDays)}
-        ORDER BY account_id, tank_id, captured_at DESC
       )
       SELECT
         tank_id,

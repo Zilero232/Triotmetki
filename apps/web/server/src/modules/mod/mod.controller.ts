@@ -10,7 +10,7 @@ import { ZodResponse } from 'nestjs-zod';
 import { CurrentUserId } from '../../common/decorators';
 import { BIND_CODE, MOD_INGEST } from './config';
 import { BindCodeDto, BindCodeInputDto, BindRequestDto, BindResponseDto, DeviceParamsDto, IngestResponseDto, ModDevicesDto } from './dto';
-import { ingestBatchSchema } from './lib';
+import { ingestBatchSchema, modDeviceTracker } from './lib';
 import { ModBindService, ModDeviceService, ModIngestService } from './services';
 
 @ApiTags('mod')
@@ -40,7 +40,7 @@ export class ModController {
   }
 
   @AllowAnonymous()
-  @Throttle({ default: MOD_INGEST.throttle })
+  @Throttle({ default: { ...MOD_INGEST.throttle, getTracker: modDeviceTracker } })
   @Post('ingest')
   @HttpCode(HttpStatus.OK)
   @ZodResponse({ type: IngestResponseDto })

@@ -9,7 +9,6 @@ enum ReportStatus {
 enum DeletionSource {
   user
   lesta
-  retention
 
   @@map("deletion_source")
 }
@@ -38,6 +37,7 @@ model AuditLog {
   actor User? @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
 
   @@index([createdAt(sort: Desc)])
+  @@index([actorUserId])
   @@map("audit_log")
 }
 
@@ -73,6 +73,7 @@ model DataDeletionRequest {
 
   requestedAt DateTime  @default(now()) @map("requested_at") @db.Timestamptz(3)
   completedAt DateTime? @map("completed_at") @db.Timestamptz(3)
+  failedAt    DateTime? @map("failed_at") @db.Timestamptz(3)
 
   @@index([status, requestedAt])
   @@index([accountId])

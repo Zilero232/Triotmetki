@@ -138,6 +138,7 @@ model Comment {
 
   @@index([target, targetId, createdAt])
   @@index([authorUserId])
+  @@index([parentId])
   @@map("comment")
 }
 

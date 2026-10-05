@@ -1,8 +1,11 @@
+import { subDays } from 'date-fns';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mockDeep } from 'vitest-mock-extended';
 
 import type { PrismaService } from '../../../../core';
 
+import { moscowDayStart } from '../../../../common/lib';
+import { TIMESCALE } from '../../../../config';
 import { TankTrendService } from '../tank-trend.service';
 
 const createService = () => {
@@ -13,8 +16,8 @@ const createService = () => {
   return { service: new TankTrendService(prisma), prisma };
 };
 
-const windowStart = (prisma: ReturnType<typeof createService>['prisma']) =>
-  prisma.$queryRaw.mock.calls[0]?.slice(1).find((value) => value instanceof Date);
+const windowDates = (prisma: ReturnType<typeof createService>['prisma']) =>
+  prisma.$queryRaw.mock.calls[0]?.slice(1).filter((value) => value instanceof Date) ?? [];
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -31,7 +34,23 @@ describe('TankTrendService.trend', () => {
 
     await service.trend({ tankId: 1, query: { days: 7, mode: 'random' } });
 
-    expect(windowStart(prisma)).toEqual(new Date('2026-09-19T21:00:00Z'));
+    expect(windowDates(prisma)[0]).toEqual(new Date('2026-09-19T21:00:00Z'));
+  });
+
+  it('counts players only over the days whose deltas are not compressed yet', async () => {
+    const { service, prisma } = createService();
+
+    await service.trend({ tankId: 1, query: { days: 60, mode: 'random' } });
+
+    expect(windowDates(prisma)[1]).toEqual(moscowDayStart(subDays(new Date(), TIMESCALE.compressAfterDays - 1)));
+  });
+
+  it('counts players over the whole window when it is shorter than the uncompressed span', async () => {
+    const { service, prisma } = createService();
+
+    await service.trend({ tankId: 1, query: { days: 7, mode: 'random' } });
+
+    expect(windowDates(prisma)[1]).toEqual(windowDates(prisma)[0]);
   });
 
   it('turns the daily rows into points', async () => {

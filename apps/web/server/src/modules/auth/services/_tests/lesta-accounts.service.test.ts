@@ -7,6 +7,7 @@ import type { LestaClient } from '../../../../lib/lesta';
 import type { EntitlementsService } from '../../../billing';
 import type { CollectorProducerService } from '../../../collector';
 
+import { createTokenCipher } from '../../../../core/token-cipher/_tests/token-cipher.fixtures';
 import { LestaAccountsService } from '../lesta-accounts.service';
 
 const identity = { userId: 'user', accountId: 7, nickname: 'Tanker', accessToken: 'token', expiresAt: new Date() };
@@ -25,7 +26,10 @@ const createService = ({ others, isKnown }: { others: number; isKnown: boolean }
 
   entitlements.limit.mockResolvedValue(2);
 
-  return { service: new LestaAccountsService(prisma, collector, entitlements, mock<LestaClient>()), prisma, collector };
+  const lesta = mockDeep<LestaClient>();
+  const cipher = createTokenCipher();
+
+  return { service: new LestaAccountsService(prisma, collector, entitlements, lesta, cipher), prisma, collector, lesta, cipher };
 };
 
 describe('LestaAccountsService.link', () => {
@@ -42,6 +46,28 @@ describe('LestaAccountsService.link', () => {
 
     await expect(service.link(identity)).resolves.toBe(true);
     expect(prisma.userLestaAccount.upsert).toHaveBeenCalled();
+  });
+
+  it('stores the Lesta access token encrypted', async () => {
+    const { service, prisma, cipher } = createService({ others: 0, isKnown: false });
+
+    await service.link(identity);
+
+    const stored = prisma.userLestaAccount.upsert.mock.calls[0]?.[0]?.create.accessToken;
+
+    expect(stored).not.toBe(identity.accessToken);
+    expect(typeof stored === 'string' ? await cipher.open(stored) : null).toBe(identity.accessToken);
+  });
+
+  it('revokes the decrypted token at Lesta', async () => {
+    const { service, prisma, lesta, cipher } = createService({ others: 0, isKnown: false });
+
+    prisma.userLestaAccount.findMany.mockResolvedValue([mock<UserLestaAccount>({ accountId: 7n, accessToken: await cipher.seal('plain-token') })]);
+    lesta.auth.logout.mockResolvedValue(undefined);
+
+    await service.revokeTokens('user');
+
+    expect(lesta.auth.logout).toHaveBeenCalledWith({ accessToken: 'plain-token' });
   });
 
   it('links an account within the limit', async () => {

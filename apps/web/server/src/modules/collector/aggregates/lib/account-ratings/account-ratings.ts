@@ -1,6 +1,7 @@
 import type { TankTotals } from '@otmetki/ratings';
 
 import { bronyaIndex, computeAverages, percentileOf, periodRatings, pickSnapshotPair, tankWn8 } from '@otmetki/ratings';
+import { subDays } from 'date-fns';
 import { findLast, firstBy, groupBy, sortBy } from 'remeda';
 
 import type {
@@ -10,6 +11,7 @@ import type {
   PeriodCutoff,
   PeriodCutoffInput,
   PeriodRowsInput,
+  RatingHistoryBounds,
   TankPeriodTotalsInput,
   TankSnapshotTotals
 } from './account-ratings.types';
@@ -48,6 +50,14 @@ export const earliestCutoff = ({ accountSnapshots, now }: EarliestCutoffInput): 
     RATING_PERIOD_WINDOWS.flatMap(({ window }) => periodCutoff({ window, accountSnapshots, now })?.cutoff ?? []),
     (cutoff) => cutoff.getTime()
   ) ?? null;
+
+export const ratingHistoryBounds = (now: Date): RatingHistoryBounds => {
+  const windows = RATING_PERIOD_WINDOWS.map(({ window }) => window);
+  const days = Math.max(...windows.flatMap((window) => (window.kind === 'duration' ? [window.days] : [])));
+  const battles = Math.max(...windows.flatMap((window) => (window.kind === 'battles' ? [window.count] : [])));
+
+  return { since: subDays(now, days), battles };
+};
 
 export const tankPeriodTotals = ({ tankSnapshots, cutoff }: TankPeriodTotalsInput) => {
   const from: TankTotals[] = [];

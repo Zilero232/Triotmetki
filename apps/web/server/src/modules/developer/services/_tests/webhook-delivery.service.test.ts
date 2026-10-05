@@ -132,7 +132,7 @@ describe('WebhookDeliveryService.deliver', () => {
     });
   });
 
-  it('skips a delivery to a switched-off endpoint', async () => {
+  it('closes a delivery to a switched-off endpoint as failed so retention can drop it', async () => {
     const { service, prisma } = createService();
 
     const disabled: WebhookDelivery & { endpoint: WebhookEndpoint } = { ...delivery, endpoint: { ...endpoint, isActive: false } };
@@ -141,6 +141,11 @@ describe('WebhookDeliveryService.deliver', () => {
 
     await expect(service.deliver({ deliveryId: 'delivery', attempt: 1, isFinal: false })).resolves.toBe('skipped');
     expect(poster.post).not.toHaveBeenCalled();
+
+    expect(prisma.webhookDelivery.update.mock.calls[0]?.[0]).toMatchObject({
+      where: { id: 'delivery' },
+      data: { status: 'failed', responseBody: WEBHOOK_DELIVERY.inactiveEndpointResponse }
+    });
   });
 
   it('keeps a failed attempt pending with the error as the response and rethrows so the queue retries it', async () => {

@@ -20,7 +20,7 @@ export class AchievementsFetchService {
 
   async fetch(now = new Date()): Promise<AchievementsFetchResult> {
     const candidates = await this.prisma.$queryRaw<FetchCandidateRow[]>(
-      fetchCandidatesSql({ now, staleBefore: subDays(now, ACHIEVEMENTS_FETCH.refreshDays), limit: ACHIEVEMENTS_FETCH.batch })
+      fetchCandidatesSql({ staleBefore: subDays(now, ACHIEVEMENTS_FETCH.refreshDays), limit: ACHIEVEMENTS_FETCH.batch })
     );
 
     if (candidates.length === 0) {

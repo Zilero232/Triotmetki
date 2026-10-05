@@ -1,21 +1,31 @@
+import type { OnApplicationShutdown } from '@nestjs/common';
+
 import { BullModule } from '@nestjs/bullmq';
-import { Global, Module } from '@nestjs/common';
+import { Global, Inject, Module } from '@nestjs/common';
 import { Redis } from 'ioredis';
 
-import { AppConfigService } from '../../config';
-import { QUEUE_DEFAULTS } from './queues.constants';
+import { QueueConnectionModule } from './queue-connection.module';
+import { QUEUE_CONNECTION, QUEUE_DEFAULTS } from './queues.constants';
 
 @Global()
 @Module({
   imports: [
+    QueueConnectionModule,
     BullModule.forRootAsync({
-      inject: [AppConfigService],
-      useFactory: (config: AppConfigService) => ({
+      imports: [QueueConnectionModule],
+      inject: [QUEUE_CONNECTION],
+      useFactory: (connection: Redis) => ({
         prefix: QUEUE_DEFAULTS.prefix,
-        connection: new Redis(config.get('REDIS_URL'), { maxRetriesPerRequest: null }),
+        connection,
         defaultJobOptions: QUEUE_DEFAULTS.jobOptions
       })
     })
   ]
 })
-export class QueuesModule {}
+export class QueuesModule implements OnApplicationShutdown {
+  constructor(@Inject(QUEUE_CONNECTION) private readonly connection: Redis) {}
+
+  async onApplicationShutdown() {
+    await this.connection.quit().catch(() => undefined);
+  }
+}

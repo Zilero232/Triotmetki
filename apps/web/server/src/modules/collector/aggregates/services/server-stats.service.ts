@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { subDays } from 'date-fns';
 
-import type { DailyStatsRow, PlayerCountRow } from '../lib/server-stats';
+import type { DailyStatsRow } from '../lib/server-stats';
+import type { ServerPlayersRow } from '../queries';
 
 import { moscowDayStart } from '../../../../common/lib';
 import { PrismaService } from '../../../../core';
 import { AGGREGATES } from '../config';
-import { buildServerStats, SERVER_STATS } from '../lib/server-stats';
+import { buildServerStats, periodPlayersAt, SERVER_STATS } from '../lib/server-stats';
+import { serverPlayersSql } from '../queries';
 import { ReferenceTablesService } from './reference-tables.service';
 
 @Injectable()
@@ -22,9 +24,12 @@ export class ServerStatsService {
     let written = 0;
 
     for (const mode of AGGREGATES.serverStatsModes) {
-      for (const { period, days } of SERVER_STATS.periods) {
-        const since = moscowDayStart(subDays(now, days));
-        const until = moscowDayStart(now);
+      const until = moscowDayStart(now);
+      const sinces = SERVER_STATS.periods.map(({ days }) => moscowDayStart(subDays(now, days)));
+      const periodPlayers = await this.prisma.$queryRaw<ServerPlayersRow[]>(serverPlayersSql({ mode, sinces, until }));
+
+      for (const [index, { period }] of SERVER_STATS.periods.entries()) {
+        const since = sinces[index] ?? until;
 
         const rows = await this.prisma.$queryRaw<DailyStatsRow[]>`
           SELECT
@@ -47,16 +52,7 @@ export class ServerStatsService {
           GROUP BY tank_id, cohort
         `;
 
-        const players = await this.prisma.$queryRaw<PlayerCountRow[]>`
-          SELECT
-            tank_id AS "tankId",
-            coalesce(cohort::text, 'all') AS "cohort",
-            count(DISTINCT account_id)::int AS "players"
-          FROM tank_battle_delta
-          WHERE mode = ${mode}::stats_mode AND captured_at >= ${since} AND captured_at < ${until}
-          GROUP BY GROUPING SETS ((tank_id, cohort), (tank_id))
-        `;
-
+        const players = periodPlayersAt({ rows: periodPlayers, index });
         const stats = buildServerStats({ rows, players, tiers, mode, period });
 
         await this.prisma.$transaction([

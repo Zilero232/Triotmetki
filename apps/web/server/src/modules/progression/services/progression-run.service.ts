@@ -44,7 +44,7 @@ export class ProgressionRunService {
     });
 
     await this.prisma.player.updateMany({
-      where: { accountId: { notIn: links.map((link) => link.accountId) }, progressionProcessedUntil: { not: null } },
+      where: { accountId: { notIn: links.map((link) => link.accountId) }, progressionProcessedUntil: { lt: now } },
       data: { progressionProcessedUntil: now }
     });
 

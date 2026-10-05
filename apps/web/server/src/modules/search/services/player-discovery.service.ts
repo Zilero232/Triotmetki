@@ -5,7 +5,7 @@ import type { AccountListItem, LestaClient } from '../../../lib/lesta';
 
 import { LESTA_CLIENT, PrismaService } from '../../../core';
 import { LestaNotConfiguredError } from '../../../lib/lesta';
-import { CollectorProducerService } from '../../collector';
+import { CollectorProducerService, PurgeGuardService } from '../../collector';
 import { SEARCH_LOOKUP } from '../config';
 
 @Injectable()
@@ -15,7 +15,8 @@ export class PlayerDiscoveryService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly collector: CollectorProducerService,
-    @Inject(LESTA_CLIENT) private readonly lesta: LestaClient
+    @Inject(LESTA_CLIENT) private readonly lesta: LestaClient,
+    private readonly purgeGuard: PurgeGuardService
   ) {}
 
   async discover(terms: string[]): Promise<AccountListItem[]> {
@@ -29,7 +30,7 @@ export class PlayerDiscoveryService {
       searchable.map((search) => this.lesta.account.list({ search, type: 'startswith', limit: SEARCH_LOOKUP.lestaLimit }))
     );
 
-    const found = uniqueBy(
+    const listed = uniqueBy(
       settled.flatMap((result) => (result.status === 'fulfilled' ? result.value : [])),
       (item) => item.account_id
     );
@@ -39,6 +40,13 @@ export class PlayerDiscoveryService {
     if (failed.length > 0) {
       this.logger.warn(`Lesta account/list failed for ${failed.length} term(s)`);
     }
+
+    if (listed.length === 0) {
+      return [];
+    }
+
+    const blocked = await this.purgeGuard.blocked(listed.map((item) => item.account_id));
+    const found = listed.filter((item) => !blocked.has(item.account_id));
 
     if (found.length === 0) {
       return [];

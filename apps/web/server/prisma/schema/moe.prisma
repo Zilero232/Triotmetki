@@ -31,5 +31,6 @@ model TankThreshold {
 
   @@id([kind, tankId, source, date])
   @@index([kind, date])
+  @@index([date])
   @@map("tank_threshold")
 }

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { BillingCoreModule } from '../billing';
+import { PurgeGuardModule } from '../collector';
 import { PlayersController } from './players.controller';
 import {
   PlayerAchievementsService,
@@ -18,7 +19,7 @@ import {
 } from './services';
 
 @Module({
-  imports: [BillingCoreModule],
+  imports: [BillingCoreModule, PurgeGuardModule],
   controllers: [PlayersController],
   providers: [
     PlayerAchievementsService,

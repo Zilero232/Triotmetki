@@ -3,6 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Queue } from 'bullmq';
 
 import type { PurgeAccountPayload } from '../../contracts';
+import type { PurgeAccountInput } from '../purge.types';
 
 import { errorMessage } from '../../../../common/lib';
 import { HYPERTABLE, PrismaService } from '../../../../core';
@@ -19,46 +20,26 @@ export class PurgeService {
   ) {}
 
   async dispatch(): Promise<number> {
-    const now = new Date();
+    const retryAfter = new Date(Date.now() - PURGE.failedCooldownMs);
 
-    const expired = await this.prisma.player.findMany({
-      where: { purgeAfter: { lte: now } },
-      orderBy: { purgeAfter: 'asc' },
-      select: { accountId: true },
-      take: PURGE.dispatchBatch
-    });
-
-    const open = await this.prisma.dataDeletionRequest.findMany({
-      where: { accountId: { in: expired.map((player) => player.accountId) }, status: { in: ['pending', 'processing'] } },
-      select: { accountId: true }
-    });
-
-    const queued = new Set(open.map((request) => request.accountId));
-
-    await this.prisma.dataDeletionRequest.createMany({
-      data: expired
-        .filter((player) => !queued.has(player.accountId))
-        .map((player) => ({ accountId: player.accountId, source: 'retention' as const, reason: 'purge_after reached' }))
-    });
-
-    const pending = await this.prisma.dataDeletionRequest.findMany({
-      where: { status: 'pending' },
+    const due = await this.prisma.dataDeletionRequest.findMany({
+      where: { OR: [{ status: 'pending' }, { status: 'failed', failedAt: { lte: retryAfter } }] },
       orderBy: { requestedAt: 'asc' },
       take: PURGE.dispatchBatch
     });
 
     await this.queue.addBulk(
-      pending.map((request) => ({
+      due.map((request) => ({
         name: JOB.purge.account,
         data: { accountId: Number(request.accountId), requestId: request.id } satisfies PurgeAccountPayload,
-        opts: { jobId: `purge-${request.id}` }
+        opts: { jobId: `purge-${request.id}`, removeOnFail: true }
       }))
     );
 
-    return pending.length;
+    return due.length;
   }
 
-  async purgeAccount({ accountId, requestId }: PurgeAccountPayload) {
+  async purgeAccount({ accountId, requestId, isFinalAttempt }: PurgeAccountInput) {
     const id = BigInt(accountId);
 
     if (requestId) {
@@ -66,11 +47,11 @@ export class PurgeService {
     }
 
     try {
-      await this.prisma.$transaction(async (tx) => {
-        for (const table of Object.values(HYPERTABLE)) {
-          await tx.$executeRawUnsafe(`DELETE FROM ${table} WHERE account_id = $1`, id);
-        }
+      for (const table of Object.values(HYPERTABLE)) {
+        await this.prisma.$executeRawUnsafe(`DELETE FROM ${table} WHERE account_id = $1`, id);
+      }
 
+      await this.prisma.$transaction(async (tx) => {
         await tx.clanMemberEvent.deleteMany({ where: { accountId: id } });
         await tx.weeklyChallengeProgress.deleteMany({ where: { accountId: id } });
         await tx.clanAttendance.deleteMany({ where: { accountId: id } });
@@ -85,14 +66,19 @@ export class PurgeService {
       if (requestId) {
         await this.prisma.dataDeletionRequest.update({
           where: { id: requestId },
-          data: { status: 'completed', completedAt: new Date(), error: null }
+          data: { status: 'completed', completedAt: new Date(), failedAt: null, error: null }
         });
       }
 
       this.logger.log(`purged account ${accountId}`);
     } catch (error) {
       if (requestId) {
-        await this.prisma.dataDeletionRequest.update({ where: { id: requestId }, data: { status: 'failed', error: errorMessage(error) } });
+        await this.prisma.dataDeletionRequest.update({
+          where: { id: requestId },
+          data: isFinalAttempt
+            ? { status: 'failed', failedAt: new Date(), error: errorMessage(error) }
+            : { status: 'pending', error: errorMessage(error) }
+        });
       }
 
       throw error;

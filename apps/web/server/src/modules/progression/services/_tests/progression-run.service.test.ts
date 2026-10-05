@@ -269,7 +269,7 @@ describe('ProgressionRunService.run', () => {
 
     expect(prisma.player.updateMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { accountId: { notIn: [7n] }, progressionProcessedUntil: { not: null } },
+        where: { accountId: { notIn: [7n] }, progressionProcessedUntil: { lt: now } },
         data: { progressionProcessedUntil: now }
       })
     );

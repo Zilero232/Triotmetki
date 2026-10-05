@@ -24,7 +24,6 @@ const player: Player = {
   nextPollAt: null,
   lastViewedAt: null,
   isHidden: false,
-  purgeAfter: null,
   logoutAt: null,
   progressionProcessedUntil: null,
   updatedAt: at

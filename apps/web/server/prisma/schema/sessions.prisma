@@ -72,7 +72,7 @@ model PlaySession {
 }
 
 model Battle {
-  id String @id @default(dbgenerated("gen_random_uuid()"))
+  id String @id @default(uuid(7))
 
   accountId     BigInt  @map("account_id")
   sessionId     String? @map("session_id")
@@ -140,5 +140,7 @@ model Battle {
   @@index([battleType, startedAt(sort: Desc)])
   @@index([receivedAt])
   @@index([arenaUniqueId])
+  @@index([deviceId])
+  @@index([accountId, receivedAt])
   @@map("battle")
 }

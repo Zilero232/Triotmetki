@@ -70,7 +70,7 @@ model ApiUsageDaily {
 }
 
 model ApiErrorLog {
-  id String @id @default(dbgenerated("gen_random_uuid()"))
+  id String @id @default(uuid(7))
 
   apiKeyId String  @map("api_key_id")
   method   String
@@ -113,7 +113,7 @@ model WebhookEndpoint {
 }
 
 model WebhookDelivery {
-  id String @id @default(dbgenerated("gen_random_uuid()"))
+  id String @id @default(uuid(7))
 
   endpointId String            @map("endpoint_id")
   event      NotificationEvent

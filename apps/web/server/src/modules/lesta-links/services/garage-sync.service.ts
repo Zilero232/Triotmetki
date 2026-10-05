@@ -8,7 +8,7 @@ import type { GaragePayload } from '../config';
 import type { GarageDispatchInput, GarageSyncInput, GarageSyncResult } from '../lesta-links.types';
 
 import { errorMessage } from '../../../common/lib';
-import { LESTA_CLIENTS, PrismaService } from '../../../core';
+import { LESTA_CLIENTS, PrismaService, TokenCipherService } from '../../../core';
 import { tankGarageSchema } from '../../../lib/lesta';
 import { LESTA_LINKS, LESTA_LINKS_QUEUE } from '../config';
 import { garageSplit, hasExpired, isTokenRejected } from '../lib';
@@ -20,7 +20,8 @@ export class GarageSyncService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(LESTA_CLIENTS) private readonly clients: LestaClients,
-    @InjectQueue(LESTA_LINKS_QUEUE.name) private readonly queue: Queue<GaragePayload>
+    @InjectQueue(LESTA_LINKS_QUEUE.name) private readonly queue: Queue<GaragePayload>,
+    private readonly cipher: TokenCipherService
   ) {}
 
   async dispatch({ scope, now = new Date() }: GarageDispatchInput): Promise<number> {
@@ -68,7 +69,11 @@ export class GarageSyncService {
     let rows: unknown[];
 
     try {
-      rows = await this.clients.bulk.tanks.stats({ accountId, accessToken: link.accessToken, fields: LESTA_LINKS.garage.fields });
+      rows = await this.clients.bulk.tanks.stats({
+        accountId,
+        accessToken: await this.cipher.open(link.accessToken),
+        fields: LESTA_LINKS.garage.fields
+      });
     } catch (error) {
       if (!isTokenRejected(error)) {
         throw error;

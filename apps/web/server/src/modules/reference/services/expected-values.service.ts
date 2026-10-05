@@ -3,6 +3,8 @@ import type { ExpectedValuesTable } from '@otmetki/ratings';
 import { Injectable } from '@nestjs/common';
 import { LRUCache } from 'lru-cache';
 
+import type { ExpectedValueRow } from './expected-values.types';
+
 import { PrismaService } from '../../../core';
 import { CATALOG } from '../config';
 
@@ -21,10 +23,13 @@ export class ExpectedValuesService {
   }
 
   private async load(): Promise<ExpectedValuesTable | undefined> {
-    const rows = await this.prisma.wn8ExpectedValue.findMany({
-      distinct: ['tankId'],
-      orderBy: [{ tankId: 'asc' }, { date: 'desc' }]
-    });
+    const rows = await this.prisma.$queryRaw<ExpectedValueRow[]>`
+      SELECT DISTINCT ON (tank_id)
+        tank_id AS "tankId", exp_damage AS "expDamage", exp_spotted AS "expSpotted", exp_frags AS "expFrags",
+        exp_defense AS "expDefense", exp_win_rate AS "expWinRate"
+      FROM wn8_expected_value
+      ORDER BY tank_id, date DESC
+    `;
 
     if (rows.length === 0) {
       return undefined;

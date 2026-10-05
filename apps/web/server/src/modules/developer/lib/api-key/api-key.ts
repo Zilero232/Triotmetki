@@ -4,9 +4,9 @@ import { apiTierSchema } from '@otmetki/schemas';
 import { addMilliseconds, differenceInSeconds } from 'date-fns';
 import { z } from 'zod';
 
-import type { QuotaRetryAfterInput, RebasedRemainingInput, TierQuota, VerifyFailure } from './api-key.types';
+import type { KeyMetadata, QuotaRetryAfterInput, VerifyFailure } from './api-key.types';
 
-import { API_KEY_POLICY, API_TIERS } from '../../config';
+import { API_KEY_POLICY } from '../../config';
 
 const keyMetadataSchema = z.object({ tier: apiTierSchema });
 
@@ -24,21 +24,7 @@ export const keyTierOf = (metadata: unknown): ApiTier | null => {
   return parsed.success ? parsed.data.tier : null;
 };
 
-export const tierQuota = (tier: ApiTier): TierQuota => ({
-  refillAmount: API_TIERS[tier].requestsPerDay,
-  refillInterval: API_KEY_POLICY.quotaRefillMs,
-  metadata: { tier }
-});
-
-export const rebasedRemaining = ({ tier, remaining, refillAmount }: RebasedRemainingInput): number => {
-  const limit = API_TIERS[tier].requestsPerDay;
-
-  if (remaining === null || refillAmount === null) {
-    return limit;
-  }
-
-  return Math.max(0, limit - Math.max(0, refillAmount - remaining));
-};
+export const tierMetadata = (tier: ApiTier): KeyMetadata => ({ tier });
 
 export const verifyFailureOf = (code: string | undefined): VerifyFailure => {
   if (API_KEY_POLICY.quotaCodes.has(code ?? '')) {

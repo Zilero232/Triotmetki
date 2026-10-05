@@ -5,14 +5,17 @@ import type { Owned } from '../../community-core';
 
 import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
+import { PurgeGuardService } from '../../collector';
 import { CommunityContentService } from '../../community-core';
+import { ACCOUNT_PURGE } from '../config';
 
 @Injectable()
 export class AccountPurgeService implements AccountPurgeStore {
   constructor(
     private readonly prisma: PrismaService,
     private readonly communityContent: CommunityContentService,
-    private readonly entitlements: EntitlementsService
+    private readonly entitlements: EntitlementsService,
+    private readonly purgeGuard: PurgeGuardService
   ) {}
 
   async purgeAccount({ userId }: Owned): Promise<void> {
@@ -35,6 +38,16 @@ export class AccountPurgeService implements AccountPurgeStore {
       await tx.telegramAccount.deleteMany({ where: { userId } });
       await tx.modSyncLibrary.deleteMany({ where: { userId } });
       await tx.modDevice.deleteMany({ where: { userId } });
+
+      const links = await tx.userLestaAccount.findMany({ where: { userId }, select: { accountId: true } });
+
+      await this.purgeGuard.open({
+        db: tx,
+        accountIds: links.map((link) => link.accountId),
+        source: 'user',
+        reason: ACCOUNT_PURGE.deletionReason
+      });
+
       await tx.userLestaAccount.deleteMany({ where: { userId } });
     });
 

@@ -1,3 +1,5 @@
+import type { JobType } from 'bullmq';
+
 const ACCOUNT_BLOCK_FIELDS = [
   'battles',
   'wins',
@@ -64,7 +66,8 @@ export const TRACKING = {
     sweepPageSize: 5000,
     sweepMinAgeHours: 20,
     addBulkChunk: 1000,
-    dormantPriority: 10
+    dormantPriority: 10,
+    sweepBacklogStates: ['waiting', 'delayed', 'prioritized'] satisfies JobType[]
   },
   intervals: {
     activeMinutes: 15,

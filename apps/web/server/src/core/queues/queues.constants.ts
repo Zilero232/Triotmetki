@@ -1,5 +1,7 @@
 import type { DefaultJobOptions } from 'bullmq';
 
+export const QUEUE_CONNECTION = Symbol('QUEUE_CONNECTION');
+
 export const QUEUE_DEFAULTS = {
   prefix: 'otmetki',
   jobOptions: {

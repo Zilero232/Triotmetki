@@ -7,6 +7,7 @@ import type { WebhookDelivery } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { WebhookEmitterService } from '../webhook-emitter.service';
 
+import { WEBHOOK_DELIVERY } from '../../config';
 import { WebhookRedriveService } from '../webhook-redrive.service';
 
 const createService = (state: 'unknown' | JobState | null) => {
@@ -19,7 +20,7 @@ const createService = (state: 'unknown' | JobState | null) => {
   job.getState.mockResolvedValue(state ?? 'unknown');
   queue.getJob.mockResolvedValue(state === null ? undefined : job);
 
-  return { service: new WebhookRedriveService(prisma, emitter, queue), emitter, job };
+  return { service: new WebhookRedriveService(prisma, emitter, queue), prisma, emitter, job };
 };
 
 describe('WebhookRedriveService.redrive', () => {
@@ -43,5 +44,16 @@ describe('WebhookRedriveService.redrive', () => {
 
     expect(await service.redrive()).toBe(0);
     expect(emitter.enqueue).not.toHaveBeenCalled();
+  });
+
+  it('closes pending deliveries of switched-off endpoints as failed instead of keeping them forever', async () => {
+    const { service, prisma } = createService(null);
+
+    await service.redrive();
+
+    expect(prisma.webhookDelivery.updateMany.mock.calls[0]?.[0]).toMatchObject({
+      where: { status: 'pending', endpoint: { isActive: false } },
+      data: { status: 'failed', responseBody: WEBHOOK_DELIVERY.inactiveEndpointResponse, nextAttemptAt: null }
+    });
   });
 });

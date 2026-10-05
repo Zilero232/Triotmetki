@@ -50,6 +50,7 @@ export const createAuth = ({ env, prisma, redis, lesta, lestaStore, telegramStor
     emailAndPassword: { enabled: false },
     socialProviders: socialProviders(env),
     account: {
+      encryptOAuthTokens: true,
       accountLinking: { enabled: true, allowDifferentEmails: true, disableImplicitLinking: true }
     },
     plugins: [

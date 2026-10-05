@@ -1,15 +1,7 @@
 import type { ApiTier } from '@otmetki/schemas';
 
-export type TierQuota = {
-  refillAmount: number;
-  refillInterval: number;
-  metadata: { tier: ApiTier };
-};
-
-export type RebasedRemainingInput = {
+export type KeyMetadata = {
   tier: ApiTier;
-  remaining: number | null;
-  refillAmount: number | null;
 };
 
 export type VerifyFailure = 'invalid' | 'quota' | 'revoked';

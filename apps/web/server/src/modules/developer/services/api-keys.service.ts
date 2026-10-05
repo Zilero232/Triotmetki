@@ -19,7 +19,7 @@ import {
 import { errorMessage } from '../../../common/lib';
 import { LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService } from '../../../core';
 import { API_TIERS } from '../config';
-import { keyTierOf, quotaRetryAfterSec, tierQuota, verifyFailureOf } from '../lib';
+import { keyTierOf, quotaRetryAfterSec, tierMetadata, verifyFailureOf } from '../lib';
 import { toApiKey } from '../mappers';
 import { ApiTierSyncService } from './api-tier-sync.service';
 import { ApiTierService } from './api-tier.service';
@@ -68,7 +68,7 @@ export class ApiKeysService {
           throw new AppConflictException('CONFLICT', `At most ${API_KEY.maxActivePerUser} active API keys`);
         }
 
-        const created = await this.auth.api.createApiKey({ body: { userId, name, expiresIn, ...tierQuota(tier) } });
+        const created = await this.auth.api.createApiKey({ body: { userId, name, expiresIn, metadata: tierMetadata(tier) } });
 
         return { key: toApiKey(created), secret: created.key };
       }

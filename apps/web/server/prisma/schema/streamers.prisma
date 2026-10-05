@@ -236,6 +236,7 @@ model SettingsApplyRequest {
   profile StreamerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   @@index([userId, status])
+  @@index([createdAt])
   @@map("settings_apply_request")
 }
 

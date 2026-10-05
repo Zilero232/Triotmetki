@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { API_KEY_POLICY, API_TIERS } from '../../../config';
-import { keyTierOf, quotaRetryAfterSec, rebasedRemaining, tierQuota, verifyFailureOf } from '../api-key';
+import { API_KEY_POLICY } from '../../../config';
+import { keyTierOf, quotaRetryAfterSec, tierMetadata, verifyFailureOf } from '../api-key';
 
 const createdAt = new Date('2026-09-25T10:00:00Z');
 
@@ -18,31 +18,9 @@ describe('keyTierOf', () => {
   });
 });
 
-describe('tierQuota', () => {
-  it('refills the daily request budget of the tier once a day', () => {
-    expect(tierQuota('plus')).toEqual({
-      refillAmount: API_TIERS.plus.requestsPerDay,
-      refillInterval: API_KEY_POLICY.quotaRefillMs,
-      metadata: { tier: 'plus' }
-    });
-  });
-});
-
-describe('rebasedRemaining', () => {
-  it('carries what was already spent today over to the new tier', () => {
-    const spent = 1_000;
-
-    expect(rebasedRemaining({ tier: 'plus', remaining: API_TIERS.free.requestsPerDay - spent, refillAmount: API_TIERS.free.requestsPerDay })).toBe(
-      API_TIERS.plus.requestsPerDay - spent
-    );
-  });
-
-  it('never goes below zero after a downgrade', () => {
-    expect(rebasedRemaining({ tier: 'free', remaining: 0, refillAmount: API_TIERS.plus.requestsPerDay })).toBe(0);
-  });
-
-  it('starts a key without a quota at the full tier budget', () => {
-    expect(rebasedRemaining({ tier: 'free', remaining: null, refillAmount: null })).toBe(API_TIERS.free.requestsPerDay);
+describe('tierMetadata', () => {
+  it('stores only the tier on the key, leaving the daily budget to the Redis limiter', () => {
+    expect(tierMetadata('plus')).toEqual({ tier: 'plus' });
   });
 });
 

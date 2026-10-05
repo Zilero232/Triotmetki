@@ -1,7 +1,7 @@
 import { safeDivide, winRateDiffFromAggregate } from '@otmetki/ratings';
 import { groupBy, sortBy } from 'remeda';
 
-import type { BuildServerStatsInput, DailyStatsRow, ServerStatsRow } from './server-stats.types';
+import type { BuildServerStatsInput, DailyStatsRow, PeriodPlayersAtInput, PlayerCountRow, ServerStatsRow } from './server-stats.types';
 
 import { CohortFilter } from '../../../../../../generated';
 import { tierListRanks } from '../tier-list';
@@ -108,3 +108,10 @@ export const buildServerStats = ({ rows, players, tiers, mode, period }: BuildSe
 
   return result;
 };
+
+export const periodPlayersAt = ({ rows, index }: PeriodPlayersAtInput): PlayerCountRow[] =>
+  rows.flatMap(({ tankId, cohort, players }) => {
+    const count = players[index] ?? 0;
+
+    return count > 0 ? [{ tankId, cohort, players: count }] : [];
+  });

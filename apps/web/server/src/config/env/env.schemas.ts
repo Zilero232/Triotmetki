@@ -20,6 +20,7 @@ export const envSchema = z.object({
 
   BETTER_AUTH_SECRET: z.string().min(32),
   INTERNAL_API_TOKEN: z.string().min(32),
+  TOKEN_ENCRYPTION_SECRET: z.string().min(32),
 
   LESTA_APPLICATION_ID: z.string().default(''),
   LESTA_RPS: z.coerce.number().int().positive().default(20),
@@ -68,7 +69,7 @@ export const envSchema = z.object({
   VK_LIVE_CLIENT_SECRET: z.string().default(''),
   YOUTUBE_API_KEY: z.string().default(''),
 
-  MOD_INGEST_SECRET: z.string().min(8),
+  MOD_INGEST_SECRET: z.string().min(32),
 
   BULL_BOARD_PASSWORD: z.string().default('')
 });

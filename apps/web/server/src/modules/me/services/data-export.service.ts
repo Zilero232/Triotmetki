@@ -21,15 +21,15 @@ export class DataExportService {
     const [players, tanks, snapshots, modSync] = await Promise.all([
       this.prisma.player.findMany({ where: { accountId: { in: accountIds } }, orderBy: { accountId: 'asc' } }),
       this.prisma.playerTank.findMany({ where: { accountId: { in: accountIds } }, orderBy: [{ accountId: 'asc' }, { tankId: 'asc' }] }),
-      this.prisma.accountSnapshot.findMany({
-        where: { accountId: { in: accountIds }, mode: 'random' },
-        orderBy: [{ accountId: 'asc' }, { capturedAt: 'desc' }],
-        distinct: ['accountId']
-      }),
+      Promise.all(
+        accountIds.map(async (accountId) =>
+          this.prisma.accountSnapshot.findFirst({ where: { accountId, mode: 'random' }, orderBy: { capturedAt: 'desc' } })
+        )
+      ),
       this.modSync.libraries(userId)
     ]);
 
-    const latest = new Map(snapshots.map((snapshot) => [snapshot.accountId, snapshot]));
+    const latest = new Map(snapshots.flatMap((snapshot) => (snapshot ? [[snapshot.accountId, snapshot] as const] : [])));
 
     return {
       generatedAt: new Date().toISOString(),

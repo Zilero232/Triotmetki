@@ -4,7 +4,8 @@ import type { AccountRating, AccountSnapshot, Battle, TankModeStats } from '../.
 import type { CareerSource, ModeStatsMode } from '../../common/lib';
 import type { AccountInfo } from '../../lib/lesta';
 import type { HistoryWindowPolicy } from './lib';
-import type { CareerRecordKey, CareerRecordRef, CareerTotals } from './mappers';
+import type { CareerRecordRef, CareerTotals } from './mappers';
+import type { CareerRecordTimes } from './selects';
 
 export type LestaPlayerInfo = AccountInfo;
 
@@ -93,15 +94,8 @@ export type CareerRecordsInput = {
 };
 
 export type CareerRecordInput = {
-  accountId: bigint;
   ref: CareerRecordRef;
-  isStored: boolean;
-};
-
-export type RecordAchievedAtInput = {
-  accountId: bigint;
-  key: CareerRecordKey;
-  value: number;
+  times: CareerRecordTimes | null;
 };
 
 export type OfficialPeriodInput = {

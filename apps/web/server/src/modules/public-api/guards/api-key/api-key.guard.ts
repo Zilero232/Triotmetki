@@ -30,8 +30,18 @@ export class ApiKeyGuard implements CanActivate {
       throw new AppUnauthorizedException('API_KEY_INVALID', `Pass your API key in the ${API_KEY.header} header`);
     }
 
+    const ip = request.ip ?? API_RATE_LIMIT.failedKeys.unknownIp;
+
     try {
-      const key = await this.keys.verify(raw);
+      await this.limits.assertKeyAttemptsLeft(ip);
+
+      const key = await this.keys.verify(raw).catch(async (error: unknown) => {
+        if (error instanceof AppUnauthorizedException) {
+          await this.limits.chargeFailedKey(ip);
+        }
+
+        throw error;
+      });
 
       response.setHeader(API_RATE_LIMIT.headers.dailyLimit, key.dailyLimit);
       response.setHeader(API_RATE_LIMIT.headers.dailyRemaining, key.dailyRemaining);

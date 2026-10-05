@@ -123,7 +123,7 @@ Other differences:
   - "data source: Леста Игры"
   - prominent link to the Lesta Support Center
   - a logout button when auth is used
-- **Deletion**: delete data on Lesta's request; don't keep stale data.
+- **Deletion**: delete data on Lesta's request; don't keep stale data. A Lesta request is opened with `bun run deletion:request --account <id> --reason "<ticket>"` (apps/web/server); deleting a site account opens a `user` request for each linked account. Both hide the player at once and block collection for good; the purge job removes the data.
 
 ### Monetisation status
 Our only paid product is the Plus subscription ([Plus spec](../../specs/2026-09-26-plus-subscription.md)); the API and core stats stay free and there are no ads. Checkout stays disabled (`PLUS.checkoutEnabled = false` in `packages/schemas/src/plus`) until Lesta confirms the model in writing, as described in the Plus spec §6; trials and promo days work meanwhile. When the reply arrives, record it here (date, sender, verbatim answer, including the history-window question).

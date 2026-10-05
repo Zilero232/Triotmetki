@@ -78,6 +78,8 @@ services:
     image: ghcr.io/zilero232/otmetki-server:latest
     container_name: otmetki-server
     restart: always
+    # Lets in-flight requests and BullMQ jobs finish before Docker sends SIGKILL.
+    stop_grace_period: 60s
     logging: *logging
     depends_on:
       postgres:
@@ -103,6 +105,8 @@ services:
     image: ghcr.io/zilero232/otmetki-server:latest
     container_name: otmetki-worker
     restart: always
+    # Lets active BullMQ jobs finish (worker.close waits for them) before Docker sends SIGKILL.
+    stop_grace_period: 60s
     logging: *logging
     command: [bun, src/worker.ts]
     # No API port: the worker's liveness is its heartbeat in the server's /health.

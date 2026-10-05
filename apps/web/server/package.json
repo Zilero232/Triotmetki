@@ -24,6 +24,7 @@
     "db:reset": "prisma db execute --file prisma/sql/reset.sql && bun scripts/timescale.ts --extensions && prisma db push && prisma generate && bun run db:timescale",
     "db:studio": "prisma studio",
     "db:timescale": "bun scripts/timescale.ts",
+    "deletion:request": "bun --env-file=../../../.env scripts/deletion-request.ts",
     "predev": "fkill :4000 --force --silent",
     "dev": "nodemon --config nodemon.json",
     "dev:worker": "nodemon --config nodemon.json --exec \"bun --env-file ../../../.env src/worker.ts\"",

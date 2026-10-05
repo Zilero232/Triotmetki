@@ -10,7 +10,7 @@ import { AppNotFoundException } from '../../../common/exceptions';
 import { errorMessage, fromUnixSeconds, insensitiveEquals } from '../../../common/lib';
 import { LESTA_CLIENT, PrismaService, REDIS } from '../../../core';
 import { accountInfoSchema, isExtraRejected, isSearchRejected } from '../../../lib/lesta';
-import { CollectorProducerService } from '../../collector';
+import { CollectorProducerService, PurgeGuardService } from '../../collector';
 import { PLAYER_LOOKUP } from '../config';
 import { missingPlayerKey } from '../lib';
 
@@ -22,7 +22,8 @@ export class PlayerResolverService {
     private readonly prisma: PrismaService,
     private readonly collector: CollectorProducerService,
     @Inject(LESTA_CLIENT) private readonly lesta: LestaClient,
-    @Inject(REDIS) private readonly redis: Redis
+    @Inject(REDIS) private readonly redis: Redis,
+    private readonly purgeGuard: PurgeGuardService
   ) {}
 
   async resolve(idOrNick: string): Promise<bigint> {
@@ -74,6 +75,12 @@ export class PlayerResolverService {
       this.touch(accountId);
 
       return accountId;
+    }
+
+    const blocked = await this.purgeGuard.blocked([Number(accountId)]);
+
+    if (blocked.size > 0) {
+      throw new AppNotFoundException('LESTA_ACCOUNT_HIDDEN', 'This player asked for their data to be deleted');
     }
 
     const lookup: MissingPlayerLookup = { kind: 'id', value: String(accountId) };

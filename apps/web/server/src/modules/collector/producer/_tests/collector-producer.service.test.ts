@@ -31,6 +31,16 @@ describe('CollectorProducerService', () => {
     expect(new Set(jobs?.map((job) => job.opts?.jobId)).size).toBe(2);
   });
 
+  it('drops an enrol job once it finally fails so its stable id can be queued again', async () => {
+    const { enrolQueue, producer } = createProducer();
+
+    await producer.enrol({ accountId: 7 });
+
+    const [jobs] = enrolQueue.addBulk.mock.calls[0] ?? [];
+
+    expect(jobs?.every((job) => job.opts?.removeOnFail === true)).toBe(true);
+  });
+
   it('does not touch the queue for an empty list', async () => {
     const { enrolQueue, pollQueue, producer } = createProducer();
 

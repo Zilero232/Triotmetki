@@ -23,6 +23,11 @@ export type PlayerCountRow = {
   players: number;
 };
 
+export type PeriodPlayersAtInput = {
+  rows: readonly { tankId: number; cohort: string; players: readonly number[] }[];
+  index: number;
+};
+
 export type BuildServerStatsInput = {
   rows: readonly DailyStatsRow[];
   players: readonly PlayerCountRow[];

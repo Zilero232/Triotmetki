@@ -1,2 +1,2 @@
 export { lockedTransaction } from './advisory-lock';
-export { isPrismaRequestError, isTransactionConflict, isUniqueViolation } from './prisma-error';
+export { isPrismaRequestError, isTransactionConflict, isUniqueViolation, isUniqueViolationOn } from './prisma-error';

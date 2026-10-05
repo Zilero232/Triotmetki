@@ -6,6 +6,16 @@ export {
   upsertLatestTanksSql,
   upsertPlayersSql,
   upsertPlayerTanksSql,
+  upsertRandomModeStatsSql,
   upsertTankModeStatsSql
 } from './account-writes';
-export type { LatestTanksSqlInput, MarksRow, PlayerIdentityRow, PlayerTankUpsertRow, SyncedRow } from './account-writes';
+export type {
+  LatestRandomModeStatsSqlInput,
+  LatestTanksSqlInput,
+  MarksRow,
+  PlayerIdentityRow,
+  PlayerTankUpsertRow,
+  SyncedRow
+} from './account-writes';
+export { claimActiveSql } from './claim-active';
+export type { ClaimActiveInput, ClaimedAccountRow } from './claim-active';

@@ -1,4 +1,4 @@
-export { isPrismaRequestError, isTransactionConflict, isUniqueViolation, lockedTransaction } from './lib';
+export { isPrismaRequestError, isTransactionConflict, isUniqueViolation, isUniqueViolationOn, lockedTransaction } from './lib';
 export { LIMIT_LOCK_SCOPE, PRISMA_CODE, PRISMA_TIMEOUT } from './prisma.constants';
 export { createPrismaClient } from './prisma.factory';
 export { PrismaModule } from './prisma.module';

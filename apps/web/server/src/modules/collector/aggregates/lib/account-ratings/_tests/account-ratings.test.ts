@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 
 import type { TankSnapshotTotals } from '../account-ratings.types';
 
-import { buildAccountRatings, earliestCutoff, periodCutoff, tankPeriodTotals } from '../account-ratings';
+import { buildAccountRatings, earliestCutoff, periodCutoff, ratingHistoryBounds, tankPeriodTotals } from '../account-ratings';
+import { RATING_PERIOD_WINDOWS } from '../account-ratings.constants';
 
 const now = new Date('2026-09-24T12:00:00Z');
 const baselineAt = subDays(now, 10);
@@ -165,5 +166,22 @@ describe('earliestCutoff', () => {
 
     expect(trimmed.length).toBeLessThan(tanks.length);
     expect(rate(trimmed)).toEqual(rate(tanks));
+  });
+});
+
+const windowDays = RATING_PERIOD_WINDOWS.flatMap(({ window }) => (window.kind === 'duration' ? [window.days] : []));
+const windowBattles = RATING_PERIOD_WINDOWS.flatMap(({ window }) => (window.kind === 'battles' ? [window.count] : []));
+
+describe('ratingHistoryBounds', () => {
+  it('reaches back as far as every duration period needs', () => {
+    const { since } = ratingHistoryBounds(now);
+
+    expect(windowDays.every((days) => since.getTime() <= subDays(now, days).getTime())).toBe(true);
+  });
+
+  it('covers every battle-count period', () => {
+    const { battles } = ratingHistoryBounds(now);
+
+    expect(windowBattles.every((count) => battles >= count)).toBe(true);
   });
 });

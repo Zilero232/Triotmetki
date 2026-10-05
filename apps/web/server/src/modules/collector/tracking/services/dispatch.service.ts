@@ -5,12 +5,14 @@ import { addMinutes, subHours } from 'date-fns';
 import { chunk } from 'remeda';
 
 import type { AccountBatchPayload } from '../../contracts';
+import type { ClaimedAccountRow } from '../queries';
 import type { EnqueueBatchesInput, SweepTier } from '../tracking.types';
 
 import { PrismaService } from '../../../../core';
 import { chunkIds } from '../../../../lib/lesta';
 import { JOB, QUEUE } from '../../contracts';
 import { TRACKING } from '../config';
+import { claimActiveSql } from '../queries';
 
 @Injectable()
 export class DispatchService {
@@ -23,30 +25,26 @@ export class DispatchService {
   async dispatchActive(): Promise<number> {
     const now = new Date();
 
-    const due = await this.prisma.player.findMany({
-      where: { trackingTier: 'active', OR: [{ nextPollAt: null }, { nextPollAt: { lte: now } }] },
-      orderBy: { nextPollAt: { sort: 'asc', nulls: 'first' } },
-      select: { accountId: true },
-      take: TRACKING.dispatch.maxActivePerTick
-    });
+    const claimed = await this.prisma.$queryRaw<ClaimedAccountRow[]>(
+      claimActiveSql({ now, nextPollAt: addMinutes(now, TRACKING.intervals.activeMinutes), limit: TRACKING.dispatch.maxActivePerTick })
+    );
 
-    if (due.length === 0) {
+    if (claimed.length === 0) {
       return 0;
     }
 
-    const accountIds = due.map((player) => player.accountId);
+    await this.enqueue({ queue: this.pollQueue, name: JOB.poll.batch, accountIds: claimed.map((row) => Number(row.accountId)) });
 
-    await this.prisma.player.updateMany({
-      where: { accountId: { in: accountIds } },
-      data: { nextPollAt: addMinutes(now, TRACKING.intervals.activeMinutes) }
-    });
-
-    await this.enqueue({ queue: this.pollQueue, name: JOB.poll.batch, accountIds: accountIds.map(Number) });
-
-    return due.length;
+    return claimed.length;
   }
 
   async dispatchSweep(tier: SweepTier): Promise<number> {
+    const backlog = await this.sweepQueue.getJobCounts(...TRACKING.dispatch.sweepBacklogStates);
+
+    if (Object.values(backlog).some((count) => count > 0)) {
+      return 0;
+    }
+
     const polledBefore = subHours(new Date(), TRACKING.dispatch.sweepMinAgeHours);
     let cursor = 0n;
     let total = 0;

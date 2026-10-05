@@ -62,7 +62,9 @@ describe('ServerStatsService.compute', () => {
   it('stores whole battle and sample counts', async () => {
     const { prisma, service } = createStats();
 
-    prisma.$queryRaw.mockResolvedValueOnce([daily]).mockResolvedValueOnce([{ tankId: 1, cohort: SERVER_STATS.allCohorts, players: 7 }]);
+    prisma.$queryRaw
+      .mockResolvedValueOnce([{ tankId: 1, cohort: SERVER_STATS.allCohorts, players: SERVER_STATS.periods.map(() => 7) }])
+      .mockResolvedValueOnce([daily]);
 
     const { rows } = await service.compute();
     const [written] = [prisma.tankServerStats.createMany.mock.calls[0]?.[0]?.data ?? []].flat();

@@ -6,6 +6,7 @@ import type { PrismaService } from '../../../../core';
 import type { SaveIntegrationInput } from '../../streamers.types';
 
 import { AppBadRequestException, AppConflictException, AppNotFoundException } from '../../../../common/exceptions';
+import { createTokenCipher } from '../../../../core/token-cipher/_tests/token-cipher.fixtures';
 import { IntegrationStoreService } from '../integration-store.service';
 
 const CONNECTED = new Date('2026-09-01T12:00:00.000Z');
@@ -31,7 +32,9 @@ const createService = () => {
 
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
 
-  return { service: new IntegrationStoreService(prisma), prisma };
+  const cipher = createTokenCipher();
+
+  return { service: new IntegrationStoreService(prisma, cipher), prisma, cipher };
 };
 
 describe('IntegrationStoreService.list', () => {
@@ -91,9 +94,22 @@ describe('IntegrationStoreService.save', () => {
     expect(prisma.streamerIntegration.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { userId_provider: { userId: 'u1', provider: 'twitch' } },
-        update: expect.objectContaining({ externalId: '777', accessToken: 'a', tokenExpiresAt: EXPIRES })
+        update: expect.objectContaining({ externalId: '777', tokenExpiresAt: EXPIRES })
       })
     );
+  });
+
+  it('stores the access and refresh tokens encrypted', async () => {
+    const { service, prisma, cipher } = createService();
+
+    prisma.streamerIntegration.count.mockResolvedValue(0);
+
+    await service.save(input);
+
+    const stored = prisma.streamerIntegration.upsert.mock.calls[0]?.[0]?.create;
+
+    expect([stored?.accessToken, stored?.refreshToken]).not.toContain(input.accessToken);
+    expect(typeof stored?.accessToken === 'string' ? await cipher.open(stored.accessToken) : null).toBe(input.accessToken);
   });
 
   it('refuses to take over an external account another user has connected', async () => {
@@ -161,10 +177,27 @@ describe('IntegrationStoreService.storeToken', () => {
     await service.storeToken({ provider: 'donationAlerts', externalId: '42', accessToken: 'a2', refreshToken: 'r2', expiresAt: EXPIRES });
 
     expect(prisma.streamerIntegration.updateMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { provider: 'donationAlerts', externalId: '42' },
-        data: { accessToken: 'a2', refreshToken: 'r2', tokenExpiresAt: EXPIRES }
-      })
+      expect.objectContaining({ where: { provider: 'donationAlerts', externalId: '42' }, data: expect.objectContaining({ tokenExpiresAt: EXPIRES }) })
     );
+  });
+
+  it('encrypts the refreshed tokens and hands them back decrypted to the listeners', async () => {
+    const { service, prisma } = createService();
+
+    await service.storeToken({ provider: 'donationAlerts', externalId: '42', accessToken: 'a2', refreshToken: 'r2', expiresAt: EXPIRES });
+
+    const data = prisma.streamerIntegration.updateMany.mock.calls[0]?.[0]?.data;
+
+    expect([data?.accessToken, data?.refreshToken]).not.toContain('a2');
+    expect([data?.accessToken, data?.refreshToken]).not.toContain('r2');
+
+    prisma.streamerIntegration.findMany.mockResolvedValue([
+      integration({
+        accessToken: typeof data?.accessToken === 'string' ? data.accessToken : null,
+        refreshToken: typeof data?.refreshToken === 'string' ? data.refreshToken : null
+      })
+    ]);
+
+    expect(await service.byProvider('donationAlerts')).toEqual([expect.objectContaining({ accessToken: 'a2', refreshToken: 'r2' })]);
   });
 });

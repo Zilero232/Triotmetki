@@ -42,8 +42,21 @@ describe('PurgeProcessor', () => {
   it('purges the account from the payload', async () => {
     const { purge, processor } = createProcessor();
 
-    expect(await processor.process(mock<Job>({ name: JOB.purge.account, data: { accountId: 5, requestId } }))).toEqual({ purged: true });
-    expect(purge.purgeAccount).toHaveBeenCalledWith({ accountId: 5, requestId });
+    expect(
+      await processor.process(mock<Job>({ name: JOB.purge.account, data: { accountId: 5, requestId }, attemptsMade: 0, opts: { attempts: 3 } }))
+    ).toEqual({
+      purged: true
+    });
+
+    expect(purge.purgeAccount).toHaveBeenCalledWith({ accountId: 5, requestId, isFinalAttempt: false });
+  });
+
+  it('tells the purge when it runs the last attempt', async () => {
+    const { purge, processor } = createProcessor();
+
+    await processor.process(mock<Job>({ name: JOB.purge.account, data: { accountId: 5, requestId }, attemptsMade: 2, opts: { attempts: 3 } }));
+
+    expect(purge.purgeAccount).toHaveBeenCalledWith({ accountId: 5, requestId, isFinalAttempt: true });
   });
 
   it('fails the job without purging on a malformed payload', async () => {

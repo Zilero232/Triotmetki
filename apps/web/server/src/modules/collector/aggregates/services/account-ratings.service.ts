@@ -4,12 +4,12 @@ import { uniqueBy } from 'remeda';
 import type { StatsMode } from '../../../../../generated';
 import type { AccountRatingsPayload } from '../../contracts';
 import type { TankSnapshotTotals } from '../lib/account-ratings';
-import type { TankBoundarySqlInput } from '../queries';
+import type { AccountSnapshotPointRow, TankBoundarySqlInput } from '../queries';
 
 import { PrismaService } from '../../../../core';
 import { AGGREGATES } from '../config';
-import { buildAccountRatings, earliestCutoff } from '../lib/account-ratings';
-import { tankBoundarySql } from '../queries';
+import { buildAccountRatings, earliestCutoff, ratingHistoryBounds } from '../lib/account-ratings';
+import { accountSnapshotWindowSql, replaceAccountRatingsSql, replaceAccountTankRatingsSql, tankBoundarySql } from '../queries';
 import { TANK_TOTALS_SELECT } from '../selects';
 import { ReferenceTablesService } from './reference-tables.service';
 
@@ -35,11 +35,9 @@ export class AccountRatingsService {
     }
 
     const now = new Date();
-    const accountSnapshots = await this.prisma.accountSnapshot.findMany({
-      where: { accountId: id, mode },
-      select: { capturedAt: true, battles: true },
-      orderBy: { capturedAt: 'asc' }
-    });
+    const accountSnapshots = await this.prisma.$queryRaw<AccountSnapshotPointRow[]>(
+      accountSnapshotWindowSql({ accountId: id, mode, ...ratingHistoryBounds(now) })
+    );
 
     const cutoff = earliestCutoff({ accountSnapshots, now });
 
@@ -53,10 +51,8 @@ export class AccountRatingsService {
     const { ratings, tankRatings } = buildAccountRatings({ accountId: id, accountSnapshots, tankSnapshots, ...tables, now });
 
     await this.prisma.$transaction([
-      this.prisma.accountRating.deleteMany({ where: { accountId: id } }),
-      this.prisma.accountRating.createMany({ data: ratings }),
-      this.prisma.accountTankRating.deleteMany({ where: { accountId: id } }),
-      this.prisma.accountTankRating.createMany({ data: tankRatings })
+      this.prisma.$executeRaw(replaceAccountRatingsSql({ accountId: id, rows: ratings })),
+      this.prisma.$executeRaw(replaceAccountTankRatingsSql({ accountId: id, rows: tankRatings }))
     ]);
 
     return { mode, periods: ratings.length, tanks: tankRatings.length };

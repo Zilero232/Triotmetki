@@ -34,6 +34,7 @@ import {
   upsertLatestTanksSql,
   upsertPlayersSql,
   upsertPlayerTanksSql,
+  upsertRandomModeStatsSql,
   upsertTankModeStatsSql
 } from '../queries';
 import { TrackingAnnounceService } from './tracking-announce.service';
@@ -195,10 +196,15 @@ export class TrackingStoreService implements PollStorePort {
 
   private async latestAccountBattles({ tx, accountId }: LatestAccountBattlesInput): Promise<Map<SnapshotMode, number>> {
     const rows = await tx.$queryRaw<{ mode: string; battles: number }[]>`
-      SELECT DISTINCT ON (mode) mode::text AS mode, battles
-      FROM account_snapshot
-      WHERE account_id = ${BigInt(accountId)} AND mode IN ('all', 'random')
-      ORDER BY mode, captured_at DESC
+      SELECT modes.mode::text AS mode, latest.battles
+      FROM (VALUES ('all'::"StatsMode"), ('random'::"StatsMode")) AS modes(mode)
+      CROSS JOIN LATERAL (
+        SELECT battles
+        FROM account_snapshot
+        WHERE account_id = ${BigInt(accountId)} AND mode = modes.mode
+        ORDER BY captured_at DESC
+        LIMIT 1
+      ) AS latest
     `;
 
     return new Map(rows.flatMap((row) => (isSnapshotMode(row.mode) ? [[row.mode, row.battles] as const] : [])));
@@ -240,6 +246,12 @@ export class TrackingStoreService implements PollStorePort {
 
     if (capturedAt !== undefined) {
       await tx.$executeRaw(upsertLatestTanksSql({ accountId: id, capturedAt: new Date(capturedAt) }));
+    }
+
+    const randomSnapshot = accountSnapshots.find((snapshot) => snapshot.mode === 'random');
+
+    if (randomSnapshot) {
+      await tx.$executeRaw(upsertRandomModeStatsSql({ accountId: id, capturedAt: new Date(randomSnapshot.capturedAt) }));
     }
 
     if (baseline.length > 0) {

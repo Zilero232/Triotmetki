@@ -37,6 +37,7 @@ const UNCONFIGURED: AuthEnv = {
 };
 
 let app: INestApplication;
+let options: ReturnType<typeof createAuth>['options'];
 
 const post = (path: string, body: object) => request(app.getHttpServer()).post(path).set('origin', WEB_URL).send(body);
 
@@ -52,6 +53,8 @@ beforeAll(async () => {
     logger: { log: () => undefined }
   });
 
+  options = auth.options;
+
   const moduleRef = await Test.createTestingModule({
     imports: [BetterAuthModule.forRoot({ auth, disableTrustedOriginsCors: true })]
   }).compile();
@@ -65,6 +68,10 @@ afterAll(async () => {
 });
 
 describe('auth with every integration unconfigured', () => {
+  it('encrypts the OAuth tokens it stores for linked social accounts', () => {
+    expect(options.account?.encryptOAuthTokens).toBe(true);
+  });
+
   it('reports the Telegram widget disabled instead of failing', async () => {
     const response = await request(app.getHttpServer()).get('/auth/telegram/widget');
 

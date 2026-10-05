@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { HttpModule } from '../../core';
+import { HttpModule, TokenCipherModule } from '../../core';
 import { BillingCoreModule } from '../billing';
 import { BotCommandsModule } from '../bot-commands';
 import { ModModule } from '../mod';
@@ -36,7 +36,7 @@ import {
 import { StreamersController } from './streamers.controller';
 
 @Module({
-  imports: [HttpModule, BillingCoreModule, BotCommandsModule, ProgressionCoreModule, ModModule],
+  imports: [HttpModule, TokenCipherModule, BillingCoreModule, BotCommandsModule, ProgressionCoreModule, ModModule],
   controllers: [OverlaysController, StreamersController, AdminStreamersController, ModSettingsController],
   providers: [
     StreamerProfileService,

@@ -10,11 +10,12 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { MOD_RATINGS_READ } from './config';
 import { ModOverviewDto, ModRatingsRequestDto, ModTankRatingsDto, ModTankRatingsRequestDto } from './dto';
+import { modDeviceTracker } from './lib';
 import { ModDeviceService, ModRatingsService } from './services';
 
 @ApiTags('mod')
 @AllowAnonymous()
-@Throttle({ default: MOD_RATINGS_READ.throttle })
+@Throttle({ default: { ...MOD_RATINGS_READ.throttle, getTracker: modDeviceTracker } })
 @Controller('mod/me')
 export class ModRatingsController {
   constructor(

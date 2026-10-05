@@ -15,8 +15,40 @@ import { API_RATE_LIMIT } from '../config';
 export class ApiRateLimitService {
   private readonly logger = new Logger(ApiRateLimitService.name);
   private readonly limiters = new Map<string, RateLimiterRedis>();
+  private readonly failedKeys: RateLimiterRedis;
 
-  constructor(@Inject(REDIS) private readonly redis: Redis) {}
+  constructor(@Inject(REDIS) private readonly redis: Redis) {
+    this.failedKeys = new RateLimiterRedis({
+      storeClient: redis,
+      keyPrefix: API_RATE_LIMIT.failedKeys.prefix,
+      points: API_RATE_LIMIT.failedKeys.points,
+      duration: API_RATE_LIMIT.failedKeys.duration
+    });
+  }
+
+  async assertKeyAttemptsLeft(ip: string): Promise<void> {
+    const spent = await this.failedKeys.get(ip).catch((error: unknown) => {
+      this.logger.warn(`failed-key limit store unavailable, letting the request through: ${errorMessage(error)}`);
+
+      return null;
+    });
+
+    if (spent && spent.consumedPoints >= API_RATE_LIMIT.failedKeys.points) {
+      throw new AppTooManyRequestsException(
+        'RATE_LIMITED',
+        'Too many requests with an invalid API key from this address',
+        Math.max(1, Math.ceil(spent.msBeforeNext / millisecondsInSecond))
+      );
+    }
+  }
+
+  async chargeFailedKey(ip: string): Promise<void> {
+    await this.failedKeys.consume(ip).catch((error: unknown) => {
+      if (!(error instanceof RateLimiterRes)) {
+        this.logger.warn(`failed API key attempt not counted: ${errorMessage(error)}`);
+      }
+    });
+  }
 
   async consume(owner: BudgetOwner): Promise<UserBudget> {
     const { requestsPerSecond, requestsPerDay } = API_TIER_LIMITS[owner.tier];

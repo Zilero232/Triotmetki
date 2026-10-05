@@ -133,4 +133,29 @@ describe('/v1 behind the API key guard', () => {
     expect(response.body.code).toBe('PLAN_LIMIT_REACHED');
     expect(Number(response.headers['retry-after'])).toBe(QUOTA_RETRY_SEC);
   });
+
+  it('refuses an address with 429 once it has spent its failed-key budget, without verifying the key', async () => {
+    for (let attempt = 0; attempt < API_RATE_LIMIT.failedKeys.points; attempt += 1) {
+      await request(app.getHttpServer()).get('/v1/leaderboards').set(API_KEY.header, 'otm_guess');
+    }
+
+    keys.verify.mockClear();
+
+    const response = await request(app.getHttpServer()).get('/v1/leaderboards').set(API_KEY.header, VALID_KEY);
+
+    expect(response.status).toBe(429);
+    expect(response.body.code).toBe('RATE_LIMITED');
+    expect(Number(response.headers['retry-after'])).toBeGreaterThan(0);
+    expect(keys.verify).not.toHaveBeenCalled();
+  });
+
+  it('does not charge the failed-key budget for a valid key', async () => {
+    for (let attempt = 0; attempt <= API_RATE_LIMIT.failedKeys.points; attempt += 1) {
+      await request(app.getHttpServer()).get('/v1/leaderboards').set(API_KEY.header, VALID_KEY);
+    }
+
+    const response = await request(app.getHttpServer()).get('/v1/leaderboards').set(API_KEY.header, 'otm_guess');
+
+    expect(response.status).toBe(401);
+  });
 });

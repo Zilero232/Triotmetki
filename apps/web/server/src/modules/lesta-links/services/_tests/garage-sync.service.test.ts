@@ -8,6 +8,7 @@ import type { UserLestaAccount } from '../../../../../generated';
 import type { LestaClients, PrismaService } from '../../../../core';
 import type { GaragePayload } from '../../config';
 
+import { createTokenCipher } from '../../../../core/token-cipher/_tests/token-cipher.fixtures';
 import { LestaApiError } from '../../../../lib/lesta';
 import { LESTA_LINKS_QUEUE } from '../../config';
 import { GarageSyncService } from '../garage-sync.service';
@@ -24,14 +25,16 @@ const createService = () => {
 
   prisma.$transaction.mockResolvedValue([]);
 
-  return { service: new GarageSyncService(prisma, clients, queue), prisma, clients, queue };
+  const cipher = createTokenCipher();
+
+  return { service: new GarageSyncService(prisma, clients, queue, cipher), prisma, clients, queue, cipher };
 };
 
 describe('GarageSyncService.sync', () => {
   it('marks the tanks Lesta reports as kept or sold and stamps the sync', async () => {
-    const { service, prisma, clients } = createService();
+    const { service, prisma, clients, cipher } = createService();
 
-    prisma.userLestaAccount.findUnique.mockResolvedValue(link());
+    prisma.userLestaAccount.findUnique.mockResolvedValue(link({ accessToken: await cipher.seal('token') }));
 
     clients.bulk.tanks.stats.mockResolvedValue([
       { tank_id: 1, in_garage: true },

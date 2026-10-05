@@ -1,4 +1,4 @@
-export { keyTierOf, quotaRetryAfterSec, rebasedRemaining, tierQuota, verifyFailureOf } from './api-key';
+export { keyTierOf, quotaRetryAfterSec, tierMetadata, verifyFailureOf } from './api-key';
 export { topEndpoints, usagePointOf, usagePoints } from './usage';
 export type { UsageRow } from './usage';
 export { matchesSubject } from './webhook-match';

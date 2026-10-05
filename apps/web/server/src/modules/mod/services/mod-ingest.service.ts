@@ -8,10 +8,12 @@ import type { IngestResponse } from '../lib';
 import type { BattleEventInput, IngestInput, LedgeredEventInput, MarkGainedInput, SessionRef, SessionSummary } from '../mod.types';
 
 import { errorMessage } from '../../../common/lib';
-import { BATTLE_EVENTS, isUniqueViolation, markGainedKey, PrismaService, WEBHOOK_EMITTER } from '../../../core';
+import { BATTLE_EVENTS, isUniqueViolationOn, markGainedKey, PrismaService, WEBHOOK_EMITTER } from '../../../core';
 import { ExpectedValuesService } from '../../reference';
+import { MOD_INGEST } from '../config';
 import { countsForSession, moePercent, sessionIncrement, sessionTankTotals, sessionUuid } from '../lib';
 import { toBattleData, toPlayerTankMoe } from '../mappers';
+import { openLiveSessionSql } from '../queries';
 import { EventLedgerService } from './event-ledger.service';
 
 @Injectable()
@@ -71,11 +73,7 @@ export class ModIngestService {
         previousMarks = previous?.marksOnGun ?? null;
 
         if (sessionId) {
-          await tx.playSession.upsert({
-            where: { id: sessionId },
-            create: { id: sessionId, accountId, source: 'mod', kind: 'live', status: 'open', startedAt, lastActivityAt: new Date(), credits: 0 },
-            update: {}
-          });
+          await tx.$executeRaw(openLiveSessionSql({ id: sessionId, accountId, startedAt }));
         }
 
         await tx.battle.create({
@@ -112,7 +110,7 @@ export class ModIngestService {
 
       return true;
     } catch (error) {
-      if (isUniqueViolation(error)) {
+      if (isUniqueViolationOn({ error, constraint: MOD_INGEST.battleUniqueConstraint })) {
         return false;
       }
 

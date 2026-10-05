@@ -1,8 +1,9 @@
 import { subDays } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
+import { z } from 'zod';
 
-import type { AccountSnapshot, Player, TankSnapshotLatest } from '../../../../../../generated';
+import type { Player, TankSnapshotLatest } from '../../../../../../generated';
 import type { ReferenceTables } from '../../aggregates.types';
 
 import { AGGREGATES } from '../../config';
@@ -23,12 +24,21 @@ const createRatings = ({ player = true, modes = [] }: { player?: boolean; modes?
     prisma.tankSnapshotLatest.findFirst.mockResolvedValueOnce(modes.includes(mode) ? mock<TankSnapshotLatest>({ tankId: 1 }) : null);
   }
 
-  prisma.accountSnapshot.findMany.mockResolvedValue([]);
+  prisma.$queryRaw.mockResolvedValue([]);
   prisma.tankSnapshot.findMany.mockResolvedValue([]);
   prisma.tankSnapshotLatest.findMany.mockResolvedValue([]);
   tables.tables.mockResolvedValue(emptyTables);
 
   return { prisma, service: new AccountRatingsService(prisma, tables) };
+};
+
+const sqlValues = (sql: unknown): unknown[] =>
+  typeof sql === 'object' && sql !== null && 'values' in sql && Array.isArray(sql.values) ? sql.values : [];
+
+const writtenRows = (prisma: ReturnType<typeof createPrisma>, call: number): { period: string; battles: number }[] => {
+  const text = sqlValues(prisma.$executeRaw.mock.calls[call]?.[0]).find((value): value is string => typeof value === 'string');
+
+  return text ? z.array(z.object({ period: z.string(), battles: z.number() })).parse(JSON.parse(text)) : [];
 };
 
 describe('AccountRatingsService.compute', () => {
@@ -59,16 +69,14 @@ describe('AccountRatingsService.compute', () => {
     expect(prisma.tankSnapshotLatest.findMany.mock.calls[0]?.[0]?.where).toMatchObject({ mode: fallbackMode });
   });
 
-  it('replaces the stored ratings in one transaction and reports what it wrote', async () => {
+  it('writes ratings and tank ratings for the account in one transaction and reports what it wrote', async () => {
     const { prisma, service } = createRatings({ modes: [preferredMode] });
 
     const result = await service.compute({ accountId: 1 });
-    const written = prisma.accountRating.createMany.mock.calls[0]?.[0]?.data;
-    const tanks = prisma.accountTankRating.createMany.mock.calls[0]?.[0]?.data;
 
     expect(prisma.$transaction).toHaveBeenCalledOnce();
-    expect(prisma.accountRating.deleteMany.mock.calls[0]?.[0]?.where).toEqual({ accountId: 1n });
-    expect(result).toMatchObject({ periods: Array.isArray(written) ? written.length : -1, tanks: Array.isArray(tanks) ? tanks.length : -1 });
+    expect(prisma.$executeRaw.mock.calls.map(([sql]) => sqlValues(sql).includes(1n))).toEqual([true, true]);
+    expect(result).toMatchObject({ periods: writtenRows(prisma, 0).length, tanks: writtenRows(prisma, 1).length });
   });
 });
 
@@ -99,8 +107,7 @@ describe('AccountRatingsService.compute retention', () => {
 
     await service.compute({ accountId: 1 });
 
-    const written = prisma.accountRating.createMany.mock.calls[0]?.[0]?.data;
-    const overall = (Array.isArray(written) ? written : []).find((row) => row.period === 'overall');
+    const overall = writtenRows(prisma, 0).find((row) => row.period === 'overall');
 
     expect(overall?.battles).toBe(100);
   });
@@ -111,17 +118,15 @@ describe('AccountRatingsService.compute history', () => {
     const { prisma, service } = createRatings({ modes: [preferredMode] });
     const baseline = subDays(new Date(), 90);
 
-    prisma.accountSnapshot.findMany.mockResolvedValue([
-      Object.assign(mock<AccountSnapshot>(), { capturedAt: baseline, battles: 100 }),
-      Object.assign(mock<AccountSnapshot>(), { capturedAt: subDays(new Date(), 1), battles: 5_000 })
+    prisma.$queryRaw.mockResolvedValueOnce([
+      { capturedAt: baseline, battles: 100 },
+      { capturedAt: subDays(new Date(), 1), battles: 5_000 }
     ]);
-
-    prisma.$queryRaw.mockResolvedValue([]);
 
     await service.compute({ accountId: 1 });
 
     expect(prisma.tankSnapshot.findMany.mock.calls[0]?.[0]?.where).toMatchObject({ capturedAt: { gt: baseline } });
-    expect(prisma.$queryRaw).toHaveBeenCalledOnce();
+    expect(prisma.$queryRaw).toHaveBeenCalledTimes(2);
   });
 
   it('skips the snapshot history when no recent period has a baseline', async () => {
@@ -130,6 +135,6 @@ describe('AccountRatingsService.compute history', () => {
     await service.compute({ accountId: 1 });
 
     expect(prisma.tankSnapshot.findMany).not.toHaveBeenCalled();
-    expect(prisma.$queryRaw).not.toHaveBeenCalled();
+    expect(prisma.$queryRaw).toHaveBeenCalledOnce();
   });
 });
