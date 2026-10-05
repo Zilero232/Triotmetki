@@ -46,7 +46,7 @@ export const AttendanceDialog = ({ clanId, event, members }: AttendanceDialogPro
                 aria-label={t('statusFor', { nickname: row.nickname })}
                 items={editor.statuses.map((status) => ({ value: status, label: t(`statuses.${status}`) }))}
                 value={row.status}
-                onValueChange={(status) => editor.onStatusChange(row.accountId, status)}
+                onValueChange={(status) => editor.onStatusChange({ accountId: row.accountId, status })}
               />
             </li>
           ))}

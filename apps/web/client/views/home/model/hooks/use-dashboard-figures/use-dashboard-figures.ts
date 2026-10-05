@@ -5,7 +5,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { ratingValueTone, winRateTone } from '@/entities/player/stats';
 import { percentText } from '@/shared/lib';
 
-import type { UseDashboardFiguresInput } from './use-dashboard-figures.types';
+import type { UseDashboardFiguresInput, WeeklyInput } from './use-dashboard-figures.types';
 
 import { HOME } from '../../../config';
 
@@ -13,8 +13,7 @@ export const useDashboardFigures = ({ overall, week }: UseDashboardFiguresInput)
   const t = useTranslations('home.dashboard.figures');
   const format = useFormatter();
 
-  const weekly = (value: number | null | undefined, text: (known: number) => string) =>
-    value === null || value === undefined ? undefined : t('week', { value: text(value) });
+  const weekly = ({ value, text }: WeeklyInput) => (value === null || value === undefined ? undefined : t('week', { value: text(value) }));
 
   const integer = (value: number) => format.number(Math.round(value));
 
@@ -25,7 +24,7 @@ export const useDashboardFigures = ({ overall, week }: UseDashboardFiguresInput)
       value: overall.wn8.value,
       format: HOME.dashboard.integerFormat,
       tone: ratingValueTone(overall.wn8),
-      hint: weekly(week?.wn8.value, integer)
+      hint: weekly({ value: week?.wn8.value, text: integer })
     },
     {
       key: 'winRate',
@@ -34,7 +33,7 @@ export const useDashboardFigures = ({ overall, week }: UseDashboardFiguresInput)
       format: HOME.dashboard.winRateFormat,
       suffix: '%',
       tone: winRateTone(overall.winRate),
-      hint: weekly(week?.winRate, (value) => percentText({ format, value, digits: HOME.dashboard.weekDigits }))
+      hint: weekly({ value: week?.winRate, text: (value) => percentText({ format, value, digits: HOME.dashboard.weekDigits }) })
     },
     {
       key: 'avgDamage',
@@ -42,8 +41,8 @@ export const useDashboardFigures = ({ overall, week }: UseDashboardFiguresInput)
       value: overall.avgDamage,
       format: HOME.dashboard.integerFormat,
       tone: 'steel' as const,
-      hint: weekly(week?.avgDamage, integer)
+      hint: weekly({ value: week?.avgDamage, text: integer })
     },
-    { key: 'battles', label: t('battles'), value: overall.battles, tone: 'steel' as const, hint: weekly(week?.battles, integer) }
+    { key: 'battles', label: t('battles'), value: overall.battles, tone: 'steel' as const, hint: weekly({ value: week?.battles, text: integer }) }
   ];
 };

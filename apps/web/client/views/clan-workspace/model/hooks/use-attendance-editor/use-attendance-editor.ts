@@ -10,7 +10,7 @@ import { communityErrorKind } from '@/features/community/api-error';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { AttendanceStatus } from '../../../api';
-import type { UseAttendanceEditorInput } from './use-attendance-editor.types';
+import type { AttendanceStatusChangeInput, UseAttendanceEditorInput } from './use-attendance-editor.types';
 
 import { setEventAttendance } from '../../../api';
 import { ATTENDANCE_STATUSES } from '../../../config';
@@ -45,7 +45,7 @@ export const useAttendanceEditor = ({ clanId, event, members }: UseAttendanceEdi
       setOpen(next);
       setDraft({});
     },
-    onStatusChange: (accountId: number, status: AttendanceStatus) => setDraft((current) => ({ ...current, [accountId]: status })),
+    onStatusChange: ({ accountId, status }: AttendanceStatusChangeInput) => setDraft((current) => ({ ...current, [accountId]: status })),
     onSave: () => save.mutate({ clanId, id: event.id, entries: changes })
   };
 };

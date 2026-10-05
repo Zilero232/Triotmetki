@@ -4,11 +4,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { QUERY_KEYS } from '@/shared/constants';
 
-import type { SaveOverlayInput } from '../../studio.types';
-
-import { createOverlay, getOverlays, removeOverlay, updateOverlay } from '../../../api';
-
-const saveOverlay = ({ id, values }: SaveOverlayInput) => (id ? updateOverlay({ id, ...values }) : createOverlay(values));
+import { getOverlays, removeOverlay, saveOverlay } from '../../../api';
 
 export const useOverlays = () => useQuery({ queryKey: QUERY_KEYS.me.streamer.overlays, queryFn: getOverlays });
 

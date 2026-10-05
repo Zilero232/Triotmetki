@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { useBlogEditorAccess } from '@/entities/blog/post';
+import { useBlogEditorAccess } from '@/features/blog/editor-access';
 import { isNotFoundError } from '@/shared/api/source';
 import { QUERY_KEYS } from '@/shared/constants';
 

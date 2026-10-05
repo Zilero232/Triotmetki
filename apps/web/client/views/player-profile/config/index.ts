@@ -7,14 +7,5 @@ export { MARKS } from './marks.constants';
 export { MODES_TAB } from './modes.constants';
 export { OFFICIAL_CARD } from './official.constants';
 export { OVERVIEW } from './overview.constants';
-export {
-  DEFAULT_PERIOD,
-  FIGURE_FORMAT,
-  PROFILE_HEADER,
-  PROFILE_PERIODS,
-  PROFILE_SKELETON,
-  PROFILE_TAB_PARAM,
-  PROFILE_TABS,
-  SESSIONS
-} from './profile.constants';
+export { FIGURE_FORMAT, PROFILE_HEADER, PROFILE_PERIODS, PROFILE_SKELETON, PROFILE_TABS, PROFILE_VIEW, SESSIONS } from './profile.constants';
 export { TANKS_FILTER, TANKS_TABLE } from './tanks.constants';

@@ -34,7 +34,7 @@ export const useSettingsTableColumns = (): TableColumn<SettingsTableRow>[] => {
       cell: (info) =>
         info.row.original.sniperSensitivity === null
           ? SETTINGS_FORMAT.missing
-          : numberText(info.row.original.sniperSensitivity, STREAMERS_SETTINGS_PAGE.sensitivityDigits),
+          : numberText({ value: info.row.original.sniperSensitivity, digits: STREAMERS_SETTINGS_PAGE.sensitivityDigits }),
       meta: { align: 'end', isNumeric: true }
     }),
     column.accessor((row) => row.fov ?? -1, {

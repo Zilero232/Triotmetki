@@ -3,9 +3,9 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { useAuthSession } from '@/entities/auth/session';
+import { getBlogEditorAccess } from '@/entities/blog/post';
 import { QUERY_KEYS } from '@/shared/constants';
 
-import { getBlogEditorAccess } from '../../../api';
 import { BLOG_ACCESS } from '../../../config';
 
 export const useBlogEditorAccess = () => {

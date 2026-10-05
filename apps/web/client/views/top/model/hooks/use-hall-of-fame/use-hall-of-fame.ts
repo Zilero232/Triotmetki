@@ -6,6 +6,7 @@ import { OFFICIAL_RATING_PERIODS, OFFICIAL_RATINGS } from '@otmetki/schemas';
 import { useQuery } from '@tanstack/react-query';
 import { useFormatter, useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { isIncludedIn } from 'remeda';
 
 import { useAuthSession } from '@/entities/auth/session';
 import {
@@ -18,8 +19,6 @@ import { percentText } from '@/shared/lib';
 
 import { HALL_OF_FAME } from '../../../config';
 import { officialEntryLink } from '../../../lib/official-entry';
-
-const percentFields: ReadonlySet<OfficialRatingField> = new Set(HALL_OF_FAME.percentFields);
 
 export const useHallOfFame = () => {
   const t = useTranslations('top.hall');
@@ -48,7 +47,7 @@ export const useHallOfFame = () => {
 
   const isTopMissing = isNotFoundError(top.error);
   const ranks = (history.data?.points ?? []).flatMap((point) => (point.rank === null ? [] : [point.rank]));
-  const isPercent = percentFields.has(field);
+  const isPercent = isIncludedIn(field, HALL_OF_FAME.percentFields);
 
   const valueText = (value: number | null): string =>
     value === null ? HALL_OF_FAME.missing : isPercent ? percentText({ format, value }) : format.number(value, { maximumFractionDigits: 2 });

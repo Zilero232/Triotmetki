@@ -1,13 +1,13 @@
 'use client';
 
-import { target, useHotkeys, useWindowEvent } from '@siberiacancode/reactuse';
+import { useHotkeys, useWindowEvent } from '@siberiacancode/reactuse';
 
 import { isTypingTarget } from '@/shared/lib';
 
-const WINDOW = target(() => window);
+import { COMMAND_PALETTE } from '../../../config';
 
 export const useCommandPaletteHotkey = (onToggle: () => void) => {
-  useHotkeys(WINDOW, 'mod+k', onToggle);
+  useHotkeys(COMMAND_PALETTE.hotkeyTarget, 'mod+k', onToggle);
 
   useWindowEvent('keydown', (event) => {
     if (event.key !== '/' || isTypingTarget(event.target)) {

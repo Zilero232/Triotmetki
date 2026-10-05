@@ -23,7 +23,7 @@ export const AggregateFieldCard = ({ field }: AggregateFieldCardProps) => {
       {field.median !== null && (
         <div>
           <span className={s.medianLabel}>{t('median')} </span>
-          <span className={s.median}>{numberText(field.median, null)}</span>
+          <span className={s.median}>{numberText({ value: field.median, digits: null })}</span>
         </div>
       )}
       <ul className={s.bars}>

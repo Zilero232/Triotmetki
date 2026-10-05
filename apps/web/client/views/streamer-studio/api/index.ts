@@ -5,6 +5,8 @@ export {
   createChallenge,
   createOverlay,
   disconnectIntegration,
+  findMyStreamerProfile,
+  findMyStreamerSettings,
   getChallenges,
   getMyStreamerProfile,
   getMyStreamerSettings,
@@ -12,6 +14,7 @@ export {
   previewOverlay,
   removeOverlay,
   saveMyStreamerSettings,
+  saveOverlay,
   saveStreamerProfile,
   setTwitchPredictions,
   updateOverlay

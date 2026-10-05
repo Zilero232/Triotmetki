@@ -16,7 +16,7 @@ import s from './HowToBuild.module.scss';
 
 export const HowToBuild = () => {
   const t = useTranslations('tank.builds');
-  const { mode, cohort, setMode, setCohort, modes, cohorts, plusCohorts, isLocked, usage, crew, hasLoadout, href, query } = useHowToBuild();
+  const { mode, cohort, setMode, setCohort, modes, cohorts, isPlusCohort, isLocked, usage, crew, hasLoadout, href, query } = useHowToBuild();
 
   return (
     <TankSection
@@ -40,7 +40,7 @@ export const HowToBuild = () => {
         />
         <SegmentedControl
           aria-label={t('cohortLabel')}
-          options={cohorts.map((value) => ({ value, label: t(`cohorts.${value}`), icon: plusCohorts.has(value) ? <PlusBadge /> : undefined }))}
+          options={cohorts.map((value) => ({ value, label: t(`cohorts.${value}`), icon: isPlusCohort(value) ? <PlusBadge /> : undefined }))}
           size='sm'
           value={cohort}
           onChange={setCohort}

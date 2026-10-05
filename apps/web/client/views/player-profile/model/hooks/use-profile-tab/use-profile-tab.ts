@@ -4,11 +4,11 @@ import { parseAsStringLiteral, useQueryState } from 'nuqs';
 
 import type { ProfileTab } from '../../profile.types';
 
-import { PROFILE_TAB_PARAM, PROFILE_TABS } from '../../../config';
+import { PROFILE_TABS, PROFILE_VIEW } from '../../../config';
 
 export const useProfileTab = () => {
   const [tab, setTab] = useQueryState(
-    PROFILE_TAB_PARAM,
+    PROFILE_VIEW.tabParam,
     parseAsStringLiteral(PROFILE_TABS).withDefault(PROFILE_TABS[0]).withOptions({ history: 'replace', scroll: false })
   );
 

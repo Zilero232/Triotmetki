@@ -6,7 +6,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
 import type { SettingsRow } from '../../../lib/settings-format';
-import type { SettingsValueParts } from './use-settings-formatter.types';
+import type { NumberTextInput, SettingsValueParts } from './use-settings-formatter.types';
 
 import { SETTINGS_FORMAT, SETTINGS_VALUE } from '../../../config';
 import { fieldMessage, isSettingsGroup, settingsOption, settingsValueView } from '../../../lib/settings-value';
@@ -31,7 +31,7 @@ export const useSettingsFormatter = () => {
     return option ? t(`options.${option}`) : value;
   };
 
-  const numberText = (value: number, digits: number | null): string =>
+  const numberText = ({ value, digits }: NumberTextInput): string =>
     format.number(
       value,
       digits === null
@@ -43,7 +43,7 @@ export const useSettingsFormatter = () => {
     match(settingsValueView(row))
       .with({ kind: 'options' }, ({ options, isList }) => ({ items: options.map((option) => t(`options.${option}`)), isList }))
       .with({ kind: 'number' }, ({ value, unit, digits }) => {
-        const text = numberText(value, digits);
+        const text = numberText({ value, digits });
 
         return { items: [unit ? t(`units.${unit}`, { value: text }) : text], isList: false };
       })

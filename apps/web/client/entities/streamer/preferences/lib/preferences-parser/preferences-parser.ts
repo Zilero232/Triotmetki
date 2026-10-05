@@ -2,7 +2,7 @@ import { settingsValuesSchema } from '@otmetki/schemas';
 import { isIncludedIn, mergeDeep, round } from 'remeda';
 import { match } from 'ts-pattern';
 
-import type { AddValueInput, PreferencesField, PreferencesImport, ReadTagInput } from './preferences-parser.types';
+import type { AddValueInput, NestedInput, PreferencesImport, ReadTagInput, ToValueInput } from './preferences-parser.types';
 
 import { PREFERENCES_BLOCKED_TAGS, PREFERENCES_TAGS, PREFERENCES_VALUES } from '../../config';
 
@@ -32,7 +32,7 @@ const readTag = ({ document, selectors }: ReadTagInput): string | null => {
 
 const toNumber = (text: string): number | null => (PREFERENCES_VALUES.number.test(text) ? Number(text) : null);
 
-const toValue = (field: PreferencesField, text: string): unknown => {
+const toValue = ({ field, text }: ToValueInput): unknown => {
   const lower = text.toLowerCase();
   const number = toNumber(text);
 
@@ -46,10 +46,10 @@ const toValue = (field: PreferencesField, text: string): unknown => {
     .exhaustive();
 };
 
-const nested = (path: string, value: unknown): Record<string, unknown> => {
+const nested = ({ path, value }: NestedInput): Record<string, unknown> => {
   const [head = '', ...rest] = path.split('.');
 
-  return { [head]: rest.length === 0 ? value : nested(rest.join('.'), value) };
+  return { [head]: rest.length === 0 ? value : nested({ path: rest.join('.'), value }) };
 };
 
 const addValue = ({ target, path, value }: AddValueInput): void => {
@@ -57,7 +57,7 @@ const addValue = ({ target, path, value }: AddValueInput): void => {
     return;
   }
 
-  const parsed = settingsValuesSchema.safeParse(nested(path, value));
+  const parsed = settingsValuesSchema.safeParse(nested({ path, value }));
 
   if (!parsed.success) {
     return;
@@ -93,7 +93,7 @@ export const parsePreferences = (xml: string): PreferencesImport => {
   for (const field of PREFERENCES_TAGS.fields) {
     const text = readTag({ document, selectors: field.selectors });
 
-    addValue({ target: result, path: field.path, value: text === null ? null : toValue(field, text) });
+    addValue({ target: result, path: field.path, value: text === null ? null : toValue({ field, text }) });
   }
 
   return result;

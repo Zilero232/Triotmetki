@@ -19,3 +19,13 @@ export type AddValueInput = {
   path: string;
   value: unknown;
 };
+
+export type ToValueInput = {
+  field: PreferencesField;
+  text: string;
+};
+
+export type NestedInput = {
+  path: string;
+  value: unknown;
+};

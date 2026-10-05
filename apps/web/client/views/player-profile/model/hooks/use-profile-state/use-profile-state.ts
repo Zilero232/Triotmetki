@@ -6,10 +6,10 @@ import { useState } from 'react';
 
 import type { ProfileContextValue } from '../../context';
 
-import { DEFAULT_PERIOD } from '../../../config';
+import { PROFILE_VIEW } from '../../../config';
 
 export const useProfileState = (profile: PlayerProfile): ProfileContextValue => {
-  const [period, setPeriod] = useState<RatingPeriod>(DEFAULT_PERIOD);
+  const [period, setPeriod] = useState<RatingPeriod>(PROFILE_VIEW.defaultPeriod);
 
   const { accountId, nickname } = profile.summary;
 

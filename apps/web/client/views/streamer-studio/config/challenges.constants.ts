@@ -40,4 +40,6 @@ export const CHALLENGE_SCOPE_DEFAULTS = {
   minTier: 8
 } as const;
 
-export const CHALLENGE_NOW_REFRESH_MS = 60_000;
+export const CHALLENGE_CARD = {
+  nowRefreshMs: 60_000
+} as const;

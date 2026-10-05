@@ -1,29 +1,11 @@
 'use client';
 
 import { useEffect, useMemo } from 'react';
-import { BufferAttribute, BufferGeometry, EdgesGeometry } from 'three';
 
-import type { ShowcasePart, ShowcaseRig } from '../../../lib/showcase-rig';
+import type { ShowcaseRig } from '../../../lib/showcase-rig';
 
-import { HOLOGRAM_SHADING } from '../../../config';
 import { createHologramMaterials, disposeHologramMaterials } from '../../../lib/hologram-material';
-
-const partGeometry = ({ piece, position }: ShowcasePart) => {
-  const indexed = new BufferGeometry();
-
-  indexed.setAttribute('position', new BufferAttribute(piece.positions, 3));
-  indexed.setIndex(new BufferAttribute(piece.indices, 1));
-
-  const fill = indexed.toNonIndexed();
-
-  fill.computeVertexNormals();
-
-  const edges = new EdgesGeometry(indexed, HOLOGRAM_SHADING.edgeThresholdDegrees);
-
-  indexed.dispose();
-
-  return { key: piece.name, position, fill, edges };
-};
+import { partGeometry } from '../../../lib/part-geometry';
 
 export const useHologramRig = (rig: ShowcaseRig) => {
   'use no memo';

@@ -3,7 +3,7 @@
 import { NotebookPen, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { BlogEditorGate } from '@/entities/blog/post';
+import { BlogEditorGate } from '@/features/blog/editor-access';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { buttonVariants, PageHeader } from '@/ui-kit';

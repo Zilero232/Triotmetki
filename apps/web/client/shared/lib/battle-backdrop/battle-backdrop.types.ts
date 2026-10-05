@@ -50,3 +50,14 @@ export type TracerSegment = {
   tail: readonly [number, number];
   fade: number;
 };
+
+export type CrossingInput = {
+  a: number;
+  b: number;
+  level: number;
+};
+
+export type WrapInput = {
+  value: number;
+  margin: number;
+};

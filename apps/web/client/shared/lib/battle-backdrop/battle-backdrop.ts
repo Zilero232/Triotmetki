@@ -2,11 +2,13 @@ import type {
   ContourInput,
   CreateMotesInput,
   CreateTracerInput,
+  CrossingInput,
   Mote,
   StepMotesInput,
   Tracer,
   TracerSegment,
-  TracerSegmentInput
+  TracerSegmentInput,
+  WrapInput
 } from './battle-backdrop.types';
 
 import { seededRandom } from '../seeded-random';
@@ -39,7 +41,7 @@ const valueField = ({ seed, cols, rows }: Pick<ContourInput, 'cols' | 'rows' | '
     }, 0);
 };
 
-const crossing = (a: number, b: number, level: number) => (a === b ? 0.5 : (level - a) / (b - a));
+const crossing = ({ a, b, level }: CrossingInput) => (a === b ? 0.5 : (level - a) / (b - a));
 
 export const contourSegments = ({ seed, cols, rows, levels }: ContourInput): number[] => {
   const field = valueField({ seed, cols, rows });
@@ -57,19 +59,19 @@ export const contourSegments = ({ seed, cols, rows, levels }: ContourInput): num
         const edges: number[] = [];
 
         if (tl < level !== tr < level) {
-          edges.push(col + crossing(tl, tr, level), row);
+          edges.push(col + crossing({ a: tl, b: tr, level }), row);
         }
 
         if (tr < level !== br < level) {
-          edges.push(col + 1, row + crossing(tr, br, level));
+          edges.push(col + 1, row + crossing({ a: tr, b: br, level }));
         }
 
         if (bl < level !== br < level) {
-          edges.push(col + crossing(bl, br, level), row + 1);
+          edges.push(col + crossing({ a: bl, b: br, level }), row + 1);
         }
 
         if (tl < level !== bl < level) {
-          edges.push(col, row + crossing(tl, bl, level));
+          edges.push(col, row + crossing({ a: tl, b: bl, level }));
         }
 
         for (let point = 0; point + 3 < edges.length; point += 4) {
@@ -102,7 +104,7 @@ export const createMotes = ({ seed, dust, smoke }: CreateMotesInput): Mote[] => 
   });
 };
 
-const wrap = (value: number, margin: number) => {
+const wrap = ({ value, margin }: WrapInput) => {
   if (value > 1 + margin) {
     return -margin;
   }
@@ -118,8 +120,8 @@ export const stepMotes = ({ motes, seconds }: StepMotesInput) => {
   for (const mote of motes) {
     const margin = mote.radius * 2;
 
-    mote.x = wrap(mote.x + mote.vx * seconds, margin);
-    mote.y = wrap(mote.y + mote.vy * seconds, margin);
+    mote.x = wrap({ value: mote.x + mote.vx * seconds, margin });
+    mote.y = wrap({ value: mote.y + mote.vy * seconds, margin });
   }
 };
 

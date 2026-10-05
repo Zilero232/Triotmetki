@@ -4,7 +4,8 @@ import { Clock, Pencil } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import Image from 'next/image';
 
-import { BLOG_CATEGORY_TONE, BlogCategoryChip, useBlogEditorAccess } from '@/entities/blog/post';
+import { BLOG_CATEGORY_TONE, BlogCategoryChip } from '@/entities/blog/post';
+import { useBlogEditorAccess } from '@/features/blog/editor-access';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Avatar, Breadcrumbs, buttonVariants } from '@/ui-kit';

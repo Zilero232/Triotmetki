@@ -20,3 +20,8 @@ export type ToApplyRequestInput = {
   values: ApplyFormValues;
   options: HardwareOptions;
 };
+
+export type HasAnyInput = {
+  group: Record<string, unknown> | undefined;
+  keys: readonly string[];
+};

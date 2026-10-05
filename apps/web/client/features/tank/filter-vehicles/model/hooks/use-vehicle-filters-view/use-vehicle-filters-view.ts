@@ -12,7 +12,7 @@ import { shortList, tierSpanText } from '@/shared/lib';
 
 import type { FilterChipInput, RoleChoice, UseVehicleFiltersViewInput } from './use-vehicle-filters-view.types';
 
-import { ANY_ROLE, VEHICLE_FILTER_VIEW, VEHICLE_TIERS } from '../../../config';
+import { VEHICLE_FILTER_VIEW, VEHICLE_TIERS } from '../../../config';
 import { rolesForTypes, rolesWithinTypes } from '../../../lib';
 import { useVehicleFilters } from '../use-vehicle-filters';
 
@@ -25,7 +25,7 @@ export const useVehicleFiltersView = ({ extraActive = [], onExtraReset }: UseVeh
 
   const statusOptions = TANK_STATUSES.map((value) => ({ value, label: tTraits(`status.${value}`) }));
   const roleItems: SelectItem<RoleChoice>[] = [
-    { value: ANY_ROLE, label: tTraits('role.any') },
+    { value: VEHICLE_FILTER_VIEW.anyRole, label: tTraits('role.any') },
     ...rolesForTypes(filters.types).map((value: TankRole) => ({ value, label: tTraits(`role.${value}`) }))
   ];
 
@@ -76,7 +76,7 @@ export const useVehicleFiltersView = ({ extraActive = [], onExtraReset }: UseVeh
     active,
     statusOptions,
     roleItems,
-    role: filters.roles[0] ?? ANY_ROLE,
+    role: filters.roles[0] ?? VEHICLE_FILTER_VIEW.anyRole,
     onReset: () => {
       void reset();
       onExtraReset?.();
@@ -89,6 +89,6 @@ export const useVehicleFiltersView = ({ extraActive = [], onExtraReset }: UseVeh
     },
     onNationsChange: (nations: typeof filters.nations) => void setFilters({ nations: nations.length > 0 ? nations : null }),
     onStatusesChange: (next: TankStatus[]) => void setFilters({ statuses: next.length > 0 ? next : null }),
-    onRoleChange: (next: RoleChoice) => void setFilters({ roles: next === ANY_ROLE ? null : [next] })
+    onRoleChange: (next: RoleChoice) => void setFilters({ roles: next === VEHICLE_FILTER_VIEW.anyRole ? null : [next] })
   };
 };

@@ -3,7 +3,8 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
-import { BLOG_CATEGORIES, listBlogPosts, useBlogEditorAccess } from '@/entities/blog/post';
+import { BLOG_CATEGORIES, listBlogPosts } from '@/entities/blog/post';
+import { useBlogEditorAccess } from '@/features/blog/editor-access';
 import { env } from '@/shared/config';
 import { QUERY_KEYS } from '@/shared/constants';
 import { nextPageOffset } from '@/shared/lib';

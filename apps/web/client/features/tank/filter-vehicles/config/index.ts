@@ -1,1 +1,1 @@
-export { ANY_ROLE, ROLE_CLASS_PREFIX, VEHICLE_FILTER_PARSERS, VEHICLE_FILTER_VIEW, VEHICLE_TIERS } from './filter-vehicles.constants';
+export { ROLE_CLASS_PREFIX, VEHICLE_FILTER_PARSERS, VEHICLE_FILTER_VIEW, VEHICLE_TIERS } from './filter-vehicles.constants';

@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { useBlogEditorAccess } from '@/entities/blog/post';
+import { useBlogEditorAccess } from '@/features/blog/editor-access';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import { listEditorPosts, removeBlogPost } from '../../../api';

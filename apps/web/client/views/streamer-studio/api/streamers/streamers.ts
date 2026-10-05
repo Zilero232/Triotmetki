@@ -33,9 +33,23 @@ import {
   streamersControllerUpdateOverlay
 } from '@/shared/api/generated';
 import { SESSION_REQUEST } from '@/shared/api/http';
-import { fromSdk } from '@/shared/api/source';
+import { fromSdk, isNotFoundError } from '@/shared/api/source';
+
+import type { SaveOverlayInput } from './streamers.types';
 
 export const getMyStreamerProfile = (): Promise<StreamerProfile> => fromSdk(() => streamersControllerProfile(SESSION_REQUEST));
+
+export const findMyStreamerProfile = async (): Promise<StreamerProfile | null> => {
+  try {
+    return await getMyStreamerProfile();
+  } catch (error) {
+    if (isNotFoundError(error)) {
+      return null;
+    }
+
+    throw error;
+  }
+};
 
 export const saveStreamerProfile = (input: UpsertStreamerProfileInput): Promise<StreamerProfile> =>
   fromSdk(() => streamersControllerSaveProfile({ ...SESSION_REQUEST, body: input }));
@@ -74,10 +88,24 @@ export const setTwitchPredictions = async (enabled: boolean): Promise<void> => {
   await fromSdk(() => streamersControllerSetPredictions({ ...SESSION_REQUEST, body: { enabled } }));
 };
 
+export const saveOverlay = ({ id, values }: SaveOverlayInput): Promise<Overlay> => (id ? updateOverlay({ id, ...values }) : createOverlay(values));
+
 export const previewOverlay = (input: PreviewOverlayInput): Promise<OverlayData> =>
   fromSdk(() => streamersControllerPreviewOverlay({ ...SESSION_REQUEST, body: previewOverlaySchema.parse(input) }));
 
 export const getMyStreamerSettings = (): Promise<StreamerSettingsView> => fromSdk(() => streamersControllerMySettings(SESSION_REQUEST));
+
+export const findMyStreamerSettings = async (): Promise<StreamerSettingsView | null> => {
+  try {
+    return await getMyStreamerSettings();
+  } catch (error) {
+    if (isNotFoundError(error)) {
+      return null;
+    }
+
+    throw error;
+  }
+};
 
 export const saveMyStreamerSettings = (input: SaveStreamerSettingsInput): Promise<StreamerSettingsView> =>
   fromSdk(() => streamersControllerSaveSettings({ ...SESSION_REQUEST, body: saveStreamerSettingsSchema.parse(input) }));
