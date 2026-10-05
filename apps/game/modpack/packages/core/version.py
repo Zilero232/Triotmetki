@@ -2,4 +2,4 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 PACKAGE_ID = 'net.triotmetki.core'
 PACKAGE_NAME = 'Three Marks Core'
-VERSION = '0.7.0'
+VERSION = '0.8.0'

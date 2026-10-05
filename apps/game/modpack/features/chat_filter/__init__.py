@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'chat_filter'
 PACKAGE_ID = 'net.triotmetki.chat_filter'
 PACKAGE_NAME = 'Three Marks: chat filter'
-VERSION = '0.1.0'
+VERSION = '0.1.1'
 
 
 def create(app):

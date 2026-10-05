@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'preset_advisor'
 PACKAGE_ID = 'net.triotmetki.preset_advisor'
 PACKAGE_NAME = 'Three Marks: preset advisor'
-VERSION = '0.1.0'
+VERSION = '0.1.1'
 
 
 def create(app):

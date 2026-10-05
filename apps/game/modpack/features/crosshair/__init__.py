@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'crosshair'
 PACKAGE_ID = 'net.triotmetki.crosshair'
 PACKAGE_NAME = 'Three Marks: crosshair presets'
-VERSION = '0.4.0'
+VERSION = '0.5.0'
 
 
 def create(app):

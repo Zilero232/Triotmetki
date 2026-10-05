@@ -1,6 +1,6 @@
 {
   "name": "@otmetki/modpack",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "private": true,
   "description": "Три отметки modpack for «Мир танков»: Python 2.7 game-client packages (core, companion, features) built into .mtmod/.wotmod, with Python 3 host tooling (uv workspace, pytest, ruff).",
   "homepage": "https://triotmetki.ru",

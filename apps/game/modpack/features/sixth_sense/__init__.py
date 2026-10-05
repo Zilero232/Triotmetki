@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'sixth_sense'
 PACKAGE_ID = 'net.triotmetki.sixth_sense'
 PACKAGE_NAME = 'Three Marks: sixth sense'
-VERSION = '0.4.0'
+VERSION = '0.4.1'
 
 
 def create(app):
