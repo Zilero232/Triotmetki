@@ -2,15 +2,9 @@ import type { z } from 'zod';
 
 import type { DialogText } from '@/shared/api';
 
-import type { reportItemSchema, reportPartSchema, reportPreviewSchema, reportReceiptSchema } from './report.schemas';
+import type { reportPartSchema } from './report.schemas';
 
 export type ReportPart = z.infer<typeof reportPartSchema>;
-
-export type ReportItem = z.infer<typeof reportItemSchema>;
-
-export type ReportPreview = z.infer<typeof reportPreviewSchema>;
-
-export type ReportReceipt = z.infer<typeof reportReceiptSchema>;
 
 export type SendReportInput = {
   previewId: string;

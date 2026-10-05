@@ -1,2 +1,1 @@
-export { cachePlanSchema, cacheResultSchema, cacheTargetSchema, clearCache, scanCache } from './cache';
-export type { CachePlan, CacheResult, CacheTarget, ClearCacheInput } from './cache';
+export { cachePlanSchema, cacheResultSchema, clearCache, scanCache } from './cache';

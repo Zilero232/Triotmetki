@@ -4,14 +4,12 @@ import type {
   clanSearchResultSchema,
   mapSearchResultSchema,
   playerSearchResultSchema,
-  searchKindSchema,
   searchQuerySchema,
   searchResponseSchema,
   searchResultSchema,
   tankSearchResultSchema
 } from './search.schemas';
 
-export type SearchKind = z.infer<typeof searchKindSchema>;
 export type SearchQuery = z.infer<typeof searchQuerySchema>;
 export type PlayerSearchResult = z.infer<typeof playerSearchResultSchema>;
 export type ClanSearchResult = z.infer<typeof clanSearchResultSchema>;

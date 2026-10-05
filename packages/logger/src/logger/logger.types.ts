@@ -1,7 +1,5 @@
 import type { LoggerOptions } from 'pino';
 
-export type LogFields = Record<string, unknown>;
-
 export type PrettyFormat = {
   ignore: string;
   messageFormat: string;

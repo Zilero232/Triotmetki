@@ -6,7 +6,7 @@ import { installationSchema } from '@/entities/installation';
 import { managerErrorCodeSchema } from '@/shared/api';
 import { localizedSchema } from '@/shared/lib';
 
-export const foreignEntrySchema = z.object({
+const foreignEntrySchema = z.object({
   path: z.string(),
   name: z.string(),
   isDir: z.boolean(),
@@ -24,7 +24,7 @@ export const installPlanSchema = z.object({
   parkedComponents: z.array(z.string())
 });
 
-export const installWarningSchema = z.object({
+const installWarningSchema = z.object({
   step: z.enum(['other_mods', 'dependencies']),
   code: managerErrorCodeSchema.catch('unknown')
 });

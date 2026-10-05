@@ -1,1 +1,1 @@
-export { fromUnixSeconds, parseLocalDateTime } from './local-date';
+export { fromUnixSeconds } from './local-date';

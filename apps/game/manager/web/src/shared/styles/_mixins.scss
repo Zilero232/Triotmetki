@@ -143,6 +143,27 @@
   }
 }
 
+@mixin text-field {
+  @include field-box;
+
+  width: 100%;
+  font: inherit;
+  font-size: var(--text-md);
+
+  &::placeholder {
+    color: var(--color-text-dim);
+  }
+
+  &:focus-visible {
+    border-color: var(--color-accent);
+    outline: none;
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--color-danger);
+  }
+}
+
 @mixin sr-only {
   position: absolute;
   overflow: hidden;

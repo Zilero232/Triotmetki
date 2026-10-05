@@ -1,25 +1,16 @@
-export { MOE_CURVE, MOE_HISTORY, SWEAT_LEVELS } from './marks.constants';
+export { MOE_CURVE, SWEAT_LEVELS } from './marks.constants';
 export {
-  masteryThresholdSchema,
   moeCurveParamsSchema,
   moeCurvePointSchema,
   moeCurveSchema,
   moeHistoryBatchQuerySchema,
   moeHistoryBatchSchema,
   moeHistoryFiltersSchema,
-  moeHistoryPointSchema,
-  moeHistoryQuerySchema,
   moeHistorySchema,
   moePageSchema,
   moeProjectionSchema,
   moeQuerySchema,
-  moeRowSchema,
-  moeSortFieldSchema,
-  moeThresholdSchema,
-  sweatIndexSchema,
-  sweatLevelSchema,
-  thresholdSourceSchema,
-  thresholdTrendSchema
+  moeSortFieldSchema
 } from './marks.schemas';
 export type {
   MasteryThreshold,
@@ -28,20 +19,14 @@ export type {
   MoeHistory,
   MoeHistoryBatch,
   MoeHistoryBatchQuery,
-  MoeHistoryBatchQueryInput,
-  MoeHistoryFilters,
   MoeHistoryPoint,
   MoeHistoryQuery,
-  MoeHistoryQueryInput,
   MoePage,
   MoeProjection,
   MoeQuery,
-  MoeQueryInput,
   MoeRow,
   MoeSortField,
   MoeThreshold,
   SweatIndex,
-  SweatLevel,
-  ThresholdSource,
-  ThresholdTrend
+  SweatLevel
 } from './marks.types';

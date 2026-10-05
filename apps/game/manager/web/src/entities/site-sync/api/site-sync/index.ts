@@ -1,3 +1,3 @@
 export { getSyncStatus, syncNow } from './site-sync';
-export { librarySyncSchema, localSyncSchema, syncOutcomeSchema, syncReportSchema, syncResolutionSchema, syncStatusSchema } from './site-sync.schemas';
-export type { LibrarySync, LocalSync, SyncNowInput, SyncOutcome, SyncReport, SyncResolution, SyncStatus } from './site-sync.types';
+export { syncReportSchema, syncStatusSchema } from './site-sync.schemas';
+export type { SyncReport, SyncResolution } from './site-sync.types';

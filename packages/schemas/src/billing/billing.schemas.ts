@@ -4,7 +4,7 @@ import { isoDateTimeSchema, uuidSchema } from '../common/primitives/primitives.s
 import { plusStateSchema } from '../plus/plus.schemas';
 import { PROMO_CODE } from './billing.constants';
 
-export const plusPlanSchema = z.enum(['monthly', 'quarterly', 'yearly']);
+const plusPlanSchema = z.enum(['monthly', 'quarterly', 'yearly']);
 
 export const subscriptionStatusSchema = z.enum(['trialing', 'active', 'pastDue', 'canceled', 'expired']);
 

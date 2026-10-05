@@ -6,11 +6,8 @@ import type {
   createGoalSchema,
   favoriteKindSchema,
   favoriteSchema,
-  favoritesSchema,
   goalMetricSchema,
   goalSchema,
-  goalsSchema,
-  goalStatusSchema,
   linkedAccountsSchema,
   sessionExtrasSchema,
   updateGoalSchema
@@ -18,12 +15,9 @@ import type {
 
 export type FavoriteKind = z.infer<typeof favoriteKindSchema>;
 export type Favorite = z.infer<typeof favoriteSchema>;
-export type Favorites = z.infer<typeof favoritesSchema>;
 export type CreateFavoriteInput = z.infer<typeof createFavoriteSchema>;
 export type GoalMetric = z.infer<typeof goalMetricSchema>;
-export type GoalStatus = z.infer<typeof goalStatusSchema>;
 export type Goal = z.infer<typeof goalSchema>;
-export type Goals = z.infer<typeof goalsSchema>;
 export type CreateGoalInput = z.infer<typeof createGoalSchema>;
 export type GoalTankInput = Pick<z.infer<typeof createGoalFieldsSchema>, 'metric' | 'tankId'>;
 export type UpdateGoalInput = z.infer<typeof updateGoalSchema>;

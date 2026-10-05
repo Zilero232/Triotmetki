@@ -40,21 +40,10 @@ export const paginationQuerySchema = z.object({
   offset: z.coerce.number().int().min(0).max(PAGINATION.maxOffset).default(0)
 });
 
-export const cursorQuerySchema = z.object({
-  limit: z.coerce.number().int().min(1).max(PAGINATION.maxLimit).default(PAGINATION.defaultLimit),
-  cursor: z.string().min(1).optional()
-});
-
 export const paginatedSchema = <T extends z.ZodType>(item: T) =>
   z.object({
     items: z.array(item),
     total: countSchema,
     limit: z.number().int().positive(),
     offset: countSchema
-  });
-
-export const cursorPageSchema = <T extends z.ZodType>(item: T) =>
-  z.object({
-    items: z.array(item),
-    nextCursor: z.string().nullable()
   });

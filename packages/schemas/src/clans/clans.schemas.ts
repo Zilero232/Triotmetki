@@ -53,7 +53,7 @@ export const clanMemberEventSchema = z.object({
   occurredAt: isoDateTimeSchema
 });
 
-export const clanStatsSchema = z.object({
+const clanStatsSchema = z.object({
   avgWinRate: percentSchema.nullable(),
   avgWn8: ratingValueSchema,
   avgBattlesPerDay: z.number().nonnegative().nullable(),

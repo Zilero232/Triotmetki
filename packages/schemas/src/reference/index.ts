@@ -1,2 +1,2 @@
-export { gameVersionSchema, serverOnlineSchema, serversOnlineSchema } from './reference.schemas';
-export type { GameVersion, ServerOnline, ServersOnline } from './reference.types';
+export { gameVersionSchema, serversOnlineSchema } from './reference.schemas';
+export type { GameVersion, ServersOnline } from './reference.types';

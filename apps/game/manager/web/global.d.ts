@@ -1,8 +1,8 @@
+import type { Locale, Messages } from '@/shared/i18n';
+
 declare module 'use-intl' {
   interface AppConfig {
-    Locale: import('@/shared/i18n').Locale;
-    Messages: import('@/shared/i18n').Messages;
+    Locale: Locale;
+    Messages: Messages;
   }
 }
-
-export {};

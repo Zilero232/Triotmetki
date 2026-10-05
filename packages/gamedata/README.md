@@ -17,7 +17,7 @@ const stats = calculateLoadout({
 });
 ```
 
-The root exports `calculateLoadout` with its input and output types (`LoadoutInput`, `FinalStats`, …), the crew and module helpers (`computeCrew`, `roleFactor`, `resolveModules`, `CREW`, `SKILL_EFFECT`, `VISION`), the model types (`VehicleSpec`, `OptionalDevice`, `Equipment`, `CrewSkill`, `FieldModification`, …) the ballistics, dispersion and spotting math (`ballisticsCurve`, `aimTimeline`, `dispersionAfter`, `spottingDistance`, …) and the modifier model (`Modifier`, `applyModifier`, `matchesDeviceTags`, `STATIC_DEFAULTS`, `FACTOR_DEFAULTS`).
+The root exports `calculateLoadout` with its input and output types (`LoadoutInput`, `FinalStats`, …), `resolveModules`, the model types (`VehicleSpec`, `OptionalDevice`, `Equipment`, `CrewSkill`, `FieldModification`, …) the ballistics, dispersion and spotting math (`ballisticsCurve`, `aimTimeline`, `spottingDuel`, …) and the modifier model (`Modifier`, `MODIFIER_OPS`).
 
 | Folder          | Concern                                                                                                                                                              |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

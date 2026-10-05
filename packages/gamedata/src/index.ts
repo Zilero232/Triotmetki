@@ -1,24 +1,16 @@
 export {
   ARMOR_FLAGS,
-  ARMOR_GEOMETRY_FORMAT,
-  ARMOR_PIECE_KINDS,
   armorFlags,
   armorPieceKind,
   base64ToBytes,
   bytesToBase64,
-  calculateArmorHit,
   decodeArmorGeometry,
   encodeArmorGeometry,
   ERF_APPROXIMATION,
   hasArmorFlag,
-  isHollowPlate,
-  isShieldPlate,
   listArmorGuns,
   PENETRATION,
   penetrationAtDistance,
-  penetrationChance,
-  penetrationVerdict,
-  rollChance,
   SHELL_KINDS,
   SHELL_RULES,
   toShellKind,
@@ -28,14 +20,8 @@ export type {
   ArmorChassisModule,
   ArmorFlag,
   ArmorGeometry,
-  ArmorGroup,
   ArmorGunModule,
-  ArmorGunOption,
-  ArmorHit,
-  ArmorLayer,
   ArmorModules,
-  ArmorMounts,
-  ArmorPieceArmor,
   ArmorPieceGeometry,
   ArmorPieceKind,
   ArmorPlate,
@@ -45,67 +31,27 @@ export type {
   ArmorTraceLayer,
   ArmorTurretModule,
   ArmorVerdict,
-  CalculateArmorHitInput,
-  ListArmorGunsInput,
-  PenetrationAtDistanceInput,
-  PenetrationChanceInput,
-  RollChanceInput,
-  ShellKind,
-  TraceArmorRayInput,
   Vec3
 } from './armor';
-export { calculateLoadout, computeCrew, CREW, resolveModules, roleFactor, SKILL_EFFECT, VISION } from './loadout';
-export type {
-  CrewSkillSelection,
-  CrewSummary,
-  FinalStats,
-  InstalledDevice,
-  LoadoutCrew,
-  LoadoutInput,
-  LoadoutState,
-  ModulePreset,
-  ModuleSelection,
-  ShellStats
-} from './loadout';
+export { calculateLoadout, resolveModules } from './loadout';
+export type { FinalStats, InstalledDevice, LoadoutInput, ModulePreset } from './loadout';
 export {
   aimCurve,
-  aimTime,
   aimTimeline,
-  BALLISTICS,
   ballisticsCurve,
   ballisticsDistances,
   camouflageFactor,
-  DISPERSION,
-  dispersionAfter,
-  dispersionFactor,
   effectiveViewRange,
   flightTime,
   FOLIAGE_KINDS,
-  HANDLING_SCENARIOS,
   handlingScore,
   penetrationAt,
   scenarioAims,
   scenarioMotion,
   SPOTTING,
-  spottingDistance,
   spottingDuel
 } from './math';
-export type {
-  AimCurvePoint,
-  BallisticShell,
-  BallisticsPoint,
-  Camouflage,
-  FoliageKind,
-  GunHandling,
-  HandlingMotion,
-  HandlingScenario,
-  ScenarioAim,
-  SpottingDuel,
-  SpottingSide,
-  SpottingState,
-  SpottingVerdict,
-  VisionState
-} from './math';
+export type { FoliageKind, GunHandling, HandlingScenario, SpottingDuel, SpottingVerdict } from './math';
 export { CREW_ROLES, NATIONS } from './model';
 export type {
   Armor,
@@ -113,7 +59,6 @@ export type {
   CrewData,
   CrewMember,
   CrewRole,
-  CrewRoleName,
   CrewSkill,
   Currency,
   Engine,
@@ -122,7 +67,6 @@ export type {
   FieldModification,
   FuelTank,
   Gun,
-  Hull,
   ModificationPair,
   ModuleBase,
   Nation,
@@ -133,7 +77,6 @@ export type {
   PostProgression,
   Price,
   ProgressionFeature,
-  ProgressionStep,
   ProgressionTree,
   Radio,
   RateOfFire,
@@ -141,7 +84,6 @@ export type {
   Shot,
   SkillBoost,
   SkillParam,
-  StepActionType,
   Turret,
   Unlock,
   VehicleClass,
@@ -151,5 +93,5 @@ export type {
   VehicleProgressionStep,
   VehicleSpec
 } from './model';
-export { applyModifier, FACTOR_DEFAULTS, matchesDeviceTags, MODIFIER_OPS, STATIC_DEFAULTS } from './modifiers';
-export type { DeviceTagFilter, Modifier, ModifierCondition, ModifierOp } from './modifiers';
+export { MODIFIER_OPS } from './modifiers';
+export type { DeviceTagFilter, Modifier, ModifierCondition } from './modifiers';

@@ -7,13 +7,6 @@ export const uuidSchema = z.uuid();
 
 export const nicknameSchema = z.string().trim().min(2).max(24).regex(/^\w+$/);
 
-export const clanTagSchema = z
-  .string()
-  .trim()
-  .min(2)
-  .max(5)
-  .regex(/^[\w-]+$/);
-
 export const isoDateTimeSchema = z.iso.datetime({ offset: true });
 export const isoDateSchema = z.iso.date();
 

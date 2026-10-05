@@ -3,12 +3,9 @@ export {
   billingStatusSchema,
   checkoutResultSchema,
   checkoutSchema,
-  paymentHistoryItemSchema,
   paymentHistorySchema,
   paymentStatusSchema,
-  planOfferSchema,
   plansSchema,
-  plusPlanSchema,
   promoRedeemSchema,
   referralSchema,
   subscriptionStatusSchema
@@ -22,7 +19,6 @@ export type {
   PaymentStatus,
   PlanOffer,
   Plans,
-  PlusPlan,
   PromoRedeemInput,
   ReferralInput,
   SubscriptionStatus

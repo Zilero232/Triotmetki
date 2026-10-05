@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { localizedSchema } from '@/shared/lib';
 
-export const catalogCategorySchema = z.object({
+const catalogCategorySchema = z.object({
   id: z.string(),
   title: localizedSchema,
   description: localizedSchema
@@ -17,7 +17,7 @@ export const catalogPresetSchema = z.object({
 
 export const perfSchema = z.enum(['low', 'medium', 'high']);
 
-export const catalogConflictSchema = z.object({
+const catalogConflictSchema = z.object({
   id: z.string(),
   title: localizedSchema,
   patterns: z.array(z.string()),
@@ -45,7 +45,7 @@ export const catalogComponentSchema = z.object({
   perf: perfSchema.nullable()
 });
 
-export const catalogDependencySchema = z.object({
+const catalogDependencySchema = z.object({
   id: z.string(),
   kind: z.literal('dependency'),
   packageId: z.string(),

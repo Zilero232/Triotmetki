@@ -1,1 +1,1 @@
-export { TIER_PLATE, TierIcon } from './tier';
+export { TierIcon } from './tier';

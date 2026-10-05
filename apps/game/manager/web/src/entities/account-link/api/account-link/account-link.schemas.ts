@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const accountBindingSchema = z.object({
+const accountBindingSchema = z.object({
   accountId: z.number().int().positive(),
   deviceId: z.string(),
   boundAt: z.number().nullable()

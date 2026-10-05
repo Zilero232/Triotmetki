@@ -5,7 +5,7 @@ import { listParam, paginatedSchema, paginationQuerySchema, sortQuery } from '..
 import { vehicleFilterSchema, vehicleSummarySchema } from '../vehicles/vehicles.schemas';
 import { MOE_CURVE, MOE_HISTORY, SWEAT_LEVELS } from './marks.constants';
 
-export const thresholdSourceSchema = z.enum(['otmetki', 'poliroid', 'kttc', 'lesta', 'manual']);
+const thresholdSourceSchema = z.enum(['otmetki', 'poliroid', 'kttc', 'lesta', 'manual']);
 
 const damage = countSchema;
 
@@ -37,7 +37,7 @@ export const masteryThresholdSchema = z
     message: 'Mastery thresholds must not decrease from class 3 to Ace'
   });
 
-export const thresholdTrendSchema = z.object({
+const thresholdTrendSchema = z.object({
   p95Delta7d: z.number().int().nullable(),
   p95Delta30d: z.number().int().nullable()
 });

@@ -5,7 +5,7 @@ import { SEASON, SHELL_REASONS, TANK_CHALLENGE_METRICS } from './progression.con
 
 export const tankChallengeMetricSchema = z.enum(TANK_CHALLENGE_METRICS);
 
-export const tankProgressSchema = z.object({
+const tankProgressSchema = z.object({
   accountId: accountIdSchema,
   tankId: tankIdSchema,
   level: z.number().int().min(1),
@@ -32,7 +32,7 @@ export const tankChallengeSchema = z.object({
   points: countSchema
 });
 
-export const tankChallengeSetSchema = z.object({
+const tankChallengeSetSchema = z.object({
   accountId: accountIdSchema,
   tankId: tankIdSchema,
   items: z.array(tankChallengeSchema)
@@ -46,7 +46,7 @@ export const tankChallengesSchema = z.object({
 
 export const shellReasonSchema = z.enum(SHELL_REASONS);
 
-export const shellEntrySchema = z.object({
+const shellEntrySchema = z.object({
   id: uuidSchema,
   amount: z.number().int(),
   reason: shellReasonSchema,
@@ -60,9 +60,9 @@ export const shellsSchema = z.object({
   entries: z.array(shellEntrySchema)
 });
 
-export const seasonCodeSchema = z.string().regex(SEASON.codePattern);
+const seasonCodeSchema = z.string().regex(SEASON.codePattern);
 
-export const seasonSchema = z.object({
+const seasonSchema = z.object({
   code: seasonCodeSchema,
   startsAt: isoDateTimeSchema,
   endsAt: isoDateTimeSchema

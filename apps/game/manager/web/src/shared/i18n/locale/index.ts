@@ -1,2 +1,2 @@
 export { resolveLocale } from './locale';
-export type { Locale, ResolveLocaleInput } from './locale.types';
+export type { Locale } from './locale.types';

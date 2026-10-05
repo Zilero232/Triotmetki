@@ -10,9 +10,10 @@ const volume = z.number().int().min(0).max(100);
 
 export const settingsGroupKeySchema = z.enum(STREAMER_SETTINGS.groups);
 export const settingsSourceSchema = z.enum(STREAMER_SETTINGS.sources);
-export const graphicsOptionSchema = z.enum(STREAMER_SETTINGS.graphicsOptions);
-export const zoomStepSchema = z.enum(STREAMER_SETTINGS.zoomSteps);
-export const markerFieldSchema = z.enum(STREAMER_SETTINGS.markerFields);
+const graphicsOptionSchema = z.enum(STREAMER_SETTINGS.graphicsOptions);
+const zoomStepSchema = z.enum(STREAMER_SETTINGS.zoomSteps);
+const markerFieldSchema = z.enum(STREAMER_SETTINGS.markerFields);
+
 export const settingsCohortSchema = z.enum(STREAMER_SETTINGS.cohorts);
 export const applicableGroupSchema = z.enum(STREAMER_SETTINGS_APPLICABLE);
 
@@ -22,7 +23,7 @@ export const settingsProvenanceSchema = z.object({
   checkedAt: isoDateTimeSchema
 });
 
-export const displayValuesSchema = z.object({
+const displayValuesSchema = z.object({
   resolution: z
     .string()
     .regex(/^\d{3,5}x\d{3,5}$/)
@@ -37,7 +38,7 @@ export const displayValuesSchema = z.object({
   tripleBuffering: z.boolean().optional()
 });
 
-export const cameraValuesSchema = z.object({
+const cameraValuesSchema = z.object({
   fov: z.number().int().min(STREAMER_SETTINGS.fov.min).max(STREAMER_SETTINGS.fov.max).optional(),
   dynamicFov: z
     .tuple([z.number().int().min(STREAMER_SETTINGS.fov.min), z.number().int().max(STREAMER_SETTINGS.fov.max)])
@@ -59,7 +60,7 @@ export const controlsValuesSchema = z.object({
     .optional()
 });
 
-export const zoomValuesSchema = z.object({
+const zoomValuesSchema = z.object({
   steps: z.array(zoomStepSchema).max(STREAMER_SETTINGS.zoomSteps.length).optional()
 });
 
@@ -69,7 +70,7 @@ const sightModeSchema = z.object({
   colour: text.optional()
 });
 
-export const sightValuesSchema = z.object({
+const sightValuesSchema = z.object({
   arcade: sightModeSchema.optional(),
   sniper: sightModeSchema.optional()
 });
@@ -83,7 +84,7 @@ export const markersValuesSchema = z.object({
   destroyed: markerSetSchema.optional()
 });
 
-export const minimapValuesSchema = z.object({
+const minimapValuesSchema = z.object({
   size: z.number().int().min(0).max(10).optional(),
   transparency: volume.optional(),
   viewRangeCircles: z.boolean().optional(),
@@ -91,7 +92,7 @@ export const minimapValuesSchema = z.object({
   spgFireSector: z.boolean().optional()
 });
 
-export const soundValuesSchema = z.object({
+const soundValuesSchema = z.object({
   master: volume.optional(),
   music: volume.optional(),
   effects: volume.optional(),
@@ -100,14 +101,14 @@ export const soundValuesSchema = z.object({
   voicePack: text.optional()
 });
 
-export const battleUiValuesSchema = z.object({
+const battleUiValuesSchema = z.object({
   damagePanel: text.optional(),
   damageLog: z.boolean().optional(),
   efficiencyRibbons: z.boolean().optional(),
   sixthSenseIcon: text.optional()
 });
 
-export const hardwareValuesSchema = z.object({
+const hardwareValuesSchema = z.object({
   cpu: text.optional(),
   gpu: text.optional(),
   ramGb: z.number().int().min(1).max(1024).optional(),
@@ -120,7 +121,7 @@ export const hardwareValuesSchema = z.object({
   headset: text.optional()
 });
 
-export const modsValuesSchema = z.object({
+const modsValuesSchema = z.object({
   kind: z.enum(STREAMER_SETTINGS.modsKinds).optional(),
   preset: text.optional()
 });
@@ -200,7 +201,7 @@ export const settingsCompareQuerySchema = z.object({
 
 export const settingsCompareSchema = z.array(streamerSettingsViewSchema);
 
-export const aggregateBucketSchema = z.object({ bucket: z.string(), count: countSchema });
+const aggregateBucketSchema = z.object({ bucket: z.string(), count: countSchema });
 
 export const aggregateFieldSchema = z.object({
   field: z.string(),
@@ -266,7 +267,7 @@ export const modDeviceRequestSchema = z.object({
   account_id: z.number().int().positive()
 });
 
-export const modApplyItemSchema = z.object({
+const modApplyItemSchema = z.object({
   id: uuidSchema,
   profile_slug: z.string(),
   groups: z.array(applicableGroupSchema),

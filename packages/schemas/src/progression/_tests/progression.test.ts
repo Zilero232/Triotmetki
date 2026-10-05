@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { seasonLevelOf, seasonOf, seasonWindowOf, tankLevelOf, xpForLevel } from '../progression';
+import { seasonLevelOf, seasonOf, tankLevelOf, xpForLevel } from '../progression';
 import { SEASON, SEASON_TRACK, TANK_LEVELS } from '../progression.constants';
 
 describe('xpForLevel', () => {
@@ -75,15 +75,5 @@ describe('seasonOf', () => {
 
     expect(next.startsAt.getTime()).toBe(current.endsAt.getTime());
     expect(next.code).not.toBe(current.code);
-  });
-
-  it('round-trips a season code', () => {
-    const season = seasonOf(new Date('2026-05-01T00:00:00Z'));
-
-    expect(seasonWindowOf(season.code)).toEqual(season);
-  });
-
-  it('rejects a malformed season code', () => {
-    expect(seasonWindowOf('2026-q5')).toBeNull();
   });
 });

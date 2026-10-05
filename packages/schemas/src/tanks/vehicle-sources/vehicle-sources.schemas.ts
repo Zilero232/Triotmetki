@@ -5,7 +5,7 @@ import { VEHICLE_SOURCE, VEHICLE_SOURCE_KINDS } from './vehicle-sources.constant
 
 export const vehicleSourceKindSchema = z.enum(VEHICLE_SOURCE_KINDS);
 
-export const vehicleSourceEventSchema = z.object({
+const vehicleSourceEventSchema = z.object({
   slug: z.string(),
   title: z.string(),
   url: z.string().nullable(),

@@ -6,7 +6,7 @@ import { ratingValueSchema } from '../common/rating/rating.schemas';
 import { vehicleSummarySchema } from '../vehicles/vehicles.schemas';
 import { SEARCH } from './search.constants';
 
-export const searchKindSchema = z.enum(['player', 'clan', 'tank', 'map']);
+const searchKindSchema = z.enum(['player', 'clan', 'tank', 'map']);
 
 export const searchQuerySchema = z.object({
   q: z.string().trim().min(SEARCH.minLength).max(SEARCH.maxLength),

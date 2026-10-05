@@ -5,9 +5,7 @@ import type {
   applicableGroupSchema,
   applyRequestSchema,
   createApplyRequestSchema,
-  modApplyItemSchema,
   modApplyListSchema,
-  modApplyResultSchema,
   modDeviceRequestSchema,
   modSettingsExportSchema,
   saveStreamerSettingsSchema,
@@ -21,8 +19,7 @@ import type {
   settingsTableRowSchema,
   settingsValuesSchema,
   streamerSettingsSchema,
-  streamerSettingsViewSchema,
-  updateSettingsShareSchema
+  streamerSettingsViewSchema
 } from './streamer-settings.schemas';
 
 export type SettingsGroupKey = z.infer<typeof settingsGroupKeySchema>;
@@ -41,13 +38,9 @@ export type SettingsAggregates = z.infer<typeof settingsAggregatesSchema>;
 export type CreateApplyRequestInput = z.input<typeof createApplyRequestSchema>;
 export type ApplyRequest = z.infer<typeof applyRequestSchema>;
 export type SettingsShare = z.infer<typeof settingsShareSchema>;
-export type UpdateSettingsShareInput = z.infer<typeof updateSettingsShareSchema>;
 export type ModSettingsExport = z.infer<typeof modSettingsExportSchema>;
 export type ModDeviceRequest = z.infer<typeof modDeviceRequestSchema>;
-export type ModApplyItem = z.infer<typeof modApplyItemSchema>;
 export type ModApplyList = z.infer<typeof modApplyListSchema>;
-export type ModApplyResult = z.infer<typeof modApplyResultSchema>;
-
 export type FlatValue = boolean | number | string | null;
 
 export type FlatSettings = Record<string, FlatValue>;

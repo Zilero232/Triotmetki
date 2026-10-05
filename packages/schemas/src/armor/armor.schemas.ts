@@ -18,7 +18,7 @@ export const armorShellOptionSchema = z.object({
   isPremium: z.boolean()
 });
 
-export const armorPieceArmorSchema = z.object({
+const armorPieceArmorSchema = z.object({
   piece: z.string(),
   plates: z.array(armorPlateSchema)
 });
@@ -35,7 +35,7 @@ export const armorTurretModuleSchema = armorPieceArmorSchema.extend({
   guns: z.array(armorGunModuleSchema)
 });
 
-export const armorChassisModuleSchema = armorPieceArmorSchema.extend({
+const armorChassisModuleSchema = armorPieceArmorSchema.extend({
   name: z.string(),
   displayName: z.string()
 });
@@ -46,7 +46,7 @@ export const armorModulesSchema = z.object({
   turrets: z.array(armorTurretModuleSchema)
 });
 
-export const armorModelSourceSchema = z.object({
+const armorModelSourceSchema = z.object({
   repo: z.string(),
   commit: z.string(),
   client: z.string()

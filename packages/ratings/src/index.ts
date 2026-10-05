@@ -1,72 +1,28 @@
-export { BRONYA_COMPONENTS, BRONYA_INDEX, bronyaIndex, percentileOf, tankBronyaScore } from './bronya-index';
-export type {
-  BronyaComponent,
-  BronyaIndexInput,
-  BronyaIndexResult,
-  PercentileInput,
-  TankBronyaScore,
-  TankBronyaScoreInput,
-  TankReference,
-  TankReferenceTable
-} from './bronya-index';
+export { BRONYA_COMPONENTS, BRONYA_INDEX, bronyaIndex, percentileOf } from './bronya-index';
+export type { BronyaComponent, TankReference, TankReferenceTable } from './bronya-index';
 
 export { averageTier, eff, EFF } from './eff';
-export type { AverageTierInput, EffInput, TankTiers } from './eff';
+export type { TankTiers } from './eff';
 
-export { parseXvmExpectedValues, toXvmExpectedValues, xvmExpectedValuesSchema } from './expected-values';
-export type { ExpectedValues, ExpectedValuesTable, XvmExpectedValuesFile } from './expected-values';
+export { parseXvmExpectedValues } from './expected-values';
+export type { ExpectedValues, ExpectedValuesTable } from './expected-values';
 
-export { MASTERY_BADGES, MASTERY_LEVELS, MASTERY_PERCENTILES, masteryCounts, masteryForXp, masteryLevel, masteryThresholds } from './mastery';
-export type { MasteryBadge, MasteryForXpInput, MasteryLevel, MasteryThresholds } from './mastery';
+export { MASTERY_LEVELS, MASTERY_PERCENTILES, masteryThresholds } from './mastery';
 
-export {
-  MOE,
-  moeAlpha,
-  moeCombinedDamage,
-  moeDamageForPercent,
-  moeMarks,
-  moePercentForDamage,
-  nextMoeEma,
-  projectMoeBattles,
-  simulateMoe,
-  toMoeThresholds
-} from './moe';
-export type {
-  MoeCombinedDamageInput,
-  MoeDamageForPercentInput,
-  MoePercentForDamageInput,
-  MoeProjection,
-  MoeThresholdPercentiles,
-  MoeThresholds,
-  NextMoeEmaInput,
-  ProjectMoeBattlesInput,
-  SimulateMoeInput
-} from './moe';
+export { MOE, moeAlpha, moeCombinedDamage, moeDamageForPercent, moeMarks, nextMoeEma, projectMoeBattles, toMoeThresholds } from './moe';
+export type { MoeThresholdPercentiles } from './moe';
 
-export { diffTankTotals, diffTotals, PERIOD_WINDOWS, periodRatings, pickSnapshotPair, RECENT_PERIODS } from './period';
-export type {
-  DiffTankTotalsInput,
-  DiffTotalsInput,
-  PeriodRatings,
-  PeriodRatingsInput,
-  PeriodWindow,
-  PickSnapshotPairInput,
-  RecentPeriod,
-  SnapshotLike,
-  SnapshotPair
-} from './period';
+export { PERIOD_WINDOWS, periodRatings, pickSnapshotPair, RECENT_PERIODS } from './period';
+export type { PeriodWindow } from './period';
 
 export { RATING_SCALES, RATING_TIERS, ratingTier } from './scale';
 export type { RatingScale, RatingTier, RatingTierInput } from './scale';
 
-export { computeAverages, safeDivide, sumTotals, winRate } from './stats';
-export type { BattleAverages, BattleTotals, SafeDivideInput, TankTotals, WinRateInput } from './stats';
+export { computeAverages, sumTotals, winRate } from './stats';
+export type { TankTotals } from './stats';
 
-export { WILSON, wilsonInterval } from './wilson';
-export type { WilsonInterval, WilsonIntervalInput } from './wilson';
+export { wilsonInterval } from './wilson';
 
-export { aggregateWinRateDiff, winRateDiff, winRateDiffFromAggregate } from './win-rate';
-export type { WinRateDiff, WinRateDiffAggregate, WinRateDiffRow } from './win-rate';
+export { winRateDiffFromAggregate } from './win-rate';
 
-export { accountWn8, tankWn8, WN8, wn8FromRatios } from './wn8';
-export type { AccountWn8Input, AccountWn8Result, TankWn8Input, Wn8Breakdown, Wn8Ratios } from './wn8';
+export { accountWn8, tankWn8, WN8 } from './wn8';

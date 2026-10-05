@@ -1,8 +1,6 @@
 import type { Modifier } from '../modifiers';
 import type { Price } from './common.types';
 
-export type StepActionType = 'feature' | 'modification' | 'pair_modification';
-
 export type ProgressionStep = {
   id: number;
   level: number;

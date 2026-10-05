@@ -8,8 +8,6 @@ import { learningDifficultySchema } from '../tanks/insights/insights.schemas';
 import { vehicleFilterSchema, vehicleSummarySchema } from '../vehicles/vehicles.schemas';
 import { BUILD_OPTIONS, BUILD_USAGE, POPULAR_BUILDS } from './builds.constants';
 
-export const vehicleProfileIdSchema = z.enum(BUILD_OPTIONS.profiles);
-
 export const shellStatsSchema = z.object({
   shell: z.string(),
   kind: z.string().nullable(),
@@ -59,7 +57,7 @@ export const modifierEffectSchema = z.object({
   condition: z.string().nullable()
 });
 
-export const priceSchema = z.object({
+const priceSchema = z.object({
   amount: z.number().nonnegative(),
   currency: z.string()
 });
@@ -79,7 +77,7 @@ export const provisionOptionSchema = z.object({
   effects: z.array(modifierEffectSchema)
 });
 
-export const crewSkillOptionSchema = z.object({
+const crewSkillOptionSchema = z.object({
   skill: z.string(),
   name: z.string(),
   nameEn: z.string().nullable().describe('English name from the Lesta encyclopedia; null until it is synced'),
@@ -188,12 +186,12 @@ const pickStats = {
 
 export const provisionPickSchema = z.object({ option: provisionOptionSchema, ...pickStats });
 
-export const equipmentSlotUsageSchema = z.object({
+const equipmentSlotUsageSchema = z.object({
   slot: z.number().int().nonnegative(),
   picks: z.array(provisionPickSchema)
 });
 
-export const fieldModificationUsageSchema = z.object({
+const fieldModificationUsageSchema = z.object({
   level: z.number().int().positive(),
   kind: fieldModificationStepSchema.shape.kind,
   picks: z.array(provisionPickSchema)

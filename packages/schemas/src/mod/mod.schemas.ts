@@ -202,9 +202,9 @@ export const modReplayStatusesSchema = z
   })
   .describe('Analysis state of the replays the mod uploaded');
 
-export const modShareChannelSchema = z.enum(MOD_HANGAR.shareChannels);
+const modShareChannelSchema = z.enum(MOD_HANGAR.shareChannels);
 
-export const modShareChannelsSchema = z
+const modShareChannelsSchema = z
   .array(modShareChannelSchema)
   .min(1)
   .max(MOD_HANGAR.shareChannels.length)

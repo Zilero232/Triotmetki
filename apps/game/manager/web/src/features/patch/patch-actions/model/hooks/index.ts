@@ -1,2 +1,2 @@
 export { usePatchAction } from './use-patch-action';
-export type { PatchActionKind, UsePatchActionInput } from './use-patch-action';
+export type { PatchActionKind } from './use-patch-action';

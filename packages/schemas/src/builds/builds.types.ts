@@ -13,11 +13,8 @@ import type {
   buildUsageQuerySchema,
   buildUsageSchema,
   crewRoleUsageSchema,
-  crewSkillOptionSchema,
   crewSkillPickSchema,
-  equipmentSlotUsageSchema,
   fieldModificationStepSchema,
-  fieldModificationUsageSchema,
   loadoutRequestSchema,
   loadoutResultSchema,
   modifierEffectSchema,
@@ -32,17 +29,14 @@ import type {
   recommendedBuildSchema,
   shellStatsSchema,
   shellUsageSchema,
-  vehicleProfileIdSchema,
   vehicleStatsSchema
 } from './builds.schemas';
 
-export type VehicleProfileId = z.infer<typeof vehicleProfileIdSchema>;
 export type ShellStats = z.infer<typeof shellStatsSchema>;
 export type VehicleStats = z.infer<typeof vehicleStatsSchema>;
 export type ModifierEffect = z.infer<typeof modifierEffectSchema>;
 export type ProvisionKind = z.infer<typeof provisionKindSchema>;
 export type ProvisionOption = z.infer<typeof provisionOptionSchema>;
-export type CrewSkillOption = z.infer<typeof crewSkillOptionSchema>;
 export type ModuleOption = z.infer<typeof moduleOptionSchema>;
 export type FieldModificationStep = z.infer<typeof fieldModificationStepSchema>;
 export type BuildOptions = z.infer<typeof buildOptionsSchema>;
@@ -56,8 +50,6 @@ export type PopularBuilds = z.infer<typeof popularBuildsSchema>;
 export type BuildMode = z.infer<typeof buildModeSchema>;
 export type BuildCohort = z.infer<typeof buildCohortSchema>;
 export type ProvisionPick = z.infer<typeof provisionPickSchema>;
-export type EquipmentSlotUsage = z.infer<typeof equipmentSlotUsageSchema>;
-export type FieldModificationUsage = z.infer<typeof fieldModificationUsageSchema>;
 export type CrewSkillPick = z.infer<typeof crewSkillPickSchema>;
 export type CrewRoleUsage = z.infer<typeof crewRoleUsageSchema>;
 export type ShellUsage = z.infer<typeof shellUsageSchema>;
@@ -68,7 +60,6 @@ export type BuildAdvice = z.infer<typeof buildAdviceSchema>;
 export type BuildHistoryEntry = z.infer<typeof buildHistoryEntrySchema>;
 export type BuildHistory = z.infer<typeof buildHistorySchema>;
 export type BuildsCatalogQuery = z.infer<typeof buildsCatalogQuerySchema>;
-export type BuildsCatalogQueryInput = z.input<typeof buildsCatalogQuerySchema>;
 export type BuildsCatalogEntry = z.infer<typeof buildsCatalogEntrySchema>;
 export type BuildsCatalog = z.infer<typeof buildsCatalogSchema>;
 export type ModuleSlot = z.infer<typeof moduleSlotSchema>;

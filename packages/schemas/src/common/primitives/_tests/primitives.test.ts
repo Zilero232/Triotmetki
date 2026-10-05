@@ -1,15 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  accountIdSchema,
-  clanTagSchema,
-  countSchema,
-  httpsUrlSchema,
-  httpUrlSchema,
-  nicknameSchema,
-  percentSchema,
-  ratioSchema
-} from '../primitives.schemas';
+import { accountIdSchema, countSchema, httpsUrlSchema, httpUrlSchema, nicknameSchema, percentSchema, ratioSchema } from '../primitives.schemas';
 
 describe('primitives', () => {
   it('coerces numeric ids from query strings and rejects non-positive ones', () => {
@@ -23,11 +14,6 @@ describe('primitives', () => {
     expect(nicknameSchema.safeParse('a').success).toBe(false);
     expect(nicknameSchema.safeParse('bad name').success).toBe(false);
     expect(nicknameSchema.safeParse('x'.repeat(25)).success).toBe(false);
-  });
-
-  it('accepts clan tags with dashes up to five characters', () => {
-    expect(clanTagSchema.parse('R-1')).toBe('R-1');
-    expect(clanTagSchema.safeParse('TOOLONG').success).toBe(false);
   });
 
   it('bounds ratios, percents and counts', () => {

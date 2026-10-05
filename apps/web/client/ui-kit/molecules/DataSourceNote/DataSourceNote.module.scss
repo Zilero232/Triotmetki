@@ -3,13 +3,3 @@
 .root {
   @include source-line;
 }
-
-.report {
-  color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-
-  &:hover {
-    color: var(--color-text);
-  }
-}

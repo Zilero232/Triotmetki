@@ -11,7 +11,7 @@ export const analyticsGranularitySchema = z.enum(ANALYTICS_GRANULARITIES);
 
 export const playlistReasonSchema = z.enum(PLAYLIST_REASONS);
 
-export const battleMistakeCodeSchema = z.enum(BATTLE_MISTAKES);
+const battleMistakeCodeSchema = z.enum(BATTLE_MISTAKES);
 
 export const analyticsAccountQuerySchema = z.object({
   account: accountIdSchema.optional()
@@ -83,7 +83,7 @@ export const trendPointSchema = z.object({
   wn8: z.number().nullable()
 });
 
-export const tiltStepSchema = z.object({
+const tiltStepSchema = z.object({
   afterLosses: countSchema,
   battles: countSchema,
   winRate: percentSchema.nullable()
@@ -121,7 +121,7 @@ export const analyticsOverviewSchema = z.object({
   sessions: z.array(sessionCompareRowSchema)
 });
 
-export const moePointSchema = z.object({
+const moePointSchema = z.object({
   at: isoDateTimeSchema,
   percent: z.number()
 });
@@ -289,7 +289,7 @@ export const analyticsRngSchema = z.object({
   })
 });
 
-export const garageStateSchema = z.enum(['ready', 'noLink', 'noGarage']);
+const garageStateSchema = z.enum(['ready', 'noLink', 'noGarage']);
 
 export const playlistItemSchema = z.object({
   vehicle: vehicleSummarySchema,

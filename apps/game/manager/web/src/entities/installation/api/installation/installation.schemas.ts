@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const componentStateSchema = z.enum(['enabled', 'disabled', 'missing']);
 
-export const installedComponentSchema = z.object({
+const installedComponentSchema = z.object({
   id: z.string(),
   state: componentStateSchema,
   file: z.string().nullable(),

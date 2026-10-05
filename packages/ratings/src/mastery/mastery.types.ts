@@ -5,8 +5,3 @@ export type MasteryLevel = (typeof MASTERY_LEVELS)[number];
 export type MasteryBadge = (typeof MASTERY_BADGES)[number];
 
 export type MasteryThresholds = Record<MasteryBadge, number>;
-
-export type MasteryForXpInput = {
-  xp: number;
-  thresholds: MasteryThresholds;
-};

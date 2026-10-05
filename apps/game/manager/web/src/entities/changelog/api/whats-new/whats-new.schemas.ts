@@ -2,13 +2,13 @@ import { z } from 'zod';
 
 import { localizedSchema } from '@/shared/lib';
 
-export const componentChangeSchema = z.object({
+const componentChangeSchema = z.object({
   id: z.string(),
   version: z.string().nullable(),
   notes: localizedSchema.nullable()
 });
 
-export const changelogReleaseSchema = z.object({
+const changelogReleaseSchema = z.object({
   version: z.string(),
   publishedAt: z.string(),
   games: z.array(z.string()),

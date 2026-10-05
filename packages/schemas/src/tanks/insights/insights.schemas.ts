@@ -29,7 +29,7 @@ export const tankTraitsFilterSchema = vehicleFilterSchema.pick({ statuses: true,
   difficulties: listParam(learningDifficultySchema).optional().describe('Only tanks whose learning curve puts them in one of these difficulties')
 });
 
-export const tankOfferSchema = z.object({
+const tankOfferSchema = z.object({
   title: z.string(),
   url: httpUrlSchema.nullable(),
   startsAt: isoDateTimeSchema.nullable(),
@@ -40,13 +40,13 @@ export const tankOfferSchema = z.object({
   discountPercent: z.number().int().nullable()
 });
 
-export const tankMentionSchema = z.object({
+const tankMentionSchema = z.object({
   title: z.string(),
   url: httpUrlSchema,
   publishedAt: isoDateTimeSchema
 });
 
-export const tankResearchStepSchema = z.object({
+const tankResearchStepSchema = z.object({
   vehicle: vehicleSummarySchema,
   xp: countSchema.nullable()
 });
@@ -91,7 +91,7 @@ export const tankEconomySchema = z.object({
   computedAt: isoDateTimeSchema.nullable()
 });
 
-export const tankEconomySortFieldSchema = z.enum(['tier', 'battles', 'credits', 'net', 'xp', 'freeXp']);
+const tankEconomySortFieldSchema = z.enum(['tier', 'battles', 'credits', 'net', 'xp', 'freeXp']);
 
 export const tankEconomyQuerySchema = z.object({
   ...vehicleFilterSchema.shape,
@@ -120,7 +120,7 @@ export const accountEconomySplitSchema = z.object({
   net: z.number().nullable().describe('Average credits after costs per battle, over battles with reported costs')
 });
 
-export const accountEconomyTankSchema = z.object({
+const accountEconomyTankSchema = z.object({
   vehicle: vehicleSummarySchema,
   battles: countSchema,
   credits: z.number(),

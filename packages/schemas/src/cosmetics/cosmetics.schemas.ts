@@ -12,7 +12,7 @@ export const cosmeticSourceSchema = z.enum(COSMETIC_SOURCES);
 
 export const cosmeticGradeSchema = z.enum(COSMETIC_GRADES);
 
-export const cosmeticCodeSchema = z.string().regex(COSMETIC_CODE.pattern);
+const cosmeticCodeSchema = z.string().regex(COSMETIC_CODE.pattern);
 
 export const cosmeticCodeParamsSchema = z.object({
   code: cosmeticCodeSchema

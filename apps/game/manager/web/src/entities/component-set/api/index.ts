@@ -1,5 +1,4 @@
 export {
-  componentSetSchema,
   deleteSet,
   duplicateSet,
   exportSet,
@@ -12,4 +11,4 @@ export {
   saveSet,
   setsViewSchema
 } from './component-sets';
-export type { ComponentSet, ExportSetFileInput, ImportSetInput, RenameSetInput, SaveSetInput, SetsView } from './component-sets';
+export type { ComponentSet, SetsView } from './component-sets';

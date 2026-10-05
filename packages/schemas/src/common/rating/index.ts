@@ -1,2 +1,2 @@
-export { ratingKindSchema, ratingTierSchema, ratingValueSchema, statsBlockSchema } from './rating.schemas';
+export { ratingKindSchema } from './rating.schemas';
 export type { RatingKind, RatingTier, RatingValue, StatsBlock } from './rating.types';

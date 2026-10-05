@@ -24,7 +24,7 @@ export const percentileOf = ({ value, quantiles, levels = BRONYA_INDEX.quantileL
   return clamp(interpolate({ points, x: value, extrapolate: true }), { min: 0, max: 1 });
 };
 
-export const tankBronyaScore = ({ totals, reference, priorBattles = BRONYA_INDEX.priorBattles }: TankBronyaScoreInput): TankBronyaScore => {
+const tankBronyaScore = ({ totals, reference, priorBattles = BRONYA_INDEX.priorBattles }: TankBronyaScoreInput): TankBronyaScore => {
   const averages = computeAverages(totals);
   const values: Record<BronyaComponent, number> = {
     damage: averages.damage,

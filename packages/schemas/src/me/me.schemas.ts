@@ -27,7 +27,7 @@ export const createFavoriteSchema = z.object({
 
 export const goalMetricSchema = z.enum(['winRate', 'wn8', 'avgDamage', 'battles', 'moe', 'broneIndex']);
 
-export const goalStatusSchema = z.enum(['active', 'achieved', 'failed', 'cancelled']);
+const goalStatusSchema = z.enum(['active', 'achieved', 'failed', 'cancelled']);
 
 export const goalSchema = z.object({
   id: uuidSchema,

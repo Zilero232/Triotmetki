@@ -2,7 +2,7 @@ import type { TierIconProps } from '../icons.types';
 
 import { IconBase, tierGlyphs, toRoman } from '../../lib';
 
-export const TIER_PLATE = {
+const TIER_PLATE = {
   outline: 'M4.5 3.5h15l2.5 2.5v12l-2.5 2.5h-15L2 18V6Z',
   bevel: 'M5.2 5h13.6',
   rivets: 'M4.3 6.2h.01M19.7 6.2h.01M4.3 17.8h.01M19.7 17.8h.01',

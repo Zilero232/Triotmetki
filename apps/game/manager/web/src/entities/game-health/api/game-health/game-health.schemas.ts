@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { GAME_HEALTH } from '../../config';
 
-export const loadFailureSchema = z.object({
+const loadFailureSchema = z.object({
   component: z.string(),
   kind: z.enum(GAME_HEALTH.kinds),
   source: z.enum(GAME_HEALTH.sources),

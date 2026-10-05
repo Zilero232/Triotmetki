@@ -23,7 +23,6 @@
     "unavailable": "Для этой версии клиента ещё нет подходящего выпуска модпака"
   },
   "otherModsDescription": "Моды других авторов остаются на месте. Отметьте то, что хотите удалить.",
-  "removeOthers": "Удалить отмеченные моды",
   "otherModsEmpty": "Других модов в клиенте нет",
   "otherModsSelected": "Будет удалено: {count}",
   "location": {
@@ -31,7 +30,6 @@
     "res_mods": "res_mods"
   },
   "reviewClient": "Клиент {version}",
-  "reviewComponents": "Компонентов: {count}",
   "reviewRemove": "Удалить других модов: {count}",
   "reviewReinstall": "Модпак уже установлен: он будет заменён выбранным набором, отключённые компоненты ({count}) останутся отключёнными",
   "confirmRemoveTitle": "Удалить {count} чужих модов?",

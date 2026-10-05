@@ -8,9 +8,7 @@ import type {
   cosmeticSourceSchema,
   equipCosmeticsSchema,
   equippedCosmeticsSchema,
-  profileCosmeticsListSchema,
   profileCosmeticSlotSchema,
-  profileCosmeticsQuerySchema,
   profileCosmeticsSchema
 } from './cosmetics.schemas';
 
@@ -23,9 +21,6 @@ export type CosmeticsInventory = z.infer<typeof cosmeticsInventorySchema>;
 export type EquippedCosmetics = z.infer<typeof equippedCosmeticsSchema>;
 export type EquipCosmeticsInput = z.infer<typeof equipCosmeticsSchema>;
 export type ProfileCosmetics = z.infer<typeof profileCosmeticsSchema>;
-export type ProfileCosmeticsList = z.infer<typeof profileCosmeticsListSchema>;
-export type ProfileCosmeticsQuery = z.infer<typeof profileCosmeticsQuerySchema>;
-
 export type CosmeticItem = {
   code: string;
   slot: CosmeticSlot;

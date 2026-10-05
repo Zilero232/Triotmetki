@@ -1,2 +1,2 @@
-export { parseXvmExpectedValues, toXvmExpectedValues, xvmExpectedValuesSchema } from './expected-values';
-export type { ExpectedValues, ExpectedValuesTable, XvmExpectedValuesFile } from './expected-values.types';
+export { parseXvmExpectedValues, toXvmExpectedValues } from './expected-values';
+export type { ExpectedValues, ExpectedValuesTable } from './expected-values.types';

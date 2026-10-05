@@ -4,7 +4,7 @@ import { REPORT } from '../../config';
 
 export const reportPartSchema = z.enum(REPORT.parts);
 
-export const reportItemSchema = z.object({
+const reportItemSchema = z.object({
   part: reportPartSchema,
   name: z.string(),
   bytes: z.number().int().nonnegative(),

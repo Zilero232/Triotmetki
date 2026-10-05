@@ -9,7 +9,6 @@ import type {
   officialRankSchema,
   officialRatingFieldSchema,
   officialRatingPeriodSchema,
-  officialRatingQuerySchema,
   officialRatingStatsSchema,
   officialTopEntrySchema,
   officialTopQuerySchema,
@@ -22,7 +21,6 @@ export type OfficialRatingField = z.infer<typeof officialRatingFieldSchema>;
 export type OfficialRank = z.infer<typeof officialRankSchema>;
 export type OfficialRatingStats = z.infer<typeof officialRatingStatsSchema>;
 export type PlayerOfficialRatings = z.infer<typeof playerOfficialRatingsSchema>;
-export type OfficialRatingQuery = z.infer<typeof officialRatingQuerySchema>;
 export type OfficialTopQuery = z.infer<typeof officialTopQuerySchema>;
 export type OfficialNeighborsQuery = z.infer<typeof officialNeighborsQuerySchema>;
 export type OfficialRankHistoryQuery = z.infer<typeof officialRankHistoryQuerySchema>;

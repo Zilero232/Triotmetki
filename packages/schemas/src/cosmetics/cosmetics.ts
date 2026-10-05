@@ -31,11 +31,9 @@ export const cosmeticOf = (code: string): CosmeticItem | null => {
 
 export const catalogCosmetics = (): CosmeticItem[] => [...STATIC_ITEMS.values()];
 
-export const isPremiumOverlayTheme = (theme: OverlayTheme): boolean => PREMIUM_THEMES.has(theme);
+const isPremiumOverlayTheme = (theme: OverlayTheme): boolean => PREMIUM_THEMES.has(theme);
 
 export const overlayThemeCosmetic = (theme: OverlayTheme): string | null =>
   isPremiumOverlayTheme(theme) ? `${COSMETIC_CODE.overlayPrefix}${theme}` : null;
-
-export const isPlusOnlyCosmetic = (item: Pick<CosmeticItem, 'source'>): boolean => item.source === 'plus';
 
 export const isPurchasableCosmetic = (item: Pick<CosmeticItem, 'price' | 'source'>): boolean => item.source === 'shop' && item.price !== null;

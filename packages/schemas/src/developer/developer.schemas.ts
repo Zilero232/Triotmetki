@@ -11,7 +11,7 @@ export const apiTierLimitsSchema = z.object({
   webhooks: countSchema
 });
 
-export const apiTierOfferSchema = z.object({
+const apiTierOfferSchema = z.object({
   tier: apiTierSchema,
   limits: apiTierLimitsSchema
 });

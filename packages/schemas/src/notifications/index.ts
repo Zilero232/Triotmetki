@@ -1,6 +1,4 @@
-export { INBOX } from './notifications.constants';
 export {
-  inboxItemSchema,
   inboxPageSchema,
   inboxQuerySchema,
   markReadResultSchema,
@@ -25,7 +23,6 @@ export type {
   NotificationSettings,
   PushKey,
   PushSubscriptionInput,
-  PushUnsubscribeInput,
-  UpdateNotificationSettingsInput
+  PushUnsubscribeInput
 } from './notifications.types';
 export { isPushServiceUrl } from './push-service';

@@ -28,7 +28,7 @@ export const playerOfficialRatingsSchema = z.object({
   periods: z.array(officialRatingStatsSchema).describe('Periods Lesta offers and ranks the player in; an unranked period is left out')
 });
 
-export const officialRatingQuerySchema = z.object({
+const officialRatingQuerySchema = z.object({
   period: officialRatingPeriodSchema.default(OFFICIAL_RATINGS.defaultPeriod),
   field: officialRatingFieldSchema.default(OFFICIAL_RATINGS.defaultField)
 });

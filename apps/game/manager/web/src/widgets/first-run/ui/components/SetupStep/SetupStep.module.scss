@@ -1,0 +1,35 @@
+@use '@/shared/styles/mixins' as *;
+
+.step {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 24px minmax(0, 1fr);
+}
+
+.marker {
+  display: flex;
+  justify-content: center;
+  padding-top: 2px;
+  color: var(--color-text-dim);
+
+  :global(svg) {
+    width: 20px;
+    height: 20px;
+  }
+
+  .step[data-done] & {
+    color: var(--color-success);
+  }
+}
+
+.body {
+  @include stack(var(--space-4));
+
+  min-width: 0;
+}
+
+.title {
+  @include heading(var(--text-md));
+
+  margin: 0;
+}

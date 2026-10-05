@@ -3,20 +3,11 @@ import { z } from 'zod';
 import { accountIdSchema, countSchema, isoDateTimeSchema, uuidSchema } from '../common/primitives/primitives.schemas';
 import { booleanParam, paginatedSchema, paginationQuerySchema } from '../common/query/query.schemas';
 import { tierSchema } from '../vehicles/vehicles.schemas';
-import {
-  COMPETITION,
-  COMPETITION_METRICS,
-  COMPETITION_MODES,
-  COMPETITION_SOURCES,
-  COMPETITION_STATUSES,
-  COMPETITION_VISIBILITIES
-} from './competitions.constants';
+import { COMPETITION, COMPETITION_MODES, COMPETITION_SOURCES, COMPETITION_STATUSES, COMPETITION_VISIBILITIES } from './competitions.constants';
 
 const DAY_MS = 86_400_000;
 
 const weight = z.number().min(0).max(COMPETITION.weightMax);
-
-export const competitionMetricSchema = z.enum(COMPETITION_METRICS);
 
 export const competitionModeSchema = z.enum(COMPETITION_MODES);
 

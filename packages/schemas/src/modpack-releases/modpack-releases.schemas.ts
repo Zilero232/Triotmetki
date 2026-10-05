@@ -8,7 +8,7 @@ const sha256Schema = z.string().regex(MODPACK_RELEASES.sha256Pattern);
 
 const semverSchema = z.string().regex(MODPACK_RELEASES.semverPattern);
 
-export const modpackGameVersionSchema = z.string().trim().regex(MODPACK_RELEASES.gameVersionPattern);
+const modpackGameVersionSchema = z.string().trim().regex(MODPACK_RELEASES.gameVersionPattern);
 
 export const modpackLocalizedSchema = z.object({ ru: z.string(), en: z.string() });
 
@@ -54,7 +54,7 @@ export const modpackLatestQuerySchema = z.object({
   game: modpackGameVersionSchema
 });
 
-export const modpackReleaseStatusSchema = z.enum(MODPACK_RELEASE_STATUSES);
+const modpackReleaseStatusSchema = z.enum(MODPACK_RELEASE_STATUSES);
 
 export const modpackLatestReleaseSchema = z.object({
   game: z.string(),
@@ -76,7 +76,7 @@ export const modpackManagerUpdateSchema = z.object({
   signature: z.string()
 });
 
-export const modpackDownloadSchema = z.object({
+const modpackDownloadSchema = z.object({
   version: semverSchema,
   publishedAt: z.iso.datetime(),
   size: z.number().int().nonnegative()
@@ -91,13 +91,13 @@ export const modpackChangelogQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(MODPACK_RELEASES.changelogMaxLimit).default(MODPACK_RELEASES.changelogDefaultLimit)
 });
 
-export const modpackChangelogChangeSchema = z.object({
+const modpackChangelogChangeSchema = z.object({
   id: z.string(),
   version: z.string().nullable(),
   notes: modpackLocalizedSchema.nullable()
 });
 
-export const modpackChangelogReleaseSchema = z.object({
+const modpackChangelogReleaseSchema = z.object({
   version: semverSchema,
   publishedAt: z.iso.datetime(),
   games: z.array(z.string()),

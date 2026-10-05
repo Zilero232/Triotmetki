@@ -27,7 +27,7 @@ export const modComponentSetSchema = z.object({
   updated: syncTimeSchema
 });
 
-export const modProfileDataSchema = z
+const modProfileDataSchema = z
   .object({
     config: z.record(z.string(), z.unknown()),
     components: z.record(z.string(), z.unknown())

@@ -1,2 +1,2 @@
 export { syncBroughtChanges, syncConflicts } from './sync-conflicts';
-export type { SyncConflict, SyncLibrary } from './sync-conflicts.types';
+export type { SyncConflict } from './sync-conflicts.types';

@@ -1,24 +1,8 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include field-box;
+  @include text-field;
 
-  width: 100%;
   height: 34px;
   padding: 0 var(--space-4);
-  font: inherit;
-  font-size: var(--text-md);
-
-  &::placeholder {
-    color: var(--color-text-dim);
-  }
-
-  &:focus-visible {
-    border-color: var(--color-accent);
-    outline: none;
-  }
-
-  &[aria-invalid='true'] {
-    border-color: var(--color-danger);
-  }
 }

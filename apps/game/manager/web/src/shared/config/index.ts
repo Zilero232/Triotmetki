@@ -1,5 +1,4 @@
 export { COMMANDS } from './commands.constants';
-export { DATE_FORMATS } from './date.constants';
 export { EVENTS } from './events.constants';
 export { DISPLAY_FORMAT } from './format.constants';
 export { LINKS } from './links.constants';

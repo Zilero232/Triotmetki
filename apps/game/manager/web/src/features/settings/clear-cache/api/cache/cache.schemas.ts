@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const cacheTargetSchema = z.object({
+const cacheTargetSchema = z.object({
   id: z.string(),
   name: z.string(),
   location: z.enum(['app_data', 'game']),

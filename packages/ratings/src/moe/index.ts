@@ -10,14 +10,4 @@ export {
   toMoeThresholds
 } from './moe';
 export { MOE } from './moe.constants';
-export type {
-  MoeCombinedDamageInput,
-  MoeDamageForPercentInput,
-  MoePercentForDamageInput,
-  MoeProjection,
-  MoeThresholdPercentiles,
-  MoeThresholds,
-  NextMoeEmaInput,
-  ProjectMoeBattlesInput,
-  SimulateMoeInput
-} from './moe.types';
+export type { MoeThresholdPercentiles, MoeThresholds } from './moe.types';

@@ -1,5 +1,4 @@
 export {
-  componentSetSchema,
   deleteSet,
   duplicateSet,
   exportSet,
@@ -7,13 +6,11 @@ export {
   exportSetsLibrary,
   importSet,
   importSetFile,
-  listSets,
   renameSet,
   saveSet,
   setsViewSchema
 } from './api';
-export type { ComponentSet, ExportSetFileInput, ImportSetInput, RenameSetInput, SaveSetInput, SetsView } from './api';
+export type { ComponentSet, SetsView } from './api';
 export { COMPONENT_SET } from './config';
 export { setFileName } from './lib';
-export type { SetFileNameInput } from './lib';
 export { useComponentSets } from './model/hooks';

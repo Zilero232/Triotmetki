@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { SITE_SYNC } from '../../config';
 
-export const localSyncSchema = z.object({
+const localSyncSchema = z.object({
   syncedAt: z.number().nullable(),
   pending: z.number().int().nonnegative()
 });
@@ -13,11 +13,11 @@ export const syncStatusSchema = z.object({
   profiles: localSyncSchema.nullable()
 });
 
-export const syncOutcomeSchema = z.enum(SITE_SYNC.outcomes);
+const syncOutcomeSchema = z.enum(SITE_SYNC.outcomes);
 
 export const syncResolutionSchema = z.enum(SITE_SYNC.resolutions);
 
-export const librarySyncSchema = z.object({
+const librarySyncSchema = z.object({
   outcome: syncOutcomeSchema,
   local: z.number().int().nonnegative(),
   remote: z.number().int().nonnegative(),

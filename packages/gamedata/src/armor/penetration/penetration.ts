@@ -95,9 +95,9 @@ export const penetrationVerdict = ({ penetration, effective, randomness }: Penet
   return penetration * (1 + randomness) < effective ? 'noPen' : 'chance';
 };
 
-export const isShieldPlate = (flags: number): boolean => (flags & SHIELD_MASK) !== 0;
+const isShieldPlate = (flags: number): boolean => (flags & SHIELD_MASK) !== 0;
 
-export const isHollowPlate = ({ thickness, flags }: HollowPlateInput): boolean => thickness <= 0 || (flags & ARMOR_FLAGS.hollow) !== 0;
+const isHollowPlate = ({ thickness, flags }: HollowPlateInput): boolean => thickness <= 0 || (flags & ARMOR_FLAGS.hollow) !== 0;
 
 export const calculateArmorHit = ({ thickness, angle, shell, flags = 0, randomness = PENETRATION.randomness }: CalculateArmorHitInput): ArmorHit => {
   const rules = SHELL_RULES[shell.kind];

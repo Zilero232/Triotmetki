@@ -38,13 +38,3 @@ export const seasonOf = (date: Date): SeasonWindow => {
     endsAt: new Date(Date.UTC(year, (quarter + 1) * SEASON.monthsPerSeason, 1))
   };
 };
-
-export const seasonWindowOf = (code: string): SeasonWindow | null => {
-  const match = SEASON.codePattern.exec(code);
-
-  if (!match) {
-    return null;
-  }
-
-  return seasonOf(new Date(Date.UTC(Number(match[1]), (Number(match[2]) - 1) * SEASON.monthsPerSeason, 1)));
-};

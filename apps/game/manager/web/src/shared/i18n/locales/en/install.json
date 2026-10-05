@@ -23,7 +23,6 @@
     "unavailable": "No modpack release supports this client version yet"
   },
   "otherModsDescription": "Mods by other authors stay in place. Tick what you want removed.",
-  "removeOthers": "Remove the ticked mods",
   "otherModsEmpty": "No other mods in this client",
   "otherModsSelected": "To be removed: {count}",
   "location": {
@@ -31,7 +30,6 @@
     "res_mods": "res_mods"
   },
   "reviewClient": "Client {version}",
-  "reviewComponents": "Components: {count}",
   "reviewRemove": "Other mods to remove: {count}",
   "reviewReinstall": "The modpack is already installed: it is replaced with this selection, and disabled components ({count}) stay disabled",
   "confirmRemoveTitle": "Remove {count} other mods?",

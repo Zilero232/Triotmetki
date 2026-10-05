@@ -7,9 +7,7 @@ export type {
   ModificationPair,
   PostProgression,
   ProgressionFeature,
-  ProgressionStep,
   ProgressionTree,
-  StepActionType,
   VehicleProgressionStep
 } from './post-progression.types';
 export type {
@@ -19,7 +17,6 @@ export type {
   Engine,
   FuelTank,
   Gun,
-  Hull,
   ModuleBase,
   PitchLimits,
   PitchPoint,

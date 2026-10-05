@@ -6,7 +6,6 @@ import type {
   apiKeySchema,
   apiKeysSchema,
   apiTierLimitsSchema,
-  apiTierOfferSchema,
   apiTierSchema,
   apiTiersSchema,
   apiUsagePointSchema,
@@ -38,7 +37,6 @@ export type ApiUsageQuery = z.infer<typeof apiUsageQuerySchema>;
 export type ApiUsage = z.infer<typeof apiUsageSchema>;
 export type ApiErrorLogEntry = z.infer<typeof apiErrorLogEntrySchema>;
 export type ApiErrorLog = z.infer<typeof apiErrorLogSchema>;
-export type ApiTierOffer = z.infer<typeof apiTierOfferSchema>;
 export type ApiTiers = z.infer<typeof apiTiersSchema>;
 export type DeveloperOverview = z.infer<typeof developerOverviewSchema>;
 export type WebhookEvent = z.infer<typeof webhookEventSchema>;

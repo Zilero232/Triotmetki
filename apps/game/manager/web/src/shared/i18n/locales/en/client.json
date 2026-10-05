@@ -5,9 +5,7 @@
     "release": "Release",
     "common_test": "Common test"
   },
-  "modsDir": "Mods folder",
   "none": "No Mir Tankov client found",
-  "noneHint": "Install the game with Lesta Game Center or point to the client folder by hand.",
   "problem": {
     "not_lesta": "Not a Lesta Mir Tankov client",
     "old_version": "Clients older than 1.35 are not supported"

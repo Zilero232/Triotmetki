@@ -1,3 +1,3 @@
-export { addClient, clientsViewSchema, gameClientSchema, listClients, selectClient } from './api';
-export type { ClientsView, GameClient } from './api';
-export { useClients, useSelectedClient } from './model/hooks';
+export { addClient, clientsViewSchema, gameClientSchema, selectClient } from './api';
+export type { ClientsView } from './api';
+export { useSelectedClient } from './model/hooks';

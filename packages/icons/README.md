@@ -16,7 +16,7 @@ import { MarkOfExcellenceIcon, TierIcon } from '@otmetki/icons';
 | `icons/`    | Static icons, one file per group (`classes`, `nations`, `tier`, `marks`, `mastery`, …)                                                                           |
 | `animated/` | `motion`-driven variants: logo, crosshair, mark of excellence, mastery                                                                                           |
 | `lib/`      | `createIcon`, `IconBase`, stroke resolution, roman numerals, star and tier glyph paths                                                                           |
-| `registry`  | Lookup maps (`NATION_ICONS`, `TANK_CLASS_ICONS`, `GAME_MODE_ICONS`, `ICON_GROUPS`)                                                                               |
+| `registry`  | Lookup maps (`NATION_ICONS`, `TANK_CLASS_ICONS`, `ICON_GROUPS`)                                                                                                  |
 | `shapes/`   | `@otmetki/icons/shapes`: framework-free geometry (`LOGO_SHAPES`, `ICON_DEFAULTS`) for non-React renderers — the modpack's Gameface sprite and its build-time PNG |
 
 ## Game conventions

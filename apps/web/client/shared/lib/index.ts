@@ -5,7 +5,6 @@ export { dayKey, daysBetween, daysUntil, nextDayStart, shiftDay, weekKey } from 
 export { heatLevel } from './calendar-layout';
 export type { CalendarDay } from './calendar-layout';
 export { CHART, sparklineLayout, tickIndices } from './chart-scale';
-export { childrenHeight } from './children-height';
 export { codeLines } from './code-lines';
 export { DATA_FILE, downloadFile, toCsv } from './data-file';
 export type { CsvCell, DownloadFileInput } from './data-file';
@@ -38,7 +37,6 @@ export { shortList } from './short-list';
 export { statValueText } from './stat-value';
 export type { StatValueKind } from './stat-value';
 export { createStoredStore } from './stored-store';
-export type { StoredStore } from './stored-store';
 export { tierBand } from './tier-band';
 export { tierSpanText } from './tier-selection';
 export type { TierSelectionMode } from './tier-selection';

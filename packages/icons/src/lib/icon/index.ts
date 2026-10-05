@@ -5,7 +5,6 @@ export type {
   IconBaseProps,
   IconComponent,
   IconProps,
-  LaurelBranchInput,
   LaurelInput,
   LaurelPointInput,
   LaurelSideInput,

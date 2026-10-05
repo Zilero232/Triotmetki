@@ -79,7 +79,7 @@ export const gameEventsQuerySchema = z.object({
   to: isoDateTimeSchema.optional()
 });
 
-export const newsKindSchema = z.enum(['news', 'patch_notes', 'dev_blog']);
+const newsKindSchema = z.enum(['news', 'patch_notes', 'dev_blog']);
 
 export const newsQuerySchema = paginationQuerySchema.extend({
   kind: newsKindSchema.optional(),

@@ -9,7 +9,7 @@ export const gameVersionSchema = z.object({
   notesUrl: z.string().nullable()
 });
 
-export const serverOnlineSchema = z.object({
+const serverOnlineSchema = z.object({
   server: z.string(),
   online: countSchema
 });

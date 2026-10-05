@@ -1,11 +1,6 @@
-export { foreignEntrySchema, installOutcomeSchema, installPlanSchema } from './api';
-export type { ForeignEntry, InstallPlan, InstallRequest } from './api';
+export { installOutcomeSchema, installPlanSchema } from './api';
 export { BLOCKER_MESSAGES, INSTALL_WIZARD } from './config';
-export { closeDependencies, installBlocker, matchingPreset, presetSelection, toggleSelection } from './lib';
-export type { InstallBlocker, Selection, SelectionComponents } from './lib';
+export { installBlocker, presetSelection } from './lib';
 export { useInstallWizard } from './model/context';
-export type { InstallWizardValue } from './model/context';
 export { useInstallPlan } from './model/hooks';
-export type { WizardStep } from './model/hooks';
 export { InstallWizardProvider } from './ui/InstallWizardProvider';
-export type { InstallWizardProviderProps } from './ui/InstallWizardProvider.types';

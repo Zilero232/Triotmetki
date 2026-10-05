@@ -18,7 +18,7 @@ import { ratingValueSchema, statsBlockSchema } from '../common/rating/rating.sch
 import { vehicleFilterSchema, vehicleSummarySchema } from '../vehicles/vehicles.schemas';
 import { PLAYER_ACTIVITY, PLAYER_TANKS, POPULAR_PLAYERS } from './players.constants';
 
-export const playerClanSchema = z.object({
+const playerClanSchema = z.object({
   clanId: clanIdSchema,
   tag: z.string(),
   name: z.string(),
@@ -46,7 +46,7 @@ export const playerSummarySchema = z.object({
   })
 });
 
-export const recentPeriodStatsSchema = z.object({
+const recentPeriodStatsSchema = z.object({
   period: recentPeriodSchema,
   from: isoDateTimeSchema.nullable(),
   to: isoDateTimeSchema.nullable(),
@@ -74,7 +74,7 @@ export const playerTankRowSchema = z.object({
   recent: recentPeriodStatsSchema.nullable()
 });
 
-export const playerTankSortFieldSchema = z.enum(['battles', 'winRate', 'avgDamage', 'wn8', 'marksOnGun', 'moePercent', 'lastBattleAt', 'tier']);
+const playerTankSortFieldSchema = z.enum(['battles', 'winRate', 'avgDamage', 'wn8', 'marksOnGun', 'moePercent', 'lastBattleAt', 'tier']);
 
 export const playerTanksQuerySchema = z.object({
   ...vehicleFilterSchema.shape,
@@ -98,7 +98,7 @@ export const timeSeriesPointSchema = z.object({
   battles: countSchema.optional()
 });
 
-export const timeSeriesMarkerSchema = z.object({
+const timeSeriesMarkerSchema = z.object({
   at: isoDateTimeSchema,
   kind: z.enum(['patch', 'event']),
   label: z.string()
@@ -118,7 +118,7 @@ export const timeSeriesQuerySchema = z.object({
   granularity: timeSeriesGranularitySchema.default('day')
 });
 
-export const activityDaySchema = z.object({
+const activityDaySchema = z.object({
   date: isoDateSchema,
   battles: countSchema,
   winRate: percentSchema.nullable()
@@ -215,7 +215,7 @@ export const tankInsightSchema = z.object({
   damageRatio: z.number().nullable()
 });
 
-export const insightTipCodeSchema = z.enum(['low_damage_tank', 'no_weak_spots', 'not_enough_battles', 'weak_class', 'weak_tier']);
+const insightTipCodeSchema = z.enum(['low_damage_tank', 'no_weak_spots', 'not_enough_battles', 'weak_class', 'weak_tier']);
 
 export const playerInsightsSchema = z.object({
   period: insightsPeriodSchema,

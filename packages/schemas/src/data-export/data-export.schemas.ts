@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { accountIdSchema, countSchema, isoDateSchema, isoDateTimeSchema, tankIdSchema } from '../common/primitives/primitives.schemas';
 import { modSyncLibrariesSchema } from '../mod-sync/mod-sync.schemas';
 
-export const exportedOverallSchema = z.object({
+const exportedOverallSchema = z.object({
   capturedAt: isoDateTimeSchema,
   battles: countSchema,
   wins: countSchema,
@@ -22,7 +22,7 @@ export const exportedOverallSchema = z.object({
   globalRating: countSchema.nullable()
 });
 
-export const exportedTankSchema = z.object({
+const exportedTankSchema = z.object({
   accountId: accountIdSchema,
   tankId: tankIdSchema,
   battles: countSchema,
@@ -32,7 +32,7 @@ export const exportedTankSchema = z.object({
   lastBattleAt: isoDateTimeSchema.nullable()
 });
 
-export const exportedAccountSchema = z.object({
+const exportedAccountSchema = z.object({
   accountId: accountIdSchema,
   nickname: z.string(),
   createdAt: isoDateTimeSchema.nullable(),
@@ -47,7 +47,7 @@ export const rawStatsExportSchema = z.object({
   modSync: modSyncLibrariesSchema.optional()
 });
 
-export const exportedSessionSchema = z.object({
+const exportedSessionSchema = z.object({
   accountId: accountIdSchema,
   source: z.string(),
   kind: z.string(),
@@ -68,7 +68,7 @@ export const exportedSessionSchema = z.object({
   broneIndex: z.number().nullable()
 });
 
-export const exportedBattleSchema = z.object({
+const exportedBattleSchema = z.object({
   accountId: accountIdSchema,
   arenaUniqueId: z.string(),
   tankId: tankIdSchema,
@@ -90,7 +90,7 @@ export const exportedBattleSchema = z.object({
   startedAt: isoDateTimeSchema
 });
 
-export const exportedTankProgressSchema = z.object({
+const exportedTankProgressSchema = z.object({
   accountId: accountIdSchema,
   tankId: tankIdSchema,
   level: countSchema,

@@ -25,7 +25,7 @@ export const mapSummarySchema = z.object({
   modes: z.array(z.string())
 });
 
-export const mapModeSchema = z.object({
+const mapModeSchema = z.object({
   mode: z.string(),
   minimap: z.url().nullable(),
   bases: z.record(z.string(), z.array(pointSchema)),
@@ -33,7 +33,7 @@ export const mapModeSchema = z.object({
   controlPoints: z.array(pointSchema)
 });
 
-export const mapTeamStatsSchema = z.object({
+const mapTeamStatsSchema = z.object({
   team: z.number().int().positive(),
   battles: countSchema,
   winRate: percentSchema.nullable()
@@ -72,9 +72,9 @@ export const tankMapSampleSchema = z.object({
   avgDamage: z.number().nonnegative().nullable()
 });
 
-export const tankMapRowSchema = tankMapSampleSchema.extend({ map: mapRefSchema });
+const tankMapRowSchema = tankMapSampleSchema.extend({ map: mapRefSchema });
 
-export const mapTankRowSchema = tankMapSampleSchema.extend({ vehicle: vehicleSummarySchema });
+const mapTankRowSchema = tankMapSampleSchema.extend({ vehicle: vehicleSummarySchema });
 
 const tankMapWindowSchema = z.object({
   windowDays: countSchema,

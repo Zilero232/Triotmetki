@@ -4,7 +4,7 @@ import type { ExpectedValues, ExpectedValuesTable, XvmExpectedValuesFile } from 
 
 const xvmNumber = z.coerce.number().refine(Number.isFinite);
 
-export const xvmExpectedValuesSchema = z.object({
+const xvmExpectedValuesSchema = z.object({
   header: z.looseObject({ version: z.union([z.string(), z.number()]).optional(), source: z.string().optional() }).optional(),
   data: z.array(
     z.looseObject({

@@ -5,7 +5,6 @@ import type {
   adminClaimSchema,
   challengeConditionSchema,
   challengeMetricSchema,
-  challengeSchema,
   challengeStatusSchema,
   claimMethodSchema,
   connectableProviderSchema,
@@ -17,7 +16,6 @@ import type {
   overlayDataSchema,
   overlayKindSchema,
   overlayMetricSchema,
-  overlayResultSchema,
   overlaySchema,
   overlayThemeSchema,
   previewOverlaySchema,
@@ -28,14 +26,12 @@ import type {
   streamerChannelInputSchema,
   streamerChannelSchema,
   streamerClaimSchema,
-  streamerDirectoryQuerySchema,
   streamerDirectorySchema,
   streamerFollowSchema,
   streamerIntegrationSchema,
   streamerInvitationSchema,
   streamerLiveSchema,
   streamerPlatformSchema,
-  streamerProfileKindSchema,
   streamerProfileSchema,
   streamerProviderSchema,
   streamerVideoSchema,
@@ -53,14 +49,12 @@ export type Overlay = z.infer<typeof overlaySchema>;
 export type ChallengeMetric = z.infer<typeof challengeMetricSchema>;
 export type ChallengeCondition = z.infer<typeof challengeConditionSchema>;
 export type ChallengeStatus = z.infer<typeof challengeStatusSchema>;
-export type Challenge = z.infer<typeof challengeSchema>;
 export type CreateChallengeInput = z.infer<typeof createChallengeSchema>;
 export type StreamerProfile = z.infer<typeof streamerProfileSchema>;
 export type UpsertStreamerProfileInput = z.infer<typeof upsertStreamerProfileSchema>;
 export type CreateOverlayInput = z.input<typeof createOverlaySchema>;
 export type UpdateOverlayInput = z.input<typeof updateOverlaySchema>;
 export type PreviewOverlayInput = z.input<typeof previewOverlaySchema>;
-export type OverlayResult = z.infer<typeof overlayResultSchema>;
 export type OverlayData = z.infer<typeof overlayDataSchema>;
 export type StreamerChallenge = z.infer<typeof streamerChallengeSchema>;
 export type ActivateChallengeInput = z.infer<typeof activateChallengeSchema>;
@@ -71,14 +65,11 @@ export type UpdatePredictionsInput = z.infer<typeof updatePredictionsSchema>;
 export type TwitchPanel = z.infer<typeof twitchPanelSchema>;
 
 export type StreamerPlatform = z.infer<typeof streamerPlatformSchema>;
-export type StreamerProfileKind = z.infer<typeof streamerProfileKindSchema>;
 export type StreamerChannel = z.infer<typeof streamerChannelSchema>;
 export type StreamerLive = z.infer<typeof streamerLiveSchema>;
 export type StreamerVideo = z.infer<typeof streamerVideoSchema>;
 export type StreamerChannelInput = z.infer<typeof streamerChannelInputSchema>;
 export type StreamerCard = z.infer<typeof streamerCardSchema>;
-export type StreamerDirectoryQuery = z.input<typeof streamerDirectoryQuerySchema>;
-export type StreamerDirectoryQueryInput = z.input<typeof streamerDirectoryQuerySchema>;
 export type StreamerDirectory = z.infer<typeof streamerDirectorySchema>;
 export type ClaimMethod = z.infer<typeof claimMethodSchema>;
 export type StartClaimInput = z.infer<typeof startClaimSchema>;

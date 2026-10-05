@@ -52,7 +52,7 @@ export const challengeConditionSchema = z.object({
 
 export const challengeStatusSchema = z.enum(['pending', 'active', 'succeeded', 'failed', 'cancelled', 'expired', 'refunded']);
 
-export const challengeSchema = z.object({
+const challengeSchema = z.object({
   id: uuidSchema,
   title: z.string(),
   condition: challengeConditionSchema,
@@ -80,7 +80,7 @@ export const createChallengeSchema = z.object({
 
 export const streamerPlatformSchema = z.enum(STREAMER_PLATFORMS);
 
-export const streamerProfileKindSchema = z.enum(['claimed', 'editorial']);
+const streamerProfileKindSchema = z.enum(['claimed', 'editorial']);
 
 export const streamerChannelSchema = z.object({
   platform: streamerPlatformSchema,
@@ -134,7 +134,7 @@ export const upsertStreamerProfileSchema = z.object({
   channels: z.array(streamerChannelInputSchema).max(STREAMER_PROFILE.channelsMax).optional()
 });
 
-export const favouriteTankSchema = z.object({ tankId: tankIdSchema, name: z.string().nullable(), battles: countSchema });
+const favouriteTankSchema = z.object({ tankId: tankIdSchema, name: z.string().nullable(), battles: countSchema });
 
 export const streamerCardSchema = z.object({
   slug: z.string(),
@@ -168,7 +168,7 @@ export const streamerLiveListSchema = z.array(streamerCardSchema);
 
 export const claimMethodSchema = z.enum(['oauth', 'bio_code', 'manual']);
 
-export const claimStatusSchema = z.enum(['open', 'resolved', 'dismissed']);
+const claimStatusSchema = z.enum(['open', 'resolved', 'dismissed']);
 
 export const startClaimSchema = z.object({
   method: claimMethodSchema,
@@ -246,7 +246,7 @@ export const overlayListSchema = z.array(overlaySchema);
 
 export const overlayPublicIdSchema = z.string().regex(STREAMER_PROFILE.publicIdPattern);
 
-export const overlayResultSchema = z.enum(['win', 'loss', 'draw']);
+const overlayResultSchema = z.enum(['win', 'loss', 'draw']);
 
 export const overlayDataSchema = z.object({
   kind: overlayKindSchema,

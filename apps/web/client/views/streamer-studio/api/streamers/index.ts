@@ -3,19 +3,15 @@ export {
   cancelChallenge,
   connectIntegration,
   createChallenge,
-  createOverlay,
   disconnectIntegration,
   findMyStreamerProfile,
   findMyStreamerSettings,
   getChallenges,
-  getMyStreamerProfile,
-  getMyStreamerSettings,
   getOverlays,
   previewOverlay,
   removeOverlay,
   saveMyStreamerSettings,
   saveOverlay,
   saveStreamerProfile,
-  setTwitchPredictions,
-  updateOverlay
+  setTwitchPredictions
 } from './streamers';

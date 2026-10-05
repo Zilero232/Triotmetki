@@ -13,5 +13,5 @@ export {
   SITE_NAV_GROUPS,
   SITE_NAV_LINKS
 } from './site-nav';
-export type { SiteNavGroup, SiteNavGroupEntry, SiteNavIcon, SiteNavItem, SiteNavLink, SiteNavLinkEntry } from './site-nav';
+export type { SiteNavGroupEntry, SiteNavIcon, SiteNavItem, SiteNavLink } from './site-nav';
 export { STORAGE_KEYS } from './storage-keys';

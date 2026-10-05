@@ -11,14 +11,12 @@ import type {
   notificationSettingsSchema,
   pushKeySchema,
   pushSubscriptionSchema,
-  pushUnsubscribeSchema,
-  updateNotificationSettingsSchema
+  pushUnsubscribeSchema
 } from './notifications.schemas';
 
 export type NotificationChannel = z.infer<typeof notificationChannelSchema>;
 export type NotificationEvent = z.infer<typeof notificationEventSchema>;
 export type NotificationSettings = z.infer<typeof notificationSettingsSchema>;
-export type UpdateNotificationSettingsInput = z.infer<typeof updateNotificationSettingsSchema>;
 export type InboxQuery = z.infer<typeof inboxQuerySchema>;
 export type InboxItem = z.infer<typeof inboxItemSchema>;
 export type InboxPage = z.infer<typeof inboxPageSchema>;

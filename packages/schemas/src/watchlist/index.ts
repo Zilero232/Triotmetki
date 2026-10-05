@@ -3,10 +3,7 @@ export { WATCHLIST, WATCHLIST_DIGESTS, WATCHLIST_PERIODS } from './watchlist.con
 export {
   addWatchlistPlayerSchema,
   updateWatchlistSettingsSchema,
-  watchlistDigestSchema,
-  watchlistPeriodSchema,
   watchlistPlayerParamsSchema,
-  watchlistPlayerSchema,
   watchlistQuerySchema,
   watchlistSchema,
   watchlistSettingsSchema

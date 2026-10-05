@@ -1,8 +1,6 @@
 import type { z } from 'zod';
 
-import type { foreignEntrySchema, installPlanSchema } from './setup.schemas';
-
-export type ForeignEntry = z.infer<typeof foreignEntrySchema>;
+import type { installPlanSchema } from './setup.schemas';
 
 export type InstallPlan = z.infer<typeof installPlanSchema>;
 

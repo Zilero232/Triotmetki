@@ -1,2 +1,2 @@
-export { createFollowSchema, followKindSchema, followListSchema, followParamsSchema, followSchema } from './follows.schemas';
-export type { CreateFollowInput, Follow, FollowKind, FollowList } from './follows.types';
+export { createFollowSchema, followListSchema, followParamsSchema } from './follows.schemas';
+export type { CreateFollowInput, Follow, FollowKind } from './follows.types';

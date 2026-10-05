@@ -78,10 +78,6 @@ const KNOWN_NATIONS: readonly string[] = NATIONS;
 
 export const isNation = (value: string): value is Nation => KNOWN_NATIONS.includes(value);
 
-export const GAME_MODES = ['random', 'ranked', 'onslaught', 'frontline', 'stronghold', 'globalmap', 'training'] as const;
-
-export type GameMode = (typeof GAME_MODES)[number];
-
 export const TANK_CLASS_ICONS = {
   lightTank: LightTankIcon,
   mediumTank: MediumTankIcon,
@@ -117,16 +113,6 @@ export const NATION_ICONS = {
   italy: ItalyIcon,
   intunion: IntUnionIcon
 } as const satisfies Record<Nation, NationIconComponent>;
-
-export const GAME_MODE_ICONS = {
-  random: RandomBattleIcon,
-  ranked: RankedBattleIcon,
-  onslaught: OnslaughtIcon,
-  frontline: FrontlineIcon,
-  stronghold: StrongholdIcon,
-  globalmap: GlobalMapIcon,
-  training: TrainingIcon
-} as const satisfies Record<GameMode, IconComponent>;
 
 export const ICONS = {
   'otmetki-logo': OtmetkiLogoIcon,
@@ -239,5 +225,3 @@ export const EQUIP_CATEGORY_ICONS = {
   directive: EquipDirectiveIcon,
   consumable: EquipConsumableIcon
 } as const satisfies Record<string, IconComponent>;
-
-export type EquipCategory = keyof typeof EQUIP_CATEGORY_ICONS;

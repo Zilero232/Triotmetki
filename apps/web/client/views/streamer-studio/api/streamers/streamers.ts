@@ -37,7 +37,7 @@ import { fromSdk, isNotFoundError } from '@/shared/api/source';
 
 import type { SaveOverlayInput } from './streamers.types';
 
-export const getMyStreamerProfile = (): Promise<StreamerProfile> => fromSdk(() => streamersControllerProfile(SESSION_REQUEST));
+const getMyStreamerProfile = (): Promise<StreamerProfile> => fromSdk(() => streamersControllerProfile(SESSION_REQUEST));
 
 export const findMyStreamerProfile = async (): Promise<StreamerProfile | null> => {
   try {
@@ -56,10 +56,10 @@ export const saveStreamerProfile = (input: UpsertStreamerProfileInput): Promise<
 
 export const getOverlays = (): Promise<Overlay[]> => fromSdk(() => streamersControllerListOverlays(SESSION_REQUEST));
 
-export const createOverlay = (input: CreateOverlayInput): Promise<Overlay> =>
+const createOverlay = (input: CreateOverlayInput): Promise<Overlay> =>
   fromSdk(() => streamersControllerCreateOverlay({ ...SESSION_REQUEST, body: createOverlaySchema.parse(input) }));
 
-export const updateOverlay = ({ id, ...patch }: UpdateOverlayInput): Promise<Overlay> =>
+const updateOverlay = ({ id, ...patch }: UpdateOverlayInput): Promise<Overlay> =>
   fromSdk(() => streamersControllerUpdateOverlay({ ...SESSION_REQUEST, path: { id }, body: updateOverlaySchema.parse(patch) }));
 
 export const removeOverlay = async (id: string): Promise<void> => {
@@ -93,7 +93,7 @@ export const saveOverlay = ({ id, values }: SaveOverlayInput): Promise<Overlay> 
 export const previewOverlay = (input: PreviewOverlayInput): Promise<OverlayData> =>
   fromSdk(() => streamersControllerPreviewOverlay({ ...SESSION_REQUEST, body: previewOverlaySchema.parse(input) }));
 
-export const getMyStreamerSettings = (): Promise<StreamerSettingsView> => fromSdk(() => streamersControllerMySettings(SESSION_REQUEST));
+const getMyStreamerSettings = (): Promise<StreamerSettingsView> => fromSdk(() => streamersControllerMySettings(SESSION_REQUEST));
 
 export const findMyStreamerSettings = async (): Promise<StreamerSettingsView | null> => {
   try {

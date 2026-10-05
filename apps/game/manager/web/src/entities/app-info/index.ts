@@ -1,3 +1,2 @@
-export { appInfoSchema, collectLogs, getAppInfo, revealPath } from './api';
-export type { AppInfo } from './api';
+export { appInfoSchema, collectLogs, revealPath } from './api';
 export { useAppInfo } from './model/hooks';
