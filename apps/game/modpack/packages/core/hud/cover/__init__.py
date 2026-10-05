@@ -7,6 +7,11 @@ and a source that goes quiet takes only its own reasons away. Every source repor
 toggle, so a missed close event is put right by the next report. `reasons(windows=False)` leaves out the game windows
 (`constants.WINDOW_REASONS`) for the "hide panels under game windows" switch turned off.
 
+`FollowedComponents` keeps which of the stock components our panels sit beside (`core.hud.stock.FOLLOWED_ALIASES`:
+the consumables panel, the minimap) are off the screen now: the page hides and shows them through the same
+`_setComponentsVisibility` calls, answers `as_isComponentVisibleS` for a page that started without one (a reconnect
+after death), and the pre-battle setups panel takes the consumables panel's place while it is open.
+
 `PageOverlays` follows a battle page from its `_setComponentsVisibility(visible, hidden)` calls and from snapshots of
 the visible components: the panels hide while the page hides its reference component (`REFERENCE_ALIASES`, the XVM
 technique: the page hides it only with its whole HUD) or shows a covering one (`PAGE_ALIAS_REASONS`); a snapshot only
@@ -16,6 +21,7 @@ ever uncovers. `window_reason(window)` decides one Gameface window (`{alive, own
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ..layer.constants import COVER_FULL_STATS, COVER_SCREEN
+from ..stock.constants import CONSUMABLES_PANEL, FOLLOWED_ALIASES
 from .constants import (
     CHECK_INTERVAL_S,
     HIDE_UNDER_WINDOWS_KEY,
@@ -35,6 +41,7 @@ __all__ = (
     'REASONS',
     'SOURCES',
     'CoverState',
+    'FollowedComponents',
     'PageOverlays',
     'covering_aliases',
     'flash_visible',
@@ -136,6 +143,46 @@ class PageOverlays(object):
 
 
 _REFERENCES = frozenset(REFERENCE_ALIASES)
+_FOLLOWED = frozenset(FOLLOWED_ALIASES)
+_SETUPS_HIDE = frozenset((CONSUMABLES_PANEL,))
+
+
+class FollowedComponents(object):
+
+    def __init__(self):
+        self.page_hidden = frozenset()
+        self.setups_shown = False
+
+    def changed(self, visible=None, hidden=None):
+        """The page shows `visible` and hides `hidden`; returns whether `hidden` (the property) changed."""
+        shown, gone = _names(visible), _names(hidden)
+        return self._set((self.page_hidden | (_FOLLOWED & gone)) - shown, self.setups_shown)
+
+    def answered(self, alias, visible):
+        """The page's `as_isComponentVisibleS(alias)`; anything but a flag leaves the state."""
+        if alias not in _FOLLOWED or not isinstance(visible, bool):
+            return False
+        if visible:
+            return self._set(self.page_hidden - frozenset((alias,)), self.setups_shown)
+        return self._set(self.page_hidden | frozenset((alias,)), self.setups_shown)
+
+    def setups(self, shown):
+        """The pre-battle setups panel opened (True) or closed (False) in the consumables panel's place."""
+        return self._set(self.page_hidden, bool(shown))
+
+    def forget_page(self):
+        """A new page: what the old one hid is gone; the setups panel (it may open before the page) stays."""
+        return self._set(frozenset(), self.setups_shown)
+
+    @property
+    def hidden(self):
+        return self.page_hidden | (_SETUPS_HIDE if self.setups_shown else frozenset())
+
+    def _set(self, page_hidden, setups_shown):
+        before = self.hidden
+        self.page_hidden = frozenset(page_hidden)
+        self.setups_shown = setups_shown
+        return self.hidden != before
 
 
 def _names(aliases):

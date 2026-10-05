@@ -7,8 +7,10 @@ import unittest
 
 import _support
 from otmetki.core.events import EVENT_COMPONENT_SETTINGS, EventBus
+from otmetki.core.hud.stock import RETICLE_RELOAD_TIMER
 from otmetki.core.hud import ComponentConfig
 from otmetki.core.storage import MemoryFile
+from otmetki.features.crosshair.model.readouts import Readouts
 from otmetki.features.crosshair.settings import PANEL_ID
 
 CLIENT_PREFIXES = ('otmetki.core.client', 'otmetki.features.crosshair.client')
@@ -36,6 +38,54 @@ class App(object):
 
     def save_state(self):
         pass
+
+
+# CROSSHAIR_VIEW_ID, RU 1.45 battle_constants.
+ARCADE, SNIPER, STRATEGIC, POSTMORTEM = 1, 2, 3, 4
+
+
+class Crosshair(object):
+
+    def getScaledPosition(self):
+        return (960, 540)
+
+    def getSize(self):
+        return (1920, 1080)
+
+    def getScaleFactor(self):
+        return 1.0
+
+
+class Layer(object):
+
+    def __init__(self):
+        self.shown = {}
+        self.draws = True
+        self.widgets = True
+
+    def show(self, panel_id, text, widget=None):
+        self.shown[panel_id] = widget
+        return self.draws
+
+    def hide(self, panel_id):
+        self.shown.pop(panel_id, None)
+
+    def renders_widgets(self):
+        return self.widgets
+
+    def place(self, panel_id, x, y):
+        return True
+
+
+class Stock(object):
+
+    def __init__(self):
+        self.wanted = {}
+        self.extended = False
+        self.page = None
+
+    def want(self, owner, aliases, while_hidden=False):
+        self.wanted[owner] = tuple(aliases)
 
 
 def forget_client():
@@ -91,6 +141,121 @@ class CrosshairNativeTest(unittest.TestCase):
         self.app.bus.emit('hangar')
 
         assert self.writes == [{'useServerAim': True}]
+
+
+class CrosshairStockTest(unittest.TestCase):
+
+    def setUp(self):
+        self.saved = sys.modules.get('BigWorld')
+        forget_client()
+        sys.modules['BigWorld'] = types.ModuleType(str('BigWorld'))
+        hud = importlib.import_module('otmetki.core.client.hud')
+        self.saved_config = hud._state['config']
+        self.config = ComponentConfig(MemoryFile())
+        hud._state['config'] = self.config
+        self.hud = hud
+        self.module = importlib.import_module('otmetki.features.crosshair.client')
+        self.module.crosshair = Crosshair
+        self.module.controls_own_vehicle = lambda: True
+        self.component = self.module.CrosshairComponent(App())
+        self.layer = Layer()
+        self.stock = Stock()
+        self.component.hud = self.layer
+        self.component.stock = self.stock
+        self.component.running = True
+        self.component.view = ARCADE
+        self.component.readouts = Readouts()
+
+    def tearDown(self):
+        self.hud._state['config'] = self.saved_config
+        forget_client()
+        if self.saved is None:
+            sys.modules.pop('BigWorld', None)
+        else:
+            sys.modules['BigWorld'] = self.saved
+
+    def hidden(self):
+        return self.stock.wanted.get(PANEL_ID, ())
+
+    def drawn_readouts(self):
+        widget = self.layer.shown.get(PANEL_ID)
+        return widget and widget['data']['readouts']
+
+    def reload(self, left=3.0, base=7.6):
+        self.component.readouts.set_reload(left, base)
+        self.component.render()
+
+    def test_the_stock_reload_timer_stays_until_the_client_tells_the_reload(self):
+        self.component.render()
+
+        assert self.hidden() == ()
+
+    def test_the_stock_reload_timer_goes_while_the_box_is_drawn(self):
+        self.reload()
+
+        assert self.drawn_readouts()['reload']['value'] == '3.0'
+        assert self.hidden() == (RETICLE_RELOAD_TIMER,)
+
+    def test_a_loaded_gun_keeps_the_box_and_its_full_reload_time(self):
+        self.reload(0.0, 7.6)
+
+        assert self.drawn_readouts()['reload']['value'] == '7.6'
+        assert self.hidden() == (RETICLE_RELOAD_TIMER,)
+
+    def test_the_stock_reload_timer_comes_back_when_the_box_is_switched_off(self):
+        self.reload()
+        self.config.update(PANEL_ID, {'reload_box': False})
+
+        self.component.render()
+
+        assert self.hidden() == ()
+
+    def test_the_stock_reload_timer_stays_when_the_page_does_not_take_the_panel(self):
+        self.layer.draws = False
+
+        self.reload()
+
+        assert self.hidden() == ()
+
+    def test_the_stock_reload_timer_stays_with_guiflash(self):
+        self.layer.widgets = False
+
+        self.reload()
+
+        assert self.hidden() == ()
+
+    def test_the_box_is_drawn_in_the_sniper_and_the_strategic_views(self):
+        for view in (SNIPER, STRATEGIC):
+            self.component.view = view
+            self.reload()
+
+            assert self.drawn_readouts()['reload'] is not None, view
+            assert self.hidden() == (RETICLE_RELOAD_TIMER,), view
+
+    def test_the_strategic_view_draws_the_box_without_the_centre_mark(self):
+        self.config.update(PANEL_ID, {'mark': 'chevron'})
+        self.component.view = STRATEGIC
+
+        self.reload()
+
+        assert self.layer.shown[PANEL_ID]['data']['shape'] is None
+
+    def test_the_stock_reload_timer_comes_back_off_the_own_reticle(self):
+        self.reload()
+        self.component.view = POSTMORTEM
+
+        self.component.render()
+
+        assert PANEL_ID not in self.layer.shown
+        assert self.hidden() == ()
+
+    def test_the_stock_reload_timer_comes_back_while_an_ally_is_followed(self):
+        self.reload()
+        self.module.controls_own_vehicle = lambda: False
+
+        self.component.render()
+
+        assert self.hidden() == ()
 
 
 if __name__ == '__main__':

@@ -3,14 +3,19 @@
     "average": {
       "ema": 2540,
       "ema_projected": 2551,
-      "label": "ср."
+      "label": "среднее"
+    },
+    "bar": {
+      "end": 5207,
+      "hold": 2540,
+      "value": 3100
     },
     "battles": {
       "level": 95,
       "text": "~45 боёв"
     },
     "damage": {
-      "label": "Сум. урон",
+      "label": "урон",
       "target": 2540,
       "value": 3100
     },
@@ -54,6 +59,7 @@
         "reached": false
       }
     ],
+    "to": "до",
     "tone": "text"
   },
   "kind": "marks_panel",

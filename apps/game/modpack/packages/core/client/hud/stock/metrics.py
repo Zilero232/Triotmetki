@@ -1,14 +1,24 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....hooks import override
-from ....hud.stock import bar_slots, stock_metrics
+from ....hud.stock import CONSUMABLES_PANEL, bar_slots, stock_metrics
 from ....log import safe
-from .constants import BAR_METHODS, CONSUMABLES_PANEL, MINIMAP_SIZE_SETTING
+from .constants import BAR_METHODS, MINIMAP_RESIZE_METHOD, MINIMAP_SIZE_SETTING
 
 try:
     from gui.Scaleform.daapi.view.battle.shared.consumables_panel import ConsumablesPanel
 except Exception:  # the panel moved: the attached panels keep the fallback width
     ConsumablesPanel = None
+
+try:
+    from gui.Scaleform.daapi.view.battle.shared.minimap.component import MinimapComponent
+except Exception:  # the minimap moved: the attached panels keep the size from the setting
+    MinimapComponent = None
+
+
+def _page_panel(page):
+    components = getattr(page, 'components', None)
+    return components.get(CONSUMABLES_PANEL) if isinstance(components, dict) else None
 
 
 def _minimap_index():
@@ -19,22 +29,26 @@ def _minimap_index():
         return None
 
 
-# The stock sizes the attached panels follow (core.hud.panel ATTACHED): the minimap side from the player's setting and
-# the consumables panel's width from the slots it added, measured when the battle page appears and after each slot
-# change.
+# The stock sizes the attached panels follow (core.hud.panel ATTACHED): the minimap side from the player's setting, then
+# from every resize in battle, and the consumables panel's width from the slots it added, measured when the battle page
+# appears, after each slot change and whenever the page shows or hides the panel (death, a respawn).
 class StockMetrics(object):
 
     def __init__(self, layer):
         self.layer = layer
         self.installed = False
+        self.panel = None
+        self.minimap = None
 
     def install(self):
-        if self.installed or ConsumablesPanel is None:
+        if self.installed:
             return
         self.installed = True
         for name in BAR_METHODS:
-            if hasattr(ConsumablesPanel, name):
+            if ConsumablesPanel is not None and hasattr(ConsumablesPanel, name):
                 self._follow(name)
+        if MinimapComponent is not None and hasattr(MinimapComponent, MINIMAP_RESIZE_METHOD):
+            self._follow_minimap()
 
     def _follow(self, name):
         metrics = self
@@ -45,12 +59,35 @@ class StockMetrics(object):
             metrics.measure(panel)
             return result
 
+    def _follow_minimap(self):
+        metrics = self
+
+        @override(MinimapComponent, MINIMAP_RESIZE_METHOD)
+        def _resized(original, component, size_index, *args, **kwargs):
+            result = original(component, size_index, *args, **kwargs)
+            metrics.minimap_resized(size_index)
+            return result
+
     @safe
     def measure(self, panel=None):
-        slots = bar_slots(getattr(panel, '_mask', None))
-        self.layer.set_stock_metrics(stock_metrics(_minimap_index(), slots))
+        if panel is not None:
+            self.panel = panel
+        slots = bar_slots(getattr(self.panel, '_mask', None))
+        index = self.minimap if self.minimap is not None else _minimap_index()
+        self.layer.set_stock_metrics(stock_metrics(index, slots))
+
+    def minimap_resized(self, size_index):
+        self.minimap = size_index
+        self.measure()
 
     def measure_page(self, page):
-        components = getattr(page, 'components', None)
-        panel = components.get(CONSUMABLES_PANEL) if isinstance(components, dict) else None
-        self.measure(panel)
+        self.forget()
+        self.measure(_page_panel(page))
+
+    def page_toggled(self, page, visible, hidden):
+        if CONSUMABLES_PANEL in set(visible or ()) | set(hidden or ()):
+            self.measure(_page_panel(page))
+
+    def forget(self):
+        self.panel = None
+        self.minimap = None

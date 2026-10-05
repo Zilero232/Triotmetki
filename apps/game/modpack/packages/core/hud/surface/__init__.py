@@ -15,7 +15,9 @@ hangar the whole screen is taken while editing.
 
 The page sends `{type: 'ready'}` once it can draw, `{type: 'moved', id, x, y, align_x, align_y}` after a drag,
 `{type: 'resized', id, scale}` after a wheel turn, `{type: 'pressed', id}` when the player clicks a button panel, and
-`{type: 'mouse', event}` the first time it sees the pointer over a panel, a press or a wheel turn in edit mode.
+`{type: 'mouse', event}` the first time it sees the pointer over a panel, a press or a wheel turn in edit mode, and
+`{type: 'drawn', ids}` whenever the panels it laid out with a size changed (a panel replaces a stock element only while
+the page draws it).
 `handle(raw)` decodes one message; the ui-web side is `src/shared/api/hud-protocol` (a test checks both command
 lists).
 """
@@ -33,6 +35,7 @@ from .constants import (
     COVERS,
     DOCK_NUMBERS,
     HUD_COMMANDS,
+    HUD_MAX_DRAWN,
     HUD_MAX_MESSAGE_CHARS,
     HUD_MESSAGE_ARG,
     HUD_PROTOCOL_VERSION,
@@ -143,8 +146,17 @@ def _mouse(message):
     return {'event': message['event']}
 
 
+def _drawn(message):
+    ids = message.get('ids')
+    if not isinstance(ids, list) or len(ids) > HUD_MAX_DRAWN:
+        return None
+    if not all(isinstance(alias, string_types) for alias in ids):
+        return None
+    return {'ids': tuple(to_text(alias) for alias in ids)}
+
+
 _PANEL_FIELDS = {'moved': _moved, 'resized': _resized, 'pressed': lambda message: {}}
-_PAGE_FIELDS = {'ready': lambda message: {}, 'mouse': _mouse}
+_PAGE_FIELDS = {'ready': lambda message: {}, 'mouse': _mouse, 'drawn': _drawn}
 
 
 def _parse_message(raw):

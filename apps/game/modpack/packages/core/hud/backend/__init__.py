@@ -39,6 +39,13 @@ class HudBackend(object):
         """Whether it draws the structured widget payloads now (only the Gameface page, once it answered)."""
         return False
 
+    def drawn_aliases(self):
+        """The labels the renderer confirmed on the screen (laid out with a size), or None while it confirmed nothing
+        (only the Gameface page reports them). A panel replaces a stock element only while it is in there."""
+
+    def listen_drawn(self, on_drawn):
+        """Call `on_drawn()` when `drawn_aliases()` changed."""
+
     def set_modifier(self, mode):
         """The key the player holds to move and resize panels (`core.hud.modifier` modes)."""
 
@@ -103,6 +110,14 @@ class BackendChain(HudBackend):
     def renders_widgets(self):
         active = self.active()
         return active is not None and active.renders_widgets()
+
+    def drawn_aliases(self):
+        active = self.active()
+        return active.drawn_aliases() if active is not None else None
+
+    def listen_drawn(self, on_drawn):
+        for backend in self.backends:
+            backend.listen_drawn(on_drawn)
 
     def set_modifier(self, mode):
         for backend in self.backends:

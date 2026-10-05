@@ -1,14 +1,26 @@
 import { clamp } from 'remeda';
 
-import type { RadialDash, RadialInput } from './radial.types';
+import type { RadialArcInput } from './radial.types';
 
-export const radialDash = ({ progress, radius }: RadialInput): RadialDash => {
-  const circumference = 2 * Math.PI * radius;
+const TURN = 2 * Math.PI;
+
+const point = (value: number): string => String(Number(value.toFixed(2)));
+
+export const radialArc = ({ progress, radius, centre }: RadialArcInput): string => {
   const done = clamp(progress, { min: 0, max: 1 });
+  const arc = `A${point(radius)} ${point(radius)} 0`;
+  const top = `${point(centre)} ${point(centre - radius)}`;
 
-  return {
-    dasharray: `${circumference.toFixed(2)} ${circumference.toFixed(2)}`,
-    dashoffset: Number((circumference * (1 - done)).toFixed(2)),
-    circumference
-  };
+  if (done <= 0) {
+    return '';
+  }
+
+  if (done >= 1) {
+    return `M${top}${arc} 1 1 ${point(centre)} ${point(centre + radius)}${arc} 1 1 ${top}`;
+  }
+
+  const angle = done * TURN;
+  const end = `${point(centre + radius * Math.sin(angle))} ${point(centre - radius * Math.cos(angle))}`;
+
+  return `M${top}${arc} ${done > 0.5 ? 1 : 0} 1 ${end}`;
 };

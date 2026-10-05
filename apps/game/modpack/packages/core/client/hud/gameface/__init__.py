@@ -142,6 +142,8 @@ class GamefaceBackend(HudBackend):
         self.broken = False
         self.listeners = []
         self.press_listeners = []
+        self.drawn_listeners = []
+        self.drawn = None
         self.cursor = False
         self.seen_edit = False
         self.seen_mouse = set()
@@ -188,6 +190,22 @@ class GamefaceBackend(HudBackend):
 
     def renders_widgets(self):
         return self.answered and self.available()
+
+    def drawn_aliases(self):
+        return self.drawn if self.view is not None else None
+
+    def listen_drawn(self, on_drawn):
+        if on_drawn not in self.drawn_listeners:
+            self.drawn_listeners.append(on_drawn)
+
+    def _set_drawn(self, drawn):
+        if drawn == self.drawn:
+            return
+        self.drawn = drawn
+        if drawn is not None:
+            log('HUD: the page draws %s' % (', '.join(sorted(drawn)) or 'nothing'))
+        for listener in list(self.drawn_listeners):
+            listener()
 
     def delete(self, alias):
         return self.surface.delete(alias) and self.sync()
@@ -280,6 +298,7 @@ class GamefaceBackend(HudBackend):
     @safe
     def close(self):
         window, self.window, self.view = self.window, None, None
+        self._set_drawn(None)
         if window is not None:
             log('HUD: Gameface window %s closed' % window.uniqueID)
             window.destroy()
@@ -294,6 +313,7 @@ class GamefaceBackend(HudBackend):
         log('HUD: Gameface page view loaded')
         view.viewModel.send += view._on_send
         self.view = view
+        self._set_drawn(None)
         self.pusher.forget()
         self.pusher.flush()
 
@@ -304,6 +324,7 @@ class GamefaceBackend(HudBackend):
         if self.view is view or self.view is None:
             self.view = None
             self.window = None
+            self._set_drawn(None)
 
     @safe
     def on_message(self, raw):
@@ -317,6 +338,7 @@ class GamefaceBackend(HudBackend):
             'mouse': self._on_page_mouse,
             'moved': self._on_page_move,
             'resized': self._on_page_move,
+            'drawn': self._on_page_drawn,
         }
         handlers[command](fields)
 
@@ -326,6 +348,9 @@ class GamefaceBackend(HudBackend):
         log('HUD: Gameface page ready (%d labels: %s)' % (len(labels), ', '.join(labels)))
         self.pusher.forget()
         self.push_state()
+
+    def _on_page_drawn(self, fields):
+        self._set_drawn(frozenset(fields['ids']))
 
     def _on_page_press(self, fields):
         for listener in list(self.press_listeners):

@@ -17,7 +17,8 @@ OWN_ID = 3
 ENEMY_ID = 7
 ALLY_ID = 9
 HULL_PEN = 4 | (1 << 8) | (120 << 16) | (100 << 24) | (250 << 32) | (130 << 40) | (110 << 48) | (255 << 56)
-EFFECTS = {0: {'shellType': 'ARMOR_PIERCING', 'caliber': 128.0}}
+EFFECTS_INDEX = 12
+AIM = (0.5, -0.1)
 DAMAGE, RECEIVED_DAMAGE = 7, 10
 
 
@@ -27,11 +28,24 @@ class Namespace(object):
         self.__dict__.update(values)
 
 
+class Shot(object):
+
+    def __init__(self, effects_index, kind, caliber):
+        self.shell = Namespace(effectsIndex=effects_index, kind=kind, caliber=caliber)
+
+
+def gun_descriptor(*shots):
+    return Namespace(gun=Namespace(shots=list(shots)))
+
+
 class Avatar(object):
 
     playerVehicleID = OWN_ID
     arenaUniqueID = 555
-    arena = None
+    arena = Namespace(vehicles={
+        ENEMY_ID: {'vehicleType': gun_descriptor(Shot(EFFECTS_INDEX, 'ARMOR_PIERCING_CR', 128.0))},
+        OWN_ID: {'vehicleType': gun_descriptor(Shot(EFFECTS_INDEX, 'HOLLOW_CHARGE', 100.0))},
+    })
 
 
 class Part(object):
@@ -53,6 +67,9 @@ class Vehicle(object):
         self.id = entity_id
         self.isPlayerVehicle = own
         self.typeDescriptor = Descriptor(entity_id * 100)
+
+    def getAimParams(self):
+        return AIM
 
     def showDamageFromShot(self, attacker_id, points, effects_index, damage_factor, last_material_is_shield):
         return None
@@ -114,7 +131,7 @@ def stub_client():
     })
     items = types.ModuleType(str('items'))
     vehicles = types.ModuleType(str('items.vehicles'))
-    vehicles.g_cache = Namespace(shotEffects=EFFECTS)
+    vehicles.g_cache = Namespace(shotEffects={})
     items.vehicles = vehicles
     for name, module in zip(STUBBED, (big_world, vehicle_module, feedback_common, items, vehicles)):
         sys.modules[name] = module
@@ -165,10 +182,30 @@ class RecorderTest(unittest.TestCase):
 
         assert self.recorder.battles() == []
 
-    def test_the_shell_comes_from_the_shot_effects(self):
-        Vehicle(OWN_ID, own=True).showDamageFromShot(ENEMY_ID, [HULL_PEN], 0, 1.0, False)
+    def test_the_shell_of_a_received_hit_comes_from_the_attackers_gun(self):
+        Vehicle(OWN_ID, own=True).showDamageFromShot(ENEMY_ID, [HULL_PEN], EFFECTS_INDEX, 1.0, False)
 
-        assert self.finish()['hits'][0]['shell'] == 'ap'
+        assert self.finish()['hits'][0]['shell'] == 'apcr'
+
+    def test_the_calibre_comes_from_the_attackers_shell(self):
+        Vehicle(OWN_ID, own=True).showDamageFromShot(ENEMY_ID, [HULL_PEN], EFFECTS_INDEX, 1.0, False)
+
+        assert self.finish()['hits'][0]['caliber'] == 128
+
+    def test_the_shell_of_a_dealt_hit_comes_from_the_own_gun(self):
+        Vehicle(ENEMY_ID).showDamageFromShot(OWN_ID, [HULL_PEN], EFFECTS_INDEX, 1.0, False)
+
+        assert self.finish()['hits'][0]['shell'] == 'heat'
+
+    def test_an_unknown_effects_index_leaves_the_shell_unknown(self):
+        Vehicle(OWN_ID, own=True).showDamageFromShot(ENEMY_ID, [HULL_PEN], 99, 1.0, False)
+
+        assert self.finish()['hits'][0]['shell'] is None
+
+    def test_the_hit_keeps_the_hit_vehicles_turret_and_gun_pose(self):
+        Vehicle(ENEMY_ID).showDamageFromShot(OWN_ID, [HULL_PEN], EFFECTS_INDEX, 1.0, False)
+
+        assert self.finish()['hits'][0]['aim'] == [0.5, -0.1]
 
     def test_the_target_keeps_only_the_model_modules(self):
         Vehicle(ENEMY_ID).showDamageFromShot(OWN_ID, [HULL_PEN], 0, 1.0, False)
@@ -208,6 +245,9 @@ class ScreenTest(unittest.TestCase):
         self.screen = screen_module.HitViewerScreen(component, Namespace(book=None))
         self.ended = []
         self.screen.stage.end = lambda: self.ended.append(True)
+        self.hangar_shown = []
+        window_module = importlib.import_module('otmetki.features.hit_viewer.client.window')
+        window_module.show_hangar = lambda: self.hangar_shown.append(True)
 
     def tearDown(self):
         forget_client()
@@ -219,7 +259,7 @@ class ScreenTest(unittest.TestCase):
 
     def opened_view(self):
         view = object()
-        self.screen.window.window = object()
+        self.screen.window.is_open = True
         self.screen.window.on_loaded(view)
         self.screen.ticker.start()
         return view
@@ -260,11 +300,32 @@ class ScreenTest(unittest.TestCase):
 
     def test_closing_the_viewer_gives_the_hangar_back_once(self):
         view = self.opened_view()
-        self.screen.window.window = Namespace(windowStatus=None, destroy=lambda: self.screen.window.on_destroyed(view))
+
+        self.screen.close()
+        self.screen.window.on_destroyed(view)
+
+        assert (self.screen.ticker.running, self.ended) == (False, [True])
+
+    def test_closing_the_viewer_brings_the_stock_hangar_view_back(self):
+        self.opened_view()
 
         self.screen.close()
 
-        assert (self.screen.ticker.running, self.ended) == (False, [True])
+        assert self.hangar_shown == [True]
+
+    def test_closing_for_a_battle_queue_leaves_the_queue_view_on_screen(self):
+        self.opened_view()
+
+        self.screen.close(restore_hangar=False)
+
+        assert self.hangar_shown == []
+
+    def test_a_view_the_client_replaced_does_not_load_the_hangar_view_again(self):
+        view = self.opened_view()
+
+        self.screen.window.on_destroyed(view)
+
+        assert self.hangar_shown == []
 
 
 class Event(object):

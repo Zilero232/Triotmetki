@@ -34,10 +34,40 @@ describe(marksPanelView, () => {
     expect(view.tone).toBe('gold');
   });
 
-  it('writes the damage for the next goal', () => {
+  it('labels the damage for the next goal with its level', () => {
     const view = marksPanelView(data);
 
-    expect(view.goal).toEqual({ level: 87, label: '87 %', value: '2 107', reached: false });
+    expect(view.target).toEqual({ label: 'до 87 %', need: 2107, reached: false });
+  });
+
+  it('puts the battle damage and the average that holds the percent on the bar', () => {
+    const view = marksPanelView(data);
+
+    expect(view.bar?.fill).toBeCloseTo(3100 / 5207);
+    expect(view.bar?.hold).toBeCloseTo(2540 / 5207);
+    expect(view.bar?.tone).toBe('good');
+  });
+
+  it('tones the bar plain below the average and gold at the goal', () => {
+    expect(marksPanelView({ ...data, bar: { value: 900, hold: 2540, end: 5207 } }).bar?.tone).toBe('text');
+    expect(marksPanelView({ ...data, bar: { value: 5207, hold: 2540, end: 5207 } }).bar?.tone).toBe('gold');
+  });
+
+  it('keeps the percent scale when the panel sends no damage bar', () => {
+    expect(marksPanelView({ ...data, bar: null }).bar).toBeNull();
+  });
+
+  it('counts a new mark or a reached goal as a milestone', () => {
+    const base = marksPanelView(data).milestone;
+
+    expect(marksPanelView({ ...data, goal: { level: 87, need: 0 } }).milestone).toBe(base + 1);
+    expect(marksPanelView({ ...data, percent: 95.1 }).milestone).toBe(base + 2);
+  });
+
+  it('compares the battle damage with the average', () => {
+    const view = marksPanelView(data);
+
+    expect(view.damage).toEqual({ label: 'урон', value: 3100, target: ' / 2 540', tone: 'good' });
   });
 
   it('marks the goal reached when no damage is left', () => {
@@ -58,16 +88,16 @@ describe(marksPanelView, () => {
     expect(view.step).toBe('+0,5 %: 955');
   });
 
-  it('writes the average before and after the battle', () => {
+  it('writes the average before and after the battle with its direction', () => {
     const view = marksPanelView(data);
 
-    expect(view.average).toEqual({ label: 'ср.', value: ['2 540', MARKS_PANEL.arrow, '2 551'].join(' ') });
+    expect(view.average).toEqual({ label: 'среднее', from: '2 540', to: '2 551', direction: 'up' });
   });
 
   it('writes the battles to the next mark', () => {
     const view = marksPanelView(data);
 
-    expect(view.battles).toEqual({ label: '95 %', value: '~45 боёв' });
+    expect(view.battles).toEqual({ label: 'до 95 %', value: '~45 боёв' });
   });
 
   it('writes a dash for an unknown percent', () => {

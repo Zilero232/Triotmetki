@@ -5,12 +5,15 @@ import BigWorld
 from ....core.client.game import client_attr, service
 from ....core.hooks import subscribe, unsubscribe
 from ....core.log import log, log_exception, safe
-from ..model import MODULE_KEYS, first_plate
+from ..model import MODULE_KEYS, along, effect_model, first_plate, shell_model
 from .constants import (
     CAMERA_MANAGER_CLASS,
     CAMERA_MANAGER_MODULE,
     DECODER_CLASS,
     DECODER_MODULE,
+    FOCUS_DISTANCE_M,
+    FOCUS_LIMITS_M,
+    GUN_NODE,
     LAST_STRUCTURAL_INDEX,
     MATERIAL_PARTS,
     PREVIEW_MODULE,
@@ -20,6 +23,7 @@ from .constants import (
     PROJECTION_MODULE,
     RESTORE_WAIT_S,
     TAIL_M,
+    TURRET_NODE,
 )
 
 
@@ -37,17 +41,6 @@ def camera_manager(space):
         return None
     import CGF
     return CGF.getManager(space.spaceID, manager_class)
-
-
-# The hangar camera as the client's HangarCameraManager.moveCamera takes it back: the orbit's target point, yaw,
-# pitch and distance (its camera's `target`, `source` and `pivotMaxDist`, RU 1.45 cgf_components/
-# hangar_camera_manager.py).
-def camera_place():
-    import Math
-    camera = BigWorld.camera()
-    source = Math.Matrix(camera.source)
-    target = Math.Matrix(camera.target)
-    return {'target': target.translation, 'yaw': source.yaw, 'pitch': source.pitch, 'distance': camera.pivotMaxDist}
 
 
 def preview_descriptor(target):
@@ -73,23 +66,88 @@ def _max_component_index(descriptor):
     return LAST_STRUCTURAL_INDEX + max(len(pairs) - 1, 0)
 
 
+def _material(descriptor, part_index, material_kind):
+    found = None
+    if 0 <= part_index < len(MATERIAL_PARTS):
+        materials = getattr(getattr(descriptor, MATERIAL_PARTS[part_index], None), 'materials', None)
+        found = materials.get(material_kind) if materials is not None else None
+    if found is None:
+        from items import vehicles
+        found = vehicles.g_cache.commonConfig['materials'].get(material_kind)
+    return found
+
+
+def _rotation(yaw, pitch):
+    import Math
+    matrix = Math.Matrix()
+    matrix.setRotateYPR((yaw, pitch, 0.0))
+    return matrix
+
+
+class SceneModels(object):
+    """The shell along the selected hit's path and the marker of its outcome: poliroid BattleHits' own models (MIT,
+    shipped unmodified), placed the way its HangarScene does it (a BigWorld.Model with a Servo motor in the hangar
+    space, turned to the shot's direction). UNVERIFIED on Lesta 1.45: the models load and draw in the hangar space."""
+
+    def __init__(self):
+        self.models = {}
+        self.space_id = None
+
+    def _model(self, path):
+        if path in self.models:
+            return self.models[path]
+        import Math
+        model = BigWorld.Model(path)
+        motor = BigWorld.Servo(Math.Matrix())
+        model.addMotor(motor)
+        model.castsShadow = False
+        model.visible = False
+        BigWorld.addModel(model, self.space_id)
+        self.models[path] = (model, motor)
+        return self.models[path]
+
+    def show(self, space_id, paths, point, direction):
+        self.hide()
+        self.space_id = space_id
+        placement = _rotation(direction.yaw, direction.pitch)
+        placement.translation = point
+        for path in paths:
+            if path is None:
+                continue
+            model, motor = self._model(path)
+            motor.signal = placement
+            model.visible = True
+
+    def hide(self):
+        for model, _ in self.models.values():
+            model.visible = False
+
+    def destroy(self):
+        for model, _ in self.models.values():
+            if model in BigWorld.models():
+                BigWorld.delModel(model)
+        self.models = {}
+
+
 # The hangar vehicle is swapped the way the client's own vehicle preview does it (CurrentVehicle.g_currentPreviewVehicle
-# .selectVehicle(intCD, strCD): HangarSpace.updatePreviewVehicle with the stock style), and given back with its
-# selectNoVehicle(), which refreshes the selected vehicle with its own outfit (RU 1.45 VehiclePreview._dispose). The
-# hits are decoded on the loaded model by the client's own decoder (VehicleEffects.DamageFromShotDecoder.decodeHitPoints
-# on the hangar appearance's collisions), so a marker sits where the battle drew the hit effect. UNVERIFIED on Lesta
-# 1.45: the preview swap outside the preview view, the collision component of the hangar vehicle and the camera fields.
+# .selectVehicle(intCD, strCD): HangarSpace.updatePreviewVehicle with the stock style; the stock EarlyAccessVehicleView,
+# a Gameface lobby sub view like ours, does the same), and given back with its selectNoVehicle(), which refreshes the
+# selected vehicle with its own outfit (RU 1.45 VehiclePreview._dispose). The hits are decoded on the loaded model by
+# the client's own decoder (VehicleEffects.DamageFromShotDecoder.decodeHitPoints on the hangar appearance's collisions),
+# so a marker sits where the battle drew the hit effect; the turret and gun take the pose the shot found them in, and
+# the camera flies to the hit the way BattleHits' HangarScene._setCameraData does. UNVERIFIED on Lesta 1.45: the
+# collision component of the hangar vehicle, the node pose and the camera flight.
 class HangarStage(object):
 
     def __init__(self, on_loaded):
         self.on_loaded = on_loaded
         self.space = None
         self.subscribed = None
-        self.saved_camera = None
         self.loading = False
         self.restoring = False
         self.shown = False
         self.generation = 0
+        self.scene = SceneModels()
 
     def preview(self):
         return client_attr(PREVIEW_MODULE, PREVIEW_NAME)
@@ -101,17 +159,13 @@ class HangarStage(object):
         self.space = hangar_space()
         if self.space is None or self.preview() is None:
             return False
-        try:
-            self.saved_camera = camera_place()
-        except Exception:
-            log_exception('hit viewer: camera place')
-            self.saved_camera = None
         self.subscribed = subscribe(self.space, 'onVehicleChanged', self._on_vehicle_changed)
         return True
 
     def show(self, target):
         self.loading = True
         self.shown = True
+        self.scene.hide()
         try:
             str_cd = preview_descriptor(target)
         except Exception:
@@ -120,6 +174,7 @@ class HangarStage(object):
         self.preview().selectVehicle(target['cd'], str_cd)
 
     def end(self):
+        self.scene.destroy()
         if self.space is None:
             return
         self.loading = False
@@ -148,9 +203,9 @@ class HangarStage(object):
 
     def _restore_camera(self):
         self.restoring = False
-        saved, manager = self.saved_camera, camera_manager(self.space)
-        if saved is not None and manager is not None:
-            manager.moveCamera(saved['target'], saved['yaw'], saved['pitch'], saved['distance'], 0)
+        manager = camera_manager(self.space)
+        if manager is not None:
+            manager.resetCameraTarget(0)
         self._finish()
 
     def _finish(self):
@@ -163,6 +218,15 @@ class HangarStage(object):
 
     def entity(self):
         return self.space.getVehicleEntity() if self.space is not None else None
+
+    def pose(self, aim):
+        """Turns the shown turret and gun to the recorded [yaw, pitch] (BattleHits Vehicle.__updateAppereance)."""
+        model = getattr(getattr(self.entity(), 'appearance', None), 'compoundModel', None)
+        if model is None or not aim:
+            return
+        yaw, pitch = aim
+        model.node(TURRET_NODE, _rotation(yaw, 0.0))
+        model.node(GUN_NODE, _rotation(0.0, pitch))
 
     def decode(self, segments):
         """(part node name, local point, local direction) of a shot on the shown model, or None."""
@@ -187,25 +251,17 @@ class HangarStage(object):
         world_direction.normalise()
         return node.applyPoint(point), world_direction
 
-    def measure(self, decoded):
+    def measure(self, decoded, shell=None, caliber=None):
         """The first plate along the shot on the shown model ({angle, armor, nominal}), or None."""
         point, direction = self.world(decoded)
         appearance = self.entity().appearance
         found = appearance.collisions.collideAllWorld(point - direction * PROBE_M, point + direction * PROBE_M)
         layers = []
         for _, hit_angle_cos, material_kind, part_index in found or ():
-            material = self._material(appearance.typeDescriptor, part_index, material_kind)
-            if material is not None:
+            material = _material(appearance.typeDescriptor, part_index, material_kind)
+            if material is not None and material.armor:
                 layers.append((hit_angle_cos, material.armor, material.useHitAngle))
-        return first_plate(layers)
-
-    @staticmethod
-    def _material(descriptor, part_index, material_kind):
-        if not 0 <= part_index < len(MATERIAL_PARTS):
-            return None
-        part = getattr(descriptor, MATERIAL_PARTS[part_index], None)
-        materials = getattr(part, 'materials', None)
-        return materials.get(material_kind) if materials is not None else None
+        return first_plate(layers, shell, caliber)
 
     def clip(self, decoded):
         """The clip-space (x, y, z, w) of the hit point and of its direction line's start."""
@@ -213,7 +269,7 @@ class HangarStage(object):
         project = client_attr(PROJECTION_MODULE, PROJECTION_FUNCTION)
         matrix = project()
         point, direction = self.world(decoded)
-        tail = point - direction * TAIL_M
+        tail = Math.Vector3(*along(tuple(point), tuple(direction), -TAIL_M))
         return tuple(self._apply(matrix, Math.Vector4(value.x, value.y, value.z, 1.0)) for value in (point, tail))
 
     @staticmethod
@@ -221,8 +277,13 @@ class HangarStage(object):
         found = matrix.applyV4Point(vector)
         return found.x, found.y, found.z, found.w
 
-    def focus(self, decoded, duration):
-        _, direction = self.world(decoded)
+    def focus(self, decoded, hit, duration):
+        point, direction = self.world(decoded)
+        paths = (shell_model(hit.get('shell')), effect_model(hit['outcome'], hit.get('damage')))
+        try:
+            self.scene.show(self.space.spaceID, paths, point, direction)
+        except Exception:
+            log_exception('hit viewer: scene models')
         manager = camera_manager(self.space)
         if manager is not None:
-            manager.moveCamera(None, direction.yaw, direction.pitch, None, duration)
+            manager.moveCamera(point, direction.yaw, -direction.pitch, FOCUS_DISTANCE_M, duration, FOCUS_LIMITS_M)

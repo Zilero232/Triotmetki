@@ -6,7 +6,9 @@ HUD_PROTOCOL_VERSION = 5
 HUD_STATE_PROPERTY = 'state'
 HUD_SEND_COMMAND = 'send'
 HUD_MESSAGE_ARG = 'message'
-HUD_COMMANDS = ('ready', 'moved', 'resized', 'pressed', 'mouse')
+HUD_COMMANDS = ('ready', 'moved', 'resized', 'pressed', 'mouse', 'drawn')
+# The most panel ids one `drawn` message names.
+HUD_MAX_DRAWN = 64
 # What the page reports once per page the first time it sees it in edit mode: a panel under the pointer, a press,
 # a wheel turn.
 MOUSE_EVENTS = ('hover', 'down', 'wheel')

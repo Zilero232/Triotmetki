@@ -13,12 +13,18 @@ from otmetki.features.hit_viewer.model import (
     SIDE_DEALT,
     SIDE_RECEIVED,
     HitBook,
+    along,
+    clean_aim,
     decode_message,
     default_index,
+    effect_model,
     first_plate,
+    gun_shell,
     impact,
     marker,
+    normalization,
     plate_analysis,
+    shell_model,
     settings_page,
     to_screen,
     viewer_state,
@@ -48,6 +54,7 @@ def received(segments=(HULL_PEN,), other=ATTACKER):
         'segments': list(segments),
         'shell': 'ap',
         'caliber': 128.0,
+        'aim': (0.25, -0.05),
     }
 
 
@@ -193,6 +200,38 @@ class BookTest(unittest.TestCase):
 
         assert book.battle(u'nope')['id'] == '42'
 
+    def test_the_hit_keeps_the_turret_and_gun_pose(self):
+        battle, _ = finished_battle()
+
+        assert battle['hits'][0]['aim'] == [0.25, -0.05]
+
+    def test_a_hit_without_a_pose_keeps_none(self):
+        battle, _ = finished_battle()
+
+        assert battle['hits'][1]['aim'] is None
+
+    def test_a_saved_pose_reads_back(self):
+        store = MemoryFile()
+        _, book = finished_battle()
+        book.store = store
+        book.save()
+
+        again = HitBook(store, 20)
+
+        assert again.battles[0]['hits'][0]['aim'] == [0.25, -0.05]
+
+
+class AimTest(unittest.TestCase):
+
+    def test_a_pose_is_two_angles(self):
+        assert clean_aim([0.1, 0.2, 0.3]) is None
+
+    def test_an_angle_beyond_a_turn_is_refused(self):
+        assert clean_aim([10.0, 0.0]) is None
+
+    def test_a_pose_is_rounded(self):
+        assert clean_aim((1.234567, -0.000049)) == [1.2346, -0.0]
+
 
 class ArmorTest(unittest.TestCase):
 
@@ -213,6 +252,77 @@ class ArmorTest(unittest.TestCase):
 
     def test_no_layers_give_nothing(self):
         assert first_plate([]) is None
+
+    def test_an_ap_shell_turns_five_degrees_towards_the_normal(self):
+        assert normalization('ap', 100, 100) == 5.0
+
+    def test_an_apcr_shell_turns_two_degrees(self):
+        assert normalization('apcr', 100, 100) == 2.0
+
+    def test_a_heat_shell_is_not_normalised(self):
+        assert normalization('heat', 100, 100) == 0.0
+
+    def test_an_overmatching_calibre_widens_the_normalisation(self):
+        assert normalization('ap', 150, 50) == 10.5
+
+    def test_the_effective_armour_takes_the_normalisation_off_the_angle(self):
+        assert plate_analysis(0.5, 100, shell='ap', caliber=100)['armor'] == 174
+
+    def test_the_angle_stays_the_measured_one(self):
+        assert plate_analysis(0.5, 100, shell='ap', caliber=100)['angle'] == 60.0
+
+    def test_a_heat_shell_meets_the_line_of_sight_armour(self):
+        assert plate_analysis(0.5, 100, shell='heat', caliber=100)['armor'] == 200
+
+    def test_the_normalisation_never_turns_past_the_normal(self):
+        assert plate_analysis(0.999, 100, shell='ap', caliber=300)['armor'] == 100
+
+    def test_the_first_plate_uses_the_shell(self):
+        assert first_plate([(0.5, 100, True)], 'ap', 100)['armor'] == 174
+
+
+class ShellTest(unittest.TestCase):
+
+    SHOTS = [(11, 'ARMOR_PIERCING', 122.0), (12, 'HIGH_EXPLOSIVE', 122.0), (13, 'ARMOR_PIERCING_CR', 121.6)]
+
+    def test_the_shot_with_the_hits_effects_is_the_shell(self):
+        assert gun_shell(self.SHOTS, 12) == ('he', 122)
+
+    def test_the_calibre_is_whole_millimetres(self):
+        assert gun_shell(self.SHOTS, 13) == ('apcr', 122)
+
+    def test_an_effects_index_the_gun_lacks_gives_nothing(self):
+        assert gun_shell(self.SHOTS, 99) is None
+
+    def test_a_gun_without_shots_gives_nothing(self):
+        assert gun_shell(None, 11) is None
+
+
+class SceneTest(unittest.TestCase):
+
+    def test_each_shell_kind_has_its_model(self):
+        assert shell_model('heat') == 'content/battlehits/common/shells/heat/shell.model'
+
+    def test_an_he_shell_uses_the_modern_he_model(self):
+        assert shell_model('he') == 'content/battlehits/common/shells/hemodern/shell.model'
+
+    def test_an_unknown_shell_draws_no_model(self):
+        assert shell_model(None) is None
+
+    def test_a_block_draws_the_not_penetrated_marker(self):
+        assert effect_model('blocked') == 'content/battlehits/style1/effects/notpenetration/effect.model'
+
+    def test_a_critical_hit_with_damage_draws_the_penetration_marker(self):
+        assert effect_model('crit', 320) == 'content/battlehits/style1/effects/penetration/effect.model'
+
+    def test_a_critical_hit_without_damage_draws_the_critical_marker(self):
+        assert effect_model('crit', 0) == 'content/battlehits/style1/effects/critical/effect.model'
+
+    def test_the_line_starts_back_along_the_shell_path(self):
+        assert along((1.0, 2.0, 3.0), (0.0, 0.0, 2.0), -0.5) == (1.0, 2.0, 2.5)
+
+    def test_a_direction_without_length_keeps_the_point(self):
+        assert along((1.0, 2.0, 3.0), (0.0, 0.0, 0.0), -0.5) == (1.0, 2.0, 3.0)
 
 
 class ProjectionTest(unittest.TestCase):
@@ -254,6 +364,13 @@ class PageTest(unittest.TestCase):
         state = viewer_state(book.battles, {'battle': battle['id'], 'tab': SIDE_RECEIVED}, translator())
 
         assert state['rows'][0]['damage'] == u'490'
+
+    def test_a_row_names_the_part_that_was_hit(self):
+        battle, book = finished_battle()
+
+        state = viewer_state(book.battles, {'battle': battle['id'], 'tab': SIDE_RECEIVED}, translator())
+
+        assert state['rows'][0]['part'] == u'Корпус'
 
     def test_an_unmeasured_angle_is_a_dash(self):
         battle, book = finished_battle()
@@ -307,6 +424,16 @@ class ProtocolTest(unittest.TestCase):
 
     def test_junk_is_refused(self):
         assert decode_message('{') is None
+
+    def test_a_camera_drag_is_understood(self):
+        assert decode_message('{"command": "move", "dx": 4, "dy": -2, "dz": 0}') == (
+            'move', {'dx': 4.0, 'dy': -2.0, 'dz': 0.0})
+
+    def test_a_huge_drag_is_clamped(self):
+        assert decode_message('{"command": "move", "dx": 99999, "dy": 0, "dz": 0}')[1]['dx'] == 2000.0
+
+    def test_a_drag_without_numbers_is_refused(self):
+        assert decode_message('{"command": "move", "dx": "far", "dy": 0, "dz": 0}') is None
 
 
 class SettingsTest(unittest.TestCase):

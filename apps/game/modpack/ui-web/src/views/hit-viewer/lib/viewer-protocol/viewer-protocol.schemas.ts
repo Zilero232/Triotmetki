@@ -13,6 +13,7 @@ const rowSchema = z.object({
   vehicle: z.string(),
   class: z.nullable(z.string()),
   result: z.string(),
+  part: z.string(),
   tone,
   shell: z.string(),
   damage: z.string(),

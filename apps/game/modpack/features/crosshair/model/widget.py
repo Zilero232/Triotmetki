@@ -9,10 +9,11 @@ from .readouts import readouts_data
 
 # A vector mark goes as its shape, colour and outline (the Gameface page draws it pixel-snapped at its size, ui-web
 # crosshair `reticle-mark`); a full-colour mark as its image. `sketch` draws the game's own reticle under it: the
-# settings previews only, in battle the game draws its reticle itself.
-def crosshair_widget(settings, translate, readouts=None, sketch=True):
-    mark = settings.get('mark')
-    path = settings_mark_image(settings)
+# settings previews only, in battle the game draws its reticle itself. `with_mark` False leaves the mark out (a view
+# the mark is not drawn in, where the readouts still are).
+def crosshair_widget(settings, translate, readouts=None, sketch=True, with_mark=True):
+    mark = settings.get('mark') if with_mark else 'none'
+    path = settings_mark_image(settings) if with_mark else None
     vector = is_vector(mark)
     return widget(KIND, {
         'mark': image(path) if path and not vector else None,

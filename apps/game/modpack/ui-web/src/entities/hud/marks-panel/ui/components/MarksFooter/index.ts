@@ -1,0 +1,1 @@
+export { MarksFooter } from './MarksFooter';

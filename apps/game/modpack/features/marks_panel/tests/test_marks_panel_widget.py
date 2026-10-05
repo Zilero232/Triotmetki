@@ -29,9 +29,16 @@ def widget_data(values, held=False):
 
 def curveless_widget():
     settings = Settings({}, SCHEMA)
-    snapshot = {'moving_avg_damage': 2000, 'damage_rating': 5000}
+    snapshot = {'moving_avg_damage': 2000, 'damage_rating': 0}
     state = panel_state(snapshot, 100, None, None, settings)
     return marks_widget(state, settings, translator())['data']
+
+
+def estimated_widget(combined=100, values=None):
+    settings = Settings(values or {}, SCHEMA)
+    snapshot = {'moving_avg_damage': 2000, 'damage_rating': 5000}
+    state = panel_state(snapshot, combined, None, None, settings)
+    return marks_widget(state, PanelView(settings), translator())['data']
 
 
 def unrated_widget(curve):
@@ -118,7 +125,7 @@ class ExtendedTest(unittest.TestCase):
     def test_shows_the_average_before_and_after(self):
         average = widget_data({'style': 'extended'})['average']
 
-        assert average == {'label': u'ср.', 'ema': 2540, 'ema_projected': 2551}
+        assert average == {'label': u'среднее', 'ema': 2540, 'ema_projected': 2551}
 
     def test_counts_the_battles_to_the_next_mark(self):
         battles = widget_data({'style': 'extended'})['battles']
@@ -145,13 +152,54 @@ class CustomTest(unittest.TestCase):
         assert widget_data({'style': 'custom'})['style'] == 'extended'
 
 
+class EstimateTest(unittest.TestCase):
+
+    def test_without_the_site_curve_the_panel_projects(self):
+        data = estimated_widget(combined=3500)
+
+        assert data['has_curve'] is True
+        assert data['delta'] > 0
+        assert data['percent'] > 50.0
+
+    def test_the_projection_is_marked_as_an_estimate(self):
+        assert estimated_widget()['estimated'] is True
+
+    def test_the_goal_has_its_damage(self):
+        goal = estimated_widget()['goal']
+
+        assert goal['level'] == 51
+        assert goal['need'] > 0
+
+
+class BarTest(unittest.TestCase):
+
+    def test_the_bar_ends_at_the_damage_for_the_goal(self):
+        data = widget_data({})
+
+        assert data['bar'] == {'value': 3100, 'hold': 2540, 'end': 3100 + 2107}
+
+    def test_a_reached_goal_fills_the_bar(self):
+        data = estimated_widget(combined=9000)
+
+        assert data['bar']['end'] == data['bar']['value'] == 9000
+
+    def test_the_percent_bar_sends_no_damage_bar(self):
+        assert widget_data({'bar': 'percent'})['bar'] is None
+
+    def test_no_curve_has_no_bar(self):
+        assert curveless_widget()['bar'] is None
+
+    def test_the_goal_prefix_comes_translated(self):
+        assert widget_data({})['to'] == u'до'
+
+
 class EmptyTest(unittest.TestCase):
 
-    def test_without_a_curve_shows_the_dossier_percent(self):
+    def test_without_a_percent_nor_a_curve_nothing_is_projected(self):
         data = curveless_widget()
 
         assert data['has_curve'] is False
-        assert data['percent'] == 50.0
+        assert data['percent'] is None
 
     def test_without_a_curve_no_thresholds_note_is_drawn(self):
         assert curveless_widget()['note'] is None
@@ -194,7 +242,7 @@ class LookTest(unittest.TestCase):
         assert widget_data({})['next']['level'] == 95
 
     def test_the_damage_row_compares_the_battle_with_the_average(self):
-        assert widget_data({})['damage'] == {'label': u'Сум. урон', 'value': 3100, 'target': 2540}
+        assert widget_data({})['damage'] == {'label': u'урон', 'value': 3100, 'target': 2540}
 
     def test_no_curve_has_no_damage_row(self):
         assert curveless_widget()['damage'] is None

@@ -21,11 +21,14 @@ Vendored for the game's Python 2.7 into `packages/core/vendor` by `tools/vendor/
 
 ### Assets
 
-| Asset                               | Author                                     | Licence               | Licence text                                           |
-| ----------------------------------- | ------------------------------------------ | --------------------- | ------------------------------------------------------ |
-| Crosshair Pack 1.1 (3 of 200 marks) | Kenney (www.kenney.nl)                     | CC0-1.0               | `assets/third_party/kenney_crosshair_pack/License.txt` |
-| Crosshair marks, icons, glyphs      | Три отметки                                | proprietary (our own) | `assets/otmetki/LICENSE.md`                            |
-| Fira Sans (Regular, Bold)           | The Mozilla Foundation and Telefonica S.A. | OFL-1.1               | `catalog/fonts/OFL.txt`                                |
+| Asset                                               | Author                                     | Licence               | Licence text                                           |
+| --------------------------------------------------- | ------------------------------------------ | --------------------- | ------------------------------------------------------ |
+| Crosshair Pack 1.1 (3 of 200 marks)                 | Kenney (www.kenney.nl)                     | CC0-1.0               | `assets/third_party/kenney_crosshair_pack/License.txt` |
+| BattleHits shell and hit-effect models (hit viewer) | Andrii Andrushchyshyn (poliroid)           | MIT                   | `assets/third_party/battlehits/LICENSE.md`             |
+| Crosshair marks, icons, glyphs                      | Три отметки                                | proprietary (our own) | `assets/otmetki/LICENSE.md`                            |
+| Fira Sans (Regular, Bold)                           | The Mozilla Foundation and Telefonica S.A. | OFL-1.1               | `catalog/fonts/OFL.txt`                                |
+
+The hit viewer's 3D view follows the approach of poliroid's BattleHits (MIT, https://gitlab.com/wot-public-mods/battle-hits): our code is a reimplementation; its shell and outcome-marker models (`.model`, `.visual`, `.primitives`, `.dds`) ship unmodified at their original in-game path `res/content/battlehits/`, with its licence text next to them.
 
 Fira Sans is used only at build time: setupkit renders the component preview images with it (`tools/build/setupkit/artwork`). The font files themselves are not shipped to players; the previews contain only rendered text.
 

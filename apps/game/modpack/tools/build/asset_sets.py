@@ -34,7 +34,7 @@ REQUIRED = (
     'id', 'feature', 'title', 'origin', 'author', 'copyright', 'license', 'license_file', 'url', 'files', 'target',
     'contents', 'fair_play',
 )
-ASSET_EXTENSIONS = ('.png', '.mp3')
+ASSET_EXTENSIONS = ('.png', '.mp3', '.model', '.visual', '.primitives', '.dds')
 NOTICES_HEADER = (
     '# Third-party notices',
     '',
@@ -68,17 +68,30 @@ class AssetSet(object):
         self.sources = data.get('sources')
         self.include = data.get('include')
         self.renditions = data.get('renditions') or []
+        self.recursive = bool(data.get('recursive'))
         default_license_target = '%s/%s' % (self.target, os.path.basename(self.license_file or ''))
         self.license_target = data.get('license_target') or default_license_target
 
     def path(self, relative):
         return os.path.join(ASSETS_DIR, *relative.split('/'))
 
+    def _listed(self, directory):
+        if not self.recursive:
+            return os.listdir(directory)
+        names = []
+        for folder, _, files in os.walk(directory):
+            relative = os.path.relpath(folder, directory).replace(os.sep, '/')
+            names.extend(name if relative == '.' else '%s/%s' % (relative, name) for name in files)
+        return names
+
     def file_names(self):
+        """The set's files, relative to its `files` folder ('/'-separated paths for a recursive set: a model's
+        .model, .visual, .primitives and textures keep the folders their in-game paths name)."""
         directory = self.path(self.files)
         if not os.path.isdir(directory):
             return []
-        names = sorted(name for name in os.listdir(directory) if os.path.splitext(name)[1].lower() in ASSET_EXTENSIONS)
+        listed = self._listed(directory)
+        names = sorted(name for name in listed if os.path.splitext(name)[1].lower() in ASSET_EXTENSIONS)
         if not self.include:
             return names
         return [name for name in names if name in self.include]
@@ -86,7 +99,9 @@ class AssetSet(object):
     def archive_files(self):
         """(source path, archive path) of the set's files and its licence."""
         directory = self.path(self.files)
-        files = [(os.path.join(directory, name), '%s/%s' % (self.target, name)) for name in self.file_names()]
+        files = [
+            (os.path.join(directory, *name.split('/')), '%s/%s' % (self.target, name)) for name in self.file_names()
+        ]
         files.append((self.path(self.license_file), self.license_target))
         return files
 

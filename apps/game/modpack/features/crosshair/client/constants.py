@@ -1,8 +1,12 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-# CROSSHAIR_VIEW_ID of gui.battle_control.battle_constants (RU 1.45 client source).
+# CROSSHAIR_VIEW_ID of gui.battle_control.battle_constants (RU 1.45 client source). The centre mark follows the
+# arcade and sniper reticles its `modes` name; the readouts every reticle with the stock reload timer (the strategic
+# view's too), never the postmortem view.
 VIEW_ARCADE = 1
 VIEW_SNIPER = 2
+VIEW_STRATEGIC = 3
+READOUT_VIEWS = (VIEW_ARCADE, VIEW_SNIPER, VIEW_STRATEGIC)
 # VEHICLE_VIEW_STATE names the readouts follow (RU 1.45 battle_constants): HEALTH carries the own HP
 # (Avatar.updateVehicleHealth), DESTROYED the death.
 READOUT_STATES = (

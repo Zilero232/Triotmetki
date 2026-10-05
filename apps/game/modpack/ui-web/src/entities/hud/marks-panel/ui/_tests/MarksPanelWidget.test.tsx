@@ -17,25 +17,43 @@ const rows = (html: HTMLElement) => html.firstElementChild?.children ?? [];
 const text = (html: Element | null | undefined): string => (html?.textContent ?? '').replaceAll(' ', ' ');
 
 describe(MarksPanelWidget, () => {
-  it('draws the box with the percent and the threshold scale on top', () => {
+  it('draws the box with the percent, the battle damage against the average and the labelled goal', () => {
     const html = render(<MarksPanelWidget data={data} />).container;
 
     expect(text(rows(html)[0])).toContain('86,30');
-    expect(text(rows(html)[0])).toContain('95');
+    expect(text(rows(html)[0])).toContain('урон3 100 / 2 540');
+    expect(text(rows(html)[0])).toContain('до 87 %2 107');
   });
 
   it('grows the detail rows under the box while Alt is held', () => {
     const html = render(<MarksPanelWidget data={data} />).container;
 
-    expect(text(rows(html)[1])).toContain('3 100 / 2 540');
-    expect(text(rows(html)[2])).toContain('25 195');
-    expect(text(rows(html)[3])).toContain('2 551');
+    expect(text(rows(html)[1])).toContain('25 195');
+    expect(text(rows(html)[2])).toContain('среднее2 540');
+    expect(text(rows(html)[2])).toContain('2 551');
   });
 
-  it('shows the next goal on the main row', () => {
+  it('draws the damage bar with the tick of the average', () => {
     const html = render(<MarksPanelWidget data={compact} />).container;
 
-    expect(text(html)).toContain('87 %2 107');
+    expect(html.querySelector('[class*="hold"]')).not.toBeNull();
+  });
+
+  it('draws the percent scale when the panel sends no damage bar', () => {
+    const html = render(<MarksPanelWidget data={{ ...compact, bar: null }} />).container;
+
+    expect(html.querySelector('[class*="hold"]')).toBeNull();
+    expect(html.querySelector('[class*="cursor"]')).not.toBeNull();
+  });
+
+  it('flashes the percent once when the goal is reached in battle', () => {
+    const view = render(<MarksPanelWidget data={compact} />);
+
+    expect(view.container.querySelector('[class*="pulse"]')).toBeNull();
+
+    view.rerender(<MarksPanelWidget data={{ ...compact, goal: { level: 87, need: 0 } }} />);
+
+    expect(view.container.querySelector('[class*="pulse"]')).not.toBeNull();
   });
 
   it('keeps the compact style to the box alone', () => {

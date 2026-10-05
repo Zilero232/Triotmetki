@@ -11,6 +11,7 @@ import type { HudLabelModel } from './use-hud-overlay.types';
 import { HUD_OVERLAY } from '../../../config';
 import { layoutLabels } from '../../../lib/label-layout';
 import { createMouseReport } from '../../../lib/mouse-report';
+import { useDrawnReport } from '../use-drawn-report';
 import { useHoveredPanel } from '../use-hovered-panel';
 import { useHudScreen } from '../use-hud-screen';
 import { useHudState } from '../use-hud-state';
@@ -34,6 +35,8 @@ export const useHudOverlay = () => {
   const { panels, lines, widgets } = usePanelContent(state);
   const { sizes, measureRef } = usePanelSizes({ lines, widgets });
   const layouts = layoutLabels({ panels, sizes, scales, overrides, screen, live, edit, widgets });
+
+  useDrawnReport(layouts);
 
   const labelOf = ({ panel, id, style, button, movable, pointer }: LabelLayout): HudLabelModel => ({
     panel,

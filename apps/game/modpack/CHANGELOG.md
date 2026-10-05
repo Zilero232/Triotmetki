@@ -4,6 +4,24 @@ The modpack's release notes. Every package has its own entry, `## <id> <version>
 
 Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## 0.3.1
+
+### ru
+
+- «Шестое чувство»: секунды под лампой отсчитывают время засвета вниз от 10 с (8,5 или 8 с с «Улучшенным радиооборудованием»), а на нуле лампа гаснет, как у Battle Observer; раньше она горела дальше с «0». Красная дуга таймера в игре съезжала вниз и влево за кольцо и наезжала на секунды: Gameface иначе поворачивает SVG и не всегда понимает `currentColor`. Теперь дуга рисуется на той же окружности, что и кольцо, от верхней точки по часовой стрелке и в цвете урона, секунды стоят ровно по центру под кольцом, а рамка панели в режиме перемещения облегает лампу с секундами.
+- Исправлено: в бою пропадал таймер перезарядки — и стандартный у прицела, и наш. Стандартный скрывался на весь бой, как только у «Прицела» включена рамка перезарядки, а наша рамка исчезала через секунду после перезарядки (и до первой перезарядки её не было вовсе). Теперь рамка остаётся на экране и при заряженном орудии показывает полное время перезарядки, как стандартный таймер, рисуется в аркадном, снайперском и артиллерийском прицелах, а стандартный таймер скрыт, только пока страница HUD подтверждает, что наша рамка действительно на экране. Во всех остальных случаях (рамка выключена, компонент выключен, GUIFlash, камера на союзнике, страница не загрузилась или не отрисовала панель, режим стримера) стандартный таймер виден. То же правило теперь у остальных замен стандартного интерфейса — журнала урона, полосы ХП команд, таймера боя и «Шестого чувства».
+- «Отметки»: панель в бою как у «отметок на стволе» ПРОТанки и Lebwa — процент после боя с изменением, полоса урона за бой с риской среднего, подписанные «урон 2 093 / 3 008» и «до 84 % 1 240», плавные цифры и золотая вспышка у новой отметки; прогноз работает и без порогов сайта (помечен «≈»). В карточке танка силуэт не пропадает при перетаскивании, лишняя чёрточка под средним убрана.
+- После гибели танка ряд оборудования больше не висит отдельно внизу слева: он скрывается вместе со стандартной панелью снарядов и расходников — после гибели, в видеокамере и пока перед боем открыта панель выбора комплектов, и возвращается вместе с ней (возрождение в «Линии фронта»), как у kurzdor в Lebwa и Jove. Панель отметок после гибели остаётся, как у «отметок на стволе» ПРОТанки и Lebwa, но отходит правее подсказки «Режим наблюдателя / Выйти в ангар», а не наезжает на неё; если места до мини-карты не хватает — встаёт над подсказкой. Итоги прошлого боя над мини-картой следуют за её размером, если вы меняете его в бою, а без мини-карты опускаются в угол экрана.
+- «Просмотр попаданий» переделан по образцу «Боевых ран» (poliroid), которые ставит Джов: вместо большого окна поверх ангара — отдельный ангар просмотра на весь экран со скрытой шапкой, где модель танка занимает экран, а сбоку только компактный список попаданий, вкладки «По мне / По врагам», выбор боя и карточка выбранного попадания. На модели рисуется сам снаряд вдоль траектории попадания (модели снарядов и меток исхода из «Боевых ран», лицензия MIT) и метка исхода, башня и орудие встают так, как стояли в момент выстрела, камера облетает попадание и смотрит вдоль траектории; мышь вращает камеру, колесо приближает, ←/→ листают попадания, Tab переключает вкладку. «Снаряд» теперь всегда показывает тип и калибр (их берёт с орудия стрелявшего, а не из группы эффектов, где типа снаряда нет), «Угол» — угол встречи, «Броня» — приведённую броню с нормализацией снаряда и номинал в карточке попадания; «По врагам» показывает ваши попадания на модели врага. Закрытие возвращает обычный ангар, ваш танк и камеру.
+
+### en
+
+- «Sixth sense»: the seconds under the lamp count the spot time down from 10 s (8.5 or 8 s with Improved Radio Equipment), and the lamp goes out at zero, as Battle Observer's does; it used to stay lit showing «0». In the game the timer's red arc slid down and left past the ring and over the seconds: Gameface rotates SVG differently and does not always resolve `currentColor`. The arc is now drawn on the ring's own circle, clockwise from the top, in the damage colour, the seconds sit centred right under the ring, and the panel's frame in move mode hugs the lamp and its seconds.
+- Fixed: the reload timer vanished in battle, both the stock one by the reticle and ours. The stock one was hidden for the whole battle as soon as «Crosshair» had its reload frame on, while our frame went away a second after the reload (and was not there at all before the first one). The frame now stays on screen and shows the full reload time while the gun is loaded, as the stock timer does, in the arcade, sniper and artillery reticles, and the stock timer is hidden only while the HUD page confirms our frame is actually on screen. In every other case (the frame off, the component off, GUIFlash, the camera on an ally, the page not loaded or not drawing the panel, the streamer mode) the stock timer shows. The other stock replacements follow the same rule now: the damage log, the team HP bar, the battle timer and «Sixth sense».
+- «Marks of Excellence»: the battle panel works like the PROTanki and Lebwa gunmarks: the percent after the battle with its change, a battle damage bar with the average's tick, the labelled «damage 2,093 / 3,008» and «to 84% 1,240», easing figures and a gold flash at a new mark; the projection works without the site's thresholds too (marked «≈»). The Tank card's silhouette no longer vanishes while dragged, and the stray dash under the average is gone.
+- After your tank is destroyed the equipment row no longer floats on its own at the bottom left: it hides with the stock shells and consumables panel (after death, in the video camera and while the pre-battle setups panel is open) and comes back with it (a Frontline respawn), as kurzdor's row in Lebwa and Jove does. The marks panel stays after death, as the PROTanki and Lebwa gunmarks do, but moves right of the «Spectator mode / Exit to hangar» tips instead of overlapping them; when the minimap leaves no room it sits above the tips. The previous battle's card above the minimap follows the minimap's size when you change it in battle, and drops to the screen corner without the minimap.
+- «Hit viewer» is rebuilt after poliroid's BattleHits that Jove's pack ships: instead of a big window over the hangar, a separate full-screen hangar view with the header hidden, where the tank model takes the screen and only a compact hit list, the «On me / On enemies» tabs, the battle picker and the selected hit's card sit at the side. The model shows the shell itself along the hit's path (BattleHits' shell and outcome-marker models, MIT licence) and the outcome marker, the turret and gun stand as they were at the shot, and the camera flies to the hit looking along the path; the mouse turns the camera, the wheel zooms, ←/→ step through the hits and Tab switches the tab. «Shell» now always shows the type and calibre (taken from the shooter's gun, not from the effects group, which carries no shell type), «Angle» the impact angle, «Armour» the effective armour with the shell's normalisation, with the nominal on the hit card; «On enemies» shows your hits on the enemy's model. Closing brings back the usual hangar, your tank and camera.
+
 ## 0.3.0
 
 ### ru
@@ -287,6 +305,16 @@ The first release of Три отметки for «Мир танков» 1.45 (Les
 - Client-settings presets (minimap, camera, crosshair) that only set the game's own options, in the hangar, on the player's change.
 - The Gameface settings window with profiles and an on-screen HUD editor; ModsSettingsAPI stays the fallback.
 - Settings survive a wiped `mods/configs`: the binding, config.json, components.json, profiles.json and the app state are mirrored into `%APPDATA%\TriOtmetki` and restored on the next start.
+
+## hit_viewer 0.3.0
+
+### ru
+
+- «Просмотр попаданий» переделан по образцу «Боевых ран» (poliroid), которые ставит Джов: вместо большого окна поверх ангара — отдельный ангар просмотра на весь экран со скрытой шапкой, где модель танка занимает экран, а сбоку только компактный список попаданий, вкладки «По мне / По врагам», выбор боя и карточка выбранного попадания. На модели рисуется сам снаряд вдоль траектории попадания (модели снарядов и меток исхода из «Боевых ран», лицензия MIT) и метка исхода, башня и орудие встают так, как стояли в момент выстрела, камера облетает попадание и смотрит вдоль траектории; мышь вращает камеру, колесо приближает, ←/→ листают попадания, Tab переключает вкладку. «Снаряд» теперь всегда показывает тип и калибр (их берёт с орудия стрелявшего, а не из группы эффектов, где типа снаряда нет), «Угол» — угол встречи, «Броня» — приведённую броню с нормализацией снаряда и номинал в карточке попадания; «По врагам» показывает ваши попадания на модели врага. Закрытие возвращает обычный ангар, ваш танк и камеру.
+
+### en
+
+- «Hit viewer» is rebuilt after poliroid's BattleHits that Jove's pack ships: instead of a big window over the hangar, a separate full-screen hangar view with the header hidden, where the tank model takes the screen and only a compact hit list, the «On me / On enemies» tabs, the battle picker and the selected hit's card sit at the side. The model shows the shell itself along the hit's path (BattleHits' shell and outcome-marker models, MIT licence) and the outcome marker, the turret and gun stand as they were at the shot, and the camera flies to the hit looking along the path; the mouse turns the camera, the wheel zooms, ←/→ step through the hits and Tab switches the tab. «Shell» now always shows the type and calibre (taken from the shooter's gun, not from the effects group, which carries no shell type), «Angle» the impact angle, «Armour» the effective armour with the shell's normalisation, with the nominal on the hit card; «On enemies» shows your hits on the enemy's model. Closing brings back the usual hangar, your tank and camera.
 
 ## hit_viewer 0.2.0
 
@@ -902,6 +930,16 @@ A new component: Event trackers (off by default).
 
 - An «Armour on the site» button in the modpack window: opens the selected tank's 3D armour on triotmetki.ru.
 
+## battle_loadout 0.7.1
+
+### ru
+
+- Ряд оборудования скрывается вместе со стандартной панелью снарядов и расходников: после гибели танка, в видеокамере и пока перед боем открыта панель выбора комплектов; возвращается вместе с ней (возрождение в «Линии фронта»). Раньше после гибели он оставался внизу слева от пустого места, где была панель.
+
+### en
+
+- The equipment row hides with the stock shells and consumables panel: after your tank is destroyed, in the video camera and while the pre-battle setups panel is open; it comes back with it (a Frontline respawn). It used to stay at the bottom left of the empty place where the panel had been.
+
 ## battle_loadout 0.7.0
 
 ### ru
@@ -1110,6 +1148,18 @@ A new component: Event trackers (off by default).
 - A key (Ctrl+Shift+H by default) takes every panel and hangar label of the mod off the screen and brings them back with their latest text; optionally the panels stay hidden in the next battle too.
 - Private mode: the battle chat of other players is not drawn and the hangar labels with your numbers (ratings, session, goals, personal missions, marks history) are hidden. Your name and clan in the game's interface stay.
 
+## crosshair 0.6.0
+
+### ru
+
+- Стандартный таймер перезарядки скрывается по тому, что действительно отрисовано: рамка без данных (игра ещё не прислала перезарядку, время перезарядки неизвестно) ничего не скрывает, а страница HUD подтверждает, что панель на экране.
+- Рамка перезарядки не пропадает: после «готово» она показывает полное время перезарядки, пока орудие заряжено, как стандартный таймер (раньше она скрывалась, а стандартный оставался скрытым — перезарядки не было видно совсем). Рамка и дуги рисуются и в артиллерийском прицеле; центральная метка — по-прежнему только в прицелах из настройки «Режимы».
+
+### en
+
+- The stock reload timer is hidden by what is actually drawn: a frame with nothing to show (the game has not sent the reload yet, the reload time is unknown) hides nothing, and the HUD page confirms the panel is on screen.
+- The reload frame no longer goes away: after «ready» it shows the full reload time while the gun is loaded, as the stock timer does (it used to hide while the stock one stayed hidden, so no reload showed at all). The frame and the arcs are drawn in the artillery reticle too; the centre mark still only in the reticles the «Modes» option names.
+
 ## crosshair 0.5.0
 
 ### ru
@@ -1177,6 +1227,20 @@ A new component: Event trackers (off by default).
 ### en
 
 - Five new one-colour centre marks of our own (dot, cross, dashed ring, brackets, diamond) and a choice of their colour: white, green, yellow, cyan, magenta, red.
+
+## core 0.9.0
+
+### ru
+
+- `core.moe.estimated_curve`: кривая порогов танка, для которого на сайте ещё нет порогов, — типичная форма опубликованных порогов 782 танков RU, проведённая через процент и среднее из досье; панель отметок помечает такой расчёт «≈».
+- Стандартный элемент скрывается, только пока страница HUD подтверждает, что заменяющая его панель на экране: страница присылает `{type: 'drawn', ids}` — панели, которые она разметила с ненулевым размером, `HudLayer.draws(panel_id)` читает их, а `StockControl` возвращает стандартный элемент, пока панели там нет (ещё не измерена, не показана, страница не загрузилась или закрыта). Панель-лампа (`BattlePanel.stock_while_hidden`, «Шестое чувство») требует только работающую страницу.
+- Панели, которые стоят рядом со стандартными элементами, следуют за их видимостью: `HudLayer.set_stock_hidden` получает от `core.client.hud.cover` (те же вызовы `_setComponentsVisibility` экрана боя, его ответ `as_isComponentVisibleS` и открытие панели комплектов перед боем) спрятанные панель снарядов и мини-карту; панель из `FOLLOWS` (ряд оборудования) скрывается вместе со своим элементом, а `attach` получает 0 вместо размера спрятанного элемента. Ширина панели снарядов перечитывается, когда экран боя её показывает или прячет, размер мини-карты — при каждой его смене в бою.
+
+### en
+
+- `core.moe.estimated_curve`: the threshold curve of a tank the site has no thresholds for yet, the typical shape of 782 RU tanks' published thresholds drawn through the dossier percent and average; the marks panel marks such figures «≈».
+- A stock element is hidden only while the HUD page confirms the panel replacing it is on screen: the page sends `{type: 'drawn', ids}` with the panels it laid out at a non-zero size, `HudLayer.draws(panel_id)` reads them, and `StockControl` gives the stock element back while the panel is not there (not measured yet, not shown, the page not loaded or closed). A lamp panel (`BattlePanel.stock_while_hidden`, «Sixth sense») needs only the page up.
+- Panels that sit beside stock elements follow their visibility: `HudLayer.set_stock_hidden` gets the hidden shells panel and minimap from `core.client.hud.cover` (the battle page's own `_setComponentsVisibility` calls, its `as_isComponentVisibleS` answer and the pre-battle setups panel opening); a `FOLLOWS` panel (the equipment row) hides with its element, and `attach` carries 0 instead of a hidden element's size. The shells panel's width is read again whenever the page shows or hides it, the minimap size on every change in battle.
 
 ## core 0.8.0
 
@@ -1566,6 +1630,16 @@ A new component: Event trackers (off by default).
 - After each own battle: the `personal` block of the battle results, MoE snapshots and distribution, queue times, the loadout and shots, sent in signed batches through an outbox that survives a restart and backs off on errors.
 - Per-feature data switches in `config.json`, the ModsSettingsAPI window as the fallback settings UI, and the streamer settings share (export, apply with a confirmation, restore).
 
+## ui 0.9.0
+
+### ru
+
+- Страница HUD сообщает моду, какие панели она действительно отрисовала (с ненулевым размером), заново при каждом изменении этого набора: мод скрывает стандартный элемент только под отрисованной панелью. Рамка перезарядки у прицела получила состояние «заряжено» с полным временем перезарядки.
+
+### en
+
+- The HUD page tells the mod which panels it actually drew (at a non-zero size), again whenever that set changes: the mod hides a stock element only under a drawn panel. The reload frame by the reticle has a «loaded» state with the full reload time.
+
 ## ui 0.8.0
 
 ### ru
@@ -1859,6 +1933,24 @@ A new component: Event trackers (off by default).
 
 - The Gameface settings window (OpenWG Gameface): a card per installed component built from its own schema, list pages, profiles (save, load, rename, export and import as a code) and the on-screen HUD editor.
 - Entry points: the «///» button in the hangar, a ModsList entry and the hotkey Ctrl+Shift+T.
+
+## marks_panel 0.8.0
+
+### ru
+
+- Панель отметки в бою переделана по образцу «отметок на стволе» ПРОТанки, Near_You и Lebwa: процент после боя с изменением за бой (зелёное при росте, красное при падении), полоса урона за бой — растёт с каждым вашим попаданием и помощью, белая риска — урон, который держит процент (ваше среднее), конец — урон до цели; под ней подписанные строки «урон 2 093 / 3 008» и «до 84 % 1 240» вместо голых чисел. По Alt (и в подробном виде) — пороги 65/85/95 %, урон на шаг, среднее до и после боя со стрелкой и боёв до отметки. Новая настройка «Полоса»: «Урон за бой» (по умолчанию) или «Процент отметки» — прежняя шкала 0–100 % с рисками.
+- Панель живая: процент, изменение и урон плавно докручиваются до нового значения, полоса плавно растёт и меняет цвет (зелёная выше среднего, золотая у цели), а когда прогноз переходит отметку или цель достигнута, процент один раз вспыхивает золотым.
+- Пока на сайте нет порогов танка, панель всё равно считает прогноз и урон до целей — по типичной кривой порогов, проведённой через ваш процент и среднее из досье; такой расчёт помечен «≈». Раньше в этом случае панель показывала неподвижный процент и строку среднего со стрелкой, которая в игре не рисовалась.
+- Карточка танка: силуэт танка больше не пропадает, когда карточку перетаскивают в ангаре; полоска отметок последних боёв появляется только с трёх боёв, а не одиночной цветной чёрточкой под средним.
+- После гибели танка панель отметки остаётся на экране, но отходит правее подсказки «Режим наблюдателя / Выйти в ангар» (панели снарядов больше нет, и место рядом с ней наезжало на подсказку); если места до мини-карты не хватает — встаёт над подсказкой. После возрождения возвращается к панели снарядов.
+
+### en
+
+- The battle panel is rebuilt after the gunmarks panels of PROTanki, Near_You and Lebwa: the percent after the battle with its change (green up, red down), a bar of the battle's damage that grows with each of your hits and assists, its white tick at the damage that holds the percent (your average) and its end at the damage for the goal; under it the labelled «damage 2,093 / 3,008» and «to 84% 1,240» instead of bare numbers. On Alt (and in the extended style) the 65/85/95% thresholds, the step damage, the average before and after with its arrow and the battles to the mark. A new «Bar» option: «Battle damage» (default) or «MoE percent», the former 0–100% scale with its ticks.
+- The panel is alive: the percent, the change and the damage count up to each new value, the bar slides and changes colour (green above the average, gold at the goal), and the percent flashes gold once when the projection passes a mark or the goal is reached.
+- While the site has no thresholds for the tank, the panel still projects and counts the damage to the goals, from a typical threshold curve drawn through your dossier percent and average; such figures are marked «≈». Before, the panel showed a still percent and an average line whose arrow the game did not draw.
+- Tank card: the tank silhouette no longer vanishes when the card is dragged in the hangar; the strip of the last battles' marks appears from three battles, not as a lone coloured dash under the average.
+- After your tank is destroyed the marks panel stays on the screen but moves right of the «Spectator mode / Exit to hangar» tips (the shells panel is gone, and the place beside it overlapped the tips); when the minimap leaves no room it sits above the tips. After a respawn it goes back beside the shells panel.
 
 ## marks_panel 0.7.0
 
@@ -2286,6 +2378,18 @@ A new component: Event trackers (off by default).
 
 - In battle: each team's HP against its maximum as bars and/or numbers, the frag score and the HP difference, from the values the client already shows on markers and team panels.
 
+## sixth_sense 0.5.0
+
+### ru
+
+- Стандартная лампа скрывается, только пока наша работает и страница HUD загружена: если клиент не даёт состояние засвета (лампа не запускается) или страница не отвечает, стандартная лампа остаётся.
+- Секунды под лампой отсчитывают время засвета вниз от 10 с (8,5 или 8 с с «Улучшенным радиооборудованием»), а на нуле лампа гаснет, как у Battle Observer; раньше она горела дальше с «0». Красная дуга таймера в игре съезжала вниз и влево за кольцо и наезжала на секунды: Gameface иначе поворачивает SVG и не всегда понимает `currentColor`. Теперь дуга рисуется на той же окружности, что и кольцо, от верхней точки по часовой стрелке и в цвете урона, секунды стоят ровно по центру под кольцом, а рамка панели в режиме перемещения облегает лампу с секундами.
+
+### en
+
+- The stock lamp is hidden only while ours runs and the HUD page is up: when the client has no spotting state (the lamp does not start) or the page does not answer, the stock lamp stays.
+- The seconds under the lamp count the spot time down from 10 s (8.5 or 8 s with Improved Radio Equipment), and the lamp goes out at zero, as Battle Observer's does; it used to stay lit showing «0». In the game the timer's red arc slid down and left past the ring and over the seconds: Gameface rotates SVG differently and does not always resolve `currentColor`. The arc is now drawn on the ring's own circle, clockwise from the top, in the damage colour, the seconds sit centred right under the ring, and the panel's frame in move mode hugs the lamp and its seconds.
+
 ## sixth_sense 0.4.1
 
 ### ru
@@ -2351,6 +2455,16 @@ A new component: Event trackers (off by default).
 
 - In battle: a text or icon with the seconds since the client's own sixth-sense lamp lit, and an optional sound from a sound mod. No direction, distance or "nearest enemy".
 - Four icons of our own (lamp, eye, «!» badge, «///») with a pulse, and our own chime (CC0) through the game's user detection-sound slot, no Wwise.
+
+## battle_results 0.3.1
+
+### ru
+
+- Итоги прошлого боя над мини-картой переезжают вслед за мини-картой, если вы меняете её размер в бою, а если экран боя её прячет — опускаются в правый нижний угол.
+
+### en
+
+- The previous battle's card above the minimap moves with the minimap when you resize it in battle, and drops to the bottom right corner when the battle screen hides the minimap.
 
 ## battle_results 0.3.0
 

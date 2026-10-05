@@ -100,7 +100,9 @@ class Readouts(object):
             return 'empty'
         if self.is_reloading():
             return 'final' if self.reload_left < FINAL_S else 'reloading'
-        return 'ready' if self.ready_left > 0 else None
+        if self.ready_left > 0:
+            return 'ready'
+        return 'loaded' if self.reload_left is not None and self.reload_base else None
 
     def reload_progress(self):
         if self.reload_left is None:
@@ -120,6 +122,8 @@ def _reload_value(readouts, state, translate):
         return u'—'
     if state == 'ready':
         return translate('crosshair_ready')
+    if state == 'loaded':
+        return _tenths(readouts.reload_base)
     return _tenths(readouts.reload_left)
 
 
@@ -166,17 +170,21 @@ def wants_readouts(settings):
     return any(settings.get(key) for key in ('reload_box', 'reload_arcs'))
 
 
-# The stock reticle parts the readouts stand in for while they are drawn, so the player never sees both: the reload
-# box the stock reload timer, and the stock magazine indicator while the box shows the magazine cells; the arcs the
-# stock reload indicator and the stock HP indicator.
-def replaced_reticle_parts(settings, readouts):
-    if readouts is None:
+# The stock reticle parts the readouts stand in for, read from what was drawn (`readouts_data` of the payload the page
+# got), so the player never sees both and never neither: the reload box the stock reload timer, and the stock magazine
+# indicator while the box shows the magazine cells; each arc the stock indicator of its value. A box or an arc with
+# nothing to show replaces nothing.
+def replaced_reticle_parts(drawn):
+    if drawn is None:
         return ()
     parts = []
-    if settings.get('reload_box'):
+    reload_box, arcs = drawn.get('reload'), drawn.get('arcs')
+    if reload_box is not None:
         parts.append(RETICLE_RELOAD_TIMER)
-        if readouts.clip is not None:
+        if reload_box.get('clip') is not None:
             parts.append(RETICLE_CASSETTE)
-    if settings.get('reload_arcs'):
-        parts.extend((RETICLE_RELOAD, RETICLE_CONDITION))
+    if arcs is not None and arcs.get('reload') is not None:
+        parts.append(RETICLE_RELOAD)
+    if arcs is not None and arcs.get('health') is not None:
+        parts.append(RETICLE_CONDITION)
     return tuple(parts)

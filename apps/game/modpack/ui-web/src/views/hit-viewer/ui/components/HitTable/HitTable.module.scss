@@ -2,14 +2,12 @@
 
 .table {
   display: flex;
-  min-height: 0;
-  flex: 1 1 0;
   flex-direction: column;
 }
 
-.scroll {
-  min-height: 0;
-  flex: 1 1 0;
+.body {
+  display: flex;
+  flex-direction: column;
 }
 
 .row {
@@ -22,15 +20,15 @@
   background-color: transparent;
   color: token(color-text);
   font-family: $font-family;
-  font-size: 14px;
+  font-size: 13px;
   text-align: left;
 }
 
 .head {
-  height: 28px;
+  height: 26px;
   border-bottom: 1px solid token(win-divider);
   color: token(color-text-muted);
-  font-size: 12px;
+  font-size: 11px;
 
   @include caps;
 }
@@ -68,19 +66,19 @@
 }
 
 .result {
-  width: 104px;
+  width: 92px;
   flex: 0 0 auto;
 }
 
 .shell {
-  width: 72px;
+  width: 64px;
   flex: 0 0 auto;
 }
 
-.damage,
 .angle,
-.armor {
-  width: 56px;
+.armor,
+.damage {
+  width: 46px;
   flex: 0 0 auto;
   text-align: right;
 }

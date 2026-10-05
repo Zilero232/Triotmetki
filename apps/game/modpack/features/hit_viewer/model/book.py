@@ -4,6 +4,7 @@ from ....core.classes import CLASS_KEYS, class_key
 from ....core.compat import is_int, is_number, string_types, to_text
 from ....core.shells import SHELL_CODES
 from .constants import (
+    AIM_LIMIT,
     ANALYSIS_KEYS,
     BOOK_VERSION,
     DAMAGE_WINDOW_S,
@@ -62,6 +63,15 @@ def _shell_of(value):
     return value if value in SHELL_CODES else None
 
 
+def clean_aim(value):
+    """[turret yaw, gun pitch] of the hit vehicle as the shot found it, or None."""
+    if not isinstance(value, (list, tuple)) or len(value) != 2:
+        return None
+    if not all(is_number(angle) and abs(angle) <= AIM_LIMIT for angle in value):
+        return None
+    return [round(float(angle), 4) for angle in value]
+
+
 # The book file may be damaged or edited by hand: what is read back is checked like what the book writes.
 def clean_hit(entry, targets):
     if not isinstance(entry, dict) or entry.get('side') not in SIDES or entry.get('target') not in targets:
@@ -82,6 +92,7 @@ def clean_hit(entry, targets):
         'shell': _shell_of(entry.get('shell')),
         'caliber': _int_or_none(entry.get('caliber')),
         'damage': _int_or_none(entry.get('damage')) or 0,
+        'aim': clean_aim(entry.get('aim')),
     }
     hit.update(_clean_analysis(entry))
     return hit
@@ -168,8 +179,8 @@ class HitBook(object):
         return True
 
     def hit(self, shot, at=None):
-        """Records `shot` ({side, target, other, vehicle, class, segments, shell, caliber}); `other` is the other
-        vehicle's id its damage is matched by."""
+        """Records `shot` ({side, target, other, vehicle, class, segments, shell, caliber, aim}); `other` is the
+        other vehicle's id its damage is matched by."""
         if self.current is None or len(self.current['hits']) >= MAX_HITS:
             return False
         target = to_text(shot.get('target'))
@@ -191,6 +202,7 @@ class HitBook(object):
             'shell': _shell_of(shot.get('shell')),
             'caliber': _int_or_none(shot.get('caliber')),
             'damage': 0,
+            'aim': clean_aim(shot.get('aim')),
             'at': at,
         }
         entry.update(dict((key, None) for key in ANALYSIS_KEYS))

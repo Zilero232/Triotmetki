@@ -3,6 +3,7 @@ import { TankSilhouette, ThresholdScale } from '@/ui-kit';
 import type { MarksSilhouetteProps } from './MarksSilhouette.types';
 
 import { MARKS_PANEL } from '../../../config';
+import { MarksFooter } from '../MarksFooter';
 import { MarksHead } from '../MarksHead';
 
 import s from './MarksSilhouette.module.scss';
@@ -19,5 +20,6 @@ export const MarksSilhouette = ({ view }: MarksSilhouetteProps) => (
     />
     <MarksHead hero view={view} />
     <ThresholdScale labels cursor={view.projected} levels={MARKS_PANEL.levels} value={view.start} width={MARKS_PANEL.large.scale} />
+    <MarksFooter damage={view.damage} target={view.target} />
   </div>
 );

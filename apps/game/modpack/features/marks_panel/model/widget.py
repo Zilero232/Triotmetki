@@ -11,6 +11,8 @@ from ....core.templates import render
 from . import target_levels
 from .constants import (
     APPROX,
+    BAR_DAMAGE,
+    CURVE_ESTIMATED,
     DEFAULT_SHAPE,
     KIND,
     LOOK_BOX,
@@ -23,11 +25,13 @@ from .constants import (
 
 # Fair play: the player's own marks of excellence, from the own dossier and the own damage and assist of this battle.
 #
-# The plate (docs/specs/2026-09-30-hud-consolidation-and-design.md §8.4): the main row (mark, percent, change, the
-# damage for the next goal) and, in the extended style or while Alt is held, the thresholds row and the average row
-# under it. The page draws the rows it gets; the style only tells it a custom template's text from the plate. The
-# `look` picks the plate: the framed box with its progress line, or the own tank's contour filled to the percent; both
-# mark the next mark's level on their axis and the gun's marks as stars.
+# The plate (docs/specs/2026-09-30-hud-consolidation-and-design.md §8.4) as the gunmarks panels of PROTanki, Near_You
+# and Lebwa lay it out: the percent after the battle with its change, the bar of this battle's damage against the
+# average that holds the percent (the gunmarks «damage progress» bar, or the 0-100 % scale), the damage dealt against
+# that average and the damage for the next goal; in the extended style or while Alt is held, the thresholds row and the
+# average row under it. The page draws the rows it gets; the style only tells it a custom template's text from the
+# plate. The `look` picks the plate: the framed box with its bar, or the own tank's contour filled to the percent; both
+# mark the gun's marks as stars.
 
 
 def _shown_percent(state):
@@ -65,6 +69,16 @@ def _goal(state, settings):
     return {'level': state['next_level'], 'need': state['need_next']}
 
 
+# The battle's damage on a bar that ends at the damage the goal needs, with a tick where it holds the percent (the
+# average): it moves with every own hit, as the gunmarks bar does, where the 0-100 % scale moves a pixel at most.
+def _bar(state, goal, settings):
+    if settings.get('bar') != BAR_DAMAGE or not state['has_curve']:
+        return None
+    damage = state['damage']
+    end = damage + goal['need'] if goal is not None and is_number(goal['need']) else damage
+    return {'value': damage, 'hold': state['ema'], 'end': max(end, state['ema'], 1)}
+
+
 def _step(state, settings):
     if not settings.get('show_step') or state['step_need'] is None:
         return None
@@ -86,6 +100,10 @@ def _battles(state, settings, translate):
     if not settings.get('show_battles') or state['next_level'] is None or state['battles'] is None:
         return None
     return {'level': state['next_level'], 'text': APPROX + counted(state['battles'], 'battles', translate)}
+
+
+def _is_estimate(state):
+    return state['source'] == SOURCE_ESTIMATED or state.get('curve') == CURVE_ESTIMATED
 
 
 def _rows(state, settings, translate):
@@ -144,6 +162,7 @@ def _damage(state, translate):
 def marks_widget(state, settings, translate, class_tag=None):
     style = _style(settings)
     look = _look(settings)
+    goal = _goal(state, settings)
     data = {
         'look': look,
         'stars': _stars(state),
@@ -154,10 +173,12 @@ def marks_widget(state, settings, translate, class_tag=None):
         'has_curve': bool(state['has_curve']),
         'percent': _shown_percent(state),
         'delta': state['delta'] if style != 'custom' else None,
-        'estimated': state['source'] == SOURCE_ESTIMATED,
+        'estimated': _is_estimate(state),
         'mark': mark_icon(state['marks']),
         'tone': percent_tone(state, settings.get('color_mode')),
-        'goal': _goal(state, settings),
+        'goal': goal,
+        'bar': _bar(state, goal, settings) if style != 'custom' else None,
+        'to': translate('marks_panel_to'),
         'note': None,
         'text': render(settings.get('template'), moe_macros(state)) if style == 'custom' else None,
     }

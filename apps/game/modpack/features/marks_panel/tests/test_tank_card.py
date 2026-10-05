@@ -121,6 +121,11 @@ class TrendTest(unittest.TestCase):
         assert card['strip'] == []
         assert card['rows'][0]['status'] == 'done'
 
+    def test_one_battle_draws_no_strip(self):
+        summary = {'last_delta': -0.4, 'trend': -0.4, 'trend_battles': 1, 'deltas': [-0.4]}
+
+        assert widget(tank_data(summary))['strip'] == []
+
     def test_one_battle_has_no_trend_row(self):
         summary = {'last_delta': 0.4, 'trend': 0.4, 'trend_battles': 1, 'deltas': [0.4]}
 

@@ -1,7 +1,7 @@
 """Marks-of-excellence maths shared by the in-battle panel and the hangar view (pure, Python 2/3).
 
 - `ema`: the client's metric (damage + best assist, 100-battle EMA), its inverse and the forecast;
-- `curve`: `ThresholdCurve`, the site's damage-for-percent curve of a tank;
+- `curve`: `ThresholdCurve`, the site's damage-for-percent curve of a tank, and `estimated_curve` until it has one;
 - `pace`: `PaceBook`, the combined damage of the player's last own battles per tank;
 - `targets`: `moe_state`, every value a marks view shows;
 - `macros`: `moe_macros` (the state as template text) and `moe_color` (the colour ramp);
@@ -13,7 +13,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from .cache import ThresholdCache
 from .constants import EMA_K, EMA_WINDOW, MARK_LEVELS, MASTERY_CLASSES, TARGET_LEVELS
-from .curve import ThresholdCurve, next_level, threshold_problem
+from .curve import ThresholdCurve, estimated_curve, next_level, threshold_problem
 from .macros import moe_color, moe_macros
 from .mastery import mastery_from_api, mastery_state
 from .ema import (
@@ -40,6 +40,7 @@ __all__ = (
     'battle_combined',
     'battles_to_reach',
     'combined_damage',
+    'estimated_curve',
     'exact_moe',
     'implausible_change',
     'is_post_battle_reading',

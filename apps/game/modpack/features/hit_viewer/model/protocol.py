@@ -2,8 +2,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import json
 
-from ....core.compat import is_int, string_types, to_text
-from .constants import COMMANDS, MAX_MESSAGE_CHARS, SIDES
+from ....core.compat import is_int, is_number, string_types, to_text
+from .constants import COMMANDS, MAX_MESSAGE_CHARS, MAX_MOVE, SIDES
+
+MOVE_FIELDS = COMMANDS['move']
 
 
 def _valid(command, fields):
@@ -13,7 +15,13 @@ def _valid(command, fields):
         return is_int(fields['index']) and fields['index'] >= 0
     if command == 'battle':
         return isinstance(fields['id'], string_types) and bool(fields['id'])
+    if command == 'move':
+        return all(is_number(fields[key]) for key in MOVE_FIELDS)
     return True
+
+
+def _clamped(fields):
+    return dict((key, max(-MAX_MOVE, min(MAX_MOVE, float(value)))) for key, value in fields.items())
 
 
 def decode_message(raw):
@@ -33,4 +41,6 @@ def decode_message(raw):
     fields = dict((key, message[key]) for key in needed)
     if 'id' in fields and isinstance(fields['id'], string_types):
         fields['id'] = to_text(fields['id'])
-    return (command, fields) if _valid(command, fields) else None
+    if not _valid(command, fields):
+        return None
+    return (command, _clamped(fields)) if command == 'move' else (command, fields)

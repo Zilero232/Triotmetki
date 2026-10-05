@@ -15,6 +15,9 @@ KINDS = ('damage', 'radio', 'track', 'stun')
 SOURCE_VERIFIED = 'verified'
 SOURCE_ESTIMATED = 'estimated'
 APPROX = u'~'
+# Where the curve comes from: the site's thresholds, or the estimate through the dossier's point until it has them.
+CURVE_SITE = 'site'
+CURVE_ESTIMATED = 'estimated'
 
 # The Alt view: every detail row on, whatever the switches say.
 DETAIL_SWITCHES = ('show_targets', 'show_battle', 'show_step', 'show_battles', 'show_up')
@@ -23,6 +26,8 @@ DETAIL_SWITCHES = ('show_targets', 'show_battle', 'show_step', 'show_battles', '
 MARK_TONES = ('muted', 'text', 'text', 'gold')
 
 KIND = 'marks_panel'
+# The battle plate's bar (settings `bar`, the gunmarks «progress bar logic»): this battle's damage, or the percent.
+BAR_DAMAGE = 'damage'
 # The two plates of the battle panel (model/view.py PanelView.look) and the mark levels the plate draws as stars.
 LOOK_BOX = 'box'
 LOOK_SILHOUETTE = 'silhouette'
@@ -42,6 +47,8 @@ PREVIEW_CLASS = 'mediumTank'
 # The hangar Tank card (model/card.py): its width in design px, the step its average line reads, its preview.
 CARD_WIDTH = 264
 CARD_STEP = 0.5
+# The fewest battles the card's strip of per-battle marks draws (model/card.py _strip).
+STRIP_MIN_BATTLES = 3
 CARD_PREVIEW_SIZE = (264, 170)
 CARD_PREVIEW_VEHICLE = u'Т-34-85'
 CARD_PREVIEW_SUMMARY = {'last_delta': 0.18, 'trend': -0.12, 'trend_battles': 5, 'deltas': [0.4, -0.3, 0.1, -0.5, 0.18]}
@@ -139,7 +146,7 @@ DELTA_GLYPHS = {1: 'trend_up', 0: 'dot', -1: 'trend_down'}
 
 # The settings window's editor: the battle panel, its numbers, then the hangar Tank card.
 EDITOR_GROUPS = (
-    ('battle', ('show_battle_panel', 'style', 'color_mode', 'alt_detail')),
+    ('battle', ('show_battle_panel', 'style', 'bar', 'color_mode', 'alt_detail')),
     ('numbers', ('show_targets', 'show_battles')),
     ('hangar', ('hangar_card', 'hangar_style', 'show_trend', 'show_tank_ratings', 'carousel_percent')),
 )

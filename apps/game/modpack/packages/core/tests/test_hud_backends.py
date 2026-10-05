@@ -57,9 +57,17 @@ class Recorder(HudBackend):
         self.labels = {}
         self.calls = []
         self.listeners = []
+        self.drawn_listeners = []
+        self.drawn = None
 
     def available(self):
         return self.is_available
+
+    def drawn_aliases(self):
+        return self.drawn
+
+    def listen_drawn(self, on_drawn):
+        self.drawn_listeners.append(on_drawn)
 
     def create(self, alias, props):
         self.calls.append(('create', alias))
@@ -210,6 +218,24 @@ class BackendChainTest(unittest.TestCase):
     def test_an_empty_chain_is_unavailable(self):
         assert not BackendChain([]).available()
 
+    def test_the_drawn_panels_are_the_active_backends(self):
+        self.gameface.drawn = frozenset(['a'])
+
+        assert self.chain.drawn_aliases() == frozenset(['a'])
+
+    def test_nothing_is_drawn_without_an_available_backend(self):
+        self.gameface.drawn = frozenset(['a'])
+        self.switch_every_backend_off()
+
+        assert self.chain.drawn_aliases() is None
+
+    def test_listen_drawn_reaches_every_backend(self):
+        seen = []
+
+        self.chain.listen_drawn(lambda: seen.append(True))
+
+        assert len(self.gameface.drawn_listeners) == len(self.guiflash.drawn_listeners) == 1
+
     def test_listen_reaches_every_backend(self):
         seen = []
 
@@ -244,6 +270,25 @@ class LayerTest(unittest.TestCase):
 
         calls = [call[0] for call in self.backend.calls]
         assert calls == ['create', 'update', 'delete', 'create']
+
+    def test_a_panel_is_not_drawn_until_the_renderer_says_so(self):
+        self.layer.show('panel', 'one')
+
+        assert not self.layer.draws('panel')
+
+    def test_a_panel_the_renderer_draws_is_drawn(self):
+        self.backend.drawn = frozenset([self.alias])
+
+        assert self.layer.draws('panel')
+        assert not self.layer.draws('other')
+
+    def test_a_change_of_the_drawn_panels_reaches_the_watchers(self):
+        seen = []
+        self.layer.watch(lambda: seen.append(True))
+
+        self.backend.drawn_listeners[0]()
+
+        assert seen == [True]
 
     def test_place_of_a_hidden_panel_is_refused(self):
         assert not self.layer.place('panel', 1, 2)
@@ -496,6 +541,18 @@ class HudMessageTest(unittest.TestCase):
 
     def test_a_known_mouse_event_is_decoded(self):
         assert decode_hud_message('{"type": "mouse", "event": "hover"}') == ('mouse', {'event': 'hover'})
+
+    def test_the_drawn_panels_are_decoded(self):
+        decoded = decode_hud_message(json.dumps({'type': 'drawn', 'ids': [DAMAGE_LOG, HANGAR_INFO]}))
+
+        assert decoded == ('drawn', {'ids': (DAMAGE_LOG, HANGAR_INFO)})
+
+    def test_no_drawn_panel_is_decoded_as_none_drawn(self):
+        assert decode_hud_message('{"type": "drawn", "ids": []}') == ('drawn', {'ids': ()})
+
+    def test_drawn_panels_that_are_not_names_are_refused(self):
+        for ids in (None, 'x', [1], [None]):
+            assert decode_hud_message(json.dumps({'type': 'drawn', 'ids': ids})) is None, ids
 
     def test_an_unknown_mouse_event_is_refused(self):
         assert decode_hud_message('{"type": "mouse", "event": "click"}') is None

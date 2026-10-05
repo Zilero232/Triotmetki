@@ -13,7 +13,7 @@ export type Sizes = Partial<Record<string, Measured>>;
 
 export type LabelStyle = AnchorStyle & { opacity: number; transform?: string; transformOrigin?: string };
 
-export type LabelLayout = DragTarget & { panel: HudPanel; style: LabelStyle };
+export type LabelLayout = DragTarget & { panel: HudPanel; style: LabelStyle; drawn: boolean };
 
 export type LayoutLabelsInput = {
   panels: HudPanel[];

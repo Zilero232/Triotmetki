@@ -20,7 +20,7 @@ from ..model.readouts import (
 )
 from ..model.widget import crosshair_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
-from .constants import CLIP_EVENTS, READOUT_STATES, VIEW_ARCADE, VIEW_SNIPER
+from .constants import CLIP_EVENTS, READOUT_STATES, READOUT_VIEWS, VIEW_ARCADE, VIEW_SNIPER
 
 try:
     from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
@@ -60,8 +60,9 @@ def own_health():
 # (only what a change moves; a change made in battle on the next hangar); the centre mark
 # and the readouts follow the client's own reticle position (CrosshairDataProxy). Fair play: the readouts are the own
 # gun's reload (the ammo controller the stock reticle's reload indicator reads) and the own damage panel's HP; every
-# update is dropped while the camera follows an ally (controls_own_vehicle). While the readouts are
-# drawn the stock reticle parts they stand in for are hidden (core.hud.stock reticle parts), only for this battle.
+# update is dropped while the camera follows an ally (controls_own_vehicle). The stock reticle parts the readouts stand
+# in for are hidden (core.hud.stock reticle parts) only while the payload the page got draws them: `drawn_readouts` is
+# that payload's readouts, None whenever the panel is off the screen.
 class CrosshairComponent(BattlePanel):
 
     def __init__(self, app):
@@ -120,7 +121,7 @@ class CrosshairComponent(BattlePanel):
         self.view = None
 
     def stock_aliases(self):
-        return replaced_reticle_parts(self.settings, self.drawn_readouts)
+        return replaced_reticle_parts(self.drawn_readouts)
 
     def _on_view(self, view):
         self.view = view
@@ -171,15 +172,16 @@ class CrosshairComponent(BattlePanel):
 
     def render(self):
         ctrl = crosshair()
-        if ctrl is None or not self._shows_in_current_view():
-            self.drawn_readouts = None
-            self.hide()
-            self.sync_stock()
+        with_mark = self._shows_in_current_view()
+        readouts = self.readouts if controls_own_vehicle() and self.view in READOUT_VIEWS else None
+        drawn = readouts_data(readouts, self.settings, self.app.translate)
+        draws_mark = with_mark and bool(mark_text(self.settings))
+        if ctrl is None or not (draws_mark or drawn):
+            self._hide_all()
             return
-        readouts = self.readouts if controls_own_vehicle() else None
-        payload = crosshair_widget(self.settings, self.app.translate, readouts, sketch=False)
-        self.drawn_readouts = readouts
-        if not self.show(self._text(readouts), payload):
+        payload = crosshair_widget(self.settings, self.app.translate, readouts, sketch=False, with_mark=with_mark)
+        self.drawn_readouts = drawn
+        if not self.show(self._text(with_mark, drawn), payload):
             self.drawn_readouts = None
             self.sync_stock()
             return
@@ -190,10 +192,15 @@ class CrosshairComponent(BattlePanel):
         x, y = mark_offset(position, size, scale, self.settings)
         self.hud.place(PANEL_ID, x, y)
 
+    def _hide_all(self):
+        self.drawn_readouts = None
+        self.hide()
+        self.sync_stock()
+
     # The GUIFlash fallback keeps the mark alone so the text never moves it off the reticle centre; without a mark it
     # shows the readouts as plain text.
-    def _text(self, readouts):
-        return mark_text(self.settings) or readouts_text(readouts_data(readouts, self.settings, self.app.translate))
+    def _text(self, with_mark, drawn):
+        return (mark_text(self.settings) if with_mark else '') or readouts_text(drawn)
 
     def _shows_in_current_view(self):
         return shows_in(self.settings.get('modes'), self.view == VIEW_ARCADE, self.view == VIEW_SNIPER)

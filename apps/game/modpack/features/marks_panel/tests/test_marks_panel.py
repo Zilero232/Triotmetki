@@ -162,10 +162,23 @@ class PanelTest(unittest.TestCase):
 
         assert chosen.get('color_mode') == 'delta'
 
-    def test_without_curve(self):
+    def test_without_the_site_curve_the_estimate_projects(self):
         text = strip_tags(format_panel(state(has_curve=False), PanelView(settings()), translator('ru')))
 
-        assert text == u'Отметка 81.50% · среднее 2 500 → 2 492'
+        assert text.startswith(u'~81.32% (-0.18)')
+
+    def test_without_the_site_curve_the_state_says_so(self):
+        assert state(has_curve=False)['curve'] == 'estimated'
+
+    def test_with_the_site_curve_the_state_says_so(self):
+        assert state()['curve'] == 'site'
+
+    def test_without_a_percent_and_a_curve_nothing_is_projected(self):
+        text = strip_tags(format_panel(
+            state(has_curve=False, snapshot=UNRATED_SNAPSHOT), PanelView(settings()), translator('ru'),
+        ))
+
+        assert text == u'Отметка -% · среднее 2 500 → 2 492'
 
     def test_preview(self):
         text = strip_tags(preview_text(settings(), translator()))

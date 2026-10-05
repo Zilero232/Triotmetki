@@ -11,7 +11,7 @@ export const lampView = (data: SixthSenseData): LampView => {
   return {
     ring: data.size + SIXTH_SENSE.ring.padding,
     progress: data.duration > 0 ? left / data.duration : 0,
-    seconds: data.timer ? formatSeconds(left) : '',
+    seconds: data.timer && left > 0 ? formatSeconds(left) : '',
     alpha: data.dim ? SIXTH_SENSE.dimAlpha : 1,
     tone: data.color === null ? 'text' : null,
     lit: !data.dim && data.duration > 0 && data.elapsed < data.duration,

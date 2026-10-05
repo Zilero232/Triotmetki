@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react';
 import { gameface } from '@/shared/api/gameface';
 import { onDistinct } from '@/shared/lib/on-distinct';
 
+import type { CameraMove } from '../../../lib/camera-move';
 import type { ViewerMarks, ViewerSide, ViewerState } from '../../../lib/viewer-protocol';
 
+import { hitStep } from '../../../lib/hit-step';
 import { footerOf, parseViewerMarks, parseViewerState, sendViewer } from '../../../lib/viewer-protocol';
 
 export const useHitViewer = () => {
@@ -32,13 +34,36 @@ export const useHitViewer = () => {
     sendViewer({ command: 'ready' });
   }, []);
 
+  const pickHit = (index: number) => sendViewer({ command: 'select', index });
+  const pickTab = (tab: ViewerSide) => sendViewer({ command: 'tab', tab });
+
+  const stepHit = (step: -1 | 1) => {
+    const next = state ? hitStep({ indexes: state.rows.map((row) => row.index), selected: state.selected, step }) : null;
+
+    if (next !== null) {
+      pickHit(next);
+    }
+  };
+
+  const switchTab = () => {
+    const other = state?.tabs.find((tab) => tab.id !== state.tab && tab.count > 0);
+
+    if (other) {
+      pickTab(other.id);
+    }
+  };
+
   return {
     state,
     marks,
     footer: state ? footerOf(state) : '',
+    selectedRow: state?.rows.find((row) => row.index === state.selected) ?? null,
     close: () => sendViewer({ command: 'close' }),
+    move: (move: CameraMove) => sendViewer({ command: 'move', ...move }),
     pickBattle: (id: string) => sendViewer({ command: 'battle', id }),
-    pickTab: (tab: ViewerSide) => sendViewer({ command: 'tab', tab }),
-    pickHit: (index: number) => sendViewer({ command: 'select', index })
+    pickTab,
+    pickHit,
+    stepHit,
+    switchTab
   };
 };

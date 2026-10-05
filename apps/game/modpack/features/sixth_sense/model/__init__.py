@@ -1,5 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import math
+
 from ....core.format import font
 from .constants import (
     DIM_SUFFIX,
@@ -68,23 +70,24 @@ class SixthSense(object):
         self.over = True
         self.reset()
 
-    def elapsed(self, now):
-        if not self.lit:
-            return None
-
-        return int(max(0, now - self.lit_at))
-
     def seconds_left(self, now):
         if not self.lit:
             return None
 
         return max(0.0, self.duration - (now - self.lit_at))
 
-    def expired(self, now, hide_after_s):
-        if not self.lit or hide_after_s <= 0:
+    def countdown(self, now):
+        seconds_left = self.seconds_left(now)
+        if seconds_left is None:
+            return None
+
+        return int(math.ceil(seconds_left))
+
+    def expired(self, now):
+        if not self.lit:
             return False
 
-        return now - self.lit_at >= hide_after_s
+        return now - self.lit_at >= self.duration
 
     def dimmed(self, now):
         if not self.lit:
@@ -123,12 +126,12 @@ def icon_gallery(icon_sets):
 
 
 def timer_line(state, settings, translate, now):
-    elapsed = state.elapsed(now)
-    if not settings.get('show_timer') or elapsed is None:
+    seconds = state.countdown(now)
+    if not settings.get('show_timer') or seconds is None:
         return None
 
     size = max(MIN_TIMER_FONT_SIZE, settings.get('font_size') - TIMER_FONT_DECREASE)
-    return font(translate('sixth_sense_timer', seconds=elapsed), settings.get('color'), size)
+    return font(translate('sixth_sense_timer', seconds=seconds), settings.get('color'), size)
 
 
 def format_sixth_sense(state, settings, translate, now):

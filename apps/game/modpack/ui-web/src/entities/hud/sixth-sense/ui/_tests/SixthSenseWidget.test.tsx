@@ -22,6 +22,18 @@ describe(SixthSenseWidget, () => {
     const html = render(<SixthSenseWidget data={data} />).container;
 
     expect(html.textContent).toBe('7');
-    expect(html.querySelectorAll('circle')).toHaveLength(2);
+    expect([html.querySelectorAll('circle').length, html.querySelectorAll('path').length]).toEqual([1, 1]);
+  });
+
+  it('centres the lamp in its ring and writes the seconds under the ring, not over it', () => {
+    const lamp = render(<SixthSenseWidget data={data} />).container.querySelector(':scope > div');
+    const ring = lamp?.querySelector(':scope > div');
+    const seconds = lamp?.querySelector(':scope > span');
+    const box = ring?.querySelector<HTMLElement>('div');
+
+    expect([box?.style.width, box?.style.height]).toEqual(['84rem', '84rem']);
+    expect(box?.querySelector('img')).not.toBeNull();
+    expect(seconds?.textContent).toBe('7');
+    expect(seconds && ring?.contains(seconds)).toBe(false);
   });
 });

@@ -33,6 +33,20 @@ describe(CrosshairWidget, () => {
     expect(html.querySelector('[class*="final"]')).not.toBeNull();
   });
 
+  it('keeps the box on screen with the full reload time while the gun is loaded', () => {
+    const readouts = data.readouts && { ...data.readouts, reload: { value: '7.6', full: null, state: 'loaded' as const, clip: null } };
+    const html = mount({ ...data, readouts });
+
+    expect(html.textContent).toContain('7.6');
+    expect(html.querySelector('[class*="loaded"]')).not.toBeNull();
+  });
+
+  it('reads the loaded state from the game', () => {
+    const reload = { value: '7.6', full: null, state: 'loaded', clip: null };
+
+    expect(crosshairSchema.safeParse({ ...data, readouts: { reload, arcs: null } }).success).toBe(true);
+  });
+
   it('draws nothing beside the mark without readouts', () => {
     const html = mount({ ...data, readouts: null });
 

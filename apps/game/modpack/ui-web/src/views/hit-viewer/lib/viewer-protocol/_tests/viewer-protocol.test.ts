@@ -15,6 +15,7 @@ const STATE = {
       vehicle: 'Maus',
       class: 'heavy',
       result: 'Пробитие',
+      part: 'Корпус',
       tone: 'pen',
       shell: 'ББ 128',
       damage: '490',

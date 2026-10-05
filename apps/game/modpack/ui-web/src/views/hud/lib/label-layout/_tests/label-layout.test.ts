@@ -88,4 +88,24 @@ describe(layoutLabels, () => {
   it('takes no click on a hidden button', () => {
     expect(layoutOf(panel({ visible: false, kind: 'button' }))?.button).toBe(false);
   });
+
+  it('counts a measured panel as drawn, hidden with the stock GUI or not', () => {
+    expect(layoutOf(panel({}))?.drawn).toBe(true);
+    expect(layoutOf(panel({ visible: false }))?.drawn).toBe(true);
+  });
+
+  it('counts a panel that never measured as not drawn', () => {
+    const [layout] = layoutLabels({
+      panels: [panel({})],
+      sizes: {},
+      scales: {},
+      overrides: {},
+      screen: SCREEN,
+      live: null,
+      edit: false,
+      widgets: new Map()
+    });
+
+    expect(layout?.drawn).toBe(false);
+  });
 });

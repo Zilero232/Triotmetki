@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { HudAttach } from '@/shared/api/hud-protocol';
 
+import { HUD_OVERLAY } from '../../../config';
 import { attachRect } from '../attach';
 
 const FULL_HD = { width: 1920, height: 1080 };
@@ -51,6 +52,36 @@ describe(attachRect, () => {
     const marks = attachRect({ attach: attach('bar_right', 684, 610), size: SIZE, screen: FULL_HD });
 
     expect(row.left + row.width).toBeLessThan(marks.left);
+  });
+
+  it('moves the marks panel right of the post-mortem tips when the bar is gone', () => {
+    const { width } = HUD_OVERLAY.postmortemTips;
+    const rect = attachRect({ attach: attach('bar_right', 0), size: SIZE, screen: FULL_HD });
+
+    expect(rect.left).toBe(960 + width / 2 + 12);
+    expect(rect.top + rect.height).toBe(1080 - 8);
+  });
+
+  it('lifts the marks panel above the post-mortem tips when there is no room beside them', () => {
+    const { height } = HUD_OVERLAY.postmortemTips;
+    const rect = attachRect({ attach: attach('bar_right', 0, 610), size: SIZE, screen: { width: 1707, height: 960 } });
+
+    expect(rect.left).toBe(1707 / 2 + 6);
+    expect(rect.top + rect.height).toBe(960 - height - 6);
+  });
+
+  it('keeps the equipment row clear of the post-mortem tips when the bar is gone', () => {
+    const { width } = HUD_OVERLAY.postmortemTips;
+    const rect = attachRect({ attach: attach('bar_left', 0), size: { width: 160, height: 44 }, screen: FULL_HD });
+
+    expect(rect.left + rect.width).toBe(960 - width / 2 - 12);
+  });
+
+  it('drops the previous battle card to the corner when the minimap is gone', () => {
+    const rect = attachRect({ attach: attach('minimap_above', 399, 0), size: SIZE, screen: FULL_HD });
+
+    expect(rect.left + rect.width).toBe(1920 - 8);
+    expect(rect.top + rect.height).toBe(1080 - 8);
   });
 
   it('keeps the previous battle card 8 px from the right edge and 12 px above the minimap', () => {

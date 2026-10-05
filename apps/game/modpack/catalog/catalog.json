@@ -960,12 +960,12 @@
         "en": "Hit viewer"
       },
       "description": {
-        "ru": "Где вас пробили и куда попали вы: после боя в ангаре на модели танка — точка и направление каждого попадания, список «По мне / По врагам» со снарядом, исходом, уроном, углом встречи и приведённой бронёй, выбор из последних боёв. Открывается своей кнопкой в списке модов ModsList (неактивна в очереди на бой, как у «Боевых ран») и из окна мода.",
-        "en": "Where you were penetrated and where you hit: after the battle, on the tank model in the hangar, each hit's point and direction and an «On me / On enemies» list with the shell, result, damage, impact angle and effective armour, for the last battles. Opens from its own ModsList entry (greyed out in the battle queue, as BattleHits does) and from the mod window."
+        "ru": "Где вас пробили и куда попали вы, как в «Боевых ранах»: после боя отдельный ангар с моделью танка — снаряд вдоль траектории попадания и метка исхода, башня и орудие в положении на момент выстрела, камера облетает попадание. Сбоку компактный список «По мне / По врагам» с типом и калибром снаряда, исходом, углом встречи, номинальной и приведённой бронёй и уроном; ваши попадания показаны на модели врага; выбор из последних боёв, ←/→ и Tab. Открывается своей кнопкой в списке модов ModsList (неактивна в очереди на бой) и из окна мода.",
+        "en": "Where you were penetrated and where you hit, as BattleHits shows it: after the battle a separate hangar view with the tank model, the shell along the hit's path and an outcome marker, the turret and gun as the shot found them, and the camera flies to the hit. A compact «On me / On enemies» list at the side with the shell type and calibre, the result, the impact angle, the nominal and effective armour and the damage; your hits are shown on the enemy's model; pick from the last battles, ←/→ and Tab. Opens from its own ModsList entry (greyed out in the battle queue) and from the mod window."
       },
       "fairPlay": {
-        "ru": "Только выстрелы между вашим танком и одной другой машиной, как их рисует клиент; брызги арты и авиаудары не пишутся. В бою ничего не анализируется: угол и броню ангар меряет на модели после боя.",
-        "en": "Only the shots between your tank and one other vehicle, as the client draws them; artillery splash and air strikes are not recorded. Nothing is analysed in battle: the hangar measures the angle and armour on the model after it."
+        "ru": "Только выстрелы между вашим танком и одной другой машиной, как их рисует клиент; брызги арты и авиаудары не пишутся. В бою ничего не анализируется и не показывается: угол и броню ангар меряет на модели после боя.",
+        "en": "Only the shots between your tank and one other vehicle, as the client draws them; artillery splash and air strikes are not recorded. Nothing is analysed or shown in battle: the hangar measures the angle and armour on the model after it."
       },
       "perf": "low",
       "preview": {

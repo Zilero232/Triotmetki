@@ -2,17 +2,23 @@ import { IconButton, Segmented } from '@/ui-kit';
 
 import type { ViewerSide } from '../lib/viewer-protocol';
 
+import { useCameraDrag } from '../model/hooks/use-camera-drag';
 import { useHitViewer } from '../model/hooks/use-hit-viewer';
-import { useInputPanel } from '../model/hooks/use-input-panel';
+import { useViewerKeys } from '../model/hooks/use-viewer-keys';
 import { BattlePicker } from './components/BattlePicker';
+import { HitDetails } from './components/HitDetails';
 import { HitMarkers } from './components/HitMarkers';
 import { HitTable } from './components/HitTable';
 
 import s from './HitViewer.module.scss';
 
 export const HitViewer = () => {
-  const { state, marks, footer, close, pickBattle, pickTab, pickHit } = useHitViewer();
-  const panelRef = useInputPanel<HTMLDivElement>();
+  const viewer = useHitViewer();
+  const surfaceRef = useCameraDrag(viewer.move);
+
+  useViewerKeys({ onStep: viewer.stepHit, onSwitchTab: viewer.switchTab });
+
+  const { state, selectedRow } = viewer;
 
   if (!state) {
     return null;
@@ -23,24 +29,35 @@ export const HitViewer = () => {
 
   return (
     <div className={s.viewer}>
-      <HitMarkers marks={marks} />
-      <div ref={panelRef} className={s.panel}>
-        <div className={s.header}>
-          <span className={s.title}>{labels.title}</span>
-          <IconButton icon='x' label={labels.close ?? ''} variant='ghost' onClick={close} />
+      <div ref={surfaceRef} className={s.surface} />
+      <HitMarkers marks={viewer.marks} />
+      <div className={s.bar}>
+        <div className={s.title}>
+          <IconButton icon='x' label={labels.close ?? ''} variant='ghost' onClick={viewer.close} />
+          <span className={s.titleText}>{labels.title}</span>
         </div>
-        {battle && <BattlePicker battles={state.battles} current={battle} label={labels.battles ?? ''} onPick={pickBattle} />}
-        {state.tab && <Segmented<ViewerSide> items={tabs} label={labels.title ?? ''} value={state.tab} onSelect={pickTab} />}
-        {battle && <HitTable labels={labels} rows={state.rows} selected={state.selected} onPick={pickHit} />}
-        <div className={s.footer}>{footer}</div>
+        {state.tab && (
+          <div className={s.tabs}>
+            <Segmented<ViewerSide> items={tabs} label={labels.title ?? ''} value={state.tab} onSelect={viewer.pickTab} />
+          </div>
+        )}
+        {battle && (
+          <div className={s.battle}>
+            <BattlePicker battles={state.battles} current={battle} label={labels.battles ?? ''} onPick={viewer.pickBattle} />
+          </div>
+        )}
       </div>
       {battle && (
-        <div className={s.card}>
-          <span className={s.cardMap}>{battle.map}</span>
-          <span className={s.cardMeta}>{battle.vehicle}</span>
-          <span className={s.cardMeta}>{battle.date}</span>
+        <div className={s.list}>
+          <HitTable labels={labels} rows={state.rows} selected={state.selected} onPick={viewer.pickHit} />
         </div>
       )}
+      {selectedRow && (
+        <div className={s.details}>
+          <HitDetails labels={labels} row={selectedRow} />
+        </div>
+      )}
+      <div className={s.footer}>{viewer.footer}</div>
     </div>
   );
 };

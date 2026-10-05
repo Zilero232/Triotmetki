@@ -4,12 +4,12 @@ import type { SixthSenseData } from '../../../model/schemas';
 
 import { lampView } from '../lamp-view';
 
-const lamp = (color: string | null = null): SixthSenseData => ({
+const lamp = (color: string | null = null, elapsed = 3): SixthSenseData => ({
   icon: null,
   size: 56,
   text: '',
   color,
-  elapsed: 3,
+  elapsed,
   duration: 10,
   timer: true,
   dim: false
@@ -26,6 +26,18 @@ describe(lampView, () => {
 
   it('writes the seconds in white without a colour of the player: the ring carries the colour', () => {
     expect(lampView(lamp())).toMatchObject({ seconds: '7', tone: 'text', color: undefined });
+  });
+
+  it('starts the count at the whole lamp time', () => {
+    expect(lampView(lamp(null, 0)).seconds).toBe('10');
+  });
+
+  it('reads 1 in the last second, never 0', () => {
+    expect(lampView(lamp(null, 9.6)).seconds).toBe('1');
+  });
+
+  it('writes no 0 once the time is out: the lamp goes out then', () => {
+    expect(lampView(lamp(null, 10))).toMatchObject({ seconds: '', progress: 0, lit: false });
   });
 
   it('paints the seconds in the colour the player set', () => {

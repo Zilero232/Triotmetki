@@ -8,6 +8,7 @@ under licences that allow redistribution in a paid product; each licence text sh
 | Asset | Author | Licence | Component | In-game path |
 | --- | --- | --- | --- | --- |
 | Crosshair Pack 1.1 (3 of 200) | Kenney (www.kenney.nl) | CC0-1.0 | crosshair | `res/gui/maps/icons/otmetki/crosshair/kenney` |
+| BattleHits shell and hit-effect models | Andrii Andrushchyshyn (poliroid) | MIT | hit_viewer | `res/content/battlehits` |
 | Crosshair centre marks | Три отметки | LicenseRef-TriOtmetki-Artwork | crosshair | `res/gui/maps/icons/otmetki/crosshair/otmetki` |
 | Crosshair vector centre marks in eight colours | Три отметки | LicenseRef-TriOtmetki-Artwork | crosshair | `res/gui/maps/icons/otmetki/crosshair/vector` |
 | Sixth-sense icons | Три отметки | LicenseRef-TriOtmetki-Artwork | sixth_sense | `res/gui/maps/icons/otmetki/sixth_sense/icons` |
@@ -24,6 +25,16 @@ under licences that allow redistribution in a paid product; each licence text sh
 - Contents: crosshair-021, -113, -196 from PNG/Outline (2x) (148 px, unmodified in src/), resized to 64 and 128 px
 - Ships in: `res/gui/maps/icons/otmetki/crosshair/kenney` (component `crosshair`)
 - Fair play: A static image drawn at the client's own reticle centre; computes nothing.
+
+### BattleHits shell and hit-effect models
+
+- Author: Andrii Andrushchyshyn (poliroid)
+- Copyright: Copyright (c) 2015-2026 Andrii Andruschyshyn
+- Licence: MIT (`assets/third_party/battlehits/LICENSE.md`)
+- Source: https://gitlab.com/wot-public-mods/battle-hits
+- Contents: From BattleHits 2.4.1 (commit 6ed4c2b, resources/in/content/battlehits), unmodified and at their original in-game path: the AP, APCR, HEAT and HE shell models (common/shells/ap|apcr|heat|hemodern), the four hit-effect markers of style1 (ricochet, notpenetration, penetration, critical) and their textures
+- Ships in: `res/content/battlehits` (component `hit_viewer`)
+- Fair play: Drawn only in the hangar's hit viewer after the battle, on the player's own recorded hits: the shell along its recorded path and a marker of the outcome the client showed.
 
 ## Original assets
 

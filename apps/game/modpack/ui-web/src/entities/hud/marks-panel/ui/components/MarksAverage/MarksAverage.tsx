@@ -1,3 +1,5 @@
+import { DeltaText } from '@/ui-kit';
+
 import type { MarksAverageProps } from './MarksAverage.types';
 
 import s from './MarksAverage.module.scss';
@@ -12,7 +14,8 @@ export const MarksAverage = ({ average, battles }: MarksAverageProps) => {
       {average !== null && (
         <span className={s.part}>
           <span className={s.label}>{average.label}</span>
-          {average.value}
+          {average.from}
+          <DeltaText className={s.projected} direction={average.direction} text={average.to} />
         </span>
       )}
       {battles !== null && (

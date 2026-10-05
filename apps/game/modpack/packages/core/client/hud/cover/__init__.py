@@ -16,6 +16,14 @@ Sources (`core.hud.cover.CoverState`, a reason stays on while any source reports
   so a key press alone never hides anything;
 - the full-screen Gameface windows (`windows.WindowWatch`).
 
+The same `_setComponentsVisibility` calls say which stock components our panels sit beside are off the screen
+(`core.hud.cover.FollowedComponents`, `HudLayer.set_stock_hidden`): the consumables panel on death, in the video camera
+and under the pre-battle setups panel (gui/impl/battle/battle_page/ammunition_panel: `as_showS` / `as_hideS` of
+PrebattleAmmunitionPanelViewMeta, which the battle page answers by hiding and showing the consumables panel in Flash,
+BattlePage.as updateConsumablePanel), back on a respawn; the minimap. A page that appears is asked
+`as_isComponentVisibleS` for each (a reconnect after death hides the consumables panel before we follow the page), and
+so is every check.
+
 The Esc menu, the F1 help, the settings and dialogs are left alone: they draw over the battle page and, by their layer,
 over the HUD window, and the stock HUD, Battle Observer and XVM stay drawn under them.
 
@@ -32,12 +40,13 @@ from functools import partial
 import BigWorld
 
 from ....hooks import Subscriptions, override
-from ....hud.cover import CHECK_INTERVAL_S, REASONS, CoverState, PageOverlays
+from ....hud.cover import CHECK_INTERVAL_S, REASONS, CoverState, FollowedComponents, PageOverlays
 from ....hud.cover.constants import SOURCE_GUI, SOURCE_KILLCAM, SOURCE_LOADING, SOURCE_PAGE, SOURCE_WINDOWS
 from ....hud.layer.constants import COVER_GUI, COVER_KILLCAM, COVER_LOADING
 from ....log import log, log_exception, safe
 from ...timer import Ticker
-from .constants import GUI_VISIBLE, KILLER_VISION_EVENTS, LOADING_SHOWN, OVERLAY_EVENTS
+from ....hud.stock import FOLLOWED_ALIASES
+from .constants import GUI_VISIBLE, KILLER_VISION_EVENTS, LOADING_SHOWN, OVERLAY_EVENTS, SETUPS_METHODS
 from .windows import WindowWatch
 
 try:
@@ -46,6 +55,11 @@ try:
 except Exception as error:  # the battle page moved: nothing covers the panels
     SharedPage = None
     IMPORT_ERROR = error
+
+try:
+    from gui.Scaleform.daapi.view.meta.PrebattleAmmunitionPanelViewMeta import PrebattleAmmunitionPanelViewMeta
+except Exception:  # no pre-battle setups panel: the consumables panel follows the page alone
+    PrebattleAmmunitionPanelViewMeta = None
 
 
 class CoverWatch(object):
@@ -56,6 +70,7 @@ class CoverWatch(object):
         self.state = CoverState()
         self.page = None
         self.overlays = PageOverlays()
+        self.followed = FollowedComponents()
         self.installed = False
         self.killer_hooks = Subscriptions()
         self.windows = WindowWatch(self._on_windows)
@@ -90,8 +105,25 @@ class CoverWatch(object):
             watch.detach(page)
             return original(page, *args, **kwargs)
 
+        self._follow_setups()
         self._listen_events()
         return True
+
+    def _follow_setups(self):
+        if PrebattleAmmunitionPanelViewMeta is None:
+            return
+        for name, shown in SETUPS_METHODS:
+            if hasattr(PrebattleAmmunitionPanelViewMeta, name):
+                self._follow_setups_call(name, shown)
+
+    def _follow_setups_call(self, name, shown):
+        watch = self
+
+        @override(PrebattleAmmunitionPanelViewMeta, name)
+        def _setups_toggled(original, panel, *args, **kwargs):
+            result = original(panel, *args, **kwargs)
+            watch.setups_changed(shown)
+            return result
 
     def attach(self, page):
         if SharedPage is None or not isinstance(page, SharedPage):
@@ -100,6 +132,8 @@ class CoverWatch(object):
         self.page = page
         self.overlays = PageOverlays(getattr(page, '_fullStatsAlias', None))
         self.state.reset(keep=(SOURCE_LOADING,))
+        self.followed.forget_page()
+        self._ask_followed(page)
         self._follow_killer()
         self.windows.start()
         self.state.report(SOURCE_WINDOWS, self.windows.reasons)
@@ -112,13 +146,25 @@ class CoverWatch(object):
         self.killer_hooks.clear()
         self.windows.stop()
         self.state.reset()
+        self.followed = FollowedComponents()
         self.ticker.stop()
         self.apply()
 
     def page_changed(self, visible, hidden):
+        if self.followed.changed(visible, hidden):
+            self.apply()
         if self.overlays.changed(visible, hidden):
             self.state.report(SOURCE_PAGE, self.overlays.reasons())
             self.apply()
+
+    @safe
+    def setups_changed(self, shown):
+        if self.followed.setups(shown):
+            self.apply()
+
+    def _ask_followed(self, page):
+        for alias in FOLLOWED_ALIASES:
+            self.followed.answered(alias, _page_call(page, 'as_isComponentVisibleS', alias))
 
     def windows_on(self):
         switch = self.windows_switch
@@ -129,6 +175,7 @@ class CoverWatch(object):
             wanted = self.state.reasons(windows=self.windows_on()) if self.page is not None else frozenset()
             for reason in REASONS:
                 self.layer.set_cover(reason, reason in wanted)
+            self.layer.set_stock_hidden(self.followed.hidden if self.page is not None else ())
         except Exception:
             log_exception('HUD cover: panels uncovered')
             self._uncover()
@@ -148,6 +195,7 @@ class CoverWatch(object):
             return
         self.overlays.snapshot(_page_call(page, 'as_getComponentsVisibilityS'))
         self.state.report(SOURCE_PAGE, self.overlays.reasons())
+        self._ask_followed(page)
         self.windows.check()
         self.state.report(SOURCE_WINDOWS, self.windows.reasons)
         visible = _page_call(page, 'isGuiVisible')
@@ -165,6 +213,10 @@ class CoverWatch(object):
                 self.layer.set_cover(reason, False)
             except Exception:
                 log_exception('HUD cover: uncover %s' % reason)
+        try:
+            self.layer.set_stock_hidden(())
+        except Exception:
+            log_exception('HUD cover: give the followed stock components back')
 
     def _on_windows(self):
         self.state.report(SOURCE_WINDOWS, self.windows.reasons)
@@ -218,12 +270,12 @@ def _names(aliases):
         return frozenset()
 
 
-def _page_call(page, name):
+def _page_call(page, name, *args):
     method = getattr(page, name, None)
     if method is None:
         return None
     try:
-        return method()
+        return method(*args)
     except Exception:  # the page's Flash object is gone
         return None
 

@@ -27,6 +27,22 @@ PACE_TANKS = 300
 THRESHOLD_TTL_S = 6 * 3600
 THRESHOLD_ERROR_TTL_S = 10 * 60
 
+# The damage-for-percent curve a tank has before the site serves its thresholds: the median shape of 782 RU tanks'
+# published thresholds (2026-10, each tank's damage at a percent over its damage at 65 %, as the marks mods cache them;
+# the middle 80 % of tanks stay within 5 % of it between 40 and 85 %), scaled through the one point the dossier gives:
+# the tank's own EMA at its own percent. Good near the current percent, rough far from it: an estimate, marked so.
+ESTIMATE_SHAPE = (
+    (20.0, 0.2656),
+    (40.0, 0.601),
+    (55.0, 0.8329),
+    (65.0, 1.0),
+    (75.0, 1.1924),
+    (85.0, 1.4302),
+    (95.0, 1.7727),
+    (100.0, 2.0497),
+)
+ESTIMATE_MIN_PERCENT = 1.0
+
 REACHED = u'✓'
 STAR = u'★'
 UNREACHABLE = u'∞'

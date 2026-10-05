@@ -16,9 +16,11 @@ A panel's `stock_aliases()` may also name parts of the stock reticle (`core.hud.
 wanted; leaving the battle page gives every part back.
 
 What covers the battle view (V, the loading screen, Tab and every other stock overlay) is `core.client.hud.cover`.
-The suppression follows the layer (`HudLayer.watch`, `releases_stock`): while a panel is muted (streamer mode), blocked,
-left out of the battle type or hidden by a reason the stock HUD does not share (the killer camera), the stock elements
-it replaces come back, so the player never sees neither.
+The suppression follows the layer (`HudLayer.watch`, `releases_stock`, `draws`): while a panel is muted (streamer mode),
+blocked, left out of the battle type, hidden by a reason the stock HUD does not share (the killer camera) or not
+confirmed on the screen by the Gameface page (it reports the panels it laid out with a size: not yet measured, never
+shown, the page gone), the stock elements it replaces come back, so the player never sees neither. A lamp
+(`want(..., while_hidden=True)`) only needs the page up and reporting: its stock lamp lights with it.
 `GameEvent.SHOW_EXTENDED_INFO` (Alt held, the key the stock markers, players panel and damage log expand on) goes out as
 `battle_extended_info(held)` on the app bus for the panels with an alternate mode.
 """
@@ -52,6 +54,7 @@ class StockControl(object):
         self.metrics = StockMetrics(layer)
         self.reticle = ReticleControl()
         self.requested = {}
+        self.lamps = set()
         watch = getattr(layer, 'watch', None)
         if watch is not None:
             watch(self.follow_layer)
@@ -68,9 +71,12 @@ class StockControl(object):
 
         @override(SharedPage, '_setComponentsVisibility')
         def _set_components_visibility(original, page, visible=None, hidden=None):
-            if page is control.page and control.hidden:
-                visible, hidden = control.suppression.filter(visible, hidden, control.hidden)
-            return original(page, visible, hidden)
+            if page is not control.page:
+                return original(page, visible, hidden)
+            visible, hidden = control.filter(visible, hidden)
+            result = original(page, visible, hidden)
+            control.metrics.page_toggled(page, visible, hidden)
+            return result
 
         @override(SharedPage, '_populate')
         def _populate(original, page, *args, **kwargs):
@@ -110,7 +116,13 @@ class StockControl(object):
             self.page = None
             self.hidden = frozenset()
             self.reticle.reset()
+            self.metrics.forget()
             self._set_extended(False)
+
+    def filter(self, visible, hidden):
+        if not self.hidden:
+            return visible, hidden
+        return self.suppression.filter(visible, hidden, self.hidden)
 
     def present(self, alias):
         components = getattr(self.page, 'components', None)
@@ -138,26 +150,38 @@ class StockControl(object):
         name = getattr(page, 'alias', None) or type(page).__name__
         return {'page': name, 'found': sorted(self.found()), 'hidden': sorted(self.hidden)}
 
-    def want(self, owner, aliases):
+    def want(self, owner, aliases, while_hidden=False):
+        """`owner` replaces `aliases` while the Gameface page confirms its panel drawn; `while_hidden` (a lamp that
+        lights with the stock one, sixth_sense) while the page is up and reporting, lit or not."""
         self.install()
         self.requested[owner] = tuple(aliases or ())
+        if while_hidden:
+            self.lamps.add(owner)
+        else:
+            self.lamps.discard(owner)
         self._apply_want(owner)
         self.sync(owner)
 
     @safe
     def follow_layer(self):
-        """The layer changed what keeps panels off the screen: a panel muted, blocked or hidden by a reason the stock
-        HUD does not share gives its stock elements back, and takes them again when it is back."""
+        """The layer changed what keeps panels off the screen: a panel muted, blocked, hidden by a reason the stock
+        HUD does not share or not confirmed drawn by the page gives its stock elements back, and takes them again
+        when it is back."""
         for owner in list(self.requested):
             self._apply_want(owner)
         self.sync('the panels shown or held')
 
     def _apply_want(self, owner):
         releases = getattr(self.layer, 'releases_stock', None)
-        released = releases is not None and releases(owner)
+        released = (releases is not None and releases(owner)) or not self._drawn(owner)
         aliases = () if released else self.requested.get(owner, ())
         self.suppression.want(owner, aliases)
         self.reticle.want(owner, tuple(alias for alias in aliases if alias in RETICLE_PARTS))
+
+    def _drawn(self, owner):
+        if owner in self.lamps:
+            return self.layer.page_draws()
+        return self.layer.draws(owner)
 
     def sync(self, owner=None):
         target = self.in_force()

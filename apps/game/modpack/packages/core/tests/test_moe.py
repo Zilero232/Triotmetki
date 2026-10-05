@@ -13,6 +13,7 @@ from otmetki.core.moe import (
     battle_combined,
     battles_to_reach,
     combined_damage,
+    estimated_curve,
     moe_color,
     moe_macros,
     moe_state,
@@ -212,6 +213,39 @@ class CurveTest(unittest.TestCase):
 
     def test_no_curve_without_a_response(self):
         assert ThresholdCurve.from_api(None) is None
+
+
+class EstimatedCurveTest(unittest.TestCase):
+
+    def test_passes_through_the_dossier_point(self):
+        estimate = estimated_curve(3008, 82.91)
+
+        assert abs(estimate.percent_for(3008) - 82.91) < 0.01
+
+    def test_a_better_battle_raises_the_percent(self):
+        estimate = estimated_curve(3008, 82.91)
+
+        assert estimate.percent_for(project_moving_avg(3008, 4300)) > 82.91
+
+    def test_the_marks_need_more_damage_in_order(self):
+        estimate = estimated_curve(3008, 82.91)
+        damages = [estimate.damage_for(level) for level in (65.0, 85.0, 95.0, 100.0)]
+
+        assert damages == sorted(damages)
+        assert damages[1] > 3008
+
+    def test_a_projection_works_without_the_site(self):
+        state = moe_state(3008, 82.91, 4300, estimated_curve(3008, 82.91))
+
+        assert state['has_curve'] is True
+        assert state['delta'] > 0
+        assert state['next_level'] == 85
+
+    def test_none_without_an_average(self):
+        assert estimated_curve(0, 50.0) is None
+
+    def test_none_without_a_percent(self):
+        assert estimated_curve(2000, 0) is None
 
 
 class NextLevelTest(unittest.TestCase):

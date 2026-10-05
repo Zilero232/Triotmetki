@@ -16,3 +16,5 @@ apps/game/modpack/assets/THIRD_PARTY_NOTICES.md
 .claude
 docs
 CHANGELOG.md
+# Third-party licences ship unmodified, as their authors wrote them.
+apps/game/modpack/assets/third_party/**

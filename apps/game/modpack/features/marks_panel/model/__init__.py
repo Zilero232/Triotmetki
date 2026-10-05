@@ -3,13 +3,15 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.compat import is_number
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, counted, font
-from ....core.moe import combined_damage, moe_color, moe_macros, moe_state, rating_to_percent
+from ....core.moe import combined_damage, estimated_curve, moe_color, moe_macros, moe_state, rating_to_percent
 from ....core.templates import render
 from .constants import (
     APPROX,
     CARD_STEP,
     KINDS,
     LINE_SEPARATOR,
+    CURVE_ESTIMATED,
+    CURVE_SITE,
     SOURCE_ESTIMATED,
     SOURCE_VERIFIED,
     TARGET_SEPARATOR,
@@ -72,15 +74,26 @@ def percent_source(snapshot, curve):
     return SOURCE_ESTIMATED
 
 
+# Until the site serves the tank's thresholds the curve is the estimate through the dossier's own point
+# (core.moe estimated_curve): the panel projects and counts the damage from the first battle, marked as an estimate.
+def _battle_curve(snapshot, curve, percent):
+    if curve is not None:
+        return curve, CURVE_SITE
+    estimate = estimated_curve(snapshot['moving_avg_damage'], percent)
+    return estimate, (CURVE_ESTIMATED if estimate is not None else None)
+
+
 def panel_state(snapshot, combined, curve, pace, settings):
     moving_avg = snapshot['moving_avg_damage']
     source = percent_source(snapshot, curve)
     is_verified = source == SOURCE_VERIFIED
     percent = rating_to_percent(snapshot.get('damage_rating')) if is_verified else None
     step = float(settings.get('step'))
+    curve, curve_source = _battle_curve(snapshot, curve, percent)
 
     state = moe_state(moving_avg, percent, combined, curve, pace, step, snapshot.get('marks_on_gun'))
     state['source'] = source
+    state['curve'] = curve_source
     if source == SOURCE_ESTIMATED:
         state['percent'] = round(curve.percent_for(moving_avg), 2)
     return state
@@ -150,7 +163,8 @@ def macro_values(state, translate):
         values['battles_count'] = values['battles']
     source = state.get('source')
     values['source'] = translate('marks_panel_source_%s' % source) if source else u''
-    values['approx'] = APPROX if source == SOURCE_ESTIMATED else u''
+    is_estimate = source == SOURCE_ESTIMATED or state.get('curve') == CURVE_ESTIMATED
+    values['approx'] = APPROX if is_estimate else u''
     return values
 
 

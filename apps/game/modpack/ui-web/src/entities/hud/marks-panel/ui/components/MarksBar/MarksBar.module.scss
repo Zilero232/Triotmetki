@@ -1,0 +1,43 @@
+@use '@/shared/styles/gameface' as *;
+
+.bar {
+  display: flex;
+  height: 10px;
+  flex-direction: column;
+  flex-shrink: 0;
+  justify-content: center;
+}
+
+.track {
+  position: relative;
+  height: 4px;
+  background-color: token(hud-bar-track);
+}
+
+.fill {
+  height: 100%;
+  transition:
+    width 240ms token(ease-out),
+    background-color token(duration-base) token(ease-out);
+}
+
+.text {
+  background-color: token(hud-muted);
+}
+
+.good {
+  background-color: token(hud-good);
+}
+
+.gold {
+  background-color: token(hud-gold);
+}
+
+.hold {
+  position: absolute;
+  top: -2px;
+  width: 2px;
+  height: 8px;
+  margin-left: -1px;
+  background-color: token(hud-text);
+}

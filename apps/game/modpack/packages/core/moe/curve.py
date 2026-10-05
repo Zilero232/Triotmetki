@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ..compat import is_number
+from .constants import ESTIMATE_MIN_PERCENT, ESTIMATE_SHAPE
 
 
 class ThresholdCurve(object):
@@ -66,6 +67,18 @@ class ThresholdCurve(object):
             if percent <= p1:
                 return d0 + (percent - p0) * (d1 - d0) / (p1 - p0)
         return self.points[-1][1]
+
+
+def estimated_curve(moving_avg, percent):
+    """The curve of a tank the site has no thresholds for: ESTIMATE_SHAPE through the dossier's own point (the EMA at
+    the percent), so the projection and the needs work from the first battle. None without a usable point."""
+    if not (is_number(moving_avg) and is_number(percent)) or moving_avg <= 0:
+        return None
+    if not ESTIMATE_MIN_PERCENT <= percent <= ESTIMATE_SHAPE[-1][0]:
+        return None
+    shape = ThresholdCurve(ESTIMATE_SHAPE)
+    unit = moving_avg / shape.damage_for(percent)
+    return ThresholdCurve([(level, ratio * unit) for level, ratio in ESTIMATE_SHAPE])
 
 
 def next_level(current_percent, curve, levels):

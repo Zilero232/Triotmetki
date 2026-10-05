@@ -48,6 +48,10 @@
   color: token(hud-good);
 }
 
+.loaded {
+  color: token(hud-text);
+}
+
 .empty {
   color: token(hud-bad);
 }
@@ -80,6 +84,6 @@
   background-color: token(hud-bar-track);
 }
 
-.loaded {
+.cellLoaded {
   background-color: token(hud-text);
 }

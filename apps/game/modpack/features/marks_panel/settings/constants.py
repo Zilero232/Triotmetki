@@ -10,6 +10,9 @@ CARD_PANEL_ID = 'hangar_marks'
 STYLES = ('compact', 'silhouette', 'extended', 'minimal', 'custom')
 HANGAR_STYLES = ('compact', 'extended')
 COLOR_MODES = ('delta', 'mark', 'off')
+# The bar of the battle plate, as the gunmarks panels offer it: this battle's damage against the average that holds the
+# percent (their default), or the percent on the 0-100 % scale with the 65/85/95 ticks.
+BARS = ('damage', 'percent')
 MAX_TEMPLATE = 400
 
 # Right of the stock consumables panel, 8 px over the bottom edge, as Lebwa and PROTanki place the marks: the page puts
@@ -29,6 +32,7 @@ DEFAULTS = {
     'show_up': True,
     'alt_detail': True,
     'color_mode': 'delta',
+    'bar': 'damage',
     'show_battle_panel': True,
     'hangar_card': True,
     'hangar_style': 'compact',

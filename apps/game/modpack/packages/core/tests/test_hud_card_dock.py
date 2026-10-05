@@ -6,7 +6,7 @@ import unittest
 import _support
 from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer, panel_schema
 from otmetki.core.hud.icons import glyph
-from otmetki.core.hud.panel import ATTACHED, DOCK_ANCHORS, DOCKS, anchor_of, attach_of, dock_layout, dock_of
+from otmetki.core.hud.panel import ATTACHED, DOCK_ANCHORS, DOCKS, FOLLOWS, anchor_of, attach_of, dock_layout, dock_of
 from otmetki.core.hud.stock import bar_slots, stock_metrics
 from otmetki.core.hud.surface import SPACE_BATTLE, SPACE_LOBBY, HudSurface
 from otmetki.core.hud.widget import CARD_KIND, card, card_chip, card_row
@@ -359,6 +359,116 @@ class AttachTest(unittest.TestCase):
         surface.create('otmetki.hud.last_battle', {'attach': {'kind': 'centre', 'bar': 1, 'minimap': 2}}, SPACE_BATTLE)
 
         assert surface.state(SPACE_BATTLE, False)['panels'][0]['attach'] is None
+
+
+LOADOUT_DEFAULTS = {'x': -240, 'y': -8, 'align_x': 'center', 'align_y': 'bottom'}
+CARD_DEFAULTS = {'x': -8, 'y': -330, 'align_x': 'right', 'align_y': 'bottom'}
+
+
+def following_layer():
+    backend = Recorder()
+    layer = HudLayer(backend, ComponentConfig(MemoryFile()))
+    layer.register('battle_loadout', panel_schema(LOADOUT_DEFAULTS))
+    layer.register('marks_panel', panel_schema(MARKS_DEFAULTS))
+    layer.register('last_battle', panel_schema(CARD_DEFAULTS))
+    return backend, layer
+
+
+def updates(backend, alias):
+    return [call[2] for call in backend.calls if call[0] == 'update' and call[1] == alias]
+
+
+class FollowTest(unittest.TestCase):
+
+    def test_the_equipment_row_follows_the_consumables_panel(self):
+        assert FOLLOWS == {'otmetki.hud.battle_loadout': 'consumablesPanel'}
+
+    def test_the_equipment_row_hides_with_the_consumables_panel(self):
+        backend, layer = following_layer()
+        layer.show('battle_loadout', u'row')
+
+        layer.set_stock_hidden({'consumablesPanel'})
+
+        assert updates(backend, 'otmetki.hud.battle_loadout')[-1]['visible'] is False
+
+    def test_the_equipment_row_comes_back_with_the_consumables_panel(self):
+        backend, layer = following_layer()
+        layer.show('battle_loadout', u'row')
+        layer.set_stock_hidden({'consumablesPanel'})
+
+        layer.set_stock_hidden(())
+
+        assert updates(backend, 'otmetki.hud.battle_loadout')[-1]['visible'] is True
+
+    def test_an_equipment_row_shown_after_death_starts_hidden(self):
+        backend, layer = following_layer()
+        layer.set_stock_hidden({'consumablesPanel'})
+
+        layer.show('battle_loadout', u'row')
+
+        assert backend.calls[-1][2]['visible'] is False
+
+    def test_a_new_row_text_keeps_the_row_hidden(self):
+        backend, layer = following_layer()
+        layer.show('battle_loadout', u'row')
+        layer.set_stock_hidden({'consumablesPanel'})
+
+        layer.show('battle_loadout', u'row 2')
+
+        assert updates(backend, 'otmetki.hud.battle_loadout')[-1]['visible'] is False
+
+    def test_the_stock_gui_coming_back_keeps_the_row_hidden_after_death(self):
+        backend, layer = following_layer()
+        layer.show('battle_loadout', u'row')
+        layer.set_stock_hidden({'consumablesPanel'})
+        layer.set_gui_hidden(True)
+
+        layer.set_gui_hidden(False)
+
+        assert all(props['visible'] is False for props in updates(backend, 'otmetki.hud.battle_loadout'))
+
+    def test_the_marks_panel_stays_on_the_screen_after_death(self):
+        backend, layer = following_layer()
+        layer.show('marks_panel', u'marks')
+
+        layer.set_stock_hidden({'consumablesPanel'})
+
+        assert all(props.get('visible', True) for props in updates(backend, 'otmetki.hud.marks_panel'))
+
+    def test_the_marks_panel_leaves_the_vanished_bar_for_its_post_mortem_place(self):
+        backend, layer = following_layer()
+        layer.show('marks_panel', u'marks')
+
+        layer.set_stock_hidden({'consumablesPanel'})
+
+        attach = {'kind': 'bar_right', 'bar': 0, 'minimap': 310}
+        assert updates(backend, 'otmetki.hud.marks_panel')[-1]['attach'] == attach
+
+    def test_the_marks_panel_goes_back_beside_the_bar_on_respawn(self):
+        backend, layer = following_layer()
+        layer.show('marks_panel', u'marks')
+        layer.set_stock_hidden({'consumablesPanel'})
+
+        layer.set_stock_hidden(())
+
+        assert updates(backend, 'otmetki.hud.marks_panel')[-1]['attach']['bar'] == 7 * 57
+
+    def test_the_previous_battle_card_drops_to_the_corner_without_the_minimap(self):
+        backend, layer = following_layer()
+        layer.show('last_battle', u'card')
+
+        layer.set_stock_hidden({'minimap'})
+
+        assert updates(backend, 'otmetki.hud.last_battle')[-1]['attach']['minimap'] == 0
+
+    def test_the_same_hidden_set_sends_nothing(self):
+        backend, layer = following_layer()
+        layer.show('battle_loadout', u'row')
+        layer.set_stock_hidden({'consumablesPanel'})
+        sent = len(backend.calls)
+
+        assert layer.set_stock_hidden({'consumablesPanel'}) is False
+        assert len(backend.calls) == sent
 
 
 if __name__ == '__main__':

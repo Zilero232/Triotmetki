@@ -1,0 +1,44 @@
+@use '@/shared/styles/gameface' as *;
+
+.footer {
+  display: flex;
+  height: 18px;
+  flex-direction: row;
+  align-items: center;
+}
+
+.part {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.goal {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: 8px;
+  margin-left: auto;
+}
+
+.label {
+  margin-right: 4px;
+  color: token(hud-muted);
+
+  @include hud-type(caption);
+  @include ease(color);
+}
+
+.reached {
+  color: token(hud-gold);
+}
+
+.value {
+  @include hud-type(value);
+}
+
+.target {
+  color: token(hud-dim);
+
+  @include hud-type(body);
+}

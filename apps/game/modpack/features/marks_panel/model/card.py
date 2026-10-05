@@ -20,6 +20,7 @@ from .constants import (
     LINE_SEPARATOR,
     METRIC_SEPARATOR,
     PERCENT_SUFFIX,
+    STRIP_MIN_BATTLES,
     TARGET_SEPARATOR,
     TIER_COLORS,
 )
@@ -177,10 +178,15 @@ def _chips(state, translate):
     return chips
 
 
+# One mark per battle of the trend, toned by its change: a series only from STRIP_MIN_BATTLES battles, as one or two
+# lone marks under the average read as a stray bar (the last battle's change has its own row).
 def _strip(summary, settings):
     if not settings.get('show_trend') or summary is None:
         return []
-    return [DELTA_TONES[delta_sign(delta)] for delta in summary.get('deltas') or []]
+    deltas = summary.get('deltas') or []
+    if len(deltas) < STRIP_MIN_BATTLES:
+        return []
+    return [DELTA_TONES[delta_sign(delta)] for delta in deltas]
 
 
 def _footer(data, settings, translate):

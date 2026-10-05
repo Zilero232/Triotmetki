@@ -26,3 +26,14 @@ MINIMAP_SIZES = (210, 260, 310, 390, 490, 610)
 MINIMAP_FALLBACK = 310
 BAR_PITCH = 57
 BAR_FALLBACK_SLOTS = 7
+
+# The stock components some of our panels sit beside and follow (core.hud.panel ATTACHED, FOLLOWS). The page hides the
+# consumables panel on death (SharedPage._switchToPostmortem), in the video camera (ClassicPage._changeCtrlMode) and
+# while the pre-battle setups panel takes its place (BattlePage.updateConsumablePanel); it gives it back on a respawn
+# (_reloadPostmortem). While one is off the screen the attached panels measure its `stock_metrics` key as 0 px
+# (`MISSING_SIZE`).
+CONSUMABLES_PANEL = 'consumablesPanel'
+MINIMAP = 'minimap'
+FOLLOWED_METRICS = ((CONSUMABLES_PANEL, 'bar'), (MINIMAP, 'minimap'))
+FOLLOWED_ALIASES = tuple(alias for alias, _ in FOLLOWED_METRICS)
+MISSING_SIZE = 0

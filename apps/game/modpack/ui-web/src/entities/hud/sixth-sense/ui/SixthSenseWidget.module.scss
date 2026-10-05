@@ -29,9 +29,9 @@
 }
 
 .seconds {
-  min-width: 28px;
-  margin-top: 2px;
-  text-align: center;
-
   @include hud-type(key);
+
+  min-width: 28px;
+  line-height: 20px;
+  text-align: center;
 }

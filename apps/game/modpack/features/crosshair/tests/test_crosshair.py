@@ -335,14 +335,30 @@ class ReadoutsTest(unittest.TestCase):
 
         assert readouts.reload_state() == 'ready'
 
-    def test_the_ready_mark_hides_after_its_hold(self):
+    def test_after_the_ready_mark_the_box_shows_the_full_reload_time(self):
         readouts = Readouts()
         readouts.set_reload(0.5, 7.6)
         readouts.tick(0.6)
 
         readouts.tick(1.5)
 
-        assert readouts.reload_state() is None
+        assert readouts.reload_state() == 'loaded'
+        assert readouts_data(readouts, Settings(None, SCHEMA), str)['reload']['value'] == '7.6'
+
+    def test_a_gun_loaded_at_the_start_shows_its_full_reload_time(self):
+        readouts = Readouts()
+        readouts.set_reload(0.0, 9.4)
+
+        assert readouts_data(readouts, Settings(None, SCHEMA), str)['reload']['value'] == '9.4'
+
+    def test_a_loaded_gun_with_an_unknown_reload_time_draws_no_box(self):
+        readouts = Readouts()
+        readouts.set_reload(0.0, None)
+
+        assert readouts_data(readouts, Settings(None, SCHEMA), str) is None
+
+    def test_nothing_is_drawn_before_the_client_told_the_reload(self):
+        assert readouts_data(Readouts(), Settings(None, SCHEMA), str) is None
 
     def test_a_reload_read_later_counts_from_now_not_from_its_update(self):
         assert reload_left(6.0, 1.5) == 1.5
@@ -460,28 +476,45 @@ class EditorTest(unittest.TestCase):
 
 class ReplacedReticlePartsTest(unittest.TestCase):
 
-    def test_the_reload_box_replaces_the_stock_reload_timer(self):
-        parts = replaced_reticle_parts(Settings(None, SCHEMA), Readouts())
+    def drawn(self, readouts, **values):
+        return readouts_data(readouts, Settings(values or None, SCHEMA), str)
 
-        assert parts == (RETICLE_RELOAD_TIMER,)
+    def test_the_drawn_reload_box_replaces_the_stock_reload_timer(self):
+        assert replaced_reticle_parts(self.drawn(sample_readouts(), reload_box=True)) == (
+            RETICLE_RELOAD_TIMER,
+            RETICLE_CASSETTE,
+        )
 
-    def test_the_magazine_cells_replace_the_stock_magazine_indicator(self):
+    def test_a_box_without_magazine_cells_keeps_the_stock_magazine_indicator(self):
         readouts = Readouts()
-        readouts.set_clip(4, 3)
+        readouts.set_reload(3.0, 7.6)
 
-        parts = replaced_reticle_parts(Settings(None, SCHEMA), readouts)
+        assert replaced_reticle_parts(self.drawn(readouts)) == (RETICLE_RELOAD_TIMER,)
 
-        assert RETICLE_CASSETTE in parts
+    def test_the_stock_reload_timer_stays_while_the_client_has_not_told_the_reload(self):
+        assert replaced_reticle_parts(self.drawn(Readouts())) == ()
 
-    def test_the_arcs_replace_the_stock_reload_and_hp_indicators(self):
-        settings = Settings({'reload_box': False, 'reload_arcs': True}, SCHEMA)
+    def test_the_stock_reload_timer_stays_while_the_box_has_nothing_to_show(self):
+        readouts = Readouts()
+        readouts.set_reload(0.0, None)
 
-        parts = replaced_reticle_parts(settings, Readouts())
+        assert replaced_reticle_parts(self.drawn(readouts)) == ()
 
-        assert parts == (RETICLE_RELOAD, RETICLE_CONDITION)
+    def test_the_drawn_arcs_replace_the_stock_reload_and_hp_indicators(self):
+        drawn = self.drawn(sample_readouts(), reload_box=False, reload_arcs=True)
+
+        assert replaced_reticle_parts(drawn) == (RETICLE_RELOAD, RETICLE_CONDITION)
+
+    def test_an_arc_without_a_value_keeps_its_stock_indicator(self):
+        readouts = Readouts()
+        readouts.set_health(500, 1000)
+
+        drawn = self.drawn(readouts, reload_box=False, reload_arcs=True)
+
+        assert replaced_reticle_parts(drawn) == (RETICLE_CONDITION,)
 
     def test_nothing_is_replaced_while_the_readouts_are_not_drawn(self):
-        assert replaced_reticle_parts(Settings(None, SCHEMA), None) == ()
+        assert replaced_reticle_parts(None) == ()
 
 
 if __name__ == '__main__':

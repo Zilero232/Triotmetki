@@ -6,10 +6,13 @@
   flex-shrink: 0;
 }
 
+// Every layer and its SVG carry the silhouette's size in rem: an absolutely placed SVG sized `100%` lost its size in
+// Gameface when the label was laid out again (the hangar card dragged with the edit modifier), and the tank vanished.
 .layer {
   position: absolute;
   top: 0;
   left: 0;
+  display: flex;
 }
 
 .fill {

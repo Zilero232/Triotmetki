@@ -99,6 +99,22 @@
       "target": "res/gui/maps/icons/otmetki/damage_log/icons",
       "contents": "6 damage-kind glyphs (damage, radio, track, stun, blocked, received) and 5 vehicle-class glyphs (class_light, class_medium, class_heavy, class_td, class_spg): SVG sources, RGBA PNG 32 px",
       "fair_play": "Decorates the player's own damage-log lines; the class glyph shows the vehicle class the player panels already show."
+    },
+    {
+      "id": "battlehits_models",
+      "feature": "hit_viewer",
+      "title": "BattleHits shell and hit-effect models",
+      "origin": "third_party",
+      "author": "Andrii Andrushchyshyn (poliroid)",
+      "copyright": "Copyright (c) 2015-2026 Andrii Andruschyshyn",
+      "license": "MIT",
+      "license_file": "third_party/battlehits/LICENSE.md",
+      "url": "https://gitlab.com/wot-public-mods/battle-hits",
+      "files": "third_party/battlehits/content",
+      "recursive": true,
+      "target": "res/content/battlehits",
+      "contents": "From BattleHits 2.4.1 (commit 6ed4c2b, resources/in/content/battlehits), unmodified and at their original in-game path: the AP, APCR, HEAT and HE shell models (common/shells/ap|apcr|heat|hemodern), the four hit-effect markers of style1 (ricochet, notpenetration, penetration, critical) and their textures",
+      "fair_play": "Drawn only in the hangar's hit viewer after the battle, on the player's own recorded hits: the shell along its recorded path and a marker of the outcome the client showed."
     }
   ]
 }

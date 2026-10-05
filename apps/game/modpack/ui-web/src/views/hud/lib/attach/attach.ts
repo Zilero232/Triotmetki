@@ -1,4 +1,4 @@
-import type { Rect } from '@/entities/hud/panel-layout';
+import type { Rect, Size } from '@/entities/hud/panel-layout';
 import type { HudAttach } from '@/shared/api/hud-protocol';
 
 import { clampRect } from '@/entities/hud/panel-layout';
@@ -9,14 +9,17 @@ import { HUD_OVERLAY } from '../../config';
 
 const { gap, edge, bar, log, minimap, score } = HUD_OVERLAY.attach;
 
+const { postmortemTips } = HUD_OVERLAY;
+
 const bottomTop = ({ size, screen }: AttachRectInput): number => screen.height - edge - size.height;
 
-const aboveBarTop = ({ size, screen }: AttachRectInput): number => screen.height - bar.height - bar.above - size.height;
+const barBox = ({ attach }: AttachRectInput): Size => (attach.bar > 0 ? { width: attach.bar, height: bar.height } : postmortemTips);
+
+const aboveBarTop = (input: AttachRectInput): number => input.screen.height - barBox(input).height - bar.above - input.size.height;
 
 const barRight = (input: AttachRectInput): Pick<Rect, 'left' | 'top'> => {
   const { attach, size, screen } = input;
-  const barEnd = screen.width / 2 + attach.bar / 2;
-  const left = barEnd + gap;
+  const left = screen.width / 2 + barBox(input).width / 2 + gap;
 
   if (left + size.width > screen.width - attach.minimap - edge) {
     return { left: screen.width / 2 + bar.split, top: aboveBarTop(input) };
@@ -26,8 +29,8 @@ const barRight = (input: AttachRectInput): Pick<Rect, 'left' | 'top'> => {
 };
 
 const barLeft = (input: AttachRectInput): Pick<Rect, 'left' | 'top'> => {
-  const { attach, size, screen } = input;
-  const left = screen.width / 2 - attach.bar / 2 - gap - size.width;
+  const { size, screen } = input;
+  const left = screen.width / 2 - barBox(input).width / 2 - gap - size.width;
 
   if (left < log.right) {
     return { left: screen.width / 2 - bar.split - size.width, top: aboveBarTop(input) };
@@ -36,10 +39,16 @@ const barLeft = (input: AttachRectInput): Pick<Rect, 'left' | 'top'> => {
   return { left, top: bottomTop(input) };
 };
 
-const minimapAbove = ({ attach, size, screen }: AttachRectInput): Pick<Rect, 'left' | 'top'> => ({
-  left: screen.width - edge - size.width,
-  top: screen.height - attach.minimap - minimap.gap - size.height
-});
+const minimapAbove = (input: AttachRectInput): Pick<Rect, 'left' | 'top'> => {
+  const { attach, size, screen } = input;
+  const left = screen.width - edge - size.width;
+
+  if (attach.minimap <= 0) {
+    return { left, top: bottomTop(input) };
+  }
+
+  return { left, top: screen.height - attach.minimap - minimap.gap - size.height };
+};
 
 const scoreRight = ({ size, screen }: AttachRectInput): Pick<Rect, 'left' | 'top'> =>
   screen.width < score.narrow

@@ -63,6 +63,7 @@ class StartSpottedTest(unittest.TestCase):
         self.panel.wait = lambda reason: None
         self.panel.hide = lambda: None
         self.panel.render = lambda: None
+        self.panel.lamp = None
 
     def tearDown(self):
         forget_client()
@@ -97,6 +98,22 @@ class StartSpottedTest(unittest.TestCase):
         self.panel.hooks.handlers['onVehicleControlling'](own_vehicle(True))
 
         assert self.panel.lamp.lit
+
+    def test_the_stock_lamp_stays_when_the_client_has_no_spotting_state(self):
+        self.panel.states = {}
+        self.panel.settings = {'replace_stock': True}
+
+        self.panel.start(Namespace())
+
+        assert self.panel.stock_aliases() == ()
+
+    def test_the_running_lamp_replaces_the_stock_lamp_lit_or_not(self):
+        self.panel.settings = {'hide_after_s': 0, 'replace_stock': True}
+
+        self.panel.start(Namespace())
+
+        assert self.panel.stock_aliases() == ('sixthSense',)
+        assert self.panel.stock_while_hidden
 
 
 if __name__ == '__main__':

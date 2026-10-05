@@ -45,6 +45,7 @@ def hit_row(number, index, hit, translate):
         'vehicle': hit.get('vehicle') or u'?',
         'class': hit.get('class'),
         'result': result_text(hit, translate),
+        'part': translate('hv_part_' + hit['part']),
         'tone': hit['outcome'],
         'shell': shell_text(hit, translate),
         'damage': _number_or_dash(hit.get('damage')) if hit['outcome'] in DAMAGING else DASH,

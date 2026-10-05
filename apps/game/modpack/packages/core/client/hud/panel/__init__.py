@@ -35,13 +35,15 @@ class BattlePanel(FeatureComponent):
     start (so it replaces nothing), and the layout ends with the battle.
 
     `show(text, widget)` sends the GUIFlash text and the Gameface widget payload. A panel that replaces a stock element
-    returns its aliases from `stock_aliases()`: they are hidden while the panel runs and the Gameface page draws
-    widgets, and come back when the panel stops, is switched off or the renderer is GUIFlash.
+    returns its aliases from `stock_aliases()`: they are hidden while the panel runs and the Gameface page confirms it
+    drawn (core.client.hud.stock), and come back when the panel stops, is switched off, is off the page or the renderer
+    is GUIFlash. A panel that lights with its stock element (`stock_while_hidden`, sixth_sense) needs the page only.
 
     A panel with an alternate mode reads `extended()` (Alt held, the stock extended-info key) while it builds its
     payload and re-renders from `extended_changed(held)`, called while it runs."""
 
     start_event = 'battle_ready'
+    stock_while_hidden = False
 
     def __init__(self, app, spec):
         self.hud = hud_layer(app)
@@ -121,7 +123,8 @@ class BattlePanel(FeatureComponent):
 
     def sync_stock(self):
         replaces = self.running and self.enabled() and self.hud.renders_widgets()
-        self.stock.want(self.component_id, self.stock_aliases() if replaces else ())
+        aliases = self.stock_aliases() if replaces else ()
+        self.stock.want(self.component_id, aliases, while_hidden=self.stock_while_hidden)
 
     def show(self, text, widget=None):
         shown = self.hud.show(self.component_id, text, widget)

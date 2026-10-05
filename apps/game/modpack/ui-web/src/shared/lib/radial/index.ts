@@ -1,3 +1,3 @@
-export { radialDash } from './radial';
+export { radialArc } from './radial';
 
-export type { RadialDash, RadialInput } from './radial.types';
+export type { RadialArcInput } from './radial.types';

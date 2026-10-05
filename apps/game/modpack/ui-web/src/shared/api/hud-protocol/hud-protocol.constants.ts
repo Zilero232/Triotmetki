@@ -1,6 +1,6 @@
 export const HUD_PROTOCOL = {
   version: 5,
-  commands: ['ready', 'moved', 'resized', 'pressed', 'mouse'],
+  commands: ['ready', 'moved', 'resized', 'pressed', 'mouse', 'drawn'],
   mouseEvents: ['hover', 'down', 'wheel'],
   kinds: ['label', 'button'],
   covers: ['', 'stats', 'modal'],

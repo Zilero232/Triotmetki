@@ -12,13 +12,19 @@ view (the Esc menu) `modal`: the page fades them and they take no mouse and show
 drawn where it was, so nothing moves when they come back. `set_gui_hidden`, `set_full_stats` and `set_menu` are its V,
 Tab and Esc reasons.
 
+`set_stock_hidden(aliases)` follows the stock components the page has off the screen now (`core.hud.cover`
+FollowedComponents): a panel that goes with one (`panel.FOLLOWS`, the equipment row with the consumables panel) is made
+invisible like a covered one, and an attached panel (`panel.ATTACHED`) measures a hidden component as 0 px
+(`stock.followed_metrics`), so nothing keeps a place beside what is gone.
+
 `enter_mode(mode)` (a battle type, `core.hud.modes`) asks the layout policy a component set with `set_policy(policy)`
 which panels the type shows and whether it keeps places of its own: a panel the type leaves out is held like a muted
 one, and a drag in such a battle is saved for that type (`ModePlaces`), not in the panel's settings. `leave_mode()` goes
 back to every panel at its own place (the hangar, the HUD editor).
 
 `show(panel_id, text, widget)` also carries the panel's structured payload (`core.hud.widget`) for the Gameface page;
-`renders_widgets()` says whether the renderer draws it (a feature replaces a stock element only then).
+`renders_widgets()` says whether the renderer draws it (a feature replaces a stock element only then); `draws(panel_id)`
+whether the renderer confirmed the panel on the screen (the Gameface page reports the panels it laid out with a size).
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -27,6 +33,7 @@ from ..backend import NullBackend
 from ..modes import MODE_RANDOM, ModePlaces
 from ..panel import (
     ATTACHED,
+    FOLLOWS,
     LAYOUT_KEYS,
     fit_place,
     alias_of,
@@ -40,7 +47,7 @@ from ..panel import (
     pinned_values,
     retired_reset,
 )
-from ..stock import stock_metrics
+from ..stock import FOLLOWED_ALIASES, followed_metrics, stock_metrics
 from .constants import (
     COVER_EFFECTS,
     COVER_FADES,
@@ -76,7 +83,9 @@ class HudLayer(object):
         self.mode_places = ModePlaces(config)
         self.watchers = []
         self.metrics = stock_metrics()
+        self.stock_hidden = frozenset()
         self.backend.listen(self.on_moved)
+        self.backend.listen_drawn(self._notify)
 
     @property
     def gui_hidden(self):
@@ -143,23 +152,49 @@ class HudLayer(object):
         return props
 
     def _attach(self, panel_id, values):
-        return attach_of(alias_of(panel_id), values, self.panels[panel_id].schema.defaults, self.metrics)
+        metrics = followed_metrics(self.metrics, self.stock_hidden)
+        return attach_of(alias_of(panel_id), values, self.panels[panel_id].schema.defaults, metrics)
 
     def set_stock_metrics(self, metrics):
         """The measured stock sizes (core.hud.stock.stock_metrics) the attached panels follow; a shown attached panel
         is placed again when they changed."""
         if not metrics or metrics == self.metrics:
             return False
-        self.metrics = dict(metrics)
-        for alias in sorted(self.shown):
-            panel_id = panel_of(alias)
-            if alias in ATTACHED and panel_id in self.panels:
-                self.backend.update(alias, {'attach': self._attach(panel_id, self.place_values(panel_id))})
+        self._restage(lambda: setattr(self, 'metrics', dict(metrics)))
         return True
+
+    def set_stock_hidden(self, aliases):
+        """The followed stock components (core.hud.stock.FOLLOWED_ALIASES) the page has off the screen now: the panels
+        that go with one hide or come back, the attached ones are placed again; only the props that changed are sent."""
+        hidden = frozenset(alias for alias in (aliases or ()) if alias in FOLLOWED_ALIASES)
+        if hidden == self.stock_hidden:
+            return False
+        self._restage(lambda: setattr(self, 'stock_hidden', hidden))
+        return True
+
+    def _restage(self, change):
+        before = dict((alias, self._stage_props(alias)) for alias in self.shown)
+        change()
+        for alias in sorted(self.shown):
+            after = self._stage_props(alias)
+            changed = dict((key, value) for key, value in after.items() if before[alias].get(key) != value)
+            if changed:
+                self.backend.update(alias, changed)
+
+    def _stage_props(self, alias):
+        props = {'visible': self._visible(alias)}
+        panel_id = panel_of(alias)
+        if alias in ATTACHED and panel_id in self.panels:
+            props['attach'] = self._attach(panel_id, self.place_values(panel_id))
+        return props
+
+    def _visible(self, alias):
+        return not self.gui_hidden and FOLLOWS.get(alias) not in self.stock_hidden
 
     def props(self, panel_id, text, widget=None):
         props = self.layout(panel_id)
-        props.update({'text': text, 'visible': not self.gui_hidden, 'widget': widget, 'cover': self.cover})
+        visible = self._visible(alias_of(panel_id))
+        props.update({'text': text, 'visible': visible, 'widget': widget, 'cover': self.cover})
         props['hint'] = panel_hint(self.translate, alias_of(panel_id))
         return props
 
@@ -167,9 +202,18 @@ class HudLayer(object):
         """Whether the current battle type shows this panel (every panel outside a battle type)."""
         return self.allowed is None or panel_id in self.allowed
 
+    def draws(self, panel_id):
+        """Whether the renderer confirmed the panel on the screen (the Gameface page laid it out with a size)."""
+        drawn = self.backend.drawn_aliases()
+        return drawn is not None and alias_of(panel_id) in drawn
+
+    def page_draws(self):
+        """Whether the renderer confirms what it draws at all (the Gameface page is up and reported)."""
+        return self.backend.drawn_aliases() is not None
+
     def watch(self, callback):
         """`callback()` after every change of what keeps panels off the screen: mute, blocked panels, the battle type,
-        a cover reason."""
+        a cover reason, the panels the renderer confirmed drawn."""
         if callback not in self.watchers:
             self.watchers.append(callback)
 
@@ -249,7 +293,7 @@ class HudLayer(object):
     def _redraw(self, alias, text, widget):
         if self.texts.get(alias) == text and self.widgets.get(alias) == widget:
             return
-        self.backend.update(alias, {'text': text, 'visible': not self.gui_hidden, 'widget': widget})
+        self.backend.update(alias, {'text': text, 'visible': self._visible(alias), 'widget': widget})
         self.texts[alias] = text
         self.widgets[alias] = widget
 
@@ -292,18 +336,22 @@ class HudLayer(object):
         `COVER_EFFECTS` says; only the props that changed are sent."""
         if reason not in COVER_EFFECTS:
             return False
-        before, covers = self._cover_props(), self.covers
+        covers = self.covers
+        before = dict((alias, self._cover_props(alias)) for alias in self.shown)
         self.covers = self.covers | {reason} if on else self.covers - {reason}
-        after = self._cover_props()
-        changed = dict((key, value) for key, value in after.items() if before[key] != value)
-        if changed:
-            self._update_shown(changed)
+        changed = False
+        for alias in sorted(self.shown):
+            after = self._cover_props(alias)
+            props = dict((key, value) for key, value in after.items() if before[alias][key] != value)
+            if props:
+                self.backend.update(alias, props)
+                changed = True
         if self.covers != covers:
             self._notify()
-        return bool(changed)
+        return changed
 
-    def _cover_props(self):
-        return {'visible': not self.gui_hidden, 'cover': self.cover}
+    def _cover_props(self, alias):
+        return {'visible': self._visible(alias), 'cover': self.cover}
 
     def set_gui_hidden(self, hidden):
         """Follow the stock battle GUI hidden with V (True) and shown again (False); the panels stay in place."""
@@ -316,10 +364,6 @@ class HudLayer(object):
     def set_menu(self, shown):
         """Follow a modal stock view over the battle (the Esc menu): every panel stays, faded (True), or not."""
         self.set_cover(COVER_MENU, bool(shown))
-
-    def _update_shown(self, props):
-        for alias in sorted(self.shown):
-            self.backend.update(alias, dict(props))
 
     def _apply(self):
         for alias in list(self.shown):

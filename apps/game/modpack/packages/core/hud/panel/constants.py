@@ -2,6 +2,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import re
 
+from ..stock.constants import CONSUMABLES_PANEL
+
 ALIAS_PREFIX = 'otmetki.hud.'
 
 PANEL_DEFAULTS = {
@@ -104,10 +106,20 @@ DOCKS = {
 # places it from them (ui-web views/hud/lib/attach); the default place itself is where GUIFlash draws it.
 # `bar_right`: right of the consumables panel (marks); `bar_left`: left of it (equipment row); `minimap_above`: right
 # aligned above the minimap (the previous battle's results); `score_right`: right of the score strip (battle progress).
+# A followed stock element the page hides (core.hud.stock FOLLOWED_ALIASES) is sent as 0 px: the marks then sit beside
+# the stock post-mortem tips, the previous battle's card drops to the corner. The score strip is never measured
+# (`score_right` follows the screen centre, where team HP draws its replacement), so nothing there can go stale.
 ATTACH_KINDS = ('bar_right', 'bar_left', 'minimap_above', 'score_right')
 ATTACHED = {
     'otmetki.hud.marks_panel': 'bar_right',
     'otmetki.hud.battle_loadout': 'bar_left',
     'otmetki.hud.last_battle': 'minimap_above',
     'otmetki.hud.battle_progress': 'score_right',
+}
+# Panels shown only while the stock component they sit beside is on the screen (core.hud.stock FOLLOWED_ALIASES): the
+# equipment row goes with the consumables panel on death, in the video camera and under the pre-battle setups panel, as
+# kurzdor's battleequipment does (CHANGELOG 3.5.0, 3.10.00). The marks stay after death, as the gunmarks packs keep
+# theirs: the bar's 0 px size moves them beside the post-mortem tips instead (ui-web views/hud/lib/attach).
+FOLLOWS = {
+    'otmetki.hud.battle_loadout': CONSUMABLES_PANEL,
 }

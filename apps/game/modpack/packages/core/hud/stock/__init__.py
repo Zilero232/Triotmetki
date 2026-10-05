@@ -18,10 +18,15 @@ from .constants import (
     BAR_PITCH,
     BATTLE_DAMAGE_LOG_PANEL,
     BATTLE_TIMER,
+    CONSUMABLES_PANEL,
+    FOLLOWED_ALIASES,
+    FOLLOWED_METRICS,
     FRAG_CORRELATION_BAR,
     HIDDEN_ALPHA,
+    MINIMAP,
     MINIMAP_FALLBACK,
     MINIMAP_SIZES,
+    MISSING_SIZE,
     RETICLE_CASSETTE,
     RETICLE_CONDITION,
     RETICLE_PARTS,
@@ -34,7 +39,10 @@ from .constants import (
 __all__ = (
     'BATTLE_DAMAGE_LOG_PANEL',
     'BATTLE_TIMER',
+    'CONSUMABLES_PANEL',
+    'FOLLOWED_ALIASES',
     'FRAG_CORRELATION_BAR',
+    'MINIMAP',
     'RETICLE_CASSETTE',
     'RETICLE_CONDITION',
     'RETICLE_PARTS',
@@ -44,6 +52,7 @@ __all__ = (
     'STOCK_ALIASES',
     'StockSuppression',
     'bar_slots',
+    'followed_metrics',
     'hide_reticle_parts',
     'stock_metrics',
 )
@@ -66,6 +75,16 @@ def stock_metrics(minimap_index=None, slots=None):
         minimap = MINIMAP_FALLBACK
     count = slots if is_number(slots) and not isinstance(slots, bool) and slots > 0 else BAR_FALLBACK_SLOTS
     return {'bar': int(count) * BAR_PITCH, 'minimap': minimap}
+
+
+def followed_metrics(metrics, hidden):
+    """A copy of `metrics` (`stock_metrics`) with the size of every followed stock component the page hides now
+    (`hidden`, aliases of FOLLOWED_ALIASES) at MISSING_SIZE: no attached panel keeps a place beside what is gone."""
+    result = dict(metrics)
+    for alias, key in FOLLOWED_METRICS:
+        if alias in hidden:
+            result[key] = MISSING_SIZE
+    return result
 
 
 def hide_reticle_parts(vo, parts):

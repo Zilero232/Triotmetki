@@ -18,6 +18,8 @@ export const marksPanelSchema = z.object({
   mark: hudIconSchema,
   tone: hudToneSchema,
   goal: z.nullable(levelNeedSchema),
+  bar: z.optional(z.nullable(z.object({ value: z.number(), hold: z.number(), end: z.number() }))),
+  to: z.optional(z.string()),
   note: z.nullable(z.string()),
   text: z.nullable(z.string()),
   thresholds: z.array(z.object({ level: z.number(), need: z.number(), reached: z.boolean() })),

@@ -17,20 +17,27 @@ from ....core.client.battle import (
 )
 from ....core.client.game import values_by_name
 from ....core.log import log, safe
-from ....core.shells import shell_code
-from ..model import BOOK_FILE, MODULE_KEYS, OWN_TARGET, SIDE_DEALT, SIDE_RECEIVED, HitBook
+from ..model import BOOK_FILE, MODULE_KEYS, OWN_TARGET, SIDE_DEALT, SIDE_RECEIVED, HitBook, gun_shell
 from .constants import SIDE_BY_EVENT
 
 
-def shot_effect(effects_index):
-    """(shell code, caliber in mm) of a shot's effects (RU 1.45 Vehicle.showDamageFromShot reads
-    vehicles.g_cache.shotEffects[effectsIndex]['shellType' / 'caliber'])."""
-    try:
-        from items import vehicles
-        effects = vehicles.g_cache.shotEffects[effects_index]
-    except Exception:
-        return None, None
-    return shell_code(effects.get('shellType')), effects.get('caliber')
+def gun_shots(vehicle_id):
+    """(shell effects index, shell kind, calibre) of every shot of a vehicle's gun, from the arena's vehicle list
+    (RU 1.45 avatar arena.vehicles[id]['vehicleType'], the descriptor the player panels read the tank from)."""
+    vehicles = getattr(arena(), 'vehicles', None) or {}
+    descriptor = (vehicles.get(vehicle_id) or {}).get('vehicleType')
+    shots = getattr(getattr(descriptor, 'gun', None), 'shots', None) or ()
+    return [(shot.shell.effectsIndex, shot.shell.kind, shot.shell.caliber) for shot in shots]
+
+
+def shot_shell(shooter_id, effects_index):
+    """(shell code, calibre in mm) of a shot, or (None, None) when the shooter's gun has no such shell."""
+    return gun_shell(gun_shots(shooter_id), effects_index) or (None, None)
+
+
+def aim_of(entity):
+    getter = getattr(entity, 'getAimParams', None)
+    return list(getter()) if getter is not None else None
 
 
 # Only what shapes the model the hits are drawn on: the type and its chassis, turret and gun, never the equipment the
@@ -54,9 +61,11 @@ def _map_label():
 
 
 # Fair play: only the shots between the player's own tank and one other vehicle, as the client draws them
-# (core.client.battle.on_shot_with_own_vehicle): the hits on the own tank and the player's own hits. Splashes
-# (showDamageFromExplosion: artillery, air strikes) and the shots between two other vehicles are never recorded.
-# Nothing is analysed in battle: the angle and the armour are measured on the model in the hangar after it.
+# (core.client.battle.on_shot_with_own_vehicle): the hits on the own tank and the player's own hits, with the shooter's
+# shell and the hit vehicle's turret and gun pose as the client drew them (poliroid BattleHits records the same:
+# BattleProcessor.processShot). Splashes (showDamageFromExplosion: artillery, air strikes) and the shots between two
+# other vehicles are never recorded. Nothing is analysed or shown in battle: the angle and the armour are measured on
+# the model in the hangar after it.
 class HitRecorder(object):
 
     def __init__(self, component):
@@ -116,7 +125,7 @@ class HitRecorder(object):
         key = OWN_TARGET if own else u'%d' % entity.id
         if not self.book.target(key, target_info(entity)):
             return
-        shell, caliber = shot_effect(effects_index)
+        shell, caliber = shot_shell(attacker_id, effects_index)
         shot = {
             'side': side,
             'target': key,
@@ -126,6 +135,7 @@ class HitRecorder(object):
             'segments': list(points or ()),
             'shell': shell,
             'caliber': caliber,
+            'aim': aim_of(entity),
         }
         self.book.hit(shot, time.time())
 

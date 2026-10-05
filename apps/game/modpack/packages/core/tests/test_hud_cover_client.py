@@ -18,6 +18,8 @@ STUBBED = (
     'gui.Scaleform.daapi.view.battle',
     'gui.Scaleform.daapi.view.battle.shared',
     'gui.Scaleform.daapi.view.battle.shared.page',
+    'gui.Scaleform.daapi.view.meta',
+    'gui.Scaleform.daapi.view.meta.PrebattleAmmunitionPanelViewMeta',
     'gui.mods',
     'gui.mods.gambiter',
     'gui.mods.gambiter.flash',
@@ -30,6 +32,7 @@ STUBBED = (
     'skeletons.gui.impl',
 )
 HOOKED = ('_populate', '_dispose', '_setComponentsVisibility')
+SETUPS_HOOKED = ('as_showS', 'as_hideS')
 FULLSCREEN_WINDOW = 1 | 1024
 DIALOG = 17
 POP_OVER = 33
@@ -62,9 +65,9 @@ class ClientEvent(object):
 
 class SharedPage(object):
 
-    def __init__(self, full_stats_alias='fullStats'):
+    def __init__(self, full_stats_alias='fullStats', visible=()):
         self._fullStatsAlias = full_stats_alias
-        self.visible = set()
+        self.visible = set(visible)
         self.gui_visible = True
         self.disposed = False
 
@@ -81,11 +84,23 @@ class SharedPage(object):
     def as_getComponentsVisibilityS(self):
         return list(self.visible)
 
+    def as_isComponentVisibleS(self, alias):
+        return alias in self.visible
+
     def isGuiVisible(self):
         return self.gui_visible
 
     def isDisposed(self):
         return self.disposed
+
+
+class PrebattleAmmunitionPanelViewMeta(object):
+
+    def as_showS(self):
+        return 'shown'
+
+    def as_hideS(self, useAnim):
+        return 'hidden'
 
 
 class Window(object):
@@ -167,6 +182,8 @@ def install_stubs(callbacks, manager):
     sys.modules['BigWorld'].callback = callbacks
     sys.modules['BigWorld'].time = lambda: 0.0
     sys.modules['gui.Scaleform.daapi.view.battle.shared.page'].SharedPage = SharedPage
+    setups = sys.modules['gui.Scaleform.daapi.view.meta.PrebattleAmmunitionPanelViewMeta']
+    setups.PrebattleAmmunitionPanelViewMeta = PrebattleAmmunitionPanelViewMeta
     sys.modules['frameworks.wulf'].WindowStatus = Namespace(DESTROYING='DESTROYING', DESTROYED='DESTROYED')
     sys.modules['helpers'].dependency = sys.modules['helpers.dependency']
     sys.modules['helpers.dependency'].instance = lambda interface: Namespace(windowsManager=manager)
@@ -195,9 +212,13 @@ class CoverWatchTest(unittest.TestCase):
         self.manager = WindowsManager()
         self.saved = install_stubs(self.callbacks, self.manager)
         self.originals = dict((name, SharedPage.__dict__[name]) for name in HOOKED)
+        self.setups_originals = dict(
+            (name, PrebattleAmmunitionPanelViewMeta.__dict__[name]) for name in SETUPS_HOOKED
+        )
         from otmetki.core.client.hud.cover import CoverWatch
         self.layer = HudLayer(Backend(), ComponentConfig(MemoryFile()))
         self.layer.register('panel', panel_schema({}))
+        self.layer.register('battle_loadout', panel_schema({}))
         self.switch = {'value': True}
         self.watch = CoverWatch(self.layer, lambda: self.switch['value'])
         assert self.watch.install()
@@ -205,13 +226,79 @@ class CoverWatchTest(unittest.TestCase):
     def tearDown(self):
         for name, value in self.originals.items():
             setattr(SharedPage, name, value)
+        for name, value in self.setups_originals.items():
+            setattr(PrebattleAmmunitionPanelViewMeta, name, value)
         restore_stubs(self.saved)
 
-    def battle_page(self, full_stats_alias='fullStats'):
-        page = SharedPage(full_stats_alias)
+    def battle_page(self, full_stats_alias='fullStats', visible=()):
+        page = SharedPage(full_stats_alias, visible)
         page._populate()
         self.layer.show('panel', 'text')
         return page
+
+    def alive_page(self):
+        return self.battle_page(visible={'consumablesPanel', 'minimap', 'teamBasesPanel'})
+
+    def test_death_takes_the_consumables_panel_and_the_equipment_row_with_it(self):
+        page = self.alive_page()
+
+        page._setComponentsVisibility(hidden={'consumablesPanel'})
+
+        assert self.layer.stock_hidden == frozenset(('consumablesPanel',))
+
+    def test_a_respawn_brings_the_consumables_panel_back(self):
+        page = self.alive_page()
+        page._setComponentsVisibility(hidden={'consumablesPanel'})
+
+        page._setComponentsVisibility(visible={'consumablesPanel'})
+
+        assert self.layer.stock_hidden == frozenset()
+
+    def test_the_video_camera_hides_the_consumables_panel(self):
+        page = self.alive_page()
+
+        page._setComponentsVisibility(hidden={'damagePanel', 'battleDamageLogPanel', 'consumablesPanel'})
+
+        assert self.layer.stock_hidden == frozenset(('consumablesPanel',))
+        assert self.layer.covers == frozenset()
+
+    def test_a_page_that_starts_after_death_has_the_consumables_hidden_at_once(self):
+        self.battle_page(visible={'teamBasesPanel', 'minimap'})
+
+        assert self.layer.stock_hidden == frozenset(('consumablesPanel',))
+
+    def test_the_check_puts_right_a_consumables_change_it_missed(self):
+        page = self.alive_page()
+        page._setComponentsVisibility(visible={'fullStats'})
+        page.visible.discard('consumablesPanel')
+
+        self.callbacks.run()
+
+        assert 'consumablesPanel' in self.layer.stock_hidden
+
+    def test_the_pre_battle_setups_panel_hides_the_consumables_panel(self):
+        self.alive_page()
+
+        PrebattleAmmunitionPanelViewMeta().as_showS()
+
+        assert self.layer.stock_hidden == frozenset(('consumablesPanel',))
+
+    def test_the_consumables_come_back_when_the_battle_starts(self):
+        self.alive_page()
+        setups = PrebattleAmmunitionPanelViewMeta()
+        setups.as_showS()
+
+        assert setups.as_hideS(True) == 'hidden'
+        assert self.layer.stock_hidden == frozenset()
+
+    def test_the_page_end_gives_every_followed_component_back(self):
+        page = self.alive_page()
+        page._setComponentsVisibility(hidden={'consumablesPanel'})
+        PrebattleAmmunitionPanelViewMeta().as_showS()
+
+        page._dispose()
+
+        assert self.layer.stock_hidden == frozenset()
 
     def test_tab_hides_the_panels(self):
         page = self.battle_page()

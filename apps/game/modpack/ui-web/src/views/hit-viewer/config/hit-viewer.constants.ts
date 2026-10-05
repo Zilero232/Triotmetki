@@ -1,8 +1,11 @@
 export const HIT_VIEWER = {
   sides: ['received', 'dealt'],
   tones: ['pen', 'crit', 'blocked', 'ricochet', 'nodamage'],
-  columns: ['number', 'vehicle', 'result', 'shell', 'damage', 'angle', 'armor'],
+  columns: ['number', 'vehicle', 'result', 'shell', 'angle', 'armor', 'damage'],
   marker: { dot: 14, selectedDot: 22, line: 2 },
   degreesPerRadian: 180 / Math.PI,
-  inputCheckMs: 250
+  zoomStep: 200,
+  dash: '—',
+  table: { rowPx: 32, maxRows: 12 },
+  keys: { previous: 'ArrowLeft', next: 'ArrowRight', tab: 'Tab' }
 } as const;

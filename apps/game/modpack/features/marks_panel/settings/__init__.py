@@ -4,6 +4,7 @@ from ....core.hud import max_length, panel_schema
 from ....core.settings import fix
 from .constants import (  # noqa: F401
     ADVANCED,
+    BARS,
     CARD_DEFAULTS,
     CARD_PANEL_ID,
     COLOR_MODES,
@@ -23,7 +24,7 @@ SETTINGS = (SWITCH,)
 
 SCHEMA = fix(panel_schema(
     DEFAULTS,
-    choices={'style': STYLES, 'color_mode': COLOR_MODES, 'hangar_style': HANGAR_STYLES},
+    choices={'style': STYLES, 'bar': BARS, 'color_mode': COLOR_MODES, 'hangar_style': HANGAR_STYLES},
     limits=LIMITS,
     normalizers={'template': max_length(MAX_TEMPLATE)},
     retired=RETIRED_PLACES,

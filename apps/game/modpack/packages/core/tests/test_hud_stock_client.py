@@ -7,7 +7,7 @@ import unittest
 
 import _support  # noqa: F401
 from otmetki.core.events import EventBus
-from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer, panel_schema
+from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer, alias_of, panel_schema
 from otmetki.core.storage import MemoryFile
 
 STUBBED = (
@@ -61,10 +61,31 @@ class Event(object):
         self.ctx = ctx
 
 
+class Everything(object):
+
+    def __contains__(self, alias):
+        return True
+
+
 class Backend(HudBackend):
+
+    def __init__(self):
+        self.drawn = Everything()
+        self.drawn_listeners = []
 
     def available(self):
         return True
+
+    def drawn_aliases(self):
+        return self.drawn
+
+    def listen_drawn(self, on_drawn):
+        self.drawn_listeners.append(on_drawn)
+
+    def page_drew(self, *panel_ids):
+        self.drawn = None if panel_ids == (None,) else frozenset(alias_of(panel_id) for panel_id in panel_ids)
+        for listener in list(self.drawn_listeners):
+            listener()
 
     def create(self, alias, props):
         return True
@@ -99,7 +120,8 @@ class StockControlTest(unittest.TestCase):
         self.saved = install_stubs()
         self.originals = dict((name, SharedPage.__dict__[name]) for name in HOOKED)
         from otmetki.core.client.hud.stock import StockControl
-        self.layer = HudLayer(Backend(), ComponentConfig(MemoryFile()))
+        self.backend = Backend()
+        self.layer = HudLayer(self.backend, ComponentConfig(MemoryFile()))
         self.layer.register('panel', panel_schema({}))
         self.bus = EventBus()
         self.control = StockControl(self.layer, self.bus)
@@ -286,6 +308,72 @@ class StockControlTest(unittest.TestCase):
         self.layer.set_cover('full_stats', True)
 
         assert self.control.hidden == frozenset(('fragCorrelationBar',))
+
+    def test_the_stock_element_stays_until_the_page_draws_the_panel(self):
+        page = self.populated_page()
+        self.backend.page_drew(None)
+
+        self.control.want('panel', ('fragCorrelationBar',))
+
+        assert page.applied == []
+
+    def test_the_stock_element_goes_once_the_page_draws_the_panel(self):
+        page = self.populated_page()
+        self.backend.page_drew(None)
+        self.control.want('panel', ('fragCorrelationBar',))
+
+        self.backend.page_drew('panel')
+
+        assert page.applied[-1] == (set(), {'fragCorrelationBar'})
+
+    def test_the_stock_element_comes_back_when_the_page_stops_drawing_the_panel(self):
+        page = self.populated_page()
+        self.control.want('panel', ('fragCorrelationBar',))
+
+        self.backend.page_drew('other')
+
+        assert page.applied[-1] == ({'fragCorrelationBar'}, set())
+
+    def test_the_stock_element_comes_back_when_the_page_is_gone(self):
+        page = self.populated_page()
+        self.control.want('panel', ('fragCorrelationBar',))
+
+        self.backend.page_drew(None)
+
+        assert page.applied[-1] == ({'fragCorrelationBar'}, set())
+
+    def test_a_lamp_hides_its_stock_lamp_while_the_page_draws_whatever_it_shows(self):
+        page = self.populated_page()
+        self.backend.page_drew('other')
+
+        self.control.want('panel', ('sixthSense',), while_hidden=True)
+
+        assert page.applied[-1] == (set(), {'sixthSense'})
+
+    def test_a_lamp_gives_its_stock_lamp_back_when_the_page_is_gone(self):
+        page = self.populated_page()
+        self.control.want('panel', ('sixthSense',), while_hidden=True)
+
+        self.backend.page_drew(None)
+
+        assert page.applied[-1] == ({'sixthSense'}, set())
+
+    def test_a_reticle_part_stays_until_the_page_draws_the_panel(self):
+        self.populated_page()
+        self.backend.page_drew(None)
+
+        self.control.want('panel', ('reloaderTimerAlphaValue',))
+
+        assert self.control.reticle.hidden == frozenset()
+
+    def test_a_reticle_part_goes_once_the_page_draws_the_panel(self):
+        self.populated_page()
+        self.backend.page_drew(None)
+        self.control.want('panel', ('reloaderTimerAlphaValue',))
+
+        self.backend.page_drew('panel')
+
+        assert self.control.reticle.hidden == frozenset(['reloaderTimerAlphaValue'])
 
     def test_alt_down_goes_out_on_the_bus_once(self):
         held = []

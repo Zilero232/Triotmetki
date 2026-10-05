@@ -49,7 +49,12 @@ PANEL_SPEC = PanelSpec(
 )
 
 
+# The lamp lights and goes out with the stock one (the same OBSERVED_BY_ENEMY state), so it replaces the stock lamp
+# while it runs, lit or not (`stock_while_hidden`); a client without the spotting state starts no lamp and replaces
+# nothing.
 class SixthSenseAlert(BattlePanel):
+
+    stock_while_hidden = True
 
     def __init__(self, app):
         self.states = values_by_name(VEHICLE_VIEW_STATE, VEHICLE_STATES)
@@ -80,7 +85,7 @@ class SixthSenseAlert(BattlePanel):
         return icon_gallery(ICON_SETS)
 
     def stock_aliases(self):
-        return (SIXTH_SENSE,) if self.settings.get('replace_stock') else ()
+        return (SIXTH_SENSE,) if self.lamp is not None and self.settings.get('replace_stock') else ()
 
     def _on_vehicle_state(self, state, value):
         name = self.states.get(state)
@@ -129,8 +134,7 @@ class SixthSenseAlert(BattlePanel):
         if lamp is None or not lamp.lit:
             return False
 
-        now = time.time()
-        if lamp.expired(now, self.settings.get('hide_after_s')):
+        if lamp.expired(time.time()):
             self.hide()
             return False
 
@@ -144,6 +148,10 @@ class SixthSenseAlert(BattlePanel):
             return
 
         now = time.time()
+        if lamp.expired(now):
+            self.hide()
+            return
+
         text = format_sixth_sense(lamp, self.settings, self.app.translate, now)
         payload = sixth_sense_widget(lamp, self.settings, self.app.translate, now)
         self.show(text, payload)

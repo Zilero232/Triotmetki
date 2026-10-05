@@ -30,7 +30,7 @@ class HitViewer(FeatureComponent):
         app.bus.on(EVENT_HIT_VIEWER_BATTLES, self._answer_battles)
         self.queued = False
         self.mods_list = ModsListEntry(lambda: self.open_battle(None))
-        app.bus.on('battle_enter', self.screen.close)
+        app.bus.on('battle_enter', lambda: self.screen.close(restore_hangar=False))
         app.bus.on('hangar', self._on_hangar)
         app.bus.on('enqueued', self._on_enqueued)
         app.bus.on('dequeued', self._on_dequeued)
@@ -51,7 +51,7 @@ class HitViewer(FeatureComponent):
 
     def _on_enqueued(self):
         self.queued = True
-        self.screen.close()
+        self.screen.close(restore_hangar=False)
         self.mods_list.set_available(False)
 
     def _on_dequeued(self):

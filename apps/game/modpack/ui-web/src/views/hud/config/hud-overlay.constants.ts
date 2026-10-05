@@ -17,5 +17,6 @@ export const HUD_OVERLAY = {
     minimap: { gap: 12 },
     score: { offset: 308, top: 4, narrow: 1700, under: 52 }
   },
+  postmortemTips: { width: 501, height: 72 },
   coverAlpha: { stats: 0.25, modal: 0.25 }
 } as const;

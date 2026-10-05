@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 import _support  # noqa: F401
-from otmetki.core.hud.cover import CoverState, PageOverlays, flash_visible, window_reason
+from otmetki.core.hud.cover import CoverState, FollowedComponents, PageOverlays, flash_visible, window_reason
 from otmetki.core.hud.layer.constants import COVER_FULL_STATS, COVER_GUI, COVER_LOADING, COVER_SCREEN
 
 WINDOW = 1
@@ -275,6 +275,80 @@ class FlashVisibleTest(unittest.TestCase):
 
     def test_props_without_visibility_pass_unchanged(self):
         assert flash_visible({}, {'text': 'x'}) == {'text': 'x'}
+
+
+class FollowedComponentsTest(unittest.TestCase):
+
+    def test_the_page_hiding_the_consumables_panel_on_death_hides_it(self):
+        followed = FollowedComponents()
+
+        assert followed.changed(hidden={'consumablesPanel'})
+        assert followed.hidden == frozenset(('consumablesPanel',))
+
+    def test_the_page_showing_it_again_on_respawn_brings_it_back(self):
+        followed = FollowedComponents()
+        followed.changed(hidden={'consumablesPanel'})
+
+        assert followed.changed(visible={'consumablesPanel'})
+        assert followed.hidden == frozenset()
+
+    def test_components_nobody_follows_are_left_out(self):
+        followed = FollowedComponents()
+
+        assert not followed.changed(hidden={'damagePanel', 'teamBasesPanel'})
+        assert followed.hidden == frozenset()
+
+    def test_the_minimap_is_followed_too(self):
+        followed = FollowedComponents()
+
+        followed.changed(hidden={'minimap', 'consumablesPanel'})
+
+        assert followed.hidden == frozenset(('minimap', 'consumablesPanel'))
+
+    def test_a_component_both_shown_and_hidden_in_one_call_is_shown(self):
+        followed = FollowedComponents()
+        followed.changed(hidden={'consumablesPanel'})
+
+        followed.changed(visible={'consumablesPanel'}, hidden={'consumablesPanel'})
+
+        assert followed.hidden == frozenset()
+
+    def test_the_page_answering_hidden_hides_it(self):
+        followed = FollowedComponents()
+
+        assert followed.answered('consumablesPanel', False)
+        assert followed.hidden == frozenset(('consumablesPanel',))
+
+    def test_an_answer_that_is_not_a_flag_changes_nothing(self):
+        followed = FollowedComponents()
+        followed.changed(hidden={'consumablesPanel'})
+
+        assert not followed.answered('consumablesPanel', None)
+        assert not followed.answered('damagePanel', True)
+        assert followed.hidden == frozenset(('consumablesPanel',))
+
+    def test_the_pre_battle_setups_panel_takes_the_consumables_place(self):
+        followed = FollowedComponents()
+
+        assert followed.setups(True)
+        assert followed.hidden == frozenset(('consumablesPanel',))
+
+    def test_the_consumables_come_back_when_the_setups_panel_closes(self):
+        followed = FollowedComponents()
+        followed.setups(True)
+
+        followed.setups(False)
+
+        assert followed.hidden == frozenset()
+
+    def test_the_consumables_stay_hidden_while_the_page_still_hides_them(self):
+        followed = FollowedComponents()
+        followed.setups(True)
+        followed.changed(hidden={'consumablesPanel'})
+
+        followed.setups(False)
+
+        assert followed.hidden == frozenset(('consumablesPanel',))
 
 
 if __name__ == '__main__':

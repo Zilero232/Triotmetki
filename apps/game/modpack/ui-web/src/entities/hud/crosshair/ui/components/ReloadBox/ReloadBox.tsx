@@ -15,7 +15,7 @@ export const ReloadBox = ({ reload }: ReloadBoxProps) => (
     {reload.clip && (
       <div className={s.clip}>
         {Array.from({ length: reload.clip.size }, (_, index) => (
-          <span key={index} className={clsx(s.cell, index < (reload.clip?.loaded ?? 0) && s.loaded)} />
+          <span key={index} className={clsx(s.cell, index < (reload.clip?.loaded ?? 0) && s.cellLoaded)} />
         ))}
       </div>
     )}

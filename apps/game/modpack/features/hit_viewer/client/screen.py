@@ -2,19 +2,23 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import json
 
+import BigWorld
+
 from ....core.client.timer import Ticker
 from ....core.events import EVENT_SETTINGS_CLOSE
 from ....core.log import log, log_exception, safe
 from ..model import decode_message, default_index, first_side, marker, viewer_state
 from .constants import FOCUS_S, TICK_S
 from .stage import HangarStage, is_exact
-from .window import ViewerWindowHost
+from .window import ViewerWindowHost, move_camera
 
 
 class HitViewerScreen(object):
-    """The hit viewer over the hangar: the page lists the hits of one recorded battle, the hangar shows the vehicle the
-    selected hit landed on, and the hits on it are projected onto the page every frame (the 2D markers follow the
-    camera the player turns)."""
+    """The hit viewer, a separate view over the 3D hangar (poliroid BattleHits' layout): the page lists the hits of
+    one recorded battle at the side, the hangar shows the vehicle the selected hit landed on with the turret and gun as
+    the shot found them, the shell's model along the hit's path and its outcome marker, and the camera flies to it; the
+    other hits on that vehicle are projected onto the page every frame (the 2D markers follow the camera the player
+    turns)."""
 
     def __init__(self, component, recorder):
         self.component = component
@@ -56,10 +60,10 @@ class HitViewerScreen(object):
         self._select_battle(self.recorder.book.battle(battle_id))
 
     @safe
-    def close(self):
+    def close(self, restore_hangar=True):
         if not self.is_open:
             return
-        self.window.close()
+        self.window.close(restore_hangar)
         self._release()
 
     @safe
@@ -109,6 +113,7 @@ class HitViewerScreen(object):
     def _show_selected(self):
         battle, index = self.battle(), self.selection['index']
         if battle is None or index is None:
+            self.stage.scene.hide()
             self.push()
             return
         key = battle['hits'][index]['target']
@@ -145,13 +150,21 @@ class HitViewerScreen(object):
         self.decoded[index] = decoded
         if hit.get('angle') is not None:
             return False
-        analysis = self.stage.measure(decoded)
+        analysis = self.stage.measure(decoded, hit.get('shell'), hit.get('caliber'))
         return analysis is not None and self.recorder.book.measured(battle['id'], index, analysis)
 
     def _focus(self):
-        decoded = self.decoded.get(self.selection['index'])
-        if decoded is not None:
-            self.stage.focus(decoded, FOCUS_S)
+        battle, index = self.battle(), self.selection['index']
+        if battle is None or index is None:
+            return
+        self.stage.pose(battle['hits'][index].get('aim'))
+        BigWorld.callback(0, safe(lambda: self._fly(index)))
+
+    def _fly(self, index):
+        battle, decoded = self.battle(), self.decoded.get(index)
+        if decoded is None or battle is None or index != self.selection['index']:
+            return
+        self.stage.focus(decoded, battle['hits'][index], FOCUS_S)
 
     def stage_state(self):
         battle = self.battle()
@@ -196,6 +209,7 @@ class HitViewerScreen(object):
             'battle': lambda: self._open_battle(fields['id']),
             'tab': lambda: self._select_tab(fields['tab']),
             'select': lambda: self._select_hit(fields['index']),
+            'move': lambda: move_camera(fields['dx'], fields['dy'], fields['dz']),
         }
         handlers[command]()
 

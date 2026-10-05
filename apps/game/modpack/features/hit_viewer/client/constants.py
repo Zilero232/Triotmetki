@@ -13,16 +13,20 @@ STATE_PROPERTY = 'state'
 MARKS_PROPERTY = 'feed'
 SEND_COMMAND = 'send'
 MESSAGE_ARG = 'message'
-# RU 1.45 frameworks/wulf/gui_constants.py: TOP_WINDOW (10) sits over the hangar's views and the HUD page's labels
-# (WINDOW, 7) and under the overlays and tooltips. The window is a plain WINDOW the page sizes to the client (as the
-# HUD page does); the page takes the mouse only over its own panel (setInputArea), so the hangar under the rest of the
-# screen still turns and zooms the camera.
-WINDOW_LAYER = 'TOP_WINDOW'
+# The viewer is a lobby sub view over the 3D hangar, the way the stock Gameface views that show a vehicle open (RU 1.45
+# gui/impl/lobby/maps_training/maps_training_base_view.py, early_access_vehicle_view.py: ViewFlags.LOBBY_SUB_VIEW,
+# ScopeTemplates.LOBBY_SUB_SCOPE, app.setBackgroundAlpha(0), the lobby header menu hidden): the stock hangar UI steps
+# aside and the page's drags and wheel turn the hangar camera (CameraRelatedEvents.LOBBY_VIEW_MOUSE_MOVE). poliroid
+# BattleHits opens a LobbySubView with __background_alpha__ 0 the same way.
+BACKGROUND_ALPHA = 0.0
 
 # How often the markers follow the camera, and how long the camera flies to a hit.
 TICK_S = 0.04
-FOCUS_S = 0.6
+FOCUS_S = 0.5
 RESTORE_WAIT_S = 4.0
+# BattleHits HangarScene.__updateCamera: the camera orbits the hit point at 2.9-9 m, looking along the shell's path.
+FOCUS_DISTANCE_M = 5.5
+FOCUS_LIMITS_M = (2.9, 9.0)
 # The direction line of a marker: this far back along the shell's path, in metres; the plate probe reaches this far
 # on both sides of the hit point.
 TAIL_M = 0.9
@@ -40,6 +44,9 @@ PROJECTION_FUNCTION = 'getViewProjectionMatrix'
 # vehicle_systems.tankStructure.TankPartIndexes: CHASSIS 0, HULL 1, TURRET 2, GUN 3; the materials of each part.
 MATERIAL_PARTS = ('chassis', 'hull', 'turret', 'gun')
 LAST_STRUCTURAL_INDEX = 3
+# vehicle_systems.tankStructure: TankPartNames.TURRET and TankNodeNames.GUN_INCLINATION, the nodes BattleHits poses.
+TURRET_NODE = 'turret'
+GUN_NODE = 'Gun'
 
 # poliroid BattleHits (gui/battlehits/hooks.py): its own ModsList entry in the hangar, greyed out while in a battle
 # queue. The icon is the ui package's (the window this one opens over ships with it); ModsList draws its own without it.

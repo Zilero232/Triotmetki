@@ -1,22 +1,21 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.client.game import main_window
-from ....core.log import safe
+from ....core.log import log_exception, safe
 from .constants import (
+    BACKGROUND_ALPHA,
     INVALID_RES_ID,
     MARKS_PROPERTY,
     MESSAGE_ARG,
     RES_MAP_ID,
     SEND_COMMAND,
     STATE_PROPERTY,
-    WINDOW_LAYER,
 )
 
-# OpenWG Gameface registers the page (the ui package's res_map); the window is the client's wulf WindowImpl +
-# ViewImpl, as the settings window and the HUD page use them.
+# OpenWG Gameface registers the page (the ui package's res_map); the view is the client's wulf ViewImpl, loaded as a
+# lobby sub view the way the stock Gameface views over the 3D hangar are (constants.BACKGROUND_ALPHA).
 try:
-    from frameworks.wulf import ViewFlags, ViewModel, ViewSettings, WindowFlags, WindowLayer, WindowStatus
-    from gui.impl.pub import ViewImpl, WindowImpl
+    from frameworks.wulf import ViewFlags, ViewModel, ViewSettings
+    from gui.impl.pub import ViewImpl
     import openwg_gameface
     AVAILABLE = True
 except Exception:  # any failure inside a third-party import must not stop the feature
@@ -42,13 +41,39 @@ def message_of(args):
     return getter(MESSAGE_ARG) if getter is not None else None
 
 
-def input_manager():
+def lobby_app():
     try:
         from helpers import dependency
         from skeletons.gui.app_loader import IAppLoader
     except ImportError:
         return None
-    return getattr(dependency.instance(IAppLoader).getApp(), 'gameInputManager', None)
+    return dependency.instance(IAppLoader).getApp()
+
+
+def input_manager():
+    return getattr(lobby_app(), 'gameInputManager', None)
+
+
+def set_header_menu(visible):
+    from gui.Scaleform.daapi.view.lobby.header.LobbyHeader import HeaderMenuVisibilityState
+    from gui.shared import EVENT_BUS_SCOPE, events, g_eventBus
+    state = HeaderMenuVisibilityState.ALL if visible else HeaderMenuVisibilityState.NOTHING
+    event = events.LobbyHeaderMenuEvent(events.LobbyHeaderMenuEvent.TOGGLE_VISIBILITY, ctx={'state': state})
+    g_eventBus.handleEvent(event, scope=EVENT_BUS_SCOPE.LOBBY)
+
+
+def move_camera(dx, dy, dz):
+    """Turns and zooms the hangar camera as a drag over the 3D hangar does (RU 1.45 maps_training_base_view
+    ._onMoveSpace)."""
+    from gui.hangar_cameras.hangar_camera_common import CameraRelatedEvents
+    from gui.shared import EVENT_BUS_SCOPE, g_eventBus
+    event = CameraRelatedEvents(CameraRelatedEvents.LOBBY_VIEW_MOUSE_MOVE, ctx={'dx': dx, 'dy': dy, 'dz': dz})
+    g_eventBus.handleEvent(event, EVENT_BUS_SCOPE.GLOBAL)
+
+
+def show_hangar():
+    from gui.shared.event_dispatcher import showHangar
+    showHangar()
 
 
 if AVAILABLE:
@@ -72,13 +97,18 @@ if AVAILABLE:
 
     class ViewerView(ViewImpl):
 
-        def __init__(self, layout, controller):
-            super(ViewerView, self).__init__(ViewSettings(layout, flags=ViewFlags.VIEW, model=ViewerModel()))
+        def __init__(self, layoutID, controller=None):
+            settings = ViewSettings(layoutID, flags=ViewFlags.LOBBY_SUB_VIEW, model=ViewerModel())
+            super(ViewerView, self).__init__(settings)
             self.controller = controller
 
         @property
         def viewModel(self):
             return super(ViewerView, self).getViewModel()
+
+        def _initialize(self, *args, **kwargs):
+            super(ViewerView, self)._initialize(*args, **kwargs)
+            self._step_aside(False)
 
         def _onLoading(self, *args, **kwargs):
             super(ViewerView, self)._onLoading(*args, **kwargs)
@@ -87,34 +117,45 @@ if AVAILABLE:
 
         def _finalize(self):
             self.viewModel.send -= self._on_send
+            self._step_aside(True)
             self.controller.on_destroyed(self)
             super(ViewerView, self)._finalize()
+
+        @staticmethod
+        def _step_aside(is_back):
+            try:
+                if not is_back:
+                    lobby_app().setBackgroundAlpha(BACKGROUND_ALPHA)
+                set_header_menu(is_back)
+            except Exception:
+                log_exception('hit viewer: lobby header')
 
         @safe
         def _on_send(self, args=None):
             self.controller.on_message(message_of(args))
 
-    class ViewerWindow(WindowImpl):
-
-        def __init__(self, layout, controller):
-            super(ViewerWindow, self).__init__(wndFlags=WindowFlags.WINDOW, content=ViewerView(layout, controller),
-                                               layer=getattr(WindowLayer, WINDOW_LAYER), parent=main_window())
+    def load_view(layout, controller):
+        from gui.Scaleform.framework import ScopeTemplates
+        from gui.Scaleform.framework.managers.loaders import GuiImplViewLoadParams
+        from gui.shared import EVENT_BUS_SCOPE, events, g_eventBus
+        params = GuiImplViewLoadParams(layout, ViewerView, ScopeTemplates.LOBBY_SUB_SCOPE)
+        g_eventBus.handleEvent(events.LoadGuiImplViewEvent(params, controller=controller), scope=EVENT_BUS_SCOPE.LOBBY)
 
 else:
-    ViewerWindow = None
-    WindowStatus = None
+    load_view = None
 
 
 class ViewerWindowHost(object):
-    """The viewer's Gameface window: opened over the hangar, its page pushed `state` and `marks`, Esc held while it is
-    open (the client's game input manager, as the settings window holds it)."""
+    """The viewer's Gameface lobby sub view: loaded in place of the hangar view over the 3D hangar, its page pushed
+    `state` and `marks`, Esc held while it is open (the client's game input manager, as the settings window holds it);
+    closing it brings the stock hangar view back."""
 
     def __init__(self, on_message, on_escape, on_ready, on_gone):
         self.on_message_cb = on_message
         self.on_escape = on_escape
         self.on_ready = on_ready
         self.on_gone = on_gone
-        self.window = None
+        self.is_open = False
         self.view = None
         self.escape_manager = None
         self.pushed = {}
@@ -123,26 +164,24 @@ class ViewerWindowHost(object):
     def available():
         return AVAILABLE and layout_id() is not None
 
-    @property
-    def is_open(self):
-        return self.window is not None
-
     def open(self):
         layout = layout_id()
         if not AVAILABLE or layout is None:
             return False
-        self.window = ViewerWindow(layout, self)
-        self.window.load()
+        load_view(layout, self)
+        self.is_open = True
         self._hold_escape()
         return True
 
+    # A battle queue (RU 1.45 VIEW_ALIAS.BATTLE_QUEUE, a SUB_VIEW) replaces the sub view by itself: loading the hangar
+    # view then would cover the queue.
     @safe
-    def close(self):
-        window, self.window, self.view = self.window, None, None
-        self.pushed = {}
+    def close(self, restore_hangar=True):
+        was_open = self.is_open
+        self.is_open, self.view, self.pushed = False, None, {}
         self._release_escape()
-        if window is not None and window.windowStatus not in (WindowStatus.DESTROYING, WindowStatus.DESTROYED):
-            window.destroy()
+        if was_open and restore_hangar:
+            show_hangar()
 
     def push_state(self, text):
         self._push(STATE_PROPERTY, text)
@@ -161,17 +200,20 @@ class ViewerWindowHost(object):
             model.set_marks(text)
 
     def on_loaded(self, view):
+        if not self.is_open:
+            return
         self.view, self.pushed = view, {}
         self.on_ready()
 
-    # The client destroys the window itself with the lobby (a battle that starts without a queue, a logout): the
+    # The client replaces the sub view itself (a header tab, a battle that starts without a queue, a logout): the
     # screen still has its ticker and the swapped hangar vehicle to give back.
     def on_destroyed(self, view):
-        if self.view is view:
-            self.view = None
-            self.window = None
-            self._release_escape()
-            self.on_gone()
+        is_other_view = self.view is not None and self.view is not view
+        if not self.is_open or is_other_view:
+            return
+        self.is_open, self.view = False, None
+        self._release_escape()
+        self.on_gone()
 
     def on_message(self, raw):
         self.on_message_cb(raw)

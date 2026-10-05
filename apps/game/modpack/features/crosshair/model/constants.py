@@ -158,8 +158,9 @@ MARK_SWATCHES = {
 # The readouts beside the reticle (ui-web crosshair widget, docs/research/design/2026-10-03-competitor-ui.md B.2.13):
 # the own gun's reload and the own HP, counted down every READOUT_TICK_S between the client's updates. A reload of -1
 # is the client's "no shells" (ammo_ctrl.preprocessGunReloadTime, RU 1.45 client source). The last FINAL_S of a reload
-# take the index colour; a finished reload shows «ready» for READY_HOLD_S, then the box hides. A magazine shows one cell
-# per shell up to MAX_CLIP_CELLS.
+# take the index colour; a finished reload shows «ready» for READY_HOLD_S, then the full reload time while the gun is
+# loaded, as the stock reload timer does, so the box never leaves the screen. A magazine shows one cell per shell up to
+# MAX_CLIP_CELLS.
 READOUT_TICK_S = 0.1
 NO_SHELLS = -1
 FINAL_S = 1.0

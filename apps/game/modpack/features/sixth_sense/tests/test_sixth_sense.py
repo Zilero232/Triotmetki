@@ -68,12 +68,12 @@ class LampTest(unittest.TestCase):
 
         assert change is None
 
-    def test_elapsed_counts_whole_seconds_since_the_detection(self):
+    def test_the_countdown_reads_the_whole_seconds_still_left(self):
         lamp = lamp_lit_at(10.0)
 
-        elapsed = lamp.elapsed(13.7)
+        seconds = lamp.countdown(13.7)
 
-        assert elapsed == 3
+        assert seconds == 7
 
     def test_losing_the_detection_hides_the_lamp(self):
         lamp = lamp_lit_at(10.0)
@@ -89,12 +89,12 @@ class LampTest(unittest.TestCase):
 
         assert change is None
 
-    def test_a_lamp_that_is_out_has_no_elapsed_time(self):
+    def test_a_lamp_that_is_out_has_no_countdown(self):
         lamp = lamp_put_out()
 
-        elapsed = lamp.elapsed(15.0)
+        seconds = lamp.countdown(15.0)
 
-        assert elapsed is None
+        assert seconds is None
 
     def test_a_new_detection_lights_the_lamp_again(self):
         lamp = lamp_put_out()
@@ -113,26 +113,50 @@ class LampTest(unittest.TestCase):
 
 class ExpiryTest(unittest.TestCase):
 
-    def test_no_own_time_never_expires(self):
+    def test_the_lamp_stays_while_the_countdown_runs(self):
         lamp = lamp_lit_at(10.0)
 
-        is_expired = lamp.expired(15.0, 0)
+        is_expired = lamp.expired(19.9)
 
         assert not is_expired
 
-    def test_the_lamp_stays_before_the_own_time(self):
+    def test_the_lamp_goes_out_when_the_countdown_reaches_zero(self):
         lamp = lamp_lit_at(10.0)
 
-        is_expired = lamp.expired(15.0, 10)
-
-        assert not is_expired
-
-    def test_the_lamp_expires_at_the_own_time(self):
-        lamp = lamp_lit_at(10.0)
-
-        is_expired = lamp.expired(20.0, 10)
+        is_expired = lamp.expired(20.0)
 
         assert is_expired
+
+    def test_the_vehicle_shortens_the_countdown(self):
+        lamp = SixthSense()
+        lamp.observed(True, 10.0, 8.5)
+
+        is_expired = lamp.expired(18.5)
+
+        assert is_expired
+
+    def test_a_lamp_that_is_out_never_expires(self):
+        lamp = lamp_put_out()
+
+        is_expired = lamp.expired(100.0)
+
+        assert not is_expired
+
+    def test_the_last_second_reads_one_never_zero(self):
+        lamp = lamp_lit_at(10.0)
+
+        seconds = lamp.countdown(19.6)
+
+        assert seconds == 1
+        assert not lamp.expired(19.6)
+
+    def test_an_expired_lamp_waits_for_a_new_detection(self):
+        lamp = lamp_lit_at(10.0)
+
+        change = lamp.observed(True, 25.0)
+
+        assert change is None
+        assert lamp.expired(25.0)
 
 
 class FormatTest(unittest.TestCase):
@@ -145,12 +169,19 @@ class FormatTest(unittest.TestCase):
         assert 'SPOTTED' in text
         assert 'lamp_' in text
 
-    def test_the_timer_shows_the_seconds_since_the_detection(self):
+    def test_the_timer_counts_down_the_seconds_left(self):
         settings = settings_with()
 
         text = format_sixth_sense(lamp_lit_at(100.0), settings, translator(), 104.2)
 
-        assert '4 с' in text
+        assert '6 с' in text
+
+    def test_the_timer_starts_at_the_full_lamp_time(self):
+        settings = settings_with()
+
+        text = format_sixth_sense(lamp_lit_at(100.0), settings, translator(), 100.0)
+
+        assert '10 с' in text
 
     def test_the_custom_icon_set_is_gone(self):
         settings = settings_with(icon_set='custom', icon='gui/maps/icons/otmetki/lamp.png')

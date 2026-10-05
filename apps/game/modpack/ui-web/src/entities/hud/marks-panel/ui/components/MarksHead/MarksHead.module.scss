@@ -1,5 +1,22 @@
 @use '@/shared/styles/gameface' as *;
 
+// A new mark or the goal reached in this battle: the percent flashes gold once (design B.1 rule 6, one 400 ms flash).
+@keyframes mark-reached {
+  0% {
+    color: token(hud-gold);
+    transform: scale(1);
+  }
+
+  35% {
+    color: token(hud-gold);
+    transform: scale(1.08);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
 .head {
   display: flex;
   height: 24px;
@@ -22,6 +39,16 @@
   @include hud-type(caption);
 }
 
+.value {
+  display: flex;
+  flex-direction: row;
+  transform-origin: 0 50%;
+}
+
+.pulse {
+  animation: mark-reached 400ms token(ease-out);
+}
+
 .percent {
   min-width: 66px;
 
@@ -38,19 +65,6 @@
   margin-left: 6px;
 
   @include hud-type(body);
-}
-
-.goal {
-  padding-left: 8px;
-  margin-left: auto;
-}
-
-.need {
-  min-width: 38px;
-  padding-left: 4px;
-  text-align: right;
-
-  @include hud-type(value);
 }
 
 .note {

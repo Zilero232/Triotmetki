@@ -55,7 +55,8 @@ export const layoutLabels = (input: LayoutLabelsInput): LabelLayout[] => {
     const scale = scaleOf({ panel, scales });
     const placed = stacked.get(panel.id) ?? HUD_OVERLAY.emptyRect;
     const rect = live?.id === panel.id ? live.rect : placed;
-    const opacity = opacityOf({ panel, settled: settled.has(panel.id) });
+    const drawn = settled.has(panel.id);
+    const opacity = opacityOf({ panel, settled: drawn });
     const isEditable = takesInput(panel) && edit;
 
     return {
@@ -66,6 +67,7 @@ export const layoutLabels = (input: LayoutLabelsInput): LabelLayout[] => {
       button: takesInput(panel) && panel.kind === 'button',
       movable: isEditable && panel.drag,
       pointer: isEditable && Boolean(widgets.get(panel.id)?.pointer),
+      drawn,
       style: labelStyle({ rect, scale, opacity })
     };
   };
