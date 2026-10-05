@@ -4,8 +4,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import importlib  # novermin
 
 from ...compat import is_int, string_types
-from ...hooks import subscribe
-from ...log import log_exception
+from ...hooks import subscribe, unsubscribe
+from ...log import log_exception, safe
 
 
 def client_version():
@@ -67,12 +67,40 @@ def selected_tank_id():
     return getattr(selected_vehicle(), 'intCD', None)
 
 
+# RU 1.45 client source: gui/shared/personality.py onAccountBecomeNonPlayer calls g_currentVehicle.destroy(), whose
+# event manager clear() drops every onChanged subscriber, so after a battle nothing would hear the selection change.
+# One dispatcher holds the callbacks and is subscribed again on each onAccountShowGUI.
+_vehicle_changed = {'callbacks': [], 'vehicle': None, 'handler': None, 'player_events': None}
+
+
+def _notify_vehicle_changed(*args):
+    for callback in list(_vehicle_changed['callbacks']):
+        callback()
+
+
+def _subscribe_vehicle_changed(*args):
+    from CurrentVehicle import g_currentVehicle
+    state = _vehicle_changed
+    if state['vehicle'] is not None:
+        unsubscribe(state['vehicle'], 'onChanged', state['handler'])
+    state['vehicle'] = g_currentVehicle
+    state['handler'] = subscribe(g_currentVehicle, 'onChanged', _notify_vehicle_changed)
+
+
+def _follow_hangar_entries():
+    from PlayerEvents import g_playerEvents
+    if _vehicle_changed['player_events'] is not g_playerEvents:
+        subscribe(g_playerEvents, 'onAccountShowGUI', _subscribe_vehicle_changed)
+        _vehicle_changed['player_events'] = g_playerEvents
+
+
 def on_vehicle_changed(callback, owner):
-    """Calls `callback()` when the vehicle selected in the hangar changes (g_currentVehicle.onChanged); a client
-    without it is logged under `owner`."""
+    """Calls `callback()` when the vehicle selected in the hangar changes (g_currentVehicle.onChanged), also after the
+    client cleared its subscribers on leaving the hangar; a client without it is logged under `owner`."""
     try:
-        from CurrentVehicle import g_currentVehicle
-        subscribe(g_currentVehicle, 'onChanged', callback)
+        _vehicle_changed['callbacks'].append(safe(callback))
+        _subscribe_vehicle_changed()
+        _follow_hangar_entries()
     except Exception:
         log_exception('%s: current vehicle' % owner)
 

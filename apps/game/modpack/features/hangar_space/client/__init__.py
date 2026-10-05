@@ -67,8 +67,9 @@ class HangarSpace(FeatureComponent):
             write_overrides(switcher, changes)
             log('hangar space: %s' % (wanted or 'the game default'))
         hangar = hangar_space()
-        plan = reload_plan(is_default_scene(switcher), space_ready(hangar), target_path(switcher, hangar),
-                           getattr(hangar, 'spacePath', None))
+        ready = space_ready(hangar) and bool(available_paths())
+        target = target_path(switcher, hangar) if ready else None
+        plan = reload_plan(is_default_scene(switcher), ready, target, getattr(hangar, 'spacePath', None))
         if changes or force:
             self._follow(switcher, hangar, plan)
         return plan

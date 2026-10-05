@@ -51,6 +51,10 @@ def event_owner():
     return Owner
 
 
+def event_holder(name):
+    return type(str('Holder'), (object,), {name: FakeEvent()})()
+
+
 def raise_value_error(value):
     raise ValueError(value)
 
@@ -202,6 +206,58 @@ class SubscriptionsTest(unittest.TestCase):
         owner.onChanged(2)
 
         self.assertEqual(calls, [])
+
+
+class VehicleChangedTest(unittest.TestCase):
+
+    def setUp(self):
+        self.saved = dict((name, sys.modules.get(name)) for name in (
+            'CurrentVehicle', 'PlayerEvents', 'otmetki.core.client.game'))
+        self.vehicle = event_holder('onChanged')
+        self.player_events = event_holder('onAccountShowGUI')
+        current_vehicle = types.ModuleType(str('CurrentVehicle'))
+        current_vehicle.g_currentVehicle = self.vehicle
+        player_events = types.ModuleType(str('PlayerEvents'))
+        player_events.g_playerEvents = self.player_events
+        sys.modules['CurrentVehicle'] = current_vehicle
+        sys.modules['PlayerEvents'] = player_events
+        sys.modules.pop('otmetki.core.client.game', None)
+        self.game = importlib.import_module('otmetki.core.client.game')
+
+    def tearDown(self):
+        for name, module in self.saved.items():
+            if module is None:
+                sys.modules.pop(name, None)
+            else:
+                sys.modules[name] = module
+
+    def test_a_callback_hears_the_selection_change(self):
+        calls = []
+        self.game.on_vehicle_changed(lambda: calls.append(1), 'test')
+
+        self.vehicle.onChanged()
+
+        self.assertEqual(calls, [1])
+
+    def test_a_callback_hears_the_change_after_the_client_cleared_the_subscribers(self):
+        calls = []
+        self.game.on_vehicle_changed(lambda: calls.append(1), 'test')
+        self.vehicle.onChanged.handlers = []
+
+        self.player_events.onAccountShowGUI({})
+        self.vehicle.onChanged()
+
+        self.assertEqual(calls, [1])
+
+    def test_returning_to_the_hangar_subscribes_once(self):
+        calls = []
+        self.game.on_vehicle_changed(lambda: calls.append(1), 'test')
+
+        self.player_events.onAccountShowGUI({})
+        self.player_events.onAccountShowGUI({})
+        self.vehicle.onChanged()
+
+        self.assertEqual(calls, [1])
 
 
 class OverrideTest(unittest.TestCase):

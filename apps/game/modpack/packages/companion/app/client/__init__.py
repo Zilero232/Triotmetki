@@ -30,10 +30,9 @@ import time
 
 import BattleReplay
 import BigWorld
-from CurrentVehicle import g_currentVehicle
 from PlayerEvents import g_playerEvents
 
-from ....core.client.game import client_language, client_version
+from ....core.client.game import client_language, client_version, on_vehicle_changed
 from ....core.client.native import repair_detection_sound
 from ....core.client.packaging import warn_mixed_install
 from ....core.client.session_log import open_session_log
@@ -114,7 +113,7 @@ class OtmetkiApp(object):
         hooks.add(g_playerEvents, 'onAvatarReady', self._on_avatar_ready)
         hooks.add(g_playerEvents, 'onAvatarBecomeNonPlayer', self._on_avatar_leave)
         hooks.add(g_playerEvents, 'onBattleResultsReceived', self._on_battle_results)
-        hooks.add(g_currentVehicle, 'onChanged', self._on_vehicle_changed)
+        on_vehicle_changed(self._on_vehicle_changed, 'companion')
         self.settings_ui.register()
         self.ticker.start()
         log('started %s' % VERSION)
