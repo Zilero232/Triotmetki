@@ -41,19 +41,6 @@ export type PlayerActivityRow = {
   marksGained: number;
 };
 
-export type SessionSumRow = {
-  account_id: bigint;
-  battles: number;
-  wins: number;
-  damage: number;
-  last_at: Date | null;
-};
-
-export type MarksGainRow = {
-  account_id: bigint;
-  marks: number;
-};
-
 type DigestSettings = Pick<NotificationSettings, 'userId' | 'watchlistDigest' | 'watchlistDigestAt'>;
 
 export type DigestForInput = {

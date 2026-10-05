@@ -1,7 +1,9 @@
 import type { PlusCountKey, PlusFeature } from '@otmetki/schemas';
 
+import type { Payment, Subscription } from '../../../generated';
 import type { PrismaExecutor } from '../../core';
-import type { PlusPlan } from './lib';
+import type { PlusPlan } from './lib/pricing';
+import type { YooKassaPayment } from './lib/yookassa';
 
 type SavedMethod = {
   id: string;
@@ -16,6 +18,10 @@ export type ActivateInput = {
   now: Date;
 };
 
+export type ActivationInput = Pick<ActivateInput, 'method' | 'now' | 'plan'> & {
+  current: Subscription | null;
+};
+
 export type GrantDaysInput = {
   db: PrismaExecutor;
   userId: string;
@@ -27,6 +33,28 @@ export type CheckoutInput = {
   userId: string;
   plan: PlusPlan;
   promoCode?: string;
+};
+
+export type RequestPaymentInput = {
+  userId: string;
+  plan: PlusPlan;
+  amountRub: number;
+  promoCode: string | undefined;
+};
+
+export type RecordPendingInput = {
+  userId: string;
+  plan: PlusPlan;
+  amountRub: number;
+  paymentId: string;
+  promoCode: string | null;
+};
+
+export type RecordPendingChargeInput = {
+  subscription: Subscription;
+  paymentId: string;
+  plan: PlusPlan;
+  amountRub: number;
 };
 
 export type PromoCodeInput = {
@@ -54,6 +82,45 @@ export type ReleaseReservationInput = RecordRedemptionInput & {
 
 export type RevokeRefundInput = {
   paymentId: string;
+  now: Date;
+};
+
+export type FullRefundInput = {
+  paymentId: string;
+  row: Payment;
+};
+
+export type RevokeRefundedInput = {
+  tx: PrismaExecutor;
+  row: Payment;
+  now: Date;
+};
+
+export type SubscriptionPaidLastInput = {
+  tx: PrismaExecutor;
+  row: Payment;
+};
+
+export type SucceedPaymentInput = {
+  row: Payment;
+  remote: YooKassaPayment;
+};
+
+export type ActivatePaidInput = {
+  tx: PrismaExecutor;
+  row: Payment;
+  method: SavedMethod | null;
+  now: Date;
+};
+
+export type SettledPayment = {
+  referrer: string | null;
+};
+
+export type ClaimTrialInput = {
+  tx: PrismaExecutor;
+  userId: string;
+  trialDays: number;
   now: Date;
 };
 

@@ -5,15 +5,19 @@ import { Redis } from 'ioredis';
 import { match } from 'ts-pattern';
 
 import type { NotificationSettings } from '../../../../generated';
-import type { DeliverPayload, DigestPayload } from '../config';
-import type { ChannelAvailability, RoutingSettings } from '../lib';
+import type { DeliverPayload, DigestPayload } from '../config/notifications-queue.types';
+import type { ChannelAvailability, RoutingSettings } from '../lib/channel-routing';
 import type { ChannelSendInput, DeliverJob, DeliverToInput } from '../notifications.types';
 
 import { AppConfigService } from '../../../config';
 import { PrismaService, REDIS } from '../../../core';
 import { TelegramSenderService } from '../../telegram';
-import { NOTIFICATION_DEFAULTS, NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE, WEEKLY_DIGEST } from '../config';
-import { quietDelayMs, renderDigest, renderNotification, resolveNotificationLocale, routeDigest, routeEvent, splitQuiet } from '../lib';
+import { NOTIFICATION_DEFAULTS } from '../config/delivery.constants';
+import { NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE } from '../config/notifications-queue.constants';
+import { WEEKLY_DIGEST } from '../config/watchers.constants';
+import { routeDigest, routeEvent, splitQuiet } from '../lib/channel-routing';
+import { renderDigest, renderNotification, resolveNotificationLocale } from '../lib/notification-copy';
+import { quietDelayMs } from '../lib/quiet-hours';
 import { EmailService } from './email.service';
 import { NotificationLedgerService } from './notification-ledger.service';
 import { WebPushService } from './web-push.service';

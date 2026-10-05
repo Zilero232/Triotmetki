@@ -1,65 +1,80 @@
 import type { Queue } from 'bullmq';
 
-import { describe, expect, it } from 'vitest';
+import { addMinutes } from 'date-fns';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Player } from '../../../../../../generated';
 import type { PrismaService } from '../../../../../core';
+import type { PlayerQueries } from '../../queries/players.types';
 
 import { LESTA_API } from '../../../../../lib/lesta';
 import { JOB } from '../../../contracts';
+import { TRACKING } from '../../config/tracking.constants';
 import { DispatchService } from '../dispatch.service';
+
+const NOW = new Date('2026-09-26T12:00:00Z');
 
 const createDispatch = () => {
   const prisma = mockDeep<PrismaService>();
   const pollQueue = mock<Queue>();
   const sweepQueue = mock<Queue>();
+  const queries = mock<PlayerQueries>();
 
-  return { prisma, pollQueue, sweepQueue, dispatch: new DispatchService(prisma, pollQueue, sweepQueue) };
+  return { prisma, pollQueue, sweepQueue, queries, dispatch: new DispatchService(prisma, pollQueue, sweepQueue, queries) };
 };
 
 const players = (count: number) => Array.from({ length: count }, (_, index) => mock<Player>({ accountId: BigInt(index + 1) }));
 
-const claimed = (count: number) => Array.from({ length: count }, (_, index) => ({ accountId: BigInt(index + 1) }));
-
-const sqlText = (prisma: ReturnType<typeof createDispatch>['prisma']) =>
-  prisma.$queryRaw.mock.calls.map(([query]) => ('strings' in query ? query.strings.join('?') : String(query))).join(' ');
+const claimed = (count: number) => Array.from({ length: count }, (_, index) => index + 1);
 
 describe('DispatchService.dispatchActive', () => {
-  it('does nothing when no active player is due', async () => {
-    const { prisma, pollQueue, dispatch } = createDispatch();
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+  });
 
-    prisma.$queryRaw.mockResolvedValue([]);
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('does nothing when no active player is due', async () => {
+    const { queries, pollQueue, dispatch } = createDispatch();
+
+    queries.claimDueActivePlayers.mockResolvedValue([]);
 
     expect(await dispatch.dispatchActive()).toBe(0);
     expect(pollQueue.addBulk).not.toHaveBeenCalled();
   });
 
-  it('claims the due players in one locked update so overlapping ticks never queue the same account', async () => {
-    const { prisma, dispatch } = createDispatch();
+  it('claims the due players once per tick and moves them one active interval ahead', async () => {
+    const { queries, dispatch } = createDispatch();
 
-    prisma.$queryRaw.mockResolvedValue([]);
+    queries.claimDueActivePlayers.mockResolvedValue([]);
 
     await dispatch.dispatchActive();
 
-    expect(prisma.$queryRaw).toHaveBeenCalledOnce();
-    expect(sqlText(prisma)).toMatch(/UPDATE player[\s\S]*FOR UPDATE SKIP LOCKED[\s\S]*RETURNING/);
-    expect(prisma.player.findMany).not.toHaveBeenCalled();
-    expect(prisma.player.updateMany).not.toHaveBeenCalled();
+    expect(queries.claimDueActivePlayers).toHaveBeenCalledOnce();
+
+    expect(queries.claimDueActivePlayers.mock.calls[0]?.[0]).toMatchObject({
+      now: NOW,
+      nextPollAt: addMinutes(NOW, TRACKING.intervals.activeMinutes),
+      limit: TRACKING.dispatch.maxActivePerTick
+    });
   });
 
   it('queues the claimed accounts in Lesta-sized batches', async () => {
-    const { prisma, pollQueue, dispatch } = createDispatch();
+    const { queries, pollQueue, dispatch } = createDispatch();
     const due = claimed(LESTA_API.batchSize + 5);
 
-    prisma.$queryRaw.mockResolvedValue(due);
+    queries.claimDueActivePlayers.mockResolvedValue(due);
 
     expect(await dispatch.dispatchActive()).toBe(due.length);
 
     const [jobs] = pollQueue.addBulk.mock.calls[0] ?? [];
 
     expect(jobs?.map((job) => job.name)).toEqual([JOB.poll.batch, JOB.poll.batch]);
-    expect(jobs?.flatMap((job) => job.data.accountIds)).toHaveLength(due.length);
+    expect(jobs?.flatMap((job) => job.data.accountIds)).toEqual(due);
   });
 });
 

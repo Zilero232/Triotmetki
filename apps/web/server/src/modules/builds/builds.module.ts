@@ -4,29 +4,29 @@ import { BillingCoreModule } from '../billing';
 import { TanksModule } from '../tanks';
 import { BuildsCatalogController } from './builds-catalog.controller';
 import { BuildsController } from './builds.controller';
-import {
-  BuildAdviceService,
-  BuildDataService,
-  BuildOptionsService,
-  BuildsCatalogService,
-  BuildUsageService,
-  LoadoutService,
-  PopularBuildsService,
-  RecommendedBuildService
-} from './services';
+import { buildsCatalogQueriesProvider } from './providers/builds-catalog-queries.provider';
+import { BuildAdviceReaderService } from './services/build-advice-reader.service';
+import { BuildDataService } from './services/build-data.service';
+import { BuildOptionsReaderService } from './services/build-options-reader.service';
+import { BuildUsageReaderService } from './services/build-usage-reader.service';
+import { BuildsCatalogReaderService } from './services/builds-catalog-reader.service';
+import { LoadoutReaderService } from './services/loadout-reader.service';
+import { PopularBuildsReaderService } from './services/popular-builds-reader.service';
+import { RecommendedBuildReaderService } from './services/recommended-build-reader.service';
 
 @Module({
   imports: [TanksModule, BillingCoreModule],
   controllers: [BuildsController, BuildsCatalogController],
   providers: [
-    BuildAdviceService,
+    buildsCatalogQueriesProvider,
+    BuildAdviceReaderService,
     BuildDataService,
-    BuildOptionsService,
-    LoadoutService,
-    PopularBuildsService,
-    BuildUsageService,
-    RecommendedBuildService,
-    BuildsCatalogService
+    BuildOptionsReaderService,
+    LoadoutReaderService,
+    PopularBuildsReaderService,
+    BuildUsageReaderService,
+    RecommendedBuildReaderService,
+    BuildsCatalogReaderService
   ],
   exports: [BuildDataService]
 })

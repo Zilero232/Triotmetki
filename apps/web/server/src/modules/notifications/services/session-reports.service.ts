@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { subHours, subMinutes } from 'date-fns';
 
-import { isSessionEnded } from '../../../common/lib';
+import { isSessionEnded, winRateShare } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { SESSION_REPORT } from '../config';
-import { sessionReportKey } from '../lib';
+import { SESSION_REPORT } from '../config/watchers.constants';
+import { sessionReportKey } from '../lib/session-report-key';
 import { NotificationService } from './notification.service';
 
 @Injectable()
@@ -63,7 +63,7 @@ export class SessionReportsService {
           nickname: session.player.nickname,
           sessionId: session.id,
           battles: session.battles,
-          winRate: session.wins / session.battles,
+          winRate: winRateShare({ wins: session.wins, battles: session.battles }) ?? 0,
           avgDamage: session.damageDealt / session.battles,
           wn8: session.wn8
         },

@@ -2,8 +2,9 @@ import { Processor } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 
 import { MetricsService, TrackedWorkerHost } from '../../collector/metrics';
-import { SESSION_SHARE_QUEUE, sessionSharePayloadSchema } from '../config';
-import { SessionShareDeliveryService } from '../services';
+import { SESSION_SHARE_QUEUE } from '../config/session-share-queue.constants';
+import { sessionSharePayloadSchema } from '../config/session-share-queue.schemas';
+import { SessionShareDeliveryService } from '../services/session-share-delivery.service';
 
 @Processor(SESSION_SHARE_QUEUE.name, { concurrency: SESSION_SHARE_QUEUE.concurrency })
 export class SessionShareProcessor extends TrackedWorkerHost<boolean> {

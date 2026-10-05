@@ -16,8 +16,11 @@ import {
   ClanPageDto,
   ClanParamsDto,
   ClanStrongholdDto
-} from './dto';
-import { ClanListService, ClanPageService, ClanResolverService, ClanStrongholdService } from './services';
+} from './dto/clans.dto';
+import { ClanListService } from './services/clan-list.service';
+import { ClanPageService } from './services/clan-page.service';
+import { ClanResolverService } from './services/clan-resolver.service';
+import { ClanStrongholdReaderService } from './services/clan-stronghold-reader.service';
 
 @ApiTags('clans')
 @AllowAnonymous()
@@ -28,7 +31,7 @@ export class ClansController {
     private readonly resolver: ClanResolverService,
     private readonly pages: ClanPageService,
     private readonly lists: ClanListService,
-    private readonly strongholds: ClanStrongholdService
+    private readonly strongholds: ClanStrongholdReaderService
   ) {}
 
   @Get()

@@ -18,8 +18,10 @@ import {
   MoeProjectionDto,
   MoeProjectionInputDto,
   MoeQueryDto
-} from './dto';
-import { MoeCurveService, MoeTableService, ProjectionService } from './services';
+} from './dto/marks.dto';
+import { MoeCurveReaderService } from './services/moe-curve-reader.service';
+import { MoeTableService } from './services/moe-table.service';
+import { ProjectionReaderService } from './services/projection-reader.service';
 
 @ApiTags('marks')
 @AllowAnonymous()
@@ -27,8 +29,8 @@ import { MoeCurveService, MoeTableService, ProjectionService } from './services'
 export class MarksController {
   constructor(
     private readonly table: MoeTableService,
-    private readonly projection: ProjectionService,
-    private readonly curves: MoeCurveService
+    private readonly projection: ProjectionReaderService,
+    private readonly curves: MoeCurveReaderService
   ) {}
 
   @Get()

@@ -2,48 +2,48 @@ import { sortBy } from 'remeda';
 
 import type { BuildFeedInput, FeedItem, MarkRow, MasteryGainInput } from './feed.types';
 
-export const isMarkGain = (row: MarkRow): boolean => row.marks_on_gun !== null && row.prev_marks !== null && row.marks_on_gun > row.prev_marks;
+export const isMarkGain = (row: MarkRow): boolean => row.marksOnGun !== null && row.prevMarks !== null && row.marksOnGun > row.prevMarks;
 
 export const isMasteryGain = ({ row, aceMastery }: MasteryGainInput): boolean =>
-  row.prev_mastery !== null && row.mark_of_mastery === aceMastery && row.prev_mastery < aceMastery;
+  row.prevMastery !== null && row.markOfMastery === aceMastery && row.prevMastery < aceMastery;
 
 export const buildFeed = ({ snapshots, records, badges, nicknames, aceMastery, limit, badgeOf }: BuildFeedInput): FeedItem[] => {
   const items: FeedItem[] = [];
-  const base = (accountId: bigint) => ({ accountId: Number(accountId), nickname: nicknames.get(accountId) ?? null, badge: null });
+  const base = (accountId: bigint | number) => ({ accountId: Number(accountId), nickname: nicknames.get(BigInt(accountId)) ?? null, badge: null });
 
   for (const row of snapshots) {
     if (isMarkGain(row)) {
       items.push({
-        ...base(row.account_id),
+        ...base(row.accountId),
         kind: 'mark',
-        tankId: row.tank_id,
-        value: row.marks_on_gun ?? 0,
-        previous: row.prev_marks,
-        at: row.captured_at.toISOString()
+        tankId: row.tankId,
+        value: row.marksOnGun ?? 0,
+        previous: row.prevMarks,
+        at: row.capturedAt.toISOString()
       });
     }
 
     if (isMasteryGain({ row, aceMastery })) {
       items.push({
-        ...base(row.account_id),
+        ...base(row.accountId),
         kind: 'mastery',
-        tankId: row.tank_id,
-        value: row.mark_of_mastery,
-        previous: row.prev_mastery,
-        at: row.captured_at.toISOString()
+        tankId: row.tankId,
+        value: row.markOfMastery,
+        previous: row.prevMastery,
+        at: row.capturedAt.toISOString()
       });
     }
   }
 
   for (const row of records) {
-    if (row.max_damage !== null && row.prev_max_damage !== null && row.max_damage > row.prev_max_damage) {
+    if (row.maxDamage !== null && row.prevMaxDamage !== null && row.maxDamage > row.prevMaxDamage) {
       items.push({
-        ...base(row.account_id),
+        ...base(row.accountId),
         kind: 'record',
-        tankId: row.max_damage_tank_id,
-        value: row.max_damage,
-        previous: row.prev_max_damage,
-        at: row.captured_at.toISOString()
+        tankId: row.maxDamageTankId,
+        value: row.maxDamage,
+        previous: row.prevMaxDamage,
+        at: row.capturedAt.toISOString()
       });
     }
   }

@@ -2,7 +2,7 @@ import { SWEAT_LEVELS } from '@otmetki/schemas';
 import { range } from 'remeda';
 import { describe, expect, it } from 'vitest';
 
-import { SWEAT_INDEX } from '../../../config';
+import { SWEAT_INDEX } from '../../../config/sweat-index.constants';
 import { buildSweatIndex, sweatCutoffs, sweatLevel, sweatRatio } from '../sweat-index';
 
 const TANK_IDS = range(1, SWEAT_INDEX.minTanks * 2 + 1);

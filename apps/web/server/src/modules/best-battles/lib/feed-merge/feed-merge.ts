@@ -3,7 +3,7 @@ import { sortBy } from 'remeda';
 import type { BestBattleRow } from '../../best-battles.types';
 import type { BattleKeyInput, MergedFeed, MergeFeedInput, MergePairInput, SortByMetricInput } from './feed-merge.types';
 
-import { BEST_BATTLES } from '../../config';
+import { BEST_BATTLES } from '../../config/feed.constants';
 
 export const battleKey = ({ source, battle_id, account_id, arena_unique_id }: BattleKeyInput): string =>
   arena_unique_id === null ? `${source}:${battle_id}` : `${account_id}:${arena_unique_id}`;

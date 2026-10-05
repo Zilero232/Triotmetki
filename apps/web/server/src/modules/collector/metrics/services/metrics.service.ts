@@ -1,18 +1,20 @@
 import type { OnApplicationShutdown } from '@nestjs/common';
 
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { startOfMinute } from 'date-fns';
 import { AsyncLocalStorage } from 'node:async_hooks';
 
 import type { LestaOutcomeRecorder, RecordLestaInput } from '../../../../core';
-import type { JobContext, MetricCounters, RecordJobInput, TrackJobInput } from '../metrics.types';
+import type { JobContext, MetricCounters, RecordJobInput, TrackJobInput, WriteCountersInput } from '../metrics.types';
+import type { MetricsQueries } from '../providers/metrics-queries.types';
 
 import { errorMessage } from '../../../../common/lib';
 import { PrismaService } from '../../../../core';
 import { COLLECTOR_STATE_KEY } from '../../config';
-import { EMPTY_COUNTERS, METRICS } from '../config';
-import { jobSuccessKey } from '../lib';
+import { EMPTY_COUNTERS, METRICS } from '../config/metrics.constants';
+import { jobSuccessKey } from '../lib/job-success';
+import { METRICS_QUERIES } from '../providers/metrics-queries.provider';
 import { CircuitBreakerService } from './circuit-breaker.service';
 
 @Injectable()
@@ -24,7 +26,8 @@ export class MetricsService implements LestaOutcomeRecorder, OnApplicationShutdo
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly breaker: CircuitBreakerService
+    private readonly breaker: CircuitBreakerService,
+    @Inject(METRICS_QUERIES) private readonly queries: MetricsQueries
   ) {}
 
   async track<T>({ job, run }: TrackJobInput<T>): Promise<T> {
@@ -66,33 +69,7 @@ export class MetricsService implements LestaOutcomeRecorder, OnApplicationShutdo
     const bucketStart = startOfMinute(new Date());
 
     for (const [queue, counters] of pending) {
-      const durationMsTotal = BigInt(Math.round(counters.durationMs));
-
-      try {
-        await this.prisma.collectorJobMetric.upsert({
-          where: { queue_bucketStart: { queue, bucketStart } },
-          create: {
-            queue,
-            bucketStart,
-            processed: counters.processed,
-            failed: counters.failed,
-            retried: counters.retried,
-            durationMsTotal,
-            lestaRequests: counters.lestaRequests,
-            lestaErrors: counters.lestaErrors
-          },
-          update: {
-            processed: { increment: counters.processed },
-            failed: { increment: counters.failed },
-            retried: { increment: counters.retried },
-            durationMsTotal: { increment: durationMsTotal },
-            lestaRequests: { increment: counters.lestaRequests },
-            lestaErrors: { increment: counters.lestaErrors }
-          }
-        });
-      } catch (error) {
-        this.logger.warn(`metrics flush for ${queue} failed: ${errorMessage(error)}`);
-      }
+      await this.writeCounters({ queue, counters, bucketStart });
     }
 
     await this.flushSuccesses();
@@ -102,21 +79,47 @@ export class MetricsService implements LestaOutcomeRecorder, OnApplicationShutdo
     await this.flush();
   }
 
+  private async writeCounters({ queue, counters, bucketStart }: WriteCountersInput) {
+    const durationMsTotal = BigInt(Math.round(counters.durationMs));
+
+    try {
+      await this.prisma.collectorJobMetric.upsert({
+        where: { queue_bucketStart: { queue, bucketStart } },
+        create: {
+          queue,
+          bucketStart,
+          processed: counters.processed,
+          failed: counters.failed,
+          retried: counters.retried,
+          durationMsTotal,
+          lestaRequests: counters.lestaRequests,
+          lestaErrors: counters.lestaErrors
+        },
+        update: {
+          processed: { increment: counters.processed },
+          failed: { increment: counters.failed },
+          retried: { increment: counters.retried },
+          durationMsTotal: { increment: durationMsTotal },
+          lestaRequests: { increment: counters.lestaRequests },
+          lestaErrors: { increment: counters.lestaErrors }
+        }
+      });
+    } catch (error) {
+      this.logger.warn(`metrics flush for ${queue} failed: ${errorMessage(error)}`);
+    }
+  }
+
   private async flushSuccesses() {
     if (this.succeeded.size === 0) {
       return;
     }
 
-    const value = JSON.stringify(Object.fromEntries(this.succeeded));
+    const value = Object.fromEntries(this.succeeded);
 
     this.succeeded = new Map();
 
     try {
-      await this.prisma.$executeRaw`
-        INSERT INTO collector_state (key, value, updated_at)
-        VALUES (${COLLECTOR_STATE_KEY.jobSuccess}, ${value}::jsonb, now())
-        ON CONFLICT (key) DO UPDATE SET value = collector_state.value || EXCLUDED.value, updated_at = now()
-      `;
+      await this.queries.mergeCollectorState({ db: this.prisma.$kysely, key: COLLECTOR_STATE_KEY.jobSuccess, value });
     } catch (error) {
       this.logger.warn(`job success flush failed: ${errorMessage(error)}`);
     }

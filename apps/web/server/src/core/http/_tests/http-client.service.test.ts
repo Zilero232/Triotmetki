@@ -54,3 +54,28 @@ describe('HttpClientService.getJson', () => {
     expect(calls).toHaveLength(1);
   });
 });
+
+describe('HttpClientService.requestJson', () => {
+  it('returns the body parsed by the schema', async () => {
+    const { fetch } = replies(() => Response.json({ id: 3, name: 'E 100', extra: true }));
+
+    const item = await new HttpClientService().requestJson({ url: URL, schema: itemSchema, options: { method: 'post', fetch } });
+
+    expect(item).toEqual({ id: 3, name: 'E 100' });
+  });
+
+  it('throws a schema validation error when the body does not match', async () => {
+    const { fetch } = replies(() => Response.json({ id: 'three' }));
+
+    await expect(new HttpClientService().requestJson({ url: URL, schema: itemSchema, options: { method: 'post', fetch } })).rejects.toBeInstanceOf(
+      SchemaValidationError
+    );
+  });
+
+  it('sends a schema-parsed request once without retrying', async () => {
+    const { fetch, calls } = replies(() => new Response(null, { status: 503 }));
+
+    await expect(new HttpClientService().requestJson({ url: URL, schema: itemSchema, options: { fetch } })).rejects.toBeInstanceOf(HTTPError);
+    expect(calls).toHaveLength(1);
+  });
+});

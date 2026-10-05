@@ -1,17 +1,19 @@
-export { THRESHOLD_SOURCE_PRIORITY, VEHICLE_STATUS } from './config';
-export { BRONYA_REFERENCE, bronyaReferencePayload, isPreferentialVehicle, parseBronyaReference, readSpecTraits, toTankRole } from './lib';
-export type { SpecTraits } from './lib';
-export {
-  masteryThresholdLevels,
-  moeThresholdLevels,
-  readVehicleStats,
-  toMasteryThreshold,
-  toMoeThreshold,
-  toMoeThresholdRecord,
-  toVehicleStats
-} from './mappers';
-export type { StoredProfile } from './mappers';
+export { THRESHOLD_SOURCE_PRIORITY } from './config/thresholds.constants';
+export { VEHICLE_STATUS } from './config/vehicle-status.constants';
+export { bronyaReferencePayload, parseBronyaReference } from './lib/bronya-reference/bronya-reference';
+export { BRONYA_REFERENCE } from './lib/bronya-reference/bronya-reference.constants';
+export { isPreferentialVehicle, readSpecTraits, toTankRole } from './lib/vehicle-status/vehicle-status';
+export type { SpecTraits } from './lib/vehicle-status/vehicle-status.types';
+export { masteryThresholdLevels, moeThresholdLevels, toMoeThresholdRecord } from './mappers/threshold-record.mappers';
+export { toMasteryThreshold, toMoeThreshold } from './mappers/threshold-view.mappers';
+export { readVehicleStats, toVehicleStats } from './mappers/vehicle-stats.mappers';
+export type { StoredProfile } from './mappers/vehicle-stats.types';
+export { unknownVehicle } from './mappers/vehicle-summary.mappers';
 export { ReferenceCoreModule } from './reference-core.module';
 export { ReferenceModule } from './reference.module';
 export type { CatalogEntry, MasteryLevels, MasteryThresholdRecord, MoeLevels, MoeThresholdRecord, ThresholdSet } from './reference.types';
-export { BronyaReferencesService, ExpectedValuesService, OfficialRatingTypesService, ThresholdsService, VehicleCatalogService } from './services';
+export { BronyaReferencesService } from './services/bronya-references.service';
+export { ExpectedValuesService } from './services/expected-values.service';
+export { OfficialRatingTypesService } from './services/official-rating-types.service';
+export { ThresholdsService } from './services/thresholds.service';
+export { VehicleCatalogService } from './services/vehicle-catalog.service';

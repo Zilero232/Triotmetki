@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { RARITY_POINTS, RARITY_TIER_NAMES } from '../../../config';
+import { RARITY_POINTS, RARITY_TIER_NAMES } from '../../../config/rarity.constants';
 import { rarityPoints, rarityTier, shareOf } from '../rarity';
 
 describe('rarityPoints', () => {

@@ -8,8 +8,9 @@ import type { BlogImageFile, UploadedBlogImage } from '../blog.types';
 import { AppBadRequestException, AppNotFoundException } from '../../../common/exceptions';
 import { AppConfigService } from '../../../config';
 import { ObjectStorage, StorageObjectMissingError } from '../../../core';
-import { BLOG_IMAGES } from '../config';
-import { detectImageType, imageFileUrl, imageTypeOf } from '../lib';
+import { BLOG_IMAGES } from '../config/image.constants';
+import { detectImageType, imageTypeOf } from '../lib/image-type/image-type';
+import { imageFileUrl } from '../lib/image-url/image-url';
 
 @Injectable()
 export class BlogImageService {

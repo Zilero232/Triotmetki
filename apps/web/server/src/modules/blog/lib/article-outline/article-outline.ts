@@ -12,7 +12,7 @@ import { VFile } from 'vfile';
 
 import type { ArticleOutline, TocEntry } from './article-outline.types';
 
-import { BLOG } from '../../config';
+import { BLOG } from '../../config/blog.constants';
 
 const processor = unified().use(remarkParse).use(remarkGfm).use(remarkRehype).use(rehypeSlug).use(rehypeExtractToc);
 

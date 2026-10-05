@@ -1,50 +1,57 @@
 import type { Leaderboard, LeaderboardQuery } from '@otmetki/schemas';
 
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 import { match } from 'ts-pattern';
 
-import type { RankedRow } from '../leaderboards.types';
-import type { LeaderboardTotalRow } from '../queries';
+import type { LeaderboardPage, LeaderboardQueries } from '../queries/leaderboard.types';
 
-import { toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { LEADERBOARD_MIN_BATTLES, RISING_STARS } from '../config';
-import { toLeaderboardEntry } from '../mappers';
-import { clansSql, marksSql, playersSql, risingStarsSql, streamersFilterSql, tankPlayersSql } from '../queries';
+import { LEADERBOARD_MIN_BATTLES } from '../config/min-battles.constants';
+import { RISING_STARS } from '../config/rising-stars.constants';
+import { LEADERBOARD_QUERIES } from '../config/tokens.constants';
+import { toLeaderboardEntry } from '../mappers/leaderboard.mappers';
+import { leaderboardQueries } from '../queries/leaderboard.queries';
 
 @Injectable()
 export class LeaderboardService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() @Inject(LEADERBOARD_QUERIES) private readonly queries: LeaderboardQueries = leaderboardQueries
+  ) {}
 
   async leaderboard(query: LeaderboardQuery): Promise<Leaderboard> {
-    const minBattles = this.minBattles(query);
-    const sql = match(query.scope)
-      .with('players', () => (query.tankId || query.tier || query.type ? tankPlayersSql({ query, minBattles }) : playersSql({ query, minBattles })))
-      .with('clans', () => clansSql(query))
-      .with('risingStars', () => {
-        const period = this.risingStarsPeriod(query);
-
-        return risingStarsSql({ query, period, minBattles: query.minBattles ?? LEADERBOARD_MIN_BATTLES[period] });
-      })
-      .with('marks', () => marksSql(query))
-      .with('streamers', () => playersSql({ query, minBattles, filter: streamersFilterSql }))
-      .exhaustive();
-
-    const [rows, [count]] = await Promise.all([
-      this.prisma.$queryRaw<RankedRow[]>(sql.page),
-      this.prisma.$queryRaw<LeaderboardTotalRow[]>(sql.total)
-    ]);
-
+    const { rows, total } = await this.page(query);
     const scale = query.scope === 'clans' || query.scope === 'marks' ? null : query.metric;
 
     return {
       scope: query.scope,
       metric: query.metric,
       period: query.period,
-      total: count ? toNumber(count.total) : 0,
+      total,
       minBattles: this.appliedMinBattles(query),
       entries: rows.map((row, index) => toLeaderboardEntry({ row, rank: query.offset + index + 1, scale }))
     };
+  }
+
+  private page(query: LeaderboardQuery): Promise<LeaderboardPage> {
+    const db = this.prisma.$kysely;
+    const minBattles = this.minBattles(query);
+
+    return match(query.scope)
+      .with('players', () =>
+        query.tankId || query.tier || query.type
+          ? this.queries.tankPlayersBoard({ db, query, minBattles })
+          : this.queries.playersBoard({ db, query, minBattles, isStreamersOnly: false })
+      )
+      .with('clans', () => this.queries.clansBoard({ db, query }))
+      .with('risingStars', () => {
+        const period = this.risingStarsPeriod(query);
+
+        return this.queries.risingStarsBoard({ db, query, period, minBattles: query.minBattles ?? LEADERBOARD_MIN_BATTLES[period] });
+      })
+      .with('marks', () => this.queries.marksBoard({ db, query }))
+      .with('streamers', () => this.queries.playersBoard({ db, query, minBattles, isStreamersOnly: true }))
+      .exhaustive();
   }
 
   private appliedMinBattles(query: LeaderboardQuery): number | null {

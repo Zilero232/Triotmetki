@@ -28,3 +28,10 @@ export const NOTIFICATION_LINKS = {
   linkedAccounts: '/me',
   goals: '/me'
 } as const;
+
+export const NOTIFICATION_GROUPS = {
+  tank: ['moeGained', 'moeThresholdDropped', 'premiumOffer', 'tankReturned', 'tankLevelUp', 'tankChallengeDone'],
+  player: ['sessionFinished', 'firstWinAvailable', 'watchlistDigest', 'goalReached', 'badgeAwarded'],
+  community: ['challengeResolved', 'clanEventReminder', 'clanWeeklyReport', 'streamerLive', 'competitionFinished'],
+  account: ['bonusCode', 'replayOverflow', 'plusCheckoutOpen', 'lestaRelinkRequired']
+} as const;

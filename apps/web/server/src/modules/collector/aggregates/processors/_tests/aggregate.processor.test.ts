@@ -4,29 +4,23 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../../metrics';
-import type {
-  AccountRatingsService,
-  BuildUsageService,
-  LearningCurveService,
-  ModeMetaService,
-  ServerStatsService,
-  TankEconomyService,
-  TankPercentilesService,
-  TierMaintenanceService
-} from '../../services';
+import type { BuildUsageAggregateService, ModeMetaAggregateService } from '../../meta';
+import type { AccountRatingsAggregateService } from '../../player-ratings';
+import type { ServerStatsAggregateService, TrackingTierAggregateService } from '../../server';
+import type { LearningCurveAggregateService, TankEconomyAggregateService, TankPercentilesAggregateService } from '../../tank-stats';
 
 import { JOB } from '../../../contracts';
 import { AggregateProcessor } from '../aggregate.processor';
 
 const createProcessor = () => {
-  const accountRatings = mock<AccountRatingsService>();
-  const serverStats = mock<ServerStatsService>();
-  const percentiles = mock<TankPercentilesService>();
-  const maintenance = mock<TierMaintenanceService>();
-  const economy = mock<TankEconomyService>();
-  const learning = mock<LearningCurveService>();
-  const buildUsage = mock<BuildUsageService>();
-  const modeMeta = mock<ModeMetaService>();
+  const accountRatings = mock<AccountRatingsAggregateService>();
+  const serverStats = mock<ServerStatsAggregateService>();
+  const percentiles = mock<TankPercentilesAggregateService>();
+  const trackingTiers = mock<TrackingTierAggregateService>();
+  const economy = mock<TankEconomyAggregateService>();
+  const learning = mock<LearningCurveAggregateService>();
+  const buildUsage = mock<BuildUsageAggregateService>();
+  const modeMeta = mock<ModeMetaAggregateService>();
   const metrics = mock<MetricsService>();
 
   metrics.track.mockImplementation(({ run }) => run());
@@ -37,7 +31,7 @@ const createProcessor = () => {
     economy,
     learning,
     metrics,
-    processor: new AggregateProcessor(accountRatings, serverStats, percentiles, maintenance, economy, learning, buildUsage, modeMeta, metrics)
+    processor: new AggregateProcessor(accountRatings, serverStats, percentiles, trackingTiers, economy, learning, buildUsage, modeMeta, metrics)
   };
 };
 

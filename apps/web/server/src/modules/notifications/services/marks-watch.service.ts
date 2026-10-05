@@ -2,15 +2,18 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Redis } from 'ioredis';
 import { isNonNullish, unique, uniqueBy } from 'remeda';
 
-import type { MarkBattle } from '../lib';
+import type { WatermarkBatch } from '../../../core';
+import type { MarkBattle } from '../lib/mark-gains';
 import type { PreviousMarksInput } from '../notifications.types';
-import type { PreviousBattleMarksRow } from '../queries';
+import type { MarksWatchQueries } from '../queries/marks-watch.types';
+import type { MarkBattleRow } from '../selects/marks-watch.selects';
 
-import { PrismaService, REDIS } from '../../../core';
+import { advanceWatermark, PrismaService, REDIS } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
-import { MARKS_WATCH } from '../config';
-import { detectMarkGains, markPairKey } from '../lib';
-import { previousBattleMarksSql } from '../queries';
+import { NOTIFICATION_TOKENS } from '../config/tokens.constants';
+import { MARKS_WATCH } from '../config/watchers.constants';
+import { detectMarkGains, markPairKey } from '../lib/mark-gains';
+import { MARK_BATTLE_SELECT } from '../selects/marks-watch.selects';
 import { NotificationService } from './notification.service';
 
 @Injectable()
@@ -19,32 +22,30 @@ export class MarksWatchService {
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService,
     private readonly notifications: NotificationService,
-    @Inject(REDIS) private readonly redis: Redis
+    @Inject(REDIS) private readonly redis: Redis,
+    @Inject(NOTIFICATION_TOKENS.marksWatchQueries) private readonly queries: MarksWatchQueries
   ) {}
 
-  async run(): Promise<number> {
-    const cursor = await this.redis.get(MARKS_WATCH.cursorKey);
+  run(): Promise<number> {
+    return advanceWatermark({
+      redis: this.redis,
+      key: MARKS_WATCH.cursorKey,
+      now: new Date(),
+      fetch: (since) => this.battlesSince(since),
+      process: (batch) => this.processBatch(batch)
+    });
+  }
 
-    if (!cursor) {
-      await this.redis.set(MARKS_WATCH.cursorKey, new Date().toISOString());
-
-      return 0;
-    }
-
-    const since = new Date(cursor);
-    const rows = await this.prisma.battle.findMany({
+  private battlesSince(since: Date) {
+    return this.prisma.battle.findMany({
       where: { receivedAt: { gt: since }, marksOnGun: { not: null } },
       orderBy: { receivedAt: 'asc' },
       take: MARKS_WATCH.batchSize,
-      select: { id: true, accountId: true, tankId: true, marksOnGun: true, startedAt: true, receivedAt: true }
+      select: MARK_BATTLE_SELECT
     });
+  }
 
-    const last = rows.at(-1);
-
-    if (!last) {
-      return 0;
-    }
-
+  private async processBatch({ rows, since }: WatermarkBatch<MarkBattleRow>): Promise<number> {
     const battles: MarkBattle[] = rows.flatMap((row) => (row.marksOnGun === null ? [] : [{ ...row, marksOnGun: row.marksOnGun }]));
     const previous = await this.previousMarks({ battles, since });
     const gains = detectMarkGains({ battles, previous });
@@ -53,8 +54,6 @@ export class MarksWatchService {
       await this.announce(gains);
     }
 
-    await this.redis.set(MARKS_WATCH.cursorKey, last.receivedAt.toISOString());
-
     return gains.length;
   }
 
@@ -62,14 +61,14 @@ export class MarksWatchService {
     const pairs = uniqueBy(battles, markPairKey);
 
     const [earlier, tanks] = await Promise.all([
-      this.prisma.$queryRaw<PreviousBattleMarksRow[]>(previousBattleMarksSql({ pairs, since })),
+      this.queries.previousBattleMarks({ db: this.prisma.$kysely, battleIds: battles.map((battle) => battle.id), since }),
       this.prisma.playerTank.findMany({
         where: { OR: pairs.map(({ accountId, tankId }) => ({ accountId, tankId })) },
         select: { accountId: true, tankId: true, marksOnGun: true }
       })
     ]);
 
-    const fromBattles = new Map(earlier.map((row) => [markPairKey(row), row.marksOnGun]));
+    const fromBattles = new Map(earlier.map((row) => [markPairKey({ accountId: BigInt(row.accountId), tankId: row.tankId }), row.marksOnGun]));
     const fromTanks = new Map(tanks.map((tank) => [markPairKey(tank), tank.marksOnGun]));
 
     return new Map(

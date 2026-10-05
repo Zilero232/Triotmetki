@@ -1,6 +1,6 @@
 import type { FreshTimestampInput, SignedMessageInput } from './request-signature.types';
 
-import { MOD_REQUEST } from '../../config';
+import { MOD_REQUEST } from '../../config/device.constants';
 import { REQUEST_SIGNATURE } from './request-signature.constants';
 
 export const signedMessage = ({ method, path, timestamp, nonce, headers = [], body }: SignedMessageInput): Buffer => {

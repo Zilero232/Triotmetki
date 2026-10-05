@@ -56,7 +56,7 @@ const fetch: NonNullable<Options['fetch']> = async (input, init) => {
 
 const httpClient = mock<HttpClientService>({
   getJson: ({ url, options }: HttpRequestInput) => http.get(url, { ...options, fetch }).json(),
-  requestJson: ({ url, options }) => http(url, { ...options, fetch }).json()
+  requestJson: ({ url, options }: HttpRequestInput) => http(url, { ...options, fetch }).json()
 });
 
 const createService = (env: Partial<Env> = credentials) =>

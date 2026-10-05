@@ -7,8 +7,8 @@ import type { WebPushInput } from '../notifications.types';
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { HostLookupService, publicAddressOf } from '../../developer';
-import { WEB_PUSH } from '../config';
-import { vapidDetails } from '../lib';
+import { WEB_PUSH } from '../config/delivery.constants';
+import { vapidDetails } from '../lib/web-push-config';
 import { WebPushSenderService } from './web-push-sender.service';
 
 @Injectable()

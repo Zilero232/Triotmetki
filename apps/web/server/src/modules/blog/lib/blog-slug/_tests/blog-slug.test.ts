@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { BLOG } from '../../../config';
+import { BLOG } from '../../../config/blog.constants';
 import { blogSlug, uniqueBlogSlug } from '../blog-slug';
 
 describe('blogSlug', () => {

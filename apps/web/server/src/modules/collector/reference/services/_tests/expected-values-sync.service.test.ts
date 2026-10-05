@@ -3,7 +3,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { HttpClientService, PrismaService } from '../../../../../core';
 
-import { REFERENCE } from '../../config';
+import { REFERENCE } from '../../config/reference.constants';
 import { ExpectedValuesSyncService } from '../expected-values-sync.service';
 
 const xvm = {

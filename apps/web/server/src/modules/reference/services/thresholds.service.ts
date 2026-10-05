@@ -1,21 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { LRUCache } from 'lru-cache';
 import { isNonNull } from 'remeda';
 
-import type { TankThreshold, ThresholdSource } from '../../../../generated';
-import type {
-  LatestThresholdsInput,
-  MasteryThresholdRecord,
-  MoeHistoryInput,
-  MoeThresholdRecord,
-  ThresholdsAsOfInput,
-  ThresholdSet
-} from '../reference.types';
+import type { ThresholdSource } from '../../../../generated';
+import type { ThresholdsQueries } from '../queries/thresholds.types';
+import type { MasteryThresholdRecord, MoeHistoryInput, MoeThresholdRecord, ThresholdsAsOfInput, ThresholdSet } from '../reference.types';
 
 import { PrismaService } from '../../../core';
-import { CATALOG } from '../config';
-import { preferredBySource } from '../lib';
-import { toMasteryThresholdRecord, toMoeThresholdRecord } from '../mappers';
+import { CATALOG } from '../config/catalog.constants';
+import { REFERENCE_QUERY_TOKENS } from '../config/queries.constants';
+import { preferredBySource } from '../lib/thresholds/thresholds';
+import { toMasteryThresholdRecord, toMoeThresholdRecord } from '../mappers/threshold-record.mappers';
 
 @Injectable()
 export class ThresholdsService {
@@ -25,7 +20,10 @@ export class ThresholdsService {
     fetchMethod: (_key, _stale, { context }) => this.asOf({ date: null, source: context })
   });
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(REFERENCE_QUERY_TOKENS.thresholds) private readonly queries: ThresholdsQueries
+  ) {}
 
   async moe(tankId: number): Promise<MoeThresholdRecord | null> {
     const { moe } = await this.latest();
@@ -48,7 +46,10 @@ export class ThresholdsService {
   async asOf({ date, source }: ThresholdsAsOfInput): Promise<ThresholdSet> {
     const upTo = date ?? new Date('9999-12-31');
 
-    const [moe, mastery] = await Promise.all([this.latestRows({ kind: 'moe', upTo, source }), this.latestRows({ kind: 'mastery', upTo, source })]);
+    const [moe, mastery] = await Promise.all([
+      this.queries.latestThresholds({ db: this.prisma.$kysely, kind: 'moe', upTo, source }),
+      this.queries.latestThresholds({ db: this.prisma.$kysely, kind: 'mastery', upTo, source })
+    ]);
 
     return {
       moe: preferredBySource(moe.map(toMoeThresholdRecord)),
@@ -68,19 +69,5 @@ export class ThresholdsService {
     });
 
     return rows.map(toMoeThresholdRecord);
-  }
-
-  private latestRows({ kind, upTo, source }: LatestThresholdsInput): Promise<TankThreshold[]> {
-    return this.prisma.$queryRaw<TankThreshold[]>`
-      SELECT DISTINCT ON (tank_id, source)
-             kind, tank_id AS "tankId", date, source,
-             level_1 AS "level1", level_2 AS "level2", level_3 AS "level3", level_4 AS "level4",
-             sample_size AS "sampleSize", captured_at AS "capturedAt"
-      FROM tank_threshold
-      WHERE kind = ${kind}::threshold_kind
-        AND date <= ${upTo}::date
-        AND (${source ?? null}::text IS NULL OR source::text = ${source ?? null}::text)
-      ORDER BY tank_id, source, date DESC
-    `;
   }
 }

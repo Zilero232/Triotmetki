@@ -1,15 +1,18 @@
+import type { CompiledQuery } from 'kysely';
+
 import { catalogCosmetics, OVERLAY_THEMES, seasonalCosmeticCode } from '@otmetki/schemas';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { mock, mockDeep } from 'vitest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import type { CosmeticOwnership, Subscription, User, UserLestaAccount } from '../../../../../generated';
-import type { PrismaService } from '../../../../core';
 
 import { AppForbiddenException } from '../../../../common/exceptions';
+import { advisoryLocks, mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { EntitlementsService } from '../../../billing';
-import { NO_COSMETICS } from '../../config';
+import { NO_COSMETICS } from '../../config/cosmetics.constants';
+import { SHELL_LEDGER } from '../../config/shell-ledger.constants';
 import { CosmeticsService } from '../cosmetics.service';
-import { ShellLedgerService } from '../shell-ledger.service';
+import { ShellLedgerWriterService } from '../shell-ledger-writer.service';
 
 const now = new Date('2026-09-26T10:00:00Z');
 const shopBadge = catalogCosmetics().find((item) => item.slot === 'badge' && item.source === 'shop');
@@ -27,9 +30,10 @@ const equipped = (id: string, fields: Partial<Pick<User, 'cosmeticBadge' | 'cosm
   Object.assign(mock<User>(), { id, cosmeticBadge: null, cosmeticFrame: null, cosmeticBanner: null, ...fields });
 
 const setup = ({ isPlus = false, codes = [] }: { isPlus?: boolean; codes?: string[] } = {}) => {
-  const prisma = mockDeep<PrismaService>();
+  const queries: CompiledQuery[] = [];
+  const prisma = mockPrismaService({ queries });
   const entitlements = mock<EntitlementsService>();
-  const ledger = mock<ShellLedgerService>();
+  const ledger = mock<ShellLedgerWriterService>();
 
   entitlements.isPlus.mockResolvedValue(isPlus);
   ledger.balance.mockResolvedValue(0);
@@ -39,7 +43,7 @@ const setup = ({ isPlus = false, codes = [] }: { isPlus?: boolean; codes?: strin
   prisma.cosmeticOwnership.findUnique.mockResolvedValue(null);
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
 
-  return { prisma, entitlements, ledger, service: new CosmeticsService(prisma, entitlements, ledger) };
+  return { prisma, queries, entitlements, ledger, service: new CosmeticsService(prisma, entitlements, ledger) };
 };
 
 beforeEach(() => {
@@ -130,6 +134,14 @@ describe('CosmeticsService.purchase', () => {
     expect(prisma.cosmeticOwnership.create).toHaveBeenCalledWith(
       expect.objectContaining({ data: expect.objectContaining({ code: shopBadge?.code, grant: 'purchase' }) })
     );
+  });
+
+  it('holds the shell lock of the user while it spends', async () => {
+    const { queries, service } = setup();
+
+    await service.purchase({ userId: 'u', code: shopBadge?.code ?? '' });
+
+    expect(advisoryLocks(queries)).toEqual([[SHELL_LEDGER.lockScope, 'u']]);
   });
 
   it('records nothing when the balance is too low', async () => {

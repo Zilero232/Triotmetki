@@ -4,12 +4,13 @@ import { Job } from 'bullmq';
 import { WORKER_CONCURRENCY } from '../../config';
 import { accountBatchPayloadSchema, JOB, QUEUE } from '../../contracts';
 import { MetricsService, TrackedWorkerHost } from '../../metrics';
-import { DispatchService, PollPipelineService } from '../services';
+import { DispatchService } from '../services/dispatch.service';
+import { PollSyncService } from '../services/poll-sync.service';
 
 @Processor(QUEUE.poll, { concurrency: WORKER_CONCURRENCY.poll })
 export class PollProcessor extends TrackedWorkerHost {
   constructor(
-    private readonly pipeline: PollPipelineService,
+    private readonly pipeline: PollSyncService,
     private readonly dispatch: DispatchService,
     metrics: MetricsService
   ) {

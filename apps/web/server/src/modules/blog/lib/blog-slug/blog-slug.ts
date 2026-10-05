@@ -3,7 +3,7 @@ import { isIncludedIn } from 'remeda';
 
 import type { BlogSlugInput, UniqueBlogSlugInput } from './blog-slug.types';
 
-import { BLOG } from '../../config';
+import { BLOG } from '../../config/blog.constants';
 
 const trimSlug = (value: string, max: number): string => value.slice(0, max).replace(/-+$/u, '');
 

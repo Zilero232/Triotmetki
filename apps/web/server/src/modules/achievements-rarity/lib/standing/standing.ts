@@ -1,6 +1,6 @@
 import type { Standing, StandingInput } from './standing.types';
 
-import { ACHIEVEMENTS_VIEW } from '../../config';
+import { ACHIEVEMENTS_VIEW } from '../../config/view.constants';
 
 export const standing = ({ above, total }: StandingInput): Standing => {
   if (total <= 0) {

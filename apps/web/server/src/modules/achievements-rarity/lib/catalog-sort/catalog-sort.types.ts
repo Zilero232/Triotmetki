@@ -1,4 +1,4 @@
-import type { ACHIEVEMENTS_VIEW } from '../../config';
+import type { ACHIEVEMENTS_VIEW } from '../../config/view.constants';
 
 type CatalogSort = (typeof ACHIEVEMENTS_VIEW.catalogSorts)[number];
 

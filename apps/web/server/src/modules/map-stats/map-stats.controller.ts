@@ -5,15 +5,15 @@ import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { ViewerCacheInterceptor } from '../../common/interceptors';
-import { MAP_STATS } from './config';
-import { MapQueueDto, MapRotationDto, MapStatsQueryDto } from './dto';
-import { MapStatsService } from './services';
+import { MAP_STATS } from './config/map-stats.constants';
+import { MapQueueDto, MapRotationDto, MapStatsQueryDto } from './dto/map-stats.dto';
+import { MapStatsReaderService } from './services/map-stats-reader.service';
 
 @ApiTags('map-stats')
 @AllowAnonymous()
 @Controller('map-stats')
 export class MapStatsController {
-  constructor(private readonly stats: MapStatsService) {}
+  constructor(private readonly stats: MapStatsReaderService) {}
 
   @Get('rotation')
   @UseInterceptors(ViewerCacheInterceptor)

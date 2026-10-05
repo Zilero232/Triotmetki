@@ -7,8 +7,8 @@ import type { ProgressionData } from '../builds.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
-import { GAME_DATA_KIND } from '../config';
-import { isVehicleSpec } from '../lib';
+import { GAME_DATA_KIND } from '../config/provisions.constants';
+import { isVehicleSpec } from '../lib/game-data-guards/game-data-guards';
 
 @Injectable()
 export class BuildDataService {

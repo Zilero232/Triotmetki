@@ -6,15 +6,15 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
-import { SearchQueryDto, SearchResponseDto } from './dto';
-import { SearchService } from './services';
+import { SearchQueryDto, SearchResponseDto } from './dto/search.dto';
+import { SearchReaderService } from './services/search-reader.service';
 
 @ApiTags('search')
 @AllowAnonymous()
 @UseInterceptors(ViewerCacheInterceptor)
 @Controller('search')
 export class SearchController {
-  constructor(private readonly searchService: SearchService) {}
+  constructor(private readonly searchService: SearchReaderService) {}
 
   @Get()
   @CacheTTL(CACHE_TTL.short)

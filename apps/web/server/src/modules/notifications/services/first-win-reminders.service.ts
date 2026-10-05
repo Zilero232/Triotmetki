@@ -6,7 +6,7 @@ import type { FirstWinRemindInput } from '../notifications.types';
 import { isoDay } from '../../../common/lib';
 import { PrismaService, USER_LESTA_ACCOUNT_ORDER } from '../../../core';
 import { dailyWindow, FirstWinService } from '../../analytics';
-import { FIRST_WIN_REMINDER } from '../config';
+import { FIRST_WIN_REMINDER } from '../config/watchers.constants';
 import { NotificationService } from './notification.service';
 
 @Injectable()

@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { any, mockDeep } from 'vitest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import type { TankThreshold } from '../../../../../generated';
-import type { PrismaService } from '../../../../core';
+import type { ThresholdsQueries } from '../../queries/thresholds.types';
 
-import { ThresholdKind } from '../../../../../generated';
-import { THRESHOLD_LEVELS, THRESHOLD_SOURCE_PRIORITY } from '../../config';
+import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
+import { THRESHOLD_LEVELS, THRESHOLD_SOURCE_PRIORITY } from '../../config/thresholds.constants';
 import { ThresholdsService } from '../thresholds.service';
 
 const [PREFERRED, FALLBACK] = THRESHOLD_SOURCE_PRIORITY;
@@ -29,13 +29,12 @@ const row = ({
 });
 
 const createService = (rows: TankThreshold[]) => {
-  const prisma = mockDeep<PrismaService>();
+  const prisma = mockPrismaService();
+  const queries = mock<ThresholdsQueries>();
 
-  for (const kind of Object.values(ThresholdKind)) {
-    prisma.$queryRaw.calledWith(any(), kind).mockResolvedValue(rows.filter((candidate) => candidate.kind === kind));
-  }
+  queries.latestThresholds.mockImplementation(async ({ kind }) => rows.filter((candidate) => candidate.kind === kind));
 
-  return { service: new ThresholdsService(prisma), prisma };
+  return { service: new ThresholdsService(prisma, queries), prisma, queries };
 };
 
 describe('ThresholdsService', () => {
@@ -73,21 +72,21 @@ describe('ThresholdsService', () => {
   });
 
   it('serves repeated reads of the latest thresholds from the cache', async () => {
-    const { service, prisma } = createService([row({ kind: 'moe', tankId: 1, source: PREFERRED })]);
+    const { service, queries } = createService([row({ kind: 'moe', tankId: 1, source: PREFERRED })]);
 
     await service.latest();
     await service.moe(1);
 
-    expect(prisma.$queryRaw).toHaveBeenCalledTimes(2);
+    expect(queries.latestThresholds).toHaveBeenCalledTimes(2);
   });
 
   it('caches each source separately', async () => {
-    const { service, prisma } = createService([row({ kind: 'moe', tankId: 1, source: PREFERRED })]);
+    const { service, queries } = createService([row({ kind: 'moe', tankId: 1, source: PREFERRED })]);
 
     await service.latest();
     await service.latest(FALLBACK);
 
-    expect(prisma.$queryRaw).toHaveBeenCalledTimes(4);
+    expect(queries.latestThresholds).toHaveBeenCalledTimes(4);
   });
 
   it('filters the MoE history by kind and only by the bounds that were given', async () => {

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import type { LiftUserRequestsInput, OpenDeletionRequestsInput } from '../purge.types';
 
 import { PrismaService } from '../../../../core';
-import { PURGE } from '../config';
+import { PURGE } from '../config/purge.constants';
 
 @Injectable()
 export class PurgeGuardService {

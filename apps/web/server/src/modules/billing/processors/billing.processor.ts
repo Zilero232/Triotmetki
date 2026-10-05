@@ -3,8 +3,9 @@ import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
 import { MetricsService, TrackedWorkerHost } from '../../collector/metrics';
-import { BILLING_QUEUE } from '../config';
-import { PromoService, RenewalService } from '../services';
+import { BILLING_QUEUE } from '../config/queue.constants';
+import { PromoService } from '../services/promo.service';
+import { RenewalService } from '../services/renewal.service';
 
 @Processor(BILLING_QUEUE.name, { concurrency: 1 })
 export class BillingProcessor extends TrackedWorkerHost<number> {

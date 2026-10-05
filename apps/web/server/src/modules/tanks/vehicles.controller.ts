@@ -7,14 +7,14 @@ import { ZodResponse } from 'nestjs-zod';
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { VehicleCatalogDto, VehicleFilterDto } from './dto';
-import { VehicleListService } from './services';
+import { VehiclesReaderService } from './services';
 
 @ApiTags('tanks')
 @AllowAnonymous()
 @UseInterceptors(ViewerCacheInterceptor)
 @Controller('vehicles')
 export class VehiclesController {
-  constructor(private readonly vehicles: VehicleListService) {}
+  constructor(private readonly vehicles: VehiclesReaderService) {}
 
   @Get()
   @CacheTTL(CACHE_TTL.reference)

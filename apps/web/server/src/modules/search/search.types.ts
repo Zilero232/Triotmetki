@@ -1,36 +1,4 @@
-import type { MapSearchResult, PlayerSearchResult, SearchQuery } from '@otmetki/schemas';
-
-export type PlayerMatchRow = {
-  accountId: bigint;
-  nickname: string;
-  clanTag: string | null;
-  matchedNickname: string | null;
-  wn8: number | null;
-  battles: number | null;
-  score: number;
-  exact: boolean;
-  term: string;
-};
-
-export type ClanMatchRow = {
-  clanId: bigint;
-  tag: string;
-  name: string;
-  membersCount: number;
-  emblems: unknown;
-  score: number;
-  exact: boolean;
-};
-
-export type TankMatchRow = {
-  tankId: number;
-  score: number;
-  term: string;
-};
-
-export type MapMatchRow = Omit<MapSearchResult, 'kind'> & {
-  score: number;
-};
+import type { PlayerSearchResult, SearchQuery } from '@otmetki/schemas';
 
 export type TermsInput = {
   terms: string[];

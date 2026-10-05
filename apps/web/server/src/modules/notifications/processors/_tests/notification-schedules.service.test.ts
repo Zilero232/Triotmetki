@@ -6,7 +6,7 @@ import { mock } from 'vitest-mock-extended';
 
 import type { AppConfigService } from '../../../../config';
 
-import { NOTIFICATION_SCHEDULES } from '../../config';
+import { NOTIFICATION_SCHEDULES } from '../../config/schedules.constants';
 import { NotificationSchedulesService } from '../notification-schedules.service';
 
 const createService = (env: 'development' | 'test') => {

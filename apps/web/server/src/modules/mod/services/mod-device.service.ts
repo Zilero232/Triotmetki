@@ -16,9 +16,10 @@ import { AppNotFoundException, ModException } from '../../../common/exceptions';
 import { isSignatureHeader, verifySignatureHeader } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { PrismaService, REDIS } from '../../../core';
-import { MOD_DEVICE, MOD_REQUEST } from '../config';
-import { deviceSecret, isFreshTimestamp, isNonce, matchesSecretHash, requestPath, signedMessage } from '../lib';
-import { toModDeviceView } from '../mappers';
+import { MOD_DEVICE, MOD_REQUEST } from '../config/device.constants';
+import { deviceSecret, matchesSecretHash } from '../lib/device-secret';
+import { isFreshTimestamp, isNonce, requestPath, signedMessage } from '../lib/request-signature';
+import { toModDeviceView } from '../mappers/device.mappers';
 
 @Injectable()
 export class ModDeviceService {

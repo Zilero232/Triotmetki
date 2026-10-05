@@ -2,11 +2,12 @@ import { Module } from '@nestjs/common';
 
 import { BillingCoreModule } from '../billing';
 import { CompetitionsController } from './competitions.controller';
-import { CompetitionService } from './services';
+import { CompetitionReaderService } from './services/competition-reader.service';
+import { CompetitionWriterService } from './services/competition-writer.service';
 
 @Module({
   imports: [BillingCoreModule],
   controllers: [CompetitionsController],
-  providers: [CompetitionService]
+  providers: [CompetitionReaderService, CompetitionWriterService]
 })
 export class CompetitionsModule {}

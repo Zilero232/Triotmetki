@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 
 import { BestBattlesController } from './best-battles.controller';
-import { BestBattleLookupsService, BestBattlesFacetsService, BestBattlesFeedService } from './services';
+import { BestBattleFacetsReaderService } from './services/best-battle-facets-reader.service';
+import { BestBattleLookupsReaderService } from './services/best-battle-lookups-reader.service';
+import { BestBattlesReaderService } from './services/best-battles-reader.service';
 
 @Module({
   controllers: [BestBattlesController],
-  providers: [BestBattleLookupsService, BestBattlesFeedService, BestBattlesFacetsService]
+  providers: [BestBattleLookupsReaderService, BestBattlesReaderService, BestBattleFacetsReaderService]
 })
 export class BestBattlesModule {}

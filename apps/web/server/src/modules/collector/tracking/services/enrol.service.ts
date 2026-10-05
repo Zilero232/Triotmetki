@@ -7,13 +7,13 @@ import type { PollResult } from '../tracking.types';
 
 import { PrismaService } from '../../../../core';
 import { JOB, QUEUE } from '../../contracts';
-import { PollPipelineService } from './poll-pipeline.service';
+import { PollSyncService } from './poll-sync.service';
 
 @Injectable()
 export class EnrolService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly pipeline: PollPipelineService,
+    private readonly pipeline: PollSyncService,
     @InjectQueue(QUEUE.clans) private readonly clansQueue: Queue
   ) {}
 

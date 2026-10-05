@@ -3,15 +3,15 @@ import type { ClanMember, ClanMemberEvent, ClanPage, Paginated } from '@otmetki/
 import { Injectable } from '@nestjs/common';
 import { subDays } from 'date-fns';
 
-import type { ClanEventsInput } from '../clans.types';
+import type { ClanEventPageInput, ClanEventsInput } from '../clans.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
-import { clampPercent, ratingValue } from '../../../common/lib';
+import { clampPercent, paginate, ratingValue } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { CLAN_PAGE } from '../config';
-import { avgBattlesPerDay } from '../lib';
-import { toClanEvent, toClanMember, toClanSummary } from '../mappers';
-import { CLAN_MEMBER_INCLUDE } from '../selects';
+import { CLAN_PAGE } from '../config/clan-page.constants';
+import { avgBattlesPerDay } from '../lib/avg-battles-per-day/avg-battles-per-day';
+import { toClanEvent, toClanMember, toClanSummary } from '../mappers/clans.mappers';
+import { CLAN_MEMBER_INCLUDE } from '../selects/clans.selects';
 
 @Injectable()
 export class ClanPageService {
@@ -63,11 +63,17 @@ export class ClanPageService {
     return rows.map((row) => toClanMember({ row, now }));
   }
 
-  async events({ clanId, limit, offset }: ClanEventsInput): Promise<Paginated<ClanMemberEvent>> {
-    const [rows, total] = await Promise.all([
-      this.prisma.clanMemberEvent.findMany({ where: { clanId }, orderBy: { occurredAt: 'desc' }, take: limit, skip: offset }),
-      this.prisma.clanMemberEvent.count({ where: { clanId } })
-    ]);
+  events({ clanId, limit, offset }: ClanEventsInput): Promise<Paginated<ClanMemberEvent>> {
+    return paginate({
+      limit,
+      offset,
+      fetch: (window) => this.eventPage({ clanId, window }),
+      count: () => this.prisma.clanMemberEvent.count({ where: { clanId } })
+    });
+  }
+
+  private async eventPage({ clanId, window }: ClanEventPageInput): Promise<ClanMemberEvent[]> {
+    const rows = await this.prisma.clanMemberEvent.findMany({ where: { clanId }, orderBy: { occurredAt: 'desc' }, ...window });
 
     const players = await this.prisma.player.findMany({
       where: { accountId: { in: rows.map((row) => row.accountId) } },
@@ -77,11 +83,6 @@ export class ClanPageService {
     const nicknameOf = new Map(players.map((player) => [player.accountId, player.nickname]));
     const hidden = new Set(players.filter((player) => player.isHidden).map((player) => player.accountId));
 
-    return {
-      items: rows.filter((row) => !hidden.has(row.accountId)).map((row) => toClanEvent({ row, nickname: nicknameOf.get(row.accountId) ?? null })),
-      total,
-      limit,
-      offset
-    };
+    return rows.filter((row) => !hidden.has(row.accountId)).map((row) => toClanEvent({ row, nickname: nicknameOf.get(row.accountId) ?? null }));
   }
 }

@@ -1,7 +1,5 @@
 import type { AnalyticsBattlesQuery, AnalyticsPeriod, AnalyticsQuery, AnalyticsTankQuery, PlaylistQuery, StatLine } from '@otmetki/schemas';
 
-import type { RawTankRow } from './lib';
-
 export type AccountInput = {
   userId: string;
   account?: number;
@@ -23,33 +21,16 @@ export type BattleInput = {
 
 export type PlaylistInput = AccountInput & PlaylistQuery;
 
-export type WindowInput = {
+export type PlaytimeWindowInput = {
   accountId: bigint;
   from: Date | null;
-};
-
-export type TrendInput = WindowInput & {
-  granularity: 'month' | 'week';
-  tankId?: number;
+  hasModBattles: boolean;
 };
 
 export type PeriodWindow = {
   accountId: bigint;
   period: AnalyticsPeriod;
   from: Date | null;
-};
-
-export type TrendRow = RawTankRow & {
-  bucket: Date;
-};
-
-export type MapRow = RawTankRow & {
-  arena_id: string;
-  team: number | null;
-};
-
-export type MateRow = RawTankRow & {
-  mate: bigint;
 };
 
 export type TakenInput = {
@@ -60,8 +41,4 @@ export type TakenInput = {
 export type SessionsInput = {
   window: PeriodWindow;
   totals: StatLine;
-};
-
-export type SizedRow = RawTankRow & {
-  is_platoon: boolean;
 };

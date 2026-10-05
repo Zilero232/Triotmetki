@@ -1,7 +1,7 @@
 import { createHmac } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 
-import { MOD_REQUEST } from '../../../config';
+import { MOD_REQUEST } from '../../../config/device.constants';
 import { isFreshTimestamp, isNonce, requestPath, signedMessage } from '../request-signature';
 
 const MOD_SIGNATURE_VECTOR = '7c6576dee0e349dfbd5997cdc94ebf348ddd00ff669762e869f89074eb845078';

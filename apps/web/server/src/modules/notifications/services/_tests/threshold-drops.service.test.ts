@@ -6,9 +6,8 @@ import type { PrismaService } from '../../../../core';
 import type { VehicleCatalogService } from '../../../reference';
 import type { NotificationService } from '../notification.service';
 
-import { moeThresholdLevels } from '../../../reference';
-import { unknownVehicle } from '../../../reference/mappers';
-import { THRESHOLD_DROP } from '../../config';
+import { moeThresholdLevels, unknownVehicle } from '../../../reference';
+import { THRESHOLD_DROP } from '../../config/watchers.constants';
 import { ThresholdDropsService } from '../threshold-drops.service';
 
 const PREVIOUS_DATE = new Date('2026-09-19T00:00:00.000Z');

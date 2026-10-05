@@ -9,19 +9,23 @@ import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { createHmac, randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { AccountRating, ModDevice, PlayerTank } from '../../../../generated';
+import type { ModRatingsQueries } from '../queries/ratings.types';
 
 import { AllExceptionsFilter } from '../../../common/filters';
 import { AppConfigService } from '../../../config';
 import { PrismaService, REDIS } from '../../../core';
 import { ExpectedValuesService } from '../../reference';
-import { MOD_DEVICE } from '../config';
-import { deviceSecret, hashSecret, signedMessage } from '../lib';
+import { MOD_DEVICE } from '../config/device.constants';
+import { MOD_TOKENS } from '../config/tokens.constants';
+import { deviceSecret, hashSecret } from '../lib/device-secret';
+import { signedMessage } from '../lib/request-signature';
 import { ModRatingsController } from '../mod-ratings.controller';
-import { ModDeviceService, ModRatingsService } from '../services';
+import { ModDeviceService } from '../services/mod-device.service';
+import { ModRatingsReaderService } from '../services/mod-ratings-reader.service';
 
 const SERVER_SECRET = 'server-secret-for-tests';
 const DEVICE_ID = 'dev_ratings';
@@ -52,6 +56,7 @@ type SignedPostInput = {
 };
 
 const prisma = mockDeep<PrismaService>();
+const queries = { tankRecords: vi.fn<ModRatingsQueries['tankRecords']>() };
 const config = mock<AppConfigService>();
 const expectedValues = mock<ExpectedValuesService>();
 
@@ -81,8 +86,9 @@ beforeAll(async () => {
     controllers: [ModRatingsController],
     providers: [
       ModDeviceService,
-      ModRatingsService,
+      ModRatingsReaderService,
       { provide: PrismaService, useValue: prisma },
+      { provide: MOD_TOKENS.ratingsQueries, useValue: queries },
       { provide: AppConfigService, useValue: config },
       { provide: ExpectedValuesService, useValue: expectedValues },
       { provide: REDIS, useValue: new RedisMock() },
@@ -103,7 +109,7 @@ beforeEach(() => {
   prisma.playerTank.findMany.mockResolvedValue([]);
   prisma.accountTankRating.findMany.mockResolvedValue([]);
   prisma.tankSnapshotLatest.findMany.mockResolvedValue([]);
-  prisma.$queryRaw.mockResolvedValue([]);
+  queries.tankRecords.mockResolvedValue([]);
   expectedValues.all.mockResolvedValue(new Map());
 });
 

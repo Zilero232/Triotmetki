@@ -2,6 +2,9 @@ import type { EquipCosmeticsInput, OverlayTheme, ShellReason, TankChallengeMetri
 
 import type { Prisma } from '../../../generated';
 import type { WeekWindow } from '../../common/lib';
+import type { PrismaTransaction } from '../../core';
+import type { BattleSample } from './lib/battle-samples/battle-samples.types';
+import type { ResolvedChallenge } from './lib/tank-challenges/tank-challenges.types';
 
 export type TankChallengeDefinition = {
   metric: TankChallengeMetric;
@@ -29,7 +32,7 @@ export type SpendShellsInput = {
   amount: number;
   key: string;
   context?: Record<string, number | string>;
-  tx: ProgressionTx;
+  tx: PrismaTransaction;
 };
 
 export type BalanceInput = {
@@ -61,6 +64,35 @@ export type ApplyXpInput = AccountRunInput & {
 
 export type EvaluateChallengesInput = AccountRunInput & {
   week: WeekWindow;
+};
+
+export type ChallengeContextInput = Omit<EvaluateChallengesInput, 'userId'>;
+
+export type ChallengeContext = {
+  tanks: [number, BattleSample[]][];
+  vehicles: ReadonlyMap<number, ProgressVehicle>;
+  hasModData: boolean;
+  completed: ReadonlySet<string>;
+};
+
+export type RecordChallengeInput = {
+  accountId: bigint;
+  tankId: number;
+  weekStart: Date;
+  now: Date;
+  challenge: ResolvedChallenge;
+  samples: readonly BattleSample[];
+  wasCompleted: boolean;
+};
+
+export type RewardChallengeInput = {
+  userId: string;
+  accountId: bigint;
+  tankId: number;
+  weekKey: string;
+  code: string;
+  now: Date;
+  tankName: string;
 };
 
 export type PurchaseCosmeticInput = {

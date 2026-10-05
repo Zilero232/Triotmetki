@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { BLOG } from '../../../config';
+import { BLOG } from '../../../config/blog.constants';
 import { outlineArticle } from '../article-outline';
 
 const wordsOf = (count: number) => Array.from({ length: count }).fill('слово').join(' ');

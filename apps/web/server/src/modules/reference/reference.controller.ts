@@ -6,8 +6,9 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
-import { GameVersionDto, ServersOnlineDto } from './dto';
-import { GameVersionService, ServersOnlineService } from './services';
+import { GameVersionDto, ServersOnlineDto } from './dto/reference.dto';
+import { GameVersionService } from './services/game-version.service';
+import { ServersOnlineService } from './services/servers-online.service';
 
 @ApiTags('reference')
 @AllowAnonymous()

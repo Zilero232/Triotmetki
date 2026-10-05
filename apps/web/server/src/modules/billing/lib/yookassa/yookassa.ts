@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 
 import type { CheckoutKeyInput, YooKassaPayment } from './yookassa.types';
 
-import { YOOKASSA } from '../../config';
+import { YOOKASSA } from '../../config/yookassa.constants';
 
 export const describeCard = (method: YooKassaPayment['payment_method']): string | null => {
   if (!method) {

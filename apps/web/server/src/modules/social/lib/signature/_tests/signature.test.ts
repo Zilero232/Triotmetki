@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-import { SIGNATURE, TIER_COLORS } from '../../../config';
+import { SIGNATURE, TIER_COLORS } from '../../../config/signature.constants';
 import { renderSignature, signatureTree } from '../signature';
 
 const fonts = [

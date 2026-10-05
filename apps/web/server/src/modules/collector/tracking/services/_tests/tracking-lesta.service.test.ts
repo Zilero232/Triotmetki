@@ -4,7 +4,7 @@ import { mockDeep } from 'vitest-mock-extended';
 import type { LestaClients } from '../../../../../core';
 
 import { LestaApiError } from '../../../../../lib/lesta';
-import { TRACKING } from '../../config';
+import { TRACKING } from '../../config/tracking.constants';
 import { TrackingLestaService } from '../tracking-lesta.service';
 
 const createLesta = () => {

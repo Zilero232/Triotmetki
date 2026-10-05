@@ -7,7 +7,7 @@ import type { VehicleCatalogService } from '../../../reference';
 import type { CatalogEntry } from '../../../reference/reference.types';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
-import { unknownVehicle } from '../../../reference/mappers';
+import { unknownVehicle } from '../../../reference';
 import { COMPARE_PROFILE } from '../../config';
 import { TankCompareService } from '../tank-compare.service';
 

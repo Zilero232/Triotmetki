@@ -2,13 +2,13 @@ import { sortBy, sum, sumBy } from 'remeda';
 
 import type { ActivityRow, BestHour, BestHoursInput, Sample } from './pulse-grid.types';
 
-import { PULSE } from '../../config';
+import { PULSE } from '../../config/pulse.constants';
 
 export const activityGrid = (rows: readonly ActivityRow[]): number[][] => {
   const grid = Array.from({ length: PULSE.days }, () => Array.from<number>({ length: PULSE.hours }).fill(0));
 
   for (const row of rows) {
-    const day = grid[row.dow - 1];
+    const day = grid[row.weekday];
 
     if (day && row.hour >= 0 && row.hour < PULSE.hours) {
       day[row.hour] = (day[row.hour] ?? 0) + row.players;

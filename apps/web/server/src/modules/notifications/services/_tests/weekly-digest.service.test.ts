@@ -6,9 +6,10 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Notification, NotificationSettings, UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { DigestPayload } from '../../config';
+import type { DigestPayload } from '../../config/notifications-queue.types';
 
-import { WEEKLY_DIGEST } from '../../config';
+import { UserLestaAccountsService } from '../../../../core';
+import { WEEKLY_DIGEST } from '../../config/watchers.constants';
 import { WeeklyDigestService } from '../weekly-digest.service';
 
 const NOW = new Date('2026-09-28T09:00:00.000Z');
@@ -31,7 +32,7 @@ const createService = () => {
 
   prisma.notification.findMany.mockResolvedValue([]);
 
-  return { service: new WeeklyDigestService(prisma, queue), prisma, queue };
+  return { service: new WeeklyDigestService(prisma, queue, new UserLestaAccountsService(prisma)), prisma, queue };
 };
 
 describe('WeeklyDigestService.run', () => {

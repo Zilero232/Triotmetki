@@ -7,10 +7,12 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { AuthenticatedDevice } from '../mod.types';
-import type { ModBindService, ModDeviceService, ModIngestService } from '../services';
+import type { ModBindWriterService } from '../services/mod-bind-writer.service';
+import type { ModDeviceService } from '../services/mod-device.service';
+import type { ModIngestWriterService } from '../services/mod-ingest-writer.service';
 
 import { ModException } from '../../../common/exceptions';
-import { ingestBatchSchema } from '../lib';
+import { ingestBatchSchema } from '../lib/contract';
 import { ModController } from '../mod.controller';
 
 const example = ingestBatchSchema.parse(
@@ -32,12 +34,12 @@ const device: AuthenticatedDevice = {
 
 const createController = () => {
   const devices = mock<ModDeviceService>();
-  const ingestion = mock<ModIngestService>();
+  const ingestion = mock<ModIngestWriterService>();
 
   devices.authenticateBody.mockImplementation(async ({ request }) => ({ device, body: ingestBatchSchema.parse(request.body) }));
   ingestion.ingest.mockResolvedValue({ accepted: example.events.length, duplicates: 0 });
 
-  return { controller: new ModController(mock<ModBindService>(), devices, ingestion), devices, ingestion };
+  return { controller: new ModController(mock<ModBindWriterService>(), devices, ingestion), devices, ingestion };
 };
 
 const requestWith = (body: unknown) => Object.assign(mock<RawBodyRequest<Request>>(), { body, rawBody: Buffer.from(JSON.stringify(body)) });

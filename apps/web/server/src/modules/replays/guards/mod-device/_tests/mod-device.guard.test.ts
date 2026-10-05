@@ -12,8 +12,7 @@ import type { AppConfigService } from '../../../../../config';
 import type { PrismaService } from '../../../../../core';
 
 import { AppBadRequestException } from '../../../../../common/exceptions';
-import { MOD_DEVICE, ModDeviceService } from '../../../../mod';
-import { deviceSecret, hashSecret } from '../../../../mod/lib';
+import { deviceSecret, hashSecret, MOD_DEVICE, ModDeviceService } from '../../../../mod';
 import { REPLAY_UPLOAD } from '../../../config';
 import { ModDeviceGuard } from '../mod-device.guard';
 

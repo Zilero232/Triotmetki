@@ -3,13 +3,13 @@ import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
 import { MetricsService, TrackedWorkerHost } from '../../collector/metrics';
-import { PULSE_QUEUE } from '../config';
-import { PulseService } from '../services';
+import { PULSE_QUEUE } from '../config/pulse.constants';
+import { PulseAggregateService } from '../services/pulse-aggregate.service';
 
 @Processor(PULSE_QUEUE.name, { concurrency: 1 })
 export class PulseProcessor extends TrackedWorkerHost {
   constructor(
-    private readonly pulse: PulseService,
+    private readonly pulse: PulseAggregateService,
     metrics: MetricsService
   ) {
     super(metrics);

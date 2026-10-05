@@ -1,1 +1,0 @@
-export { fieldModificationSteps } from './progression';

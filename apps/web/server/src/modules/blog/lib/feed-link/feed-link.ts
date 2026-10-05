@@ -1,6 +1,7 @@
 import type { BlogFeedLinkInput } from './feed-link.types';
 
-import { BLOG, BLOG_FEED } from '../../config';
+import { BLOG } from '../../config/blog.constants';
+import { BLOG_FEED } from '../../config/feed.constants';
 
 export const blogFeedLink = ({ webUrl, locale, slug }: BlogFeedLinkInput): string => {
   const prefix = locale === BLOG.defaultLocale ? '' : BLOG_FEED.enPrefix;

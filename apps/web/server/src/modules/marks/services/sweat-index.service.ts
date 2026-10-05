@@ -3,12 +3,12 @@ import type { SweatIndex } from '@otmetki/schemas';
 import { Injectable } from '@nestjs/common';
 import { LRUCache } from 'lru-cache';
 
-import type { SweatBaseline } from '../lib';
+import type { SweatBaseline } from '../lib/sweat-index/sweat-index.types';
 
 import { PrismaService } from '../../../core';
 import { ThresholdsService, VehicleCatalogService } from '../../reference';
-import { SWEAT_INDEX } from '../config';
-import { buildSweatIndex, EMPTY_SWEAT } from '../lib';
+import { SWEAT_INDEX } from '../config/sweat-index.constants';
+import { buildSweatIndex, EMPTY_SWEAT } from '../lib/sweat-index/sweat-index';
 
 @Injectable()
 export class SweatIndexService {

@@ -3,7 +3,7 @@ import { Body, Button, Container, Head, Heading, Html, Preview, Section, Text } 
 
 import type { DigestEmailProps } from '../notifications.types';
 
-import { EMAIL_THEME } from '../config';
+import { EMAIL_THEME } from '../config/email.constants';
 
 const styles = {
   body: { backgroundColor: EMAIL_THEME.background, fontFamily: EMAIL_THEME.fontFamily, margin: 0, padding: '24px 0' },

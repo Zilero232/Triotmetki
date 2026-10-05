@@ -1,5 +1,5 @@
 export type ActivityRow = {
-  dow: number;
+  weekday: number;
   hour: number;
   players: number;
 };

@@ -6,8 +6,8 @@ import type { ClaimRedemptionInput, PromoCodeInput, RecordRedemptionInput, Relea
 
 import { AppBadRequestException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
-import { PROMO_REJECTION_CODE, PROMO_RESERVATION } from '../config';
-import { promoRejection } from '../lib';
+import { PROMO_REJECTION_CODE, PROMO_RESERVATION } from '../config/promo.constants';
+import { promoRejection } from '../lib/promo-check';
 import { EntitlementsService } from './entitlements.service';
 import { SubscriptionService } from './subscription.service';
 
@@ -18,10 +18,6 @@ export class PromoService {
     private readonly subscriptions: SubscriptionService,
     private readonly entitlements: EntitlementsService
   ) {}
-
-  normalise(code: string): string {
-    return code.trim().toUpperCase();
-  }
 
   async usable({ userId, code }: PromoCodeInput): Promise<PromoCode> {
     const normalised = this.normalise(code);
@@ -102,7 +98,7 @@ export class PromoService {
     return lapsed.length;
   }
 
-  async claimRedemption({ db, userId, code, now, reservedUntil }: ClaimRedemptionInput): Promise<void> {
+  private async claimRedemption({ db, userId, code, now, reservedUntil }: ClaimRedemptionInput): Promise<void> {
     const claimed = await db.promoCode.updateMany({
       where: {
         code,
@@ -128,7 +124,7 @@ export class PromoService {
     }
   }
 
-  async recordRedemption({ db, userId, code }: RecordRedemptionInput): Promise<void> {
+  private async recordRedemption({ db, userId, code }: RecordRedemptionInput): Promise<void> {
     const inserted = await db.promoRedemption.createMany({ data: [{ code, userId }], skipDuplicates: true });
 
     if (inserted.count > 0) {
@@ -137,5 +133,9 @@ export class PromoService {
         data: { usedCount: { increment: 1 } }
       });
     }
+  }
+
+  private normalise(code: string): string {
+    return code.trim().toUpperCase();
   }
 }

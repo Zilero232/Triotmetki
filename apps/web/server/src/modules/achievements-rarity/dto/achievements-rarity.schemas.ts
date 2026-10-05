@@ -11,7 +11,8 @@ import {
 } from '@otmetki/schemas';
 import { z } from 'zod';
 
-import { ACHIEVEMENTS_VIEW, RARITY_TIER_NAMES } from '../config';
+import { RARITY_TIER_NAMES } from '../config/rarity.constants';
+import { ACHIEVEMENTS_VIEW } from '../config/view.constants';
 
 const rarityTierSchema = z.enum(RARITY_TIER_NAMES);
 

@@ -1,5 +1,0 @@
-export { ModThresholdsService } from './mod-thresholds.service';
-export { MoeCurveService } from './moe-curve.service';
-export { MoeTableService } from './moe-table.service';
-export { ProjectionService } from './projection.service';
-export { SweatIndexService } from './sweat-index.service';

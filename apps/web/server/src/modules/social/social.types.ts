@@ -13,8 +13,8 @@ import type {
   leagueSchema,
   wrappedSchema
 } from './dto/social.schemas';
-import type { ChallengeDefinition } from './lib/challenges';
-import type { LeagueMetric } from './lib/league';
+import type { ChallengeDefinition } from './lib/challenges/challenges.types';
+import type { LeagueMetric } from './lib/league/league.types';
 
 export type FollowView = Follow;
 export type FeedItem = z.infer<typeof feedItemSchema>;

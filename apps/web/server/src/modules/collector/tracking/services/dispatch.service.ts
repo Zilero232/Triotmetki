@@ -1,39 +1,42 @@
 import { InjectQueue } from '@nestjs/bullmq';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { addMinutes, subHours } from 'date-fns';
 import { chunk } from 'remeda';
 
 import type { AccountBatchPayload } from '../../contracts';
-import type { ClaimedAccountRow } from '../queries';
+import type { PlayerQueries } from '../queries/players.types';
 import type { EnqueueBatchesInput, SweepTier } from '../tracking.types';
 
 import { PrismaService } from '../../../../core';
 import { chunkIds } from '../../../../lib/lesta';
 import { JOB, QUEUE } from '../../contracts';
-import { TRACKING } from '../config';
-import { claimActiveSql } from '../queries';
+import { TRACKING, TRACKING_TOKENS } from '../config/tracking.constants';
 
 @Injectable()
 export class DispatchService {
   constructor(
     private readonly prisma: PrismaService,
     @InjectQueue(QUEUE.poll) private readonly pollQueue: Queue,
-    @InjectQueue(QUEUE.sweep) private readonly sweepQueue: Queue
+    @InjectQueue(QUEUE.sweep) private readonly sweepQueue: Queue,
+    @Inject(TRACKING_TOKENS.playerQueries) private readonly queries: PlayerQueries
   ) {}
 
   async dispatchActive(): Promise<number> {
     const now = new Date();
 
-    const claimed = await this.prisma.$queryRaw<ClaimedAccountRow[]>(
-      claimActiveSql({ now, nextPollAt: addMinutes(now, TRACKING.intervals.activeMinutes), limit: TRACKING.dispatch.maxActivePerTick })
-    );
+    const claimed = await this.queries.claimDueActivePlayers({
+      db: this.prisma.$kysely,
+      now,
+      nextPollAt: addMinutes(now, TRACKING.intervals.activeMinutes),
+      limit: TRACKING.dispatch.maxActivePerTick
+    });
 
     if (claimed.length === 0) {
       return 0;
     }
 
-    await this.enqueue({ queue: this.pollQueue, name: JOB.poll.batch, accountIds: claimed.map((row) => Number(row.accountId)) });
+    await this.enqueue({ queue: this.pollQueue, name: JOB.poll.batch, accountIds: claimed });
 
     return claimed.length;
   }

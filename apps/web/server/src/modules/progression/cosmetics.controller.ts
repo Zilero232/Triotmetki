@@ -12,8 +12,8 @@ import {
   ProfileCosmeticsDto,
   ProfileCosmeticsListDto,
   ProfileCosmeticsQueryDto
-} from './dto';
-import { CosmeticsService } from './services';
+} from './dto/progression.dto';
+import { CosmeticsService } from './services/cosmetics.service';
 
 @ApiTags('cosmetics')
 @Controller()

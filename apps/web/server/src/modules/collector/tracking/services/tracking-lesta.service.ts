@@ -8,7 +8,7 @@ import type { WithModeExtraInput } from '../tracking.types';
 
 import { LESTA_CLIENTS } from '../../../../core';
 import { accountInfoSchema, isExtraRejected, tankStatsSchema } from '../../../../lib/lesta';
-import { TRACKING } from '../config';
+import { TRACKING } from '../config/tracking.constants';
 
 @Injectable()
 export class TrackingLestaService {

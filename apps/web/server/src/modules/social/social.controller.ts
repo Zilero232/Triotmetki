@@ -7,7 +7,7 @@ import { ZodResponse } from 'nestjs-zod';
 import { CACHE_TTL } from '../../common/cache';
 import { CurrentUserId } from '../../common/decorators';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
-import { SIGNATURE } from './config';
+import { SIGNATURE } from './config/signature.constants';
 import {
   ChallengesDto,
   CreateFollowDto,
@@ -21,19 +21,26 @@ import {
   WrappedDto,
   WrappedParamsDto,
   WrappedQueryDto
-} from './dto';
-import { FeedService, FollowService, LeagueService, SignatureService, WeeklyChallengeService, WrappedService } from './services';
+} from './dto/social.dto';
+import { FeedReaderService } from './services/feed-reader.service';
+import { FollowReaderService } from './services/follow-reader.service';
+import { FollowWriterService } from './services/follow-writer.service';
+import { LeagueReaderService } from './services/league-reader.service';
+import { SignatureReaderService } from './services/signature-reader.service';
+import { WeeklyChallengeReaderService } from './services/weekly-challenge-reader.service';
+import { WrappedReaderService } from './services/wrapped-reader.service';
 
 @ApiTags('social')
 @Controller()
 export class SocialController {
   constructor(
-    private readonly follows: FollowService,
-    private readonly feeds: FeedService,
-    private readonly leagues: LeagueService,
-    private readonly challenges: WeeklyChallengeService,
-    private readonly signatures: SignatureService,
-    private readonly wrapped: WrappedService
+    private readonly follows: FollowReaderService,
+    private readonly followWriter: FollowWriterService,
+    private readonly feeds: FeedReaderService,
+    private readonly leagues: LeagueReaderService,
+    private readonly challenges: WeeklyChallengeReaderService,
+    private readonly signatures: SignatureReaderService,
+    private readonly wrapped: WrappedReaderService
   ) {}
 
   @Get('social/follows')
@@ -45,13 +52,13 @@ export class SocialController {
   @Post('social/follows')
   @ZodResponse({ type: FollowListDto, status: HttpStatus.CREATED })
   follow(@CurrentUserId() userId: string, @Body() body: CreateFollowDto) {
-    return this.follows.create({ ...body, userId });
+    return this.followWriter.create({ ...body, userId });
   }
 
   @Delete('social/follows/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async unfollow(@CurrentUserId() userId: string, @Param() { id }: FollowParamsDto) {
-    await this.follows.remove({ userId, id });
+    await this.followWriter.remove({ userId, id });
   }
 
   @Get('social/feed')

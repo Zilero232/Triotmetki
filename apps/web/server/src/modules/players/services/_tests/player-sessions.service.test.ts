@@ -6,7 +6,7 @@ import type { PrismaService } from '../../../../core';
 import type { VehicleCatalogService } from '../../../reference';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
-import { unknownVehicle } from '../../../reference/mappers';
+import { unknownVehicle } from '../../../reference';
 import { PlayerSessionsService } from '../player-sessions.service';
 
 const STARTED_AT = new Date('2026-09-25T18:00:00.000Z');

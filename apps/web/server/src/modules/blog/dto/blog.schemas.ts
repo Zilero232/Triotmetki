@@ -11,7 +11,7 @@ import {
 import { z } from 'zod';
 
 import { BlogPostStatus } from '../../../../generated';
-import { BLOG, BLOG_POST_LIMITS } from '../config';
+import { BLOG, BLOG_POST_LIMITS } from '../config/blog.constants';
 
 const blogTagSchema = z
   .string()

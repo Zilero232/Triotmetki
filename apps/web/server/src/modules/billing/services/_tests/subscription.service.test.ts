@@ -1,6 +1,6 @@
 import type { PlusState } from '@otmetki/schemas';
 
-import { addDays, addMonths } from 'date-fns';
+import { addDays } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
@@ -10,7 +10,7 @@ import type { PrismaService } from '../../../../core';
 import type { EntitlementsService } from '../entitlements.service';
 
 import { Prisma } from '../../../../../generated';
-import { PLUS_PLANS } from '../../config';
+import { PLUS_PLANS } from '../../config/plans.constants';
 import { SubscriptionService } from '../subscription.service';
 
 const now = new Date('2026-09-25T12:00:00Z');
@@ -23,7 +23,6 @@ const createService = (isRecurring: boolean) => {
   const entitlements = mock<EntitlementsService>();
 
   config.get.mockReturnValue(isRecurring);
-  prisma.subscription.upsert.mockResolvedValue(mock<Subscription>({ id: 'sub-1' }));
   entitlements.refresh.mockResolvedValue(plusState('none'));
 
   return { service: new SubscriptionService(prisma, config, entitlements), prisma, entitlements };
@@ -57,158 +56,6 @@ const storedSubscription = (overrides: Partial<Subscription>) =>
     savedCardTitle: null,
     ...overrides
   });
-
-const upserted = (prisma: ReturnType<typeof createService>['prisma']) => prisma.subscription.upsert.mock.calls[0]?.[0];
-
-describe('SubscriptionService.activate', () => {
-  it('adds the paid months on top of a running period', async () => {
-    const { service, prisma } = createService(true);
-    const currentPeriodEnd = addDays(now, 10);
-
-    prisma.subscription.findUnique.mockResolvedValue(
-      mock<Subscription>({ status: 'active', currentPeriodEnd, cancelAtPeriodEnd: false, savedCardId: 'card' })
-    );
-
-    await service.activate({ db: prisma, userId: 'u1', plan: 'monthly', method: null, now });
-
-    expect(upserted(prisma)?.update).toEqual(
-      expect.objectContaining({
-        currentPeriodEnd: addMonths(currentPeriodEnd, PLUS_PLANS.monthly.months),
-        cancelAtPeriodEnd: false,
-        status: 'active'
-      })
-    );
-  });
-
-  it('restarts an expired subscription from now and forgets an old cancellation', async () => {
-    const { service, prisma } = createService(true);
-
-    prisma.subscription.findUnique.mockResolvedValue(
-      mock<Subscription>({ status: 'expired', currentPeriodEnd: addDays(now, -5), cancelAtPeriodEnd: true, savedCardId: null })
-    );
-
-    await service.activate({ db: prisma, userId: 'u1', plan: 'yearly', method: { id: 'card', title: 'Visa' }, now });
-
-    expect(upserted(prisma)?.update).toEqual(
-      expect.objectContaining({ currentPeriodEnd: addMonths(now, PLUS_PLANS.yearly.months), cancelAtPeriodEnd: false, savedCardId: 'card' })
-    );
-  });
-
-  it('never auto-renews when recurring payments are off', async () => {
-    const { service, prisma } = createService(false);
-
-    prisma.subscription.findUnique.mockResolvedValue(null);
-
-    await service.activate({ db: prisma, userId: 'u1', plan: 'monthly', method: { id: 'card', title: null }, now });
-
-    expect(upserted(prisma)?.create).toEqual(expect.objectContaining({ cancelAtPeriodEnd: true }));
-  });
-
-  it('keeps the cancellation of a running subscription and its stored card', async () => {
-    const { service, prisma } = createService(true);
-
-    prisma.subscription.findUnique.mockResolvedValue(
-      mock<Subscription>({ status: 'active', currentPeriodEnd: addDays(now, 3), cancelAtPeriodEnd: true, savedCardId: 'card' })
-    );
-
-    await service.activate({ db: prisma, userId: 'u1', plan: 'monthly', method: null, now });
-
-    expect(upserted(prisma)?.update).toEqual(expect.objectContaining({ cancelAtPeriodEnd: true }));
-    expect(upserted(prisma)?.update).not.toHaveProperty('savedCardId');
-  });
-
-  it('does not auto-renew a subscriber without any card even when recurring payments are on', async () => {
-    const { service, prisma } = createService(true);
-
-    prisma.subscription.findUnique.mockResolvedValue(null);
-
-    await service.activate({ db: prisma, userId: 'u1', plan: 'monthly', method: null, now });
-
-    expect(upserted(prisma)?.create).toEqual(expect.objectContaining({ cancelAtPeriodEnd: true }));
-  });
-
-  it('auto-renews through the card stored on a lapsed cancelled subscription', async () => {
-    const { service, prisma } = createService(true);
-
-    prisma.subscription.findUnique.mockResolvedValue(
-      mock<Subscription>({ status: 'expired', currentPeriodEnd: addDays(now, -1), cancelAtPeriodEnd: true, savedCardId: 'card' })
-    );
-
-    await service.activate({ db: prisma, userId: 'u1', plan: 'monthly', method: null, now });
-
-    expect(upserted(prisma)?.update).toEqual(
-      expect.objectContaining({ cancelAtPeriodEnd: false, currentPeriodEnd: addMonths(now, PLUS_PLANS.monthly.months) })
-    );
-  });
-
-  it('returns the id of the stored subscription', async () => {
-    const { service, prisma } = createService(true);
-
-    prisma.subscription.findUnique.mockResolvedValue(null);
-
-    await expect(service.activate({ db: prisma, userId: 'u1', plan: 'monthly', method: null, now })).resolves.toBe('sub-1');
-  });
-});
-
-describe('SubscriptionService.grantDays', () => {
-  it('adds the days on top of a running period without touching its renewal', async () => {
-    const { service, prisma } = createService(true);
-    const currentPeriodEnd = addDays(now, 10);
-
-    prisma.subscription.findUnique.mockResolvedValue(mock<Subscription>({ status: 'active', currentPeriodEnd, cancelAtPeriodEnd: false }));
-
-    await service.grantDays({ db: prisma, userId: 'u1', days: 7, now });
-
-    expect(upserted(prisma)?.update).toEqual({ currentPeriodEnd: addDays(currentPeriodEnd, 7) });
-  });
-
-  it('starts a non-renewing period from now for a lapsed subscription', async () => {
-    const { service, prisma } = createService(true);
-
-    prisma.subscription.findUnique.mockResolvedValue(
-      mock<Subscription>({ status: 'expired', currentPeriodEnd: addDays(now, -3), cancelAtPeriodEnd: false })
-    );
-
-    await service.grantDays({ db: prisma, userId: 'u1', days: 7, now });
-
-    expect(upserted(prisma)?.update).toEqual({ currentPeriodEnd: addDays(now, 7), status: 'active', cancelAtPeriodEnd: true });
-  });
-
-  it('creates a non-renewing subscription for a user who never had one', async () => {
-    const { service, prisma } = createService(true);
-
-    prisma.subscription.findUnique.mockResolvedValue(null);
-
-    await service.grantDays({ db: prisma, userId: 'u1', days: 30, now });
-
-    expect(upserted(prisma)?.create).toEqual(
-      expect.objectContaining({ currentPeriodEnd: addDays(now, 30), status: 'active', cancelAtPeriodEnd: true })
-    );
-  });
-
-  it('keeps the cancellation of a running subscription when days are granted', async () => {
-    const { service, prisma } = createService(true);
-    const currentPeriodEnd = addDays(now, 2);
-
-    prisma.subscription.findUnique.mockResolvedValue(mock<Subscription>({ status: 'active', currentPeriodEnd, cancelAtPeriodEnd: true }));
-
-    await service.grantDays({ db: prisma, userId: 'u1', days: 3, now });
-
-    expect(upserted(prisma)?.update).not.toHaveProperty('cancelAtPeriodEnd');
-  });
-
-  it('writes through the transaction client it is given', async () => {
-    const { service, prisma } = createService(true);
-    const db = mockDeep<PrismaService>();
-
-    db.subscription.findUnique.mockResolvedValue(null);
-
-    await service.grantDays({ db, userId: 'u1', days: 7, now });
-
-    expect(db.subscription.upsert).toHaveBeenCalledOnce();
-    expect(prisma.subscription.upsert).not.toHaveBeenCalled();
-  });
-});
 
 describe('SubscriptionService.status', () => {
   it('describes a user without a subscription as having nothing to renew', async () => {

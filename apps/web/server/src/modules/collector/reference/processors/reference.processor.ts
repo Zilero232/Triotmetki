@@ -5,14 +5,12 @@ import { match } from 'ts-pattern';
 import { WORKER_CONCURRENCY } from '../../config';
 import { encyclopediaPayloadSchema, JOB, QUEUE } from '../../contracts';
 import { MetricsService, TrackedWorkerHost } from '../../metrics';
-import {
-  CatalogSyncService,
-  EncyclopediaSyncService,
-  ExpectedValuesSyncService,
-  MasteryThresholdsSyncService,
-  MoeEstimateSyncService,
-  MoeThresholdsSyncService
-} from '../services';
+import { CatalogSyncService } from '../services/catalog-sync.service';
+import { EncyclopediaSyncService } from '../services/encyclopedia-sync.service';
+import { ExpectedValuesSyncService } from '../services/expected-values-sync.service';
+import { MasteryThresholdsSyncService } from '../services/mastery-thresholds-sync.service';
+import { MoeEstimateAggregateService } from '../services/moe-estimate-aggregate.service';
+import { MoeThresholdsSyncService } from '../services/moe-thresholds-sync.service';
 
 @Processor(QUEUE.reference, { concurrency: WORKER_CONCURRENCY.reference })
 export class ReferenceProcessor extends TrackedWorkerHost {
@@ -20,7 +18,7 @@ export class ReferenceProcessor extends TrackedWorkerHost {
     private readonly encyclopedia: EncyclopediaSyncService,
     private readonly expectedValues: ExpectedValuesSyncService,
     private readonly moe: MoeThresholdsSyncService,
-    private readonly moeEstimate: MoeEstimateSyncService,
+    private readonly moeEstimate: MoeEstimateAggregateService,
     private readonly mastery: MasteryThresholdsSyncService,
     private readonly catalog: CatalogSyncService,
     metrics: MetricsService

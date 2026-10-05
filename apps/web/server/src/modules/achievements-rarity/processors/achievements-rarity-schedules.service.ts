@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { createJobSchedules } from '../../../common/schedules';
-import { ACHIEVEMENTS_RARITY_SCHEDULES } from '../config';
+import { ACHIEVEMENTS_RARITY_SCHEDULES } from '../config/queue.constants';
 
 @Injectable()
 export class AchievementsRaritySchedulesService extends createJobSchedules({

@@ -2,7 +2,7 @@ import { accountIdSchema, isoDateTimeSchema, paginatedSchema, paginationQuerySch
 import { z } from 'zod';
 
 import { statRequirementsSchema } from '../../community-core';
-import { TOURNAMENT } from '../config';
+import { TOURNAMENT } from '../config/tournaments.constants';
 
 const tournamentStatusSchema = z.enum(['draft', 'registration', 'running', 'finished', 'cancelled']);
 

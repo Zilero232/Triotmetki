@@ -16,8 +16,10 @@ import {
   PlayerCollectionDto,
   TankRarityDto,
   TankRarityQueryDto
-} from './dto';
-import { AchievementCatalogService, CollectorsService, TankRarityService } from './services';
+} from './dto/achievements-rarity.dto';
+import { AchievementCatalogReaderService } from './services/achievement-catalog-reader.service';
+import { CollectorsReaderService } from './services/collectors-reader.service';
+import { TankRarityReaderService } from './services/tank-rarity-reader.service';
 
 @ApiTags('achievements')
 @AllowAnonymous()
@@ -25,9 +27,9 @@ import { AchievementCatalogService, CollectorsService, TankRarityService } from 
 @Controller('achievements')
 export class AchievementsRarityController {
   constructor(
-    private readonly catalog: AchievementCatalogService,
-    private readonly tanks: TankRarityService,
-    private readonly collectors: CollectorsService
+    private readonly catalog: AchievementCatalogReaderService,
+    private readonly tanks: TankRarityReaderService,
+    private readonly collectors: CollectorsReaderService
   ) {}
 
   @Get()

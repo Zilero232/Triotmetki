@@ -7,7 +7,7 @@ import type { AppConfigService } from '../../../../config';
 import type { PrismaService } from '../../../../core';
 import type { DiscordSenderService } from '../../../discord';
 import type { TelegramSenderService } from '../../../telegram';
-import type { SessionCardRow, ShareRecipientRow } from '../../selects';
+import type { SessionCardRow, ShareRecipientRow } from '../../selects/session-share.selects';
 
 import { NotificationLedgerService } from '../../../notifications';
 import { SessionShareDeliveryService } from '../session-share-delivery.service';

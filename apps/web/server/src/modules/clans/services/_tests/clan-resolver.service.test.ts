@@ -9,7 +9,7 @@ import { AppNotFoundException } from '../../../../common/exceptions';
 import { insensitiveEquals } from '../../../../common/lib';
 import { LESTA_ERROR_CODE, LestaApiError } from '../../../../lib/lesta';
 import { CollectorProducerService, PurgeGuardService } from '../../../collector';
-import { CLAN_PAGE } from '../../config';
+import { CLAN_PAGE } from '../../config/clan-page.constants';
 import { ClanResolverService } from '../clan-resolver.service';
 
 const listed = (clanId: number, tag: string): ClanListItem => ({ clan_id: clanId, tag, name: tag, members_count: 1, created_at: 1_600_000_000 });

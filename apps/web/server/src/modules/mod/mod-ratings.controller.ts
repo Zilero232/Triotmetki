@@ -8,10 +8,11 @@ import { modRatingsRequestSchema, modTankRatingsRequestSchema } from '@otmetki/s
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
-import { MOD_RATINGS_READ } from './config';
-import { ModOverviewDto, ModRatingsRequestDto, ModTankRatingsDto, ModTankRatingsRequestDto } from './dto';
-import { modDeviceTracker } from './lib';
-import { ModDeviceService, ModRatingsService } from './services';
+import { MOD_RATINGS_READ } from './config/ratings.constants';
+import { ModOverviewDto, ModRatingsRequestDto, ModTankRatingsDto, ModTankRatingsRequestDto } from './dto/mod.dto';
+import { modDeviceTracker } from './lib/device-tracker';
+import { ModDeviceService } from './services/mod-device.service';
+import { ModRatingsReaderService } from './services/mod-ratings-reader.service';
 
 @ApiTags('mod')
 @AllowAnonymous()
@@ -20,7 +21,7 @@ import { ModDeviceService, ModRatingsService } from './services';
 export class ModRatingsController {
   constructor(
     private readonly devices: ModDeviceService,
-    private readonly ratings: ModRatingsService
+    private readonly ratings: ModRatingsReaderService
   ) {}
 
   @Post('overview')

@@ -1,0 +1,1 @@
+export const BEST_BATTLES_QUERIES = Symbol('BEST_BATTLES_QUERIES');

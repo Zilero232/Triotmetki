@@ -5,7 +5,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { PrismaService } from '../../../../core';
 import type { VehicleCatalogService } from '../../../reference';
-import type { TankTraitsService } from '../tank-traits.service';
+import type { TankTraitsReaderService } from '../tank-traits-reader.service';
 
 import { TANK_STATS_RANKING } from '../../config';
 import { TankStatsService } from '../tank-stats.service';
@@ -22,7 +22,7 @@ const eligible = [
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
   const catalog = mock<VehicleCatalogService>();
-  const traits = mock<TankTraitsService>();
+  const traits = mock<TankTraitsReaderService>();
 
   catalog.filter.mockResolvedValue(eligible);
   traits.filter.mockImplementation(async ({ entries }) => [...entries]);

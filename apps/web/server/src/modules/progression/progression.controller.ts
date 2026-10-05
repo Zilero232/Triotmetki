@@ -5,16 +5,18 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId } from '../../common/decorators';
 import { RequiresPlus } from '../billing';
-import { AccountParamsDto, SeasonHistoryDto, SeasonTrackDto, ShellsDto, TankChallengesDto, TankProgressListDto } from './dto';
-import { SeasonService, ShellLedgerService, TankProgressService } from './services';
+import { AccountParamsDto, SeasonHistoryDto, SeasonTrackDto, ShellsDto, TankChallengesDto, TankProgressListDto } from './dto/progression.dto';
+import { SeasonReaderService } from './services/season-reader.service';
+import { ShellLedgerWriterService } from './services/shell-ledger-writer.service';
+import { TankProgressReaderService } from './services/tank-progress-reader.service';
 
 @ApiTags('progression')
 @Controller()
 export class ProgressionController {
   constructor(
-    private readonly tanks: TankProgressService,
-    private readonly seasons: SeasonService,
-    private readonly shells: ShellLedgerService
+    private readonly tanks: TankProgressReaderService,
+    private readonly seasons: SeasonReaderService,
+    private readonly shells: ShellLedgerWriterService
   ) {}
 
   @Get('me/progression/tanks')

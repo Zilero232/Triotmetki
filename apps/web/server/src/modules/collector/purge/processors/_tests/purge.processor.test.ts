@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../../metrics';
-import type { PurgeService, RetentionService } from '../../services';
+import type { PurgeService } from '../../services/purge.service';
+import type { RetentionService } from '../../services/retention.service';
 
 import { JOB } from '../../../contracts';
 import { PurgeProcessor } from '../purge.processor';

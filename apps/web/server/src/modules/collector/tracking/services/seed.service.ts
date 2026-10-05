@@ -12,9 +12,9 @@ import { chunkIds } from '../../../../lib/lesta';
 import { COLLECTOR_STATE_KEY } from '../../config';
 import { JOB, QUEUE } from '../../contracts';
 import { PurgeGuardService } from '../../purge';
-import { TRACKING } from '../config';
+import { TRACKING } from '../config/tracking.constants';
 import { collectIds } from '../lib/seed';
-import { toClanRecord } from '../mappers';
+import { toClanRecord } from '../mappers/clans.mappers';
 import { DispatchService } from './dispatch.service';
 
 @Injectable()

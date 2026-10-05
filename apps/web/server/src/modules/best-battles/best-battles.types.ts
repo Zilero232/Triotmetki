@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import type { BEST_BATTLE_SOURCES } from './config';
+import type { BEST_BATTLE_SOURCES } from './config/facets.constants';
 import type {
   bestBattleMetricSchema,
   bestBattlePeriodSchema,
@@ -9,7 +9,8 @@ import type {
   bestBattlesFacetsSchema,
   bestBattlesPageSchema,
   bestBattlesQuerySchema
-} from './dto';
+} from './dto/best-battles.schemas';
+import type { FeedPageQueryInput } from './queries/best-battles.types';
 
 export type BestBattlePeriod = z.infer<typeof bestBattlePeriodSchema>;
 
@@ -30,8 +31,8 @@ export type BestBattlesFacets = z.infer<typeof bestBattlesFacetsSchema>;
 export type BestBattleRow = {
   source: BestBattleSource;
   battle_id: string;
-  account_id: bigint;
-  arena_unique_id: bigint | null;
+  account_id: number;
+  arena_unique_id: number | null;
   nickname: string | null;
   tank_id: number;
   arena_id: string | null;
@@ -65,3 +66,5 @@ export type FacetsInput = {
   query: BestBattlesFacetsQuery;
   now: Date;
 };
+
+export type CandidatesInput = Omit<FeedPageQueryInput, 'battleTypes' | 'db'>;

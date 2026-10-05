@@ -2,7 +2,7 @@ import { clamp } from 'remeda';
 
 import type { DescribePlanInput, PlanPriceInput, PlusPlan } from './pricing.types';
 
-import { PAYMENT_DESCRIPTION, PLUS_PLANS, PRICING } from '../../config';
+import { PAYMENT_DESCRIPTION, PLUS_PLANS, PRICING } from '../../config/plans.constants';
 
 export const planPrice = ({ plan, discountPercent }: PlanPriceInput): number => {
   const base = PLUS_PLANS[plan].priceRub;

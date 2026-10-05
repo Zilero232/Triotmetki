@@ -122,3 +122,8 @@ export const TRACKING = {
     clanPageLimit: 100
   }
 } as const;
+
+export const TRACKING_TOKENS = {
+  playerQueries: Symbol('TRACKING_PLAYER_QUERIES'),
+  accountWriteQueries: Symbol('TRACKING_ACCOUNT_WRITE_QUERIES')
+} as const;

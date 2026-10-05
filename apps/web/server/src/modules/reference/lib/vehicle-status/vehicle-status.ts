@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 import type { ClassifyVehicleInput, SpecTraits } from './vehicle-status.types';
 
-import { VEHICLE_STATUS } from '../../config';
+import { VEHICLE_STATUS } from '../../config/vehicle-status.constants';
 
 const specTraitsSchema = z.object({
   tags: z.array(z.string()).catch([]),

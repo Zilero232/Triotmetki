@@ -10,7 +10,7 @@ import type { PrismaService } from '../../../../core';
 import type { EntitlementsService } from '../../../billing';
 import type { CollectorProducerService } from '../../../collector';
 import type { PlayerActivityRow } from '../../watchlist.types';
-import type { WatchlistActivityService } from '../watchlist-activity.service';
+import type { WatchlistActivityReaderService } from '../watchlist-activity-reader.service';
 
 import { AppForbiddenException } from '../../../../common/exceptions';
 import { NOTIFICATION_DEFAULTS } from '../../../notifications';
@@ -30,7 +30,7 @@ const setup = () => {
   const prisma = mockDeep<PrismaService>();
   const entitlements = mockDeep<EntitlementsService>();
   const collector = mockDeep<CollectorProducerService>();
-  const activity = mockDeep<WatchlistActivityService>();
+  const activity = mockDeep<WatchlistActivityReaderService>();
 
   prisma.follow.findMany.mockResolvedValue([]);
   prisma.player.findMany.mockResolvedValue([]);

@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Redis } from 'ioredis';
 import { match } from 'ts-pattern';
 
-import type { SessionSharePayload } from '../config';
+import type { SessionSharePayload } from '../config/session-share-queue.types';
 import type { SendDiscordOnceInput } from '../session-share.types';
 
 import { AppConfigService } from '../../../config';
@@ -10,9 +10,9 @@ import { PrismaService, REDIS } from '../../../core';
 import { DiscordSenderService } from '../../discord';
 import { NotificationLedgerService, renderNotification, resolveNotificationLocale, sessionReportKey } from '../../notifications';
 import { TelegramSenderService } from '../../telegram';
-import { SESSION_SHARE } from '../config';
-import { toSessionCard } from '../mappers';
-import { SESSION_CARD_SELECT, SHARE_RECIPIENT_SELECT } from '../selects';
+import { SESSION_SHARE } from '../config/session-share.constants';
+import { toSessionCard } from '../mappers/session-card.mappers';
+import { SESSION_CARD_SELECT, SHARE_RECIPIENT_SELECT } from '../selects/session-share.selects';
 
 @Injectable()
 export class SessionShareDeliveryService {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { ACHIEVEMENT_SERIES } from '../../../config';
+import { ACHIEVEMENT_SERIES } from '../../../config/aggregate.constants';
 import { seriesProgress } from '../series-progress';
 
 const [sniper] = ACHIEVEMENT_SERIES;

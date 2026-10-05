@@ -3,15 +3,16 @@ import type { BillingStatus, PaymentHistoryItem, PlanOffer } from '@otmetki/sche
 import { Injectable } from '@nestjs/common';
 import { isPlusState, PLUS } from '@otmetki/schemas';
 
-import type { ActivateInput, GrantDaysInput, SetAutoRenewInput } from '../billing.types';
+import type { ActivateInput, ActivationInput, GrantDaysInput, SetAutoRenewInput } from '../billing.types';
 
 import { AppBadRequestException } from '../../../common/exceptions';
-import { isEntitled, toIso } from '../../../common/lib';
+import { isEntitled, PLUS_SUBSCRIPTION, toIso } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
-import { PLUS_PLANS, PLUS_SUBSCRIPTION } from '../config';
-import { cancelsAtPeriodEnd, extendPeriod, plusSubscriptionKey } from '../lib';
-import { toPaymentHistoryItem } from '../mappers';
+import { PLUS_PLANS } from '../config/plans.constants';
+import { cancelsAtPeriodEnd, extendPeriod } from '../lib/period';
+import { plusSubscriptionKey } from '../lib/subscription-key';
+import { toPaymentHistoryItem } from '../mappers/payment.mappers';
 import { EntitlementsService } from './entitlements.service';
 
 @Injectable()
@@ -32,23 +33,7 @@ export class SubscriptionService {
 
   async activate({ db, userId, plan, method, now }: ActivateInput): Promise<string> {
     const current = await db.subscription.findUnique({ where: plusSubscriptionKey(userId) });
-    const isRunning = isEntitled({ subscription: current, now });
-
-    const data = {
-      plan,
-      status: 'active' as const,
-      currentPeriodEnd: extendPeriod({
-        currentPeriodEnd: isRunning ? (current?.currentPeriodEnd ?? null) : null,
-        now,
-        months: PLUS_PLANS[plan].months
-      }),
-      cancelAtPeriodEnd: cancelsAtPeriodEnd({
-        isRecurringEnabled: this.isRecurringEnabled,
-        hasMethod: Boolean(method?.id ?? current?.savedCardId),
-        wasCancelled: isRunning && (current?.cancelAtPeriodEnd ?? false)
-      }),
-      ...(method ? { savedCardId: method.id, savedCardTitle: method.title } : {})
-    };
+    const data = this.activation({ current, plan, method, now });
 
     const subscription = await db.subscription.upsert({
       where: plusSubscriptionKey(userId),
@@ -70,6 +55,26 @@ export class SubscriptionService {
       create: { userId, product: PLUS_SUBSCRIPTION.product, status: 'active', currentPeriodEnd, cancelAtPeriodEnd: true },
       update: { currentPeriodEnd, ...(isRunning ? {} : { status: 'active' as const, cancelAtPeriodEnd: true }) }
     });
+  }
+
+  private activation({ current, plan, method, now }: ActivationInput) {
+    const isRunning = isEntitled({ subscription: current, now });
+
+    return {
+      plan,
+      status: 'active' as const,
+      currentPeriodEnd: extendPeriod({
+        currentPeriodEnd: isRunning ? (current?.currentPeriodEnd ?? null) : null,
+        now,
+        months: PLUS_PLANS[plan].months
+      }),
+      cancelAtPeriodEnd: cancelsAtPeriodEnd({
+        isRecurringEnabled: this.isRecurringEnabled,
+        hasMethod: Boolean(method?.id ?? current?.savedCardId),
+        wasCancelled: isRunning && (current?.cancelAtPeriodEnd ?? false)
+      }),
+      ...(method ? { savedCardId: method.id, savedCardTitle: method.title } : {})
+    };
   }
 
   async status(userId: string): Promise<BillingStatus> {

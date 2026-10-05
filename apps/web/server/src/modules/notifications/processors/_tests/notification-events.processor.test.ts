@@ -4,9 +4,13 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../../collector/metrics';
-import type { FirstWinRemindersService, MarksWatchService, SessionReportsService, ThresholdDropsService, WeeklyDigestService } from '../../services';
+import type { FirstWinRemindersService } from '../../services/first-win-reminders.service';
+import type { MarksWatchService } from '../../services/marks-watch.service';
+import type { SessionReportsService } from '../../services/session-reports.service';
+import type { ThresholdDropsService } from '../../services/threshold-drops.service';
+import type { WeeklyDigestService } from '../../services/weekly-digest.service';
 
-import { NOTIFICATIONS_JOB } from '../../config';
+import { NOTIFICATIONS_JOB } from '../../config/notifications-queue.constants';
 import { NotificationEventsProcessor } from '../notification-events.processor';
 
 const trackingMetrics = () => mock<MetricsService>({ track: async ({ run }) => run() });

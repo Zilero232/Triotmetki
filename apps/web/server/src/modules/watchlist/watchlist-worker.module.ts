@@ -5,10 +5,11 @@ import { BillingCoreModule } from '../billing';
 import { NotificationsProducerModule } from '../notifications';
 import { WATCHLIST_QUEUE } from './config';
 import { WatchlistProcessor, WatchlistSchedulesService } from './processors';
-import { WatchlistActivityService, WatchlistDigestService } from './services';
+import { watchlistQueriesProvider } from './providers/watchlist-queries.provider';
+import { WatchlistActivityReaderService, WatchlistDigestService } from './services';
 
 @Module({
   imports: [BillingCoreModule, NotificationsProducerModule, BullModule.registerQueue({ name: WATCHLIST_QUEUE.name })],
-  providers: [WatchlistActivityService, WatchlistDigestService, WatchlistProcessor, WatchlistSchedulesService]
+  providers: [watchlistQueriesProvider, WatchlistActivityReaderService, WatchlistDigestService, WatchlistProcessor, WatchlistSchedulesService]
 })
 export class WatchlistWorkerModule {}

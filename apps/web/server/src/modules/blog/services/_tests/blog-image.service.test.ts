@@ -6,7 +6,7 @@ import type { ObjectStorage } from '../../../../core';
 
 import { AppBadRequestException, AppNotFoundException } from '../../../../common/exceptions';
 import { StorageObjectMissingError } from '../../../../core';
-import { BLOG_IMAGES } from '../../config';
+import { BLOG_IMAGES } from '../../config/image.constants';
 import { BlogImageService } from '../blog-image.service';
 
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==', 'base64');

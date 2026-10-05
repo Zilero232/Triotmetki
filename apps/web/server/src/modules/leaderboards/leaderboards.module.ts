@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 
 import { LeaderboardsController } from './leaderboards.controller';
-import { LeaderboardService, OfficialRatingsService } from './services';
+import { LeaderboardService } from './services/leaderboard.service';
+import { OfficialRatingsService } from './services/official-ratings.service';
 
 @Module({
   controllers: [LeaderboardsController],

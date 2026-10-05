@@ -10,7 +10,7 @@ import { errorMessage } from '../../../../common/lib';
 import { LESTA_CLIENTS, PrismaService } from '../../../../core';
 import { COLLECTOR_STATE_KEY } from '../../config';
 import { JOB, QUEUE } from '../../contracts';
-import { REFERENCE } from '../config';
+import { REFERENCE } from '../config/reference.constants';
 import { CatalogSyncService } from './catalog-sync.service';
 import { EquipmentSyncService } from './equipment-sync.service';
 import { VehicleSyncService } from './vehicle-sync.service';

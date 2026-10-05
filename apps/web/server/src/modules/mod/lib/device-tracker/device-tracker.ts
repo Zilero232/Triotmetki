@@ -2,7 +2,7 @@ import { DEFAULT_IPV6_SUBNET_PREFIX, normalizeIp } from '@nestjs/throttler';
 
 import type { TrackedRequest } from './device-tracker.types';
 
-import { MOD_DEVICE } from '../../config';
+import { MOD_DEVICE } from '../../config/device.constants';
 
 export const modDeviceTracker = ({ ip, headers }: TrackedRequest): string => {
   const device = headers?.[MOD_DEVICE.header];

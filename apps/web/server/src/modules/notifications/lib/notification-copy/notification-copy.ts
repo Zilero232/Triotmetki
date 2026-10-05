@@ -1,17 +1,23 @@
-import { match } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 
+import type { ParsedNotification } from '../../config/notifications-queue.types';
 import type {
+  AccountNotification,
+  CommunityNotification,
   LinkInput,
   NotificationLocale,
   NotificationMessage,
   NotificationTextInput,
+  PlayerNotification,
   RenderDigestInput,
   RenderedNotification,
-  RenderNotificationInput
+  RenderNotificationInput,
+  TankNotification
 } from './notification-copy.types';
 
+import { winRatePercent } from '../../../../common/lib';
 import { createFluentStore } from '../../../telegram';
-import { NOTIFICATION_COPY, NOTIFICATION_LINKS } from '../../config/copy.constants';
+import { NOTIFICATION_COPY, NOTIFICATION_GROUPS, NOTIFICATION_LINKS } from '../../config/copy.constants';
 
 const store = createFluentStore({ files: NOTIFICATION_COPY.files });
 
@@ -26,7 +32,7 @@ export const resolveNotificationLocale = (raw: string | null | undefined): Notif
 
 export const notificationText = ({ locale, key, values }: NotificationTextInput): string => store.t(locale, key, values);
 
-const messageOf = (notification: RenderNotificationInput['notification']): NotificationMessage =>
+const tankMessage = (notification: TankNotification): NotificationMessage =>
   match(notification)
     .with({ event: 'moeGained' }, (event) => ({
       message: event.isFollowed ? 'moe-gained-followed' : 'moe-gained',
@@ -38,6 +44,34 @@ const messageOf = (notification: RenderNotificationInput['notification']): Notif
       values: { tankName: event.tankName, mark: event.mark, from: event.from, to: event.to },
       path: `${NOTIFICATION_LINKS.tank}/${event.tankId}`
     }))
+    .with({ event: 'premiumOffer' }, (event) => ({
+      message: 'premium-offer',
+      values: { tankName: event.tankName, discount: event.discountPercent ?? NOTIFICATION_COPY.missing },
+      path: `${NOTIFICATION_LINKS.tank}/${event.tankId}`
+    }))
+    .with({ event: 'tankReturned' }, (event) => ({
+      message: 'tank-returned',
+      values: {
+        tankName: event.tankName,
+        absentDays: event.absentDays ?? NOTIFICATION_COPY.missing,
+        discount: event.discountPercent ?? NOTIFICATION_COPY.missing
+      },
+      path: `${NOTIFICATION_LINKS.tank}/${event.tankId}`
+    }))
+    .with({ event: 'tankLevelUp' }, (event) => ({
+      message: 'tank-level-up',
+      values: { tankName: event.tankName, level: event.level, shells: event.shells },
+      path: NOTIFICATION_LINKS.progress
+    }))
+    .with({ event: 'tankChallengeDone' }, (event) => ({
+      message: 'tank-challenge-done',
+      values: { tankName: event.tankName, shells: event.shells },
+      path: NOTIFICATION_LINKS.progress
+    }))
+    .exhaustive();
+
+const playerMessage = (notification: PlayerNotification): NotificationMessage =>
+  match(notification)
     .with({ event: 'sessionFinished' }, (event) => ({
       message: 'session-finished',
       values: {
@@ -49,16 +83,37 @@ const messageOf = (notification: RenderNotificationInput['notification']): Notif
       },
       path: `${playerPath(event.nickname)}?${new URLSearchParams({ [NOTIFICATION_LINKS.sessionParam]: event.sessionId }).toString()}`
     }))
-    .with({ event: 'bonusCode' }, (event) => ({
-      message: 'bonus-code',
-      values: { code: event.code, description: event.description || NOTIFICATION_COPY.missing },
-      path: NOTIFICATION_LINKS.bonusCodes
+    .with({ event: 'firstWinAvailable' }, (event) => ({
+      message: 'first-win-available',
+      values: { nickname: event.nickname, available: event.available },
+      path: NOTIFICATION_LINKS.analytics
     }))
-    .with({ event: 'premiumOffer' }, (event) => ({
-      message: 'premium-offer',
-      values: { tankName: event.tankName, discount: event.discountPercent ?? NOTIFICATION_COPY.missing },
-      path: `${NOTIFICATION_LINKS.tank}/${event.tankId}`
+    .with({ event: 'watchlistDigest' }, (event) => ({
+      message: 'watchlist-digest',
+      values: {
+        players: event.activePlayers,
+        battles: event.battles,
+        marks: event.marksGained,
+        leader: event.top[0]?.nickname ?? NOTIFICATION_COPY.missing,
+        leaderBattles: event.top[0]?.battles ?? 0,
+        leaderWinRate: event.top[0]?.winRate ?? 0
+      },
+      path: NOTIFICATION_LINKS.watchlist
     }))
+    .with({ event: 'goalReached' }, (event) => ({
+      message: 'goal-reached',
+      values: { metric: event.metric, target: event.target },
+      path: NOTIFICATION_LINKS.goals
+    }))
+    .with({ event: 'badgeAwarded' }, (event) => ({
+      message: 'badge-awarded',
+      values: { title: event.title },
+      path: NOTIFICATION_LINKS.badges
+    }))
+    .exhaustive();
+
+const communityMessage = (notification: CommunityNotification): NotificationMessage =>
+  match(notification)
     .with({ event: 'challengeResolved' }, (event) => ({
       message: 'challenge-resolved',
       values: { title: event.title, outcome: event.isSucceeded ? 'succeeded' : 'failed' },
@@ -80,42 +135,6 @@ const messageOf = (notification: RenderNotificationInput['notification']): Notif
       },
       path: clanWorkspacePath(event.clanId)
     }))
-    .with({ event: 'badgeAwarded' }, (event) => ({
-      message: 'badge-awarded',
-      values: { title: event.title },
-      path: NOTIFICATION_LINKS.badges
-    }))
-    .with({ event: 'replayOverflow' }, (event) => ({
-      message: 'replay-overflow',
-      values: { stored: event.stored, keep: event.keep, daysLeft: event.daysLeft, deleteAt: event.deleteAt },
-      path: NOTIFICATION_LINKS.replays
-    }))
-    .with({ event: 'firstWinAvailable' }, (event) => ({
-      message: 'first-win-available',
-      values: { nickname: event.nickname, available: event.available },
-      path: NOTIFICATION_LINKS.analytics
-    }))
-    .with({ event: 'watchlistDigest' }, (event) => ({
-      message: 'watchlist-digest',
-      values: {
-        players: event.activePlayers,
-        battles: event.battles,
-        marks: event.marksGained,
-        leader: event.top[0]?.nickname ?? NOTIFICATION_COPY.missing,
-        leaderBattles: event.top[0]?.battles ?? 0,
-        leaderWinRate: event.top[0]?.winRate ?? 0
-      },
-      path: NOTIFICATION_LINKS.watchlist
-    }))
-    .with({ event: 'tankReturned' }, (event) => ({
-      message: 'tank-returned',
-      values: {
-        tankName: event.tankName,
-        absentDays: event.absentDays ?? NOTIFICATION_COPY.missing,
-        discount: event.discountPercent ?? NOTIFICATION_COPY.missing
-      },
-      path: `${NOTIFICATION_LINKS.tank}/${event.tankId}`
-    }))
     .with({ event: 'streamerLive' }, (event) => ({
       message: event.tankName ? 'streamer-live-tank' : 'streamer-live',
       values: { name: event.displayName, platform: event.platform, tankName: event.tankName ?? NOTIFICATION_COPY.missing },
@@ -126,20 +145,19 @@ const messageOf = (notification: RenderNotificationInput['notification']): Notif
       values: { title: event.title, teamName: event.teamName, rank: event.rank, teams: event.teams },
       path: `${NOTIFICATION_LINKS.competitions}/${encodeURIComponent(event.competitionSlug)}`
     }))
-    .with({ event: 'tankLevelUp' }, (event) => ({
-      message: 'tank-level-up',
-      values: { tankName: event.tankName, level: event.level, shells: event.shells },
-      path: NOTIFICATION_LINKS.progress
+    .exhaustive();
+
+const accountMessage = (notification: AccountNotification): NotificationMessage =>
+  match(notification)
+    .with({ event: 'bonusCode' }, (event) => ({
+      message: 'bonus-code',
+      values: { code: event.code, description: event.description || NOTIFICATION_COPY.missing },
+      path: NOTIFICATION_LINKS.bonusCodes
     }))
-    .with({ event: 'tankChallengeDone' }, (event) => ({
-      message: 'tank-challenge-done',
-      values: { tankName: event.tankName, shells: event.shells },
-      path: NOTIFICATION_LINKS.progress
-    }))
-    .with({ event: 'goalReached' }, (event) => ({
-      message: 'goal-reached',
-      values: { metric: event.metric, target: event.target },
-      path: NOTIFICATION_LINKS.goals
+    .with({ event: 'replayOverflow' }, (event) => ({
+      message: 'replay-overflow',
+      values: { stored: event.stored, keep: event.keep, daysLeft: event.daysLeft, deleteAt: event.deleteAt },
+      path: NOTIFICATION_LINKS.replays
     }))
     .with({ event: 'plusCheckoutOpen' }, () => ({ message: 'plus-checkout-open', values: {}, path: NOTIFICATION_LINKS.plus }))
     .with({ event: 'lestaRelinkRequired' }, (event) => ({
@@ -147,6 +165,14 @@ const messageOf = (notification: RenderNotificationInput['notification']): Notif
       values: { nickname: event.nickname },
       path: NOTIFICATION_LINKS.linkedAccounts
     }))
+    .exhaustive();
+
+const messageOf = (notification: ParsedNotification): NotificationMessage =>
+  match(notification)
+    .with({ event: P.union(...NOTIFICATION_GROUPS.tank) }, tankMessage)
+    .with({ event: P.union(...NOTIFICATION_GROUPS.player) }, playerMessage)
+    .with({ event: P.union(...NOTIFICATION_GROUPS.community) }, communityMessage)
+    .with({ event: P.union(...NOTIFICATION_GROUPS.account) }, accountMessage)
     .exhaustive();
 
 export const renderNotification = ({ notification, locale, webUrl }: RenderNotificationInput): RenderedNotification => {
@@ -163,7 +189,9 @@ export const renderDigest = ({ digest, locale, webUrl }: RenderDigestInput): Ren
   const title = notificationText({ locale, key: 'digest-title' });
   const url = link({ webUrl, path: NOTIFICATION_LINKS.digest });
 
-  if (digest.battles === 0) {
+  const winRate = winRatePercent({ wins: digest.wins, battles: digest.battles });
+
+  if (winRate === null) {
     return { title, body: notificationText({ locale, key: 'digest-empty' }), url };
   }
 
@@ -175,7 +203,7 @@ export const renderDigest = ({ digest, locale, webUrl }: RenderDigestInput): Ren
       values: {
         battles: digest.battles,
         sessions: digest.sessions,
-        winRate: (digest.wins / digest.battles) * 100,
+        winRate,
         avgDamage: digest.damageDealt / digest.battles,
         marksGained: digest.marksGained
       }

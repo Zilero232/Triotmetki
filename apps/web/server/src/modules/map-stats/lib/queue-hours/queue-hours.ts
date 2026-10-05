@@ -5,7 +5,7 @@ import { firstBy, sortBy } from 'remeda';
 import type { QueueNow } from '../../map-stats.types';
 import type { QueueNowInput, ZoneHourInput } from './queue-hours.types';
 
-import { MAP_STATS } from '../../config';
+import { MAP_STATS } from '../../config/map-stats.constants';
 
 export const zoneHour = ({ at, zone }: ZoneHourInput): number => getHours(at, { in: tz(zone) });
 

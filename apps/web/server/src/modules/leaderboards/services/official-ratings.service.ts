@@ -9,7 +9,7 @@ import type { OfficialEntriesInput, OfficialHistoryInput, OfficialNeighborsInput
 
 import { isoDay, OFFICIAL_FIELD_TO_LESTA, OFFICIAL_PERIOD_TO_LESTA, toNumber, toOfficialRank } from '../../../common/lib';
 import { LESTA_CLIENT, PrismaService } from '../../../core';
-import { OFFICIAL_HALL } from '../config';
+import { OFFICIAL_HALL } from '../config/official-hall.constants';
 
 @Injectable()
 export class OfficialRatingsService {

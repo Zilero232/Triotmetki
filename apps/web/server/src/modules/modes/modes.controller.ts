@@ -9,14 +9,14 @@ import { CurrentUserId } from '../../common/decorators';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { RequiresPlus } from '../billing';
 import { ModeMetaDto, ModeMetaQueryDto, ModeParamsDto, ModesHubDto, MyModeStatsDto, MyModeStatsQueryDto } from './dto';
-import { ModeMetaQueryService, MyModeStatsService } from './services';
+import { ModeMetaReaderService, MyModeStatsReaderService } from './services';
 
 @ApiTags('modes')
 @Controller('modes')
 export class ModesController {
   constructor(
-    private readonly meta: ModeMetaQueryService,
-    private readonly mine: MyModeStatsService
+    private readonly meta: ModeMetaReaderService,
+    private readonly mine: MyModeStatsReaderService
   ) {}
 
   @AllowAnonymous()

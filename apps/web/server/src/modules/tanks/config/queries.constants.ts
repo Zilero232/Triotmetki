@@ -1,0 +1,1 @@
+export const TANKS_QUERIES = 'TANKS_QUERIES';

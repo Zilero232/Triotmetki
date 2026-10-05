@@ -1,3 +1,3 @@
 export const COMPETITION_SCORE = {
-  digits: 10
+  digits: 1
 } as const;

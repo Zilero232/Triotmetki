@@ -34,13 +34,13 @@ import {
   TimeSeriesQueryDto
 } from './dto';
 import {
-  PlayerAchievementsService,
-  PlayerCareerService,
+  PlayerAchievementsReaderService,
+  PlayerCareerReaderService,
   PlayerHistoryService,
-  PlayerInsightsService,
+  PlayerInsightsReaderService,
   PlayerMarksService,
-  PlayerOfficialRatingsService,
-  PlayerPlaytimeService,
+  PlayerOfficialRatingsReaderService,
+  PlayerPlaytimeReaderService,
   PlayerResolverService,
   PlayerSessionsService,
   PlayerSummaryService,
@@ -60,12 +60,12 @@ export class PlayersController {
     private readonly history: PlayerHistoryService,
     private readonly sessions: PlayerSessionsService,
     private readonly marksService: PlayerMarksService,
-    private readonly insightsService: PlayerInsightsService,
-    private readonly playtimeService: PlayerPlaytimeService,
+    private readonly insightsService: PlayerInsightsReaderService,
+    private readonly playtimeService: PlayerPlaytimeReaderService,
     private readonly views: PlayerViewsService,
-    private readonly achievementsService: PlayerAchievementsService,
-    private readonly careerService: PlayerCareerService,
-    private readonly official: PlayerOfficialRatingsService
+    private readonly achievementsService: PlayerAchievementsReaderService,
+    private readonly careerService: PlayerCareerReaderService,
+    private readonly official: PlayerOfficialRatingsReaderService
   ) {}
 
   @Get('popular')

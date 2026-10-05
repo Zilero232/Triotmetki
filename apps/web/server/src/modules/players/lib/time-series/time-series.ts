@@ -7,6 +7,8 @@ import { match } from 'ts-pattern';
 
 import type { BucketTankRow, SeriesPointsInput } from './time-series.types';
 
+import { winRatePercent } from '../../../../common/lib';
+
 const toTotals = (row: BucketTankRow): TankTotals => ({
   tankId: row.tank_id,
   battles: row.battles,
@@ -28,7 +30,7 @@ export const seriesPoints = ({ rows, metric, expected, tiers, references }: Seri
 
     const value = match(metric)
       .with('battles', () => battles)
-      .with('winRate', () => (battles > 0 ? (totals.wins * 100) / battles : null))
+      .with('winRate', () => winRatePercent(totals))
       .with('avgDamage', () => (battles > 0 ? totals.damageDealt / battles : null))
       .with('wn8', () => accountWn8({ tanks, expected }).wn8)
       .with('eff', () => {

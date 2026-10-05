@@ -7,7 +7,7 @@ import type { TankServerStats } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { CatalogEntry, MasteryThresholdRecord, MoeThresholdRecord, ThresholdsService, VehicleCatalogService } from '../../../reference';
 
-import { EMPTY_SWEAT } from '../../lib';
+import { EMPTY_SWEAT } from '../../lib/sweat-index/sweat-index';
 import { SweatIndexService } from '../sweat-index.service';
 
 const summary = (tankId: number): VehicleSummary => ({

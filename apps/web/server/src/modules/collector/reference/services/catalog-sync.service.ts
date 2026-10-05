@@ -5,7 +5,7 @@ import type { EnglishNamesResult } from '../reference.types';
 
 import { slugify, toJsonValue } from '../../../../common/lib';
 import { LESTA_CLIENTS, PrismaService } from '../../../../core';
-import { REFERENCE } from '../config';
+import { REFERENCE } from '../config/reference.constants';
 import { achievementSchema, arenaSchema, crewSkillSchema, keyedEntries } from '../lib/encyclopedia';
 
 @Injectable()

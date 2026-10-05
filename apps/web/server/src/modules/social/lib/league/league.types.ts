@@ -1,4 +1,4 @@
-import type { LEAGUE } from '../../config';
+import type { LEAGUE } from '../../config/leagues.constants';
 
 export type LeagueMetric = (typeof LEAGUE.metrics)[number];
 

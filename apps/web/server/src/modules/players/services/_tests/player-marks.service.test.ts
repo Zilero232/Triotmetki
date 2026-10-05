@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { mock, mockDeep } from 'vitest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import type { AccountTankRating, PlayerTank } from '../../../../../generated';
-import type { PrismaService } from '../../../../core';
 import type { ThresholdsService, VehicleCatalogService } from '../../../reference';
 import type { CatalogEntry, ThresholdSet } from '../../../reference/reference.types';
-import type { CombinedDamageRow } from '../../queries';
+import type { PlayerQueries } from '../../providers/player-queries.provider.types';
 
-import { unknownVehicle } from '../../../reference/mappers';
+import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
+import { unknownVehicle } from '../../../reference';
 import { PLAYER_MARKS } from '../../config';
 import { PlayerMarksService } from '../player-marks.service';
 
@@ -47,22 +47,23 @@ type Setup = {
   tanks: PlayerTank[];
   catalog: CatalogEntry[];
   thresholds?: MoeThresholdRow[];
-  combined?: CombinedDamageRow[];
+  combined?: Awaited<ReturnType<PlayerQueries['combinedDamage']>>;
   ratings?: AccountTankRating[];
 };
 
 const createService = (setup: Setup) => {
-  const prisma = mockDeep<PrismaService>();
+  const prisma = mockPrismaService();
+  const queries = mock<PlayerQueries>();
   const catalog = mock<VehicleCatalogService>();
   const thresholds = mock<ThresholdsService>();
 
   prisma.playerTank.findMany.mockResolvedValue(setup.tanks);
-  prisma.$queryRaw.mockResolvedValue(setup.combined ?? []);
+  queries.combinedDamage.mockResolvedValue(setup.combined ?? []);
   prisma.accountTankRating.findMany.mockResolvedValue(setup.ratings ?? []);
   thresholds.latest.mockResolvedValue({ moe: new Map((setup.thresholds ?? []).map((row) => [row.tankId, row])), mastery: new Map() });
   catalog.all.mockResolvedValue(new Map(setup.catalog.map((item) => [item.summary.tankId, item])));
 
-  return new PlayerMarksService(prisma, catalog, thresholds);
+  return new PlayerMarksService(prisma, catalog, thresholds, queries);
 };
 
 describe('PlayerMarksService.marks', () => {

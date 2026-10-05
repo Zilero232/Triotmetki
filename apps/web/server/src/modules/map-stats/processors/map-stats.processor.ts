@@ -3,8 +3,8 @@ import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
 import { MetricsService, TrackedWorkerHost } from '../../collector/metrics';
-import { MAP_STATS_QUEUE } from '../config';
-import { MapStatsAggregateService } from '../services';
+import { MAP_STATS_QUEUE } from '../config/map-stats.constants';
+import { MapStatsAggregateService } from '../services/map-stats-aggregate.service';
 
 @Processor(MAP_STATS_QUEUE.name, { concurrency: 1 })
 export class MapStatsProcessor extends TrackedWorkerHost {

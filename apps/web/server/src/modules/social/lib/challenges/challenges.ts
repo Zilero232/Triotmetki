@@ -2,7 +2,7 @@ import { match } from 'ts-pattern';
 
 import type { ChallengeDefinition, ChallengeProgressInput } from './challenges.types';
 
-import { CHALLENGE_BADGES, WEEKLY_CHALLENGES } from '../../config';
+import { CHALLENGE_BADGES, WEEKLY_CHALLENGES } from '../../config/challenges.constants';
 
 export const badgeCodeOf = (definition: Pick<ChallengeDefinition, 'code'>): string => `${CHALLENGE_BADGES.prefix}${definition.code}`;
 

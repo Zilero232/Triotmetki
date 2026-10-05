@@ -1,7 +1,7 @@
 import { WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 
-import { MetricsService } from '../services';
+import { MetricsService } from '../services/metrics.service';
 
 export abstract class TrackedWorkerHost<T = unknown> extends WorkerHost {
   constructor(protected readonly metrics: MetricsService) {

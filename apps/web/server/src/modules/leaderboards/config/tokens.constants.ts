@@ -1,0 +1,1 @@
+export const LEADERBOARD_QUERIES = Symbol('LEADERBOARD_QUERIES');

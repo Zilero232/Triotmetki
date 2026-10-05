@@ -2,8 +2,8 @@ import type { MoeHistoryQuery, TankRole, vehicleFilterSchema, VehicleSummary } f
 import type { z } from 'zod';
 
 import type { Prisma, TankThreshold, ThresholdKind, ThresholdSource, VehicleType } from '../../../generated';
-import type { THRESHOLD_LEVELS } from './config';
-import type { SpecTraits } from './lib';
+import type { THRESHOLD_LEVELS } from './config/thresholds.constants';
+import type { SpecTraits } from './lib/vehicle-status/vehicle-status.types';
 
 export type CatalogEntry = {
   summary: VehicleSummary;
@@ -42,12 +42,6 @@ export type ThresholdSet = {
 
 export type ThresholdsAsOfInput = {
   date: Date | null;
-  source?: ThresholdSource;
-};
-
-export type LatestThresholdsInput = {
-  kind: ThresholdKind;
-  upTo: Date;
   source?: ThresholdSource;
 };
 

@@ -8,7 +8,7 @@ import type { LestaClients } from '../../../../core';
 import { toJsonValue } from '../../../../common/lib';
 import { LESTA_CLIENTS, PrismaService } from '../../../../core';
 import { masteryThresholdLevels } from '../../../reference';
-import { REFERENCE } from '../config';
+import { REFERENCE } from '../config/reference.constants';
 import { masteryPercentiles, masteryThresholdRows } from '../lib/community-data';
 
 @Injectable()

@@ -9,7 +9,7 @@ import {
 } from '@otmetki/schemas';
 import { createZodDto } from 'nestjs-zod';
 
-import { bindRequestSchema, bindResponseSchema, ingestResponseSchema } from '../lib';
+import { bindRequestSchema, bindResponseSchema, ingestResponseSchema } from '../lib/contract';
 import { deviceParamsSchema } from './mod.schemas';
 
 export class BindCodeInputDto extends createZodDto(bindCodeInputSchema) {}

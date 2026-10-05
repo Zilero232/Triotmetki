@@ -27,7 +27,7 @@ const createService = (rows: Vehicle[]) => {
   const prisma = mockDeep<PrismaService>();
 
   prisma.vehicle.findMany.mockResolvedValue(rows);
-  prisma.$queryRaw.mockResolvedValue([]);
+  prisma.premiumOffer.findMany.mockResolvedValue([]);
 
   return { service: new VehicleCatalogService(prisma), prisma };
 };
@@ -89,7 +89,7 @@ describe('VehicleCatalogService', () => {
     const hidden = { isPremium: true, specs: { tags: [], role: 'role_HT_break', notInShop: true } };
     const { service, prisma } = createService([vehicle(1, hidden), vehicle(2, hidden)]);
 
-    prisma.$queryRaw.mockResolvedValue([{ tank_id: 1 }]);
+    prisma.premiumOffer.findMany.mockResolvedValue([mock({ tankIds: [1] })]);
 
     const entries = await service.all();
 

@@ -1,7 +1,13 @@
-export { BATTLE_CORROBORATION, MOD_DEVICE, MOD_DEVICE_LIMITS } from './config';
-export { deviceSecret, hashSecret, isModDeviceRequest, readStoredLoadout, sessionUuid, signedMessage } from './lib';
-export type { BattleResultEvent, StoredLoadout } from './lib';
+export { MOD_DEVICE, MOD_DEVICE_LIMITS } from './config/device.constants';
+export { BATTLE_CORROBORATION } from './config/ingest.constants';
+export { sessionUuid } from './lib/battle';
+export type { BattleResultEvent } from './lib/contract';
+export { deviceSecret, hashSecret } from './lib/device-secret';
+export { isModDeviceRequest } from './lib/device-tracker';
+export { readStoredLoadout } from './lib/loadout';
+export type { StoredLoadout } from './lib/loadout';
+export { signedMessage } from './lib/request-signature';
 export { ModModule } from './mod.module';
 export type { AuthenticatedDevice, SignedModRequest } from './mod.types';
-export { corroboratedBattleSql, ownerTrustedBattleSql } from './queries';
-export { ModDeviceService } from './services';
+export { corroboratedBattle, ownerTrustedBattle } from './queries/battle-corroboration.queries';
+export { ModDeviceService } from './services/mod-device.service';

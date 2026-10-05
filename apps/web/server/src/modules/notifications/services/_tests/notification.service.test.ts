@@ -5,9 +5,9 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Follow, NotificationSettings, UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { DeliverPayload } from '../../config';
+import type { DeliverPayload } from '../../config/notifications-queue.types';
 
-import { NOTIFICATIONS_JOB } from '../../config';
+import { NOTIFICATIONS_JOB } from '../../config/notifications-queue.constants';
 import { NotificationService } from '../notification.service';
 
 const moe = { event: 'moeGained', accountId: 7, nickname: 'Tanker', tankId: 1, tankName: 'T-34', marks: 2 } as const;

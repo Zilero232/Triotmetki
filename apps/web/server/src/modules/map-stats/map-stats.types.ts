@@ -1,6 +1,13 @@
 import type { z } from 'zod';
 
-import type { mapQueueSchema, mapRotationRowSchema, mapRotationSchema, mapStatsQuerySchema, queueCellSchema, queueNowSchema } from './dto';
+import type {
+  mapQueueSchema,
+  mapRotationRowSchema,
+  mapRotationSchema,
+  mapStatsQuerySchema,
+  queueCellSchema,
+  queueNowSchema
+} from './dto/map-stats.schemas';
 
 export type MapStatsQuery = z.infer<typeof mapStatsQuerySchema>;
 

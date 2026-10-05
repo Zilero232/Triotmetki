@@ -9,7 +9,7 @@ import { OptionalUserId } from '../../common/decorators';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { RequiresPlus } from '../billing';
 import { TankDetailService } from '../tanks';
-import { RECOMMENDED_BUILD } from './config';
+import { RECOMMENDED_BUILD } from './config/recommended.constants';
 import {
   BuildAdviceDto,
   BuildHistoryDto,
@@ -21,15 +21,13 @@ import {
   PopularBuildsDto,
   PopularBuildsQueryDto,
   RecommendedBuildDto
-} from './dto';
-import {
-  BuildAdviceService,
-  BuildOptionsService,
-  BuildUsageService,
-  LoadoutService,
-  PopularBuildsService,
-  RecommendedBuildService
-} from './services';
+} from './dto/builds.dto';
+import { BuildAdviceReaderService } from './services/build-advice-reader.service';
+import { BuildOptionsReaderService } from './services/build-options-reader.service';
+import { BuildUsageReaderService } from './services/build-usage-reader.service';
+import { LoadoutReaderService } from './services/loadout-reader.service';
+import { PopularBuildsReaderService } from './services/popular-builds-reader.service';
+import { RecommendedBuildReaderService } from './services/recommended-build-reader.service';
 
 @ApiTags('builds')
 @AllowAnonymous()
@@ -37,12 +35,12 @@ import {
 export class BuildsController {
   constructor(
     private readonly tanks: TankDetailService,
-    private readonly buildOptions: BuildOptionsService,
-    private readonly loadouts: LoadoutService,
-    private readonly popularBuilds: PopularBuildsService,
-    private readonly recommendedBuilds: RecommendedBuildService,
-    private readonly usage: BuildUsageService,
-    private readonly buildAdvice: BuildAdviceService
+    private readonly buildOptions: BuildOptionsReaderService,
+    private readonly loadouts: LoadoutReaderService,
+    private readonly popularBuilds: PopularBuildsReaderService,
+    private readonly recommendedBuilds: RecommendedBuildReaderService,
+    private readonly usage: BuildUsageReaderService,
+    private readonly buildAdvice: BuildAdviceReaderService
   ) {}
 
   @Get(':id/build-options')

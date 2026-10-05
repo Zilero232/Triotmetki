@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { TOURNAMENT } from '../../../config';
+import { TOURNAMENT } from '../../../config/tournaments.constants';
 import { storedBracket, storedCapacity } from '../stored-tournament';
 
 describe('storedCapacity', () => {

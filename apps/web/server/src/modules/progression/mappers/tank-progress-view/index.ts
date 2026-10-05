@@ -1,2 +1,0 @@
-export { toTankChallengeSet, toTankProgressItem } from './tank-progress-view';
-export type { TankChallengeSet, TankProgressItem, TankProgressRow } from './tank-progress-view.types';

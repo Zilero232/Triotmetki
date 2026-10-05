@@ -26,12 +26,12 @@ import {
 } from './dto';
 import {
   TankDetailService,
-  TankEconomyReportService,
-  TankPatchesService,
+  TankEconomyReaderService,
+  TankPatchesReaderService,
   TankStatsService,
-  TankTrendService,
+  TankTrendReaderService,
   TierListService,
-  TopPlayersService
+  TopPlayersReaderService
 } from './services';
 
 @ApiTags('tanks')
@@ -43,10 +43,10 @@ export class TanksController {
     private readonly stats: TankStatsService,
     private readonly tierLists: TierListService,
     private readonly details: TankDetailService,
-    private readonly topPlayers: TopPlayersService,
-    private readonly trends: TankTrendService,
-    private readonly patchNotes: TankPatchesService,
-    private readonly economy: TankEconomyReportService
+    private readonly topPlayers: TopPlayersReaderService,
+    private readonly trends: TankTrendReaderService,
+    private readonly patchNotes: TankPatchesReaderService,
+    private readonly economy: TankEconomyReaderService
   ) {}
 
   @Get()

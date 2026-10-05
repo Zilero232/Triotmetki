@@ -1,0 +1,1 @@
+export const PLAYER_QUERIES = 'PLAYER_QUERIES';

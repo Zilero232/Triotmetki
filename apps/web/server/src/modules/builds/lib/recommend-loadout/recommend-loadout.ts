@@ -5,7 +5,8 @@ import { firstBy, sortBy, sumBy } from 'remeda';
 
 import type { CommonSkillEntry, TopIdsInput } from './recommend-loadout.types';
 
-import { BUILD_SLOTS, RECOMMENDED_BUILD } from '../../config';
+import { BUILD_SLOTS } from '../../config/provisions.constants';
+import { RECOMMENDED_BUILD } from '../../config/recommended.constants';
 
 const { minShare, maxSkillsPerRole, profileId, commonRole } = RECOMMENDED_BUILD;
 

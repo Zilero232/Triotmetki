@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { BattleSample } from '../../battle-samples';
+import type { BattleSample } from '../../battle-samples/battle-samples.types';
 
 import { xpOfSamples } from '../tank-xp';
 

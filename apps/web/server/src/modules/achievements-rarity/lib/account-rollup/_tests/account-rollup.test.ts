@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { ACHIEVEMENTS_AGGREGATE } from '../../../config';
+import { ACHIEVEMENTS_AGGREGATE } from '../../../config/aggregate.constants';
 import { accountRollup, heldNames, obtainableNames, readCounts } from '../account-rollup';
 
 const points = new Map([

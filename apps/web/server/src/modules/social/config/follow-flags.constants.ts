@@ -1,4 +1,4 @@
-import type { FollowFlagConfig, FollowFlags } from '../lib/follow-flags';
+import type { FollowFlagConfig, FollowFlags } from '../lib/follow-flags/follow-flags.types';
 
 export const FOLLOW_FLAGS: Record<keyof FollowFlags, FollowFlagConfig> = {
   isFollowing: {

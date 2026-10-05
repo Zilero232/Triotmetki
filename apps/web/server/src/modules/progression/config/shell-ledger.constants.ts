@@ -1,4 +1,4 @@
 export const SHELL_LEDGER = {
   recentEntries: 30,
-  lockNamespace: 'shells'
+  lockScope: 'shells'
 } as const;

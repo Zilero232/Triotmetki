@@ -3,17 +3,20 @@ import { ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
-import { BLOG_FEED, BLOG_IMAGES } from './config';
-import { BlogArticleDto, BlogImageParamsDto, BlogPostPageDto, BlogPostsQueryDto, BlogSlugParamsDto, BlogTagsDto } from './dto';
-import { BlogFeedService, BlogImageService, BlogQueryService } from './services';
+import { BLOG_FEED } from './config/feed.constants';
+import { BLOG_IMAGES } from './config/image.constants';
+import { BlogArticleDto, BlogImageParamsDto, BlogPostPageDto, BlogPostsQueryDto, BlogSlugParamsDto, BlogTagsDto } from './dto/blog.dto';
+import { BlogImageService } from './services/blog-image.service';
+import { BlogReaderService } from './services/blog-reader.service';
+import { BlogRssReaderService } from './services/blog-rss-reader.service';
 
 @ApiTags('blog')
 @AllowAnonymous()
 @Controller('blog')
 export class BlogController {
   constructor(
-    private readonly posts: BlogQueryService,
-    private readonly feed: BlogFeedService,
+    private readonly posts: BlogReaderService,
+    private readonly feed: BlogRssReaderService,
     private readonly images: BlogImageService
   ) {}
 

@@ -1,3 +1,3 @@
 export const SWEAT_RATIO = {
-  precision: 100
+  digits: 2
 } as const;

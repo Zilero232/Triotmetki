@@ -1,9 +1,9 @@
 import type { AccountBadge } from '../../../../../generated';
-import type { RecordEventRow, SnapshotEventRow } from '../../queries';
+import type { RecordEventRow, TankEventRow } from '../../queries/snapshot-events.types';
 import type { FeedItem } from '../../social.types';
 
 export type BuildFeedInput = {
-  snapshots: readonly SnapshotEventRow[];
+  snapshots: readonly TankEventRow[];
   records: readonly RecordEventRow[];
   badges: readonly FeedBadge[];
   nicknames: ReadonlyMap<bigint, string>;
@@ -16,9 +16,9 @@ export type { FeedItem };
 
 type FeedBadge = Pick<AccountBadge, 'accountId' | 'awardedAt' | 'badgeCode'>;
 
-export type MarkRow = Pick<SnapshotEventRow, 'marks_on_gun' | 'prev_marks'>;
+export type MarkRow = Pick<TankEventRow, 'marksOnGun' | 'prevMarks'>;
 
 export type MasteryGainInput = {
-  row: Pick<SnapshotEventRow, 'mark_of_mastery' | 'prev_mastery'>;
+  row: Pick<TankEventRow, 'markOfMastery' | 'prevMastery'>;
   aceMastery: number;
 };

@@ -2,7 +2,7 @@ import { HONEST_RNG } from '@otmetki/schemas';
 import { sumBy } from 'remeda';
 import { describe, expect, it } from 'vitest';
 
-import { RNG_LUCK } from '../../../config';
+import { RNG_LUCK } from '../../../config/theory.constants';
 import { luckVerdict, theoryBuckets } from '../rng-theory';
 
 describe('theoryBuckets', () => {

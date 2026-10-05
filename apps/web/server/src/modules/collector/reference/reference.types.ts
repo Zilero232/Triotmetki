@@ -1,5 +1,6 @@
 import type { VehicleType } from '../../../../generated';
 import type { Vehicle } from '../../../lib/lesta';
+import type { MoeEstimate } from './lib/moe-estimate';
 
 export type SectionRunner = () => Promise<number>;
 
@@ -19,4 +20,20 @@ export type EnglishNamesResult = {
   arenas: number;
   achievements: number;
   crewSkills: number;
+};
+
+export type WriteVehiclesInput = {
+  vehicles: readonly Vehicle[];
+  gameVersionId: number;
+};
+
+export type WriteSpecHistoryInput = {
+  vehicle: Vehicle;
+  gameVersionId: number;
+  previousSpecs: unknown;
+};
+
+export type ReplaceMoeEstimatesInput = {
+  estimates: readonly MoeEstimate[];
+  date: Date;
 };

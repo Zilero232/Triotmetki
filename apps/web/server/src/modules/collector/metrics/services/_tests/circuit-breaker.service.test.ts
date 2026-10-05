@@ -3,7 +3,7 @@ import { mockDeep } from 'vitest-mock-extended';
 
 import type { PrismaService } from '../../../../../core';
 
-import { CIRCUIT_BREAKER } from '../../config';
+import { CIRCUIT_BREAKER } from '../../config/circuit-breaker.constants';
 import { CircuitBreakerService } from '../circuit-breaker.service';
 
 const burst = CIRCUIT_BREAKER.minimumRps * (CIRCUIT_BREAKER.samplingMs / 1000) + 5;

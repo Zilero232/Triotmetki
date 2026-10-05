@@ -9,9 +9,14 @@ import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { ModDeviceService } from '../mod';
-import { SESSION_SHARE } from './config';
-import { ModSessionSharePreferenceAnswerDto, ModSessionSharePreferenceDto, ModSessionShareSendDto, ModSessionShareSentDto } from './dto';
-import { SessionShareService } from './services';
+import { SESSION_SHARE } from './config/session-share.constants';
+import {
+  ModSessionSharePreferenceAnswerDto,
+  ModSessionSharePreferenceDto,
+  ModSessionShareSendDto,
+  ModSessionShareSentDto
+} from './dto/session-share.dto';
+import { SessionShareWriterService } from './services/session-share-writer.service';
 
 @ApiTags('mod')
 @AllowAnonymous()
@@ -19,7 +24,7 @@ import { SessionShareService } from './services';
 export class SessionShareController {
   constructor(
     private readonly devices: ModDeviceService,
-    private readonly shares: SessionShareService
+    private readonly shares: SessionShareWriterService
   ) {}
 
   @Post()

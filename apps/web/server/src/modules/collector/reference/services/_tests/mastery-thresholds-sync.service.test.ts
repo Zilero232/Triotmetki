@@ -6,7 +6,7 @@ import type { Vehicle } from '../../../../../../generated';
 import type { LestaClients, PrismaService } from '../../../../../core';
 
 import { masteryThresholdLevels } from '../../../../reference';
-import { REFERENCE } from '../../config';
+import { REFERENCE } from '../../config/reference.constants';
 import { MasteryThresholdsSyncService } from '../mastery-thresholds-sync.service';
 
 const NOW = new Date('2026-09-26T15:00:00Z');

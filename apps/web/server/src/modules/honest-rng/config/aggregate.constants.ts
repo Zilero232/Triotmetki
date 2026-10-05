@@ -11,3 +11,5 @@ export const HONEST_RNG_AGGREGATE = {
   cacheKey: 'honest-rng:view:v1',
   cacheSeconds: 600
 } as const;
+
+export const RNG_BATTLES_QUERIES = Symbol('RNG_BATTLES_QUERIES');

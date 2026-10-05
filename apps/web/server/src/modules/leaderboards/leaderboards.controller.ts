@@ -16,8 +16,9 @@ import {
   OfficialRankHistoryQueryDto,
   OfficialTopDto,
   OfficialTopQueryDto
-} from './dto';
-import { LeaderboardService, OfficialRatingsService } from './services';
+} from './dto/leaderboards.dto';
+import { LeaderboardService } from './services/leaderboard.service';
+import { OfficialRatingsService } from './services/official-ratings.service';
 
 @ApiTags('leaderboards')
 @AllowAnonymous()

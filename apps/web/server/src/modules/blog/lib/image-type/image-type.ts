@@ -3,7 +3,7 @@ import { entries } from 'remeda';
 
 import type { ImageExtension, ImageType } from './image-type.types';
 
-import { BLOG_IMAGES } from '../../config';
+import { BLOG_IMAGES } from '../../config/image.constants';
 
 export const imageTypeOf = (extension: string): ImageType | null => {
   const found = entries(BLOG_IMAGES.types).find(([key]) => key === extension);

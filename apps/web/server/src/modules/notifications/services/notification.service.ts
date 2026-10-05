@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { chunk, unique } from 'remeda';
 
-import type { DeliverPayload } from '../config';
+import type { DeliverPayload } from '../config/notifications-queue.types';
 import type {
   BonusCodeInput,
   BroadcastInput,
@@ -16,7 +16,8 @@ import type {
 } from '../notifications.types';
 
 import { PrismaService } from '../../../core';
-import { NOTIFICATION_DELIVERY, NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE } from '../config';
+import { NOTIFICATION_DELIVERY } from '../config/delivery.constants';
+import { NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE } from '../config/notifications-queue.constants';
 
 @Injectable()
 export class NotificationService {

@@ -4,12 +4,12 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { PromoCode } from '../../../../../generated';
 import type { AppConfigService } from '../../../../config';
 import type { PrismaService } from '../../../../core';
-import type { YooKassaClient, YooKassaPayment } from '../../lib';
+import type { YooKassaClient, YooKassaPayment } from '../../lib/yookassa';
 import type { PromoService } from '../promo.service';
 import type { SubscriptionService } from '../subscription.service';
 
-import { BILLING_LINKS, PLUS_PLANS } from '../../config';
-import { planPrice } from '../../lib';
+import { BILLING_LINKS, PLUS_PLANS } from '../../config/plans.constants';
+import { planPrice } from '../../lib/pricing';
 import { CheckoutService } from '../checkout.service';
 
 type ServiceOptions = {

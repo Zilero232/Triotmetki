@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { PLUS_PLANS, PRICING } from '../../../config';
+import { PLUS_PLANS, PRICING } from '../../../config/plans.constants';
 import { describePlan, isPlusPlan, planPrice, storedPlan } from '../pricing';
 
 describe('planPrice', () => {

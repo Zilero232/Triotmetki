@@ -1,23 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 
-import type { RotationCount } from '../lib';
-import type { QueueTimeRow } from '../queries';
+import type { MapStatsQueries } from '../queries/map-stats.types';
 
 import { PrismaService } from '../../../core';
-import { MAP_STATS } from '../config';
-import { statsWindow, withShares } from '../lib';
-import { queueTimesSql, rotationCountsSql } from '../queries';
+import { MAP_STATS } from '../config/map-stats.constants';
+import { MAP_STATS_QUERIES } from '../config/tokens.constants';
+import { withShares } from '../lib/rotation-share/rotation-share';
+import { statsWindow } from '../lib/stats-window/stats-window';
+import { mapStatsQueries } from '../queries/map-stats.queries';
 
 @Injectable()
 export class MapStatsAggregateService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() @Inject(MAP_STATS_QUERIES) private readonly queries: MapStatsQueries = mapStatsQueries
+  ) {}
 
   async compute(now = new Date()) {
-    const window = statsWindow({ now, days: MAP_STATS.windowDays });
-    const [counts, queues] = await Promise.all([
-      this.prisma.$queryRaw<RotationCount[]>(rotationCountsSql(window)),
-      this.prisma.$queryRaw<QueueTimeRow[]>(queueTimesSql(window))
-    ]);
+    const window = { db: this.prisma.$kysely, ...statsWindow({ now, days: MAP_STATS.windowDays }) };
+    const [counts, queues] = await Promise.all([this.queries.rotationCounts(window), this.queries.queueTimes(window)]);
 
     const common = { windowDays: MAP_STATS.windowDays, computedAt: now };
     const rotation = withShares(counts).map((row) => ({ ...row, ...common }));

@@ -11,12 +11,13 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { SessionSharePreference, User } from '../../../../generated';
 import type { AuthenticatedDevice } from '../../mod';
-import type { ShareRecipientRow } from '../selects';
+import type { ShareRecipientRow } from '../selects/session-share.selects';
 
 import { AllExceptionsFilter } from '../../../common/filters';
 import { PrismaService } from '../../../core';
 import { ModDeviceService, sessionUuid } from '../../mod';
-import { SessionShareQueueService, SessionShareService } from '../services';
+import { SessionShareQueueService } from '../services/session-share-queue.service';
+import { SessionShareWriterService } from '../services/session-share-writer.service';
 import { SessionShareController } from '../session-share.controller';
 
 const DEVICE_ID = 'dev_share';
@@ -51,7 +52,7 @@ beforeAll(async () => {
   const moduleRef = await Test.createTestingModule({
     controllers: [SessionShareController],
     providers: [
-      SessionShareService,
+      SessionShareWriterService,
       { provide: ModDeviceService, useValue: devices },
       { provide: SessionShareQueueService, useValue: queue },
       { provide: PrismaService, useValue: prisma },

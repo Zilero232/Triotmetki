@@ -1,19 +1,21 @@
 import { describe, expect, it } from 'vitest';
-import { mockDeep } from 'vitest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
-import type { PrismaService } from '../../../../core';
-import type { ExpectedValueRow } from '../expected-values.types';
+import type { ExpectedValuesQueries } from '../../queries/expected-values.types';
 
+import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { ExpectedValuesService } from '../expected-values.service';
+
+type ExpectedValueRow = Awaited<ReturnType<ExpectedValuesQueries['latestExpectedValues']>>[number];
 
 const ROW: ExpectedValueRow = { tankId: 1, expDamage: 1800, expSpotted: 1.2, expFrags: 0.9, expDefense: 0.6, expWinRate: 52 };
 
 const createService = (rows: ExpectedValueRow[]) => {
-  const prisma = mockDeep<PrismaService>();
+  const queries = mock<ExpectedValuesQueries>();
 
-  prisma.$queryRaw.mockResolvedValue(rows);
+  queries.latestExpectedValues.mockResolvedValue(rows);
 
-  return { service: new ExpectedValuesService(prisma), prisma };
+  return { service: new ExpectedValuesService(mockPrismaService(), queries), queries };
 };
 
 describe('ExpectedValuesService.all', () => {
@@ -24,20 +26,20 @@ describe('ExpectedValuesService.all', () => {
   });
 
   it('caches a loaded table', async () => {
-    const { service, prisma } = createService([ROW]);
+    const { service, queries } = createService([ROW]);
 
     await service.all();
     await service.all();
 
-    expect(prisma.$queryRaw).toHaveBeenCalledOnce();
+    expect(queries.latestExpectedValues).toHaveBeenCalledOnce();
   });
 
   it('returns an empty table and retries later when nothing is stored', async () => {
-    const { service, prisma } = createService([]);
+    const { service, queries } = createService([]);
 
     expect((await service.all()).size).toBe(0);
     await service.all();
 
-    expect(prisma.$queryRaw).toHaveBeenCalledTimes(2);
+    expect(queries.latestExpectedValues).toHaveBeenCalledTimes(2);
   });
 });

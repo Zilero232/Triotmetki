@@ -1,7 +1,7 @@
 import { competitionModeSchema, countSchema, isoDateTimeSchema, percentSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
-import { MAP_STATS } from '../config';
+import { MAP_STATS } from '../config/map-stats.constants';
 
 const mapStatsTierSchema = z.coerce.number().int().min(MAP_STATS.allTiers).max(MAP_STATS.maxTier);
 

@@ -1,10 +1,10 @@
 import { MOE_CURVE } from '@otmetki/schemas';
 import { groupBy } from 'remeda';
 
-import type { MoeEstimateRow } from '../../queries';
+import type { MoeEstimateRow } from '../../queries/moe-estimate.types';
 import type { MoeEstimate, MoeEstimateLevel } from './moe-estimate.types';
 
-import { MOE_ESTIMATE } from '../../config';
+import { MOE_ESTIMATE } from '../../config/moe-estimate.constants';
 
 const levelOf = ({ points, percent }: { points: readonly MoeEstimateRow[]; percent: number }): MoeEstimateLevel | null => {
   const point = points.find((candidate) => candidate.percent === percent && candidate.players >= MOE_CURVE.minPlayers);

@@ -5,7 +5,7 @@ import { Queue } from 'bullmq';
 import type { AccountRatingsPayload } from '../../contracts';
 
 import { JOB, QUEUE } from '../../contracts';
-import { TRACKING } from '../config';
+import { TRACKING } from '../config/tracking.constants';
 
 @Injectable()
 export class RatingsTriggerService {

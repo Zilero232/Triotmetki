@@ -6,15 +6,15 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
-import { ModMoeParamsDto, ModMoeThresholdsDto } from './dto';
-import { ModThresholdsService } from './services';
+import { ModMoeParamsDto, ModMoeThresholdsDto } from './dto/marks.dto';
+import { ModThresholdsReaderService } from './services/mod-thresholds-reader.service';
 
 @ApiTags('v1-mod')
 @AllowAnonymous()
 @UseInterceptors(ViewerCacheInterceptor)
 @Controller('v1/moe')
 export class MoePublicController {
-  constructor(private readonly modThresholds: ModThresholdsService) {}
+  constructor(private readonly modThresholds: ModThresholdsReaderService) {}
 
   @Get(':tankId')
   @CacheTTL(CACHE_TTL.reference)

@@ -3,7 +3,7 @@ import { createHash, createHmac, randomBytes } from 'node:crypto';
 import type { DeviceSecretInput, MatchesSecretHashInput } from './device-secret.types';
 
 import { timingSafeEqual } from '../../../../common/lib';
-import { MOD_DEVICE } from '../../config';
+import { MOD_DEVICE } from '../../config/device.constants';
 
 export const deviceSecret = ({ deviceId, serverSecret }: DeviceSecretInput): string =>
   createHmac('sha256', serverSecret).update(`${MOD_DEVICE.secretContext}${deviceId}`).digest('base64url');

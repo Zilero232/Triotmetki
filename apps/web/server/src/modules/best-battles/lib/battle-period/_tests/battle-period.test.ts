@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { BEST_BATTLE_PERIODS } from '../../../config';
+import { BEST_BATTLE_PERIODS } from '../../../config/facets.constants';
 import { periodSince } from '../battle-period';
 
 const now = new Date('2026-09-26T12:00:00.000Z');

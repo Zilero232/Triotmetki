@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import { JOB } from '../../../contracts';
-import { TRACKING } from '../../config';
+import { TRACKING } from '../../config/tracking.constants';
 import { RatingsTriggerService } from '../ratings-trigger.service';
 
 describe('RatingsTriggerService.request', () => {

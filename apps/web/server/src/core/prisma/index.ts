@@ -6,5 +6,20 @@ export { createPrismaClient } from './prisma.factory';
 export { PrismaModule } from './prisma.module';
 export { PrismaService } from './prisma.service';
 export type { PrismaExecutor, PrismaTransaction } from './prisma.types';
-export { moscowBucket, moscowDayText, moscowHour, moscowWeekday, percentile, replayWithoutModBattle, statSums } from './sql-expressions';
+export {
+  jsonbPathText,
+  moscowBucket,
+  moscowDayText,
+  moscowHour,
+  moscowWeekday,
+  percentile,
+  percentiles,
+  plusHours,
+  replayWithoutModBattle,
+  statSums,
+  trigramSimilar,
+  unnestIntegers,
+  valuesTable,
+  widthBucket
+} from './sql-expressions';
 export { HYPERTABLE } from './timescale';

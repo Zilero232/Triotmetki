@@ -1,21 +1,20 @@
 import type { PlayerActivity, PlayerHistoryEntry, TimeSeries } from '@otmetki/schemas';
 
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { subDays } from 'date-fns';
 import { sortBy } from 'remeda';
 
-import type { BucketTankRow, HistoryWindowPolicy } from '../lib';
+import type { HistoryWindowPolicy } from '../lib';
 import type { ActivityInput, HistoryInput, HistoryPolicyInput } from '../players.types';
-import type { ActivityRow } from '../queries';
+import type { PlayerQueries } from '../providers/player-queries.provider.types';
 
 import { moscowDay, moscowDayStart, percentOf } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { BronyaReferencesService, ExpectedValuesService, VehicleCatalogService } from '../../reference';
-import { HISTORY_WINDOW } from '../config';
+import { HISTORY_WINDOW, PLAYER_QUERIES } from '../config';
 import { historyWindow, seriesPoints } from '../lib';
 import { toClanHistoryEntry, toNicknameHistoryEntry } from '../mappers';
-import { activityDaysSql, historySeriesSql } from '../queries';
 
 @Injectable()
 export class PlayerHistoryService {
@@ -24,7 +23,8 @@ export class PlayerHistoryService {
     private readonly catalog: VehicleCatalogService,
     private readonly expected: ExpectedValuesService,
     private readonly bronya: BronyaReferencesService,
-    private readonly entitlements: EntitlementsService
+    private readonly entitlements: EntitlementsService,
+    @Inject(PLAYER_QUERIES) private readonly queries: PlayerQueries
   ) {}
 
   async policyFor({ accountId, viewerUserId }: HistoryPolicyInput): Promise<HistoryWindowPolicy> {
@@ -45,7 +45,7 @@ export class PlayerHistoryService {
     const { from, to } = historyWindow({ from: query.from, to: query.to, now: new Date(), policy });
 
     const [rows, expected, tiers, patches, references] = await Promise.all([
-      this.prisma.$queryRaw<BucketTankRow[]>(historySeriesSql({ accountId, granularity: query.granularity, from, to })),
+      this.queries.tankDeltaBuckets({ db: this.prisma.$kysely, accountId: Number(accountId), granularity: query.granularity, from, to }),
       this.expected.all(),
       this.catalog.tiers(),
       this.prisma.gameVersion.findMany({ where: { releasedAt: { gte: from, lt: to } }, orderBy: { releasedAt: 'asc' } }),
@@ -66,7 +66,7 @@ export class PlayerHistoryService {
     const to = new Date();
     const from = moscowDayStart(subDays(to, days - 1));
 
-    const rows = await this.prisma.$queryRaw<ActivityRow[]>(activityDaysSql({ accountId, from }));
+    const rows = await this.queries.activityDays({ db: this.prisma.$kysely, accountId: Number(accountId), from });
 
     return {
       from: moscowDay(from),

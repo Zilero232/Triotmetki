@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { MAP_TEAMS } from '../../../config';
+import { MAP_TEAMS } from '../../../config/maps.constants';
 import { statsFromBattles, statsFromReplays } from '../team-stats';
 
 const [first = 0, second = 0] = MAP_TEAMS.teams;

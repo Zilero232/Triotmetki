@@ -7,7 +7,7 @@ import type { RngLuck } from '../../honest-rng.types';
 import type { LuckInput, NormalCdfInput } from './rng-theory.types';
 
 import { summarizeRolls } from '../../../analytics';
-import { RNG_LUCK, RNG_THEORY } from '../../config';
+import { RNG_LUCK, RNG_THEORY } from '../../config/theory.constants';
 
 const normalCdf = ({ x, sigma }: NormalCdfInput): number => 0.5 * (1 + errorFunction(x / (sigma * Math.SQRT2)));
 

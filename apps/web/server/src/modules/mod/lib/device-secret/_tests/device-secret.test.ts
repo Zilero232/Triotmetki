@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { MOD_DEVICE } from '../../../config';
+import { MOD_DEVICE } from '../../../config/device.constants';
 import { deviceSecret, hashSecret, matchesSecretHash, newDeviceId, normalizeBindCode } from '../device-secret';
 
 describe('deviceSecret', () => {

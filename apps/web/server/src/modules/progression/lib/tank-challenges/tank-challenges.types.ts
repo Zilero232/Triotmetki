@@ -1,7 +1,7 @@
 import type { TankChallenge } from '@otmetki/schemas';
 
 import type { TankChallengeDefinition } from '../../progression.types';
-import type { BattleSample } from '../battle-samples';
+import type { BattleSample } from '../battle-samples/battle-samples.types';
 
 export type WeeklyTankChallengesInput = {
   seed: string;

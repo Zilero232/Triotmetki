@@ -1,23 +1,23 @@
 import type { PlayerMarks } from '@otmetki/schemas';
 
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { sortBy } from 'remeda';
 
-import type { CombinedDamageRow } from '../queries';
+import type { PlayerQueries } from '../providers/player-queries.provider.types';
 
 import { PrismaService } from '../../../core';
 import { ThresholdsService, VehicleCatalogService } from '../../reference';
-import { PLAYER_MARKS } from '../config';
+import { PLAYER_MARKS, PLAYER_QUERIES } from '../config';
 import { marksSummary } from '../lib';
 import { toPlayerMark } from '../mappers';
-import { combinedDamageSql } from '../queries';
 
 @Injectable()
 export class PlayerMarksService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService,
-    private readonly thresholds: ThresholdsService
+    private readonly thresholds: ThresholdsService,
+    @Inject(PLAYER_QUERIES) private readonly queries: PlayerQueries
   ) {}
 
   async marks(accountId: bigint): Promise<PlayerMarks> {
@@ -25,7 +25,7 @@ export class PlayerMarksService {
       this.prisma.playerTank.findMany({ where: { accountId } }),
       this.thresholds.latest(),
       this.catalog.all(),
-      this.combinedDamage(accountId),
+      this.queries.combinedDamage({ db: this.prisma.$kysely, accountId: Number(accountId) }),
       this.prisma.accountTankRating.findMany({ where: { accountId, period: 'overall' }, select: { tankId: true, avgDamage: true } })
     ]);
 
@@ -54,8 +54,5 @@ export class PlayerMarksService {
       summary: marksSummary(items),
       items: sortBy(items, [(item) => item.damageToNextMark ?? Number.POSITIVE_INFINITY, 'asc'], [(item) => item.battles, 'desc'])
     };
-  }
-  private async combinedDamage(accountId: bigint): Promise<CombinedDamageRow[]> {
-    return this.prisma.$queryRaw<CombinedDamageRow[]>(combinedDamageSql(accountId));
   }
 }

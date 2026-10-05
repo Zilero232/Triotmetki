@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common';
 
 import { ReferenceCoreModule } from './reference-core.module';
 import { ReferenceController } from './reference.controller';
-import { GameVersionService, ServersOnlineService } from './services';
+import { GameVersionService } from './services/game-version.service';
+import { ServersOnlineService } from './services/servers-online.service';
 
 @Module({
   imports: [ReferenceCoreModule],

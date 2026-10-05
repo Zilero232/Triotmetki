@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { ClassifyVehicleInput } from '../vehicle-status.types';
 
-import { VEHICLE_STATUS } from '../../../config';
+import { VEHICLE_STATUS } from '../../../config/vehicle-status.constants';
 import { classifyVehicle, isPreferentialVehicle, readSpecTraits, toTankRole } from '../vehicle-status';
 
 const PREMIUM: ClassifyVehicleInput = {

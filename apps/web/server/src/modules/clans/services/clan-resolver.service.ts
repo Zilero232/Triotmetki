@@ -7,7 +7,7 @@ import { clanInfoFields, clanRoleToDb, fromUnixSeconds, insensitiveEquals } from
 import { LESTA_CLIENT, PrismaService } from '../../../core';
 import { isSearchRejected } from '../../../lib/lesta';
 import { CollectorProducerService, PurgeGuardService } from '../../collector';
-import { CLAN_PAGE } from '../config';
+import { CLAN_PAGE } from '../config/clan-page.constants';
 
 @Injectable()
 export class ClanResolverService {

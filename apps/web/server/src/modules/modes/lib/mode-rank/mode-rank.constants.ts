@@ -1,3 +1,3 @@
 export const MODE_RANK_SCORE = {
-  digits: 100
+  digits: 2
 } as const;

@@ -4,13 +4,14 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Payment, Subscription } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { YooKassaClient, YooKassaPayment } from '../../lib';
+import type { YooKassaClient, YooKassaPayment } from '../../lib/yookassa';
 import type { EntitlementsService } from '../entitlements.service';
 import type { SubscriptionService } from '../subscription.service';
 import type { WebhookService } from '../webhook.service';
 
-import { RENEWAL } from '../../config';
-import { planPrice, renewalIdempotenceKey } from '../../lib';
+import { RENEWAL } from '../../config/renewal.constants';
+import { renewalIdempotenceKey } from '../../lib/period';
+import { planPrice } from '../../lib/pricing';
 import { RenewalService } from '../renewal.service';
 
 const now = new Date('2026-09-25T12:00:00Z');

@@ -5,7 +5,7 @@ import type { SubscribePushInput, UnsubscribePushInput } from '../notifications.
 import { AppConflictException, AppNotFoundException } from '../../../common/exceptions';
 import { AppConfigService } from '../../../config';
 import { isUniqueViolation, PrismaService } from '../../../core';
-import { vapidDetails } from '../lib';
+import { vapidDetails } from '../lib/web-push-config';
 
 @Injectable()
 export class PushSubscriptionsService {

@@ -7,7 +7,7 @@ import { mock } from 'vitest-mock-extended';
 import type { AppConfigService } from '../../../../config';
 
 import { TIME } from '../../../../config';
-import { BILLING_SCHEDULES } from '../../config';
+import { BILLING_SCHEDULES } from '../../config/renewal.constants';
 import { BillingSchedulesService } from '../billing-schedules.service';
 
 const createService = (nodeEnv: 'production' | 'test') => {

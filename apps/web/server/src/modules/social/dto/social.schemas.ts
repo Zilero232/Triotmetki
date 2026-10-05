@@ -15,7 +15,7 @@ import {
 } from '@otmetki/schemas';
 import { z } from 'zod';
 
-import { WRAPPED } from '../config';
+import { WRAPPED } from '../config/wrapped.constants';
 
 export const challengeRuleSchema = z.object({
   code: z.string(),

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { BLOG_IMAGES } from '../../../config';
+import { BLOG_IMAGES } from '../../../config/image.constants';
 import { blogCoverUrl, imageFileUrl } from '../image-url';
 
 const API_URL = 'https://api.triotmetki.ru';

@@ -4,7 +4,7 @@ import { mock } from 'vitest-mock-extended';
 
 import type { NotificationService } from '../notification.service';
 
-import { PLUS_LAUNCH } from '../../config';
+import { PLUS_LAUNCH } from '../../config/plus-launch.constants';
 import { PlusLaunchService } from '../plus-launch.service';
 
 const createService = (isCheckoutEnabled = true) => {

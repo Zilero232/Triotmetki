@@ -7,9 +7,9 @@ import type { DigestEmailInput, NotificationEmailInput } from '../notifications.
 
 import { AppConfigService } from '../../../config';
 import { isPlaceholderEmail } from '../../../lib/auth';
-import { SMTP_TIMEOUTS } from '../config';
-import { notificationText } from '../lib';
-import { DigestEmail } from '../templates';
+import { SMTP_TIMEOUTS } from '../config/email.constants';
+import { notificationText } from '../lib/notification-copy';
+import { DigestEmail } from '../templates/digest-email';
 import { MailTransportService } from './mail-transport.service';
 
 @Injectable()

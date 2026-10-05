@@ -1,6 +1,6 @@
 import type { BlogCoverInput, ImageFileUrlInput } from './image-url.types';
 
-import { BLOG_IMAGES } from '../../config';
+import { BLOG_IMAGES } from '../../config/image.constants';
 
 export const imageFileUrl = ({ key, apiUrl }: ImageFileUrlInput): string =>
   new URL(BLOG_IMAGES.route.replace('{file}', key.slice(BLOG_IMAGES.prefix.length + 1)), apiUrl).href;

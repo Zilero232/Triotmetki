@@ -3,8 +3,12 @@ import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
 import { MetricsService, TrackedWorkerHost } from '../../collector/metrics';
-import { NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE } from '../config';
-import { FirstWinRemindersService, MarksWatchService, SessionReportsService, ThresholdDropsService, WeeklyDigestService } from '../services';
+import { NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE } from '../config/notifications-queue.constants';
+import { FirstWinRemindersService } from '../services/first-win-reminders.service';
+import { MarksWatchService } from '../services/marks-watch.service';
+import { SessionReportsService } from '../services/session-reports.service';
+import { ThresholdDropsService } from '../services/threshold-drops.service';
+import { WeeklyDigestService } from '../services/weekly-digest.service';
 
 @Processor(NOTIFICATIONS_QUEUE.events, { concurrency: 1 })
 export class NotificationEventsProcessor extends TrackedWorkerHost<number> {

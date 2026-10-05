@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { CatalogEntry } from '../../../reference.types';
 
-import { unknownVehicle } from '../../../mappers';
+import { unknownVehicle } from '../../../mappers/vehicle-summary.mappers';
 import { matchesFilter } from '../catalog-entry';
 
 const ENTRY: CatalogEntry = {

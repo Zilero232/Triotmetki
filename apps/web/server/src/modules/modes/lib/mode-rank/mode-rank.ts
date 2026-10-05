@@ -4,6 +4,7 @@ import { sortBy, sumBy } from 'remeda';
 
 import type { RankedTank, RankModeTanksInput } from './mode-rank.types';
 
+import { roundTo, winRateShare } from '../../../../common/lib';
 import { MODE_RANKING } from '../../config';
 import { MODE_RANK_SCORE } from './mode-rank.constants';
 
@@ -11,18 +12,17 @@ const rankAt = (position: number): ModeRank => MODE_RANKING.shares.find((share) 
 
 export const rankModeTanks = ({ tanks, minBattles }: RankModeTanksInput): Map<number, RankedTank> => {
   const eligible = tanks.filter((tank) => tank.battles >= minBattles && tank.decided > 0);
-  const decided = sumBy(eligible, (tank) => tank.decided);
+  const average = winRateShare({ wins: sumBy(eligible, (tank) => tank.wins), battles: sumBy(eligible, (tank) => tank.decided) });
 
-  if (decided === 0) {
+  if (average === null) {
     return new Map();
   }
 
-  const average = sumBy(eligible, (tank) => tank.wins) / decided;
   const prior = MODE_RANKING.priorBattles;
 
   const scored = eligible.map((tank) => ({
     tankId: tank.tankId,
-    score: Math.round(((tank.wins + prior * average) / (tank.decided + prior) - average) * 100 * MODE_RANK_SCORE.digits) / MODE_RANK_SCORE.digits
+    score: roundTo({ value: ((tank.wins + prior * average) / (tank.decided + prior) - average) * 100, digits: MODE_RANK_SCORE.digits })
   }));
 
   const sorted = sortBy(scored, [(tank) => tank.score, 'desc']);

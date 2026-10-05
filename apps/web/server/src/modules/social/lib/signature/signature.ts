@@ -5,7 +5,7 @@ import type { SignatureData } from '../../social.types';
 import type { NodeInput, RenderSignatureInput, SignatureNode, StatInput } from './signature.types';
 
 import { formatNumberOr, formatPercentOr, ratingValue } from '../../../../common/lib';
-import { SIGNATURE, TIER_COLORS } from '../../config';
+import { SIGNATURE, TIER_COLORS } from '../../config/signature.constants';
 
 const div = ({ style, children }: NodeInput): SignatureNode => ({
   type: 'div',

@@ -6,3 +6,5 @@ export const MOE_TABLE = {
 export const MOE_CURVE_SQL = {
   randomBattleType: '1'
 } as const;
+
+export const MOE_CURVE_QUERIES = Symbol('MOE_CURVE_QUERIES');

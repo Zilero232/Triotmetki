@@ -1,7 +1,7 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 
-import { SESSION_SHARE_QUEUE } from './config';
+import { SESSION_SHARE_QUEUE } from './config/session-share-queue.constants';
 import { SessionShareQueueService } from './services/session-share-queue.service';
 
 @Module({

@@ -1,5 +1,3 @@
-import { isIncludedIn } from 'remeda';
-
 import type { Prisma } from '../../../../../../generated';
 import type { BattleStatsBlock } from '../../../../../lib/lesta';
 import type {
@@ -9,13 +7,11 @@ import type {
   BlockSource,
   ModeBlock,
   ShouldWriteSnapshotInput,
-  SnapshotMode,
   TankDeltaInput,
   TankSnapshotRowInput
 } from './snapshots.types';
 
 import { careerSourceFromBlock } from '../../../../../common/lib';
-import { SNAPSHOT_MODES } from './snapshots.constants';
 
 export const modeBlocks = (source: BlockSource): ModeBlock[] => {
   const blocks: ModeBlock[] = [{ mode: 'all', block: source.all }];
@@ -116,5 +112,3 @@ export const buildTankDelta = ({ previous, current, cohort, accountWinRate }: Ta
     droppedCapturePoints: current.droppedCapturePoints - previous.droppedCapturePoints
   };
 };
-
-export const isSnapshotMode = (mode: string): mode is SnapshotMode => isIncludedIn(mode, SNAPSHOT_MODES);

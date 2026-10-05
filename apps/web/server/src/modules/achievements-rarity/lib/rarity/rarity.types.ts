@@ -1,4 +1,4 @@
-import type { RARITY_TIER_NAMES } from '../../config';
+import type { RARITY_TIER_NAMES } from '../../config/rarity.constants';
 
 export type RarityTier = (typeof RARITY_TIER_NAMES)[number];
 

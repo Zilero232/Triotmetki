@@ -8,13 +8,13 @@ import type { UsageActor } from '../usage';
 import { ARMOR_VIEWER } from '../../config';
 import { CurrentUsageActor, MeteredUsage } from '../usage';
 import { TankArmorDto, TankArmorGunsDto, TankLookupParamsDto } from './dto';
-import { TankArmorService } from './services';
+import { TankArmorReaderService } from './services';
 
 @ApiTags('tanks')
 @AllowAnonymous()
 @Controller('tanks')
 export class TankArmorController {
-  constructor(private readonly armorModels: TankArmorService) {}
+  constructor(private readonly armorModels: TankArmorReaderService) {}
 
   @Get(':idOrSlug/armor')
   @MeteredUsage()

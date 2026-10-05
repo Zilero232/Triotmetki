@@ -1,6 +1,6 @@
-import type { Bracket } from '../bracket';
+import type { Bracket } from '../bracket/bracket.types';
 
-import { TOURNAMENT } from '../../config';
+import { TOURNAMENT } from '../../config/tournaments.constants';
 import { bracketSchema, tournamentRulesSchema } from '../../dto/tournaments.schemas';
 
 export const storedBracket = (value: unknown): Bracket | null => {

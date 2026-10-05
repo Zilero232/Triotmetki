@@ -7,7 +7,7 @@ import type { FirstWinService } from '../../../analytics';
 import type { NotificationService } from '../notification.service';
 
 import { dailyWindow } from '../../../analytics';
-import { FIRST_WIN_REMINDER } from '../../config';
+import { FIRST_WIN_REMINDER } from '../../config/watchers.constants';
 import { FirstWinRemindersService } from '../first-win-reminders.service';
 
 const NOW = new Date('2026-09-26T09:00:00.000Z');

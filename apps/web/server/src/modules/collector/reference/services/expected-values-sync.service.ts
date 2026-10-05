@@ -5,7 +5,7 @@ import { isoDay } from '../../../../common/lib';
 import { SOURCES } from '../../../../config';
 import { HttpClientService, PrismaService } from '../../../../core';
 import { expectedValuesDate } from '../lib/community-data';
-import { toExpectedValueRecord } from '../mappers';
+import { toExpectedValueRecord } from '../mappers/expected-value.mappers';
 
 @Injectable()
 export class ExpectedValuesSyncService {

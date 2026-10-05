@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 
 import { BillingCoreModule } from '../billing';
-import { CosmeticsService, ShellLedgerService } from './services';
+import { CosmeticsService } from './services/cosmetics.service';
+import { ShellLedgerWriterService } from './services/shell-ledger-writer.service';
 
 @Module({
   imports: [BillingCoreModule],
-  providers: [ShellLedgerService, CosmeticsService],
-  exports: [ShellLedgerService, CosmeticsService]
+  providers: [ShellLedgerWriterService, CosmeticsService],
+  exports: [ShellLedgerWriterService, CosmeticsService]
 })
 export class ProgressionCoreModule {}

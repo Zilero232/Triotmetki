@@ -3,10 +3,12 @@ import { match } from 'ts-pattern';
 
 import type { LeagueMetric, LeagueValueInput, RankedEntry, RankLeagueInput } from './league.types';
 
+import { ratio } from '../../../../common/lib';
+
 const valueOf = ({ stats, metric }: LeagueValueInput): number | null =>
   match(metric)
-    .with('damage', () => (stats.battles > 0 ? stats.damage / stats.battles : null))
-    .with('wn8', () => (stats.wn8Battles > 0 ? stats.wn8Weighted / stats.wn8Battles : null))
+    .with('damage', () => ratio({ value: stats.damage, by: stats.battles }))
+    .with('wn8', () => ratio({ value: stats.wn8Weighted, by: stats.wn8Battles }))
     .with('marks', () => stats.marks)
     .with('battles', () => stats.battles)
     .exhaustive();

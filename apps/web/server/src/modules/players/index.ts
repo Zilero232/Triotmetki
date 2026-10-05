@@ -2,8 +2,10 @@ export { HISTORY_WINDOW } from './config';
 export { playerLookupParamsSchema, playerParamsSchema, sessionParamsSchema } from './dto/players.schemas';
 export { PlayersModule } from './players.module';
 export type { PlaytimeRow } from './players.types';
+export { tankDeltaBuckets, tankDeltaTotals } from './queries/player-history.queries';
+export { playtimeFromBattles, playtimeFromDeltas } from './queries/playtime.queries';
 export {
-  PlayerCareerService,
+  PlayerCareerReaderService,
   PlayerHistoryService,
   PlayerMarksService,
   PlayerResolverService,

@@ -3,14 +3,12 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../../metrics';
-import type {
-  CatalogSyncService,
-  EncyclopediaSyncService,
-  ExpectedValuesSyncService,
-  MasteryThresholdsSyncService,
-  MoeEstimateSyncService,
-  MoeThresholdsSyncService
-} from '../../services';
+import type { CatalogSyncService } from '../../services/catalog-sync.service';
+import type { EncyclopediaSyncService } from '../../services/encyclopedia-sync.service';
+import type { ExpectedValuesSyncService } from '../../services/expected-values-sync.service';
+import type { MasteryThresholdsSyncService } from '../../services/mastery-thresholds-sync.service';
+import type { MoeEstimateAggregateService } from '../../services/moe-estimate-aggregate.service';
+import type { MoeThresholdsSyncService } from '../../services/moe-thresholds-sync.service';
 
 import { JOB } from '../../../contracts';
 import { ReferenceProcessor } from '../reference.processor';
@@ -19,7 +17,7 @@ const createProcessor = () => {
   const encyclopedia = mock<EncyclopediaSyncService>();
   const expectedValues = mock<ExpectedValuesSyncService>();
   const moe = mock<MoeThresholdsSyncService>();
-  const moeEstimate = mock<MoeEstimateSyncService>();
+  const moeEstimate = mock<MoeEstimateAggregateService>();
   const mastery = mock<MasteryThresholdsSyncService>();
   const catalog = mock<CatalogSyncService>();
   const metrics = mock<MetricsService>();

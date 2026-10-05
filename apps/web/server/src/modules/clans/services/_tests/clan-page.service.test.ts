@@ -6,7 +6,7 @@ import type { AccountRating, Clan, ClanMember, ClanMemberEvent, ClanSnapshot, Pl
 import type { PrismaService } from '../../../../core';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
-import { CLAN_PAGE } from '../../config';
+import { CLAN_PAGE } from '../../config/clan-page.constants';
 import { ClanPageService } from '../clan-page.service';
 
 const NOW = new Date('2026-09-26T12:00:00Z');

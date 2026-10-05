@@ -3,13 +3,14 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../../metrics';
-import type { DispatchService, PollPipelineService } from '../../services';
+import type { DispatchService } from '../../services/dispatch.service';
+import type { PollSyncService } from '../../services/poll-sync.service';
 
 import { JOB } from '../../../contracts';
 import { PollProcessor } from '../poll.processor';
 
 const createProcessor = () => {
-  const pipeline = mock<PollPipelineService>();
+  const pipeline = mock<PollSyncService>();
   const dispatch = mock<DispatchService>();
   const metrics = mock<MetricsService>();
 

@@ -1,7 +1,7 @@
 import type { z } from 'zod';
 
 import type { StoredShot } from '../../../analytics';
-import type { BattleAccuracy, RollTally } from '../roll-tally';
+import type { BattleAccuracy, RollTally } from '../roll-tally/roll-tally.types';
 import type { rngWatermarkSchema } from './rng-daily.schemas';
 
 export type DailyRowInput = {

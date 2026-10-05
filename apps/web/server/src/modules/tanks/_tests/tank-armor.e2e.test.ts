@@ -21,7 +21,7 @@ import { EntitlementsService } from '../../billing';
 import { VehicleCatalogService } from '../../reference';
 import { USAGE_DEVICE, UsageActorGuard, UsageMeterService } from '../../usage';
 import { ARMOR_STORAGE } from '../config';
-import { TankArmorService, TankDetailService } from '../services';
+import { TankArmorReaderService, TankDetailService } from '../services';
 import { TankArmorController } from '../tank-armor.controller';
 
 const USER_HEADER = 'x-test-user';
@@ -79,7 +79,7 @@ beforeAll(async () => {
   const moduleRef = await Test.createTestingModule({
     controllers: [TankArmorController],
     providers: [
-      TankArmorService,
+      TankArmorReaderService,
       UsageMeterService,
       UsageActorGuard,
       { provide: PrismaService, useValue: prisma },

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../../metrics';
-import type { EnrolService } from '../../services';
+import type { EnrolService } from '../../services/enrol.service';
 
 import { EnrolProcessor } from '../enrol.processor';
 

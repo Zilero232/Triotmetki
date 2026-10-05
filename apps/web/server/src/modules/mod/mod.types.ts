@@ -1,10 +1,10 @@
 import type { RawBodyRequest } from '@nestjs/common';
 import type { BindCode, BindCodeInput as BindCodeBody, ModDeviceRequest, ModDevice as ModDeviceView } from '@otmetki/schemas';
 import type { Request } from 'express';
-import type { ZodType } from 'zod';
+import type { z, ZodType } from 'zod';
 
-import type { ModDevice } from '../../../generated';
-import type { BattleResultEvent, IngestBatch, IngestEvent, IngestResponse } from './lib';
+import type { ModDevice, Player, UserLestaAccount } from '../../../generated';
+import type { BattleResultEvent, bindRequestSchema, IngestBatch, IngestEvent, IngestResponse } from './lib/contract';
 
 export type LedgerKeyInput = {
   accountId: bigint;
@@ -45,6 +45,26 @@ export type BindInput = {
 export type BindLinkInput = {
   userId: string;
   accountId: bigint | null;
+};
+
+export type BindRequest = z.infer<typeof bindRequestSchema>;
+
+export type ClaimCodeInput = {
+  request: BindRequest;
+  failureKey: string;
+};
+
+export type ClaimedCode = {
+  userId: string;
+  link: UserLestaAccount & { player: Player };
+};
+
+export type RegisterDeviceInput = {
+  request: BindRequest;
+  userId: string;
+  accountId: bigint;
+  deviceId: string;
+  secret: string;
 };
 
 export type BindCodeInput = BindCodeBody & {

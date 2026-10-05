@@ -6,8 +6,9 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
-import { MapDetailDto, MapListDto, MapParamsDto, MapsQueryDto, MapTanksDto } from './dto';
-import { MapsService, TankMapStatsService } from './services';
+import { MapDetailDto, MapListDto, MapParamsDto, MapsQueryDto, MapTanksDto } from './dto/maps.dto';
+import { MapsReaderService } from './services/maps-reader.service';
+import { TankMapStatsReaderService } from './services/tank-map-stats-reader.service';
 
 @ApiTags('maps')
 @AllowAnonymous()
@@ -15,8 +16,8 @@ import { MapsService, TankMapStatsService } from './services';
 @Controller('maps')
 export class MapsController {
   constructor(
-    private readonly maps: MapsService,
-    private readonly tankStats: TankMapStatsService
+    private readonly maps: MapsReaderService,
+    private readonly tankStats: TankMapStatsReaderService
   ) {}
 
   @Get()

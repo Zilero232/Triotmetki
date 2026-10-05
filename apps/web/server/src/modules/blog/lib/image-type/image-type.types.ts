@@ -1,4 +1,4 @@
-import type { BLOG_IMAGES } from '../../config';
+import type { BLOG_IMAGES } from '../../config/image.constants';
 
 export type ImageExtension = keyof typeof BLOG_IMAGES.types;
 

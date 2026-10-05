@@ -10,7 +10,7 @@ import type {
 
 import { AppBadRequestException, AppNotFoundException } from '../../../../common/exceptions';
 import { errorMessage } from '../../../../common/lib';
-import { YOOKASSA } from '../../config';
+import { YOOKASSA } from '../../config/yookassa.constants';
 import { toAmount } from './yookassa';
 import { yookassaPaymentSchema } from './yookassa.schemas';
 
@@ -64,8 +64,9 @@ export class YooKassaClient {
     const authorization = `Basic ${Buffer.from(`${this.credentials.shopId}:${this.credentials.secretKey}`).toString('base64')}`;
 
     try {
-      const body = await this.http.requestJson({
+      return await this.http.requestJson({
         url: `${YOOKASSA.apiUrl}${path}`,
+        schema: yookassaPaymentSchema,
         options: {
           method,
           json,
@@ -73,8 +74,6 @@ export class YooKassaClient {
           headers: { authorization, ...(idempotenceKey ? { 'idempotence-key': idempotenceKey } : {}) }
         }
       });
-
-      return yookassaPaymentSchema.parse(body);
     } catch (error) {
       throw new AppBadRequestException('PAYMENT_FAILED', `YooKassa ${method.toUpperCase()} ${path} failed: ${errorMessage(error)}`);
     }

@@ -2,7 +2,7 @@ import { sumBy } from 'remeda';
 
 import type { XpOfSamplesInput } from './tank-xp.types';
 
-import { TANK_XP } from '../../config';
+import { TANK_XP } from '../../config/tank-xp.constants';
 
 export const xpOfSamples = ({ samples, tier }: XpOfSamplesInput): number => {
   const damageUnit = Math.max(tier, TANK_XP.minTier) * TANK_XP.damagePerTierPoint;

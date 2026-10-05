@@ -12,7 +12,7 @@ import type {
   WeeklyTankChallengesInput
 } from './tank-challenges.types';
 
-import { TANK_CHALLENGE_POOL, TANK_CHALLENGE_ROUNDING } from '../../config';
+import { TANK_CHALLENGE_POOL, TANK_CHALLENGE_ROUNDING } from '../../config/tank-challenges.constants';
 
 const roundUp = ({ value, step }: RoundUpInput): number => Math.max(step, Math.ceil(value / step) * step);
 

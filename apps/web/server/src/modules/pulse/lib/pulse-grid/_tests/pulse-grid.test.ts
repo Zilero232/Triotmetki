@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
-import { PULSE } from '../../../config';
+import { PULSE } from '../../../config/pulse.constants';
 import { activityGrid, bestHours, decodeSample, encodeSample } from '../pulse-grid';
 
 describe('activityGrid', () => {
-  it('places ISO weekdays and hours and ignores rows outside the grid', () => {
+  it('places Monday-first weekdays and hours and ignores rows outside the grid', () => {
     const grid = activityGrid([
-      { dow: 1, hour: 0, players: 5 },
-      { dow: 7, hour: 23, players: 2 },
-      { dow: 8, hour: 1, players: 100 },
-      { dow: 1, hour: 24, players: 100 }
+      { weekday: 0, hour: 0, players: 5 },
+      { weekday: 6, hour: 23, players: 2 },
+      { weekday: 7, hour: 1, players: 100 },
+      { weekday: 0, hour: 24, players: 100 }
     ]);
 
     expect(grid).toHaveLength(PULSE.days);
@@ -22,9 +22,9 @@ describe('activityGrid', () => {
 describe('bestHours', () => {
   it('sums every weekday and returns shares that never exceed one', () => {
     const grid = activityGrid([
-      { dow: 1, hour: 20, players: 10 },
-      { dow: 2, hour: 20, players: 10 },
-      { dow: 3, hour: 9, players: 5 }
+      { weekday: 0, hour: 20, players: 10 },
+      { weekday: 1, hour: 20, players: 10 },
+      { weekday: 2, hour: 9, players: 5 }
     ]);
 
     const best = bestHours({ grid, count: 2 });

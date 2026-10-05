@@ -21,3 +21,5 @@ export const COMPETITION_RUN = {
   slugSuffixLength: 6,
   plusFeature: 'privateCompetitions'
 } as const;
+
+export const NO_SCORE = { score: 0, battles: 0, source: 'none' } as const;

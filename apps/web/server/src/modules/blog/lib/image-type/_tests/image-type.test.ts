@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { BLOG_IMAGES } from '../../../config';
+import { BLOG_IMAGES } from '../../../config/image.constants';
 import { detectImageType, imageTypeOf } from '../image-type';
 
 const PNG_BYTES = Uint8Array.from(

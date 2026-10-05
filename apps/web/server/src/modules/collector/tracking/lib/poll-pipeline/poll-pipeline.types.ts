@@ -131,3 +131,43 @@ export type BuildChangesInput = {
   wn8: number | null;
   now: Date;
 };
+
+export type AccountSnapshotsInput = Pick<BuildChangesInput, 'info' | 'now' | 'store'>;
+
+export type TankChangesInput = Pick<BuildChangesInput, 'info' | 'marks' | 'now' | 'stats' | 'store' | 'wn8'>;
+
+export type TankChanges = {
+  tankSnapshots: TankSnapshotRow[];
+  deltas: Prisma.TankBattleDeltaCreateManyInput[];
+  statsTankIds: Set<number>;
+};
+
+export type BaselineRowsInput = Pick<BuildChangesInput, 'info' | 'masteryOnlyTankIds' | 'tanks'> & {
+  statsTankIds: ReadonlySet<number>;
+};
+
+export type LoadPresentInput = {
+  ports: PollPorts;
+  allowed: readonly number[];
+  result: PollResult;
+};
+
+export type PresentAccounts = {
+  present: AccountInfo[];
+  players: Map<number, StoredPlayer>;
+};
+
+export type SplitByNewBattlesInput = PresentAccounts & {
+  now: Date;
+  result: PollResult;
+  synced: MarkSyncedInput[];
+};
+
+export type ScanAccountsInput = {
+  ports: PollPorts;
+  toScan: readonly AccountInfo[];
+  tier: TrackingTier;
+  now: Date;
+  result: PollResult;
+  synced: MarkSyncedInput[];
+};

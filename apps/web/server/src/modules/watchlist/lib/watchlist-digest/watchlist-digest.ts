@@ -4,6 +4,8 @@ import { sortBy, sumBy } from 'remeda';
 
 import type { IsDigestDueInput, SummarizeDigestInput, WatchlistDigestSummary } from './watchlist-digest.types';
 
+import { roundTo, winRatePercent } from '../../../../common/lib';
+
 const DUE_SLACK_MINUTES = 10;
 
 export const isDigestDue = ({ digest, lastDigestAt, now }: IsDigestDueInput): boolean => {
@@ -39,7 +41,7 @@ export const summarizeDigest = ({ players, limit }: SummarizeDigestInput): Watch
       .map((player) => ({
         nickname: player.nickname,
         battles: player.battles,
-        winRate: player.battles > 0 ? Math.round((player.wins * 1000) / player.battles) / 10 : 0,
+        winRate: roundTo({ value: winRatePercent(player) ?? 0, digits: 1 }),
         marksGained: player.marksGained
       }))
   };

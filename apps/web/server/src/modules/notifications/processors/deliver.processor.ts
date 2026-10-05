@@ -3,8 +3,10 @@ import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
 import { MetricsService, TrackedWorkerHost } from '../../collector/metrics';
-import { deliverPayloadSchema, digestPayloadSchema, NOTIFICATION_DELIVERY, NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE } from '../config';
-import { DeliveryService } from '../services';
+import { NOTIFICATION_DELIVERY } from '../config/delivery.constants';
+import { NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE } from '../config/notifications-queue.constants';
+import { deliverPayloadSchema, digestPayloadSchema } from '../config/notifications-queue.schemas';
+import { DeliveryService } from '../services/delivery.service';
 
 @Processor(NOTIFICATIONS_QUEUE.deliver, { concurrency: NOTIFICATION_DELIVERY.concurrency })
 export class DeliverProcessor extends TrackedWorkerHost<number> {

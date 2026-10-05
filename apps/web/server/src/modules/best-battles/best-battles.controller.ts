@@ -5,9 +5,10 @@ import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { ViewerCacheInterceptor } from '../../common/interceptors';
-import { BEST_BATTLES } from './config';
-import { BestBattlesFacetsDto, BestBattlesFacetsQueryDto, BestBattlesPageDto, BestBattlesQueryDto } from './dto';
-import { BestBattlesFacetsService, BestBattlesFeedService } from './services';
+import { BEST_BATTLES } from './config/feed.constants';
+import { BestBattlesFacetsDto, BestBattlesFacetsQueryDto, BestBattlesPageDto, BestBattlesQueryDto } from './dto/best-battles.dto';
+import { BestBattleFacetsReaderService } from './services/best-battle-facets-reader.service';
+import { BestBattlesReaderService } from './services/best-battles-reader.service';
 
 @ApiTags('best-battles')
 @AllowAnonymous()
@@ -15,8 +16,8 @@ import { BestBattlesFacetsService, BestBattlesFeedService } from './services';
 @Controller('best-battles')
 export class BestBattlesController {
   constructor(
-    private readonly feed: BestBattlesFeedService,
-    private readonly facets: BestBattlesFacetsService
+    private readonly feed: BestBattlesReaderService,
+    private readonly facets: BestBattleFacetsReaderService
   ) {}
 
   @Get()

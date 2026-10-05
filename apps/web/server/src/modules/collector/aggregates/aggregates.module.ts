@@ -1,30 +1,13 @@
 import { Module } from '@nestjs/common';
 
-import { AggregateProcessor } from './processors';
-import {
-  AccountRatingsService,
-  BuildUsageService,
-  LearningCurveService,
-  ModeMetaService,
-  ReferenceTablesService,
-  ServerStatsService,
-  TankEconomyService,
-  TankPercentilesService,
-  TierMaintenanceService
-} from './services';
+import { MetaAggregatesModule } from './meta';
+import { PlayerRatingsAggregatesModule } from './player-ratings';
+import { AggregateProcessor } from './processors/aggregate.processor';
+import { ServerAggregatesModule } from './server';
+import { TankStatsAggregatesModule } from './tank-stats';
 
 @Module({
-  providers: [
-    ReferenceTablesService,
-    AccountRatingsService,
-    ServerStatsService,
-    TankPercentilesService,
-    TierMaintenanceService,
-    TankEconomyService,
-    LearningCurveService,
-    ModeMetaService,
-    BuildUsageService,
-    AggregateProcessor
-  ]
+  imports: [PlayerRatingsAggregatesModule, TankStatsAggregatesModule, MetaAggregatesModule, ServerAggregatesModule],
+  providers: [AggregateProcessor]
 })
 export class AggregatesModule {}

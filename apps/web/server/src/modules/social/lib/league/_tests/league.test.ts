@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { LEAGUE } from '../../../config';
+import { LEAGUE } from '../../../config/leagues.constants';
 import { rankLeague } from '../league';
 
 const row = (accountId: bigint, overrides: Partial<{ battles: number; damage: number; wn8Weighted: number; wn8Battles: number; marks: number }>) => ({

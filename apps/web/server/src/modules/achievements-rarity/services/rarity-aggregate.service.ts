@@ -1,16 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 
 import type { RarityAggregateResult, StoredCountsRow, WriteAchievementsInput } from '../achievements-rarity.types';
-import type { RollupRow, TankOwnersRow } from '../queries';
+import type { RarityAggregateQueries, RollupRow } from '../queries/rarity-aggregate.types';
 
 import { PrismaService } from '../../../core';
-import { ACHIEVEMENTS_AGGREGATE } from '../config';
-import { accountRollup, heldNames, obtainableNames, rarityPoints, readCounts, shareOf } from '../lib';
-import { rollupUpdateSql, tankOwnersSql } from '../queries';
+import { ACHIEVEMENTS_AGGREGATE } from '../config/aggregate.constants';
+import { ACHIEVEMENTS_RARITY_TOKENS } from '../config/tokens.constants';
+import { accountRollup, heldNames, obtainableNames, readCounts } from '../lib/account-rollup/account-rollup';
+import { rarityPoints, shareOf } from '../lib/rarity/rarity';
+import { rarityAggregateQueries } from '../queries/rarity-aggregate.queries';
 
 @Injectable()
 export class RarityAggregateService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() @Inject(ACHIEVEMENTS_RARITY_TOKENS.aggregateQueries) private readonly queries: RarityAggregateQueries = rarityAggregateQueries
+  ) {}
 
   async compute(now = new Date()): Promise<RarityAggregateResult> {
     const catalog = await this.prisma.achievement.findMany({ select: { name: true, section: true } });
@@ -49,18 +54,18 @@ export class RarityAggregateService {
 
     for await (const chunk of this.chunks()) {
       const rollups: RollupRow[] = chunk.map((row) => ({
-        accountId: row.accountId,
+        accountId: Number(row.accountId),
         ...accountRollup({ counts: readCounts(row.counts), points, obtainable })
       }));
 
-      await this.prisma.$executeRaw(rollupUpdateSql({ rows: rollups, computedAt: now }));
+      await this.queries.updateRollups({ db: this.prisma.$kysely, rows: rollups, computedAt: now });
     }
 
     return rows.length;
   }
 
   private async writeTanks(now: Date): Promise<number> {
-    const owners = await this.prisma.$queryRaw<TankOwnersRow[]>(tankOwnersSql());
+    const owners = await this.queries.tankOwners({ db: this.prisma.$kysely });
 
     await this.prisma.$transaction([
       this.prisma.tankRarity.deleteMany(),

@@ -24,26 +24,26 @@ import {
   PlaylistQueryDto
 } from './dto';
 import {
-  AnalyticsOverviewService,
-  BattleReviewService,
+  AnalyticsOverviewReaderService,
+  BattleReviewReaderService,
   FirstWinService,
-  HonestRngService,
-  MapAdvisorService,
-  PlatoonChemistryService,
+  HonestRngReaderService,
+  MapAdvisorReaderService,
+  PlatoonChemistryReaderService,
   PlaylistService,
-  TankAnalyticsService
+  TankAnalyticsReaderService
 } from './services';
 
 @ApiTags('me')
 @Controller('me/analytics')
 export class AnalyticsController {
   constructor(
-    private readonly overviews: AnalyticsOverviewService,
-    private readonly tanks: TankAnalyticsService,
-    private readonly mapAdvisor: MapAdvisorService,
-    private readonly platoonChemistry: PlatoonChemistryService,
-    private readonly honestRng: HonestRngService,
-    private readonly battles: BattleReviewService,
+    private readonly overviews: AnalyticsOverviewReaderService,
+    private readonly tanks: TankAnalyticsReaderService,
+    private readonly mapAdvisor: MapAdvisorReaderService,
+    private readonly platoonChemistry: PlatoonChemistryReaderService,
+    private readonly honestRng: HonestRngReaderService,
+    private readonly battles: BattleReviewReaderService,
     private readonly playlists: PlaylistService,
     private readonly firstWins: FirstWinService
   ) {}

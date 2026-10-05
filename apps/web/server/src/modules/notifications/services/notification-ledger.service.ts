@@ -5,7 +5,7 @@ import type { ClaimNotificationInput, NotificationClaim, SendOnceInput } from '.
 
 import { errorMessage } from '../../../common/lib';
 import { isUniqueViolation, PrismaService } from '../../../core';
-import { NOTIFICATION_LEDGER } from '../config';
+import { NOTIFICATION_LEDGER } from '../config/delivery.constants';
 
 @Injectable()
 export class NotificationLedgerService {

@@ -1,2 +1,2 @@
 export { LeaderboardsModule } from './leaderboards.module';
-export { LeaderboardService } from './services';
+export { LeaderboardService } from './services/leaderboard.service';

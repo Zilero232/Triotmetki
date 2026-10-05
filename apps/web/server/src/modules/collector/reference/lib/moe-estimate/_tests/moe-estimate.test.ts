@@ -1,9 +1,9 @@
 import { MOE_CURVE } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
-import type { MoeEstimateRow } from '../../../queries';
+import type { MoeEstimateRow } from '../../../queries/moe-estimate.types';
 
-import { MOE_ESTIMATE } from '../../../config';
+import { MOE_ESTIMATE } from '../../../config/moe-estimate.constants';
 import { moeEstimates } from '../moe-estimate';
 
 const { percents } = MOE_ESTIMATE;

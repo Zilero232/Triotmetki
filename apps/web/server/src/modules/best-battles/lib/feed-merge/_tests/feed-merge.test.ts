@@ -2,12 +2,12 @@ import { describe, expect, it } from 'vitest';
 
 import type { BestBattleRow } from '../../../best-battles.types';
 
-import { BEST_BATTLES } from '../../../config';
+import { BEST_BATTLES } from '../../../config/feed.constants';
 import { battleKey, dedupeBattles, mergeFeed, sortByMetric } from '../feed-merge';
 
 const row = (overrides: Partial<BestBattleRow> & Pick<BestBattleRow, 'battle_id'>): BestBattleRow => ({
   source: 'mod',
-  account_id: 1n,
+  account_id: 1,
   arena_unique_id: null,
   nickname: 'Tanker',
   tank_id: 1,
@@ -28,8 +28,8 @@ const row = (overrides: Partial<BestBattleRow> & Pick<BestBattleRow, 'battle_id'
 
 describe('battleKey', () => {
   it('keys a battle by account and arena so both sources collide', () => {
-    const mod = row({ battle_id: 'b1', arena_unique_id: 77n });
-    const replay = row({ battle_id: 'r1', source: 'replay', arena_unique_id: 77n });
+    const mod = row({ battle_id: 'b1', arena_unique_id: 77 });
+    const replay = row({ battle_id: 'r1', source: 'replay', arena_unique_id: 77 });
 
     expect(battleKey(mod)).toBe(battleKey(replay));
   });
@@ -41,8 +41,8 @@ describe('battleKey', () => {
 
 describe('dedupeBattles', () => {
   it('folds a mod battle and its replay into the mod entry carrying the replay id', () => {
-    const replay = row({ battle_id: 'replay-1', source: 'replay', arena_unique_id: 5n, spotted: null });
-    const mod = row({ battle_id: 'battle-1', arena_unique_id: 5n });
+    const replay = row({ battle_id: 'replay-1', source: 'replay', arena_unique_id: 5, spotted: null });
+    const mod = row({ battle_id: 'battle-1', arena_unique_id: 5 });
 
     const merged = dedupeBattles([replay, mod]);
 
@@ -53,14 +53,14 @@ describe('dedupeBattles', () => {
   });
 
   it('keeps a replay id the mod row already linked', () => {
-    const mod = row({ battle_id: 'battle-1', arena_unique_id: 5n, replay_id: 'linked' });
-    const replay = row({ battle_id: 'other', source: 'replay', arena_unique_id: 5n });
+    const mod = row({ battle_id: 'battle-1', arena_unique_id: 5, replay_id: 'linked' });
+    const replay = row({ battle_id: 'other', source: 'replay', arena_unique_id: 5 });
 
     expect(dedupeBattles([mod, replay])[0]?.replay_id).toBe('linked');
   });
 
   it('keeps battles of different players in the same arena apart', () => {
-    const merged = dedupeBattles([row({ battle_id: 'a', arena_unique_id: 5n }), row({ battle_id: 'b', arena_unique_id: 5n, account_id: 2n })]);
+    const merged = dedupeBattles([row({ battle_id: 'a', arena_unique_id: 5 }), row({ battle_id: 'b', arena_unique_id: 5, account_id: 2 })]);
 
     expect(merged).toHaveLength(2);
   });

@@ -8,7 +8,7 @@ import type { VehicleCatalogService } from '../../../reference';
 import type { CatalogEntry } from '../../../reference/reference.types';
 import type { LatestTankSnapshot } from '../../selects';
 
-import { unknownVehicle } from '../../../reference/mappers';
+import { unknownVehicle } from '../../../reference';
 import { PLAYER_STATS } from '../../config';
 import { PlayerTanksService } from '../player-tanks.service';
 

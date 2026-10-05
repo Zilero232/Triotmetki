@@ -10,7 +10,7 @@ import type { EntitlementChange, EntitlementMessageInput } from '../billing.type
 
 import { errorMessage } from '../../../common/lib';
 import { REDIS } from '../../../core';
-import { ENTITLEMENTS } from '../config';
+import { ENTITLEMENTS } from '../config/entitlements.constants';
 
 @Injectable()
 export class EntitlementsBusService implements OnModuleInit, OnModuleDestroy {

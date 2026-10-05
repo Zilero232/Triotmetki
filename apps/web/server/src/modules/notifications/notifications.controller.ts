@@ -4,8 +4,17 @@ import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId, UserAgent } from '../../common/decorators';
-import { InboxPageDto, InboxQueryDto, MarkReadDto, MarkReadResultDto, PushKeyDto, PushSubscriptionDto, PushUnsubscribeDto } from './dto';
-import { InboxService, PushSubscriptionsService } from './services';
+import {
+  InboxPageDto,
+  InboxQueryDto,
+  MarkReadDto,
+  MarkReadResultDto,
+  PushKeyDto,
+  PushSubscriptionDto,
+  PushUnsubscribeDto
+} from './dto/notifications.dto';
+import { InboxService } from './services/inbox.service';
+import { PushSubscriptionsService } from './services/push-subscriptions.service';
 
 @ApiTags('notifications')
 @Controller()

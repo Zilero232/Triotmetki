@@ -3,13 +3,14 @@ import { Injectable } from '@nestjs/common';
 import { Queue } from 'bullmq';
 
 import type { SessionEndedEvent, SessionEventsSink } from '../../../core';
-import type { SessionSharePayload } from '../config';
+import type { SessionSharePayload } from '../config/session-share-queue.types';
 import type { EnqueueShareInput } from '../session-share.types';
 
 import { PrismaService } from '../../../core';
-import { SESSION_SHARE, SESSION_SHARE_QUEUE } from '../config';
-import { linkedShareChannels } from '../lib';
-import { SHARE_RECIPIENT_SELECT } from '../selects';
+import { SESSION_SHARE_QUEUE } from '../config/session-share-queue.constants';
+import { SESSION_SHARE } from '../config/session-share.constants';
+import { linkedShareChannels } from '../lib/share-channels';
+import { SHARE_RECIPIENT_SELECT } from '../selects/session-share.selects';
 
 @Injectable()
 export class SessionShareQueueService implements SessionEventsSink {

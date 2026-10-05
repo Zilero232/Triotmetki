@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { RoutingSettings } from '../channel-routing.types';
 
-import { NOTIFICATION_ROUTING } from '../../../config';
+import { NOTIFICATION_ROUTING } from '../../../config/delivery.constants';
 import { routeDigest, routeEvent, splitQuiet } from '../channel-routing';
 
 const everything: RoutingSettings = {

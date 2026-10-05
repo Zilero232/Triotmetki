@@ -1,32 +1,35 @@
 import { timeSeriesQuerySchema } from '@otmetki/schemas';
 import { differenceInCalendarDays, subDays } from 'date-fns';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { mock, mockDeep } from 'vitest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import type { Clan, GameVersion, PlayerClanHistory, PlayerNickname, UserLestaAccount } from '../../../../../generated';
-import type { PrismaService } from '../../../../core';
 import type { EntitlementsService } from '../../../billing';
 import type { BronyaReferencesService, ExpectedValuesService, VehicleCatalogService } from '../../../reference';
+import type { PlayerQueries } from '../../providers/player-queries.provider.types';
 
+import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { HISTORY_WINDOW } from '../../config';
 import { PlayerHistoryService } from '../player-history.service';
 
 const NOW = new Date('2026-09-26T12:00:00.000Z');
 
 const createService = () => {
-  const prisma = mockDeep<PrismaService>();
+  const prisma = mockPrismaService();
+  const queries = mock<PlayerQueries>();
   const catalog = mock<VehicleCatalogService>();
   const expected = mock<ExpectedValuesService>();
   const bronya = mock<BronyaReferencesService>();
   const entitlements = mock<EntitlementsService>();
 
-  prisma.$queryRaw.mockResolvedValue([]);
+  queries.tankDeltaBuckets.mockResolvedValue([]);
+  queries.activityDays.mockResolvedValue([]);
   prisma.gameVersion.findMany.mockResolvedValue([]);
   expected.all.mockResolvedValue(new Map());
   catalog.tiers.mockResolvedValue(new Map());
   bronya.all.mockResolvedValue(new Map());
 
-  return { service: new PlayerHistoryService(prisma, catalog, expected, bronya, entitlements), prisma, bronya, entitlements };
+  return { service: new PlayerHistoryService(prisma, catalog, expected, bronya, entitlements, queries), prisma, queries, bronya, entitlements };
 };
 
 beforeEach(() => {
@@ -124,9 +127,9 @@ describe('PlayerHistoryService.series', () => {
 
 describe('PlayerHistoryService.activity', () => {
   it('spans the requested number of Moscow days and computes the daily win rate', async () => {
-    const { service, prisma } = createService();
+    const { service, queries } = createService();
 
-    prisma.$queryRaw.mockResolvedValue([
+    queries.activityDays.mockResolvedValue([
       { day: '2026-09-25', battles: 10, wins: 6 },
       { day: '2026-09-26', battles: 0, wins: 0 }
     ]);

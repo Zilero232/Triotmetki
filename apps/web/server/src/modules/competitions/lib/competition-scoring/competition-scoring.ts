@@ -13,9 +13,10 @@ import type {
   TeamEntry
 } from './competition-scoring.types';
 
+import { roundTo } from '../../../../common/lib';
 import { COMPETITION_SCORE } from './competition-scoring.constants';
 
-const round = (value: number): number => Math.round(value * COMPETITION_SCORE.digits) / COMPETITION_SCORE.digits;
+const round = (value: number): number => roundTo({ value, digits: COMPETITION_SCORE.digits });
 
 export const scoreLine = ({ line, scoring }: ScoreLineInput): number =>
   line.damage * scoring.damage +

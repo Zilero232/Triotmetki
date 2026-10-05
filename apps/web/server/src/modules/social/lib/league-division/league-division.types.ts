@@ -1,6 +1,6 @@
 import type { LeagueTier, LeagueZone } from '@otmetki/schemas';
 
-import type { LEAGUE_DIVISION } from '../../config';
+import type { LEAGUE_DIVISION } from '../../config/leagues.constants';
 import type { LeagueMetric, LeagueStats, RankedEntry } from '../league/league.types';
 
 type DivisionRules = Pick<typeof LEAGUE_DIVISION, 'groupSize' | 'minRanked' | 'zoneShare'>;

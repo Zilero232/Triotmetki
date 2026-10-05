@@ -1,6 +1,6 @@
 import type { JobSchedule } from '../../../common/lib';
 
-import { NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE } from './notifications-queue';
+import { NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE } from './notifications-queue.constants';
 
 export const NOTIFICATION_SCHEDULES = [
   { id: 'notifications-marks-watch', queue: NOTIFICATIONS_QUEUE.events, name: NOTIFICATIONS_JOB.events.marksWatch, repeat: { every: 60_000 } },

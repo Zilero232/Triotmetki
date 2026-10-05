@@ -7,7 +7,7 @@ import type { AppConfigService } from '../../../../config';
 import type { PlaylistService } from '../../../analytics';
 import type { BotContext, LinkedChat } from '../../telegram.types';
 
-import { unknownVehicle } from '../../../reference/mappers';
+import { unknownVehicle } from '../../../reference';
 import { TelegramPlaylistCommandsService } from '../telegram-playlist-commands.service';
 
 const CHAT: LinkedChat = { userId: 'user', telegramId: 42n, accountId: 7n, nickname: 'Tanker', locale: 'ru' };

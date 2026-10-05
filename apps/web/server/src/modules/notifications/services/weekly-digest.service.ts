@@ -3,17 +3,19 @@ import { Injectable } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { format, subDays } from 'date-fns';
 
-import type { Digest, DigestPayload } from '../config';
+import type { Digest, DigestPayload } from '../config/notifications-queue.types';
 import type { DigestOfInput } from '../notifications.types';
 
-import { PrismaService } from '../../../core';
-import { NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE, WEEKLY_DIGEST } from '../config';
+import { PrismaService, UserLestaAccountsService } from '../../../core';
+import { NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE } from '../config/notifications-queue.constants';
+import { WEEKLY_DIGEST } from '../config/watchers.constants';
 
 @Injectable()
 export class WeeklyDigestService {
   constructor(
     private readonly prisma: PrismaService,
-    @InjectQueue(NOTIFICATIONS_QUEUE.deliver) private readonly queue: Queue<DigestPayload>
+    @InjectQueue(NOTIFICATIONS_QUEUE.deliver) private readonly queue: Queue<DigestPayload>,
+    private readonly accounts: UserLestaAccountsService
   ) {}
 
   async run(now = new Date()): Promise<number> {
@@ -46,8 +48,7 @@ export class WeeklyDigestService {
   }
 
   async digestOf({ userId, since }: DigestOfInput): Promise<Digest> {
-    const accounts = await this.prisma.userLestaAccount.findMany({ where: { userId }, select: { accountId: true } });
-    const accountIds = accounts.map((account) => account.accountId);
+    const accountIds = await this.accounts.accountIds(userId);
 
     const [sessions, marks] = await Promise.all([
       this.prisma.playSession.aggregate({

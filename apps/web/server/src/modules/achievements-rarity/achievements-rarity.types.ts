@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import type { AccountAchievements, Achievement } from '../../../generated';
+import type { AccountAchievements, Achievement, Prisma } from '../../../generated';
 import type {
   achievementRarityItemSchema,
   achievementsCatalogSchema,
@@ -13,8 +13,9 @@ import type {
   tankRarityItemSchema,
   tankRarityQuerySchema,
   tankRaritySchema
-} from './dto';
-import type { ObtainableRow } from './lib';
+} from './dto/achievements-rarity.schemas';
+import type { ObtainableRow } from './lib/account-rollup/account-rollup.types';
+import type { COLLECTOR_ROW_SELECT, PLAYER_COLLECTION_SELECT } from './selects/collectors.selects';
 
 export type AchievementsQuery = z.infer<typeof achievementsQuerySchema>;
 
@@ -71,3 +72,7 @@ export type PlayerCollectionInput = {
   accountId: bigint;
   viewerUserId: string | null;
 };
+
+export type CollectorPageRow = Prisma.AccountAchievementsGetPayload<{ select: typeof COLLECTOR_ROW_SELECT }>;
+
+export type VisiblePlayer = Prisma.PlayerGetPayload<{ select: typeof PLAYER_COLLECTION_SELECT }>;

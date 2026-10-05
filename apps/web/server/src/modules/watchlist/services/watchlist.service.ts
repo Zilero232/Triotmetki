@@ -14,7 +14,7 @@ import { CollectorProducerService } from '../../collector';
 import { NOTIFICATION_DEFAULTS } from '../../notifications';
 import { clearFollowFlag, setFollowFlag } from '../../social';
 import { WATCHLIST_DIGEST_RUN } from '../config';
-import { WatchlistActivityService } from './watchlist-activity.service';
+import { WatchlistActivityReaderService } from './watchlist-activity-reader.service';
 
 @Injectable()
 export class WatchlistService {
@@ -22,7 +22,7 @@ export class WatchlistService {
     private readonly prisma: PrismaService,
     private readonly entitlements: EntitlementsService,
     private readonly collector: CollectorProducerService,
-    private readonly activity: WatchlistActivityService
+    private readonly activity: WatchlistActivityReaderService
   ) {}
 
   async list({ userId, query }: WatchlistListInput): Promise<Watchlist> {

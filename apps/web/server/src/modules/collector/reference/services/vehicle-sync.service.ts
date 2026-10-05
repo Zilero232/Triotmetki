@@ -2,21 +2,23 @@ import { Inject, Injectable } from '@nestjs/common';
 import { isNonNullish } from 'remeda';
 
 import type { LestaClients } from '../../../../core';
-import type { LatestSpecRow } from '../queries';
-import type { WriteVehicleInput } from '../reference.types';
+import type { Vehicle } from '../../../../lib/lesta';
+import type { ReferenceQueries } from '../providers/reference-queries.types';
+import type { WriteSpecHistoryInput, WriteVehicleInput, WriteVehiclesInput } from '../reference.types';
 
 import { toJsonValue } from '../../../../common/lib';
 import { LESTA_CLIENTS, PrismaService } from '../../../../core';
 import { vehicleImages } from '../../../../lib/lesta';
-import { REFERENCE } from '../config';
+import { REFERENCE } from '../config/reference.constants';
 import { previousTankIds, specDiff, toVehicleType, vehicleSlugs } from '../lib/encyclopedia';
-import { latestSpecHistorySql } from '../queries';
+import { REFERENCE_QUERIES } from '../providers/reference-queries.provider';
 
 @Injectable()
 export class VehicleSyncService {
   constructor(
     private readonly prisma: PrismaService,
-    @Inject(LESTA_CLIENTS) private readonly clients: LestaClients
+    @Inject(LESTA_CLIENTS) private readonly clients: LestaClients,
+    @Inject(REFERENCE_QUERIES) private readonly queries: ReferenceQueries
   ) {}
 
   async sync(gameVersionId: number): Promise<number> {
@@ -26,9 +28,17 @@ export class VehicleSyncService {
       return 0;
     }
 
+    const written = await this.writeVehicles({ vehicles, gameVersionId });
+
+    await this.prisma.vehicle.updateMany({ where: { tankId: { notIn: vehicles.map((vehicle) => vehicle.tank_id) } }, data: { isActive: false } });
+
+    return written;
+  }
+
+  private async writeVehicles({ vehicles, gameVersionId }: WriteVehiclesInput): Promise<number> {
     const slugs = vehicleSlugs({ vehicles });
     const previous = previousTankIds(vehicles);
-    const latest = await this.prisma.$queryRaw<LatestSpecRow[]>(latestSpecHistorySql(gameVersionId));
+    const latest = await this.queries.latestSpecHistory({ db: this.prisma.$kysely, gameVersionId });
     const history = new Map(latest.map((row) => [row.tankId, row.specs]));
 
     let written = 0;
@@ -47,23 +57,25 @@ export class VehicleSyncService {
         prevTankIds: previous.get(vehicle.tank_id) ?? []
       });
 
-      await this.prisma.vehicleSpecHistory.upsert({
-        where: { tankId_gameVersionId: { tankId: vehicle.tank_id, gameVersionId } },
-        create: {
-          tankId: vehicle.tank_id,
-          gameVersionId,
-          specs: toJsonValue(vehicle.default_profile),
-          diff: toJsonValue(specDiff({ previous: history.get(vehicle.tank_id), next: vehicle.default_profile }))
-        },
-        update: { specs: toJsonValue(vehicle.default_profile) }
-      });
+      await this.writeSpecHistory({ vehicle, gameVersionId, previousSpecs: history.get(vehicle.tank_id) });
 
       written += 1;
     }
 
-    await this.prisma.vehicle.updateMany({ where: { tankId: { notIn: vehicles.map((vehicle) => vehicle.tank_id) } }, data: { isActive: false } });
-
     return written;
+  }
+
+  private async writeSpecHistory({ vehicle, gameVersionId, previousSpecs }: WriteSpecHistoryInput) {
+    await this.prisma.vehicleSpecHistory.upsert({
+      where: { tankId_gameVersionId: { tankId: vehicle.tank_id, gameVersionId } },
+      create: {
+        tankId: vehicle.tank_id,
+        gameVersionId,
+        specs: toJsonValue(vehicle.default_profile),
+        diff: toJsonValue(specDiff({ previous: previousSpecs, next: vehicle.default_profile }))
+      },
+      update: { specs: toJsonValue(vehicle.default_profile) }
+    });
   }
 
   private async writeVehicle({ vehicle, type, slug, prevTankIds }: WriteVehicleInput) {
@@ -97,18 +109,24 @@ export class VehicleSyncService {
       update: images ? { ...data, images: toJsonValue(images) } : data
     });
 
+    await this.writeDefaultProfile(vehicle);
+  }
+
+  private async writeDefaultProfile(vehicle: Vehicle) {
     const profile = vehicle.default_profile;
 
-    if (profile) {
-      const profileId = profile.profile_id ?? REFERENCE.defaultProfileId;
-      const moduleIds = Object.values(profile.modules ?? {}).filter((value): value is number => typeof value === 'number');
-      const payload = { isDefault: true, moduleIds, data: toJsonValue(profile) };
-
-      await this.prisma.vehicleProfile.upsert({
-        where: { tankId_profileId: { tankId: vehicle.tank_id, profileId } },
-        create: { tankId: vehicle.tank_id, profileId, ...payload },
-        update: payload
-      });
+    if (!profile) {
+      return;
     }
+
+    const profileId = profile.profile_id ?? REFERENCE.defaultProfileId;
+    const moduleIds = Object.values(profile.modules ?? {}).filter((value): value is number => typeof value === 'number');
+    const payload = { isDefault: true, moduleIds, data: toJsonValue(profile) };
+
+    await this.prisma.vehicleProfile.upsert({
+      where: { tankId_profileId: { tankId: vehicle.tank_id, profileId } },
+      create: { tankId: vehicle.tank_id, profileId, ...payload },
+      update: payload
+    });
   }
 }

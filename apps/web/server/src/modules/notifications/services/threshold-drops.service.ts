@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { toIsoDate } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { toMoeThresholdRecord, VehicleCatalogService } from '../../reference';
-import { THRESHOLD_DROP } from '../config';
-import { thresholdDrops } from '../lib';
+import { THRESHOLD_DROP } from '../config/watchers.constants';
+import { thresholdDrops } from '../lib/threshold-drops';
 import { NotificationService } from './notification.service';
 
 @Injectable()

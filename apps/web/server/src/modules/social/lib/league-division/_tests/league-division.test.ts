@@ -1,7 +1,7 @@
 import { LEAGUE_TIERS } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
-import { LEAGUE_DIVISION } from '../../../config';
+import { LEAGUE_DIVISION } from '../../../config/leagues.constants';
 import { divisionStandings, divisionZones, nextTier, placeMembers, tierMoves } from '../league-division';
 
 const [lowest, second] = LEAGUE_TIERS;

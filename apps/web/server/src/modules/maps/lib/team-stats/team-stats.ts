@@ -4,8 +4,8 @@ import { sumBy } from 'remeda';
 
 import type { BattleSideRow, ToStatsInput, WinnerRow } from './team-stats.types';
 
-import { percentOf } from '../../../../common/lib';
-import { MAP_TEAMS } from '../../config';
+import { winRatePercent } from '../../../../common/lib';
+import { MAP_TEAMS } from '../../config/maps.constants';
 
 const otherTeam = (team: number): number => MAP_TEAMS.teams.find((candidate) => candidate !== team) ?? team;
 
@@ -23,7 +23,7 @@ const toStats = ({ source, winners }: ToStatsInput): MapStats | null => {
     teams: MAP_TEAMS.teams.map((team) => ({
       team,
       battles,
-      winRate: percentOf({ value: sumBy(counted, (row) => (row.winner === team ? row.battles : 0)), by: battles })
+      winRate: winRatePercent({ wins: sumBy(counted, (row) => (row.winner === team ? row.battles : 0)), battles })
     }))
   };
 };

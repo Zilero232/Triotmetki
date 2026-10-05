@@ -6,26 +6,28 @@ import { PlayersModule } from '../players';
 import { UsageModule } from '../usage';
 import { AnalyticsCoreModule } from './analytics-core.module';
 import { AnalyticsController } from './analytics.controller';
+import { analyticsQueriesProvider } from './providers/analytics-queries.provider';
 import {
-  AnalyticsOverviewService,
-  BattleReviewService,
-  HonestRngService,
-  MapAdvisorService,
-  PlatoonChemistryService,
+  AnalyticsOverviewReaderService,
+  BattleReviewReaderService,
+  HonestRngReaderService,
+  MapAdvisorReaderService,
+  PlatoonChemistryReaderService,
   PlaylistService,
-  TankAnalyticsService
+  TankAnalyticsReaderService
 } from './services';
 
 @Module({
   imports: [AnalyticsCoreModule, BillingCoreModule, PlayersModule, MissionsModule, UsageModule],
   controllers: [AnalyticsController],
   providers: [
-    AnalyticsOverviewService,
-    TankAnalyticsService,
-    MapAdvisorService,
-    PlatoonChemistryService,
-    HonestRngService,
-    BattleReviewService,
+    analyticsQueriesProvider,
+    AnalyticsOverviewReaderService,
+    TankAnalyticsReaderService,
+    MapAdvisorReaderService,
+    PlatoonChemistryReaderService,
+    HonestRngReaderService,
+    BattleReviewReaderService,
     PlaylistService
   ],
   exports: [PlaylistService, AnalyticsCoreModule]

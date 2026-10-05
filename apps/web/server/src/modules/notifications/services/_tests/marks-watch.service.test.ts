@@ -2,14 +2,15 @@ import type { VehicleSummary } from '@otmetki/schemas';
 
 import RedisMock from 'ioredis-mock';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { mock, mockDeep } from 'vitest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import type { Battle, Player, PlayerTank } from '../../../../../generated';
-import type { PrismaService } from '../../../../core';
 import type { VehicleCatalogService } from '../../../reference';
+import type { MarksWatchQueries } from '../../queries/marks-watch.types';
 import type { NotificationService } from '../notification.service';
 
-import { MARKS_WATCH } from '../../config';
+import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
+import { MARKS_WATCH } from '../../config/watchers.constants';
 import { MarksWatchService } from '../marks-watch.service';
 
 const NOW = new Date('2026-09-26T12:00:00Z');
@@ -27,7 +28,7 @@ const battle = ({ id, marks, minute }: { id: string; marks: number; minute: numb
   });
 
 const createService = () => {
-  const prisma = mockDeep<PrismaService>();
+  const prisma = mockPrismaService();
   const catalog = mock<VehicleCatalogService>();
   const notifications = mock<NotificationService>();
   const redis = new RedisMock();
@@ -35,7 +36,9 @@ const createService = () => {
   catalog.summary.mockResolvedValue(mock<VehicleSummary>({ name: 'T-34-85', shortName: 'T-34-85' }));
   prisma.player.findMany.mockResolvedValue([mock<Player>({ accountId: 7n, nickname: 'Tanker' })]);
 
-  return { service: new MarksWatchService(prisma, catalog, notifications, redis), prisma, notifications, redis };
+  const queries = { previousBattleMarks: vi.fn<MarksWatchQueries['previousBattleMarks']>().mockResolvedValue([]) };
+
+  return { service: new MarksWatchService(prisma, catalog, notifications, redis, queries), prisma, queries, notifications, redis };
 };
 
 describe('MarksWatchService', () => {
@@ -62,7 +65,6 @@ describe('MarksWatchService', () => {
 
     await redis.set(MARKS_WATCH.cursorKey, CURSOR);
     prisma.battle.findMany.mockResolvedValue(rows);
-    prisma.$queryRaw.mockResolvedValue([]);
     prisma.playerTank.findMany.mockResolvedValue([mock<PlayerTank>({ accountId: 7n, tankId: 1, marksOnGun: 1 })]);
 
     expect(await service.run()).toBe(1);
@@ -87,11 +89,11 @@ describe('MarksWatchService', () => {
   });
 
   it('prefers the marks of the last earlier battle over the stored tank marks', async () => {
-    const { service, prisma, notifications, redis } = createService();
+    const { service, prisma, queries, notifications, redis } = createService();
 
     await redis.set(MARKS_WATCH.cursorKey, CURSOR);
     prisma.battle.findMany.mockResolvedValue([battle({ id: 'b3', marks: 2, minute: 0 })]);
-    prisma.$queryRaw.mockResolvedValue([{ accountId: 7n, tankId: 1, marksOnGun: 2 }]);
+    queries.previousBattleMarks.mockResolvedValue([{ accountId: 7, tankId: 1, marksOnGun: 2 }]);
     prisma.playerTank.findMany.mockResolvedValue([mock<PlayerTank>({ accountId: 7n, tankId: 1, marksOnGun: 1 })]);
 
     expect(await service.run()).toBe(0);
@@ -103,7 +105,6 @@ describe('MarksWatchService', () => {
 
     await redis.set(MARKS_WATCH.cursorKey, CURSOR);
     prisma.battle.findMany.mockResolvedValue([battle({ id: 'b4', marks: 1, minute: 0 })]);
-    prisma.$queryRaw.mockResolvedValue([]);
     prisma.playerTank.findMany.mockResolvedValue([mock<PlayerTank>({ accountId: 7n, tankId: 1, marksOnGun: 0 })]);
 
     expect(await service.run()).toBe(1);
@@ -114,7 +115,6 @@ describe('MarksWatchService', () => {
 
     await redis.set(MARKS_WATCH.cursorKey, CURSOR);
     prisma.battle.findMany.mockResolvedValue([battle({ id: 'b5', marks: 1, minute: 0 })]);
-    prisma.$queryRaw.mockResolvedValue([]);
     prisma.playerTank.findMany.mockResolvedValue([]);
 
     expect(await service.run()).toBe(0);

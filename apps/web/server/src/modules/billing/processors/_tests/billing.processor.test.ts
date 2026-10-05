@@ -4,9 +4,10 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../../collector/metrics';
-import type { PromoService, RenewalService } from '../../services';
+import type { PromoService } from '../../services/promo.service';
+import type { RenewalService } from '../../services/renewal.service';
 
-import { BILLING_QUEUE } from '../../config';
+import { BILLING_QUEUE } from '../../config/queue.constants';
 import { BillingProcessor } from '../billing.processor';
 
 const trackingMetrics = () => mock<MetricsService>({ track: async ({ run }) => run() });

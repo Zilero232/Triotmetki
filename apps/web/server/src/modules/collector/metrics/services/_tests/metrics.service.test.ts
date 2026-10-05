@@ -1,19 +1,34 @@
 import type { Job } from 'bullmq';
 
+import { omit } from 'remeda';
 import { describe, expect, it } from 'vitest';
-import { mock, mockDeep } from 'vitest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
-import type { PrismaService } from '../../../../../core';
+import type { MetricsQueries } from '../../providers/metrics-queries.types';
+import type { MergeCollectorStateInput } from '../../queries/collector-state.types';
 
-import { METRICS } from '../../config';
+import { mockPrismaService } from '../../../../../core/prisma/_tests/prisma-mock';
+import { COLLECTOR_STATE_KEY } from '../../../config';
+import { METRICS } from '../../config/metrics.constants';
+import { metricsQueries } from '../../providers/metrics-queries.provider';
 import { CircuitBreakerService } from '../circuit-breaker.service';
 import { MetricsService } from '../metrics.service';
 
 const createMetrics = () => {
-  const prisma = mockDeep<PrismaService>();
+  const prisma = mockPrismaService();
   const breaker = mock<CircuitBreakerService>();
+  const merges: Omit<MergeCollectorStateInput, 'db'>[] = [];
 
-  return { prisma, breaker, metrics: new MetricsService(prisma, breaker) };
+  const queries: MetricsQueries = {
+    ...metricsQueries,
+    mergeCollectorState: async (input) => {
+      merges.push(omit(input, ['db']));
+
+      return [];
+    }
+  };
+
+  return { prisma, breaker, merges, metrics: new MetricsService(prisma, breaker, queries) };
 };
 
 const job = (attemptsMade = 0) => mock<Job>({ queueName: 'collector.poll', name: 'batch', attemptsMade });
@@ -80,8 +95,17 @@ describe('MetricsService.flush', () => {
     await setup.metrics.track({ job: job(), run: async () => 'done' });
     await setup.metrics.flush();
 
-    expect(setup.prisma.$executeRaw).toHaveBeenCalledOnce();
-    expect(JSON.stringify(setup.prisma.$executeRaw.mock.calls[0])).toContain('collector.poll:batch');
+    expect(setup.merges).toEqual([{ key: COLLECTOR_STATE_KEY.jobSuccess, value: { 'collector.poll:batch': expect.any(String) } }]);
+  });
+
+  it('stores each success only once', async () => {
+    const setup = createMetrics();
+
+    await setup.metrics.track({ job: job(), run: async () => 'done' });
+    await setup.metrics.flush();
+    await setup.metrics.flush();
+
+    expect(setup.merges).toHaveLength(1);
   });
 
   it('records no success for a failed job', async () => {
@@ -98,7 +122,7 @@ describe('MetricsService.flush', () => {
 
     await setup.metrics.flush();
 
-    expect(setup.prisma.$executeRaw).not.toHaveBeenCalled();
+    expect(setup.merges).toEqual([]);
   });
 });
 

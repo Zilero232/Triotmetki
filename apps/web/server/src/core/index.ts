@@ -12,6 +12,7 @@ export {
   isTransactionConflict,
   isUniqueViolation,
   isUniqueViolationOn,
+  jsonbPathText,
   LIMIT_LOCK_SCOPE,
   lockedTransaction,
   moscowBucket,
@@ -19,16 +20,23 @@ export {
   moscowHour,
   moscowWeekday,
   percentile,
+  percentiles,
+  plusHours,
   PRISMA_CODE,
   PRISMA_TIMEOUT,
   PrismaModule,
   PrismaService,
   replayWithoutModBattle,
-  statSums
+  statSums,
+  trigramSimilar,
+  unnestIntegers,
+  valuesTable,
+  widthBucket
 } from './prisma';
 export type { Database, PrismaExecutor, PrismaTransaction } from './prisma';
 export { QueuesModule } from './queues';
-export { REDIS, RedisModule } from './redis';
+export { advanceWatermark, REDIS, RedisModule } from './redis';
+export type { AdvanceWatermarkInput, WatermarkBatch, WatermarkedRow } from './redis';
 export { PageCrawlerService, ScrapeModule } from './scrape';
 export { SESSION_EVENTS } from './session-events';
 export type { SessionEndedEvent, SessionEventsSink } from './session-events';

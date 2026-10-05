@@ -3,12 +3,11 @@ import type { Options } from 'ky';
 import { describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
-import type { HttpClientService } from '../../../../../core';
 import type { YooKassaCredentials, YooKassaPayment } from '../yookassa.types';
 
 import { AppBadRequestException, AppNotFoundException } from '../../../../../common/exceptions';
-import { http } from '../../../../../lib/http';
-import { YOOKASSA } from '../../../config';
+import { HttpClientService } from '../../../../../core';
+import { YOOKASSA } from '../../../config/yookassa.constants';
 import { YooKassaClient } from '../yookassa.client';
 
 const credentials = { shopId: 'shop', secretKey: 'secret' };
@@ -27,13 +26,18 @@ type Sent = {
   body: unknown;
 };
 
+const httpWith = (fetch: Fetch) => {
+  const http = mock<HttpClientService>();
+
+  http.requestJson.mockImplementation((input) => new HttpClientService().requestJson({ ...input, options: { ...input.options, fetch } }));
+
+  return http;
+};
+
 const clientWith =
   (fetch: Fetch) =>
   (keys: YooKassaCredentials = credentials): YooKassaClient =>
-    new YooKassaClient({
-      credentials: keys,
-      http: mock<HttpClientService>({ requestJson: ({ url, options }) => http(url, { ...options, fetch }).json() })
-    });
+    new YooKassaClient({ credentials: keys, http: httpWith(fetch) });
 
 const reply = (body: unknown, status = 200) => {
   const sent: Sent[] = [];

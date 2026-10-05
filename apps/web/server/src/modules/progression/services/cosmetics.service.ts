@@ -8,20 +8,22 @@ import type { EquipCosmeticsRequest, OverlayThemeInput, PurchaseCosmeticInput } 
 
 import { AppBadRequestException, AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
 import { entitledSubscriptionWhere, toNumber } from '../../../common/lib';
-import { PrismaService } from '../../../core';
+import { lockedTransaction, PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
-import { NO_COSMETICS } from '../config';
-import { isCosmeticUsable, purchaseKey, visibleCosmetics } from '../lib';
-import { toCosmeticColumns, toEquippedCosmetics } from '../mappers';
-import { EQUIPPED_COSMETICS_SELECT } from '../selects';
-import { ShellLedgerService } from './shell-ledger.service';
+import { NO_COSMETICS } from '../config/cosmetics.constants';
+import { SHELL_LEDGER } from '../config/shell-ledger.constants';
+import { isCosmeticUsable, visibleCosmetics } from '../lib/cosmetic-access/cosmetic-access';
+import { purchaseKey } from '../lib/ledger-keys/ledger-keys';
+import { toCosmeticColumns, toEquippedCosmetics } from '../mappers/equipped-cosmetics.mappers';
+import { EQUIPPED_COSMETICS_SELECT } from '../selects/equipped-cosmetics.selects';
+import { ShellLedgerWriterService } from './shell-ledger-writer.service';
 
 @Injectable()
 export class CosmeticsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly entitlements: EntitlementsService,
-    private readonly ledger: ShellLedgerService
+    private readonly ledger: ShellLedgerWriterService
   ) {}
 
   async inventory(userId: string): Promise<CosmeticsInventory> {
@@ -71,15 +73,20 @@ export class CosmeticsService {
 
     const price = item.price;
 
-    await this.prisma.$transaction(async (tx) => {
-      const owned = await tx.cosmeticOwnership.findUnique({ where: { userId_code: { userId, code } } });
+    await lockedTransaction({
+      prisma: this.prisma,
+      scope: SHELL_LEDGER.lockScope,
+      key: userId,
+      run: async (tx) => {
+        const owned = await tx.cosmeticOwnership.findUnique({ where: { userId_code: { userId, code } } });
 
-      if (owned) {
-        throw new AppConflictException('CONFLICT', `${code} is already owned`);
+        if (owned) {
+          throw new AppConflictException('CONFLICT', `${code} is already owned`);
+        }
+
+        await this.ledger.spend({ userId, amount: price, key: purchaseKey({ userId, code }), context: { code }, tx });
+        await tx.cosmeticOwnership.create({ data: { userId, code, grant: 'purchase' } });
       }
-
-      await this.ledger.spend({ userId, amount: price, key: purchaseKey({ userId, code }), context: { code }, tx });
-      await tx.cosmeticOwnership.create({ data: { userId, code, grant: 'purchase' } });
     });
 
     return this.inventory(userId);

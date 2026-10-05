@@ -1,6 +1,7 @@
 import type { NotificationChannel, NotificationEvent, TargetKind } from '../../../generated';
-import type { AppNotification, DeliverPayload, Digest, ParsedNotification } from './config';
-import type { MarkBattle, NotificationLocale, RenderedNotification } from './lib';
+import type { AppNotification, DeliverPayload, Digest, ParsedNotification } from './config/notifications-queue.types';
+import type { MarkBattle } from './lib/mark-gains';
+import type { NotificationLocale, RenderedNotification } from './lib/notification-copy';
 
 export type NotifyInput = {
   userId: string;

@@ -8,7 +8,7 @@ import { EntitlementsService } from '../../billing';
 import { NotificationService } from '../../notifications';
 import { WATCHLIST_DIGEST_RUN } from '../config';
 import { digestWindowStart, isDigestDue, summarizeDigest } from '../lib/watchlist-digest';
-import { WatchlistActivityService } from './watchlist-activity.service';
+import { WatchlistActivityReaderService } from './watchlist-activity-reader.service';
 
 @Injectable()
 export class WatchlistDigestService {
@@ -16,7 +16,7 @@ export class WatchlistDigestService {
     private readonly prisma: PrismaService,
     private readonly entitlements: EntitlementsService,
     private readonly notifications: NotificationService,
-    private readonly activity: WatchlistActivityService
+    private readonly activity: WatchlistActivityReaderService
   ) {}
 
   async run(now = new Date()): Promise<number> {

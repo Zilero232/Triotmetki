@@ -8,7 +8,7 @@ import type { PollResult } from '../../tracking.types';
 
 import { JOB } from '../../../contracts';
 import { EnrolService } from '../enrol.service';
-import { PollPipelineService } from '../poll-pipeline.service';
+import { PollSyncService } from '../poll-sync.service';
 
 const result = (fields: Partial<PollResult> = {}): PollResult => ({
   requested: 1,
@@ -24,7 +24,7 @@ const result = (fields: Partial<PollResult> = {}): PollResult => ({
 
 const createEnrol = (outcome: PollResult) => {
   const prisma = mockDeep<PrismaService>();
-  const pipeline = mock<PollPipelineService>();
+  const pipeline = mock<PollSyncService>();
   const clansQueue = mock<Queue>();
 
   pipeline.run.mockResolvedValue(outcome);

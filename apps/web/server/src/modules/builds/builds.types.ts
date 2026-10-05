@@ -8,8 +8,6 @@ import type {
   PopularBuildsQuery
 } from '@otmetki/schemas';
 
-import type { BuildUsageAggregate } from '../../../generated';
-
 export type ProgressionData = {
   tree: unknown;
   pairs: unknown[];
@@ -48,10 +46,6 @@ export type BuildHistoryInput = {
 };
 
 export type BuildsCatalogInput = BuildsCatalogQuery;
-
-export type CatalogUsageRow = Pick<BuildUsageAggregate, 'avgDamage' | 'battles' | 'computedAt' | 'players' | 'tankId' | 'winRate'> & {
-  usage: unknown;
-};
 
 export type EnsureCohortInput = {
   cohort: BuildCohort;

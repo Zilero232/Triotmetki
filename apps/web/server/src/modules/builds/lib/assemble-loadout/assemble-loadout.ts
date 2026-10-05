@@ -2,63 +2,68 @@ import type { CrewSkill as CrewSkillData, Equipment, FieldModification, Installe
 
 import { isNonNullish, unique } from 'remeda';
 
-import type { AssembledLoadout, AssembleLoadoutInput, PickProvisionsInput } from './assemble-loadout.types';
+import type {
+  AssembledLoadout,
+  AssembleLoadoutInput,
+  FitsTankInput,
+  PickCrewSkillsInput,
+  PickFieldModificationsInput,
+  PickOptionalDevicesInput,
+  PickProvisionsInput,
+  ProvisionContext
+} from './assemble-loadout.types';
 
-import { LOADOUT_DEFAULTS } from '../../config';
-import { isCrewSkill, isEquipment, isFieldModification, isOptionalDevice } from '../game-data-guards';
+import { LOADOUT_DEFAULTS } from '../../config/provisions.constants';
+import { isCrewSkill, isEquipment, isFieldModification, isOptionalDevice } from '../game-data-guards/game-data-guards';
 
-export const assembleLoadout = ({ tankId, vehicle, request, provisions, skills }: AssembleLoadoutInput): AssembledLoadout => {
-  const { loadout } = request;
-  const ignored: string[] = [];
-  const fits = (row: AssembleLoadoutInput['provisions'][number]) => row.tankIds.includes(tankId);
-  const byId = new Map(provisions.map((row) => [row.provisionId, row]));
+const fitsTank = ({ row, tankId }: FitsTankInput) => row.tankIds.includes(tankId);
 
-  const pick = <T>({ ids, type, guard }: PickProvisionsInput<T>): T[] =>
-    ids.filter(isNonNullish).flatMap((id) => {
-      const row = byId.get(id);
+const pickProvisions = <T>({ context, ids, type, guard }: PickProvisionsInput<T>): T[] =>
+  ids.filter(isNonNullish).flatMap((id) => {
+    const row = context.byId.get(id);
 
-      if (!row || row.type !== type || !fits(row) || !guard(row.data)) {
-        ignored.push(`${type}:${id}`);
+    if (!row || row.type !== type || !fitsTank({ row, tankId: context.tankId }) || !guard(row.data)) {
+      context.ignored.push(`${type}:${id}`);
 
-        return [];
-      }
+      return [];
+    }
 
-      return [row.data];
-    });
+    return [row.data];
+  });
 
-  const optionalDevices: InstalledDevice[] = loadout.equipment.flatMap((id, slot) => {
-    const [device] = pick({ ids: id === null ? [] : [id], type: 'optionalDevice', guard: isOptionalDevice });
+const pickOptionalDevices = ({ context, request }: PickOptionalDevicesInput): InstalledDevice[] =>
+  request.loadout.equipment.flatMap((id, slot) => {
+    const [device] = pickProvisions({ context, ids: id === null ? [] : [id], type: 'optionalDevice', guard: isOptionalDevice });
 
     return device ? [{ device, specialized: request.specialized[slot] ?? false }] : [];
   });
 
-  const consumables: Equipment[] = pick({ ids: loadout.consumables, type: 'equipment', guard: isEquipment });
-  const directives: Equipment[] = pick({ ids: loadout.directives, type: 'directive', guard: isEquipment });
-
-  const modificationsByTag = new Map(
-    provisions.filter((row) => row.type === 'fieldModification' && fits(row)).map((row) => [row.tag ?? row.name, row.data])
+const pickFieldModifications = ({ context, provisions, names }: PickFieldModificationsInput): FieldModification[] => {
+  const byTag = new Map(
+    provisions
+      .filter((row) => row.type === 'fieldModification' && fitsTank({ row, tankId: context.tankId }))
+      .map((row) => [row.tag ?? row.name, row.data])
   );
 
-  const fieldModifications: FieldModification[] = loadout.fieldModifications.flatMap((name) => {
-    const data = modificationsByTag.get(name);
+  return names.flatMap((name) => {
+    const data = byTag.get(name);
 
     if (!isFieldModification(data)) {
-      ignored.push(`fieldModification:${name}`);
+      context.ignored.push(`fieldModification:${name}`);
 
       return [];
     }
 
     return [data];
   });
+};
 
-  const definitions = new Map(skills.flatMap((row) => (isCrewSkill(row.data) ? [[row.skill, row.data] as const] : [])));
-  const wanted = unique(Object.values(loadout.crewSkills).flat());
-
-  const crewSkills = wanted.flatMap((name): { skill: CrewSkillData }[] => {
+const pickCrewSkills = ({ context, definitions, crewSkills }: PickCrewSkillsInput): { skill: CrewSkillData }[] =>
+  unique(Object.values(crewSkills).flat()).flatMap((name) => {
     const skill = definitions.get(name);
 
     if (!skill) {
-      ignored.push(`crewSkill:${name}`);
+      context.ignored.push(`crewSkill:${name}`);
 
       return [];
     }
@@ -66,12 +71,22 @@ export const assembleLoadout = ({ tankId, vehicle, request, provisions, skills }
     return [{ skill }];
   });
 
-  const profileId = loadout.profileId ?? LOADOUT_DEFAULTS.preset;
-  const preset = profileId === 'stock' ? 'stock' : 'top';
+export const assembleLoadout = ({ tankId, vehicle, request, provisions, skills }: AssembleLoadoutInput): AssembledLoadout => {
+  const { loadout } = request;
+  const context: ProvisionContext = { tankId, byId: new Map(provisions.map((row) => [row.provisionId, row])), ignored: [] };
+  const definitions = new Map(skills.flatMap((row) => (isCrewSkill(row.data) ? [[row.skill, row.data] as const] : [])));
+
+  const optionalDevices = pickOptionalDevices({ context, request });
+  const consumables: Equipment[] = pickProvisions({ context, ids: loadout.consumables, type: 'equipment', guard: isEquipment });
+  const directives: Equipment[] = pickProvisions({ context, ids: loadout.directives, type: 'directive', guard: isEquipment });
+  const fieldModifications = pickFieldModifications({ context, provisions, names: loadout.fieldModifications });
+  const crewSkills = pickCrewSkills({ context, definitions, crewSkills: loadout.crewSkills });
+
+  const preset = (loadout.profileId ?? LOADOUT_DEFAULTS.preset) === 'stock' ? 'stock' : 'top';
 
   return {
     profileId: request.modules ? 'custom' : preset,
-    ignored,
+    ignored: context.ignored,
     input: {
       vehicle,
       modules: request.modules ?? preset,

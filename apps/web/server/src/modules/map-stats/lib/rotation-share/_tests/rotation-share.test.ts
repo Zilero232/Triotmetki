@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { RotationCount } from '../rotation-share.types';
 
-import { MAP_STATS } from '../../../config';
+import { MAP_STATS } from '../../../config/map-stats.constants';
 import { withShares } from '../rotation-share';
 
 const count = (arenaId: string, tier: number, mode: string, battles: number): RotationCount => ({

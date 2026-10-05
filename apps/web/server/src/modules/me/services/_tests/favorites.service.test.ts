@@ -7,7 +7,7 @@ import type { CollectorProducerService } from '../../../collector';
 import type { VehicleCatalogService } from '../../../reference';
 
 import { AppConflictException, AppNotFoundException } from '../../../../common/exceptions';
-import { unknownVehicle } from '../../../reference/mappers';
+import { unknownVehicle } from '../../../reference';
 import { FAVORITES } from '../../config';
 import { FavoritesService } from '../favorites.service';
 

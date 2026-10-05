@@ -8,16 +8,25 @@ import type { UploadedBlogImage } from './blog.types';
 
 import { CurrentUserId, OptionalUserId } from '../../common/decorators';
 import { IdParamsDto } from '../community-core';
-import { BLOG, BLOG_IMAGES } from './config';
-import { BlogEditorAccessDto, BlogEditorPostDto, BlogEditorPostListDto, BlogImageUploadDto, CreateBlogPostDto, UpdateBlogPostDto } from './dto';
-import { BlogImageFileInterceptor } from './interceptors';
-import { BlogEditorService, BlogImageService } from './services';
+import { BLOG } from './config/blog.constants';
+import { BLOG_IMAGES } from './config/image.constants';
+import {
+  BlogEditorAccessDto,
+  BlogEditorPostDto,
+  BlogEditorPostListDto,
+  BlogImageUploadDto,
+  CreateBlogPostDto,
+  UpdateBlogPostDto
+} from './dto/blog.dto';
+import { BlogImageFileInterceptor } from './interceptors/image-file/image-file.interceptor';
+import { BlogImageService } from './services/blog-image.service';
+import { BlogWriterService } from './services/blog-writer.service';
 
 @ApiTags('blog')
 @Controller('blog/editor')
 export class BlogEditorController {
   constructor(
-    private readonly editor: BlogEditorService,
+    private readonly editor: BlogWriterService,
     private readonly images: BlogImageService
   ) {}
 

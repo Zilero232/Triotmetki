@@ -1,6 +1,6 @@
 import { afterAll, beforeEach, expect, it } from 'vitest';
 
-import { moscowBucket, moscowDayText, moscowHour, moscowWeekday, percentile, replayWithoutModBattle, statSums } from '../sql-expressions';
+import { moscowBucket, moscowDayText, moscowHour, moscowWeekday, percentile, plusHours, replayWithoutModBattle, statSums } from '../sql-expressions';
 import { createTestPrisma, describeWithDatabase, truncateTables } from './test-database';
 
 const SEED = {
@@ -110,6 +110,17 @@ describeWithDatabase('sql expressions', () => {
       .executeTakeFirstOrThrow();
 
     expect(row).toEqual({ median: 2.5 });
+  });
+
+  it('shifts a timestamp by whole hours', async () => {
+    await prisma.tankBattleDelta.create({ data: { ...delta({ battles: 1, wins: 1, damageDealt: 1 }), capturedAt: SEED.mondayNightUtc } });
+
+    const row = await prisma.$kysely
+      .selectFrom('tank_battle_delta')
+      .select(plusHours({ column: 'captured_at', hours: 72 }).as('shifted'))
+      .executeTakeFirstOrThrow();
+
+    expect(row).toEqual({ shifted: new Date('2026-10-07T22:30:00Z') });
   });
 
   it('keeps only the replays no mod battle already covers', async () => {

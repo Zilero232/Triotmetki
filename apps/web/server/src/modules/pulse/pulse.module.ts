@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 
+import { pulseQueriesProvider } from './providers/pulse-queries.provider';
 import { PulseController } from './pulse.controller';
-import { PulseService } from './services';
+import { PulseReaderService } from './services/pulse-reader.service';
 
 @Module({
   controllers: [PulseController],
-  providers: [PulseService]
+  providers: [pulseQueriesProvider, PulseReaderService]
 })
 export class PulseModule {}

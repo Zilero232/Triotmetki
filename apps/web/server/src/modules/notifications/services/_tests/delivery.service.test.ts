@@ -9,14 +9,14 @@ import type { Notification, NotificationSettings, User } from '../../../../../ge
 import type { AppConfigService } from '../../../../config';
 import type { PrismaService } from '../../../../core';
 import type { TelegramSenderService } from '../../../telegram';
-import type { DeliverPayload } from '../../config';
+import type { DeliverPayload } from '../../config/notifications-queue.types';
 import type { DeliverJob } from '../../notifications.types';
 import type { EmailService } from '../email.service';
 import type { WebPushService } from '../web-push.service';
 
 import { Prisma } from '../../../../../generated';
 import { PRISMA_CODE } from '../../../../core/prisma/prisma.constants';
-import { WEEKLY_DIGEST } from '../../config';
+import { WEEKLY_DIGEST } from '../../config/watchers.constants';
 import { DeliveryService } from '../delivery.service';
 import { NotificationLedgerService } from '../notification-ledger.service';
 

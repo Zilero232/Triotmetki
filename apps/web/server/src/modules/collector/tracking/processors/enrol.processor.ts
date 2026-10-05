@@ -4,7 +4,7 @@ import { Job } from 'bullmq';
 import { WORKER_CONCURRENCY } from '../../config';
 import { enrolPayloadSchema, QUEUE } from '../../contracts';
 import { MetricsService, TrackedWorkerHost } from '../../metrics';
-import { EnrolService } from '../services';
+import { EnrolService } from '../services/enrol.service';
 
 @Processor(QUEUE.enrol, { concurrency: WORKER_CONCURRENCY.enrol })
 export class EnrolProcessor extends TrackedWorkerHost {

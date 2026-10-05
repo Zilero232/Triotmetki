@@ -8,7 +8,7 @@ import type { ClanDispatchPayload, ClanRefreshPayload } from '../../contracts';
 import { PrismaService } from '../../../../core';
 import { chunkIds } from '../../../../lib/lesta';
 import { JOB, QUEUE } from '../../contracts';
-import { CLANS } from '../config';
+import { CLANS } from '../config/clans.constants';
 
 @Injectable()
 export class ClanDispatchService {

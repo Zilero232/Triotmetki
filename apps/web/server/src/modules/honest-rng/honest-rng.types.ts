@@ -1,7 +1,9 @@
 import type { z } from 'zod';
 
-import type { honestRngMineSchema, honestRngSchema, rngLuckSchema, rngPeriodSchema, rngSummarySchema } from './dto';
-import type { RngWatermark, RollTally } from './lib';
+import type { honestRngMineSchema, honestRngSchema, rngLuckSchema, rngPeriodSchema, rngSummarySchema } from './dto/honest-rng.schemas';
+import type { RngWatermark } from './lib/rng-daily/rng-daily.types';
+import type { RollTally } from './lib/roll-tally/roll-tally.types';
+import type { RngBattleRow } from './queries/rng-battles.types';
 
 export type RngPeriod = z.infer<typeof rngPeriodSchema>;
 
@@ -27,4 +29,9 @@ export type DayTally = {
 export type StoreDailyInput = {
   tallies: DayTally[];
   watermark: RngWatermark;
+};
+
+export type TallyChunkInput = {
+  chunk: RngBattleRow[];
+  tiers: Map<number, number>;
 };

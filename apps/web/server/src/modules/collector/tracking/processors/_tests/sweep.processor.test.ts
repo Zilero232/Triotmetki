@@ -3,13 +3,15 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { CircuitBreakerService, MetricsService } from '../../../metrics';
-import type { DispatchService, PollPipelineService, SeedService } from '../../services';
+import type { DispatchService } from '../../services/dispatch.service';
+import type { PollSyncService } from '../../services/poll-sync.service';
+import type { SeedService } from '../../services/seed.service';
 
 import { JOB } from '../../../contracts';
 import { SweepProcessor } from '../sweep.processor';
 
 const createProcessor = (open: boolean) => {
-  const pipeline = mock<PollPipelineService>();
+  const pipeline = mock<PollSyncService>();
   const dispatch = mock<DispatchService>();
   const breaker = mock<CircuitBreakerService>();
   const metrics = mock<MetricsService>();

@@ -4,9 +4,9 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../../collector/metrics';
-import type { DeliveryService } from '../../services';
+import type { DeliveryService } from '../../services/delivery.service';
 
-import { NOTIFICATIONS_JOB } from '../../config';
+import { NOTIFICATIONS_JOB } from '../../config/notifications-queue.constants';
 import { DeliverProcessor } from '../deliver.processor';
 
 const trackingMetrics = () => mock<MetricsService>({ track: async ({ run }) => run() });

@@ -2,11 +2,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { addHours, subDays } from 'date-fns';
 
 import type { Subscription } from '../../../../generated';
+import type { RecordPendingChargeInput } from '../billing.types';
 
-import { errorMessage } from '../../../common/lib';
+import { errorMessage, PLUS_SUBSCRIPTION } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { PLUS_SUBSCRIPTION, RENEWAL } from '../config';
-import { describePlan, planPrice, renewalIdempotenceKey, storedPlan, YooKassaClient } from '../lib';
+import { RENEWAL } from '../config/renewal.constants';
+import { renewalIdempotenceKey } from '../lib/period';
+import { describePlan, planPrice, storedPlan } from '../lib/pricing';
+import { YooKassaClient } from '../lib/yookassa';
 import { EntitlementsService } from './entitlements.service';
 import { SubscriptionService } from './subscription.service';
 import { WebhookService } from './webhook.service';
@@ -28,27 +31,9 @@ export class RenewalService {
       return 0;
     }
 
-    const due = await this.prisma.subscription.findMany({
-      where: {
-        product: PLUS_SUBSCRIPTION.product,
-        status: { in: ['active', 'pastDue'] },
-        cancelAtPeriodEnd: false,
-        savedCardId: { not: null },
-        currentPeriodEnd: { lte: addHours(now, RENEWAL.leadHours), gt: subDays(now, RENEWAL.pastDueGraceDays) }
-      },
-      take: RENEWAL.batchSize
-    });
-
-    const pending = await this.prisma.payment.findMany({
-      where: { subscriptionId: { in: due.map((subscription) => subscription.id) }, isAutoCharge: true, status: 'pending' },
-      select: { subscriptionId: true },
-      distinct: ['subscriptionId']
-    });
-
-    const awaiting = new Set(pending.map((payment) => payment.subscriptionId));
     let charged = 0;
 
-    for (const subscription of due.filter((candidate) => !awaiting.has(candidate.id))) {
+    for (const subscription of await this.dueWithoutPendingCharge(now)) {
       try {
         charged += (await this.charge(subscription)) ? 1 : 0;
       } catch (error) {
@@ -87,6 +72,29 @@ export class RenewalService {
     return lapsed.count + overdue.count + unpaid.count;
   }
 
+  private async dueWithoutPendingCharge(now: Date): Promise<Subscription[]> {
+    const due = await this.prisma.subscription.findMany({
+      where: {
+        product: PLUS_SUBSCRIPTION.product,
+        status: { in: ['active', 'pastDue'] },
+        cancelAtPeriodEnd: false,
+        savedCardId: { not: null },
+        currentPeriodEnd: { lte: addHours(now, RENEWAL.leadHours), gt: subDays(now, RENEWAL.pastDueGraceDays) }
+      },
+      take: RENEWAL.batchSize
+    });
+
+    const pending = await this.prisma.payment.findMany({
+      where: { subscriptionId: { in: due.map((subscription) => subscription.id) }, isAutoCharge: true, status: 'pending' },
+      select: { subscriptionId: true },
+      distinct: ['subscriptionId']
+    });
+
+    const awaiting = new Set(pending.map((payment) => payment.subscriptionId));
+
+    return due.filter((candidate) => !awaiting.has(candidate.id));
+  }
+
   private async charge(subscription: Subscription): Promise<boolean> {
     if (!subscription.savedCardId || !subscription.currentPeriodEnd) {
       return false;
@@ -103,12 +111,18 @@ export class RenewalService {
       metadata: { userId: subscription.userId, plan, product: PLUS_SUBSCRIPTION.product, subscriptionId: subscription.id }
     });
 
+    await this.recordPendingCharge({ subscription, paymentId: payment.id, plan, amountRub });
+
+    return payment.status === 'pending' ? true : this.webhooks.settle(payment.id);
+  }
+
+  private async recordPendingCharge({ subscription, paymentId, plan, amountRub }: RecordPendingChargeInput): Promise<void> {
     await this.prisma.payment.upsert({
-      where: { yookassaPaymentId: payment.id },
+      where: { yookassaPaymentId: paymentId },
       create: {
         userId: subscription.userId,
         subscriptionId: subscription.id,
-        yookassaPaymentId: payment.id,
+        yookassaPaymentId: paymentId,
         amount: amountRub,
         status: 'pending',
         plan,
@@ -116,7 +130,5 @@ export class RenewalService {
       },
       update: {}
     });
-
-    return payment.status === 'pending' ? true : this.webhooks.settle(payment.id);
   }
 }

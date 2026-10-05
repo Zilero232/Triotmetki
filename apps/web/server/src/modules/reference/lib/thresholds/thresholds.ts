@@ -1,6 +1,6 @@
 import type { TankThreshold } from '../../../../../generated';
 
-import { THRESHOLD_SOURCE_PRIORITY } from '../../config';
+import { THRESHOLD_SOURCE_PRIORITY } from '../../config/thresholds.constants';
 
 const rank = (source: string): number => {
   const index = THRESHOLD_SOURCE_PRIORITY.findIndex((candidate) => candidate === source);

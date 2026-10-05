@@ -3,7 +3,7 @@ import { mockDeep } from 'vitest-mock-extended';
 
 import type { PrismaService } from '../../../../../core';
 
-import { FOLLOW_FLAGS } from '../../../config';
+import { FOLLOW_FLAGS } from '../../../config/follow-flags.constants';
 import { clearFollowFlag, setFollowFlag } from '../follow-flags';
 
 const key = { userId: 'user', kind: 'player' as const, targetId: 7n };

@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import type { StoredShot } from '../../../../analytics';
 
-import { HONEST_RNG_AGGREGATE } from '../../../config';
-import { emptyTally, foldBattle, tallySummary } from '../../roll-tally';
+import { HONEST_RNG_AGGREGATE } from '../../../config/aggregate.constants';
+import { emptyTally, foldBattle, tallySummary } from '../../roll-tally/roll-tally';
 import { battleScopes, dailyFromTally, tallyFromDaily } from '../rng-daily';
 
 const shot = (shell: StoredShot['shell']): StoredShot => ({ damage: 400, nominal: 400, shell, outcome: 'damage', distance: 100, fatal: false });

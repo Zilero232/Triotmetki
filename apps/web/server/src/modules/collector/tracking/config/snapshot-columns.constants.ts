@@ -1,0 +1,52 @@
+import type { DB } from '../../../../../generated/kysely/database';
+
+export const SNAPSHOT_COLUMNS = {
+  tankSnapshot: [
+    'account_id',
+    'tank_id',
+    'mode',
+    'captured_at',
+    'battles',
+    'wins',
+    'losses',
+    'draws',
+    'damage_dealt',
+    'damage_received',
+    'frags',
+    'spotted',
+    'xp',
+    'survived_battles',
+    'hits',
+    'shots',
+    'capture_points',
+    'dropped_capture_points',
+    'avg_damage_blocked',
+    'mark_of_mastery',
+    'marks_on_gun',
+    'max_frags',
+    'max_xp'
+  ],
+  accountModeStats: [
+    'account_id',
+    'mode',
+    'battles',
+    'wins',
+    'losses',
+    'draws',
+    'damage_dealt',
+    'damage_received',
+    'frags',
+    'spotted',
+    'xp',
+    'survived_battles',
+    'hits',
+    'shots',
+    'capture_points',
+    'dropped_capture_points',
+    'avg_damage_blocked',
+    'avg_damage_assisted',
+    'max_damage',
+    'max_xp',
+    'max_frags'
+  ]
+} as const satisfies { tankSnapshot: readonly (keyof DB['tank_snapshot'])[]; accountModeStats: readonly (keyof DB['account_snapshot'])[] };

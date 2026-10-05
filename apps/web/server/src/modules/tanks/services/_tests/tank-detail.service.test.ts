@@ -7,10 +7,10 @@ import type { VehicleProfile } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { SweatIndexService } from '../../../marks';
 import type { CatalogEntry, MoeThresholdRecord, ThresholdsService, VehicleCatalogService } from '../../../reference';
-import type { TankEconomyReportService } from '../tank-economy-report.service';
-import type { TankLearningService } from '../tank-learning.service';
-import type { TankObtainService } from '../tank-obtain.service';
-import type { TopPlayersService } from '../top-players.service';
+import type { TankEconomyReaderService } from '../tank-economy-reader.service';
+import type { TankLearningReaderService } from '../tank-learning-reader.service';
+import type { TankObtainReaderService } from '../tank-obtain-reader.service';
+import type { TopPlayersReaderService } from '../top-players-reader.service';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
 import { TANK_PROFILES } from '../../config';
@@ -68,10 +68,10 @@ const createService = (entry: CatalogEntry | null = tank) => {
   const prisma = mockDeep<PrismaService>();
   const catalog = mock<VehicleCatalogService>();
   const thresholds = mock<ThresholdsService>();
-  const topPlayers = mock<TopPlayersService>();
-  const obtain = mock<TankObtainService>();
-  const economy = mock<TankEconomyReportService>();
-  const learning = mock<TankLearningService>();
+  const topPlayers = mock<TopPlayersReaderService>();
+  const obtain = mock<TankObtainReaderService>();
+  const economy = mock<TankEconomyReaderService>();
+  const learning = mock<TankLearningReaderService>();
   const sweat = mock<SweatIndexService>();
 
   catalog.find.mockResolvedValue(entry);

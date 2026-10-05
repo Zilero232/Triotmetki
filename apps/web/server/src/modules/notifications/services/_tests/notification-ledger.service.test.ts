@@ -8,7 +8,7 @@ import type { SendOnceInput } from '../../notifications.types';
 
 import { Prisma } from '../../../../../generated';
 import { PRISMA_CODE } from '../../../../core/prisma/prisma.constants';
-import { NOTIFICATION_LEDGER } from '../../config';
+import { NOTIFICATION_LEDGER } from '../../config/delivery.constants';
 import { NotificationLedgerService } from '../notification-ledger.service';
 
 const NOW = new Date('2026-09-28T12:00:00Z');

@@ -1,7 +1,9 @@
 import { modBattleLoadoutSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
-import { BIND_CODE, MOD_ACHIEVEMENTS, MOD_BATTLE_LIMITS, MOD_INGEST, MOD_PLATOON, MOD_SHOTS } from '../../config';
+import { MOD_ACHIEVEMENTS, MOD_BATTLE_LIMITS, MOD_PLATOON, MOD_SHOTS } from '../../config/battle-payload.constants';
+import { BIND_CODE } from '../../config/bind-code.constants';
+import { MOD_INGEST } from '../../config/ingest.constants';
 
 const id = z
   .string()

@@ -4,7 +4,7 @@ import type { LestaClients } from '../../../../core';
 import type { AccountBatchPayload } from '../../contracts';
 
 import { LESTA_CLIENTS, PrismaService } from '../../../../core';
-import { toClanHistoryRecord } from '../mappers';
+import { toClanHistoryRecord } from '../mappers/clan-member.mappers';
 
 @Injectable()
 export class ClanHistoryService {

@@ -5,7 +5,7 @@ import { firstBy } from 'remeda';
 
 import type { ToTankLearningInput } from './tank-learning-view.types';
 
-import { clampPercent } from '../../../../common/lib';
+import { clampPercent, winRatePercent } from '../../../../common/lib';
 import { learningDifficulty, learningGain } from '../../lib/learning-curve';
 
 export const toTankLearning = ({ tankId, rows }: ToTankLearningInput): TankLearning => {
@@ -21,7 +21,7 @@ export const toTankLearning = ({ tankId, rows }: ToTankLearningInput): TankLearn
       to: starts[index + 1] ?? null,
       battles,
       players: row?.players ?? 0,
-      winRate: row && battles > 0 ? clampPercent((row.wins * 100) / battles) : null,
+      winRate: row ? clampPercent(winRatePercent({ wins: row.wins, battles })) : null,
       avgDamage: row && battles > 0 ? Number(row.damage) / battles : null
     };
   });

@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-import type { ParsedNotification } from '../../../config';
+import type { ParsedNotification } from '../../../config/notifications-queue.types';
 
-import { NOTIFICATION_COPY } from '../../../config';
+import { NOTIFICATION_COPY } from '../../../config/copy.constants';
 import { notificationText, renderDigest, renderNotification, resolveNotificationLocale } from '../notification-copy';
 
 const webUrl = 'https://triotmetki.ru';

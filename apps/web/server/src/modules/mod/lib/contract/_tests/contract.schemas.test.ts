@@ -2,7 +2,8 @@ import { readFileSync } from 'node:fs';
 import { isPlainObject } from 'remeda';
 import { describe, expect, it } from 'vitest';
 
-import { MOD_BATTLE_LIMITS, MOD_INGEST } from '../../../config';
+import { MOD_BATTLE_LIMITS } from '../../../config/battle-payload.constants';
+import { MOD_INGEST } from '../../../config/ingest.constants';
 import { ingestBatchSchema } from '../contract.schemas';
 
 const example: { events: Record<string, unknown>[] } = JSON.parse(

@@ -3,7 +3,7 @@ import { mockDeep } from 'vitest-mock-extended';
 
 import type { LestaClients, PrismaService } from '../../../../../core';
 
-import { REFERENCE } from '../../config';
+import { REFERENCE } from '../../config/reference.constants';
 import { CatalogSyncService } from '../catalog-sync.service';
 
 const createSync = () => {

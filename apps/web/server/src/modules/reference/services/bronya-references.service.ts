@@ -4,8 +4,9 @@ import { Injectable } from '@nestjs/common';
 import { LRUCache } from 'lru-cache';
 
 import { PrismaService } from '../../../core';
-import { CATALOG } from '../config';
-import { BRONYA_REFERENCE, parseBronyaReference } from '../lib';
+import { CATALOG } from '../config/catalog.constants';
+import { parseBronyaReference } from '../lib/bronya-reference/bronya-reference';
+import { BRONYA_REFERENCE } from '../lib/bronya-reference/bronya-reference.constants';
 
 @Injectable()
 export class BronyaReferencesService {

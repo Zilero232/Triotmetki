@@ -8,18 +8,22 @@ import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId } from '../../common/decorators';
-import { BIND_CODE, MOD_INGEST } from './config';
-import { BindCodeDto, BindCodeInputDto, BindRequestDto, BindResponseDto, DeviceParamsDto, IngestResponseDto, ModDevicesDto } from './dto';
-import { ingestBatchSchema, modDeviceTracker } from './lib';
-import { ModBindService, ModDeviceService, ModIngestService } from './services';
+import { BIND_CODE } from './config/bind-code.constants';
+import { MOD_INGEST } from './config/ingest.constants';
+import { BindCodeDto, BindCodeInputDto, BindRequestDto, BindResponseDto, DeviceParamsDto, IngestResponseDto, ModDevicesDto } from './dto/mod.dto';
+import { ingestBatchSchema } from './lib/contract';
+import { modDeviceTracker } from './lib/device-tracker';
+import { ModBindWriterService } from './services/mod-bind-writer.service';
+import { ModDeviceService } from './services/mod-device.service';
+import { ModIngestWriterService } from './services/mod-ingest-writer.service';
 
 @ApiTags('mod')
 @Controller('mod')
 export class ModController {
   constructor(
-    private readonly binding: ModBindService,
+    private readonly binding: ModBindWriterService,
     private readonly devices: ModDeviceService,
-    private readonly ingestion: ModIngestService
+    private readonly ingestion: ModIngestWriterService
   ) {}
 
   @Post('bind-code')

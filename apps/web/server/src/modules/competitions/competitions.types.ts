@@ -1,9 +1,9 @@
-import type { CompetitionsQuery, CreateCompetition, JoinCompetitionInput } from '@otmetki/schemas';
+import type { CompetitionScoring, CompetitionsQuery, CreateCompetition, JoinCompetitionInput } from '@otmetki/schemas';
 
 import type { Competition, CompetitionSource } from '../../../generated';
 import type { CatalogEntry } from '../reference';
-import type { ParticipantScore } from './lib';
-import type { CompetitionWithSummary } from './selects';
+import type { ParticipantScore } from './lib/competition-scoring/competition-scoring.types';
+import type { CompetitionWithSummary } from './selects/competition-summary.types';
 
 export type CompetitionListInput = {
   query: CompetitionsQuery;
@@ -65,4 +65,15 @@ export type ToViewInput = {
 
 export type EntryScore = ParticipantScore & {
   source: CompetitionSource;
+};
+
+export type ModBattlesInput = {
+  competition: Competition;
+  accountId: bigint;
+  from: Date;
+  limit: number;
+};
+
+export type SnapshotScoreInput = ModBattlesInput & {
+  scoring: CompetitionScoring;
 };

@@ -6,9 +6,10 @@ import { LRUCache } from 'lru-cache';
 import type { CatalogEntry, VehicleFilter } from '../reference.types';
 
 import { PrismaService } from '../../../core';
-import { CATALOG } from '../config';
-import { matchesFilter } from '../lib';
-import { toCatalogEntry, unknownVehicle } from '../mappers';
+import { CATALOG } from '../config/catalog.constants';
+import { matchesFilter } from '../lib/catalog-entry/catalog-entry';
+import { toCatalogEntry } from '../mappers/catalog-entry.mappers';
+import { unknownVehicle } from '../mappers/vehicle-summary.mappers';
 
 @Injectable()
 export class VehicleCatalogService {
@@ -57,10 +58,10 @@ export class VehicleCatalogService {
   private async load(): Promise<Map<number, CatalogEntry> | undefined> {
     const [rows, offered] = await Promise.all([
       this.prisma.vehicle.findMany({ where: { isActive: true } }),
-      this.prisma.$queryRaw<{ tank_id: number }[]>`SELECT DISTINCT unnest(tank_ids) AS tank_id FROM premium_offer`
+      this.prisma.premiumOffer.findMany({ select: { tankIds: true } })
     ]);
 
-    const withOffers = new Set(offered.map((row) => row.tank_id));
+    const withOffers = new Set(offered.flatMap((offer) => offer.tankIds));
 
     return rows.length > 0 ? new Map(rows.map((row) => [row.tankId, toCatalogEntry({ row, hasOffers: withOffers.has(row.tankId) })])) : undefined;
   }

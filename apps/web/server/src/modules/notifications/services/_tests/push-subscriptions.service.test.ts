@@ -5,7 +5,7 @@ import { mockDeep } from 'vitest-mock-extended';
 import type { PushSubscription } from '../../../../../generated';
 import type { Env } from '../../../../config/env';
 import type { PrismaService } from '../../../../core';
-import type { WebPushEnv } from '../../lib';
+import type { WebPushEnv } from '../../lib/web-push-config';
 
 import { AppConfigService } from '../../../../config';
 import { PushSubscriptionsService } from '../push-subscriptions.service';

@@ -4,7 +4,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { DataDeletionRequest } from '../../../../../../generated';
 import type { PrismaService } from '../../../../../core';
 
-import { PURGE } from '../../config';
+import { PURGE } from '../../config/purge.constants';
 import { PurgeGuardService } from '../purge-guard.service';
 
 const createGuard = () => {

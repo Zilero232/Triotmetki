@@ -3,7 +3,9 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../../metrics';
-import type { ClanDispatchService, ClanHistoryService, ClanSyncService } from '../../services';
+import type { ClanDispatchService } from '../../services/clan-dispatch.service';
+import type { ClanHistoryService } from '../../services/clan-history.service';
+import type { ClanSyncService } from '../../services/clan-sync.service';
 
 import { JOB } from '../../../contracts';
 import { ClansProcessor } from '../clans.processor';

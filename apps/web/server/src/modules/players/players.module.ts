@@ -3,14 +3,15 @@ import { Module } from '@nestjs/common';
 import { BillingCoreModule } from '../billing';
 import { PurgeGuardModule } from '../collector';
 import { PlayersController } from './players.controller';
+import { playerQueriesProvider } from './providers/player-queries.provider';
 import {
-  PlayerAchievementsService,
-  PlayerCareerService,
+  PlayerAchievementsReaderService,
+  PlayerCareerReaderService,
   PlayerHistoryService,
-  PlayerInsightsService,
+  PlayerInsightsReaderService,
   PlayerMarksService,
-  PlayerOfficialRatingsService,
-  PlayerPlaytimeService,
+  PlayerOfficialRatingsReaderService,
+  PlayerPlaytimeReaderService,
   PlayerResolverService,
   PlayerSessionsService,
   PlayerSummaryService,
@@ -22,18 +23,19 @@ import {
   imports: [BillingCoreModule, PurgeGuardModule],
   controllers: [PlayersController],
   providers: [
-    PlayerAchievementsService,
+    playerQueriesProvider,
+    PlayerAchievementsReaderService,
     PlayerResolverService,
     PlayerSummaryService,
     PlayerTanksService,
     PlayerHistoryService,
     PlayerSessionsService,
     PlayerMarksService,
-    PlayerInsightsService,
-    PlayerPlaytimeService,
+    PlayerInsightsReaderService,
+    PlayerPlaytimeReaderService,
     PlayerViewsService,
-    PlayerCareerService,
-    PlayerOfficialRatingsService
+    PlayerCareerReaderService,
+    PlayerOfficialRatingsReaderService
   ],
   exports: [
     PlayerResolverService,
@@ -42,7 +44,7 @@ import {
     PlayerHistoryService,
     PlayerSessionsService,
     PlayerMarksService,
-    PlayerCareerService
+    PlayerCareerReaderService
   ]
 })
 export class PlayersModule {}

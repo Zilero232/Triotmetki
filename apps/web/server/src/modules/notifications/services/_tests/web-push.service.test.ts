@@ -8,7 +8,7 @@ import type { PrismaService } from '../../../../core';
 import type { HostLookupService } from '../../../developer';
 import type { WebPushSenderService } from '../web-push-sender.service';
 
-import { WEB_PUSH } from '../../config';
+import { WEB_PUSH } from '../../config/delivery.constants';
 import { WebPushService } from '../web-push.service';
 
 const sendNotification = vi.fn<WebPushSenderService['send']>();

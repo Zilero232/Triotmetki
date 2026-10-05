@@ -1,6 +1,6 @@
 import { AppConfigService } from '../../../config';
 import { HttpClientService } from '../../../core';
-import { YooKassaClient } from '../lib';
+import { YooKassaClient } from '../lib/yookassa';
 
 export const yooKassaProvider = {
   provide: YooKassaClient,

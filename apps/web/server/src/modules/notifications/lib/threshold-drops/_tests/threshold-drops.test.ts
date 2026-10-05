@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { THRESHOLD_DROP } from '../../../config';
+import { THRESHOLD_DROP } from '../../../config/watchers.constants';
 import { thresholdDrops } from '../threshold-drops';
 
 const previous = { p65: 2000, p85: 3000, p95: 4000 };

@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { mockDeep } from 'vitest-mock-extended';
 
-import type { LestaClients, PrismaService } from '../../../../../core';
+import type { LestaClients } from '../../../../../core';
 import type { Vehicle } from '../../../../../lib/lesta';
+import type { ReferenceQueries } from '../../providers/reference-queries.types';
 
-import { REFERENCE } from '../../config';
+import { Prisma } from '../../../../../../generated';
+import { mockPrismaService } from '../../../../../core/prisma/_tests/prisma-mock';
+import { REFERENCE } from '../../config/reference.constants';
+import { referenceQueries } from '../../providers/reference-queries.provider';
 import { VehicleSyncService } from '../vehicle-sync.service';
 
 const GAME_VERSION_ID = 3;
@@ -21,14 +25,16 @@ const vehicle = (fields: Partial<Vehicle> = {}): Vehicle => ({
   ...fields
 });
 
-const createSync = (vehicles: Record<string, Vehicle | null>) => {
-  const prisma = mockDeep<PrismaService>();
+type LatestSpecs = Awaited<ReturnType<ReferenceQueries['latestSpecHistory']>>;
+
+const createSync = (vehicles: Record<string, Vehicle | null>, latestSpecs: LatestSpecs = []) => {
+  const prisma = mockPrismaService();
   const clients = mockDeep<LestaClients>();
+  const queries: ReferenceQueries = { ...referenceQueries, latestSpecHistory: async () => latestSpecs };
 
   clients.bulk.encyclopedia.allVehicles.mockResolvedValue(vehicles);
-  prisma.$queryRaw.mockResolvedValue([]);
 
-  return { prisma, clients, service: new VehicleSyncService(prisma, clients) };
+  return { prisma, clients, service: new VehicleSyncService(prisma, clients, queries) };
 };
 
 describe('VehicleSyncService.sync', () => {
@@ -107,14 +113,19 @@ describe('VehicleSyncService.sync', () => {
     expect(prisma.vehicleProfile.upsert).not.toHaveBeenCalled();
   });
 
-  it('diffs the specs against the latest earlier game version only', async () => {
-    const { prisma, service } = createSync({ 1: vehicle() });
-
-    prisma.$queryRaw.mockResolvedValue([{ tankId: 1, specs: { profile_id: 'p1', modules: { gun_id: 9 } } }]);
+  it('diffs the specs against the latest spec of an earlier game version', async () => {
+    const { prisma, service } = createSync({ 1: vehicle() }, [{ tankId: 1, specs: { profile_id: 'p1', modules: { gun_id: 9 } } }]);
 
     await service.sync(GAME_VERSION_ID);
 
-    expect(prisma.$queryRaw.mock.calls[0]?.[0]).toMatchObject({ values: [GAME_VERSION_ID] });
-    expect(prisma.vehicleSpecHistory.upsert.mock.calls[0]?.[0].create.diff).not.toBeNull();
+    expect(prisma.vehicleSpecHistory.upsert.mock.calls[0]?.[0].create.diff).not.toBe(Prisma.JsonNull);
+  });
+
+  it('stores no diff when the specs match the earlier game version', async () => {
+    const { prisma, service } = createSync({ 1: vehicle() }, [{ tankId: 1, specs: vehicle().default_profile }]);
+
+    await service.sync(GAME_VERSION_ID);
+
+    expect(prisma.vehicleSpecHistory.upsert.mock.calls[0]?.[0].create.diff).toBe(Prisma.JsonNull);
   });
 });

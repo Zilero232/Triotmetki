@@ -12,10 +12,10 @@ import { SweatIndexService } from '../../marks';
 import { readVehicleStats, ThresholdsService, toMasteryThreshold, toMoeThreshold, VehicleCatalogService } from '../../reference';
 import { TANK_PROFILES, TOP_PLAYERS } from '../config';
 import { toServerStatsRow } from '../mappers';
-import { TankEconomyReportService } from './tank-economy-report.service';
-import { TankLearningService } from './tank-learning.service';
-import { TankObtainService } from './tank-obtain.service';
-import { TopPlayersService } from './top-players.service';
+import { TankEconomyReaderService } from './tank-economy-reader.service';
+import { TankLearningReaderService } from './tank-learning-reader.service';
+import { TankObtainReaderService } from './tank-obtain-reader.service';
+import { TopPlayersReaderService } from './top-players-reader.service';
 
 @Injectable()
 export class TankDetailService {
@@ -23,10 +23,10 @@ export class TankDetailService {
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService,
     private readonly thresholds: ThresholdsService,
-    private readonly topPlayers: TopPlayersService,
-    private readonly obtainInfo: TankObtainService,
-    private readonly economy: TankEconomyReportService,
-    private readonly learning: TankLearningService,
+    private readonly topPlayers: TopPlayersReaderService,
+    private readonly obtainInfo: TankObtainReaderService,
+    private readonly economy: TankEconomyReaderService,
+    private readonly learning: TankLearningReaderService,
     private readonly sweat: SweatIndexService
   ) {}
 

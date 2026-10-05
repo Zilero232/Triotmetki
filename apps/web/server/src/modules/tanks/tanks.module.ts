@@ -6,22 +6,23 @@ import { MarksModule } from '../marks';
 import { UsageModule } from '../usage';
 import { MyTanksController } from './my-tanks.controller';
 import { armorStorageProvider } from './providers';
+import { tanksQueriesProvider } from './providers/tanks-queries.provider';
 import {
-  MyTankInsightsService,
-  TankArmorService,
+  MyTankInsightsReaderService,
+  TankArmorReaderService,
   TankDetailService,
   TankDifficultyService,
-  TankEconomyReportService,
-  TankLearningService,
-  TankObtainService,
-  TankPatchesService,
+  TankEconomyReaderService,
+  TankLearningReaderService,
+  TankObtainReaderService,
+  TankPatchesReaderService,
   TankStatsService,
-  TankTraitsService,
-  TankTrendService,
+  TankTraitsReaderService,
+  TankTrendReaderService,
   TierListService,
-  TopPlayersService,
-  VehicleListService,
-  VehicleSourcesService
+  TopPlayersReaderService,
+  VehicleSourcesService,
+  VehiclesReaderService
 } from './services';
 import { TankArmorController } from './tank-armor.controller';
 import { TanksController } from './tanks.controller';
@@ -33,20 +34,21 @@ import { VehiclesController } from './vehicles.controller';
   controllers: [TanksController, TankArmorController, MyTanksController, VehiclesController, VehicleSourcesController],
   providers: [
     armorStorageProvider,
-    TankArmorService,
+    tanksQueriesProvider,
+    TankArmorReaderService,
     TankStatsService,
     TierListService,
     TankDetailService,
     TankDifficultyService,
-    TopPlayersService,
-    TankTrendService,
-    TankPatchesService,
-    VehicleListService,
-    TankTraitsService,
-    TankObtainService,
-    TankEconomyReportService,
-    TankLearningService,
-    MyTankInsightsService,
+    TopPlayersReaderService,
+    TankTrendReaderService,
+    TankPatchesReaderService,
+    VehiclesReaderService,
+    TankTraitsReaderService,
+    TankObtainReaderService,
+    TankEconomyReaderService,
+    TankLearningReaderService,
+    MyTankInsightsReaderService,
     VehicleSourcesService
   ],
   exports: [TankDetailService, TankDifficultyService, TankStatsService, TierListService]

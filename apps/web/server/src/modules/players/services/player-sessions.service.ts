@@ -9,7 +9,7 @@ import type { Battle } from '../../../../generated';
 import type { SessionBattleInput, SessionDetailInput, SessionsInput } from '../players.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
-import { ratio, toNumber } from '../../../common/lib';
+import { paginate, ratio, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
 import { statsBlockFromTotals } from '../lib';
@@ -23,12 +23,16 @@ export class PlayerSessionsService {
   ) {}
 
   async list({ accountId, limit, offset }: SessionsInput): Promise<Paginated<SessionListItem>> {
-    const [items, total] = await Promise.all([
-      this.prisma.playSession.findMany({ where: { accountId }, orderBy: { startedAt: 'desc' }, take: limit, skip: offset }),
-      this.prisma.playSession.count({ where: { accountId } })
-    ]);
+    return paginate({
+      limit,
+      offset,
+      fetch: async (window) => {
+        const sessions = await this.prisma.playSession.findMany({ where: { accountId }, orderBy: { startedAt: 'desc' }, ...window });
 
-    return { items: items.map((session) => toSessionListItem(session)), total, limit, offset };
+        return sessions.map((session) => toSessionListItem(session));
+      },
+      count: () => this.prisma.playSession.count({ where: { accountId } })
+    });
   }
 
   async detail({ accountId, sessionId }: SessionDetailInput): Promise<Session> {

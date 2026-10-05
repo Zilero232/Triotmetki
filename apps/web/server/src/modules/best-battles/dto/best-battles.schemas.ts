@@ -11,7 +11,8 @@ import {
 } from '@otmetki/schemas';
 import { z } from 'zod';
 
-import { BEST_BATTLE_METRICS, BEST_BATTLE_PERIODS, BEST_BATTLE_SOURCES, BEST_BATTLES } from '../config';
+import { BEST_BATTLE_METRICS, BEST_BATTLE_PERIODS, BEST_BATTLE_SOURCES } from '../config/facets.constants';
+import { BEST_BATTLES } from '../config/feed.constants';
 
 export const bestBattlePeriodSchema = z.enum(BEST_BATTLE_PERIODS);
 

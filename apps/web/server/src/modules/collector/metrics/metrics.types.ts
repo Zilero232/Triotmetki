@@ -1,6 +1,6 @@
 import type { Job } from 'bullmq';
 
-import type { CIRCUIT_STATE_NAME } from './config';
+import type { CIRCUIT_STATE_NAME } from './config/circuit-breaker.constants';
 
 export type JobContext = {
   queue: string;
@@ -18,6 +18,12 @@ export type MetricCounters = {
 export type TrackJobInput<T> = {
   job: Pick<Job, 'attemptsMade' | 'name' | 'queueName'>;
   run: () => Promise<T>;
+};
+
+export type WriteCountersInput = {
+  queue: string;
+  counters: MetricCounters;
+  bucketStart: Date;
 };
 
 export type RecordJobInput = {

@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 
 import { toIso } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { GAME_VERSION } from '../config';
+import { GAME_VERSION } from '../config/game-version.constants';
 
 @Injectable()
 export class GameVersionService {

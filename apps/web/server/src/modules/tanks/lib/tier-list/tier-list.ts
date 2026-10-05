@@ -5,6 +5,7 @@ import { sortBy } from 'remeda';
 
 import type { RankedCandidate, TierListCandidate } from './tier-list.types';
 
+import { roundTo } from '../../../../common/lib';
 import { TIER_LIST } from '../../config';
 
 const rankAt = (position: number): TierListRank => {
@@ -44,7 +45,7 @@ export const rankTierList = (candidates: readonly TierListCandidate[]): RankedCa
     return {
       ...candidate,
       rank: stored.success ? stored.data : rankAt(sorted.length <= 1 ? 0 : index / sorted.length),
-      score: Math.round(candidate.winRateDiff * 100) / 100,
+      score: roundTo({ value: candidate.winRateDiff, digits: 2 }),
       trend: trendOf(candidate)
     };
   });

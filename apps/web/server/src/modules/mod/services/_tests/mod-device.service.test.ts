@@ -11,11 +11,12 @@ import { z } from 'zod';
 import type { ModDevice } from '../../../../../generated';
 import type { AppConfigService } from '../../../../config';
 import type { PrismaService } from '../../../../core';
-import type { SignedHeader } from '../../lib';
+import type { SignedHeader } from '../../lib/request-signature';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
-import { MOD_DEVICE, MOD_REQUEST } from '../../config';
-import { deviceSecret, hashSecret, signedMessage } from '../../lib';
+import { MOD_DEVICE, MOD_REQUEST } from '../../config/device.constants';
+import { deviceSecret, hashSecret } from '../../lib/device-secret';
+import { signedMessage } from '../../lib/request-signature';
 import { ModDeviceService } from '../mod-device.service';
 
 const SERVER_SECRET = 'server-secret-for-tests';

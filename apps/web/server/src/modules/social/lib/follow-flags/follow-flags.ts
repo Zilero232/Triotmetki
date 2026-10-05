@@ -1,7 +1,7 @@
 import type { Follow } from '../../../../../generated';
 import type { ClearFollowFlagInput, SetFollowFlagInput } from './follow-flags.types';
 
-import { FOLLOW_FLAGS } from '../../config';
+import { FOLLOW_FLAGS } from '../../config/follow-flags.constants';
 
 export const setFollowFlag = ({ prisma, flag, key, data = {} }: SetFollowFlagInput): Promise<Follow> =>
   prisma.follow.upsert({

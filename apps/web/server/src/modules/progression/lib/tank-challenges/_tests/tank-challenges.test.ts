@@ -1,9 +1,9 @@
 import { TANK_CHALLENGES } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
-import type { BattleSample } from '../../battle-samples';
+import type { BattleSample } from '../../battle-samples/battle-samples.types';
 
-import { TANK_CHALLENGE_POOL } from '../../../config';
+import { TANK_CHALLENGE_POOL } from '../../../config/tank-challenges.constants';
 import { challengeProgress, weeklyTankChallenges } from '../tank-challenges';
 
 const battle = (overrides: Partial<BattleSample>): BattleSample => ({

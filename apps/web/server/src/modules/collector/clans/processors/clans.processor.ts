@@ -5,7 +5,9 @@ import { match } from 'ts-pattern';
 import { WORKER_CONCURRENCY } from '../../config';
 import { accountBatchPayloadSchema, clanDispatchPayloadSchema, clanRefreshPayloadSchema, JOB, QUEUE } from '../../contracts';
 import { MetricsService, TrackedWorkerHost } from '../../metrics';
-import { ClanDispatchService, ClanHistoryService, ClanSyncService } from '../services';
+import { ClanDispatchService } from '../services/clan-dispatch.service';
+import { ClanHistoryService } from '../services/clan-history.service';
+import { ClanSyncService } from '../services/clan-sync.service';
 
 @Processor(QUEUE.clans, { concurrency: WORKER_CONCURRENCY.clans })
 export class ClansProcessor extends TrackedWorkerHost {

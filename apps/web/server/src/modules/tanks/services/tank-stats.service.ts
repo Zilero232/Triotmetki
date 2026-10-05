@@ -9,14 +9,14 @@ import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
 import { statsRankValue, statsSampleFloor } from '../lib';
 import { toServerStatsRow } from '../mappers';
-import { TankTraitsService } from './tank-traits.service';
+import { TankTraitsReaderService } from './tank-traits-reader.service';
 
 @Injectable()
 export class TankStatsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService,
-    private readonly traits: TankTraitsService
+    private readonly traits: TankTraitsReaderService
   ) {}
 
   async list(query: TankStatsListInput): Promise<Paginated<TankServerStatsRow>> {

@@ -1,7 +1,7 @@
 import { accountIdSchema, countSchema, isoDateTimeSchema, percentSchema, rngBucketSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
-import { RNG_PERIODS } from '../config';
+import { RNG_PERIODS } from '../config/aggregate.constants';
 
 export const rngPeriodSchema = z.enum(RNG_PERIODS);
 

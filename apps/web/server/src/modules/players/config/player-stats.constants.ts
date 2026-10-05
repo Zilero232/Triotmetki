@@ -5,6 +5,7 @@ import { PLUS_LIMITS } from '@otmetki/schemas';
 
 export const PLAYER_STATS = {
   snapshotMode: 'random',
+  deltaSums: ['battles', 'wins', 'damage', 'frags', 'spotted', 'cap', 'def', 'survived'],
   recentPeriods: ['24h', '7d', '30d', '60d', '1000'] satisfies RecentPeriod[],
   serverReference: { mode: 'random', period: 'd30', cohort: 'all', cacheTtlMs: 15 * 60_000, cacheKey: 'server-reference' },
   insightsMinBattles: { overall: 30, recent: 5 }

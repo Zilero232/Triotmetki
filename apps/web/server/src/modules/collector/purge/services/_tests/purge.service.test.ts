@@ -1,52 +1,48 @@
 import type { Queue } from 'bullmq';
 
 import { describe, expect, it } from 'vitest';
-import { mock, mockDeep } from 'vitest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 import type { DataDeletionRequest, Replay } from '../../../../../../generated';
-import type { ObjectStorage, PrismaService } from '../../../../../core';
+import type { ObjectStorage } from '../../../../../core';
+import type { PurgeQueries } from '../../queries/purge.types';
 
-import { HYPERTABLE } from '../../../../../core';
+import { mockPrismaService } from '../../../../../core/prisma/_tests/prisma-mock';
 import { JOB } from '../../../contracts';
-import { PURGE } from '../../config';
+import { PURGE } from '../../config/purge.constants';
 import { PurgeService } from '../purge.service';
 
 const requestId = '00000000-0000-4000-8000-000000000001';
 
 const createPurge = () => {
-  const prisma = mockDeep<PrismaService>();
-
+  const prisma = mockPrismaService();
   const queue = mock<Queue>();
   const storage = mock<ObjectStorage>();
+  const queries = mock<PurgeQueries>();
 
   prisma.$transaction.mockImplementation(async (run) => run(prisma));
   prisma.dataDeletionRequest.updateMany.mockResolvedValue({ count: 1 });
   prisma.replay.findMany.mockResolvedValue([]);
 
-  return { prisma, queue, storage, purge: new PurgeService(prisma, queue, storage) };
+  return { prisma, queue, storage, queries, purge: new PurgeService(prisma, queue, storage, queries) };
 };
-
-const executedSql = (prisma: ReturnType<typeof createPurge>['prisma']) =>
-  prisma.$executeRaw.mock.calls.map(([query, ...values]) =>
-    'raw' in query ? { sql: query.join('?'), values } : { sql: query.sql, values: query.values }
-  );
 
 const statuses = (prisma: ReturnType<typeof createPurge>['prisma']) =>
   prisma.dataDeletionRequest.updateMany.mock.calls.map(([{ data }]) => data.status);
 
 describe('PurgeService.purgeAccount', () => {
-  it('deletes the account from every hypertable and closes the request', async () => {
-    const { prisma, purge } = createPurge();
+  it('deletes the account from the hypertables, deletes the player and closes the request', async () => {
+    const { prisma, queries, purge } = createPurge();
 
     await purge.purgeAccount({ accountId: 5, requestId, isFinalAttempt: true });
 
-    expect(prisma.$executeRawUnsafe).toHaveBeenCalledTimes(Object.values(HYPERTABLE).length);
+    expect(queries.deleteAccountTimeSeries).toHaveBeenCalledWith(expect.objectContaining({ accountId: 5 }));
     expect(prisma.player.deleteMany).toHaveBeenCalledWith(expect.objectContaining({ where: { accountId: 5n } }));
     expect(statuses(prisma)).toEqual(['processing', 'completed']);
   });
 
   it('clears the account from the tables that have no cascade to the player', async () => {
-    const { prisma, purge } = createPurge();
+    const { prisma, queries, purge } = createPurge();
 
     await purge.purgeAccount({ accountId: 5, isFinalAttempt: true });
 
@@ -60,7 +56,7 @@ describe('PurgeService.purgeAccount', () => {
       expect(remove).toHaveBeenCalledWith({ where: { accountId: 5n } });
     }
 
-    expect(prisma.$executeRaw).toHaveBeenCalled();
+    expect(queries.removeAccountFromRngPlayers).toHaveBeenCalledWith(expect.objectContaining({ accountId: 5 }));
   });
 
   it('deletes the replays the account recorded together with their stored files', async () => {
@@ -74,6 +70,17 @@ describe('PurgeService.purgeAccount', () => {
     expect(storage.remove.mock.calls.map(([key]) => key).sort()).toEqual(['replays/a.mtreplay', 'timelines/a.json']);
   });
 
+  it('keeps purging when a replay file cannot be removed', async () => {
+    const { prisma, storage, purge } = createPurge();
+
+    prisma.replay.findMany.mockResolvedValue([mock<Replay>({ id: 'r1', storageKey: 'replays/a.mtreplay', timelineKey: 'timelines/a.json' })]);
+    storage.remove.mockRejectedValueOnce(new Error('gone'));
+
+    await purge.purgeAccount({ accountId: 5, isFinalAttempt: true });
+
+    expect(storage.remove).toHaveBeenCalledTimes(2);
+  });
+
   it('keeps the recorded replay files when a re-link cancels the purge', async () => {
     const { prisma, storage, purge } = createPurge();
 
@@ -85,52 +92,34 @@ describe('PurgeService.purgeAccount', () => {
     expect(storage.remove).not.toHaveBeenCalled();
   });
 
-  it('replaces the account with an anonymous placeholder in the summaries of other people replays', async () => {
-    const { prisma, purge } = createPurge();
+  it('replaces the account with the anonymous placeholder in the summaries of other people replays', async () => {
+    const { queries, purge } = createPurge();
 
     await purge.purgeAccount({ accountId: 5, isFinalAttempt: true });
 
-    const scrubs = executedSql(prisma).filter(({ sql }) => sql.includes("'{players}'"));
-
-    expect(scrubs).toHaveLength(1);
-    expect(scrubs[0]?.sql).toContain("'accountId', NULL");
-    expect(scrubs[0]?.sql).toContain("'clanTag', NULL");
-    expect(scrubs[0]?.values).toContain(PURGE.anonymousReplayName);
+    expect(queries.scrubReplayPlayer).toHaveBeenCalledWith(expect.objectContaining({ accountId: 5, placeholder: PURGE.anonymousReplayName }));
   });
 
   it('scrubs the replay summaries before it drops the account from their player sets', async () => {
-    const { prisma, purge } = createPurge();
+    const { queries, purge } = createPurge();
 
     await purge.purgeAccount({ accountId: 5, isFinalAttempt: true });
 
-    const order = executedSql(prisma).map(({ sql }) => sql);
-    const scrub = order.findIndex((sql) => sql.includes("'{players}'"));
-    const remove = order.findIndex((sql) => sql.includes('player_account_ids = array_remove'));
+    const [scrubOrder = Number.POSITIVE_INFINITY] = queries.scrubReplayPlayer.mock.invocationCallOrder;
+    const [removeOrder = 0] = queries.removeAccountFromReplayPlayers.mock.invocationCallOrder;
 
-    expect(scrub).toBeGreaterThanOrEqual(0);
-    expect(scrub).toBeLessThan(remove);
-  });
-
-  it('removes the account id from the honest-rng daily player sets', async () => {
-    const { prisma, purge } = createPurge();
-
-    await purge.purgeAccount({ accountId: 5, isFinalAttempt: true });
-
-    const rngUpdates = prisma.$executeRaw.mock.calls.flatMap(([query, ...values]) =>
-      'raw' in query && query.join('').includes('rng_daily') ? [{ sql: query.join('?'), values }] : []
-    );
-
-    expect(rngUpdates).toEqual([{ sql: expect.stringContaining('players = array_remove(players, ?)'), values: [5n, 5n] }]);
+    expect(scrubOrder).toBeLessThan(removeOrder);
   });
 
   it('deletes the hypertable rows outside the relational transaction, before it opens', async () => {
-    const { prisma, purge } = createPurge();
+    const { prisma, queries, purge } = createPurge();
 
     await purge.purgeAccount({ accountId: 5, requestId, isFinalAttempt: true });
 
     const [transactionOrder = 0] = prisma.$transaction.mock.invocationCallOrder;
+    const [timeSeriesOrder = Number.POSITIVE_INFINITY] = queries.deleteAccountTimeSeries.mock.invocationCallOrder;
 
-    expect(prisma.$executeRawUnsafe.mock.invocationCallOrder.every((order) => order < transactionOrder)).toBe(true);
+    expect(timeSeriesOrder).toBeLessThan(transactionOrder);
   });
 
   it('puts the request back to pending when a retry is still left', async () => {
@@ -149,6 +138,15 @@ describe('PurgeService.purgeAccount', () => {
 
     await expect(purge.purgeAccount({ accountId: 5, requestId, isFinalAttempt: true })).rejects.toThrow('lock timeout');
     expect([statuses(prisma)[0], statuses(prisma).at(-1)]).toEqual(['processing', 'failed']);
+  });
+
+  it('marks the request failed when the hypertable delete fails on the last attempt', async () => {
+    const { prisma, queries, purge } = createPurge();
+
+    queries.deleteAccountTimeSeries.mockRejectedValue(new Error('timeout'));
+
+    await expect(purge.purgeAccount({ accountId: 5, requestId, isFinalAttempt: true })).rejects.toThrow('timeout');
+    expect(statuses(prisma).at(-1)).toBe('failed');
   });
 
   it('purges without touching deletion requests when run without one', async () => {
@@ -183,13 +181,13 @@ describe('PurgeService.purgeAccount after a re-link', () => {
   });
 
   it('skips the purge when the request was superseded before it started', async () => {
-    const { prisma, purge } = createPurge();
+    const { prisma, queries, purge } = createPurge();
 
     prisma.dataDeletionRequest.updateMany.mockResolvedValueOnce({ count: 0 });
 
     await purge.purgeAccount({ accountId: 5, requestId, isFinalAttempt: true });
 
-    expect(prisma.$executeRawUnsafe).not.toHaveBeenCalled();
+    expect(queries.deleteAccountTimeSeries).not.toHaveBeenCalled();
     expect(prisma.player.deleteMany).not.toHaveBeenCalled();
   });
 
@@ -207,7 +205,7 @@ describe('PurgeService.purgeAccount after a re-link', () => {
   });
 
   it('keeps the relational rows when the account was re-linked while the purge ran', async () => {
-    const { prisma, purge } = createPurge();
+    const { prisma, queries, purge } = createPurge();
 
     prisma.dataDeletionRequest.updateMany.mockResolvedValueOnce({ count: 1 }).mockResolvedValueOnce({ count: 0 });
 
@@ -215,6 +213,7 @@ describe('PurgeService.purgeAccount after a re-link', () => {
 
     expect(prisma.player.deleteMany).not.toHaveBeenCalled();
     expect(prisma.clanMemberEvent.deleteMany).not.toHaveBeenCalled();
+    expect(queries.scrubReplayPlayer).not.toHaveBeenCalled();
   });
 
   it('never overwrites a superseded request when the purge fails', async () => {

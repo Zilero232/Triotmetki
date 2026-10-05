@@ -2,7 +2,7 @@ import { clamp } from 'remeda';
 
 import type { RarityTier, ShareInput } from './rarity.types';
 
-import { RARITY_POINTS, RARITY_TIERS } from '../../config';
+import { RARITY_POINTS, RARITY_TIERS } from '../../config/rarity.constants';
 
 export const rarityPoints = (share: number): number => {
   if (share <= 0) {

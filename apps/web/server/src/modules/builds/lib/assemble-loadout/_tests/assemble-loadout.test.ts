@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import type { CrewSkill, Provision } from '../../../../../../generated';
 
 import { loadIs } from '../../../../gamedata/lib/_tests/fixtures';
-import { LOADOUT_DEFAULTS } from '../../../config';
+import { LOADOUT_DEFAULTS } from '../../../config/provisions.constants';
 import { assembleLoadout } from '../assemble-loadout';
 
 const vehicle = loadIs();

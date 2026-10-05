@@ -3,7 +3,8 @@ import { z } from 'zod';
 
 import type { AccountRollup, AccountRollupInput, ObtainableRow } from './account-rollup.types';
 
-import { ACHIEVEMENTS_AGGREGATE, ACHIEVEMENTS_VIEW } from '../../config';
+import { ACHIEVEMENTS_AGGREGATE } from '../../config/aggregate.constants';
+import { ACHIEVEMENTS_VIEW } from '../../config/view.constants';
 
 const countsSchema = z.record(z.string(), z.number()).catch({});
 const completionSections = new Set<string>(ACHIEVEMENTS_AGGREGATE.completionSections);

@@ -1,4 +1,4 @@
-import type { WEEKLY_CHALLENGES } from '../../config';
+import type { WEEKLY_CHALLENGES } from '../../config/challenges.constants';
 
 export type ChallengeDefinition = (typeof WEEKLY_CHALLENGES)[number];
 

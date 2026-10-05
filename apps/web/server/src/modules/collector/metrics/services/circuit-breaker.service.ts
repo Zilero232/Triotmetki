@@ -7,7 +7,7 @@ import type { CircuitListener, CircuitStateName } from '../metrics.types';
 import { errorMessage } from '../../../../common/lib';
 import { PrismaService } from '../../../../core';
 import { COLLECTOR_STATE_KEY } from '../../config';
-import { CIRCUIT_BREAKER, CIRCUIT_STATE_NAME } from '../config';
+import { CIRCUIT_BREAKER, CIRCUIT_STATE_NAME } from '../config/circuit-breaker.constants';
 
 @Injectable()
 export class CircuitBreakerService {

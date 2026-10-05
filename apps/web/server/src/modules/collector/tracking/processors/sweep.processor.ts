@@ -11,7 +11,9 @@ import { errorMessage } from '../../../../common/lib';
 import { WORKER_CONCURRENCY } from '../../config';
 import { accountBatchPayloadSchema, JOB, QUEUE } from '../../contracts';
 import { CIRCUIT_BREAKER, CircuitBreakerService, MetricsService } from '../../metrics';
-import { DispatchService, PollPipelineService, SeedService } from '../services';
+import { DispatchService } from '../services/dispatch.service';
+import { PollSyncService } from '../services/poll-sync.service';
+import { SeedService } from '../services/seed.service';
 
 @Processor(QUEUE.sweep, { concurrency: WORKER_CONCURRENCY.sweep })
 export class SweepProcessor extends WorkerHost implements OnModuleInit, OnModuleDestroy {
@@ -20,7 +22,7 @@ export class SweepProcessor extends WorkerHost implements OnModuleInit, OnModule
   private unsubscribe: (() => void) | undefined;
 
   constructor(
-    private readonly pipeline: PollPipelineService,
+    private readonly pipeline: PollSyncService,
     private readonly dispatch: DispatchService,
     private readonly seeder: SeedService,
     private readonly breaker: CircuitBreakerService,

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { TankThreshold } from '../../../../../../generated';
 
-import { THRESHOLD_SOURCE_PRIORITY } from '../../../config';
+import { THRESHOLD_SOURCE_PRIORITY } from '../../../config/thresholds.constants';
 import { preferredBySource } from '../thresholds';
 
 const row = (tankId: number, source: TankThreshold['source']): Pick<TankThreshold, 'source' | 'tankId'> => ({ tankId, source });

@@ -2,8 +2,15 @@ import { MOE } from '@otmetki/ratings';
 
 import type { CombinedSourceInput, NextMark, NextMarkInput, ThresholdForInput } from './next-mark.types';
 
-const thresholdFor = ({ thresholds, percent }: ThresholdForInput): number =>
-  percent >= 95 ? thresholds.p95 : percent >= 85 ? thresholds.p85 : thresholds.p65;
+const [, twoMarks, threeMarks] = MOE.markPercents;
+
+const thresholdFor = ({ thresholds, percent }: ThresholdForInput): number => {
+  if (percent >= threeMarks) {
+    return thresholds.p95;
+  }
+
+  return percent >= twoMarks ? thresholds.p85 : thresholds.p65;
+};
 
 export const nextMark = ({ percent, marksOnGun, thresholds, movingDamage }: NextMarkInput): NextMark => {
   const reached = percent === null ? (marksOnGun ?? 0) : MOE.markPercents.filter((mark) => percent >= mark).length;

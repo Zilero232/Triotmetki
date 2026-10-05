@@ -5,7 +5,8 @@ import { match } from 'ts-pattern';
 import { WORKER_CONCURRENCY } from '../../config';
 import { JOB, purgeAccountPayloadSchema, QUEUE } from '../../contracts';
 import { MetricsService, TrackedWorkerHost } from '../../metrics';
-import { PurgeService, RetentionService } from '../services';
+import { PurgeService } from '../services/purge.service';
+import { RetentionService } from '../services/retention.service';
 
 @Processor(QUEUE.purge, { concurrency: WORKER_CONCURRENCY.purge })
 export class PurgeProcessor extends TrackedWorkerHost {

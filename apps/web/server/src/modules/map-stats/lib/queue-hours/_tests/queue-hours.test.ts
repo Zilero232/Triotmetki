@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { QueueCell } from '../../../map-stats.types';
 
-import { MAP_STATS } from '../../../config';
+import { MAP_STATS } from '../../../config/map-stats.constants';
 import { queueNow, zoneHour } from '../queue-hours';
 
 const cell = (tier: number, hour: number, medianSec: number, samples: number = MAP_STATS.minQueueSamples): QueueCell => ({

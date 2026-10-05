@@ -6,7 +6,7 @@ import type { LestaClients } from '../../../core';
 import { errorMessage } from '../../../common/lib';
 import { LESTA_CLIENTS } from '../../../core';
 import { LestaNotConfiguredError } from '../../../lib/lesta';
-import { OFFICIAL_RATING_TYPES } from '../config';
+import { OFFICIAL_RATING_TYPES } from '../config/official-ratings.constants';
 
 @Injectable()
 export class OfficialRatingTypesService {

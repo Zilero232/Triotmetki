@@ -5,7 +5,8 @@ import { Redis } from 'ioredis';
 
 import { errorMessage } from '../../../common/lib';
 import { REDIS } from '../../../core';
-import { NOTIFICATION_TOKENS, PLUS_LAUNCH } from '../config';
+import { PLUS_LAUNCH } from '../config/plus-launch.constants';
+import { NOTIFICATION_TOKENS } from '../config/tokens.constants';
 import { NotificationService } from './notification.service';
 
 @Injectable()

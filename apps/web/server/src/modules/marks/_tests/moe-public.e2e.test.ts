@@ -9,7 +9,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { AllExceptionsFilter } from '../../../common/filters';
 import { MoePublicController } from '../moe-public.controller';
-import { ModThresholdsService } from '../services';
+import { ModThresholdsReaderService } from '../services/mod-thresholds-reader.service';
 
 const KNOWN_TANK = 17_953;
 const thresholds = { '65': 2_000, '85': 2_600, '95': 3_100 };
@@ -34,7 +34,7 @@ describe('GET /v1/moe/:tankId', () => {
       imports: [CacheModule.register()],
       controllers: [MoePublicController],
       providers: [
-        { provide: ModThresholdsService, useValue: service },
+        { provide: ModThresholdsReaderService, useValue: service },
         { provide: APP_FILTER, useClass: AllExceptionsFilter },
         { provide: APP_PIPE, useClass: ZodValidationPipe },
         { provide: APP_INTERCEPTOR, useClass: ZodSerializerInterceptor }

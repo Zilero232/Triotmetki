@@ -5,7 +5,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { TankPercentile } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
-import { bronyaReferencePayload } from '../../lib';
+import { bronyaReferencePayload } from '../../lib/bronya-reference/bronya-reference';
 import { BronyaReferencesService } from '../bronya-references.service';
 
 const ramp = (scale: number) => BRONYA_INDEX.quantileLevels.map((level) => level * scale);

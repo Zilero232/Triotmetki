@@ -3,7 +3,7 @@ import type { StrongholdBattles } from '@otmetki/schemas';
 import type { RawBuilding, SkirmishStatistics } from './stronghold-stats.types';
 
 import { percentOf } from '../../../../common/lib';
-import { STRONGHOLD } from '../../config';
+import { STRONGHOLD } from '../../config/stronghold.constants';
 import { rawBuildingSchema } from '../../dto/stronghold.schemas';
 
 export const strongholdCount = (value: number | null | undefined): number | null =>

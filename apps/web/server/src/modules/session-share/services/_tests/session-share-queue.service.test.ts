@@ -5,10 +5,11 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { SessionSharePreference } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { SessionSharePayload } from '../../config';
-import type { ShareRecipientRow } from '../../selects';
+import type { SessionSharePayload } from '../../config/session-share-queue.types';
+import type { ShareRecipientRow } from '../../selects/session-share.selects';
 
-import { SESSION_SHARE, SESSION_SHARE_QUEUE } from '../../config';
+import { SESSION_SHARE_QUEUE } from '../../config/session-share-queue.constants';
+import { SESSION_SHARE } from '../../config/session-share.constants';
 import { SessionShareQueueService } from '../session-share-queue.service';
 
 const SESSION = '3f0a4d5e-6b7c-4d8e-9f0a-1b2c3d4e5f60';

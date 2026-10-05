@@ -9,9 +9,10 @@ import type { MoeHistoryBatchInput, MoeHistoryInput } from '../marks.types';
 import { page, sortRows } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { ThresholdsService, toMasteryThreshold, toMoeThreshold, toMoeThresholdRecord, VehicleCatalogService } from '../../reference';
-import { MOE_TABLE } from '../config';
-import { EMPTY_SWEAT, historySeries } from '../lib';
-import { toHistorySourceRow } from '../mappers';
+import { MOE_TABLE } from '../config/marks.constants';
+import { historySeries } from '../lib/moe-history/moe-history';
+import { EMPTY_SWEAT } from '../lib/sweat-index/sweat-index';
+import { toHistorySourceRow } from '../mappers/moe-history.mappers';
 import { SweatIndexService } from './sweat-index.service';
 
 @Injectable()

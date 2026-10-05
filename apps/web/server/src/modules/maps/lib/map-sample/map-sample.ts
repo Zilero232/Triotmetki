@@ -4,7 +4,7 @@ import { TANK_MAPS } from '@otmetki/schemas';
 
 import type { MapSampleCounts } from './map-sample.types';
 
-import { percentOf } from '../../../../common/lib';
+import { winRatePercent } from '../../../../common/lib';
 
 export const toMapSample = ({ battles, wins, avgDamage }: MapSampleCounts): TankMapSample => {
   const isEnough = battles >= TANK_MAPS.minBattles;
@@ -12,7 +12,7 @@ export const toMapSample = ({ battles, wins, avgDamage }: MapSampleCounts): Tank
   return {
     battles,
     isEnough,
-    winRate: isEnough ? percentOf({ value: wins, by: battles }) : null,
+    winRate: isEnough ? winRatePercent({ wins, battles }) : null,
     avgDamage: isEnough && avgDamage !== null ? Math.round(avgDamage) : null
   };
 };

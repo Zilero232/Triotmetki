@@ -2,17 +2,6 @@ import type { OfficialNeighborsQuery, OfficialRankHistoryQuery, OfficialRatingFi
 
 import type { RatingAccount, RatingRankField } from '../../lib/lesta';
 
-export type RankedRow = {
-  accountId: bigint | null;
-  clanId: bigint | null;
-  name: string;
-  clanTag: string | null;
-  color: string | null;
-  value: number | null;
-  battles: number;
-  delta: number | null;
-};
-
 export type OfficialNeighborsInput = {
   accountId: bigint;
   query: OfficialNeighborsQuery;

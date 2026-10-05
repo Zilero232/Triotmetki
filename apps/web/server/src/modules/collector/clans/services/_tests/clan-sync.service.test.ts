@@ -2,11 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Clan, ClanMember } from '../../../../../../generated';
-import type { LestaClients, PrismaService, WebhookEmitter } from '../../../../../core';
+import type { LestaClients, WebhookEmitter } from '../../../../../core';
 import type { ClanInfo } from '../../../../../lib/lesta';
+import type { ClansQueries } from '../../providers/clans-queries.types';
+import type { ClanActivityRow } from '../../queries/clan-activity.types';
 
+import { mockPrismaService } from '../../../../../core/prisma/_tests/prisma-mock';
 import { PurgeGuardService } from '../../../purge';
-import { CLANS } from '../../config';
+import { CLANS } from '../../config/clans.constants';
+import { clansQueries } from '../../providers/clans-queries.provider';
+import { ClanSnapshotSyncService } from '../clan-snapshot-sync.service';
 import { ClanSyncService } from '../clan-sync.service';
 
 const CLAN_ID = 500;
@@ -30,10 +35,12 @@ type Setup = {
   exists: boolean;
   stored?: ClanMember[];
   blocked?: number[];
+  activity?: ClanActivityRow[];
 };
 
-const createSync = ({ info, exists, stored = [], blocked = [] }: Setup) => {
-  const prisma = mockDeep<PrismaService>();
+const createSync = ({ info, exists, stored = [], blocked = [], activity = [] }: Setup) => {
+  const prisma = mockPrismaService();
+  const queries: ClansQueries = { ...clansQueries, clanActivity: async () => activity };
   const guard = mock<PurgeGuardService>();
   const clients = mockDeep<LestaClients>();
   const webhooks = mock<WebhookEmitter>();
@@ -46,9 +53,10 @@ const createSync = ({ info, exists, stored = [], blocked = [] }: Setup) => {
   clients.bulk.globalmap.claninfo.mockResolvedValue({});
   clients.bulk.stronghold.claninfo.mockResolvedValue({});
   clients.bulk.globalmap.clanprovinces.mockResolvedValue({});
-  prisma.$queryRaw.mockResolvedValue([]);
 
-  return { prisma, clients, webhooks, sync: new ClanSyncService(prisma, guard, clients, webhooks) };
+  const snapshots = new ClanSnapshotSyncService(prisma, clients, queries);
+
+  return { prisma, clients, webhooks, sync: new ClanSyncService(prisma, guard, clients, webhooks, snapshots) };
 };
 
 describe('ClanSyncService.refresh', () => {
@@ -203,9 +211,11 @@ describe('ClanSyncService.refresh', () => {
   });
 
   it('writes the battles and averages of the members into the snapshot', async () => {
-    const { prisma, sync } = createSync({ info: clanInfo(), exists: true });
-
-    prisma.$queryRaw.mockResolvedValue([{ clanId: BigInt(CLAN_ID), battlesDelta: 42, avgWn8: 1500, avgWinRate: 52.5, activeMembers7d: 2 }]);
+    const { prisma, sync } = createSync({
+      info: clanInfo(),
+      exists: true,
+      activity: [{ clanId: CLAN_ID, battlesDelta: 42, avgWn8: 1500, avgWinRate: 52.5, activeMembers7d: 2 }]
+    });
 
     await sync.refresh({ clanIds: [CLAN_ID], snapshot: true });
 

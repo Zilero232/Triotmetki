@@ -11,7 +11,7 @@ import { LESTA_API } from '../../../../../lib/lesta';
 import { COLLECTOR_STATE_KEY } from '../../../config';
 import { JOB } from '../../../contracts';
 import { PurgeGuardService } from '../../../purge';
-import { TRACKING } from '../../config';
+import { TRACKING } from '../../config/tracking.constants';
 import { DispatchService } from '../dispatch.service';
 import { SeedService } from '../seed.service';
 

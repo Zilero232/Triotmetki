@@ -4,7 +4,7 @@ import { Redis } from 'ioredis';
 import type { LedgerKeyInput } from '../mod.types';
 
 import { REDIS } from '../../../core';
-import { MOD_INGEST } from '../config';
+import { MOD_INGEST } from '../config/ingest.constants';
 
 @Injectable()
 export class EventLedgerService {

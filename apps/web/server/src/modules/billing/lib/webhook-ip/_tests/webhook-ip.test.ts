@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { YOOKASSA_CIDRS } from '../../../config';
+import { YOOKASSA_CIDRS } from '../../../config/webhook.constants';
 import { buildAllowList, isAllowedIp } from '../webhook-ip';
 
 const list = buildAllowList(YOOKASSA_CIDRS);

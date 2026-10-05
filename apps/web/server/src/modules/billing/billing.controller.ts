@@ -15,9 +15,14 @@ import {
   ReferralDto,
   WebhookAckDto,
   WebhookEventDto
-} from './dto';
-import { WebhookIpGuard } from './guards';
-import { CheckoutService, PromoService, ReferralService, SubscriptionService, TrialService, WebhookService } from './services';
+} from './dto/billing.dto';
+import { WebhookIpGuard } from './guards/webhook-ip.guard';
+import { CheckoutService } from './services/checkout.service';
+import { PromoService } from './services/promo.service';
+import { ReferralService } from './services/referral.service';
+import { SubscriptionService } from './services/subscription.service';
+import { TrialService } from './services/trial.service';
+import { WebhookService } from './services/webhook.service';
 
 @ApiTags('billing')
 @Controller()

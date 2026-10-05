@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { CHALLENGE_BADGES, WEEKLY_CHALLENGES } from '../../../config';
+import { CHALLENGE_BADGES, WEEKLY_CHALLENGES } from '../../../config/challenges.constants';
 import { badgeCodeOf, challengeOfBadge, challengeProgress } from '../challenges';
 
 const empty = { battles: 0, wins: 0, spotted: 0, marks: 0, bigDamage: [] };

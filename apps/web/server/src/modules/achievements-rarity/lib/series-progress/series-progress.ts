@@ -1,6 +1,7 @@
 import type { SeriesProgress } from './series-progress.types';
 
-import { ACHIEVEMENT_SERIES, ACHIEVEMENTS_VIEW } from '../../config';
+import { ACHIEVEMENT_SERIES } from '../../config/aggregate.constants';
+import { ACHIEVEMENTS_VIEW } from '../../config/view.constants';
 
 export const seriesProgress = (maxSeries: Record<string, number>): SeriesProgress[] =>
   ACHIEVEMENT_SERIES.map(({ name, keys, threshold }) => {

@@ -8,7 +8,7 @@ import type { PrismaService } from '../../../../core';
 import type { CatalogEntry } from '../../../reference';
 
 import { ThresholdsService, VehicleCatalogService } from '../../../reference';
-import { MOE_TABLE } from '../../config';
+import { MOE_TABLE } from '../../config/marks.constants';
 import { MoeTableService } from '../moe-table.service';
 import { SweatIndexService } from '../sweat-index.service';
 

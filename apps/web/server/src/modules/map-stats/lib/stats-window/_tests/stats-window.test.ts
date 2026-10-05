@@ -1,7 +1,7 @@
 import { differenceInCalendarDays } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
-import { MAP_STATS } from '../../../config';
+import { MAP_STATS } from '../../../config/map-stats.constants';
 import { statsWindow } from '../stats-window';
 
 const NOW = new Date('2026-09-26T12:00:00Z');

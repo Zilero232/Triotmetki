@@ -1,9 +1,9 @@
-export { AnalyticsOverviewService } from './analytics-overview.service';
-export { BattleReviewService } from './battle-review.service';
+export { AnalyticsOverviewReaderService } from './analytics-overview-reader.service';
+export { BattleReviewReaderService } from './battle-review-reader.service';
 export { FirstWinService } from './first-win.service';
-export { HonestRngService } from './honest-rng.service';
-export { MapAdvisorService } from './map-advisor.service';
+export { HonestRngReaderService } from './honest-rng-reader.service';
+export { MapAdvisorReaderService } from './map-advisor-reader.service';
 export { OwnAccountService } from './own-account.service';
-export { PlatoonChemistryService } from './platoon-chemistry.service';
+export { PlatoonChemistryReaderService } from './platoon-chemistry-reader.service';
 export { PlaylistService } from './playlist.service';
-export { TankAnalyticsService } from './tank-analytics.service';
+export { TankAnalyticsReaderService } from './tank-analytics-reader.service';
