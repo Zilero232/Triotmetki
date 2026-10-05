@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """The binary assets the packages ship (assets/assets.json) and their licence notices.
 
 Each set belongs to one feature; the build puts its files into that feature's package at the set's `target`
@@ -6,6 +7,8 @@ Each set belongs to one feature; the build puts its files into that feature's pa
     python tools/build/asset_sets.py --write   # regenerate assets/THIRD_PARTY_NOTICES.md
     python tools/build/asset_sets.py --check   # fail when a set is invalid or the notices are stale
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import io
 import json
 import os

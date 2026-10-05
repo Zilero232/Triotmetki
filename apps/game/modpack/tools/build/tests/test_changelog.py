@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """CHANGELOG.md keeps the shape the server's parseChangelog and the manager's release notes read:
 a bilingual `## <id> <version>` entry for every catalogued package and a `## <version>` one for the release."""
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import io
 import json
 import os

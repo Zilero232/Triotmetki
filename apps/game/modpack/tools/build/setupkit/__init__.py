@@ -6,6 +6,8 @@
 
 Run it as `python tools/build/setupkit --help` (see __main__.py).
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import os
 
 BUILD_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

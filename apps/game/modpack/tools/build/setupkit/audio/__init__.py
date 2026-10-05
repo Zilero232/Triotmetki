@@ -2,8 +2,12 @@
 
     assets/<preview.audio>  -> previews/<component id>.<ext>
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import os
 import shutil
+
+import fileio
 
 from ..manifest.catalog import AUDIO_DIR
 
@@ -18,7 +22,7 @@ def copy_audio(manifest, catalog, modpack_dir, out_dir):
             continue
         source = os.path.join(modpack_dir, AUDIO_DIR, *entry.preview.audio.split('/'))
         target = os.path.join(out_dir, *component.preview.audio.split('/'))
-        os.makedirs(os.path.dirname(target), exist_ok=True)
+        fileio.make_dirs(os.path.dirname(target))
         shutil.copyfile(source, target)
         written.append(target)
     return written

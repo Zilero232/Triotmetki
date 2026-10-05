@@ -1,25 +1,20 @@
 """Run every modpack unittest suite: packages/*/tests, features/*/tests and tools/**/tests.
 
-Works on Python 3 and on Python 2.7 with no third-party packages; `pytest` runs the same tests
-(see pyproject.toml). The build tool's and the dev loop's own tests need Python 3 and are left out on Python 2.7.
-Usage: python tools/run_tests.py [-v]
+Runs on Python 2.7, the game client's own interpreter, which also runs all of the host tooling
+(the dependencies in tools/requirements.txt).
+Usage: python tools/run_tests.py [-v]   (Python 2.7)
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import os
 import sys
 import unittest
 
 TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
 MODPACK_DIR = os.path.dirname(TOOLS_DIR)
-PY3 = sys.version_info[0] >= 3
-PYTHON3_TOOLS = ('build', 'dev')
 sys.path.insert(0, os.path.join(TOOLS_DIR, 'testing'))
 
 import _support  # noqa: E402  (maps the repo layout onto the otmetki package)
-
-
-def python3_only(directory):
-    """The build tooling (tools/build/**) and the dev loop (tools/dev/**) need Python 3."""
-    return directory.startswith(tuple(os.path.join(TOOLS_DIR, name) for name in PYTHON3_TOOLS))
 
 
 def is_tests_dir(directory):
@@ -37,8 +32,7 @@ def has_test_modules(directory):
 def tools_test_dirs():
     for directory, children, _ in os.walk(TOOLS_DIR):
         children[:] = sorted(child for child in children if child != '__pycache__')
-        is_runnable = PY3 or not python3_only(directory)
-        if is_tests_dir(directory) and is_runnable:
+        if is_tests_dir(directory):
             yield directory
 
 
@@ -66,6 +60,9 @@ def find_duplicate_module(directories):
 
 
 def main(argv):
+    if sys.version_info[:2] != (2, 7):
+        sys.stderr.write('the modpack runs on Python 2.7, the game client interpreter (mise: conda:python 2.7.18)\n')
+        return 2
     directories = test_dirs()
     duplicate = find_duplicate_module(directories)
     if duplicate:

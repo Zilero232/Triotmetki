@@ -1,14 +1,17 @@
 """Renders the PNG files of every asset set from its sources (assets/assets.json `sources` -> `files`).
 
-SVG sources go through resvg (resvg-py), raster sources (a third-party PNG) are resized with Pillow (LANCZOS).
+SVG sources go through resvg (tools/build/rasterize: @resvg/resvg-js on Node), raster sources (a third-party PNG) are
+resized with Pillow (LANCZOS).
 Each rendition is `<stem><suffix>_<size>.png`; `alpha` scales the opacity (the dimmed pulse frame) and `recolor`
 ({from: to}) swaps colours in an SVG source before it is drawn (one-colour art in several colours).
 The client shows them through Scaleform `img://gui/maps/icons/...` in the HUD labels, which reads PNG
 directly: no DDS or atlas is needed (atlases are only for the vanilla battleAtlas, which we never touch).
 
-    uv run python tools/assets/render.py           # rewrite every set's PNG files
-    uv run python tools/assets/render.py --check   # fail when a rendition is missing
+    python tools/assets/render.py           # rewrite every set's PNG files
+    python tools/assets/render.py --check   # fail when a rendition is missing
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import io
 import os
 import sys
@@ -16,57 +19,57 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'build'))
 
 import asset_sets  # noqa: E402
+import rasterize  # noqa: E402
 
 SOURCE_EXTENSIONS = ('.svg', '.png')
 
 
-def libraries():
+def image_module():
     try:
-        import resvg_py
         from PIL import Image
     except ImportError as error:
-        raise SystemExit('render needs resvg-py and pillow (uv sync in apps/game/modpack): %s' % error)
-    return resvg_py, Image
+        raise SystemExit('render needs Pillow (python -m pip install -r tools/requirements.txt): %s' % error)
+    return Image
 
 
 def rendition_name(stem, rendition):
     return '%s%s_%d.png' % (stem, rendition.get('suffix', ''), rendition['size'])
 
 
-def recoloured_svg(path, recolor):
-    with io.open(path, encoding='utf-8') as handle:
-        svg = handle.read()
-    for source, target in sorted(recolor.items()):
+def svg_text(path, rendition):
+    """The SVG source, recoloured first when the rendition asks for it."""
+    svg = rasterize.read_svg(path)
+    for source, target in sorted((rendition.get('recolor') or {}).items()):
         svg = svg.replace(source, target)
     return svg
 
 
-def svg_png(path, rendition):
-    """The PNG bytes resvg draws for an SVG source, recoloured first when the rendition asks for it."""
-    resvg_py, _ = libraries()
-    size = rendition['size']
-    if rendition.get('recolor'):
-        svg = recoloured_svg(path, rendition['recolor'])
-        return bytes(resvg_py.svg_to_bytes(svg_string=svg, width=size, height=size))
-    return bytes(resvg_py.svg_to_bytes(svg_path=path, width=size, height=size))
-
-
-def load_image(path, rendition):
-    _, Image = libraries()
+def load_image(path, rendition, svg_png):
+    Image = image_module()
     if path.endswith('.svg'):
-        return Image.open(io.BytesIO(svg_png(path, rendition))).convert('RGBA')
+        return Image.open(io.BytesIO(svg_png)).convert('RGBA')
     size = rendition['size']
     return Image.open(path).convert('RGBA').resize((size, size), Image.LANCZOS)
 
 
-def render_one(path, rendition):
-    image = load_image(path, rendition)
+def render_one(path, rendition, svg_png=None):
+    image = load_image(path, rendition, svg_png)
     alpha = rendition.get('alpha')
     if alpha is not None:
         image.putalpha(image.getchannel('A').point(lambda value: int(round(value * alpha))))
     output = io.BytesIO()
     image.save(output, 'PNG', optimize=True)
     return output.getvalue()
+
+
+def render_all(items):
+    """{output path: PNG bytes} for the planned items; every SVG is drawn in one Node run."""
+    svg_items = [item for item in items if item[1].endswith('.svg')]
+    drawn = rasterize.svg_pngs([
+        rasterize.job(svg_text(source, rendition), rendition['size']) for _, source, rendition in svg_items
+    ])
+    svg_pngs = dict((item[0], png) for item, png in zip(svg_items, drawn))
+    return dict((output, render_one(source, rendition, svg_pngs.get(output))) for output, source, rendition in items)
 
 
 def planned(asset_set):
@@ -95,14 +98,13 @@ def write(output, data):
 
 def main(argv):
     is_check = '--check' in argv
+    items = [item for asset_set in asset_sets.load() for item in planned(asset_set)]
     stale = []
-    for asset_set in asset_sets.load():
-        for output, source, rendition in planned(asset_set):
-            data = render_one(source, rendition)
-            if not is_check:
-                write(output, data)
-            elif not os.path.isfile(output):
-                stale.append(output)
+    for output, data in sorted(render_all(items).items()):
+        if not is_check:
+            write(output, data)
+        elif not os.path.isfile(output):
+            stale.append(output)
     if stale:
         sys.stderr.write('missing renditions (run tools/assets/render.py):\n  %s\n' % '\n  '.join(stale))
         return 1

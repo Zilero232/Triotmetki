@@ -1,4 +1,6 @@
 """One HUD page state per HUD component, from the component's own preview payload."""
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import importlib
 import json
 import os
@@ -38,7 +40,7 @@ def install_packages():
     """Maps packages/ and features/ onto the in-game `otmetki` package tree, as the client loads them."""
     if ROOT_PACKAGE in sys.modules:
         return
-    root = types.ModuleType(ROOT_PACKAGE)
+    root = types.ModuleType(str(ROOT_PACKAGE))
     root.__path__ = [os.path.join(MODPACK_DIR, 'packages'), MODPACK_DIR]
     sys.modules[ROOT_PACKAGE] = root
 

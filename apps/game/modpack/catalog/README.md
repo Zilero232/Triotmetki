@@ -13,7 +13,7 @@ catalog/
                         the preview renderer loads, so a Linux release runner draws the same text as Windows
 ```
 
-[tools/build/setupkit](../tools/build/setupkit/__init__.py) turns it into the files the manager reads: `manifest/` merges the catalog with the package layout into `components.json`, `artwork/` renders the previews with resvg-py (the fonts in `fonts/` only, never the system ones) and Pillow.
+[tools/build/setupkit](../tools/build/setupkit/__init__.py) turns it into the files the manager reads: `manifest/` merges the catalog with the package layout into `components.json`, `artwork/` renders the previews with resvg (`@resvg/resvg-js` through `tools/build/rasterize.mjs` on Node; the fonts in `fonts/` only, never the system ones) and Pillow.
 
 ## Preview canvas
 
@@ -33,19 +33,19 @@ The preview of every HUD component (`HUD_PREVIEWS` in [tools/build/previews/stat
 ```bash
 cd apps/game/modpack
 bun run ui:build                                   # the HUD page the previews are drawn with
-uv run python tools/build/previews                 # -> catalog/previews/<id>.png (Playwright's Chromium)
+python tools/build/previews                        # -> catalog/previews/<id>.png (Playwright's Chromium)
 ```
 
 ## Build
 
 ```bash
 cd apps/game/modpack
-uv sync                                                  # resvg-py, pillow for the previews
+python -m pip install -r tools/requirements.txt          # Python 2.7: Pillow, jsonschema (bun install brings @resvg/resvg-js)
 python tools/build/build.py --require-pyc                # release packages -> dist/ (see ../README.md#build)
-uv run python tools/build/setupkit --packages dist       # -> dist/catalog/components.json + dist/catalog/previews/*.png
+python tools/build/setupkit --packages dist              # -> dist/catalog/components.json + dist/catalog/previews/*.png
 ```
 
-`--strict` fails when a package has no catalog entry or an entry has no package (the release job uses it; a `kind: "dependency"` entry has no package by design and is not counted), or when a dependency's `requiredBy` names a component the build does not ship; `--skip-artwork` writes `components.json` only. The manual `modpack.yml` run uploads `dist/modpack` and `dist/catalog` as the `modpack` artifact; a release publishes the catalogue as its `catalog`, which the manager downloads (manager README «Releases»).
+`--strict` fails when a package has no catalog entry or an entry has no package (the release job uses it; a `kind: "dependency"` entry has no package by design and is not counted), or when a dependency's `requiredBy` names a component the build does not ship; `--skip-artwork` writes `components.json` only. The release workflow's modpack job uploads `dist/modpack` and `dist/catalog` as the `modpack` artifact and publishes the catalogue as its `catalog`, which the manager downloads (manager README «Releases»).
 
 ## components.json
 

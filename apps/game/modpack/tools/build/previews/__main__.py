@@ -3,9 +3,11 @@
 Usage:
     python tools/build/previews [--html packages/ui/gameface/hud.html] [--out catalog/previews]
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import argparse
-import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -14,6 +16,7 @@ PREVIEWS_DIR = os.path.dirname(os.path.abspath(__file__))
 if os.path.dirname(PREVIEWS_DIR) not in sys.path:
     sys.path.insert(0, os.path.dirname(PREVIEWS_DIR))
 
+import fileio  # noqa: E402
 from previews.states import HUD_PREVIEWS, MODPACK_DIR, job  # noqa: E402
 
 RENDERER = os.path.join(PREVIEWS_DIR, 'render.mjs')
@@ -36,16 +39,17 @@ def compress(out_dir):
     for component_id in HUD_PREVIEWS:
         path = os.path.join(out_dir, '%s.png' % component_id)
         image = Image.open(path).convert('RGB')
-        image.quantize(colors=PALETTE_COLOURS, dither=Image.Dither.NONE).save(path, format='PNG', optimize=True)
+        image.quantize(colors=PALETTE_COLOURS, dither=Image.NONE).save(path, format='PNG', optimize=True)
 
 
 def main(argv=None):
     args = parse_args(argv)
-    with tempfile.TemporaryDirectory(prefix='otmetki-previews-') as directory:
-        job_path = os.path.join(directory, 'job.json')
-        with open(job_path, 'w', encoding='utf-8') as handle:
-            json.dump(job(), handle, ensure_ascii=False)
-        subprocess.run(['node', RENDERER, args.html, job_path, args.out], check=True, cwd=MODPACK_DIR)
+    directory = tempfile.mkdtemp(prefix='otmetki-previews-')
+    try:
+        job_path = fileio.write_json(os.path.join(directory, 'job.json'), job())
+        subprocess.check_call(['node', RENDERER, args.html, job_path, args.out], cwd=MODPACK_DIR)
+    finally:
+        shutil.rmtree(directory, ignore_errors=True)
     compress(args.out)
 
 

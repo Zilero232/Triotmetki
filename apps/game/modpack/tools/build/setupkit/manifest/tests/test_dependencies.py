@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import copy
 import io
 import json
@@ -208,12 +210,11 @@ class DependencyCatalogTest(unittest.TestCase):
 
     def assert_problems(self, cases):
         for expected, mutate in cases:
-            with self.subTest(expected=expected):
-                problems = self.problems(mutate)
+            problems = self.problems(mutate)
 
-                self.assertIn(expected, problems)
+            self.assertIn(expected, problems)
 
-    @unittest.skipUnless(catalog_module.HAVE_SCHEMA, 'jsonschema is not installed (uv sync)')
+    @unittest.skipUnless(catalog_module.HAVE_SCHEMA, 'jsonschema is not installed (tools/requirements.txt)')
     def test_a_badly_shaped_dependency_is_rejected_at_its_schema_path(self):
         self.assert_problems(SCHEMA_PROBLEMS)
 

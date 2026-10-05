@@ -40,7 +40,7 @@
     "text": {
       "description": "Non-empty text without control characters other than a newline.",
       "type": "string",
-      "allOf": [{ "pattern": "\\S" }, { "pattern": "^[^\\u0000-\\u0009\\u000b-\\u001f]*$" }]
+      "allOf": [{ "pattern": "\\S" }, { "pattern": "^[^\u0000-\u0009\u000b-\u001f]*$" }]
     },
     "localized": {
       "type": "object",

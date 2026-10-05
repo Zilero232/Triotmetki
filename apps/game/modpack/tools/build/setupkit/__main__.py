@@ -7,6 +7,8 @@ Writes <out>/components.json (default apps/game/modpack/dist/catalog) and <out>/
 the modpack manager downloads as a release's `catalog`. --packages is the folder
 with the split .mtmod packages from tools/build/build.py (adds sha256/size to the manifest).
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import argparse
 import os
 import sys
@@ -39,7 +41,7 @@ def parse_args(argv=None):
     parser.add_argument(
         '--skip-artwork',
         action='store_true',
-        help='do not render previews (needs resvg-py and pillow)',
+        help='do not render previews (needs Pillow and Node)',
     )
     return parser.parse_args(argv)
 
@@ -68,7 +70,7 @@ def main(argv=None):
     try:
         generate(args)
     except (catalog_module.CatalogError, ManifestError) as error:
-        raise SystemExit(str(error))
+        raise SystemExit('%s' % error)
 
 
 if __name__ == '__main__':

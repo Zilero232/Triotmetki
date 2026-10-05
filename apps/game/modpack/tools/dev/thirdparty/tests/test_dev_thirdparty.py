@@ -1,10 +1,12 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import hashlib
 import os
 import shutil
 import sys
 import tempfile
 import unittest
-from types import SimpleNamespace
+from argparse import Namespace
 
 TOOLS_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 if TOOLS_DIR not in sys.path:
@@ -14,7 +16,7 @@ from dev import thirdparty  # noqa: E402
 from dev.testing import write  # noqa: E402
 
 CONTENT = 'gameface package'
-GAMEFACE = SimpleNamespace(
+GAMEFACE = Namespace(
     id='openwg_gameface',
     package_id='net.openwg.gameface',
     file='net.openwg.gameface_1.2.2.mtmod',

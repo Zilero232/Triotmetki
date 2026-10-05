@@ -5,18 +5,19 @@ entry marked `required` joins, each package brings its own dependencies (tools/b
 the catalog entry's `dependencies`, and a third-party mod joins when one of its `requiredBy` is installed. Optional
 third-party mods (ModsList) never join on their own, as switching a component on in the manager never installs them.
 """
-from dataclasses import dataclass
-from typing import Tuple
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import attr
 
 
 class SelectionError(ValueError):
     """An asked id that is neither a package nor a catalog entry."""
 
 
-@dataclass(frozen=True)
-class Selection:
-    keys: Tuple[str, ...]
-    dependencies: Tuple[object, ...]
+@attr.s(frozen=True)
+class Selection(object):
+    keys = attr.ib()
+    dependencies = attr.ib()
 
 
 def package_dependencies(packages, catalog):

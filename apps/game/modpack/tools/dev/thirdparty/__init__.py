@@ -4,10 +4,13 @@ A player's own copy anywhere in mods/<version>/ (four levels deep, the manager's
 it is. Otherwise the pinned `sourceUrl` is downloaded once into dist/dev/thirdparty and every use checks its size and
 sha256 against the catalog, so a changed upload never reaches the client.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import os
 import shutil
 import tempfile
-import urllib.request
+import contextlib
+import urllib2
 
 import fileio
 
@@ -57,12 +60,16 @@ def verify(path, dependency):
         raise ThirdPartyError('%s: sha256 %s, the catalog pins %s' % (path, digest, dependency.sha256))
 
 
+def _open_url(url):
+    return urllib2.urlopen(url, timeout=DOWNLOAD_TIMEOUT_S)
+
+
 def _download(url, target):
     handle, partial = tempfile.mkstemp(prefix='.download-', dir=os.path.dirname(target))
     try:
-        with os.fdopen(handle, 'wb') as output, urllib.request.urlopen(url, timeout=DOWNLOAD_TIMEOUT_S) as response:
+        with os.fdopen(handle, 'wb') as output, contextlib.closing(_open_url(url)) as response:
             shutil.copyfileobj(response, output)
-        os.replace(partial, target)
+        fileio.replace_file(partial, target)
     finally:
         if os.path.exists(partial):
             os.remove(partial)
@@ -70,7 +77,7 @@ def _download(url, target):
 
 def fetch(dependency, cache_dir, offline=False):
     """The verified package file of `dependency` in cache_dir, downloading it when it is not there yet."""
-    os.makedirs(cache_dir, exist_ok=True)
+    fileio.make_dirs(cache_dir)
     target = os.path.join(cache_dir, dependency.file)
     if not os.path.isfile(target):
         if offline:
@@ -78,8 +85,8 @@ def fetch(dependency, cache_dir, offline=False):
         print('Downloading %s from %s' % (dependency.file, dependency.source_url))
         try:
             _download(dependency.source_url, target)
-        except OSError as error:
-            raise ThirdPartyError('download of %s failed: %s' % (dependency.source_url, error)) from error
+        except (IOError, OSError) as error:
+            raise ThirdPartyError('download of %s failed: %s' % (dependency.source_url, error))
     try:
         verify(target, dependency)
     except ThirdPartyError:

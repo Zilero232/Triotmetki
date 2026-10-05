@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import absolute_import, division, print_function
 
 import importlib
 import json
@@ -304,9 +304,7 @@ class UiSmokeTest(unittest.TestCase):
         shutil.rmtree(self.game_dir, ignore_errors=True)
 
     def purge(self):
-        for name in list(sys.modules):
-            if name.split('.')[0] in STUBBED:
-                del sys.modules[name]
+        _support.drop_modules([name for name in sys.modules if name.split('.')[0] in STUBBED])
 
     def install_client_stubs(self):
         test = self

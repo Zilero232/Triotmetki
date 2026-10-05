@@ -4,24 +4,30 @@ The manager shows a preview 240 px wide (the card) or about 270 px (the install 
 the 640x360 canvas with text of at least MIN_FONT_SIZE there (about 11 px on the card) in the bundled Fira Sans, and
 its artwork reaches the canvas edges instead of floating in the middle.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import io
 import json
 import os
+import shutil
 import struct
 import sys
+import tempfile
 import unittest
+from distutils.spawn import find_executable
 import xml.etree.ElementTree as ElementTree
 
 BUILD_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 if BUILD_DIR not in sys.path:
     sys.path.insert(0, BUILD_DIR)
 
+import rasterize  # noqa: E402
 from setupkit import CATALOG_DIR, CATALOG_PATH  # noqa: E402
 from setupkit.artwork import render  # noqa: E402
 
 try:
     import PIL  # noqa: F401
-    import resvg_py  # noqa: F401
-    HAVE_LIBRARIES = True
+    HAVE_LIBRARIES = find_executable(rasterize.NODE) is not None
 except ImportError:
     HAVE_LIBRARIES = False
 
@@ -39,7 +45,7 @@ def preview_files(extension):
 
 
 def catalog_previews():
-    with open(CATALOG_PATH, encoding='utf-8') as handle:
+    with io.open(CATALOG_PATH, encoding='utf-8') as handle:
         entries = json.load(handle)['components']
     return set(entry['preview']['image'].split('/')[-1] for entry in entries if entry.get('preview', {}).get('image'))
 
@@ -134,19 +140,19 @@ class SvgPreviewTest(unittest.TestCase):
         self.assertEqual(dict((name, texts) for name, texts in small.items() if texts), {})
 
 
-@unittest.skipUnless(HAVE_LIBRARIES, 'resvg-py and pillow are not installed (uv sync)')
+@unittest.skipUnless(HAVE_LIBRARIES, 'Pillow (tools/requirements.txt) or Node is missing')
 class SvgArtworkTest(unittest.TestCase):
 
     def test_the_artwork_fills_the_canvas(self):
-        import tempfile
-
+        directory = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, directory, True)
         narrow = []
-        with tempfile.TemporaryDirectory() as directory:
-            for name in preview_files('.svg'):
-                out = render.render_preview(os.path.join(PREVIEWS_DIR, name), os.path.join(directory, name + '.png'))
-                span = artwork_span(out)
-                if span[0] < MIN_SPAN[0] or span[1] < MIN_SPAN[1]:
-                    narrow.append((name, round(span[0], 2), round(span[1], 2)))
+
+        for name in preview_files('.svg'):
+            out = render.render_preview(os.path.join(PREVIEWS_DIR, name), os.path.join(directory, name + '.png'))
+            span = artwork_span(out)
+            if span[0] < MIN_SPAN[0] or span[1] < MIN_SPAN[1]:
+                narrow.append((name, round(span[0], 2), round(span[1], 2)))
 
         self.assertEqual(narrow, [])
 

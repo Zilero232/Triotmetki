@@ -6,6 +6,8 @@
 
 so tests import the sources exactly as the client does, with their relative imports intact.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import io
 import json
 import os
@@ -24,10 +26,22 @@ ROOT_PACKAGE = 'otmetki'
 VENDOR_DIR = os.path.join(PACKAGES_DIR, 'core', 'vendor')
 
 
+# The client's own site module (res/scripts/common/bw_site.py) switches the default encoding to UTF-8 at start-up, so
+# implicit byte/text mixing in the game decodes UTF-8 (the client's localized strings are UTF-8 bytes); the tests run
+# the sources under the same rule.
+def _match_client_encoding():
+    if sys.version_info[0] == 2 and sys.getdefaultencoding() != 'utf-8':
+        reload(sys)
+        sys.setdefaultencoding('utf-8')
+
+
+_match_client_encoding()
+
+
 def _install_root_package():
     if ROOT_PACKAGE in sys.modules:
         return
-    root = types.ModuleType(ROOT_PACKAGE)
+    root = types.ModuleType(str(ROOT_PACKAGE))
     root.__path__ = [PACKAGES_DIR, MODPACK_DIR]
     sys.modules[ROOT_PACKAGE] = root
 
@@ -47,6 +61,49 @@ def _isolate_durable_dir():
 
 
 _isolate_durable_dir()
+
+
+# Python 2 sets every global of a module to None once the module object is freed, so a function imported from a module
+# that a test later drops from sys.modules (to reload it under fresh stubs) would find its globals gone. The dropped
+# modules are kept here for the rest of the run.
+_DROPPED_MODULES = []
+
+
+def drop_modules(names):
+    """Removes the named modules from sys.modules, keeping them alive (see _DROPPED_MODULES)."""
+    for name in list(names):
+        module = sys.modules.pop(name, None)
+        if module is not None:
+            _DROPPED_MODULES.append(module)
+
+
+def forget_modules(prefixes):
+    """Drops every loaded module whose name starts with one of `prefixes` (a string or a tuple)."""
+    drop_modules([name for name in sys.modules if name.startswith(prefixes)])
+
+
+# Python 2 resolves a stubbed client module the way the client's real packages allow, not straight from sys.modules:
+# `import a.b.c` needs `a` and `a.b` loaded, and `from a.b import c` reads the attribute `c` of `a.b`.
+def stub_parents(name):
+    """Adds an empty package for every missing parent of `name`; returns the names it added."""
+    parts = name.split('.')
+    added = []
+    for index in range(1, len(parts)):
+        parent = '.'.join(parts[:index])
+        if parent not in sys.modules:
+            package = types.ModuleType(str(parent))
+            package.__path__ = []
+            sys.modules[parent] = package
+            added.append(parent)
+        link_to_parent(parent)
+    return added
+
+
+def link_to_parent(name):
+    """Sets the loaded module `name` as an attribute of its loaded parent package, as an import would."""
+    parent, _, child = name.rpartition('.')
+    if parent in sys.modules and name in sys.modules:
+        setattr(sys.modules[parent], str(child), sys.modules[name])
 
 
 def source_dirs():

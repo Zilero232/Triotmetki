@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import glob
 import os
 import shutil
@@ -5,12 +7,14 @@ import struct
 import sys
 import tempfile
 import unittest
+from distutils.spawn import find_executable
 
 BUILD_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 if BUILD_DIR not in sys.path:
     sys.path.insert(0, BUILD_DIR)
 
 import layout  # noqa: E402
+import rasterize  # noqa: E402
 from setupkit import ASSETS_DIR, CATALOG_PATH  # noqa: E402
 from setupkit.artwork import render  # noqa: E402
 from setupkit.manifest import catalog as catalog_module  # noqa: E402
@@ -18,8 +22,7 @@ from setupkit.manifest.generate import build_manifest  # noqa: E402
 
 try:
     import PIL  # noqa: F401
-    import resvg_py  # noqa: F401
-    HAVE_LIBRARIES = True
+    HAVE_LIBRARIES = find_executable(rasterize.NODE) is not None
 except ImportError:
     HAVE_LIBRARIES = False
 
@@ -49,7 +52,7 @@ class SourcesTest(unittest.TestCase):
         self.assertTrue(sources)
 
 
-@unittest.skipUnless(HAVE_LIBRARIES, 'resvg-py and pillow are not installed (uv sync)')
+@unittest.skipUnless(HAVE_LIBRARIES, 'Pillow (tools/requirements.txt) or Node is missing')
 class RenderTest(unittest.TestCase):
 
     def setUp(self):

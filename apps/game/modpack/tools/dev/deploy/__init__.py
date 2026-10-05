@@ -5,15 +5,20 @@ subfolder works and keeps the dev packages apart from the user's mods and from t
 without descending. The manifest records every file the dev loop wrote with its sha256; uninstall removes exactly
 those, leaves a file someone changed since (with a warning), and deletes the folder only when nothing else is left.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import io
 import datetime
+import errno
 import json
 import os
-from dataclasses import dataclass, field
-from typing import List, Tuple
 
+import attr
 import fileio
 
 DEV_FOLDER = 'otmetki-dev'
+# A file the running client holds open fails with one of these.
+ACCESS_ERRORS = (errno.EACCES, errno.EPERM)
 MANIFEST_NAME = 'otmetki-dev.json'
 MANIFEST_TOOL = 'otmetki-dev'
 PARTIAL_SUFFIX = '.part'
@@ -24,23 +29,23 @@ class DeployError(RuntimeError):
     """A file could not be written or removed, or the manifest is not ours."""
 
 
-@dataclass
-class SyncPlan:
-    copy: List[Tuple[str, str]] = field(default_factory=list)
-    remove: List[str] = field(default_factory=list)
-    keep: List[str] = field(default_factory=list)
-    changed: List[str] = field(default_factory=list)
+@attr.s
+class SyncPlan(object):
+    copy = attr.ib(factory=list)
+    remove = attr.ib(factory=list)
+    keep = attr.ib(factory=list)
+    changed = attr.ib(factory=list)
 
     @property
     def is_empty(self):
         return not self.copy and not self.remove
 
 
-@dataclass
-class UninstallPlan:
-    remove: List[str] = field(default_factory=list)
-    changed: List[str] = field(default_factory=list)
-    missing: List[str] = field(default_factory=list)
+@attr.s
+class UninstallPlan(object):
+    remove = attr.ib(factory=list)
+    changed = attr.ib(factory=list)
+    missing = attr.ib(factory=list)
 
 
 def dev_dir(mods_dir):
@@ -63,10 +68,10 @@ def read_manifest(folder):
     if not os.path.isfile(path):
         return None
     try:
-        with open(path, encoding='utf-8') as handle:
+        with io.open(path, encoding='utf-8') as handle:
             manifest = json.load(handle)
     except ValueError as error:
-        raise DeployError('%s is not valid JSON: %s' % (path, error)) from error
+        raise DeployError('%s is not valid JSON: %s' % (path, error))
     if not isinstance(manifest, dict) or manifest.get('tool') != MANIFEST_TOOL:
         raise DeployError('%s was not written by the dev loop; leaving the folder alone' % path)
     files = manifest.get('files')
@@ -121,9 +126,11 @@ def _write_copy(source, target):
     try:
         with open(source, 'rb') as reader, open(partial, 'wb') as writer:
             writer.write(reader.read())
-        os.replace(partial, target)
-    except PermissionError as error:
-        raise DeployError('cannot write %s: %s' % (target, RUNNING_HINT)) from error
+        fileio.replace_file(partial, target)
+    except (IOError, OSError) as error:
+        if error.errno not in ACCESS_ERRORS:
+            raise
+        raise DeployError('cannot write %s: %s' % (target, RUNNING_HINT))
     finally:
         if os.path.exists(partial):
             os.remove(partial)
@@ -132,15 +139,17 @@ def _write_copy(source, target):
 def _remove(path):
     try:
         os.remove(path)
-    except PermissionError as error:
-        raise DeployError('cannot remove %s: %s' % (path, RUNNING_HINT)) from error
+    except OSError as error:
+        if error.errno not in ACCESS_ERRORS:
+            raise
+        raise DeployError('cannot remove %s: %s' % (path, RUNNING_HINT))
 
 
 def write_manifest(folder, files, details):
     manifest = dict(details)
     manifest.update({
         'tool': MANIFEST_TOOL,
-        'updatedAt': datetime.datetime.now().isoformat(timespec='seconds'),
+        'updatedAt': datetime.datetime.now().replace(microsecond=0).isoformat(),
         'files': dict(sorted(files.items())),
     })
     fileio.write_json(manifest_file(folder), manifest)
@@ -148,7 +157,7 @@ def write_manifest(folder, files, details):
 
 def apply_sync(folder, plan, details):
     """Carries out the plan and rewrites the manifest: {name: sha256} of every file the dev loop now owns there."""
-    os.makedirs(folder, exist_ok=True)
+    fileio.make_dirs(folder)
     recorded = dict((read_manifest(folder) or {}).get('files', {}))
     for name in plan.remove:
         _remove(os.path.join(folder, name))

@@ -9,8 +9,10 @@ DEBOUNCE_S, then built and synced in one go.
 The client mounts its packages at start and has no reload for Python mods or Gameface pages, so every reinstall ends
 with a reminder to restart it; while it runs it keeps the packages open, and the sync is retried until it closes.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import os
-import queue
+import Queue as queue
 import time
 
 import layout
@@ -81,7 +83,7 @@ class _Collector(object):
 
 def _next(events, deadline):
     """The next queued path, or None once `deadline` passes (short waits keep Ctrl+C working on Windows)."""
-    while time.monotonic() < deadline:
+    while time.time() < deadline:
         try:
             return events.get(timeout=POLL_S)
         except queue.Empty:
@@ -91,12 +93,12 @@ def _next(events, deadline):
 
 def _drain(events, timeout):
     """Paths that arrive until none came for DEBOUNCE_S; an empty set when nothing came within `timeout`."""
-    first = _next(events, time.monotonic() + timeout)
+    first = _next(events, time.time() + timeout)
     if first is None:
         return set()
     paths = {first}
     while True:
-        path = _next(events, time.monotonic() + DEBOUNCE_S)
+        path = _next(events, time.time() + DEBOUNCE_S)
         if path is None:
             return paths
         paths.add(path)

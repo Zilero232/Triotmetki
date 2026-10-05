@@ -1,17 +1,19 @@
 """The modpack dev loop: build the packages and install them into the local game client without a release.
 
 Usage:
-    uv run python tools/dev status
-    uv run python tools/dev install [ID ...] [--dry-run] [--offline] [--compiler auto|owg|py27]
-    uv run python tools/dev uninstall [--dry-run]
-    uv run python tools/dev watch [ID ...] [--offline] [--compiler auto|owg|py27]
-    uv run python tools/dev log [--all] [--own] [--no-follow]
+    python tools/dev status
+    python tools/dev install [ID ...] [--dry-run] [--offline] [--compiler auto|owg|py27]
+    python tools/dev uninstall [--dry-run]
+    python tools/dev watch [ID ...] [--offline] [--compiler auto|owg|py27]
+    python tools/dev log [--all] [--own] [--no-follow]
 
 IDs are component ids of catalog/catalog.json (package keys: core, companion, ui, marks_panel, ...); none means every
 package. Their dependencies come along, and so do OpenWG Gameface and GUIFlash when a chosen component needs them.
 The client is OTMETKI_GAME_DIR or the one the manager would pick (Lesta Game Center). Everything goes into
 mods/<version>/otmetki-dev/ with a manifest, and the dev loop refuses to install next to a manager install.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import argparse
 import os
 import sys
@@ -20,7 +22,8 @@ DEV_PARENT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if DEV_PARENT not in sys.path:
     sys.path.insert(0, DEV_PARENT)
 
-from dev import DEFAULT_CACHE, DEFAULT_OUT  # noqa: E402
+from dev import DEFAULT_CACHE, DEFAULT_OUT, text_environ  # noqa: E402
+from dev.pylog import safe_output  # noqa: E402
 from dev.session import DevError, Session  # noqa: E402
 
 
@@ -34,7 +37,7 @@ def parse_args(argv=None):
     parser = argparse.ArgumentParser(prog='tools/dev', description='Three Marks modpack dev loop')
     parser.add_argument('--out', default=DEFAULT_OUT, help='where the dev packages are built (default dist/dev)')
     parser.add_argument('--cache', default=DEFAULT_CACHE, help='third-party package cache (dist/dev/thirdparty)')
-    commands = parser.add_subparsers(dest='command', required=True)
+    commands = parser.add_subparsers(dest='command')
     commands.add_parser('status', help='print the detected client, the dev install and any manager install')
     install = commands.add_parser('install', help='build and install into mods/<version>/otmetki-dev')
     _add_build_options(install)
@@ -52,8 +55,9 @@ def parse_args(argv=None):
 
 def main(argv=None):
     args = parse_args(argv)
+    sys.stdout = safe_output(sys.stdout)
     try:
-        session = Session(os.environ, out_dir=args.out, cache_dir=args.cache)
+        session = Session(text_environ(os.environ), out_dir=args.out, cache_dir=args.cache)
         getattr(session, args.command)(args)
     except DevError as error:
         sys.stdout.flush()

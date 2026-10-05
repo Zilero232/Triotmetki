@@ -1,4 +1,7 @@
-"""File helpers the build, and the catalogue share: UTF-8 text with LF endings and file hashes."""
+"""File helpers the build, the catalogue and the dev loop share: UTF-8 text with LF endings, file hashes, folders and
+file replacement on Python 2.7 (no `exist_ok`, no `os.replace`)."""
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import hashlib
 import io
 import json
@@ -16,11 +19,27 @@ def sha256(path):
     return digest.hexdigest()
 
 
+def make_dirs(path):
+    """Creates `path` and its parents unless it is already a folder; returns `path`."""
+    if not os.path.isdir(path):
+        os.makedirs(path)
+    return path
+
+
+def replace_file(source, target):
+    """Moves `source` over `target`. Windows refuses a rename onto an existing file, so the old one goes first."""
+    if os.path.exists(target):
+        os.remove(target)
+    os.rename(source, target)
+
+
 def write_text(path, text):
     """Writes `text` as UTF-8 with LF endings, creating the parent folder; returns `path`."""
+    if isinstance(text, bytes):
+        text = text.decode('utf-8')
     parent = os.path.dirname(path)
     if parent:
-        os.makedirs(parent, exist_ok=True)
+        make_dirs(parent)
     with io.open(path, 'w', encoding='utf-8', newline='\n') as handle:
         handle.write(text)
     return path

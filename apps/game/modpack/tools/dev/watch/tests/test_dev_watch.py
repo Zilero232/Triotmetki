@@ -1,8 +1,11 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import os
 import sys
 import types
 import unittest
-from unittest import mock
+
+import mock
 
 TOOLS_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 if TOOLS_DIR not in sys.path:
@@ -89,9 +92,9 @@ class RunTest(unittest.TestCase):
             except StopIteration:
                 raise KeyboardInterrupt
         reinstalled = []
-        observers = types.ModuleType('watchdog.observers')
+        observers = types.ModuleType(str('watchdog.observers'))
         observers.Observer = _Observer
-        stubs = {'watchdog': types.ModuleType('watchdog'), 'watchdog.observers': observers}
+        stubs = {'watchdog': types.ModuleType(str('watchdog')), 'watchdog.observers': observers}
         modules = mock.patch.dict(sys.modules, stubs)
         readings = mock.patch.object(layout, 'split_packages', side_effect=layouts)
         with modules, readings, mock.patch.object(watch, '_drain', drain):

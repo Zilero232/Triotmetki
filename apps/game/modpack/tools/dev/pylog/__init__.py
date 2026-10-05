@@ -4,7 +4,10 @@ Our lines carry core.log's `[OTMETKI]` prefix or name an otmetki path; the trace
 (indented frames, `Traceback ...`, the closing `SomethingError: ...`) come along. The client rewrites python.log on
 every start, so a file that shrinks is read again from its beginning.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import codecs
+import locale
 import os
 import re
 import sys
@@ -44,11 +47,11 @@ class OurLines(object):
         return [line for line in lines if self.keep(line)]
 
 
-def safe_output(stream):
-    """Let `stream` print what its code page lacks as '?': through bun or uv stdout is a pipe in the ANSI code page,
-    which has no U+FFFD (an undecodable byte of the log) or arrows."""
-    if hasattr(stream, 'reconfigure'):
-        stream.reconfigure(errors='replace')
+def safe_output(stream, encoding=None):
+    """A writer over `stream` that prints what its code page lacks as '?': through bun stdout is a pipe in the ANSI
+    code page (Python 2 then assumes ASCII), which lacks Cyrillic, U+FFFD (an undecodable byte of the log) or arrows."""
+    encoding = encoding or getattr(stream, 'encoding', None) or locale.getpreferredencoding() or 'ascii'
+    return codecs.getwriter(encoding)(stream, 'replace')
 
 
 class LogReader(object):
@@ -84,7 +87,6 @@ def _complete_lines(buffer):
 
 def tail(path, keep_all=False, follow=True, last=TAIL_LINES):
     """Prints our last `last` lines, then (with follow) new ones as the client writes them, until Ctrl+C."""
-    safe_output(sys.stdout)
     lines = OurLines(keep_all)
     reader = LogReader(path)
     finished, pending = _complete_lines(reader.read())
@@ -101,6 +103,7 @@ def tail(path, keep_all=False, follow=True, last=TAIL_LINES):
                 pending = ''
             finished, pending = _complete_lines(pending + text)
             for line in lines.filter(finished):
-                print(line, flush=True)
+                print(line)
+                sys.stdout.flush()
     except KeyboardInterrupt:
         return

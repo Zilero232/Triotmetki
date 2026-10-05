@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import io
 import os
 import shutil
@@ -75,13 +78,11 @@ class ReadFromTest(unittest.TestCase):
 class SafeOutputTest(unittest.TestCase):
 
     def test_a_character_the_console_cannot_show_is_replaced(self):
-        stream = io.TextIOWrapper(io.BytesIO(), encoding='cp1251', newline='\n')
+        buffer = io.BytesIO()
 
-        pylog.safe_output(stream)
-        stream.write(u'� →\n')
-        stream.flush()
+        pylog.safe_output(buffer, 'cp1251').write(u'� →\n')
 
-        self.assertEqual(stream.buffer.getvalue(), b'? ?\n')
+        self.assertEqual(buffer.getvalue(), b'? ?\n')
 
 
 if __name__ == '__main__':

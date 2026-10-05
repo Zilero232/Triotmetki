@@ -41,7 +41,7 @@ assets/
 ## Rebuild
 
 ```bash
-uv run python tools/assets/render.py                  # every set with sources -> its PNG renditions
+python tools/assets/render.py                         # every set with sources -> its PNG renditions (Python 2.7; SVG drawn on Node)
 python tools/build/asset_sets.py --write              # the notices
 python tools/build/build.py --dry-run                 # lists the assets in each package
 ```

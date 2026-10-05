@@ -1,12 +1,17 @@
-"""The catalog's preview images, rendered with resvg (resvg-py) and packed with Pillow.
+"""The catalog's preview images, rendered with resvg (tools/build/rasterize, on Node) and packed with Pillow.
 
     catalog/previews/*.svg (or a .png screenshot)  -> previews/<component id>.png, 640x360
 
 Every preview is drawn on one 640x360 canvas (16:9, the manager's card frame) with the bundled Fira Sans
 (catalog/fonts, OFL), never the system fonts, so a Linux release runner draws the same Cyrillic as Windows.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import io
 import os
+
+import fileio
+import rasterize
 
 from .. import CATALOG_DIR
 
@@ -19,32 +24,32 @@ class ArtworkError(RuntimeError):
     pass
 
 
-def _libraries():
+def _image_module():
     try:
-        import resvg_py
         from PIL import Image
     except ImportError as error:
-        raise ArtworkError('artwork needs resvg-py and pillow (uv sync in apps/game/modpack): %s' % error)
-    return resvg_py, Image
+        raise ArtworkError('artwork needs Pillow (python -m pip install -r tools/requirements.txt): %s' % error)
+    return Image
 
 
 def svg_png(svg_path, width):
-    resvg_py, _ = _libraries()
-    return bytes(resvg_py.svg_to_bytes(
-        svg_path=svg_path,
-        width=width,
-        skip_system_fonts=True,
-        font_dirs=[FONTS_DIR],
-        font_family=PREVIEW_FONT,
-        sans_serif_family=PREVIEW_FONT,
-    ))
+    try:
+        return rasterize.svg_png(
+            rasterize.read_svg(svg_path),
+            width,
+            font_dirs=[FONTS_DIR],
+            font_family=PREVIEW_FONT,
+            resources_dir=os.path.dirname(os.path.abspath(svg_path)),
+        )
+    except rasterize.RasterizeError as error:
+        raise ArtworkError('%s' % error)
 
 
 def cover(image, size, image_module):
     """Scales `image` to cover `size` and crops the overflow evenly from both sides."""
     width, height = size
     scale = max(float(width) / image.width, float(height) / image.height)
-    scaled_size = (max(width, round(image.width * scale)), max(height, round(image.height * scale)))
+    scaled_size = (max(width, int(round(image.width * scale))), max(height, int(round(image.height * scale))))
     image = image.resize(scaled_size, image_module.LANCZOS)
     left = (image.width - width) // 2
     top = (image.height - height) // 2
@@ -53,13 +58,13 @@ def cover(image, size, image_module):
 
 def render_preview(source, out_path):
     """An SVG renders at 640 px wide; a PNG screenshot is scaled and centre-cropped to 640x360."""
-    _, Image = _libraries()
+    Image = _image_module()
     if source.lower().endswith('.svg'):
         image = Image.open(io.BytesIO(svg_png(source, PREVIEW_SIZE[0])))
     else:
         image = Image.open(source)
     image = cover(image.convert('RGB'), PREVIEW_SIZE, Image)
-    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    fileio.make_dirs(os.path.dirname(out_path))
     image.save(out_path, format='PNG', optimize=True)
     return out_path
 

@@ -8,3 +8,4 @@ carry no game files); `render.mjs` loads the built `packages/ui/gameface/hud.htm
 repo's e2e dependency), scales the panel to fit a 16:9 frame, centres it and saves the PNG. Run `bun run ui:build`
 first so the page is current. The other components keep their drawn SVG previews.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals

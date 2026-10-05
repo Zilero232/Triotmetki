@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function
+
 import importlib
 import io
 import os
@@ -49,7 +51,6 @@ ATTACH_EDGE = 8
 BAR_HEIGHT = 58
 BAR_ABOVE = 6
 BAR_SPLIT = 6
-LOG_RIGHT = 507
 MINIMAP_GAP = 12
 SCORE_OFFSET = 308
 SCORE_TOP = 4
@@ -277,16 +278,12 @@ def sized(left, top, size):
 
 def beside_bar(kind, size, screen, minimap, bar):
     width, height = screen
-    if kind == 'bar_right':
-        left = width / 2 + bar / 2 + ATTACH_GAP
-        lifted = left + size[0] > width - minimap - ATTACH_EDGE
-        lifted_left = width / 2 + BAR_SPLIT
-    else:
-        left = width / 2 - bar / 2 - ATTACH_GAP - size[0]
-        lifted = left < LOG_RIGHT
-        lifted_left = width / 2 - BAR_SPLIT - size[0]
-    if lifted:
-        return sized(lifted_left, height - BAR_HEIGHT - BAR_ABOVE - size[1], size)
+    above_top = height - BAR_HEIGHT - BAR_ABOVE - size[1]
+    if kind == 'bar_left':
+        return sized(width / 2 - BAR_SPLIT - size[0], above_top, size)
+    left = width / 2 + bar / 2 + ATTACH_GAP
+    if left + size[0] > width - minimap - ATTACH_EDGE:
+        return sized(width / 2 + BAR_SPLIT, above_top, size)
     return sized(left, height - ATTACH_EDGE - size[1], size)
 
 
@@ -390,14 +387,13 @@ class DefaultPlacesTest(unittest.TestCase):
 
         assert crowded == []
 
-    def test_the_equipment_row_sits_beside_the_consumables_or_above_them(self):
-        screen = (2560, 1440)
-        beside = attached_rect('bar_left', PANEL_SIZES['battle_loadout'], screen, MINIMAP_DEFAULT, 7 * 57)
-        lifted = attached_rect('bar_left', PANEL_SIZES['battle_loadout'], (1920, 1080), MINIMAP_DEFAULT)
-        consumables = dict(stock_rects((1920, 1080)))['consumables']
+    def test_the_equipment_row_sits_above_the_consumables(self):
+        for screen in ((2560, 1440), (1920, 1080)):
+            row = attached_rect('bar_left', PANEL_SIZES['battle_loadout'], screen, MINIMAP_DEFAULT)
+            consumables = dict(stock_rects(screen))['consumables']
 
-        assert (beside[2], beside[3]) == (screen[0] / 2 - 7 * 57 / 2 - ATTACH_GAP, screen[1] - ATTACH_EDGE)
-        assert consumables[1] - lifted[3] >= 6
+            assert row[2] == screen[0] / 2 - BAR_SPLIT
+            assert consumables[1] - row[3] >= 6
 
     def test_the_marks_end_left_of_the_minimap(self):
         crowded = [
@@ -414,7 +410,7 @@ class DefaultPlacesTest(unittest.TestCase):
 
         expected = {
             'gap': ATTACH_GAP, 'edge': ATTACH_EDGE, 'height': BAR_HEIGHT, 'above': BAR_ABOVE, 'split': BAR_SPLIT,
-            'right': LOG_RIGHT, 'offset': SCORE_OFFSET, 'top': SCORE_TOP, 'narrow': SCORE_NARROW, 'under': SCORE_UNDER,
+            'offset': SCORE_OFFSET, 'top': SCORE_TOP, 'narrow': SCORE_NARROW, 'under': SCORE_UNDER,
         }
         assert dict((key, page.get(key)) for key in expected) == expected
 

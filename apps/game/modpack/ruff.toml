@@ -1,0 +1,43 @@
+# ruff lints the modpack's Python 2.7 sources as a standalone binary (no Python project needed; pinned in mise.toml).
+# Its oldest target is py37; the 2.7 syntax itself is checked by the 2.7 compiler (tools/tests/test_py27_compat.py).
+# ruff format stays off: with a py37 target it adds trailing commas after *args/**kwargs, a SyntaxError on 2.7.
+target-version = "py37"
+line-length = 120
+extend-exclude = ["dist", "packages/core/vendor"]
+# Python 2 names the linter would flag as undefined.
+builtins = ["unicode", "basestring", "long", "reload", "xrange", "unichr", "raw_input"]
+
+[lint]
+# pyupgrade (UP), bugbear (B) and friends stay off: they suggest Python-3-only rewrites.
+# E30x (blank lines) and PLR1702 (nesting) are preview rules: explicit-preview-rules turns on only those two, and
+# mise.toml pins the ruff that checks them.
+preview = true
+explicit-preview-rules = true
+select = [
+  "E", "F", "W",
+  "E301", "E302", "E303", "E304", "E305", "E306",
+  "C901",
+  "PT018",
+  "PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR1702",
+  "RET",
+  "SIM",
+]
+# SIM105 suggests contextlib.suppress, which is Python 3.4+.
+ignore = ["SIM105"]
+
+[lint.mccabe]
+max-complexity = 10
+
+[lint.pylint]
+max-args = 7
+max-branches = 10
+max-returns = 6
+max-statements = 30
+max-nested-blocks = 3
+
+[lint.per-file-ignores]
+# Entry scripts and the test runner import after sys.path set-up.
+"tools/**" = ["E402"]
+# Translated strings are long lines by nature.
+"**/i18n.py" = ["E501"]
+"**/i18n/*.py" = ["E501"]

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """dev: the local dev loop — build the packages and install them into the local game client without a release.
 
     client/      finds the game client the way the manager does (OTMETKI_GAME_DIR first, then Lesta Game Center)
@@ -9,9 +10,11 @@
     watch/       rebuilds and reinstalls the packages whose sources changed (watchdog)
     pylog/       tails the client's python.log, our lines only
 
-Run it as `uv run python tools/dev --help` (see __main__.py). Python 3 only: it reuses tools/build (layout, archive,
+Run it as `python tools/dev --help` on Python 2.7 (see __main__.py). It reuses tools/build (layout, archive,
 compilers) and setupkit (catalog).
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import os
 import sys
 
@@ -24,3 +27,10 @@ DEFAULT_CACHE = os.path.join(DEFAULT_OUT, 'thirdparty')
 
 if BUILD_DIR not in sys.path:
     sys.path.insert(0, BUILD_DIR)
+
+
+def text_environ(environ):
+    """`environ` with text values: Python 2 hands them out as bytes in the file system encoding (a Cyrillic user name
+    in %APPDATA%), which would not join with the text paths."""
+    encoding = sys.getfilesystemencoding() or 'utf-8'
+    return dict((key, value.decode(encoding) if isinstance(value, bytes) else value) for key, value in environ.items())

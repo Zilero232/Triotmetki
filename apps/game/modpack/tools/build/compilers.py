@@ -7,17 +7,22 @@ packages must ship `.pyc`. Two backends, tried in this order by `--compiler auto
   C++ tool, no Python 2.7 needed, reproducible output (fixed header timestamp, stable co_filename).
   Found through --owg-compiler, $OWG_PYTHON_COMPILER, then `owg_python_compiler` on PATH.
 - `py27`: a local Python 2.7 interpreter running py_compile.
-  Found through --python27, $OTMETKI_PY27, $PYTHON27, `py -2.7`, python2.7, python2, C:\\Python27.
+  Found through --python27, the running interpreter (the build itself runs on 2.7), $OTMETKI_PY27, $PYTHON27,
+  `py -2.7`, python2.7, python2, C:\\Python27.
 
 Both put the in-package path (scripts/client/gui/mods/...) into co_filename so tracebacks in
 python.log point at the package, not at the build machine.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import json
 import os
 import shutil
 import subprocess
 import sys
+from distutils.spawn import find_executable
 
+import fileio
 from archive import ZIP_EPOCH
 
 OWG_NAMES = ('owg_python_compiler', 'owg_python_compiler.exe')
@@ -43,14 +48,23 @@ print('compiled %d files' % len(jobs))
 '''
 
 
-def _runs(command, args, expect=None):
+def _run(command, stdin=None):
+    """(return code, stdout + stderr) of `command`, or (None, '') when it cannot start."""
     try:
-        output = subprocess.run(command + args, capture_output=True, text=True, timeout=20)
-    except (OSError, subprocess.SubprocessError):
+        process = subprocess.Popen(
+            command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True,
+        )
+    except OSError:
+        return None, ''
+    output, _ = process.communicate(stdin)
+    return process.returncode, output
+
+
+def _runs(command, args, expect=None):
+    code, output = _run(command + args)
+    if code != 0:
         return False
-    if output.returncode != 0:
-        return False
-    return expect is None or output.stdout.strip() == expect
+    return expect is None or output.strip() == expect
 
 
 def find_owg(explicit=None):
@@ -60,7 +74,7 @@ def find_owg(explicit=None):
     if os.environ.get('OWG_PYTHON_COMPILER'):
         candidates.append(os.environ['OWG_PYTHON_COMPILER'])
     for name in OWG_NAMES:
-        found = shutil.which(name)
+        found = find_executable(name)
         if found:
             candidates.append(found)
     for candidate in candidates:
@@ -73,6 +87,8 @@ def find_python27(explicit=None):
     candidates = []
     if explicit:
         candidates.append([explicit])
+    if sys.version_info[:2] == (2, 7):
+        candidates.append([sys.executable])
     for env in ('OTMETKI_PY27', 'PYTHON27'):
         if os.environ.get(env):
             candidates.append([os.environ[env]])
@@ -93,19 +109,14 @@ def compile_py27(python27, entries, staging):
     compiled = []
     for path, archive_path in entries:
         target = os.path.join(staging, archive_path.replace('/', os.sep) + 'c')
-        os.makedirs(os.path.dirname(target), exist_ok=True)
+        fileio.make_dirs(os.path.dirname(target))
         jobs.append([path, target, in_package_path(archive_path)])
         compiled.append((target, archive_path + 'c'))
-    result = subprocess.run(
-        python27 + ['-c', PY27_COMPILE_SCRIPT, str(ZIP_EPOCH)],
-        input=json.dumps(jobs),
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        sys.stderr.write(result.stdout + result.stderr)
+    code, output = _run(python27 + ['-c', PY27_COMPILE_SCRIPT, str(ZIP_EPOCH)], stdin=json.dumps(jobs))
+    if code != 0:
+        sys.stderr.write(output)
         raise SystemExit('Python 2.7 compilation failed')
-    print(result.stdout.strip())
+    print(output.strip())
     return compiled
 
 
@@ -117,7 +128,7 @@ def compile_owg(owg, entries, staging):
     target_root = os.path.join(staging, 'out')
     for path, archive_path in entries:
         target = os.path.join(source_root, in_package_path(archive_path).replace('/', os.sep))
-        os.makedirs(os.path.dirname(target), exist_ok=True)
+        fileio.make_dirs(os.path.dirname(target))
         shutil.copyfile(path, target)
     command = owg + [
         'compile',
@@ -128,9 +139,9 @@ def compile_owg(owg, entries, staging):
         '--strict',
         '--quiet',
     ]
-    result = subprocess.run(command, capture_output=True, text=True)
-    if result.returncode != 0:
-        sys.stderr.write(result.stdout + result.stderr)
+    code, output = _run(command)
+    if code != 0:
+        sys.stderr.write(output)
         raise SystemExit('owg_python_compiler failed')
     compiled = []
     for path, archive_path in entries:

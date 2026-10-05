@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Build the Three Marks packages.
 
 Usage:
@@ -14,6 +13,8 @@ split packages and shares the companion's id, so the two sets never sit in one f
 The production client loads only compiled `mod_*.pyc`: without a compiler the packages carry `.py`
 sources and only load in a development client. Release builds pass --require-pyc (see compilers.py).
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import argparse
 import os
 import shutil
@@ -106,7 +107,7 @@ def package_entries(package, compile_entries, staging):
 def write_packages(packages, args, staging):
     compile_entries = select_compiler(args)
     out = output_dir(args)
-    os.makedirs(out, exist_ok=True)
+    fileio.make_dirs(out)
 
     outputs = []
     for index, package in enumerate(packages):
@@ -119,7 +120,7 @@ def write_packages(packages, args, staging):
 
 
 def install(outputs, install_dir):
-    os.makedirs(install_dir, exist_ok=True)
+    fileio.make_dirs(install_dir)
     for output in outputs:
         shutil.copy2(output, install_dir)
     print('Copied %d package(s) to %s' % (len(outputs), install_dir))

@@ -1,7 +1,9 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import os
 import sys
 import unittest
-from types import SimpleNamespace
+from argparse import Namespace
 
 TOOLS_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 if TOOLS_DIR not in sys.path:
@@ -17,11 +19,11 @@ def package(key, depends=()):
 
 
 def entry(key, required=False, dependencies=()):
-    return SimpleNamespace(id=key, required=required, dependencies=tuple(dependencies))
+    return Namespace(id=key, required=required, dependencies=tuple(dependencies))
 
 
 def dependency(key, required_by, optional=False):
-    return SimpleNamespace(id=key, required_by=tuple(required_by), optional=optional)
+    return Namespace(id=key, required_by=tuple(required_by), optional=optional)
 
 
 class FakeCatalog(object):

@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function
+
 import ast
 import importlib
 import io
@@ -6,11 +8,6 @@ import sys
 import unittest
 
 import _support
-
-FORBIDDEN_NODES = tuple(getattr(ast, name) for name in (
-    'JoinedStr', 'AnnAssign', 'AsyncFunctionDef', 'AsyncFor', 'AsyncWith', 'Await', 'YieldFrom',
-    'Nonlocal', 'NamedExpr', 'MatchAs', 'Match',
-) if hasattr(ast, name))
 
 PY3_ONLY_MODULES = (
     'urllib.request', 'urllib.error', 'http.server', 'queue', 'configparser', 'pathlib', 'typing', 'enum',
@@ -22,7 +19,6 @@ CLIENT_ONLY = (
     'BigWorld', 'gui', 'PlayerEvents', 'CurrentVehicle', 'BattleReplay', 'BattleFeedbackCommon', 'dossiers2',
     'AccountCommands', 'items', 'helpers', 'ArenaType', 'skeletons', 'constants', 'SoundGroups',
 )
-PY3 = sys.version_info[0] >= 3
 
 
 def source_files():
@@ -32,6 +28,12 @@ def source_files():
 def read_text(path):
     with io.open(path, 'r', encoding='utf-8') as handle:
         return handle.read()
+
+
+def parse(path):
+    """The module's tree, parsed from its bytes: Python 2 refuses a coding header in a text source."""
+    with io.open(path, 'rb') as handle:
+        return ast.parse(handle.read(), path)
 
 
 def relative(path):
@@ -65,7 +67,7 @@ def catches_import_error(try_node):
 def guarded(tree, node):
     """Whether `node` sits inside a try/except ImportError (the py3-only import has a py2 fallback)."""
     for parent in ast.walk(tree):
-        if not isinstance(parent, ast.Try) or not catches_import_error(parent):
+        if not isinstance(parent, ast.TryExcept) or not catches_import_error(parent):
             continue
         statements = list(parent.body) + [statement for handler in parent.handlers for statement in handler.body]
         if any(node is child for statement in statements for child in ast.walk(statement)):
@@ -73,35 +75,9 @@ def guarded(tree, node):
     return False
 
 
-def check_forbidden_node(node, tree, text):
-    if isinstance(node, FORBIDDEN_NODES):
-        return type(node).__name__
-    return None
-
-
-def check_arguments(node, tree, text):
-    if not isinstance(node, (ast.FunctionDef, ast.Lambda)):
-        return None
-    arguments = node.args
-    if arguments.kwonlyargs or getattr(arguments, 'posonlyargs', []):
-        return 'keyword-only/positional-only args'
-    if not isinstance(node, ast.FunctionDef):
-        return None
-    if node.returns is not None or any(argument.annotation is not None for argument in arguments.args):
-        return 'annotations'
-    return None
-
-
-def check_extended_unpacking(node, tree, text):
-    if isinstance(node, ast.Starred) and not isinstance(getattr(node, 'ctx', None), ast.Load):
-        return 'extended unpacking'
-    return None
-
-
 def check_print(node, tree, text):
-    is_print_call = isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == 'print'
-    if is_print_call and 'print_function' not in text:
-        return 'print() without __future__ import'
+    if isinstance(node, ast.Print):
+        return 'print statement (print() without the __future__ import)'
     return None
 
 
@@ -115,15 +91,14 @@ def check_py3_only_import(node, tree, text):
 
 
 def check_bytes_literal(node, tree, text):
-    if isinstance(node, ast.Constant) and isinstance(node.value, bytes) and any(byte > 127 for byte in node.value):
+    if isinstance(node, ast.Str) and isinstance(node.s, bytes) and any(ord(byte) > 127 for byte in node.s):
         return 'non-ASCII bytes literal'
     return None
 
 
+# The Python 3 syntax itself (f-strings, annotations, keyword-only args, nonlocal, async, walrus, extended unpacking)
+# fails test_sources_compile on the Python 2.7 compiler; these catch what still compiles there.
 NODE_CHECKS = (
-    check_forbidden_node,
-    check_arguments,
-    check_extended_unpacking,
     check_print,
     check_py3_only_import,
     check_bytes_literal,
@@ -132,7 +107,7 @@ NODE_CHECKS = (
 
 def syntax_problems(path):
     text = read_text(path)
-    tree = ast.parse(text, path)
+    tree = parse(path)
     source = relative(path)
     problems = []
     has_non_ascii = any(ord(character) > 127 for character in text)
@@ -147,7 +122,7 @@ def syntax_problems(path):
 
 
 def client_imports(path):
-    tree = ast.parse(read_text(path), path)
+    tree = parse(path)
     for node in ast.walk(tree):
         if not isinstance(node, (ast.Import, ast.ImportFrom)) or getattr(node, 'level', 0) != 0:
             continue
@@ -163,13 +138,11 @@ class Py27CompatTest(unittest.TestCase):
             with io.open(path, 'rb') as handle:
                 compile(handle.read(), path, 'exec')
 
-    @unittest.skipUnless(PY3, 'the AST scan needs the Python 3 ast module')
     def test_sources_use_py27_syntax(self):
         problems = [problem for path in source_files() for problem in syntax_problems(path)]
 
         self.assertEqual(problems, [])
 
-    @unittest.skipUnless(PY3, 'the AST scan needs the Python 3 ast module')
     def test_client_modules_are_isolated(self):
         pure = [path for path in source_files() if not is_client_glue(path)]
 

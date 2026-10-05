@@ -1,18 +1,8 @@
 {
   "include": ["packages", "features", "tools"],
-  "exclude": ["**/vendor", "dist", ".venv", "**/node_modules", "**/__pycache__", "**/fixtures"],
-  "venvPath": ".",
-  "venv": ".venv",
+  "exclude": ["**/vendor", "dist", "**/node_modules", "**/__pycache__", "**/fixtures"],
   "typeCheckingMode": "off",
-  "reportMissingImports": "error",
-  "pythonVersion": "3.10",
-  "extraPaths": ["tools/testing", "tools", "tools/build", "tools/assets"],
-  "executionEnvironments": [
-    { "root": "packages", "pythonVersion": "3.7", "reportMissingImports": "none" },
-    { "root": "features", "pythonVersion": "3.7", "reportMissingImports": "none" },
-    { "root": "tools/tests", "reportMissingImports": "none" },
-    { "root": "tools/testing", "reportMissingImports": "none" },
-    { "root": "tools/build/previews", "reportMissingImports": "none" },
-    { "root": "tools" }
-  ]
+  "reportMissingImports": "none",
+  "pythonVersion": "3.7",
+  "extraPaths": ["tools/testing", "tools", "tools/build", "tools/assets"]
 }

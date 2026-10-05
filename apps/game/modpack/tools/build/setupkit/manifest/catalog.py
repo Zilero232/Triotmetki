@@ -5,12 +5,15 @@ version and package id patterns, texts without control characters (they are show
 hashes. This module then checks what a schema cannot: preview files on disk, ids that refer to each other, presets
 and the third-party masks. Every problem is collected, then reported at once as a
 CatalogError. Entries with `kind: "dependency"` are third-party runtime mods, passed through to components.json.
-jsonschema is a dev dependency (uv sync); on a bare Python the shape check is skipped and only the rest runs.
+jsonschema comes from tools/requirements.txt; on a bare Python the shape check is skipped and only the rest runs.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import fnmatch
 import io
 import json
 import os
+import re
 
 from .. import SCHEMA_PATH
 from .model import (
@@ -36,6 +39,8 @@ HAVE_SCHEMA = jsonschema is not None
 # Audio previews are the sounds a component already ships, so they are read from the modpack's assets/ folder.
 AUDIO_DIR = 'assets'
 DEPENDENCY_EXTENSION = '.mtmod'
+# jsonschema quotes values with repr(), which on Python 2 marks every text value u'...'.
+UNICODE_REPR = re.compile(r"(?<![\w'])u(['\"])")
 
 
 class CatalogError(ValueError):
@@ -52,7 +57,11 @@ def schema_problems(raw):
     with io.open(SCHEMA_PATH, encoding='utf-8') as handle:
         validator = jsonschema.Draft7Validator(json.load(handle))
     errors = sorted(validator.iter_errors(raw), key=lambda error: list(map(str, error.absolute_path)))
-    return ['%s: %s' % ('/'.join(map(str, error.absolute_path)) or '(root)', error.message) for error in errors]
+    return ['%s: %s' % (_error_path(error), UNICODE_REPR.sub(r'\1', error.message)) for error in errors]
+
+
+def _error_path(error):
+    return '/'.join(map(str, error.absolute_path)) or '(root)'
 
 
 def _localized(value):
@@ -80,7 +89,7 @@ class _Reader(object):
         return Preview(image, value.get('video'), audio)
 
     def audio_path(self, audio):
-        return os.path.join(os.path.dirname(os.path.abspath(self.assets_dir)), AUDIO_DIR, *str(audio).split('/'))
+        return os.path.join(os.path.dirname(os.path.abspath(self.assets_dir)), AUDIO_DIR, *('%s' % audio).split('/'))
 
     def entry(self, raw):
         return CatalogEntry(
@@ -177,7 +186,7 @@ def _check(reader, catalog):
     _unique(reader, 'components', entry_ids + [dependency.id for dependency in catalog.dependencies])
     _check_presets(reader, catalog.presets)
     if catalog.fallback_category not in category_ids:
-        reader.fail('fallbackCategory', 'unknown category %r' % catalog.fallback_category)
+        reader.fail('fallbackCategory', "unknown category '%s'" % catalog.fallback_category)
     for entry in catalog.components:
         _check_entry(reader, catalog, entry)
     for dependency in catalog.dependencies:
@@ -202,25 +211,25 @@ def _check_entry(reader, catalog, entry):
     custom = [preset.id for preset in catalog.presets if preset.custom]
     entry_ids = [component.id for component in catalog.components]
     if entry.category not in category_ids:
-        reader.fail(where, 'unknown category %r' % entry.category)
+        reader.fail(where, "unknown category '%s'" % entry.category)
     for preset in entry.presets:
         if preset not in preset_ids or preset in custom:
-            reader.fail(where, 'unknown or custom preset %r' % preset)
+            reader.fail(where, "unknown or custom preset '%s'" % preset)
     if entry.required and entry.presets:
         reader.fail(where, 'a required component is in every preset; drop its presets list')
     for dependency in entry.dependencies:
         if dependency not in entry_ids or dependency == entry.id:
-            reader.fail(where, 'unknown dependency %r' % dependency)
+            reader.fail(where, "unknown dependency '%s'" % dependency)
 
 
 def _check_conflict(reader, catalog, entry_ids, rule):
     where = 'conflicts.%s' % rule.id
     for component_id in rule.components:
         if component_id not in entry_ids:
-            reader.fail(where, 'unknown component %r' % component_id)
+            reader.fail(where, "unknown component '%s'" % component_id)
     for pattern in rule.patterns:
         if any(pattern.startswith(prefix.lower()) for prefix in our_prefixes(catalog.owned_patterns)):
-            reader.fail(where, '%r names our own packages' % pattern)
+            reader.fail(where, "'%s' names our own packages" % pattern)
 
 
 def our_prefixes(owned_patterns):
@@ -240,7 +249,7 @@ def _check_dependency(reader, catalog, entry_ids, dependency):
         reader.fail(where, 'file must be %s, got %s' % (expected, dependency.file))
     for component_id in dependency.required_by:
         if component_id not in entry_ids:
-            reader.fail(where, 'requiredBy: unknown component %r' % component_id)
+            reader.fail(where, "requiredBy: unknown component '%s'" % component_id)
 
 
 def load(path, assets_dir):

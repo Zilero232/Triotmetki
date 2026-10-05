@@ -14,6 +14,9 @@ asset sets in assets/assets.json (images, sounds), their files, licences and THI
 
 so the split packages never ship the same file, and the single package is their union.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import io
 import json
 import os
 import re
@@ -59,7 +62,7 @@ class Package(object):
 
 
 def read_constants(path, names):
-    with open(path, encoding='utf-8') as handle:
+    with io.open(path, encoding='utf-8') as handle:
         text = handle.read()
     pattern = r"^(%s) = '([^']+)'" % '|'.join(names)
     values = dict(re.findall(pattern, text, re.M))
@@ -167,7 +170,7 @@ def feature_package(feature_id, core, companion):
 
 def modpack_version():
     """The modpack release version: "version" in apps/game/modpack/package.json, its single source."""
-    with open(PACKAGE_JSON, encoding='utf-8') as handle:
+    with io.open(PACKAGE_JSON, encoding='utf-8') as handle:
         return json.load(handle)['version']
 
 

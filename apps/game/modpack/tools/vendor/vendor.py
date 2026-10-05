@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Vendor the pinned Python 2.7-compatible libraries into packages/core/vendor.
 
 Usage: python apps/game/modpack/tools/vendor/vendor.py [--check]
@@ -9,8 +8,11 @@ gui.mods.otmetki.core.vendor.<name>), copies its licence to vendor/licenses/ and
 vendor/__init__.py with the pinned versions. `--check` compares the tree with a fresh vendoring and
 fails on any difference (nothing is written).
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import argparse
 import collections
+import contextlib
 import hashlib
 import io
 import json
@@ -19,7 +21,7 @@ import re
 import shutil
 import sys
 import tempfile
-import urllib.request
+import urllib2
 import zipfile
 
 MODPACK_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -95,7 +97,7 @@ VENDORED = {
 
 
 def wheel_url(pin):
-    with urllib.request.urlopen(PYPI_JSON % (pin.name, pin.version), timeout=60) as response:
+    with contextlib.closing(urllib2.urlopen(PYPI_JSON % (pin.name, pin.version), timeout=60)) as response:
         release = json.loads(response.read().decode('utf-8'))
     for entry in release.get('urls', ()):
         is_pinned_file = entry.get('filename') == pin.wheel
@@ -107,7 +109,7 @@ def wheel_url(pin):
 def download(pin, cache):
     path = os.path.join(cache, pin.wheel)
     if not os.path.isfile(path):
-        with urllib.request.urlopen(wheel_url(pin), timeout=120) as response:
+        with contextlib.closing(urllib2.urlopen(wheel_url(pin), timeout=120)) as response:
             data = response.read()
         with open(path, 'wb') as handle:
             handle.write(data)
@@ -125,6 +127,11 @@ def patch(text, patches, member):
             raise SystemExit('%s: patch %r did not apply' % (member, pattern))
         text = updated
     return text
+
+
+def make_dirs(path):
+    if not os.path.isdir(path):
+        os.makedirs(path)
 
 
 def write_text(path, text):
@@ -149,7 +156,7 @@ def vendor_member(wheel, member, pin, target):
         applicable = [item for item in pin.patches if re.search(item[0], text)]
         applied.update(item[0] for item in applicable)
         path = os.path.join(target, *relative.split('/'))
-        os.makedirs(os.path.dirname(path), exist_ok=True)
+        make_dirs(os.path.dirname(path))
         write_text(path, patch(text, applicable, member))
     return applied
 
@@ -215,7 +222,7 @@ def main(argv=None):
     work = tempfile.mkdtemp(prefix='otmetki-vendor-')
     try:
         cache = args.cache or os.path.join(work, 'wheels')
-        os.makedirs(cache, exist_ok=True)
+        make_dirs(cache)
         fresh = os.path.join(work, 'vendor')
         vendor_into(fresh, cache)
         if args.check:

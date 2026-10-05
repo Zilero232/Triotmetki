@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function
+
 import copy
 import importlib
 import json
@@ -217,6 +219,7 @@ def module(name, **attrs):
     stub = types.ModuleType(name)
     stub.__dict__.update(attrs)
     sys.modules[name] = stub
+    _support.link_to_parent(name)
     return stub
 
 
@@ -749,9 +752,7 @@ class Game(object):
         shutil.rmtree(self.game_dir, ignore_errors=True)
 
     def purge(self):
-        for name in list(sys.modules):
-            if name.split('.')[0] in STUBBED:
-                del sys.modules[name]
+        _support.drop_modules([name for name in sys.modules if name.split('.')[0] in STUBBED])
 
     def install_big_world(self):
         test = self
@@ -1770,11 +1771,13 @@ class HangarCardsTest(StoryTest):
         game.install_hud_stubs()
         game.open_hangar()
         instances = game.instances()
+        tank_card = instances['marks_panel'].ui_parts()['hangar_marks']
         cls.actions = dict(
             (feature_id, instances[feature_id].ui_actions())
-            for feature_id in ('marks_panel', 'battle_results', 'auto_resupply')
+            for feature_id in ('battle_results', 'auto_resupply')
         )
-        cls.history_rows = instances['marks_panel'].ui_page()['rows']
+        cls.actions['hangar_marks'] = tank_card.ui_actions()
+        cls.history_rows = tank_card.ui_page()['rows']
         cls.results_rows_before = instances['battle_results'].ui_page()['rows']
         game.events.onBattleResultsReceived(True, _support.battle_results())
         cls.results_rows = copy.deepcopy(instances['battle_results'].ui_page()['rows'])
@@ -2757,6 +2760,38 @@ class MarksTest(StoryTest):
         self.assertIn('moe_pace', self.state_parts)
 
 
+class MarksPartsTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        app = game.open_hangar(is_bound=True)
+        game.moe_curve_reads(app)[0](response_json(MOE_CURVE))
+        app.config.update({'battle_moe_panel': False})
+        app.bus.emit('component_settings', 'marks_panel', ['battle_moe_panel'])
+        cls.card_without_the_battle_panel = 'hangar_marks' in game.hud_components()
+        game.enter_battle(1, tank_id=1)
+        cls.battle_panels = sorted(game.hud_components())
+        game.events.onAvatarBecomeNonPlayer()
+        app.config.update({'battle_moe_panel': True, 'hangar_tank_card': False})
+        app.bus.emit('component_settings', 'hangar_marks', ['hangar_tank_card'])
+        cls.card_switched_off = 'hangar_marks' in game.hud_components()
+        game.enter_battle(2, tank_id=1)
+        cls.battle_panels_without_the_card = sorted(game.hud_components())
+
+    def test_the_card_stays_while_the_battle_panel_is_off(self):
+        self.assertTrue(self.card_without_the_battle_panel)
+
+    def test_the_battle_panel_switched_off_stays_out_of_the_battle(self):
+        self.assertNotIn('marks_panel', self.battle_panels)
+
+    def test_the_card_follows_its_own_switch(self):
+        self.assertFalse(self.card_switched_off)
+
+    def test_the_battle_panel_runs_without_the_card(self):
+        self.assertIn('marks_panel', self.battle_panels_without_the_card)
+
+
 class GamefaceBackendTest(StoryTest):
 
     @classmethod
@@ -3100,7 +3135,7 @@ class TankCardProgressTest(StoryTest):
         game.vehicle.item = research_tank()
 
         app = game.open_hangar(is_bound=True)
-        game.hud_module().component_config(app).get('marks_panel').update({'hangar_style': 'extended'})
+        game.hud_module().component_config(app).get('hangar_marks').update({'style': 'extended'})
         snapshot = dict(MOE_SNAPSHOT, mastery=2)
         app.marks.hangar_moe[1] = snapshot
         app.bus.emit('vehicle_moe', snapshot)

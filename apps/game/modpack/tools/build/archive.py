@@ -3,6 +3,8 @@
 Lesta clients from 1.35 load `.mtmod` packages from mods/<client version>/; WG clients load `.wotmod`.
 The format is the same, only the extension differs.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import zipfile
 from xml.sax.saxutils import escape
 

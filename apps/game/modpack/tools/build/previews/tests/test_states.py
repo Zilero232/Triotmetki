@@ -1,3 +1,6 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import io
 import json
 import os
 import sys
@@ -23,7 +26,7 @@ def image_values(value):
 
 
 def catalog_images():
-    with open(CATALOG_PATH, encoding='utf-8') as handle:
+    with io.open(CATALOG_PATH, encoding='utf-8') as handle:
         entries = json.load(handle)['components']
     return dict((entry['id'], entry.get('preview', {}).get('image')) for entry in entries)
 
@@ -36,7 +39,7 @@ class PreviewStateTest(unittest.TestCase):
         cls.images = images
         states = dict((component_id, preview_state(component_id, images)) for component_id in HUD_PREVIEWS)
         cls.panels = dict((component_id, state['panels'][0]) for component_id, state in states.items())
-        with open(PAGE_WIDGETS, encoding='utf-8') as handle:
+        with io.open(PAGE_WIDGETS, encoding='utf-8') as handle:
             cls.page_widgets = handle.read()
 
     def test_every_hud_preview_is_a_widget_the_page_draws(self):

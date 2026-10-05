@@ -1,11 +1,14 @@
-import contextlib
-import io
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import os
 import shutil
 import sys
 import tempfile
 import unittest
 import zipfile
+from StringIO import StringIO
+
+import contextlib2
 
 import _support  # noqa: F401
 
@@ -183,7 +186,7 @@ class BuildTest(unittest.TestCase):
         build.compilers.select = lambda choice, owg=None, python27=None: selection
 
     def run_build(self, *extra):
-        with contextlib.redirect_stdout(io.StringIO()):
+        with contextlib2.redirect_stdout(StringIO()):
             return build.build(build.parse_args(['--out', self.out] + list(extra)))
 
     def test_split_build_writes_one_mtmod_per_package(self):
@@ -256,9 +259,9 @@ class BuildTest(unittest.TestCase):
 
     def test_dry_run_lists_the_paths_and_writes_nothing(self):
         dry_out = os.path.join(self.out, 'dry')
-        output = io.StringIO()
+        output = StringIO()
 
-        with contextlib.redirect_stdout(output):
+        with contextlib2.redirect_stdout(output):
             result = build.build(build.parse_args(['--out', dry_out, '--dry-run']))
 
         self.assertEqual(result, [])
@@ -282,7 +285,7 @@ class Py27CompileTest(unittest.TestCase):
         folder = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, folder, True)
 
-        with contextlib.redirect_stdout(io.StringIO()):
+        with contextlib2.redirect_stdout(StringIO()):
             first = self.compiled(folder, 1000000000)
             second = self.compiled(folder, 1200000000)
 

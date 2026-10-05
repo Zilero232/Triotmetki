@@ -1,4 +1,6 @@
-import contextlib
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import copy
 import hashlib
 import importlib
@@ -9,6 +11,9 @@ import shutil
 import sys
 import tempfile
 import unittest
+from StringIO import StringIO
+
+import contextlib2
 
 BUILD_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 if BUILD_DIR not in sys.path:
@@ -138,12 +143,11 @@ class CatalogTest(unittest.TestCase):
 
     def assert_problems(self, cases):
         for expected, mutate in cases:
-            with self.subTest(expected=expected):
-                problems = self.problems(mutate)
+            problems = self.problems(mutate)
 
-                self.assertIn(expected, problems)
+            self.assertIn(expected, problems)
 
-    @unittest.skipUnless(catalog_module.HAVE_SCHEMA, 'jsonschema is not installed (uv sync)')
+    @unittest.skipUnless(catalog_module.HAVE_SCHEMA, 'jsonschema is not installed (tools/requirements.txt)')
     def test_a_badly_shaped_catalog_is_rejected_at_its_schema_path(self):
         self.assert_problems(SCHEMA_PROBLEMS)
 
@@ -337,7 +341,7 @@ class CliTest(unittest.TestCase):
         self.cli = importlib.import_module('setupkit.__main__')
         self.folder = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.folder)
-        with contextlib.redirect_stdout(io.StringIO()):
+        with contextlib2.redirect_stdout(StringIO()):
             self.cli.main(['--out', self.folder, '--skip-artwork'])
         with io.open(os.path.join(self.folder, 'components.json'), encoding='utf-8') as handle:
             self.data = json.load(handle)

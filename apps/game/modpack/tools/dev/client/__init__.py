@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Finds the local «Мир танков» client: a port of the manager's detection (apps/game/manager/tauri/src/detect).
 
 OTMETKI_GAME_DIR names the client folder and wins. Otherwise the clients come from Lesta Game Center
@@ -6,11 +7,13 @@ manager's own manualClients, and the pick is the manager's: its selectedClient, 
 then the first usable one. The mods folder is <Packages><Root> of paths.xml when it stays inside the client, else
 mods/<version> from version.xml, exactly as the manager lays packages out.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import json
 import os
 import xml.etree.ElementTree as ElementTree
-from dataclasses import dataclass, replace
-from typing import Optional, Tuple
+
+import attr
 
 GAME_DIR_ENV = 'OTMETKI_GAME_DIR'
 PROGRAM_DATA_ENV = 'PROGRAMDATA'
@@ -35,18 +38,18 @@ class ClientError(RuntimeError):
     """No usable game client: the message says what to do."""
 
 
-@dataclass(frozen=True)
-class GameClient:
-    path: str
-    version: Tuple[int, int, int, int]
-    realm: Optional[str]
-    mods_dir: str
-    res_mods_dir: str
-    package_mask: str
-    is_lesta: bool
-    is_common_test: bool
-    source: str
-    preferred: bool = False
+@attr.s(frozen=True)
+class GameClient(object):
+    path = attr.ib()
+    version = attr.ib()
+    realm = attr.ib()
+    mods_dir = attr.ib()
+    res_mods_dir = attr.ib()
+    package_mask = attr.ib()
+    is_lesta = attr.ib()
+    is_common_test = attr.ib()
+    source = attr.ib()
+    preferred = attr.ib(default=False)
 
     @property
     def version_text(self):
@@ -75,7 +78,7 @@ def read_text(path):
     try:
         with open(path, 'rb') as handle:
             return decode_text(handle.read())
-    except OSError:
+    except (IOError, OSError):
         return None
 
 
@@ -186,7 +189,7 @@ def inspect(path, source):
 
 def normalized(path):
     """The manager's path key: backslashes, no trailing separator, lower case."""
-    text = str(path).replace('/', '\\')
+    text = ('%s' % path).replace('/', '\\')
     if len(text) > 3:
         text = text.rstrip('\\')
     return text.lower()
@@ -243,7 +246,7 @@ def detect_clients(program_data, manual=()):
         client = inspect(path, source)
         if client is not None:
             preferred = selected is not None and same_path(selected, path)
-            found.append(replace(client, preferred=preferred))
+            found.append(attr.evolve(client, preferred=preferred))
     return found
 
 

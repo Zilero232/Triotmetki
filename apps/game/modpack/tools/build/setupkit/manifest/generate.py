@@ -4,7 +4,9 @@ Nothing the layout knows is repeated in the catalog: a component's id is its pac
 comes from archive.file_name and its dependencies start with the package's own `depends`. Third-party
 runtime mods (`kind: "dependency"`) have no package here: they are passed through as the catalog pins them.
 """
-import dataclasses
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import attr
 import fnmatch
 import os
 
@@ -175,7 +177,7 @@ def _conflicts(catalog, keys):
     for rule in catalog.conflicts:
         components = tuple(component_id for component_id in rule.components if component_id in keys)
         if components:
-            rules.append(dataclasses.replace(rule, components=components))
+            rules.append(attr.evolve(rule, components=components))
     return tuple(rules)
 
 
@@ -189,5 +191,5 @@ def _dependencies(catalog, keys, warnings):
             message = 'dependency %s is required by %s, which this build does not ship'
             warnings.append(message % (dependency.id, left_out))
         if required_by:
-            shipped.append(dataclasses.replace(dependency, required_by=required_by))
+            shipped.append(attr.evolve(dependency, required_by=required_by))
     return tuple(shipped)

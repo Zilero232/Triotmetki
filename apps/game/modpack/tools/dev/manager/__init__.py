@@ -6,11 +6,13 @@ mods/<version>/, where it lists files without descending into subfolders. Two co
 break the client, and moving the manager's files away would only make its background check put them back, so the dev
 loop refuses while either is there: uninstall the modpack in the manager first.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import fnmatch
 import hashlib
 import os
-from dataclasses import dataclass
-from typing import Optional, Tuple
+
+import attr
 
 STATE_ROOT_ENV = 'OTMETKI_STATE_ROOT'
 APP_FOLDER = 'TriOtmetki'
@@ -19,10 +21,10 @@ KEY_LENGTH = 16
 SHOWN_FILES = 3
 
 
-@dataclass(frozen=True)
-class ManagerInstall:
-    manifest: Optional[str]
-    files: Tuple[str, ...]
+@attr.s(frozen=True)
+class ManagerInstall(object):
+    manifest = attr.ib()
+    files = attr.ib()
 
     @property
     def present(self):
@@ -41,10 +43,10 @@ class ManagerInstall:
 
 def client_key(path):
     """The manager's state folder name for a client: sha256 of the lower-cased path as UTF-16LE, 16 hex digits."""
-    text = str(path)
+    text = '%s' % path
     if len(text) > 3:
         text = text.rstrip('\\')
-    lowered = ''.join(char.lower() if char.isascii() else char for char in text)
+    lowered = ''.join(char.lower() if ord(char) < 128 else char for char in text)
     return hashlib.sha256(lowered.encode('utf-16-le')).hexdigest()[:KEY_LENGTH]
 
 

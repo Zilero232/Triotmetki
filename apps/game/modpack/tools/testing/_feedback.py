@@ -13,6 +13,8 @@ The server sends `{'eventType', 'targetID', 'count', 'details'}` dicts to Avatar
 the adaptor turns each into a PlayerFeedbackEvent whose extra is decoded from the packed `details`
 int, as here.
 """
+from __future__ import absolute_import, division, print_function
+
 NONE_SHELL_TYPE = 127
 
 

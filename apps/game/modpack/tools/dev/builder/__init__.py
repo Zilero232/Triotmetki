@@ -3,6 +3,8 @@
 Bytecode when owg_python_compiler or a Python 2.7 is found (tools/build/compilers.py), `.py` sources otherwise. The
 production client loads only `mod_*.pyc`, so a source build only loads in a development client: the warning says so.
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import os
 import shutil
 import tempfile
@@ -41,7 +43,7 @@ class Builder(object):
 
     def build(self, keys):
         """{key: built package path} for `keys`, in the build's order."""
-        os.makedirs(self.out_dir, exist_ok=True)
+        fileio.make_dirs(self.out_dir)
         staging = tempfile.mkdtemp(prefix='otmetki-dev-')
         try:
             built = {}
