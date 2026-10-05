@@ -1,4 +1,4 @@
-import type { ChangeVerdict } from '../change-verdict';
+import type { ChangeVerdict } from '../change-verdict/change-verdict.types';
 
 type SummaryTank = {
   key: string;

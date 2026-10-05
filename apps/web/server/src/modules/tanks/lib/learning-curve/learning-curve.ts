@@ -4,7 +4,7 @@ import { LEARNING_CURVE } from '@otmetki/schemas';
 import { last } from 'remeda';
 
 import { clampPercentDelta } from '../../../../common/lib';
-import { TANK_LEARNING } from '../../config';
+import { TANK_LEARNING } from '../../config/tank-traits.constants';
 
 export const bucketOf = (battles: number): number => {
   const index = LEARNING_CURVE.bucketStarts.findLastIndex((start) => battles >= start);

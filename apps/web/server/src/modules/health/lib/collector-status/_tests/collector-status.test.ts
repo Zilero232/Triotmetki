@@ -2,7 +2,7 @@ import { COLLECTOR_JOBS } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import { jobSuccessKey } from '../../../../collector/metrics';
-import { COLLECTOR_JOB_SOURCES } from '../../../config';
+import { COLLECTOR_JOB_SOURCES } from '../../../config/health.constants';
 import { collectorJobs, toQueueBacklog } from '../collector-status';
 
 const EARLY = '2026-09-29T08:00:00.000Z';

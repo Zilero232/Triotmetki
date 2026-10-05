@@ -6,11 +6,12 @@ import type { BotCommandSpec, BotContext, ConsumeInput, GuardInput, LinkPromptIn
 
 import { errorMessage } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
-import { BotRepliesService } from '../../bot-commands';
-import { BOT, SHARED_COMMAND_OF, WEB_LOGIN } from '../config';
-import { isPublicUrl, linkConfirmData, looksLikeLinkCode, parseLinkConfirm, resolveBotLocale } from '../lib';
-import { TelegramIdentityService } from './telegram-identity.service';
-import { TelegramLinkService } from './telegram-link.service';
+import { BotRepliesService, isPublicUrl, resolveBotLocale } from '../../bot-commands';
+import { BOT, SHARED_COMMAND_OF } from '../config/bot.constants';
+import { WEB_LOGIN } from '../config/web-login.constants';
+import { linkConfirmData, looksLikeLinkCode, parseLinkConfirm } from '../lib/link-code/link-code';
+import { TelegramIdentityWriterService } from './telegram-identity-writer.service';
+import { TelegramLinkWriterService } from './telegram-link-writer.service';
 import { TelegramMissionCommandsService } from './telegram-mission-commands.service';
 import { TelegramPlaylistCommandsService } from './telegram-playlist-commands.service';
 import { TelegramSharedCommandsService } from './telegram-shared-commands.service';
@@ -25,8 +26,8 @@ export class TelegramCommandsService {
     private readonly replies: BotRepliesService,
     private readonly missions: TelegramMissionCommandsService,
     private readonly playlists: TelegramPlaylistCommandsService,
-    private readonly links: TelegramLinkService,
-    private readonly identity: TelegramIdentityService
+    private readonly links: TelegramLinkWriterService,
+    private readonly identity: TelegramIdentityWriterService
   ) {}
 
   get commands(): BotCommandSpec[] {

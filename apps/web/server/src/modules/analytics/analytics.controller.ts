@@ -22,17 +22,15 @@ import {
   MyBattlesPageDto,
   PlaylistDto,
   PlaylistQueryDto
-} from './dto';
-import {
-  AnalyticsOverviewReaderService,
-  BattleReviewReaderService,
-  FirstWinReaderService,
-  HonestRngReaderService,
-  MapAdvisorReaderService,
-  PlatoonChemistryReaderService,
-  PlaylistReaderService,
-  TankAnalyticsReaderService
-} from './services';
+} from './dto/analytics.dto';
+import { AnalyticsOverviewReaderService } from './services/analytics-overview-reader.service';
+import { BattleReviewReaderService } from './services/battle-review-reader.service';
+import { FirstWinReaderService } from './services/first-win-reader.service';
+import { HonestRngReaderService } from './services/honest-rng-reader.service';
+import { MapAdvisorReaderService } from './services/map-advisor-reader.service';
+import { PlatoonChemistryReaderService } from './services/platoon-chemistry-reader.service';
+import { PlaylistReaderService } from './services/playlist-reader.service';
+import { TankAnalyticsReaderService } from './services/tank-analytics-reader.service';
 
 @ApiTags('me')
 @Controller('me/analytics')

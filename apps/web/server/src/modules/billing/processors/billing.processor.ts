@@ -4,14 +4,14 @@ import { match } from 'ts-pattern';
 
 import { MetricsService, TrackedWorkerHost } from '../../collector/metrics';
 import { BILLING_QUEUE } from '../config/queue.constants';
-import { PromoService } from '../services/promo.service';
-import { RenewalService } from '../services/renewal.service';
+import { PromoWriterService } from '../services/promo-writer.service';
+import { RenewalWriterService } from '../services/renewal-writer.service';
 
 @Processor(BILLING_QUEUE.name, { concurrency: 1 })
 export class BillingProcessor extends TrackedWorkerHost<number> {
   constructor(
-    private readonly renewals: RenewalService,
-    private readonly promos: PromoService,
+    private readonly renewals: RenewalWriterService,
+    private readonly promos: PromoWriterService,
     metrics: MetricsService
   ) {
     super(metrics);

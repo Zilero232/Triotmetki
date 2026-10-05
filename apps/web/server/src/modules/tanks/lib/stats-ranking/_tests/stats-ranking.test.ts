@@ -3,8 +3,8 @@ import type { TankServerStatsRow } from '@otmetki/schemas';
 import { wilsonInterval } from '@otmetki/ratings';
 import { describe, expect, it } from 'vitest';
 
-import { TANK_STATS_RANKING } from '../../../config';
-import { toServerStatsRow } from '../../../mappers';
+import { TANK_STATS_RANKING } from '../../../config/tank-stats.constants';
+import { toServerStatsRow } from '../../../mappers/tank-stats.mappers';
 import { serverStats, vehicle } from '../../../services/_tests/tanks.fixtures';
 import { statsRankValue, statsSampleFloor } from '../stats-ranking';
 

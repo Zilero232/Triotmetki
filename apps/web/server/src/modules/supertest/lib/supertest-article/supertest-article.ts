@@ -1,7 +1,7 @@
 import { firstBy } from 'remeda';
 
 import type { NamedVehicle } from '../../../shop';
-import type { ParamLine } from '../param-line';
+import type { ParamLine } from '../param-line/param-line.types';
 import type {
   HeadingInput,
   NormaliseInput,
@@ -13,13 +13,10 @@ import type {
 } from './supertest-article.types';
 
 import { matchTankNames } from '../../../shop';
-import { SUPERTEST_ARTICLE, SUPERTEST_SCRAPE } from '../../config';
-import { paramOf } from '../param-key';
-import { parseParamLine, parseValueCell } from '../param-line';
+import { SUPERTEST_ARTICLE, SUPERTEST_SCRAPE } from '../../config/scrape.constants';
+import { paramOf } from '../param-key/param-key';
+import { parseParamLine, parseValueCell } from '../param-line/param-line';
 import { SUPERTEST_ARTICLE_PARAMS } from './supertest-article.constants';
-
-const CHANGE_VERB = /увелич|уменьш|измен|улучш|ухудш|сниж|повыш|сокращ|ускор|замедл|добавл|убран/iu;
-const CLOSING_PUNCTUATION = /[.:!?,;]$/u;
 
 export const isSupertestTitle = (title: string): boolean => SUPERTEST_SCRAPE.titlePattern.test(title);
 
@@ -72,7 +69,11 @@ const vehicleIn = ({ line, vehicles }: VehicleInInput): NamedVehicle | null => {
 };
 
 const looksLikeName = (line: string): boolean =>
-  isShort(line) && !SUPERTEST_ARTICLE.sectionHeading.test(line) && !CLOSING_PUNCTUATION.test(line) && paramOf(line) === null && /\p{L}/u.test(line);
+  isShort(line) &&
+  !SUPERTEST_ARTICLE.sectionHeading.test(line) &&
+  !SUPERTEST_ARTICLE_PARAMS.closingPunctuation.test(line) &&
+  paramOf(line) === null &&
+  /\p{L}/u.test(line);
 
 const startsParams = ({ rows, index }: Pick<HeadingInput, 'index' | 'rows'>): boolean => {
   const next = rows[index + 1] ?? '';
@@ -162,7 +163,7 @@ export const parseSupertestArticle = ({ lines, vehicles }: ParseArticleInput): P
       continue;
     }
 
-    if (line.length <= SUPERTEST_ARTICLE.maxChangeLineLength && CHANGE_VERB.test(line)) {
+    if (line.length <= SUPERTEST_ARTICLE.maxChangeLineLength && SUPERTEST_ARTICLE_PARAMS.changeVerb.test(line)) {
       current.changes.push({ param: meta.key, label: line, from: null, to: null, unit: meta.unit, raw: line });
     }
   }

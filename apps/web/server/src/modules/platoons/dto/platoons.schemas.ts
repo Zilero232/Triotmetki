@@ -2,7 +2,7 @@ import { accountIdSchema, isoDateTimeSchema, paginatedSchema, paginationQuerySch
 import { z } from 'zod';
 
 import { playerStatsSchema, postStatusSchema } from '../../community-core';
-import { PLATOON } from '../config';
+import { PLATOON } from '../config/platoons.constants';
 
 export const platoonPostSchema = z.object({
   id: uuidSchema,

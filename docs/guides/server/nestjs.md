@@ -27,9 +27,8 @@ src/modules/search/
 ```
 
 Inside a module a segment holds one file per topic, not a folder per item, and has no
-barrel; relative imports point at the file. Code from before this rule still has the
-folder-per-item shape until its module is converted
-([refactor plan](../../specs/2026-10-05-server-refactor.md), WP-4 … WP-13).
+barrel; relative imports point at the file (`lib/<concern>/` folders have no `index.ts`
+either).
 
 - DTOs wrap a schema: `export class SearchQueryDto extends createZodDto(searchQuerySchema) {}`
   (`nestjs-zod`). A contract the client reads or sends lives in `@otmetki/schemas`, so

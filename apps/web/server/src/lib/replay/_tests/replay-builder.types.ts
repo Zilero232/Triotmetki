@@ -1,4 +1,4 @@
-import type { Vector3 } from '../binary';
+import type { Vector3 } from '../binary/byte-reader.types';
 
 export type PacketFrame = {
   payload: Uint8Array;

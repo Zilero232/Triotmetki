@@ -6,7 +6,7 @@ import type { ReadUrlInput, ToVehicleSummaryInput } from './vehicle-summary.type
 
 import { VEHICLE_TYPE_FROM_DB } from '../../../common/lib';
 import { vehicleRenderUrl } from '../../gamedata';
-import { IMAGE_KEYS } from './vehicle-summary.constants';
+import { IMAGE_KEYS } from '../config/vehicle-images.constants';
 
 const readUrl = ({ images, keys }: ReadUrlInput): string | null => {
   if (!isObjectType(images)) {

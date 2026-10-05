@@ -12,7 +12,7 @@ import type { ModDeviceService } from '../services/mod-device.service';
 import type { ModIngestWriterService } from '../services/mod-ingest-writer.service';
 
 import { ModException } from '../../../common/exceptions';
-import { ingestBatchSchema } from '../lib/contract';
+import { ingestBatchSchema } from '../lib/contract/contract.schemas';
 import { ModController } from '../mod.controller';
 
 const example = ingestBatchSchema.parse(

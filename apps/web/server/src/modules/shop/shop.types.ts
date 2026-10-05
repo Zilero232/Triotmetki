@@ -10,7 +10,8 @@ import type { z } from 'zod';
 import type { BonusCode, BonusCodeStatus } from '../../../generated';
 import type { ListingItem } from '../../lib/scrape';
 import type { offerArchiveSchema, offerPageSchema, offersQuerySchema } from './dto/shop.schemas';
-import type { NamedVehicle, OfferDetail } from './lib';
+import type { OfferDetail } from './lib/offer-detail/offer-detail.types';
+import type { NamedVehicle } from './lib/tank-mentions/tank-mentions.types';
 
 export type OffersQuery = z.output<typeof offersQuerySchema>;
 export type OfferPage = z.infer<typeof offerPageSchema>;

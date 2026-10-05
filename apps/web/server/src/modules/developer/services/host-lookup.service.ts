@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { lookup } from 'node:dns/promises';
 
-import type { HostLookup } from '../lib';
+import type { HostLookup } from '../lib/webhook-url/webhook-url.types';
 
 @Injectable()
 export class HostLookupService {

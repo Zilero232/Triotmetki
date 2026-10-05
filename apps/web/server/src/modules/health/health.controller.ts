@@ -6,15 +6,15 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
-import { HealthDto } from './dto';
-import { HealthService } from './services';
+import { HealthDto } from './dto/health.dto';
+import { HealthReaderService } from './services/health-reader.service';
 
 @ApiTags('health')
 @AllowAnonymous()
 @SkipThrottle()
 @Controller('health')
 export class HealthController {
-  constructor(private readonly health: HealthService) {}
+  constructor(private readonly health: HealthReaderService) {}
 
   @Get()
   @ZodResponse({ type: HealthDto })

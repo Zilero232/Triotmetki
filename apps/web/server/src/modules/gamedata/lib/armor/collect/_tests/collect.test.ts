@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import type { GameData } from '../../../game-data';
+import type { GameData } from '../../../game-data/game-data.types';
 
 import { COLLISION_FIXTURES, loadIs, readFixture } from '../../../_tests/fixtures';
-import { createLocalRepoReader, ForeignClientError, MODEL_PATHS, MODEL_SOURCES } from '../../../source';
+import { createLocalRepoReader } from '../../../source/local/local';
+import { ForeignClientError } from '../../../source/mt-client/mt-client.errors';
+import { MODEL_PATHS, MODEL_SOURCES } from '../../../source/source.constants';
 import { collectArmorModels } from '../collect';
 import { ArmorVersionMismatchError } from '../collect.errors';
 

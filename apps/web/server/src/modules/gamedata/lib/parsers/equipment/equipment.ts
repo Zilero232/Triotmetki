@@ -1,11 +1,11 @@
 import type { Equipment, EquipmentKind, Modifier, SkillBoost } from '@otmetki/gamedata';
 
-import type { XmlNode } from '../../xml';
+import type { XmlNode } from '../../xml/xml.types';
 import type { BoosterModifiersInput, EquipmentKindInput, EquipmentModifiersInput, OptionalModifierInput, SkillBoostInput } from './equipment.types';
 
-import { oneOf } from '../../guards';
-import { provisionIdOf } from '../../ids';
-import { parseDeviceTagFilter } from '../../modifiers';
+import { oneOf } from '../../guards/guards';
+import { provisionIdOf } from '../../ids/ids';
+import { parseDeviceTagFilter } from '../../modifiers/modifiers';
 import {
   bool,
   entries,
@@ -22,8 +22,8 @@ import {
   scriptName,
   text,
   words
-} from '../../xml';
-import { parseVehicleFilter } from '../vehicle-filter';
+} from '../../xml/xml';
+import { parseVehicleFilter } from '../vehicle-filter/vehicle-filter';
 import { CONSUMABLE_SCRIPTS, EQUIPMENT_SCRIPT, EQUIPMENT_TYPE, REPAIRKIT_TAG, SKILL_BOOSTER_SCRIPTS } from './equipment.constants';
 
 const isConsumableScript = oneOf(CONSUMABLE_SCRIPTS);

@@ -2,7 +2,7 @@ import type { ModComponentSet, ModProfilesWriteRequest, ModSetsWriteRequest, Mod
 import type { ZodType } from 'zod';
 
 import type { ModSyncKind, ModSyncLibrary, Prisma } from '../../../generated';
-import type { SyncEntry, SyncState } from './lib';
+import type { SyncEntry, SyncState } from './lib/library-merge/library-merge.types';
 
 export type LibraryRow = Pick<ModSyncLibrary, 'revision' | 'updatedAt'>;
 

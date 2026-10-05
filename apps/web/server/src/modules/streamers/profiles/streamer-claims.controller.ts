@@ -7,13 +7,13 @@ import { CurrentUserId, OperationIdPrefix } from '../../../common/decorators';
 import { SlugParamsDto } from '../dto/params.dto';
 import { STREAMERS } from './config/directory.constants';
 import { ClaimStatusDto, StartClaimDto, StreamerClaimDto } from './dto/profiles.dto';
-import { StreamerClaimService } from './services/streamer-claim.service';
+import { StreamerClaimWriterService } from './services/streamer-claim-writer.service';
 
 @ApiTags('streamers')
 @OperationIdPrefix('StreamersController')
 @Controller('streamers')
 export class StreamerClaimsController {
-  constructor(private readonly claims: StreamerClaimService) {}
+  constructor(private readonly claims: StreamerClaimWriterService) {}
 
   @Get(':slug/claim')
   @ZodResponse({ type: ClaimStatusDto })

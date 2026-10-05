@@ -3,7 +3,7 @@ import { addMinutes } from 'date-fns';
 import { Redis } from 'ioredis';
 import { isObjectType, isString } from 'remeda';
 
-import type { BindResponse } from '../lib/contract';
+import type { BindResponse } from '../lib/contract/contract.types';
 import type { BindCode, BindCodeInput, BindInput, BindLinkInput, BindRequest, ClaimCodeInput, ClaimedCode, RegisterDeviceInput } from '../mod.types';
 
 import { AppForbiddenException, ModException } from '../../../common/exceptions';
@@ -13,8 +13,8 @@ import { LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService, REDIS } from '../..
 import { UserAccountsReaderService } from '../../accounts';
 import { BIND_CODE } from '../config/bind-code.constants';
 import { MOD_DEVICE_LIMITS } from '../config/device.constants';
-import { bindCodePattern, bindRequestSchema } from '../lib/contract';
-import { deviceSecret, hashSecret, newDeviceId, normalizeBindCode } from '../lib/device-secret';
+import { bindCodePattern, bindRequestSchema } from '../lib/contract/contract.schemas';
+import { deviceSecret, hashSecret, newDeviceId, normalizeBindCode } from '../lib/device-secret/device-secret';
 
 @Injectable()
 export class ModBindWriterService {

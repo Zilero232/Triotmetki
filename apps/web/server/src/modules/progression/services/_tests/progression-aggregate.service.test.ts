@@ -8,6 +8,7 @@ import type { PrismaService } from '../../../../core';
 import type { NotificationService } from '../../../notifications';
 
 import { weekWindow } from '../../../../common/lib';
+import { PROGRESSION_RUN } from '../../config/queue.constants';
 import { TANK_CHALLENGE_POOL } from '../../config/tank-challenges.constants';
 import { ProgressionAggregateService } from '../progression-aggregate.service';
 import { SeasonRewardsWriterService } from '../season-rewards-writer.service';
@@ -273,5 +274,26 @@ describe('ProgressionAggregateService.run', () => {
         data: { progressionProcessedUntil: now }
       })
     );
+  });
+
+  it('keeps the cursor of Plus accounts past the per-run cap so their battles wait for the next run', async () => {
+    const { prisma, service } = setup();
+    const accountIds = range(0, PROGRESSION_RUN.maxAccountsPerRun + 1).map((index) => BigInt(index + 1));
+
+    prisma.userLestaAccount.findMany.mockResolvedValue(accountIds.map((accountId) => link('u', accountId)));
+
+    expect(await service.run(now)).toBe(PROGRESSION_RUN.maxAccountsPerRun);
+    expect(prisma.player.updateMany.mock.calls[0]?.[0]?.where?.accountId).toEqual({ notIn: accountIds });
+  });
+
+  it('serves the accounts with the oldest progression cursor first', async () => {
+    const { prisma, service } = setup();
+
+    await service.run(now);
+
+    expect(prisma.userLestaAccount.findMany.mock.calls[0]?.[0]?.orderBy).toEqual([
+      { player: { progressionProcessedUntil: { sort: 'asc', nulls: 'first' } } },
+      { accountId: 'asc' }
+    ]);
   });
 });

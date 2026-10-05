@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import type { ArenaBlock, PersonalResult, ResultsBlock } from '../header';
+import type { ArenaBlock, PersonalResult, ResultsBlock } from '../header/header.types';
 import type { clientVersionSchema, playerResultSchema, replayGameSchema, replayPlayerSchema, replaySummarySchema } from './summary.schemas';
 
 export type ReplayGame = z.infer<typeof replayGameSchema>;

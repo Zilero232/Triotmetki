@@ -4,8 +4,8 @@ import { Injectable } from '@nestjs/common';
 
 import type { CollabContext, ReplaceLiveDataInput } from '../tactics.types';
 
-import { TACTICS } from '../config';
-import { replaceBoardLayers } from '../lib';
+import { TACTICS } from '../config/tactics.constants';
+import { replaceBoardLayers } from '../lib/board-document/board-document';
 
 @Injectable()
 export class BoardLiveService {

@@ -2,15 +2,17 @@ import { API } from '@discordjs/core';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
 import type { ApplyRolesInput, SyncGuildInput, SyncMemberInput } from '../discord.types';
-import type { MemberStanding } from '../lib';
+import type { MemberStanding } from '../lib/member-roles/member-roles.types';
 
 import { errorMessage } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { AUTH_PROVIDER } from '../../../lib/auth';
 import { USER_LESTA_ACCOUNT_ORDER } from '../../accounts';
 import { EntitlementsService } from '../../billing';
-import { DISCORD_LIMITS, DISCORD_TOKENS } from '../config';
-import { desiredRoles, isUnknownMember, readTierRoles, roleChanges } from '../lib';
+import { DISCORD_LIMITS } from '../config/queue.constants';
+import { DISCORD_TOKENS } from '../config/tokens.constants';
+import { isUnknownMember } from '../lib/discord-errors/discord-errors';
+import { desiredRoles, readTierRoles, roleChanges } from '../lib/member-roles/member-roles';
 
 @Injectable()
 export class DiscordRolesService {

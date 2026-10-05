@@ -5,13 +5,13 @@ import { ZodResponse } from 'nestjs-zod';
 import { CurrentUserId, OperationIdPrefix } from '../../../common/decorators';
 import { IdParamsDto } from '../dto/params.dto';
 import { CreateOverlayDto, OverlayDataDto, OverlayDto, OverlayListDto, PreviewOverlayDto, UpdateOverlayDto } from './dto/overlays.dto';
-import { OverlayService } from './services/overlay.service';
+import { OverlayWriterService } from './services/overlay-writer.service';
 
 @ApiTags('streamers')
 @OperationIdPrefix('StreamersController')
 @Controller('streamers')
 export class StreamerOverlaysController {
-  constructor(private readonly overlays: OverlayService) {}
+  constructor(private readonly overlays: OverlayWriterService) {}
 
   @Get('me/overlays')
   @ZodResponse({ type: OverlayListDto })

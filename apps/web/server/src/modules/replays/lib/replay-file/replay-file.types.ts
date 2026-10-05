@@ -1,4 +1,4 @@
-import type { REPLAY_UPLOAD } from '../../config';
+import type { REPLAY_UPLOAD } from '../../config/upload.constants';
 
 export type ReplayExtension = (typeof REPLAY_UPLOAD.extensions)[number];
 

@@ -7,9 +7,9 @@ import { z } from 'zod';
 import type { SignInVkInput, VkMiniAppOptions } from './vk-mini-app.types';
 
 import { AUTH_PROVIDER, VK_MINI_APP_AUTH } from '../auth.constants';
-import { integrationUnavailable } from '../integration-unavailable';
-import { placeholderEmail } from '../placeholder-email';
-import { verifyVkLaunchParams } from './launch-params';
+import { integrationUnavailable } from '../integration-unavailable/integration-unavailable';
+import { placeholderEmail } from '../placeholder-email/placeholder-email';
+import { verifyVkLaunchParams } from './launch-params/launch-params';
 
 const signInVk = async ({ ctx, identity }: SignInVkInput) => {
   const current = await getSessionFromCtx(ctx).catch(() => null);

@@ -5,7 +5,7 @@ import type { ClanMember, ClanRole, ClanWorkspace, UserLestaAccount } from '../.
 import type { PrismaService } from '../../../../core';
 
 import { AppForbiddenException, AppNotFoundException } from '../../../../common/exceptions';
-import { WORKSPACE_ROLES } from '../../config';
+import { WORKSPACE_ROLES } from '../../config/roles.constants';
 import { ClanAccessService } from '../clan-access.service';
 
 const clanId = 100;

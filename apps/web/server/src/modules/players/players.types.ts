@@ -3,9 +3,9 @@ import type { InsightsPeriod, OfficialRatingPeriod, PlayerTanksQuery, Playtime, 
 import type { AccountRating, AccountSnapshot, Battle, TankModeStats } from '../../../generated';
 import type { AccountInfo } from '../../lib/lesta';
 import type { CareerSource, ModeStatsMode } from '../collector';
-import type { HistoryWindowPolicy } from './lib';
-import type { CareerRecordRef, CareerTotals } from './mappers';
-import type { CareerRecordTimes } from './selects';
+import type { HistoryWindowPolicy } from './lib/history-window/history-window.types';
+import type { CareerRecordRef, CareerTotals } from './mappers/career.types';
+import type { CareerRecordTimes } from './selects/players.selects';
 
 export type LestaPlayerInfo = AccountInfo;
 

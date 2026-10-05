@@ -8,10 +8,11 @@ import type { PlaylistInput } from '../analytics.types';
 
 import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
-import { MissionProgressService } from '../../missions';
+import { MissionProgressReaderService } from '../../missions';
 import { PlayerMarksReaderService } from '../../players';
 import { VehicleCatalogService } from '../../reference';
-import { buildPlaylist, dailyWindow } from '../lib';
+import { dailyWindow } from '../lib/daily-reset/daily-reset';
+import { buildPlaylist } from '../lib/playlist/playlist';
 import { toPlaylistCandidates, toPlaylistItems } from '../mappers/playlist.mappers';
 import { FirstWinReaderService } from './first-win-reader.service';
 import { OwnAccountReaderService } from './own-account-reader.service';
@@ -24,7 +25,7 @@ export class PlaylistReaderService {
     private readonly accounts: OwnAccountReaderService,
     private readonly firstWin: FirstWinReaderService,
     private readonly marks: PlayerMarksReaderService,
-    private readonly missions: MissionProgressService,
+    private readonly missions: MissionProgressReaderService,
     private readonly entitlements: EntitlementsService
   ) {}
 

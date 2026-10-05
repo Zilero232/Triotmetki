@@ -7,7 +7,7 @@ import { match } from 'ts-pattern';
 import type { GoalMetric } from '../../../../../generated';
 import type { GoalCurrentInput, GoalOutcome, GoalOutcomeInput, WindowTotalsInput } from './goal-progress.types';
 
-import { GOAL_PROGRESS } from '../../config';
+import { GOAL_PROGRESS } from '../../config/goal-progress.constants';
 
 const WINDOW_METRICS: ReadonlySet<GoalMetric> = new Set(GOAL_PROGRESS.windowMetrics);
 

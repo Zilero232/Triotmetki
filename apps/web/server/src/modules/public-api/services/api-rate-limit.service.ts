@@ -9,7 +9,7 @@ import type { BudgetOwner, LimiterInput, SecondBudget, TakeBudgetInput, UserBudg
 import { AppTooManyRequestsException } from '../../../common/exceptions';
 import { errorMessage } from '../../../common/lib';
 import { REDIS } from '../../../core';
-import { API_RATE_LIMIT } from '../config';
+import { API_RATE_LIMIT } from '../config/public-api.constants';
 
 @Injectable()
 export class ApiRateLimitService {

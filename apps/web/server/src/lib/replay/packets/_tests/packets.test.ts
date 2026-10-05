@@ -11,8 +11,8 @@ import {
   periodFrame,
   positionPayload
 } from '../../_tests/replay-builder';
-import { ReplayFormatError } from '../../errors';
-import { parseReplay } from '../../replay';
+import { ReplayFormatError } from '../../errors/replay-format-error';
+import { parseReplay } from '../../replay/replay';
 import { collectTracks, parsePackets } from '../packets';
 import { BATTLE_PERIOD, PACKET_TYPE } from '../packets.constants';
 

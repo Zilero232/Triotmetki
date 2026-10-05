@@ -10,8 +10,9 @@ import type { EmitWebhookInput, WebhookEmitter } from '../../webhooks';
 import { stableUuid, toJsonValue } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { JOB, QUEUE } from '../../collector';
-import { WEBHOOK_DELIVERY, WEBHOOK_EVENT_TO_DB } from '../config';
-import { matchesSubject } from '../lib';
+import { WEBHOOK_DELIVERY } from '../config/webhook-delivery.constants';
+import { WEBHOOK_EVENT_TO_DB } from '../config/webhook-events.constants';
+import { matchesSubject } from '../lib/webhook-match/webhook-match';
 
 @Injectable()
 export class WebhookEmitterService implements WebhookEmitter {

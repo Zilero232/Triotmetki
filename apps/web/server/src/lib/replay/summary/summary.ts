@@ -1,4 +1,4 @@
-import type { VehicleResult } from '../header';
+import type { VehicleResult } from '../header/header.types';
 import type { BuildSummaryInput, OutcomeOfInput, ReplayPlayer, ReplaySummary, WithPersonalInput } from './summary.types';
 
 import {

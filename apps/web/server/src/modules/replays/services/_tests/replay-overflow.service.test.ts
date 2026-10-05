@@ -6,7 +6,7 @@ import type { Replay, Subscription } from '../../../../../generated';
 import type { ObjectStorage, PrismaService } from '../../../../core';
 import type { NotificationService } from '../../../notifications';
 
-import { REPLAY_OVERFLOW } from '../../config';
+import { REPLAY_OVERFLOW } from '../../config/overflow.constants';
 import { ReplayOverflowService } from '../replay-overflow.service';
 
 const periodEnd = new Date('2026-01-01T00:00:00Z');

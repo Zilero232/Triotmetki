@@ -15,7 +15,7 @@ Part of the [style guide](../README.md). Overview: [apps/web/server/CLAUDE.md](.
 
 ## Retention
 
-Retention is part of the schema contract: every table that grows with time has a rule — the Timescale policies (`TIMESCALE`) for hypertables, `RETENTION` in `modules/collector/purge/config` (batched deletes per table and column) for the rest, and the purge jobs for deletion requests. A new growing table gets a rule in the same change. Kept on purpose, with no rule: `shell_ledger_entry` (the «Гильзы» balance is the sum of the ledger), `news_item` (the public news archive, a few rows a day), `vehicle_spec_history` (patch history per vehicle, one row per changed spec per game version), `player_nickname` (nickname history shown on the player page; removed with the account by the purge jobs) and `blog_post` (the editorial archive, a few rows a month; an author's deletion only nulls `author_user_id`).
+Retention is part of the schema contract: every table that grows with time has a rule — the Timescale policies (`TIMESCALE`) for hypertables, `RETENTION` in `modules/collector/purge/config` (batched deletes per table and column) for the rest, and the purge jobs for deletion requests. A new growing table gets a rule in the same change. Kept on purpose, with no rule: `shell_ledger_entry` (the «Гильзы» balance is the sum of the ledger), `news_item` (the public news archive, a few rows a day), `vehicle_spec_history` (patch history per vehicle, one row per changed spec per game version), `player_nickname_history` (nickname history shown on the player page; removed with the account by the purge jobs) and `blog_post` (the editorial archive, a few rows a month; an author's deletion only nulls `author_user_id`).
 
 ## Concurrency and time
 

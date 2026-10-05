@@ -14,7 +14,7 @@ import {
   PlayerSummaryReaderService,
   PlayerTanksReaderService
 } from '../players';
-import { PublicApi } from './decorators';
+import { PublicApi } from './decorators/public-api.decorator';
 import {
   V1PlayerLookupDto,
   V1PlayerMarksDto,
@@ -29,7 +29,7 @@ import {
   V1SessionsQueryDto,
   V1TimeSeriesDto,
   V1TimeSeriesQueryDto
-} from './dto';
+} from './dto/v1.dto';
 
 @UseInterceptors(ViewerCacheInterceptor)
 @PublicApi('players')

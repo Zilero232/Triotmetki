@@ -1,6 +1,6 @@
 import type { LatestThresholdsInput } from './thresholds.types';
 
-export const latestThresholds = ({ db, kind, upTo, source }: LatestThresholdsInput) => {
+const latestThresholds = ({ db, kind, upTo, source }: LatestThresholdsInput) => {
   const query = db
     .selectFrom('tank_threshold')
     .distinctOn(['tank_id', 'source'])

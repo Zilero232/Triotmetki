@@ -4,7 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { Client } from 'pg';
 
 import { TIMESCALE } from '../src/config/timescale.constants';
-import { buildTimescaleStatements, CONTINUOUS_AGGREGATE_SOURCES } from '../src/core/prisma/timescale';
+import { buildTimescaleStatements } from '../src/core/prisma/timescale/timescale';
+import { CONTINUOUS_AGGREGATE_SOURCES } from '../src/core/prisma/timescale/timescale.constants';
 
 config({ path: fileURLToPath(new URL('../../../../.env', import.meta.url)), quiet: true });
 

@@ -1,2 +1,2 @@
 export { RecruitingModule } from './recruiting.module';
-export { RecruitingService } from './services';
+export { RecruitingWriterService } from './services/recruiting-writer.service';

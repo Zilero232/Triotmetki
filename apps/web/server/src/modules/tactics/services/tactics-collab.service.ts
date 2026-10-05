@@ -6,26 +6,30 @@ import { Hocuspocus } from '@hocuspocus/server';
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { AuthService } from '@thallesp/nestjs-better-auth';
+import { setTimeout as delay } from 'node:timers/promises';
 import { WebSocketServer } from 'ws';
 
 import type { CollabContext, CollabDocumentHooks } from '../tactics.types';
 
 import { allowedOrigins, AppConfigService } from '../../../config';
-import { TACTICS } from '../config';
-import { boardIdOf, boardSnapshot, canEdit, encodeBoard, redisConnection, restoreBoard, seedBoardDocument } from '../lib';
+import { TACTICS } from '../config/tactics.constants';
+import { canEdit } from '../lib/board-access/board-access';
+import { boardIdOf, boardSnapshot, encodeBoard, restoreBoard, seedBoardDocument } from '../lib/board-document/board-document';
+import { redisConnection } from '../lib/redis-connection/redis-connection';
 import { BoardLiveService } from './board-live.service';
 import { CollabRedisService } from './collab-redis.service';
-import { TacticBoardService } from './tactic-board.service';
+import { TacticBoardWriterService } from './tactic-board-writer.service';
 
 @Injectable()
 export class TacticsCollabService implements OnApplicationBootstrap, OnApplicationShutdown {
   private readonly logger = new Logger(TacticsCollabService.name);
   private readonly sockets = new WebSocketServer({ noServer: true, maxPayload: TACTICS.maxPayloadBytes });
   private readonly hocuspocus: Hocuspocus<CollabContext>;
+  private allUnloaded: (() => void) | null = null;
 
   constructor(
     private readonly adapterHost: HttpAdapterHost,
-    private readonly boards: TacticBoardService,
+    private readonly boards: TacticBoardWriterService,
     private readonly config: AppConfigService,
     private readonly auth: AuthService,
     private readonly live: BoardLiveService,
@@ -41,7 +45,12 @@ export class TacticsCollabService implements OnApplicationBootstrap, OnApplicati
       extensions: [this.redis.createExtension({ ...redisConnection(this.config.get('REDIS_URL')), prefix: TACTICS.redisPrefix })],
       debounce: TACTICS.debounceMs,
       maxDebounce: TACTICS.maxDebounceMs,
-      ...this.documentHooks()
+      ...this.documentHooks(),
+      afterUnloadDocument: async ({ instance }) => {
+        if (instance.getDocumentsCount() === 0) {
+          this.allUnloaded?.();
+        }
+      }
     });
   }
 
@@ -139,9 +148,23 @@ export class TacticsCollabService implements OnApplicationBootstrap, OnApplicati
   }
 
   async onApplicationShutdown(): Promise<void> {
-    this.hocuspocus.flushPendingStores();
-    this.hocuspocus.closeConnections();
+    await this.unloadDocuments();
     this.sockets.close();
     await this.hocuspocus.hooks('onDestroy', { instance: this.hocuspocus });
+  }
+
+  private async unloadDocuments(): Promise<void> {
+    if (this.hocuspocus.getDocumentsCount() === 0) {
+      return;
+    }
+
+    const unloaded = new Promise<void>((resolve) => {
+      this.allUnloaded = resolve;
+    });
+
+    this.hocuspocus.closeConnections();
+    this.hocuspocus.flushPendingStores();
+
+    await Promise.race([unloaded, delay(TACTICS.shutdownTimeoutMs, undefined, { ref: false })]);
   }
 }

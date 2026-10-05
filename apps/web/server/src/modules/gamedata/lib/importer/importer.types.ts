@@ -12,9 +12,9 @@ import type { ModuleSlot } from '@otmetki/schemas';
 
 import type { Arena, CrewRole, CrewSkill, GameDataEntry, Module, PrismaClient, Provision, Vehicle, VehicleProfile } from '../../../../../generated';
 import type { LestaVehicleImages } from '../../../../lib/lesta';
-import type { GameData } from '../game-data';
-import type { LocalizedMessages } from '../localization';
-import type { SourceRevision } from '../source';
+import type { GameData } from '../game-data/game-data.types';
+import type { LocalizedMessages } from '../localization/localization.types';
+import type { SourceRevision } from '../source/source.types';
 
 export type SpecPrimitive = boolean | number | string | null;
 

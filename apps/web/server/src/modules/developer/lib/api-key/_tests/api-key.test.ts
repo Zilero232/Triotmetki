@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { API_KEY_POLICY } from '../../../config';
+import { API_KEY_POLICY } from '../../../config/api-keys.constants';
 import { keyTierOf, quotaRetryAfterSec, tierMetadata, verifyFailureOf } from '../api-key';
 
 const createdAt = new Date('2026-09-25T10:00:00Z');

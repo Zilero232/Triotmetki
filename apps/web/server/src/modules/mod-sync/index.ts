@@ -1,2 +1,2 @@
 export { ModSyncModule } from './mod-sync.module';
-export { ModSyncService } from './services';
+export { ModSyncWriterService } from './services/mod-sync-writer.service';

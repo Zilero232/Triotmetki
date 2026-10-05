@@ -9,7 +9,7 @@ import type { BronyaReferencesReaderService, ExpectedValuesReaderService, Vehicl
 import type { PlayerQueries } from '../../providers/player-queries.provider.types';
 
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
-import { HISTORY_WINDOW } from '../../config';
+import { HISTORY_WINDOW } from '../../config/player-stats.constants';
 import { PlayerHistoryReaderService } from '../player-history-reader.service';
 
 const NOW = new Date('2026-09-26T12:00:00.000Z');

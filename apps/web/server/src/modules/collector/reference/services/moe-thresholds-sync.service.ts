@@ -5,7 +5,7 @@ import { startOfDay } from 'date-fns';
 import { FEATURES, SOURCES } from '../../../../config';
 import { HttpClientService, PrismaService } from '../../../../core';
 import { moeThresholdLevels } from '../../../reference';
-import { parsePoliroidMoe } from '../lib/community-data';
+import { poliroidMoeSchema } from '../lib/community-data/community-data';
 
 @Injectable()
 export class MoeThresholdsSyncService {
@@ -19,7 +19,7 @@ export class MoeThresholdsSyncService {
       return { skipped: true };
     }
 
-    const rows = parsePoliroidMoe(await this.http.getJson({ url: SOURCES.poliroidMoe }));
+    const rows = await this.http.getJson({ url: SOURCES.poliroidMoe, schema: poliroidMoeSchema, options: { retry: 0 } });
     const date = startOfDay(new Date(), { in: utc });
 
     await this.prisma.$transaction([

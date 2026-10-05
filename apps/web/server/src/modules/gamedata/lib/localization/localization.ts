@@ -2,8 +2,8 @@ import { isDefined, unique } from 'remeda';
 
 import type { LoadLocalizationInput, LocalizedMessages, TranslateInput } from './localization.types';
 
-import { parsePoMessages } from '../parsers/po';
-import { GAME_PATHS } from '../source';
+import { parsePoMessages } from '../parsers/po/po';
+import { GAME_PATHS } from '../source/source.constants';
 import { LOCALIZATION } from './localization.constants';
 
 const domainOf = (key: string): string | undefined => {

@@ -4,14 +4,14 @@ import { Throttle } from '@nestjs/throttler';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
-import { MOD_REPORTS_API } from './config';
-import { ModProblemReportReceiptDto, ModProblemReportRequestDto } from './dto';
-import { ModReportsService } from './services';
+import { MOD_REPORTS_API } from './config/mod-reports.constants';
+import { ModProblemReportReceiptDto, ModProblemReportRequestDto } from './dto/mod-reports.dto';
+import { ModReportsWriterService } from './services/mod-reports-writer.service';
 
 @ApiTags('mod')
 @Controller('mod/reports')
 export class ModReportsController {
-  constructor(private readonly reports: ModReportsService) {}
+  constructor(private readonly reports: ModReportsWriterService) {}
 
   @AllowAnonymous()
   @Throttle({ default: MOD_REPORTS_API.throttle })

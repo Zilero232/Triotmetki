@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 
 import { HttpModule } from '../../../core';
-import { NewsProcessor } from './processors';
-import { NewsSyncService } from './services';
+import { NewsProcessor } from './processors/news.processor';
+import { NewsSyncService } from './services/news-sync.service';
 
 @Module({
   imports: [HttpModule],

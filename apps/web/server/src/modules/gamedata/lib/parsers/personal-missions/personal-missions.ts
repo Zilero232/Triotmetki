@@ -1,7 +1,7 @@
 import { groupBy } from 'remeda';
 
-import type { PyValue } from '../../python-literal';
-import type { XmlNode, XmlValue } from '../../xml';
+import type { PyValue } from '../../python-literal/python-literal.types';
+import type { XmlNode, XmlValue } from '../../xml/xml.types';
 import type {
   CampaignBranchInput,
   ParseCampaignsInput,
@@ -17,12 +17,12 @@ import type {
   PersonalOperation
 } from './personal-missions.types';
 
-import { oneOf } from '../../guards';
-import { isPyDict, readAssignment } from '../../python-literal';
-import { bool, entries, get, isXmlNode, nodes, num, nums, parseXml, text, words } from '../../xml';
+import { oneOf } from '../../guards/guards';
+import { isPyDict, readAssignment } from '../../python-literal/python-literal';
+import { bool, entries, get, isXmlNode, nodes, num, nums, parseXml, text, words } from '../../xml/xml';
 import { VEHICLE_CLASSES } from '../vehicle-list/vehicle-list.constants';
-import { parseConditions } from './conditions';
-import { createLocalize } from './localization';
+import { parseConditions } from './conditions/conditions';
+import { createLocalize } from './localization/localization';
 import {
   ALLIANCE_NATIONS,
   PERSONAL_MISSION_BRANCHES,

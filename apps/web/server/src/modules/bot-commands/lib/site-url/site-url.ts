@@ -1,6 +1,6 @@
 import type { LinkUrlInput, PlayerUrlInput, StatCardUrlInput } from '../../bot-commands.types';
 
-import { LOCAL_HOSTS, SITE_LINKS } from '../../config';
+import { LOCAL_HOSTS, SITE_LINKS } from '../../config/links.constants';
 
 export const siteUrl = ({ webUrl, path }: LinkUrlInput): string => new URL(path, webUrl).href;
 

@@ -5,7 +5,7 @@ import { unique } from 'remeda';
 import type { ModuleRow, VehicleModule } from '../../importer.types';
 
 import { MODULE_TYPE } from '../../importer.constants';
-import { vehicleModules } from '../vehicle-modules';
+import { vehicleModules } from '../vehicle-modules/vehicle-modules';
 
 const moduleData = ({ kind, module }: VehicleModule): Record<string, unknown> => {
   if (kind === 'turret' && 'guns' in module && Array.isArray(module.guns)) {

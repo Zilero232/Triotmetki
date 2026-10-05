@@ -7,8 +7,8 @@ import { ZodResponse } from 'nestjs-zod';
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { TankDetailReaderService } from '../tanks';
-import { TankMathDto, TankMathParamsDto } from './dto';
-import { TankMathService } from './services';
+import { TankMathDto, TankMathParamsDto } from './dto/tank-math.dto';
+import { TankMathReaderService } from './services/tank-math-reader.service';
 
 @ApiTags('tank-math')
 @AllowAnonymous()
@@ -16,7 +16,7 @@ import { TankMathService } from './services';
 export class TankMathController {
   constructor(
     private readonly tanks: TankDetailReaderService,
-    private readonly math: TankMathService
+    private readonly math: TankMathReaderService
   ) {}
 
   @Get(':tankId')

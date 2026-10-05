@@ -1,6 +1,6 @@
 import type { ClanRole } from '../../../../../generated';
 
-import { RECRUITING } from '../../config';
+import { RECRUITING } from '../../config/recruiting.constants';
 
 const OFFICER_ROLES: ReadonlySet<ClanRole> = new Set(RECRUITING.officerRoles);
 

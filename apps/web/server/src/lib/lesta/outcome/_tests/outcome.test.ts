@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { LESTA_ERROR_CODE } from '../../errors';
+import { LESTA_ERROR_CODE } from '../../errors/errors.constants';
 import { classifyLestaResponse } from '../outcome';
 
 describe('classifyLestaResponse', () => {

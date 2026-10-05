@@ -1,8 +1,8 @@
-export type { Vector3 } from './binary';
-export type { ReplayContainer, ReplayStreamSection } from './container';
-export { ReplayFormatError } from './errors';
-export type { ArenaBlock, ArenaVehicle, BattleResult, PersonalResult, ResultsBlock, VehicleResult } from './header';
-export { collectTracks, parsePackets } from './packets';
+export type { Vector3 } from './binary/byte-reader.types';
+export type { ReplayContainer, ReplayStreamSection } from './container/container.types';
+export { ReplayFormatError } from './errors/replay-format-error';
+export type { ArenaBlock, PersonalResult, ResultsBlock, VehicleResult } from './header/header.types';
+export { collectTracks, parsePackets } from './packets/packets';
 
 export type {
   BasePlayerCreatePacket,
@@ -28,8 +28,8 @@ export type {
   TrackPoint,
   UnknownPacket,
   VehicleMethodIds
-} from './packets';
-export { parseReplay, parseReplaySummary } from './replay';
-export type { ParsedReplay, ReplayHeader, ReplayInput } from './replay';
-export { replaySummarySchema } from './summary';
-export type { ClientVersion, PlayerResult, ReplayGame, ReplayPlayer, ReplaySummary } from './summary';
+} from './packets/packets.types';
+export { parseReplay, parseReplaySummary } from './replay/replay';
+export type { ParsedReplay, ReplayHeader, ReplayInput } from './replay/replay.types';
+export { replaySummarySchema } from './summary/summary.schemas';
+export type { ClientVersion, PlayerResult, ReplayGame, ReplayPlayer, ReplaySummary } from './summary/summary.types';

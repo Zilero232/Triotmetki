@@ -32,7 +32,6 @@ export const SHARED_COMMAND_OF = {
 } as const;
 
 export const BOT_TEXT_LIMITS = {
-  inlineResults: 5,
   inlineCacheSeconds: 60,
   queryMinLength: 2
 } as const;

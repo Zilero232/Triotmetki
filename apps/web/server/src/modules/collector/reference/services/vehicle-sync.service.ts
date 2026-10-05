@@ -10,7 +10,7 @@ import { toJsonValue } from '../../../../common/lib';
 import { LESTA_CLIENTS, PrismaService } from '../../../../core';
 import { vehicleImages } from '../../../../lib/lesta';
 import { REFERENCE } from '../config/reference.constants';
-import { previousTankIds, specDiff, toVehicleType, vehicleSlugs } from '../lib/encyclopedia';
+import { previousTankIds, specDiff, toVehicleType, vehicleSlugs } from '../lib/encyclopedia/encyclopedia';
 import { REFERENCE_QUERIES } from '../providers/reference-queries.provider';
 
 @Injectable()

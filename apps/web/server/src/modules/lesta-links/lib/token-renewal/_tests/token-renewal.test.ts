@@ -2,7 +2,7 @@ import { addDays, addHours, fromUnixTime } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
 import { LestaApiError, LestaNetworkError } from '../../../../../lib/lesta';
-import { LESTA_LINKS } from '../../../config';
+import { LESTA_LINKS } from '../../../config/lesta-links.constants';
 import { hasExpired, isTokenRejected, relinkDedupeKey, renewalDue, renewedExpiry } from '../token-renewal';
 
 const now = new Date('2026-09-28T04:40:00Z');

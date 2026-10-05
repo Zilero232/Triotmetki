@@ -1,12 +1,25 @@
 import type { Modifier, OptionalDevice, OptionalDeviceKind } from '@otmetki/gamedata';
 
-import type { XmlNode } from '../../xml';
+import type { XmlNode } from '../../xml/xml.types';
 import type { DeviceKindInput, ScriptModifiersInput, SpecialModifierInput } from './optional-devices.types';
 
-import { provisionIdOf } from '../../ids';
-import { parseFactorBlock } from '../../modifiers';
-import { bool, entries, get, identifiedNodes, localizationFallback, localizationKey, node, nums, price, scriptName, text, words } from '../../xml';
-import { parseVehicleFilter } from '../vehicle-filter';
+import { provisionIdOf } from '../../ids/ids';
+import { parseFactorBlock } from '../../modifiers/modifiers';
+import {
+  bool,
+  entries,
+  get,
+  identifiedNodes,
+  localizationFallback,
+  localizationKey,
+  node,
+  nums,
+  price,
+  scriptName,
+  text,
+  words
+} from '../../xml/xml';
+import { parseVehicleFilter } from '../vehicle-filter/vehicle-filter';
 import { DEVICE_KIND_TAG, DEVICE_SCRIPT, DEVICE_SCRIPT_SUFFIXES, DEVICE_SPECIAL_MODIFIERS } from './optional-devices.constants';
 
 const baseScript = (script: string | undefined): string | undefined => {

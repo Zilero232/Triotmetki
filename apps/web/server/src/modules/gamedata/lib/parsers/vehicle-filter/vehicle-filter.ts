@@ -1,9 +1,9 @@
 import type { VehicleFilter, VehicleFilterRule } from '@otmetki/gamedata';
 
-import type { XmlValue } from '../../xml';
+import type { XmlValue } from '../../xml/xml.types';
 import type { MatchesRuleInput, MatchesVehicleFilterInput } from './vehicle-filter.types';
 
-import { node, nodes, num, words } from '../../xml';
+import { node, nodes, num, words } from '../../xml/xml';
 
 const parseRules = (value: XmlValue | undefined): VehicleFilterRule[] => {
   const section = node(value);

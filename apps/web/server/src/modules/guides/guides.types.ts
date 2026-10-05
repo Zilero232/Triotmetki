@@ -12,7 +12,7 @@ import type {
   guidesQuerySchema,
   updateGuideSchema
 } from './dto/guides.schemas';
-import type { GuideRow } from './selects';
+import type { GuideRow } from './selects/guide.types';
 
 export type GuideView = z.infer<typeof guideSchema>;
 export type GuidesQuery = z.output<typeof guidesQuerySchema> & Viewer;

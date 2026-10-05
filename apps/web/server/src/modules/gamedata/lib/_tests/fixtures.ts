@@ -1,14 +1,15 @@
 import { readFileSync } from 'node:fs';
 
-import type { SharedComponents } from '../parsers/vehicle';
+import type { SharedComponents } from '../parsers/vehicle/vehicle.types';
 
-import { parseCrew } from '../parsers/crew';
-import { parseEquipments } from '../parsers/equipment';
-import { parseOptionalDevices } from '../parsers/optional-devices';
-import { parsePostProgression } from '../parsers/post-progression';
-import { parseSharedComponents, parseShells, parseVehicle } from '../parsers/vehicle';
-import { parseVehicleList } from '../parsers/vehicle-list';
-import { GAME_PATHS } from '../source';
+import { parseCrew } from '../parsers/crew/crew';
+import { parseEquipments } from '../parsers/equipment/equipment';
+import { parseOptionalDevices } from '../parsers/optional-devices/optional-devices';
+import { parsePostProgression } from '../parsers/post-progression/post-progression';
+import { parseVehicleList } from '../parsers/vehicle-list/vehicle-list';
+import { parseShells } from '../parsers/vehicle/shells/shells';
+import { parseSharedComponents, parseVehicle } from '../parsers/vehicle/vehicle';
+import { GAME_PATHS } from '../source/source.constants';
 
 export const readFixture = (path: string): string => readFileSync(new URL(`../parsers/${path}`, import.meta.url), 'utf8');
 

@@ -4,9 +4,9 @@ import { Roles } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId } from '../../common/decorators';
-import { VEHICLE_SOURCES } from './config';
-import { CreateVehicleSourceDto, VehicleSourceDto, VehicleSourceIdParamsDto } from './dto';
-import { VehicleSourcesService } from './services';
+import { VEHICLE_SOURCES } from './config/vehicle-sources.constants';
+import { CreateVehicleSourceDto, VehicleSourceDto, VehicleSourceIdParamsDto } from './dto/vehicle-sources.dto';
+import { VehicleSourcesService } from './services/vehicle-sources.service';
 
 @ApiTags('tanks')
 @Controller('admin/vehicle-sources')

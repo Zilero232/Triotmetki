@@ -2,9 +2,10 @@ import { addHours } from 'date-fns';
 import { mock } from 'vitest-mock-extended';
 
 import type { Battle, ClanAttendance, ClanEvent, ClanMember } from '../../../../../generated';
-import type { EventWithAttendance } from '../../mappers';
+import type { EventWithAttendance } from '../../mappers/clan-event.types';
 
-import { ATTENDANCE_BONUS_TYPES, CLAN_WORKSPACE } from '../../config';
+import { ATTENDANCE_BONUS_TYPES } from '../../config/attendance.constants';
+import { CLAN_WORKSPACE } from '../../config/workspace.constants';
 
 export const clanId = 100;
 export const scope = { clanId, userId: 'u1' };

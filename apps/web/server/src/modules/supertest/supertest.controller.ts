@@ -5,13 +5,13 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId } from '../../common/decorators';
 import { RequiresPlus } from '../billing';
-import { SupertestAnnouncementDto, SupertestListDto, SupertestMineDto, SupertestParamsDto } from './dto';
-import { SupertestQueryService } from './services';
+import { SupertestAnnouncementDto, SupertestListDto, SupertestMineDto, SupertestParamsDto } from './dto/supertest.dto';
+import { SupertestReaderService } from './services/supertest-reader.service';
 
 @ApiTags('supertest')
 @Controller('supertest')
 export class SupertestController {
-  constructor(private readonly supertest: SupertestQueryService) {}
+  constructor(private readonly supertest: SupertestReaderService) {}
 
   @Get()
   @AllowAnonymous()

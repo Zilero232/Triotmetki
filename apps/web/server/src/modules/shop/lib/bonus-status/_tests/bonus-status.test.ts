@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { BONUS_CODE } from '../../../config';
+import { BONUS_CODE } from '../../../config/bonus-codes.constants';
 import { bonusCodeStatus, reportedStatus, reportTallies } from '../bonus-status';
 
 const now = new Date('2026-09-25T00:00:00Z');

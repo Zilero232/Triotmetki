@@ -3,7 +3,7 @@ import { addDays, getUnixTime } from 'date-fns';
 import type { RelinkKeyInput, RenewalDueInput } from './token-renewal.types';
 
 import { LESTA_ERROR_CODE, LestaApiError } from '../../../../lib/lesta';
-import { LESTA_LINKS } from '../../config';
+import { LESTA_LINKS } from '../../config/lesta-links.constants';
 
 export const renewalDue = ({ expiresAt, now }: RenewalDueInput): boolean =>
   expiresAt !== null && expiresAt.getTime() <= addDays(now, LESTA_LINKS.token.renewWithinDays).getTime();

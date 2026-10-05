@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { BOT_COMMAND_LOCALE_FILES, BOT_LOCALE } from '../../../config';
+import { BOT_LOCALE } from '../../../config/bot-commands.constants';
+import { BOT_COMMAND_LOCALE_FILES } from '../../../config/locales.constants';
 import { createFluentStore } from '../fluent-store';
 
 describe('createFluentStore', () => {

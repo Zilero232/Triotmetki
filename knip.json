@@ -3,6 +3,14 @@
   "ignoreBinaries": ["uv"],
   "ignoreDependencies": ["pino-pretty", "@prisma/client-runtime-utils", "stylelint-order"],
   "ignoreUnresolved": ["^.$"],
+  "ignoreExportsUsedInFile": {
+    "type": true,
+    "interface": true
+  },
+  "ignoreIssues": {
+    "**/[A-Z]*/index.ts": ["types"],
+    "apps/web/server/src/**/index.ts": ["types"]
+  },
   "rules": {
     "exports": "warn",
     "types": "warn"
@@ -18,26 +26,31 @@
         "views/twitch-panel/lib/panel-script/panel-entry.ts",
         "shared/api/http/client-config/index.ts"
       ],
-      "project": ["**/*.{ts,tsx,scss}"],
+      "project": ["**/*.{ts,tsx,scss,sass}"],
       "ignoreDependencies": ["@otmetki/design-tokens"]
     },
     "apps/game/modpack": {
       "entry": ["ui-web/src/*.{ts,tsx}", "ui-web/stylelint.config.mjs"],
-      "project": ["ui-web/**/*.{ts,tsx,scss}"],
+      "project": ["ui-web/**/*.{ts,tsx,scss,sass}"],
       "ignoreDependencies": ["lucide-react"]
     },
     "apps/game/manager": {
-      "project": ["web/**/*.{ts,tsx,scss}"]
+      "project": ["web/**/*.{ts,tsx,scss,sass}", "scripts/**/*.ts"]
     },
     "apps/web/server": {
       "entry": ["scripts/*.ts"],
       "project": ["src/**/*.ts", "scripts/**/*.ts", "prisma/**/*.prisma"]
     },
     "packages/design-tokens": {
-      "project": ["src/**/*.ts", "scss/**/*.{ts,scss}"]
+      "project": ["src/**/*.ts", "scss/**/*.{ts,scss,sass}"],
+      "includeEntryExports": true
     },
     "packages/*": {
-      "project": ["src/**/*.{ts,tsx}"]
+      "project": ["src/**/*.{ts,tsx}"],
+      "includeEntryExports": true
+    },
+    "packages/sdk": {
+      "project": ["src/**/*.ts"]
     }
   }
 }

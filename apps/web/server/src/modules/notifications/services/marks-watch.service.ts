@@ -3,7 +3,7 @@ import { Redis } from 'ioredis';
 import { isNonNullish, unique, uniqueBy } from 'remeda';
 
 import type { WatermarkBatch } from '../../../core';
-import type { MarkBattle } from '../lib/mark-gains';
+import type { MarkBattle } from '../lib/mark-gains/mark-gains.types';
 import type { PreviousMarksInput } from '../notifications.types';
 import type { MarksWatchQueries } from '../queries/marks-watch.types';
 import type { MarkBattleRow } from '../selects/marks-watch.selects';
@@ -12,7 +12,7 @@ import { advanceWatermark, PrismaService, REDIS } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
 import { NOTIFICATION_TOKENS } from '../config/tokens.constants';
 import { MARKS_WATCH } from '../config/watchers.constants';
-import { detectMarkGains, markPairKey } from '../lib/mark-gains';
+import { detectMarkGains, markPairKey } from '../lib/mark-gains/mark-gains';
 import { MARK_BATTLE_SELECT } from '../selects/marks-watch.selects';
 import { NotificationService } from './notification.service';
 
@@ -36,13 +36,27 @@ export class MarksWatchService {
     });
   }
 
-  private battlesSince(since: Date) {
-    return this.prisma.battle.findMany({
+  private async battlesSince(since: Date): Promise<MarkBattleRow[]> {
+    const rows = await this.prisma.battle.findMany({
       where: { receivedAt: { gt: since }, marksOnGun: { not: null } },
-      orderBy: { receivedAt: 'asc' },
+      orderBy: [{ receivedAt: 'asc' }, { id: 'asc' }],
       take: MARKS_WATCH.batchSize,
       select: MARK_BATTLE_SELECT
     });
+
+    const last = rows.at(-1);
+
+    if (!last || rows.length < MARKS_WATCH.batchSize) {
+      return rows;
+    }
+
+    const tied = await this.prisma.battle.findMany({
+      where: { receivedAt: last.receivedAt, marksOnGun: { not: null }, id: { notIn: rows.map((row) => row.id) } },
+      orderBy: { id: 'asc' },
+      select: MARK_BATTLE_SELECT
+    });
+
+    return [...rows, ...tied];
   }
 
   private async processBatch({ rows, since }: WatermarkBatch<MarkBattleRow>): Promise<number> {

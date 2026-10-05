@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 
 import { AccountsModule } from '../accounts';
-import { CommunityAccountsService, CommunityContentService } from './services';
+import { CommunityAccountsReaderService } from './services/community-accounts-reader.service';
+import { CommunityContentWriterService } from './services/community-content-writer.service';
 
 @Module({
   imports: [AccountsModule],
-  providers: [CommunityAccountsService, CommunityContentService],
-  exports: [CommunityAccountsService, CommunityContentService]
+  providers: [CommunityAccountsReaderService, CommunityContentWriterService],
+  exports: [CommunityAccountsReaderService, CommunityContentWriterService]
 })
 export class CommunityCoreModule {}

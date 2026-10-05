@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { ReplayPlayer, ReplaySummary } from '../../../../../lib/replay';
 
-import { REPLAY_TAGGING } from '../../../config';
+import { REPLAY_TAGGING } from '../../../config/tagging.constants';
 import { replayTagColumns, replayTags } from '../replay-tags';
 
 type Fighter = {

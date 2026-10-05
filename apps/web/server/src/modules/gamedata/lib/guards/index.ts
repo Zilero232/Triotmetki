@@ -1,1 +1,0 @@
-export { oneOf } from './guards';

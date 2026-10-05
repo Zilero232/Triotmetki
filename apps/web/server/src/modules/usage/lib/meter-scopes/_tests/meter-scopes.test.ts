@@ -1,7 +1,7 @@
 import { usageLimit } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
-import { USAGE_METER } from '../../../config';
+import { USAGE_METER } from '../../../config/usage-meter.constants';
 import { meterScopes, meterState } from '../meter-scopes';
 
 const ANONYMOUS = { userId: null, deviceId: 'device-1', ipHash: 'ip-1' };

@@ -4,24 +4,20 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { parseArgs } from 'node:util';
 
-import { isMissingFileError } from '../src/common/lib/errors';
+import { isMissingFileError } from '../src/common/lib/errors/errors';
+import { parseChangelog, releaseNotes } from '../src/modules/modpack-releases/lib/changelog/changelog';
+import { buildRelease, catalogPackages, mergeReleaseIndex, releasePayload } from '../src/modules/modpack-releases/lib/release-build/release-build';
+import { RELEASE_BUILD } from '../src/modules/modpack-releases/lib/release-build/release-build.constants';
+import { modpackCatalogSchema } from '../src/modules/modpack-releases/lib/release-build/release-build.schemas';
+import { releaseChanges } from '../src/modules/modpack-releases/lib/release-changes/release-changes';
+import { parseReleaseIndex } from '../src/modules/modpack-releases/lib/release-index/release-index';
+import { newestFirst } from '../src/modules/modpack-releases/lib/release-order/release-order';
+import { releaseNeeds } from '../src/modules/modpack-releases/lib/release-source/release-source';
+import { RELEASE_SOURCE } from '../src/modules/modpack-releases/lib/release-source/release-source.constants';
 import {
-  buildRelease,
-  catalogPackages,
   managerReleaseManifestSchema,
-  mergeReleaseIndex,
-  modpackCatalogSchema,
-  modpackReleaseManifestSchema,
-  newestFirst,
-  parseChangelog,
-  parseReleaseIndex,
-  RELEASE_BUILD,
-  RELEASE_SOURCE,
-  releaseChanges,
-  releaseNeeds,
-  releaseNotes,
-  releasePayload
-} from '../src/modules/modpack-releases/lib';
+  modpackReleaseManifestSchema
+} from '../src/modules/modpack-releases/lib/release-source/release-source.schemas';
 
 const { positionals, values } = parseArgs({
   allowPositionals: true,

@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-import type { PollStorePort } from '../lib/poll-pipeline';
+import type { PollStorePort } from '../lib/poll-pipeline/poll-pipeline.types';
 import type { PollResult, RunPipelineInput } from '../tracking.types';
 
 import { errorMessage } from '../../../../common/lib';
 import { PurgeGuardService } from '../../purge';
-import { runPollPipeline } from '../lib/poll-pipeline';
+import { runPollPipeline } from '../lib/poll-pipeline/poll-pipeline';
 import { AccountWriterService } from './account-writer.service';
 import { PlayerWriterService } from './player-writer.service';
 import { RatingsTriggerService } from './ratings-trigger.service';

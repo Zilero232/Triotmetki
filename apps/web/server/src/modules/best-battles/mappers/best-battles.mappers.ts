@@ -3,9 +3,9 @@ import type { BestBattleMedal, ToArenaInput, ToBestBattleInput, ToFacetsInput, T
 
 const count = (value: number | null): number | null => (value === null ? null : Math.max(0, Math.round(value)));
 
-export const toMedal = ({ name, medals }: ToMedalInput): BestBattleMedal => medals.get(name) ?? { name, title: name, image: null };
+const toMedal = ({ name, medals }: ToMedalInput): BestBattleMedal => medals.get(name) ?? { name, title: name, image: null };
 
-export const toArena = ({ arenaId, fallback, arenas }: ToArenaInput): BestBattle['arena'] =>
+const toArena = ({ arenaId, fallback, arenas }: ToArenaInput): BestBattle['arena'] =>
   arenaId === null ? null : { arenaId, name: arenas.get(arenaId) ?? fallback ?? arenaId };
 
 export const toBestBattle = ({ row, vehicles, arenas, medals }: ToBestBattleInput): BestBattle | null => {

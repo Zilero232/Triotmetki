@@ -9,16 +9,16 @@ import { ZodResponse } from 'nestjs-zod';
 import { CurrentUserId, OperationIdPrefix, OptionalUserId } from '../../../common/decorators';
 import { OAUTH_STATE, PROVIDER_FROM_PATH } from './config/integrations.constants';
 import { ConnectProviderDto, ConnectUrlDto, IntegrationListDto, OAuthCallbackDto, UpdatePredictionsDto } from './dto/integrations.dto';
-import { IntegrationStoreService } from './services/integration-store.service';
-import { IntegrationsService } from './services/integrations.service';
+import { IntegrationConnectWriterService } from './services/integration-connect-writer.service';
+import { IntegrationWriterService } from './services/integration-writer.service';
 
 @ApiTags('streamers')
 @OperationIdPrefix('StreamersController')
 @Controller('streamers')
 export class StreamerIntegrationsController {
   constructor(
-    private readonly integrations: IntegrationsService,
-    private readonly store: IntegrationStoreService
+    private readonly integrations: IntegrationConnectWriterService,
+    private readonly store: IntegrationWriterService
   ) {}
 
   @Get('me/integrations')

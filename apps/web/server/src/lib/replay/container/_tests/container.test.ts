@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { buildReplay } from '../../_tests/replay-builder';
-import { ReplayFormatError } from '../../errors';
+import { ReplayFormatError } from '../../errors/replay-format-error';
 import { readContainer } from '../container';
 import { REPLAY_CONTAINER } from '../container.constants';
 

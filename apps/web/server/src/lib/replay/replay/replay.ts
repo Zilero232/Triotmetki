@@ -1,13 +1,14 @@
 import { isPlainObject } from 'remeda';
 
-import type { ReplayContainer } from '../container';
-import type { ResultsBlock } from '../header';
+import type { ReplayContainer } from '../container/container.types';
+import type { ResultsBlock } from '../header/header.types';
 import type { ParsedReplay, ReplayInput } from './replay.types';
 
-import { readContainer } from '../container';
-import { ReplayFormatError } from '../errors';
-import { arenaBlockSchema, parseJsonBlock, resultsBlockSchema } from '../header';
-import { buildSummary } from '../summary';
+import { readContainer } from '../container/container';
+import { ReplayFormatError } from '../errors/replay-format-error';
+import { arenaBlockSchema, resultsBlockSchema } from '../header/header.schemas';
+import { parseJsonBlock } from '../header/json-block';
+import { buildSummary } from '../summary/summary';
 
 export const toBytes = (input: ReplayInput) => (input instanceof Uint8Array ? input : new Uint8Array(input));
 

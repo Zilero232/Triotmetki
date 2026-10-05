@@ -1,7 +1,7 @@
 import type { Prisma } from '../../../../generated';
 import type { ClanInfo, ClanMember } from '../../../lib/lesta';
-import type { OwnedProvince } from './lib/clan-provinces';
-import type { ClanRosterDiff, CurrentMember } from './lib/clan-roster';
+import type { OwnedProvince } from './lib/clan-provinces/clan-provinces.types';
+import type { ClanRosterDiff, CurrentMember } from './lib/clan-roster/clan-roster.types';
 import type { ClanActivityRow } from './queries/clan-activity.types';
 
 export type SyncClanInput = {

@@ -4,7 +4,7 @@ import { fromUnixTime } from 'date-fns';
 import { mapValues, sortBy } from 'remeda';
 
 import type { WebhookEmitter } from '../../webhooks';
-import type { IngestResponse } from '../lib/contract';
+import type { IngestResponse } from '../lib/contract/contract.types';
 import type { BattleEventInput, BattleEventsSink, IngestInput, LedgeredEventInput, MarkGainedInput, SessionRef, SessionSummary } from '../mod.types';
 
 import { errorMessage } from '../../../common/lib';
@@ -13,8 +13,8 @@ import { ExpectedValuesReaderService } from '../../reference';
 import { markGainedKey, WEBHOOK_EMITTER } from '../../webhooks';
 import { BATTLE_EVENTS } from '../config/battle-events.constants';
 import { MOD_INGEST } from '../config/ingest.constants';
-import { countsForSession, moePercent, sessionIncrement, sessionUuid } from '../lib/battle';
-import { sessionTankTotals } from '../lib/session-tanks';
+import { countsForSession, moePercent, sessionIncrement, sessionUuid } from '../lib/battle/battle';
+import { sessionTankTotals } from '../lib/session-tanks/session-tanks';
 import { toBattleData, toPlayerTankMoe } from '../mappers/battle.mappers';
 import { EventLedgerService } from './event-ledger.service';
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { REPLAY_UPLOAD } from '../../../config';
+import { REPLAY_UPLOAD } from '../../../config/upload.constants';
 import { replayExtension, replayStorageKey, sha256Hex, tracksStorageKey } from '../replay-file';
 
 describe('replayExtension', () => {

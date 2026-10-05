@@ -2,7 +2,6 @@ export const SITE_LINKS = {
   player: '/p/{nickname}',
   tank: '/t/{slug}',
   clan: '/c/{tag}',
-  top: '/top',
   missions: '/missions/{campaign}/{operation}',
   settings: '/me',
   analytics: '/me/analytics',

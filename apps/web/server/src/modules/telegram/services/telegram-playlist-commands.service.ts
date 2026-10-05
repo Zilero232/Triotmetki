@@ -3,10 +3,11 @@ import { PLAYLIST } from '@otmetki/schemas';
 
 import type { BotContext, PlaylistReasonInput } from '../telegram.types';
 
+import { roundTo } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { PlaylistReaderService } from '../../analytics';
-import { SITE_LINKS } from '../../bot-commands';
-import { openButton, siteUrl } from '../lib';
+import { SITE_LINKS, siteUrl } from '../../bot-commands';
+import { openButton } from '../lib/keyboard/keyboard';
 
 @Injectable()
 export class TelegramPlaylistCommandsService {
@@ -56,6 +57,6 @@ export class TelegramPlaylistCommandsService {
   }
 
   private reason({ ctx, item, reason }: PlaylistReasonInput): string {
-    return ctx.t(`next-reason-${reason}`, { percent: Math.round((item.moePercent ?? 0) * 10) / 10, days: item.daysSinceBattle ?? 0 });
+    return ctx.t(`next-reason-${reason}`, { percent: roundTo({ value: item.moePercent ?? 0, digits: 1 }), days: item.daysSinceBattle ?? 0 });
   }
 }

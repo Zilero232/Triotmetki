@@ -1,7 +1,7 @@
 import type { PlanWriteInput } from '../../importer.types';
 
 import { WRITE } from '../../importer.constants';
-import { inBatches, toStoredJson } from '../batches';
+import { inBatches, toStoredJson } from '../batches/batches';
 
 export const writeEntries = async ({ prisma, plan, gameVersionId }: PlanWriteInput): Promise<number> => {
   await prisma.gameDataEntry.deleteMany({ where: { gameVersionId } });

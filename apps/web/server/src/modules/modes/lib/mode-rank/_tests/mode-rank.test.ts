@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { RankableTank } from '../mode-rank.types';
 
-import { MODE_RANKING } from '../../../config';
+import { MODE_RANKING } from '../../../config/modes.constants';
 import { rankModeTanks } from '../mode-rank';
 
 const tank = (tankId: number, wins: number, decided: number): RankableTank => ({ tankId, battles: decided, wins, decided });

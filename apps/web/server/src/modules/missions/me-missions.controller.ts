@@ -12,16 +12,20 @@ import {
   MissionProgressDto,
   MissionProgressItemDto,
   UpdateMissionProgressDto
-} from './dto';
-import { MissionPlanService, MissionProgressService, MissionTanksService } from './services';
+} from './dto/missions.dto';
+import { MissionPlanReaderService } from './services/mission-plan-reader.service';
+import { MissionProgressReaderService } from './services/mission-progress-reader.service';
+import { MissionProgressWriterService } from './services/mission-progress-writer.service';
+import { MissionTanksReaderService } from './services/mission-tanks-reader.service';
 
 @ApiTags('me')
 @Controller('me/missions')
 export class MeMissionsController {
   constructor(
-    private readonly progress: MissionProgressService,
-    private readonly tanks: MissionTanksService,
-    private readonly plans: MissionPlanService
+    private readonly progress: MissionProgressReaderService,
+    private readonly progressWriter: MissionProgressWriterService,
+    private readonly tanks: MissionTanksReaderService,
+    private readonly plans: MissionPlanReaderService
   ) {}
 
   @Get('progress')
@@ -33,7 +37,7 @@ export class MeMissionsController {
   @Put('progress')
   @ZodResponse({ type: MissionProgressItemDto })
   updateProgress(@CurrentUserId() userId: string, @Body() body: UpdateMissionProgressDto) {
-    return this.progress.update({ ...body, userId });
+    return this.progressWriter.update({ ...body, userId });
   }
 
   @Get('plan')

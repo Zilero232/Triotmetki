@@ -1,6 +1,6 @@
 import type { AccountInfo, AccountTank, TankStats } from '../../../../../../lib/lesta';
-import type { TankBaseline } from '../../account-diff';
-import type { SnapshotMode, TankSnapshotRow } from '../../snapshots';
+import type { TankBaseline } from '../../account-diff/account-diff.types';
+import type { SnapshotMode, TankSnapshotRow } from '../../snapshots/snapshots.types';
 import type { StoredPlayer } from '../poll-pipeline.types';
 
 export type InfoInput = {

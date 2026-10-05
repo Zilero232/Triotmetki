@@ -1,6 +1,6 @@
 import type { ClanRole } from '../../../../../generated';
 
-import { WORKSPACE_ROLES } from '../../config';
+import { WORKSPACE_ROLES } from '../../config/roles.constants';
 
 const OFFICERS: ReadonlySet<ClanRole> = new Set(WORKSPACE_ROLES.officers);
 const OWNERS: ReadonlySet<ClanRole> = new Set(WORKSPACE_ROLES.owners);

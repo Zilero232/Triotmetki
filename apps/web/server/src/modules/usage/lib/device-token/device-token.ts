@@ -3,7 +3,7 @@ import ipaddr from 'ipaddr.js';
 import type { HashIpInput, ReadDeviceTokenInput, SignDeviceTokenInput } from './device-token.types';
 
 import { hmacSha256Hex, timingSafeEqual } from '../../../../common/lib';
-import { USAGE_DEVICE } from '../../config';
+import { USAGE_DEVICE } from '../../config/usage-device.constants';
 
 const signatureOf = ({ deviceId, secret }: SignDeviceTokenInput): string =>
   hmacSha256Hex({ key: secret, data: `${USAGE_DEVICE.signingContext}${deviceId}` });

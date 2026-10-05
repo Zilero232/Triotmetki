@@ -1,8 +1,8 @@
 import type { CatalogCounts, PlanWriteInput } from '../../importer.types';
 
 import { Prisma } from '../../../../../../../generated';
-import { ASSET_URL_PREFIX } from '../../../source';
-import { inBatches, toStoredJson } from '../batches';
+import { ASSET_URL_PREFIX } from '../../../source/github/github';
+import { inBatches, toStoredJson } from '../batches/batches';
 
 export const writeCatalog = async ({ prisma, plan }: Omit<PlanWriteInput, 'gameVersionId'>): Promise<CatalogCounts> => {
   const withImages = new Set(

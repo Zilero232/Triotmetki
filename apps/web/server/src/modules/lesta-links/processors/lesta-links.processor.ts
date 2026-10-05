@@ -3,8 +3,11 @@ import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
 import { MetricsService, TrackedWorkerHost } from '../../collector/metrics';
-import { garageDispatchPayloadSchema, garagePayloadSchema, LESTA_LINKS, LESTA_LINKS_QUEUE } from '../config';
-import { GarageSyncService, TokenRenewalService } from '../services';
+import { LESTA_LINKS_QUEUE } from '../config/lesta-links-queue.constants';
+import { garageDispatchPayloadSchema, garagePayloadSchema } from '../config/lesta-links-queue.schemas';
+import { LESTA_LINKS } from '../config/lesta-links.constants';
+import { GarageSyncService } from '../services/garage-sync.service';
+import { TokenRenewalService } from '../services/token-renewal.service';
 
 @Processor(LESTA_LINKS_QUEUE.name, { concurrency: LESTA_LINKS.concurrency })
 export class LestaLinksProcessor extends TrackedWorkerHost {

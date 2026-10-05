@@ -233,7 +233,7 @@ describe('DeliveryService.deliverDigest', () => {
 
     expect(await service.deliverDigest(digest)).toBe(2);
     expect(await service.deliverDigest(digest)).toBe(0);
-    expect(email.sendDigest).toHaveBeenCalledTimes(1);
+    expect(email.sendNotification).toHaveBeenCalledTimes(1);
     expect(telegram.sendNotification).toHaveBeenCalledTimes(1);
   });
 
@@ -246,7 +246,7 @@ describe('DeliveryService.deliverDigest', () => {
     const unreachable = { ...digest, weekKey: '2026-W41' };
 
     expect(await service.deliverDigest(unreachable)).toBe(0);
-    expect(email.sendDigest).not.toHaveBeenCalled();
+    expect(email.sendNotification).not.toHaveBeenCalled();
     expect(await redis.keys(`${WEEKLY_DIGEST.dedupePrefix}${unreachable.userId}:${unreachable.weekKey}*`)).toEqual([]);
   });
 
@@ -254,7 +254,7 @@ describe('DeliveryService.deliverDigest', () => {
     const { service, prisma, email } = createService();
 
     email.canReach.mockReturnValue(true);
-    email.sendDigest.mockRejectedValueOnce(new Error('smtp down'));
+    email.sendNotification.mockRejectedValueOnce(new Error('smtp down'));
     prisma.user.findUnique.mockResolvedValue(recipient({ telegramId: null }));
 
     const retried = { ...digest, weekKey: '2026-W40' };
@@ -274,7 +274,7 @@ describe('DeliveryService.deliverDigest', () => {
 
     await expect(service.deliverDigest(retried)).rejects.toThrow('telegram down');
     expect(await service.deliverDigest(retried)).toBe(1);
-    expect(email.sendDigest).toHaveBeenCalledTimes(1);
+    expect(email.sendNotification).toHaveBeenCalledTimes(1);
     expect(telegram.sendNotification).toHaveBeenCalledTimes(2);
   });
 });

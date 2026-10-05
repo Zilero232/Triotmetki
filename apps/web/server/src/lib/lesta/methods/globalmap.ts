@@ -1,6 +1,6 @@
 import type { LestaRequester } from '../client/client.types';
 
-import { passthrough, passthroughById } from './call-shapes';
+import { passthrough, passthroughById } from './call-shapes/call-shapes';
 
 export const createGlobalmapMethods = (requester: LestaRequester) => ({
   fronts: passthrough({ requester, method: 'globalmap/fronts' }),

@@ -6,7 +6,7 @@ import type { AnalyticsQueries } from '../../providers/analytics-queries.provide
 
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { ExpectedValuesReaderService } from '../../../reference';
-import { PLATOON_CHEMISTRY } from '../../config';
+import { PLATOON_CHEMISTRY } from '../../config/platoon-chemistry.constants';
 import { OwnAccountReaderService } from '../own-account-reader.service';
 import { PlatoonChemistryReaderService } from '../platoon-chemistry-reader.service';
 import { rawRow } from './analytics.fixtures';

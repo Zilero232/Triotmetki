@@ -1,4 +1,4 @@
-import type { RepoReader } from '../source';
+import type { RepoReader } from '../source/source.types';
 
 export type LocalizedMessages = Record<string, string>;
 

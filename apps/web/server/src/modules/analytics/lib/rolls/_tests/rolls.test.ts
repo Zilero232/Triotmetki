@@ -1,7 +1,7 @@
 import { HONEST_RNG } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
-import type { StoredShot } from '../../stored-shots';
+import type { StoredShot } from '../../stored-shots/stored-shots.types';
 
 import { shotRolls, summarizeRolls } from '../rolls';
 

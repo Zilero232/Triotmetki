@@ -5,7 +5,7 @@ import type { ClanRecipientsInput, ClanScope, Membership } from '../clan-workspa
 
 import { AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
-import { isClanOfficer } from '../lib';
+import { isClanOfficer } from '../lib/workspace-roles/workspace-roles';
 
 @Injectable()
 export class ClanAccessService {

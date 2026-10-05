@@ -11,9 +11,9 @@ import type { AssertFeatureInput, AssertWithinLimitInput, LimitInput } from '../
 import { AppForbiddenException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
 import { ENTITLEMENTS } from '../config/entitlements.constants';
-import { plusStateOf } from '../lib/plus-state';
-import { plusSubscriptionKey } from '../lib/subscription-key';
-import { isTrialEligible, trialDaysFor } from '../lib/trial';
+import { plusStateOf } from '../lib/plus-state/plus-state';
+import { plusSubscriptionKey } from '../lib/subscription-key/subscription-key';
+import { isTrialEligible, trialDaysFor } from '../lib/trial/trial';
 import { EntitlementsBusService } from './entitlements-bus.service';
 
 @Injectable()

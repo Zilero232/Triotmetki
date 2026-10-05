@@ -20,7 +20,7 @@ import { mockPrismaService } from '../../../core/prisma/_tests/prisma-mock';
 import { deviceSecret, hashSecret, MOD_DEVICE, ModDeviceService, signedMessage } from '../../mod';
 import { ModSyncAccountController } from '../mod-sync-account.controller';
 import { ModSyncController } from '../mod-sync.controller';
-import { ModSyncService } from '../services';
+import { ModSyncWriterService } from '../services/mod-sync-writer.service';
 
 const SERVER_SECRET = 'server-secret-for-tests';
 const DEVICE_ID = 'dev_sync';
@@ -79,7 +79,7 @@ beforeAll(async () => {
     controllers: [ModSyncController, ModSyncAccountController],
     providers: [
       ModDeviceService,
-      ModSyncService,
+      ModSyncWriterService,
       { provide: PrismaService, useValue: prisma },
       { provide: AppConfigService, useValue: config },
       { provide: REDIS, useValue: new RedisMock() },

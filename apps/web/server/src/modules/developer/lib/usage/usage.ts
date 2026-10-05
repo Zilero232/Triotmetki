@@ -4,7 +4,7 @@ import { groupBy, sortBy, sumBy } from 'remeda';
 
 import type { TopEndpoint, UsagePointInput, UsageRow } from './usage.types';
 
-import { API_USAGE_REPORT } from '../../config';
+import { API_USAGE_REPORT } from '../../config/api-usage.constants';
 
 const toPoint = ({ day, rows }: UsagePointInput): ApiUsagePoint => {
   const requests = sumBy(rows, (row) => row.requests);

@@ -3,13 +3,13 @@ import { addDays } from 'date-fns';
 import { partition, uniqueBy } from 'remeda';
 
 import type { Prisma } from '../../../../../generated';
-import type { MarkSyncedInput, StoredPlayer, UpsertPlayerInput } from '../lib/poll-pipeline';
+import type { MarkSyncedInput, StoredPlayer, UpsertPlayerInput } from '../lib/poll-pipeline/poll-pipeline.types';
 import type { PlayerIdentityRow, PlayerQueries, SyncedRow } from '../queries/players.types';
 
 import { asPrismaTransaction, PrismaService } from '../../../../core';
 import { TRACKING, TRACKING_TOKENS } from '../config/tracking.constants';
-import { changesClan, playerIdentity } from '../lib/player-identity';
-import { nextPollAt } from '../lib/poll-schedule';
+import { changesClan, playerIdentity } from '../lib/player-identity/player-identity';
+import { nextPollAt } from '../lib/poll-schedule/poll-schedule';
 import { toStoredPlayer } from '../mappers/players.mappers';
 import { STORED_PLAYER_SELECT } from '../selects/players.selects';
 import { TrackingAnnounceService } from './tracking-announce.service';

@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 
 import type { SharedCommandInput } from '../telegram.types';
 
-import { BotRepliesService } from '../../bot-commands';
-import { SHARED_COMMAND_OF } from '../config';
-import { replyOptions, resolveBotLocale } from '../lib';
+import { BotRepliesService, resolveBotLocale } from '../../bot-commands';
+import { SHARED_COMMAND_OF } from '../config/bot.constants';
+import { replyOptions } from '../lib/bot-reply/bot-reply';
 
 @Injectable()
 export class TelegramSharedCommandsService {

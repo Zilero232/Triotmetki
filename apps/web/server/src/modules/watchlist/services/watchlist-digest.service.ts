@@ -6,8 +6,8 @@ import type { DigestForInput } from '../watchlist.types';
 import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { NotificationService } from '../../notifications';
-import { WATCHLIST_DIGEST_RUN } from '../config';
-import { digestWindowStart, isDigestDue, summarizeDigest } from '../lib/watchlist-digest';
+import { WATCHLIST_DIGEST_RUN } from '../config/queue.constants';
+import { digestWindowStart, isDigestDue, summarizeDigest } from '../lib/watchlist-digest/watchlist-digest';
 import { WatchlistActivityReaderService } from './watchlist-activity-reader.service';
 
 @Injectable()

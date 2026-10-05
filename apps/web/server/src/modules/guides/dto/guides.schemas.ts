@@ -2,7 +2,7 @@ import { authorSchema, countSchema, isoDateTimeSchema, paginatedSchema, paginati
 import { z } from 'zod';
 
 import { arenaIdSchema, moderationStatusSchema } from '../../community-core';
-import { COMMENTS, GUIDES } from '../config';
+import { COMMENTS, GUIDES } from '../config/guides.constants';
 
 const guideKindSchema = z.enum(['tank', 'map', 'general']);
 

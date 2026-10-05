@@ -83,4 +83,15 @@ describe('SessionReportsService', () => {
 
     expect(prisma.playSession.findMany.mock.calls[0]?.[0]?.where).toMatchObject({ source: 'mod', kind: 'live' });
   });
+
+  it('releases the claim when the report cannot be queued so the next run reports it', async () => {
+    const { service, prisma, notifications } = createService();
+    const now = new Date('2026-09-25T12:00:00Z');
+
+    prisma.playSession.updateMany.mockResolvedValue({ count: 1 });
+    notifications.notifyMany.mockRejectedValueOnce(new Error('redis down'));
+
+    await expect(service.run(now)).rejects.toThrow('redis down');
+    expect(prisma.playSession.updateMany).toHaveBeenLastCalledWith({ where: { id: 's1', reportSentAt: now }, data: { reportSentAt: null } });
+  });
 });

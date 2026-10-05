@@ -6,11 +6,11 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { UserLestaAccount } from '../../../../../generated';
 import type { LestaClients, PrismaService } from '../../../../core';
-import type { GaragePayload } from '../../config';
+import type { GaragePayload } from '../../config/lesta-links-queue.types';
 
 import { createTokenCipher } from '../../../../core/token-cipher/_tests/token-cipher.fixtures';
 import { LestaApiError } from '../../../../lib/lesta';
-import { LESTA_LINKS_QUEUE } from '../../config';
+import { LESTA_LINKS_QUEUE } from '../../config/lesta-links-queue.constants';
 import { GarageSyncService } from '../garage-sync.service';
 
 const NOW = new Date('2026-09-28T05:20:00Z');

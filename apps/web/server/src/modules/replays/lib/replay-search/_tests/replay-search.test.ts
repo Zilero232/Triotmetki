@@ -73,7 +73,13 @@ describe('searchWhere', () => {
 describe('searchOrder', () => {
   it('breaks ties on the play date for every sort', () => {
     for (const sort of ['damage', 'xp', 'views'] as const) {
-      expect(searchOrder(sort).at(-1)).toEqual({ playedAt: 'desc' });
+      expect(searchOrder(sort)).toContainEqual({ playedAt: 'desc' });
+    }
+  });
+
+  it('ends on the unique id so offset pages never repeat or skip a replay', () => {
+    for (const sort of ['recent', 'damage', 'xp', 'views'] as const) {
+      expect(searchOrder(sort).at(-1)).toEqual({ id: 'desc' });
     }
   });
 });

@@ -12,7 +12,8 @@ export const LEARNING_CURVE_AGGREGATE = {
   windowDays: LEARNING_CURVE.windowDays,
   bucketStarts: LEARNING_CURVE.bucketStarts,
   maxBattleDelta: 500,
-  minBattles: 50
+  minBattles: 50,
+  seriesColumns: ['account_id', 'tank_id', 'captured_at', 'battles', 'wins', 'damage_dealt']
 } as const;
 
 export const TANK_PERCENTILES_AGGREGATE = {

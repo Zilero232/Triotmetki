@@ -4,7 +4,7 @@ import { toIsoDate } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { toMoeThresholdRecord, VehicleCatalogService } from '../../reference';
 import { THRESHOLD_DROP } from '../config/watchers.constants';
-import { thresholdDrops } from '../lib/threshold-drops';
+import { thresholdDrops } from '../lib/threshold-drops/threshold-drops';
 import { NotificationService } from './notification.service';
 
 @Injectable()

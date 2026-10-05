@@ -10,9 +10,9 @@ import type { ChallengeAnnouncement, ChatAnnouncer, ChatMessageInput, TwitchConn
 
 import { errorMessage, readRecord } from '../../../../common/lib';
 import { AppConfigService } from '../../../../config';
-import { INTEGRATIONS, IntegrationStoreService, TWITCH, TwitchSdkService } from '../../integrations';
-import { parseChatCommand } from '../lib/chat-command';
-import { StreamerStatsService } from './streamer-stats.service';
+import { INTEGRATIONS, IntegrationWriterService, TWITCH, TwitchSdkService } from '../../integrations';
+import { parseChatCommand } from '../lib/chat-command/chat-command';
+import { ChatReplyReaderService } from './chat-reply-reader.service';
 
 @Injectable()
 export class TwitchChatService implements ChatAnnouncer, OnApplicationBootstrap, OnModuleDestroy {
@@ -23,8 +23,8 @@ export class TwitchChatService implements ChatAnnouncer, OnApplicationBootstrap,
 
   constructor(
     private readonly config: AppConfigService,
-    private readonly store: IntegrationStoreService,
-    private readonly stats: StreamerStatsService,
+    private readonly store: IntegrationWriterService,
+    private readonly stats: ChatReplyReaderService,
     private readonly sdk: TwitchSdkService
   ) {}
 

@@ -10,8 +10,8 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { PrismaClient } from '../../../../generated';
 import type { LestaClient } from '../../lesta';
 import type { AccountPurgeStore, AuthEnv } from '../auth.types';
-import type { LestaAccountStore } from '../lesta-id';
-import type { TelegramAccountStore } from '../telegram-login';
+import type { LestaAccountStore } from '../lesta-id/lesta-id.types';
+import type { TelegramAccountStore } from '../telegram-login/telegram-login.types';
 
 import { createAuth } from '../auth';
 import { AUTH_RATE_LIMIT } from '../auth.constants';

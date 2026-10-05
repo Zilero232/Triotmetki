@@ -7,7 +7,7 @@ import type { TournamentPage, TournamentsQuery, TournamentView, TournamentViewWi
 import { AppNotFoundException } from '../../../common/exceptions';
 import { paginate } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { CommunityAccountsService } from '../../community-core';
+import { CommunityAccountsReaderService } from '../../community-core';
 import { storedBracket, storedCapacity } from '../lib/stored-tournament/stored-tournament';
 import { toTournamentView } from '../mappers/tournament-view.mappers';
 import { TOURNAMENT_INCLUDE } from '../selects/tournament.selects';
@@ -16,7 +16,7 @@ import { TOURNAMENT_INCLUDE } from '../selects/tournament.selects';
 export class TournamentReaderService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly accounts: CommunityAccountsService
+    private readonly accounts: CommunityAccountsReaderService
   ) {}
 
   async list({ status, limit, offset }: TournamentsQuery): Promise<TournamentPage> {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { RECRUITING } from '../../../config';
+import { RECRUITING } from '../../../config/recruiting.constants';
 import { isRecruitingOfficer } from '../clan-officer';
 
 describe('isRecruitingOfficer', () => {

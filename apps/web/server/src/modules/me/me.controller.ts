@@ -17,18 +17,22 @@ import {
   NotificationSettingsDto,
   UpdateGoalDto,
   UpdateNotificationSettingsDto
-} from './dto';
-import { FavoritesService, GoalsService, LinkedAccountsService, MyMarksService, NotificationSettingsService } from './services';
+} from './dto/me.dto';
+import { FavoritesWriterService } from './services/favorites-writer.service';
+import { GoalsWriterService } from './services/goals-writer.service';
+import { LinkedAccountsWriterService } from './services/linked-accounts-writer.service';
+import { MyMarksReaderService } from './services/my-marks-reader.service';
+import { NotificationSettingsWriterService } from './services/notification-settings-writer.service';
 
 @ApiTags('me')
 @Controller('me')
 export class MeController {
   constructor(
-    private readonly favorites: FavoritesService,
-    private readonly goals: GoalsService,
-    private readonly notifications: NotificationSettingsService,
-    private readonly accounts: LinkedAccountsService,
-    private readonly myMarks: MyMarksService
+    private readonly favorites: FavoritesWriterService,
+    private readonly goals: GoalsWriterService,
+    private readonly notifications: NotificationSettingsWriterService,
+    private readonly accounts: LinkedAccountsWriterService,
+    private readonly myMarks: MyMarksReaderService
   ) {}
 
   @Get('marks')

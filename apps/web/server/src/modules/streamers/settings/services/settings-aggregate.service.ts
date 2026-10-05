@@ -8,7 +8,7 @@ import { groupBy } from 'remeda';
 import { Prisma } from '../../../../../generated';
 import { toIso } from '../../../../common/lib';
 import { PrismaService } from '../../../../core';
-import { aggregateCohort } from '../lib/settings-aggregate';
+import { aggregateCohort } from '../lib/settings-aggregate/settings-aggregate';
 
 @Injectable()
 export class SettingsAggregateService {

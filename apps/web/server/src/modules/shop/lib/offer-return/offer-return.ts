@@ -6,7 +6,7 @@ import { median } from 'simple-statistics';
 import type { PremiumOffer } from '../../../../../generated';
 import type { AbsenceBeforeReturnInput, ReturnEstimate } from './offer-return.types';
 
-import { OFFER_RETURN } from '../../config';
+import { OFFER_RETURN } from '../../config/offers.constants';
 
 export const returnEstimate = (appearances: readonly Date[]): ReturnEstimate => {
   const times = sortBy(unique(appearances.map((date) => date.getTime())), identity());

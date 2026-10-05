@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { ReplayFormatError } from '../../errors';
+import { ReplayFormatError } from '../../errors/replay-format-error';
 import { parseJsonBlock } from '../json-block';
 
 const encode = (text: string) => new TextEncoder().encode(text);

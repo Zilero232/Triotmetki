@@ -6,7 +6,7 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId } from '../../common/decorators';
 import { IdParamsDto } from '../community-core';
-import { MODERATION } from './config';
+import { MODERATION } from './config/moderation.constants';
 import {
   ContentReportDto,
   ContentReportListDto,
@@ -16,13 +16,13 @@ import {
   PendingGuidesDto,
   ReportsQueryDto,
   ResolveReportDto
-} from './dto';
-import { ModerationService } from './services';
+} from './dto/moderation.dto';
+import { ModerationWriterService } from './services/moderation-writer.service';
 
 @ApiTags('community')
 @Controller()
 export class ModerationController {
-  constructor(private readonly moderation: ModerationService) {}
+  constructor(private readonly moderation: ModerationWriterService) {}
 
   @Post('community/reports')
   @Throttle({ default: MODERATION.reportThrottle })

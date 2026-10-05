@@ -1,10 +1,10 @@
 import { fromUnixTime } from 'date-fns';
 import { sumBy } from 'remeda';
 
-import type { ArenaBlock, PersonalResult, VehicleResult } from '../header';
+import type { ArenaBlock, PersonalResult, VehicleResult } from '../header/header.types';
 import type { ClientVersion, PlayerResult, ReplayGame } from './summary.types';
 
-import { personalResultSchema } from '../header';
+import { personalResultSchema } from '../header/header.schemas';
 import { GAME_TITLE, REPLAY_PATTERN, VEHICLE_RESULT } from './summary.constants';
 
 export const blankToNull = (value: string | null | undefined) => value || null;

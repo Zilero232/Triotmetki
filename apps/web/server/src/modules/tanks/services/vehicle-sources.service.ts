@@ -6,9 +6,9 @@ import type { CreateVehicleSourceRequest } from '../tanks.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
 import { PrismaService } from '../../../core';
-import { rewardMissions } from '../lib';
-import { toVehicleSourceView } from '../mappers';
-import { VEHICLE_SOURCE_EVENT } from '../selects';
+import { rewardMissions } from '../lib/vehicle-sources/vehicle-sources';
+import { toVehicleSourceView } from '../mappers/vehicle-sources.mappers';
+import { VEHICLE_SOURCE_EVENT } from '../selects/vehicle-sources.selects';
 
 @Injectable()
 export class VehicleSourcesService {

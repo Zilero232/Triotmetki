@@ -53,12 +53,7 @@ describe('EmailService', () => {
   it('sends the rendered notification as HTML and plain text', async () => {
     const service = createService('configured');
 
-    await service.sendDigest({
-      to: 'player@example.com',
-      locale: 'en',
-      rendered: RENDERED,
-      digest: { battles: 10, wins: 5, damageDealt: 1, sessions: 1, marksGained: 0 }
-    });
+    await service.sendNotification({ to: 'player@example.com', locale: 'en', rendered: RENDERED });
 
     const mail = sendMail.mock.calls[0]?.[0];
 

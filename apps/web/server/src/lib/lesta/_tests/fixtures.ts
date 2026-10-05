@@ -1,4 +1,4 @@
-import type { LestaFetch } from '../client';
+import type { LestaFetch } from '../client/client.types';
 import type { FetchHandler, FetchReply, LestaErrorFixtureInput, OkWithMetaInput, RecordedCall, TankStatsFixtureInput } from './fixtures.types';
 
 const statsBlock = (battles: number) => ({

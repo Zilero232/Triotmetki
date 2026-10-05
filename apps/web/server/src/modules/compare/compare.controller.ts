@@ -6,8 +6,9 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
-import { ComparePlayersQueryDto, CompareTanksQueryDto, PlayerComparisonDto, TankComparisonDto } from './dto';
-import { PlayerCompareService, TankCompareService } from './services';
+import { ComparePlayersQueryDto, CompareTanksQueryDto, PlayerComparisonDto, TankComparisonDto } from './dto/compare.dto';
+import { PlayerCompareReaderService } from './services/player-compare-reader.service';
+import { TankCompareReaderService } from './services/tank-compare-reader.service';
 
 @ApiTags('compare')
 @AllowAnonymous()
@@ -15,8 +16,8 @@ import { PlayerCompareService, TankCompareService } from './services';
 @Controller('compare')
 export class CompareController {
   constructor(
-    private readonly players: PlayerCompareService,
-    private readonly tanks: TankCompareService
+    private readonly players: PlayerCompareReaderService,
+    private readonly tanks: TankCompareReaderService
   ) {}
 
   @Get('players')

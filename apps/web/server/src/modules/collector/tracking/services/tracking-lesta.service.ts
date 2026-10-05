@@ -3,7 +3,7 @@ import { mapValues } from 'remeda';
 
 import type { LestaClients } from '../../../../core';
 import type { LestaClient } from '../../../../lib/lesta';
-import type { PollLestaPort } from '../lib/poll-pipeline';
+import type { PollLestaPort } from '../lib/poll-pipeline/poll-pipeline.types';
 import type { WithModeExtraInput } from '../tracking.types';
 
 import { LESTA_CLIENTS } from '../../../../core';

@@ -6,7 +6,7 @@ import type { Update } from 'grammy/types';
 import type { NotificationChannel, NotificationEvent, NotificationSettings, Prisma } from '../../../generated';
 import type { TelegramIdentity } from '../../lib/auth';
 import type { BotLocale } from '../bot-commands';
-import type { EXTERNAL_BOT_COMMANDS, SHARED_COMMAND_OF } from './config';
+import type { EXTERNAL_BOT_COMMANDS, SHARED_COMMAND_OF } from './config/bot.constants';
 
 export type { TelegramIdentity } from '../../lib/auth';
 export type { BotLocale } from '../bot-commands';

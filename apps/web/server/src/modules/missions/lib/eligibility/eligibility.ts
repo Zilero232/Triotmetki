@@ -5,7 +5,7 @@ import { range } from 'remeda';
 
 import type { MissionFilterInput, MissionVehicleFilter } from './eligibility.types';
 
-import { MISSION_TIERS } from '../../config';
+import { MISSION_TIERS } from '../../config/suitable-tanks.constants';
 
 export const vehicleTypesOf = (values: readonly string[]): VehicleType[] =>
   values.flatMap((value) => {

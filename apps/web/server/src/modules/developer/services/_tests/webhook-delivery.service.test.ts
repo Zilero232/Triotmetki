@@ -9,8 +9,9 @@ import type { PrismaService } from '../../../../core';
 import type { HostLookupService } from '../host-lookup.service';
 import type { WebhookPosterService } from '../webhook-poster.service';
 
-import { WEBHOOK_DELIVERY } from '../../config';
-import { generateWebhookSecret, WebhookResponseError } from '../../lib';
+import { WEBHOOK_DELIVERY } from '../../config/webhook-delivery.constants';
+import { WebhookResponseError } from '../../lib/webhook-post/webhook-post';
+import { generateWebhookSecret } from '../../lib/webhook-signature/webhook-signature';
 import { WebhookDeliveryService } from '../webhook-delivery.service';
 
 const poster = mock<WebhookPosterService>();

@@ -1,7 +1,7 @@
 import type { DailyStatsInput, ServerPlayersInput } from './server.types';
 
 import { statSums } from '../../../../../core';
-import { SERVER_STATS } from '../lib/server-stats';
+import { SERVER_STATS } from '../lib/server-stats/server-stats.constants';
 
 export const serverPlayers = async ({ db, mode, sinces, until }: ServerPlayersInput) => {
   const earliest = new Date(Math.min(...sinces.map((since) => since.getTime())));

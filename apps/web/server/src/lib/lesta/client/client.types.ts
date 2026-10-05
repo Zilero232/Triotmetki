@@ -1,9 +1,9 @@
 import type { Options } from 'ky';
 import type { z } from 'zod';
 
-import type { LestaOutcome } from '../outcome';
-import type { RateLimiter } from '../rate-limit';
-import type { LestaMeta } from '../schemas';
+import type { LestaOutcome } from '../outcome/outcome.types';
+import type { RateLimiter } from '../rate-limit/rate-limit.types';
+import type { LestaMeta } from '../schemas/common/common.types';
 import type { LESTA_LANGUAGES } from './client.constants';
 
 export type LestaLanguage = (typeof LESTA_LANGUAGES)[number];

@@ -1,8 +1,14 @@
 import type { z } from 'zod';
 
 import type { Prisma } from '../../../generated';
-import type { supertestAnnouncementSchema, supertestChangeSchema, supertestListSchema, supertestMineSchema, supertestTankSchema } from './dto';
-import type { ParsedTank } from './lib';
+import type {
+  supertestAnnouncementSchema,
+  supertestChangeSchema,
+  supertestListSchema,
+  supertestMineSchema,
+  supertestTankSchema
+} from './dto/supertest.schemas';
+import type { ParsedTank } from './lib/supertest-article/supertest-article.types';
 
 export type SupertestChangeView = z.infer<typeof supertestChangeSchema>;
 
@@ -30,3 +36,10 @@ export type StoreAnnouncementInput = {
 };
 
 export type ChangeRowInput = Omit<Prisma.SupertestChangeCreateManyInput, 'announcementId' | 'position'>;
+
+export type SupertestSyncSummary = {
+  seen: number;
+  fetched: number;
+  stored: number;
+  changes: number;
+};

@@ -7,7 +7,7 @@ import type { PrismaService } from '../../../../core';
 import type { VehicleCatalogService } from '../../../reference';
 import type { TankTraitsReaderService } from '../tank-traits-reader.service';
 
-import { TANK_STATS_RANKING } from '../../config';
+import { TANK_STATS_RANKING } from '../../config/tank-stats.constants';
 import { TankStatsReaderService } from '../tank-stats-reader.service';
 import { catalogEntry, serverStats, vehicle } from './tanks.fixtures';
 

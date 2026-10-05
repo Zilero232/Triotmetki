@@ -12,8 +12,8 @@ import { PrismaService } from '../../../core';
 import { UserAccountsReaderService } from '../../accounts';
 import { PlayerCareerReaderService } from '../../players';
 import { bonusTypesOfMode, VehicleCatalogService } from '../../reference';
-import { MODES_QUERIES } from '../config';
-import { foldModeStats } from '../lib/my-mode-stats';
+import { MODES_QUERIES } from '../config/queries.constants';
+import { foldModeStats } from '../lib/my-mode-stats/my-mode-stats';
 import { toMyModeRows } from '../mappers/my-mode-stats.mappers';
 
 @Injectable()

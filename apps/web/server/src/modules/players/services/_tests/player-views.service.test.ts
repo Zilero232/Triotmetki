@@ -7,7 +7,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { Clan, Player } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
-import { PLAYER_VIEWS } from '../../config';
+import { PLAYER_VIEWS } from '../../config/player-lookup.constants';
 import { PlayerViewsService } from '../player-views.service';
 
 const NOW = new Date('2026-09-26T12:00:00Z');

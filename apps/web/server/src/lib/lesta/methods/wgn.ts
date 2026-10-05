@@ -1,9 +1,9 @@
 import type { LestaCallOptions, LestaRequester } from '../client/client.types';
-import type { ServerOnline } from '../schemas';
+import type { ServerOnline } from '../schemas/wgn/wgn.types';
 
 import { LESTA_API } from '../client/client.constants';
-import { callParams } from '../client/params';
-import { serversInfoSchema } from '../schemas';
+import { callParams } from '../client/params/params';
+import { serversInfoSchema } from '../schemas/wgn/wgn.schemas';
 
 export const createWgnMethods = (requester: LestaRequester) => {
   const servers = async (options: LestaCallOptions = {}): Promise<ServerOnline[]> => {

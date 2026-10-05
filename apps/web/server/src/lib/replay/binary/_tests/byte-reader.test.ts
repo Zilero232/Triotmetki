@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { ReplayFormatError } from '../../errors';
+import { ReplayFormatError } from '../../errors/replay-format-error';
 import { ByteReader } from '../byte-reader';
 
 const bytesOf = ({ size, write }: { size: number; write: (view: DataView) => void }) => {

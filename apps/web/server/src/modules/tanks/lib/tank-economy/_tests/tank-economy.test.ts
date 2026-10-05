@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { EconomyBattle } from '../tank-economy.types';
 
-import { ACCOUNT_ECONOMY } from '../../../config';
+import { ACCOUNT_ECONOMY } from '../../../config/tank-economy.constants';
 import { accountEconomy, battleNet } from '../tank-economy';
 
 const vehicle = (tankId: number): VehicleSummary => ({

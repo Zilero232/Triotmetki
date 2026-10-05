@@ -6,7 +6,7 @@ import { range } from 'remeda';
 import type { TiltBattle } from './tilt.types';
 
 import { percentOf } from '../../../../common/lib';
-import { TILT } from '../../config';
+import { TILT } from '../../config/tilt.constants';
 
 const lossesBefore = (battles: readonly TiltBattle[]): number[] => {
   const streaks: number[] = [];

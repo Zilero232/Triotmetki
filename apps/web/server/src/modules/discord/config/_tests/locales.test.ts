@@ -2,8 +2,8 @@ import { RATING_TIERS } from '@otmetki/ratings';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-import { DISCORD_LOCALE_FILES } from '..';
-import { commandDefinitions } from '../../lib';
+import { commandDefinitions } from '../../lib/command-definitions/command-definitions';
+import { DISCORD_LOCALE_FILES } from '../locales.constants';
 
 const messageKeys = (locale: keyof typeof DISCORD_LOCALE_FILES) =>
   readFileSync(DISCORD_LOCALE_FILES[locale], 'utf8')

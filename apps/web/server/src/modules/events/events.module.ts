@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 
 import { EventsController } from './events.controller';
-import { EventQueryService } from './services';
+import { EventReaderService } from './services/event-reader.service';
 
 @Module({
   controllers: [EventsController],
-  providers: [EventQueryService]
+  providers: [EventReaderService]
 })
 export class EventsModule {}

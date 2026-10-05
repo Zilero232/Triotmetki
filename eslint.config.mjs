@@ -1,7 +1,5 @@
 import { eslint } from '@siberiacancode/eslint';
 
-import { RAW_SQL_ALLOWLIST } from './apps/web/server/eslint.raw-sql-allowlist.mjs';
-
 export default eslint(
   {
     typescript: true,
@@ -113,12 +111,11 @@ export default eslint(
   },
 
   // One way to write SQL in the server: Kysely through prisma.$kysely (docs/guides/server/queries.md).
-  // Prisma's raw API is banned outside the shrinking allowlist of files not yet moved; tests may still
-  // reference it on their mocks.
+  // Prisma's raw API is banned; tests may still reference it on their mocks.
   {
     name: 'otmetki/server-raw-sql',
     files: ['apps/web/server/src/**/*.ts', 'apps/web/server/scripts/**/*.ts'],
-    ignores: ['apps/web/server/src/**/_tests/**', ...RAW_SQL_ALLOWLIST],
+    ignores: ['apps/web/server/src/**/_tests/**'],
     rules: {
       'no-restricted-properties': [
         'error',

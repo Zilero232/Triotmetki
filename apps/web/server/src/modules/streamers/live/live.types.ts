@@ -1,4 +1,4 @@
-import type { LiveStream } from './lib/live-status';
+import type { LiveStream } from './lib/live-status/live-status.types';
 
 export type CachedToken = {
   value: string;

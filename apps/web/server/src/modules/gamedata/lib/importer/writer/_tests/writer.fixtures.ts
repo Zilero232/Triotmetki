@@ -5,9 +5,9 @@ import type { ImportedVehicleSummary, ImportPlan, VehicleRow } from '../../impor
 
 import { vehicleImages } from '../../../../../../lib/lesta';
 import { memoryFiles } from '../../../_tests/fixtures';
-import { buildGameData } from '../../../game-data';
-import { createMemoryReader } from '../../../source';
-import { createImportPlan } from '../../plan';
+import { buildGameData } from '../../../game-data/game-data';
+import { createMemoryReader } from '../../../source/local/local';
+import { createImportPlan } from '../../plan/plan';
 
 export const VEHICLE_IMAGES = vehicleImages({ nation: 'ussr', tag: 'R00_Fixture' });
 

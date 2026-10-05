@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 
 import { BillingCoreModule } from '../billing';
-import { UsageActorGuard } from './guards';
-import { UsageMeterService } from './services';
+import { UsageActorGuard } from './guards/usage-actor.guard';
+import { UsageMeterService } from './services/usage-meter.service';
 import { UsageController } from './usage.controller';
 
 @Module({

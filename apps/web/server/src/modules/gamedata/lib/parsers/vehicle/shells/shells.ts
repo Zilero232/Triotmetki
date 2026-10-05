@@ -2,8 +2,8 @@ import type { Shell } from '@otmetki/gamedata';
 
 import type { ParseShellsInput } from '../vehicle.types';
 
-import { makeCompactDescr, nationId } from '../../../ids';
-import { bool, entries, get, isXmlNode, localizationFallback, localizationKey, num, parseXml, price, text } from '../../../xml';
+import { makeCompactDescr, nationId } from '../../../ids/ids';
+import { bool, entries, get, isXmlNode, localizationFallback, localizationKey, num, parseXml, price, text } from '../../../xml/xml';
 import { SHELLS } from '../vehicle.constants';
 
 export const parseShells = ({ xml, nation }: ParseShellsInput): Record<string, Shell> => {

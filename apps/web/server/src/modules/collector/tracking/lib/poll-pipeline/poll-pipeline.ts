@@ -5,7 +5,7 @@ import { isIncludedIn, unique } from 'remeda';
 
 import type { Prisma } from '../../../../../../generated';
 import type { AccountInfo } from '../../../../../lib/lesta';
-import type { TankSnapshotRow } from '../snapshots';
+import type { TankSnapshotRow } from '../snapshots/snapshots.types';
 import type {
   AccountSnapshotsInput,
   BaselineRowsInput,
@@ -23,10 +23,10 @@ import type {
   TankChangesInput
 } from './poll-pipeline.types';
 
-import { diffAccountTanks, hasNewBattles } from '../account-diff';
-import { assignCohort } from '../cohort';
-import { accountModeRows, tankModeRows } from '../mode-stats';
-import { accountSnapshotRow, buildTankDelta, modeBlocks, shouldWriteSnapshot, tankSnapshotRow } from '../snapshots';
+import { diffAccountTanks, hasNewBattles } from '../account-diff/account-diff';
+import { assignCohort } from '../cohort/cohort';
+import { accountModeRows, tankModeRows } from '../mode-stats/mode-stats';
+import { accountSnapshotRow, buildTankDelta, modeBlocks, shouldWriteSnapshot, tankSnapshotRow } from '../snapshots/snapshots';
 import { POLL_PIPELINE } from './poll-pipeline.constants';
 
 const snapshotKey = (row: Pick<TankSnapshotRow, 'mode' | 'tankId'>) => `${row.tankId}:${row.mode}`;

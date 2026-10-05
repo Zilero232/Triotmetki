@@ -5,7 +5,7 @@ import { moeAlpha, moeCombinedDamage } from '@otmetki/ratings';
 import type { BattleReview, RatioToInput, ReviewedBattle, ReviewInput } from './battle-review.types';
 
 import { percentOf } from '../../../../common/lib';
-import { BATTLE_REVIEW } from '../../config';
+import { BATTLE_REVIEW } from '../../config/battle-review.constants';
 
 const ratioTo = ({ value, reference }: RatioToInput): number | null => (reference !== null && reference > 0 ? value / reference : null);
 

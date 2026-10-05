@@ -4,7 +4,7 @@ Scope: `apps/web/server` (NestJS 11 on Bun, Prisma 7 + TimescaleDB, BullMQ worke
 
 Measured on 2026-10-05, at the working tree as of commit `946107870` with the uncommitted security fixes still in progress. Re-measure before each package starts.
 
-**Status (2026-10-05).** Decisions D1, D2 and D3 are accepted. Phase 0 (WP-0) and phase 1 (WP-1, WP-2, WP-3) have landed; what changed against the plan is recorded under each package as *Landed*. Phase 2 starts from here. §1.5 adds the findings of the follow-up audits and assigns them to packages.
+**Status (2026-10-05).** Decisions D1, D2 and D3 are accepted. All packages, WP-0 through WP-14, have landed; what changed against the plan is recorded under each package as *Landed*, and the final numbers are under WP-14. §1.5 adds the findings of the follow-up audits and assigns them to packages.
 
 ## 1. Findings
 
@@ -378,6 +378,22 @@ Each package, for every module it owns: move inline SQL out of services; rewrite
 ### Phase 4 — finish (sequential)
 
 **WP-14 Cleanup.** Delete the raw-SQL lint allowlist (must be empty), remove the old `HttpClientService` methods, run `bun run lint:unused` and `bun run lint:dupes` and fix what the refactor left, re-measure §1 and append the numbers to this doc. Done: zero `$queryRaw`/`Prisma.sql` outside `core/prisma/lib/advisory-lock` if it stays raw; numbers recorded.
+
+*Landed.* The raw-SQL allowlist (empty) is deleted; the `otmetki/server-raw-sql` ban stays with only tests exempt, and no `$queryRaw` / `Prisma.sql` is left in `src/` or `scripts/`. `HttpClientService` keeps `getText` and the schema forms of `getJson` / `requestJson` only (live platforms, the poliroid MoE sync through a transforming schema, the XVM sync through `getText`). Every segment and per-item barrel inside a module is gone (≈ 580 `index.ts` removed in this package, including `lib/<concern>/index.ts`); barrels remain at module roots, collector and streamers sub-module roots, `core/<x>`, `src/lib/<client>`, `config/`, `common/<x>` and `openapi/`. Folder-per-item mappers and selects became `<topic>.mappers.ts` / `<topic>.selects.ts`; guards, decorators and interceptors are one flat file each. About 105 services got a D2 name (and `MissionProgressService`, `HeatmapService`, `StreamerSettingsService` split into reader + writer); the 94 kept names are infrastructure, transports, SDK wrappers, buses, queue producers, bot command handlers, watcher jobs that turn table state into messages, and the WP-13 precedents. knip for the server ignores type-only re-exports in barrels (`knip.json` `ignoreIssues`) and reports nothing; jscpd finds three clones, all import blocks or look-alike CTE heads with different columns (left). Defects fixed on the way, each with a test, and the behaviour decisions still open are listed in the WP-14 report; the retention audit's gaps wait for the owner.
+
+### WP-14 re-measure (2026-10-05)
+
+| Metric | Before (§1.1) | After |
+| --- | --- | --- |
+| Source files / lines (tests excluded) | 3,185 / 80,138 | 2,359 / 81,646 |
+| Test files (db tests) | 716 (0) | 771 (68) |
+| Directories under `src/` | 1,581 | 1,483 |
+| `index.ts` barrels | 1,059 | 116 |
+| Services / without a D2 suffix | 345 / — | 356 / 94 |
+| Files with Prisma raw SQL | 96 | 0 |
+| Server unit tests | — | 703 files, 4,570 tests |
+| `test:db` | — | 68 files, 309 tests |
+| OpenAPI (public, internal) | — | byte-identical to the pre-WP-14 export |
 
 Parallelism: phase 1 runs WP-1/2/3 at once; phase 2 runs WP-4 … WP-11 at once (8 agents, disjoint modules); phase 3 runs WP-12 alongside WP-13 only if WP-13 does not touch streamers imports (otherwise sequential).
 

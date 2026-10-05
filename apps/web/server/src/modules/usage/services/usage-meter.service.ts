@@ -11,8 +11,9 @@ import { AppForbiddenException } from '../../../common/exceptions';
 import { errorMessage } from '../../../common/lib';
 import { REDIS } from '../../../core';
 import { EntitlementsService } from '../../billing';
-import { USAGE_METER } from '../config';
-import { countKey, meterScopes, meterState, seenKey, unlimitedMeterState, usagePeriod } from '../lib';
+import { USAGE_METER } from '../config/usage-meter.constants';
+import { countKey, meterScopes, meterState, seenKey, unlimitedMeterState } from '../lib/meter-scopes/meter-scopes';
+import { usagePeriod } from '../lib/usage-period/usage-period';
 
 @Injectable()
 export class UsageMeterService {

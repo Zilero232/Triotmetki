@@ -21,7 +21,7 @@ import {
 } from '@otmetki/schemas';
 import { z } from 'zod';
 
-import { HEATMAP } from '../config';
+import { HEATMAP } from '../config/heatmap.constants';
 
 const replaySortSchema = z.enum(['recent', 'damage', 'xp', 'views']);
 

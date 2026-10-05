@@ -1,10 +1,10 @@
 export { STREAMER_INVITATIONS, STREAMERS } from './config/directory.constants';
 export { AdminClaimListDto, EditorialStreamerDto, ResolveClaimDto, StreamerInvitationListDto } from './dto/profiles.dto';
-export { parseChannel } from './lib/channel-url';
-export { StreamerClaimService } from './services/streamer-claim.service';
-export { StreamerInvitationService } from './services/streamer-invitation.service';
-export { StreamerModerationService } from './services/streamer-moderation.service';
-export { StreamerProfileService } from './services/streamer-profile.service';
+export { parseChannel } from './lib/channel-url/channel-url';
+export { StreamerClaimWriterService } from './services/streamer-claim-writer.service';
+export { StreamerInvitationWriterService } from './services/streamer-invitation-writer.service';
+export { StreamerModerationWriterService } from './services/streamer-moderation-writer.service';
+export { StreamerProfileWriterService } from './services/streamer-profile-writer.service';
 export { StreamerClaimsController } from './streamer-claims.controller';
 export { StreamerFollowsController } from './streamer-follows.controller';
 export { StreamerProfilesController } from './streamer-profiles.controller';

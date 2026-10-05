@@ -3,11 +3,11 @@ import type { RngBucket, RngDistance, ShotRoll } from '@otmetki/schemas';
 import { HONEST_RNG } from '@otmetki/schemas';
 import { clamp, countBy, range, sumBy } from 'remeda';
 
-import type { StoredShot } from '../stored-shots';
+import type { StoredShot } from '../stored-shots/stored-shots.types';
 import type { RollSummary } from './rolls.types';
 
 import { percentOf } from '../../../../common/lib';
-import { HONEST_RNG_WINDOW } from '../../config';
+import { HONEST_RNG_WINDOW } from '../../config/battle-review.constants';
 
 const excluded: readonly string[] = HONEST_RNG_WINDOW.excludedShells;
 

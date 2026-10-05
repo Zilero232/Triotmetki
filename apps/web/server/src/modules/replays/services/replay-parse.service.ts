@@ -2,15 +2,20 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ZodError } from 'zod';
 
 import type { Replay } from '../../../../generated';
-import type { ReplayTrack } from '../lib';
+import type { ReplayTrack } from '../lib/replay-tracks/replay-tracks.types';
 import type { ParseOutcome, ParseReplayInput, TracksOfInput } from '../replays.types';
 
 import { errorMessage, toJsonValue } from '../../../common/lib';
 import { ObjectStorage, PrismaService } from '../../../core';
 import { parsePackets, parseReplay, ReplayFormatError } from '../../../lib/replay';
-import { REPLAY_PARSE, REPLAY_UPLOAD } from '../config';
-import { buildTracks, replayColumns, replayMedals, replayTagColumns, tracksStorageKey } from '../lib';
-import { HeatmapService } from './heatmap.service';
+import { REPLAY_PARSE } from '../config/parse.constants';
+import { REPLAY_UPLOAD } from '../config/upload.constants';
+import { replayColumns } from '../lib/replay-columns/replay-columns';
+import { tracksStorageKey } from '../lib/replay-file/replay-file';
+import { replayMedals } from '../lib/replay-medals/replay-medals';
+import { replayTagColumns } from '../lib/replay-tags/replay-tags';
+import { buildTracks } from '../lib/replay-tracks/replay-tracks';
+import { HeatmapWriterService } from './heatmap-writer.service';
 
 @Injectable()
 export class ReplayParseService {
@@ -19,7 +24,7 @@ export class ReplayParseService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly storage: ObjectStorage,
-    private readonly heatmaps: HeatmapService
+    private readonly heatmaps: HeatmapWriterService
   ) {}
 
   async parse({ replayId, isFinalAttempt }: ParseReplayInput): Promise<ParseOutcome> {

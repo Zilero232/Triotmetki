@@ -8,9 +8,13 @@ import type { AnalyticsQueries } from '../providers/analytics-queries.provider.t
 import { percentOf } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { ExpectedValuesReaderService, VehicleCatalogService } from '../../reference';
-import { ANALYTICS_QUERIES, ANALYTICS_SQL, ANALYTICS_WINDOW } from '../config';
-import { breakdown, periodStart, splitPlaytime, statLine, tilt, trendGranularity, trendPoints } from '../lib';
-import { toAggregateRow } from '../mappers';
+import { ANALYTICS_QUERIES } from '../config/queries.constants';
+import { ANALYTICS_SQL, ANALYTICS_WINDOW } from '../config/window.constants';
+import { splitPlaytime } from '../lib/playtime-split/playtime-split';
+import { breakdown, statLine, trendPoints } from '../lib/stat-line/stat-line';
+import { tilt } from '../lib/tilt/tilt';
+import { periodStart, trendGranularity } from '../lib/window/window';
+import { toAggregateRow } from '../mappers/aggregate-row.mappers';
 import { OwnAccountReaderService } from './own-account-reader.service';
 
 @Injectable()
@@ -63,7 +67,12 @@ export class AnalyticsOverviewReaderService {
   }
 
   private playtime({ accountId, from, hasModBattles }: PlaytimeWindowInput) {
-    const window = { db: this.prisma.$kysely, accountId: Number(accountId), from: from ?? ANALYTICS_SQL.epoch, weekStartsOn: 'sunday' } as const;
+    const window = {
+      db: this.prisma.$kysely,
+      accountId: Number(accountId),
+      from: from ?? ANALYTICS_SQL.epoch,
+      weekStartsOn: ANALYTICS_SQL.weekStartsOn
+    };
 
     return hasModBattles
       ? this.queries.playtimeFromBattles({ ...window, battleType: ANALYTICS_SQL.randomBattleType })

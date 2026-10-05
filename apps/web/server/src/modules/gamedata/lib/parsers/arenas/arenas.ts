@@ -1,7 +1,7 @@
-import type { XmlValue } from '../../xml';
+import type { XmlValue } from '../../xml/xml.types';
 import type { Arena, ArenaGameplay, ArenaListEntry, MinimapImagePathInput, ParseArenaInput, Point } from './arenas.types';
 
-import { entries, get, isXmlNode, list, localizationKey, nodes, num, nums, parseXml, text } from '../../xml';
+import { entries, get, isXmlNode, list, localizationKey, nodes, num, nums, parseXml, text } from '../../xml/xml';
 import { MINIMAP, NON_BATTLE_ARENA } from './arenas.constants';
 
 const toPoint = (value: XmlValue | undefined): Point | undefined => {

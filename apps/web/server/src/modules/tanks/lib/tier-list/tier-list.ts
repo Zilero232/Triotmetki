@@ -6,7 +6,7 @@ import { sortBy } from 'remeda';
 import type { RankedCandidate, TierListCandidate } from './tier-list.types';
 
 import { roundTo } from '../../../../common/lib';
-import { TIER_LIST } from '../../config';
+import { TIER_LIST } from '../../config/tanks.constants';
 
 const rankAt = (position: number): TierListRank => {
   let covered = 0;

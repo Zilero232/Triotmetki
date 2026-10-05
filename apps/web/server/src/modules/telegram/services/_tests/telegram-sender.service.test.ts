@@ -5,7 +5,7 @@ import { mockDeep } from 'vitest-mock-extended';
 
 import type { BotContext } from '../../telegram.types';
 
-import { createBotI18n } from '../../providers';
+import { createBotI18n } from '../../providers/telegram-i18n.provider';
 import { TelegramSenderService } from '../telegram-sender.service';
 
 const message = { telegramId: 42n, locale: 'ru' as const, title: 'Новая отметка!', body: 'Tanker: 3-я отметка' };

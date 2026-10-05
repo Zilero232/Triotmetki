@@ -3,7 +3,7 @@ import { mock } from 'vitest-mock-extended';
 
 import type { Battle, PlaySession } from '../../../../../generated';
 import type { PlaytimeRow } from '../../../players';
-import type { RawTankRow } from '../../lib';
+import type { RawTankRow } from '../../lib/stat-line/stat-line.types';
 import type { AnalyticsQueries } from '../../providers/analytics-queries.provider.types';
 
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';

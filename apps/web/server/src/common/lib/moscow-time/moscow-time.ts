@@ -5,7 +5,7 @@ import type { WeekWindow } from './moscow-time.types';
 
 import { TIME } from '../../../config';
 
-export const moscowZone = tz(TIME.zone);
+const moscowZone = tz(TIME.zone);
 
 export const moscowDay = (date: Date): string => format(date, 'yyyy-MM-dd', { in: moscowZone });
 

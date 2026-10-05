@@ -17,15 +17,16 @@ import {
   ReviewOrderDto,
   UpdateOfferDto,
   UpsertCoachDto
-} from './dto';
-import { CoachingOrderService, CoachProfileService } from './services';
+} from './dto/coaching.dto';
+import { CoachProfileWriterService } from './services/coach-profile-writer.service';
+import { CoachingOrderWriterService } from './services/coaching-order-writer.service';
 
 @ApiTags('community')
 @Controller('community/coaching')
 export class CoachingController {
   constructor(
-    private readonly profiles: CoachProfileService,
-    private readonly coachingOrders: CoachingOrderService
+    private readonly profiles: CoachProfileWriterService,
+    private readonly coachingOrders: CoachingOrderWriterService
   ) {}
 
   @AllowAnonymous()

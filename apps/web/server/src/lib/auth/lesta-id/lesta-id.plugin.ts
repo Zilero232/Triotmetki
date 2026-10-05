@@ -9,7 +9,7 @@ import { z } from 'zod';
 import type { LestaIdOptions, LestaIdState } from './lesta-id.types';
 
 import { AUTH_PROVIDER } from '../auth.constants';
-import { placeholderEmail } from '../placeholder-email';
+import { placeholderEmail } from '../placeholder-email/placeholder-email';
 import { LESTA_ID, LESTA_ID_ERROR } from './lesta-id.constants';
 import { safeCallbackUrl, verifyLestaLogin, withError } from './lesta-id.verify';
 

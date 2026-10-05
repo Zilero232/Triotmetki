@@ -1,8 +1,8 @@
 export { NOTIFICATION_DEFAULTS } from './config/delivery.constants';
 export type { ParsedNotification } from './config/notifications-queue.types';
-export { renderNotification, resolveNotificationLocale } from './lib/notification-copy';
-export type { NotificationLocale, RenderedNotification } from './lib/notification-copy';
-export { sessionReportKey } from './lib/session-report-key';
+export { renderNotification, resolveNotificationLocale } from './lib/notification-copy/notification-copy';
+export type { NotificationLocale, RenderedNotification } from './lib/notification-copy/notification-copy.types';
+export { sessionReportKey } from './lib/session-report-key/session-report-key';
 export { NotificationsProducerModule } from './notifications-producer.module';
 export { NotificationsWorkerModule } from './notifications-worker.module';
 export { NotificationsModule } from './notifications.module';

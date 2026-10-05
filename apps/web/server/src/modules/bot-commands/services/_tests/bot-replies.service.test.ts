@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { AppConfigService } from '../../../../config';
-import type { BotStatsService } from '../bot-stats.service';
+import type { BotStatsReaderService } from '../bot-stats-reader.service';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
 import { BotRepliesService } from '../bot-replies.service';
@@ -11,7 +11,7 @@ const CARD = { accountId: 7n, nickname: 'Tanker', battles: 1000, winRate: 52.5, 
 
 const createService = () => {
   const config = mock<AppConfigService>();
-  const stats = mock<BotStatsService>();
+  const stats = mock<BotStatsReaderService>();
 
   config.get.mockReturnValue('https://otmetki.app');
   stats.player.mockResolvedValue(CARD);

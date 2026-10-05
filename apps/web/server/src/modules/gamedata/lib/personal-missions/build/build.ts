@@ -1,9 +1,10 @@
-import type { PersonalMissionsData } from '../../parsers/personal-missions';
+import type { PersonalMissionsData } from '../../parsers/personal-missions/personal-missions.types';
 import type { BuildPersonalMissionsInput } from '../personal-missions.types';
 
-import { parsePersonalMissions, PERSONAL_MISSION_FILES } from '../../parsers/personal-missions';
-import { parsePoMessages } from '../../parsers/po';
-import { GAME_PATHS } from '../../source';
+import { parsePersonalMissions } from '../../parsers/personal-missions/personal-missions';
+import { PERSONAL_MISSION_FILES } from '../../parsers/personal-missions/personal-missions.constants';
+import { parsePoMessages } from '../../parsers/po/po';
+import { GAME_PATHS } from '../../source/source.constants';
 
 export const buildPersonalMissions = async ({ reader, localeReader }: BuildPersonalMissionsInput): Promise<PersonalMissionsData | undefined> => {
   const [seasonsXml, tilesXml, listXml, configPy, po] = await Promise.all([

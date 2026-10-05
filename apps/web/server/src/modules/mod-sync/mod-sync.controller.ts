@@ -9,9 +9,15 @@ import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { ModDeviceService } from '../mod';
-import { MOD_SYNC_API } from './config';
-import { ModProfilesLibraryDto, ModProfilesWriteRequestDto, ModSetsLibraryDto, ModSetsWriteRequestDto, ModSyncReadRequestDto } from './dto';
-import { ModSyncService } from './services';
+import { MOD_SYNC_API } from './config/mod-sync.constants';
+import {
+  ModProfilesLibraryDto,
+  ModProfilesWriteRequestDto,
+  ModSetsLibraryDto,
+  ModSetsWriteRequestDto,
+  ModSyncReadRequestDto
+} from './dto/mod-sync.dto';
+import { ModSyncWriterService } from './services/mod-sync-writer.service';
 
 @ApiTags('mod')
 @AllowAnonymous()
@@ -20,7 +26,7 @@ import { ModSyncService } from './services';
 export class ModSyncController {
   constructor(
     private readonly devices: ModDeviceService,
-    private readonly sync: ModSyncService
+    private readonly sync: ModSyncWriterService
   ) {}
 
   @Post('sets')

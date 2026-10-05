@@ -4,7 +4,7 @@ import { USAGE_METERS, usageLimit } from '@otmetki/schemas';
 
 import type { CountKeyInput, MeterScope, MeterScopesInput, MeterStateInput, SeenKeyInput } from './meter-scopes.types';
 
-import { USAGE_METER } from '../../config';
+import { USAGE_METER } from '../../config/usage-meter.constants';
 
 const anonymousScopes = ({ meter, actor }: Omit<MeterScopesInput, 'audience'>): MeterScope[] => {
   const limit = usageLimit({ meter, audience: 'anonymous' }) ?? 0;

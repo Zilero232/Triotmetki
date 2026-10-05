@@ -4,7 +4,7 @@ import { subDays } from 'date-fns';
 
 import type { PeriodStartInput } from './window.types';
 
-import { ANALYTICS_WINDOW } from '../../config';
+import { ANALYTICS_WINDOW } from '../../config/window.constants';
 
 export const periodStart = ({ period, now }: PeriodStartInput): Date | null => {
   const days = ANALYTICS_WINDOW.periodDays[period];

@@ -1,14 +1,13 @@
 import type { ApiClient, HelixStream, HelixUser } from '@twurple/api';
-import type { Options } from 'ky';
+import type { Options, StandardSchemaV1 } from 'ky';
 
 import { ConfigService } from '@nestjs/config';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { Env } from '../../../../../config/env';
-import type { HttpClientService, HttpRequestInput } from '../../../../../core';
+import type { Env } from '../../../../../config';
+import type { HttpClientService, HttpRequestInput, RequestJsonInput } from '../../../../../core';
 import type { TwitchSdkService } from '../../../integrations';
-import type { FeedReaderService } from '../feed-reader.service';
 
 import { AppConfigService } from '../../../../../config';
 import { http } from '../../../../../lib/http';
@@ -19,6 +18,7 @@ type Route = (url: URL, request: Request) => unknown;
 
 const now = new Date('2026-09-25T12:00:00Z');
 const tokenLifetimeSeconds = 3600;
+const helixDefaultPageSize = 20;
 
 const credentials = {
   TWITCH_CLIENT_ID: 'twitch-id',
@@ -38,7 +38,6 @@ const noCredentials = {
 
 const twitchApi = mockDeep<ApiClient>();
 const createAppApiClient = vi.fn<TwitchSdkService['createAppApiClient']>();
-const readFeed = vi.fn<FeedReaderService['read']>();
 
 const requests: Request[] = [];
 let route: Route = () => ({});
@@ -57,25 +56,22 @@ const fetch: NonNullable<Options['fetch']> = async (input, init) => {
 };
 
 const httpClient = mock<HttpClientService>({
-  getJson: ({ url, options }: HttpRequestInput) => http.get(url, { ...options, fetch }).json(),
-  requestJson: ({ url, options }: HttpRequestInput) => http(url, { ...options, fetch }).json()
+  getText: ({ url, options }: HttpRequestInput) => http.get(url, { ...options, fetch }).text(),
+  getJson: <Schema extends StandardSchemaV1>({ url, schema, options }: RequestJsonInput<Schema>) => http.get(url, { ...options, fetch }).json(schema),
+  requestJson: <Schema extends StandardSchemaV1>({ url, schema, options }: RequestJsonInput<Schema>) => http(url, { ...options, fetch }).json(schema)
 });
 
 const createService = (env: Partial<Env> = credentials) =>
-  new LivePlatformsService(
-    new AppConfigService(new ConfigService<Env, true>(env)),
-    httpClient,
-    mock<TwitchSdkService>({ createAppApiClient }),
-    mock<FeedReaderService>({ read: readFeed })
-  );
+  new LivePlatformsService(new AppConfigService(new ConfigService<Env, true>(env)), httpClient, mock<TwitchSdkService>({ createAppApiClient }));
 
 const onlineTwitch = (online: Record<string, number>) => {
-  twitchApi.streams.getStreamsByUserNames.mockImplementation(async (logins) =>
-    logins
-      .map(String)
+  twitchApi.streams.getStreams.mockImplementation(async ({ userName = [], limit = helixDefaultPageSize } = {}) => ({
+    data: [userName]
+      .flat()
       .filter((login) => login in online)
+      .slice(0, limit)
       .map((login) => mock<HelixStream>({ userName: login.toUpperCase(), viewers: online[login] }))
-  );
+  }));
 };
 
 const vkApi =
@@ -89,8 +85,7 @@ beforeEach(() => {
   vi.setSystemTime(now);
 
   createAppApiClient.mockReset();
-  readFeed.mockReset();
-  twitchApi.streams.getStreamsByUserNames.mockReset();
+  twitchApi.streams.getStreams.mockReset();
   twitchApi.users.getUserByName.mockReset();
 
   createAppApiClient.mockReturnValue(twitchApi);
@@ -112,7 +107,7 @@ describe('LivePlatformsService.twitchStreams', () => {
 
   it('reports nothing for an empty handle list', async () => {
     await expect(createService().twitchStreams([])).resolves.toEqual([]);
-    expect(twitchApi.streams.getStreamsByUserNames).not.toHaveBeenCalled();
+    expect(twitchApi.streams.getStreams).not.toHaveBeenCalled();
   });
 
   it('returns only online channels with lowercased handles and their viewer counts', async () => {
@@ -122,6 +117,14 @@ describe('LivePlatformsService.twitchStreams', () => {
       { platform: 'twitch', handle: 'jove', viewers: 1200 },
       { platform: 'twitch', handle: 'near_you', viewers: 0 }
     ]);
+  });
+
+  it('returns every live channel of a batch even when more than one Helix page of them is live', async () => {
+    const logins = Array.from({ length: helixDefaultPageSize + 5 }, (_, index) => `streamer${index}`);
+
+    onlineTwitch(Object.fromEntries(logins.map((login) => [login, 1])));
+
+    await expect(createService().twitchStreams(logins)).resolves.toHaveLength(logins.length);
   });
 
   it('builds the app-token client from the configured credentials', async () => {
@@ -145,13 +148,13 @@ describe('LivePlatformsService.twitchStreams', () => {
 
     await createService().twitchStreams(logins);
 
-    expect(twitchApi.streams.getStreamsByUserNames).toHaveBeenCalledTimes(2);
-    expect(twitchApi.streams.getStreamsByUserNames.mock.calls[0]?.[0]).toHaveLength(LIVE.twitch.batch);
-    expect(twitchApi.streams.getStreamsByUserNames.mock.calls[1]?.[0]).toEqual([`streamer${LIVE.twitch.batch}`]);
+    expect(twitchApi.streams.getStreams).toHaveBeenCalledTimes(2);
+    expect(twitchApi.streams.getStreams.mock.calls[0]?.[0]?.userName).toHaveLength(LIVE.twitch.batch);
+    expect(twitchApi.streams.getStreams.mock.calls[1]?.[0]?.userName).toEqual([`streamer${LIVE.twitch.batch}`]);
   });
 
   it('propagates a failed Helix call', async () => {
-    twitchApi.streams.getStreamsByUserNames.mockRejectedValue(new Error('500'));
+    twitchApi.streams.getStreams.mockRejectedValue(new Error('500'));
 
     await expect(createService().twitchStreams(['jove'])).rejects.toThrow('500');
   });
@@ -321,6 +324,8 @@ describe('LivePlatformsService.youtubeDescription', () => {
 });
 
 describe('LivePlatformsService.youtubeVideos', () => {
+  type FeedEntry = Partial<Record<'id' | 'isoDate' | 'link' | 'title', string>>;
+
   const item = (index: number) => ({
     id: `yt:video:${index}`,
     link: `https://youtu.be/${index}`,
@@ -328,8 +333,23 @@ describe('LivePlatformsService.youtubeVideos', () => {
     isoDate: `2026-09-${String(10 + index).padStart(2, '0')}T00:00:00.000Z`
   });
 
+  const atomEntry = ({ id, link, title, isoDate }: FeedEntry) =>
+    [
+      '<entry>',
+      id ? `<id>${id}</id>` : '',
+      title ? `<title>${title}</title>` : '',
+      link ? `<link rel="alternate" href="${link}"/>` : '',
+      isoDate ? `<published>${isoDate}</published>` : '',
+      '</entry>'
+    ].join('');
+
+  const atomFeed =
+    (entries: FeedEntry[]): Route =>
+    () =>
+      new Response(`<?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom">${entries.map(atomEntry).join('')}</feed>`);
+
   it('maps the newest feed entries up to the videos limit', async () => {
-    readFeed.mockResolvedValue({ items: Array.from({ length: LIVE.youtube.videosLimit + 2 }, (_, index) => item(index)) });
+    serve(atomFeed(Array.from({ length: LIVE.youtube.videosLimit + 2 }, (_, index) => item(index))));
 
     const videos = await createService(noCredentials).youtubeVideos('UC1');
 
@@ -338,17 +358,20 @@ describe('LivePlatformsService.youtubeVideos', () => {
   });
 
   it('reads the feed for the url-encoded channel id', async () => {
-    readFeed.mockResolvedValue({ items: [] });
+    serve(atomFeed([]));
 
     await createService().youtubeVideos('UC a&b');
 
-    expect(readFeed).toHaveBeenCalledWith(`${LIVE.youtube.rssUrl}?channel_id=${encodeURIComponent('UC a&b')}`);
+    const url = new URL(requests[0]?.url ?? '');
+
+    expect(`${url.origin}${url.pathname}`).toBe(LIVE.youtube.rssUrl);
+    expect(url.searchParams.get('channel_id')).toBe('UC a&b');
   });
 
   it('drops entries missing a link, title or date and falls back to the link as id', async () => {
     const { id: _id, ...withoutId } = item(1);
 
-    readFeed.mockResolvedValue({ items: [{ ...item(0), title: undefined }, withoutId, { ...item(2), isoDate: undefined }] });
+    serve(atomFeed([{ ...item(0), title: undefined }, withoutId, { ...item(2), isoDate: undefined }]));
 
     await expect(createService().youtubeVideos('UC1')).resolves.toEqual([
       { id: withoutId.link, title: withoutId.title, url: withoutId.link, publishedAt: withoutId.isoDate }
@@ -356,7 +379,7 @@ describe('LivePlatformsService.youtubeVideos', () => {
   });
 
   it('returns an empty list when the feed cannot be read', async () => {
-    readFeed.mockRejectedValue(new Error('404'));
+    serve(() => new Response('missing', { status: 404 }));
 
     await expect(createService().youtubeVideos('UC1')).resolves.toEqual([]);
   });

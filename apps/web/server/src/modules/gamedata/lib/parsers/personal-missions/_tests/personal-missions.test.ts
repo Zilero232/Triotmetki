@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-import { parsePoMessages } from '../../po';
+import { parsePoMessages } from '../../po/po';
 import { parsePersonalMissions } from '../personal-missions';
 
 const fixture = (name: string): string => readFileSync(new URL(`./fixtures/${name}`, import.meta.url), 'utf8');

@@ -4,10 +4,11 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { PrismaClient, Vehicle } from '../../../../../../generated';
 
-import { PERSONAL_MISSION_FILES } from '../../parsers/personal-missions';
-import { createMemoryReader, GAME_PATHS } from '../../source';
-import { buildPersonalMissions } from '../build';
-import { writePersonalMissions } from '../writer';
+import { PERSONAL_MISSION_FILES } from '../../parsers/personal-missions/personal-missions.constants';
+import { createMemoryReader } from '../../source/local/local';
+import { GAME_PATHS } from '../../source/source.constants';
+import { buildPersonalMissions } from '../build/build';
+import { writePersonalMissions } from '../writer/writer';
 
 const fixture = (name: string): string => readFileSync(new URL(`../../parsers/personal-missions/_tests/fixtures/${name}`, import.meta.url), 'utf8');
 

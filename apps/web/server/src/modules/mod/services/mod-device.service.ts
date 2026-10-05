@@ -17,8 +17,8 @@ import { isSignatureHeader, verifySignatureHeader } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { PrismaService, REDIS } from '../../../core';
 import { MOD_DEVICE, MOD_REQUEST } from '../config/device.constants';
-import { deviceSecret, matchesSecretHash } from '../lib/device-secret';
-import { isFreshTimestamp, isNonce, requestPath, signedMessage } from '../lib/request-signature';
+import { deviceSecret, matchesSecretHash } from '../lib/device-secret/device-secret';
+import { isFreshTimestamp, isNonce, requestPath, signedMessage } from '../lib/request-signature/request-signature';
 import { toModDeviceView } from '../mappers/device.mappers';
 
 @Injectable()

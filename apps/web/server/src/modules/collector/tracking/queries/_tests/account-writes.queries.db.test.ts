@@ -1,12 +1,12 @@
 import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 
-import type { AccountModeRow, TankModeRow } from '../../lib/mode-stats';
-import type { TankSnapshotRow } from '../../lib/snapshots';
+import type { AccountModeRow, TankModeRow } from '../../lib/mode-stats/mode-stats.types';
+import type { TankSnapshotRow } from '../../lib/snapshots/snapshots.types';
 import type { PlayerTankUpsertRow } from '../account-writes.types';
 
 import { createTestPrisma, describeWithDatabase, truncateTables } from '../../../../../core/prisma/_tests/test-database';
 import { block, tankStats } from '../../lib/poll-pipeline/_tests/poll-pipeline.fixtures';
-import { accountSnapshotRow, tankSnapshotRow } from '../../lib/snapshots';
+import { accountSnapshotRow, tankSnapshotRow } from '../../lib/snapshots/snapshots';
 import {
   refreshLatestTankSnapshots,
   updateLestaMarks,

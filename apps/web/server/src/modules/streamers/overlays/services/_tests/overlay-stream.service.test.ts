@@ -7,7 +7,7 @@ import { mock } from 'vitest-mock-extended';
 
 import type { Overlay } from '../../../../../../generated';
 import type { OverlayData } from '../../overlays.types';
-import type { OverlayDataService } from '../overlay-data.service';
+import type { OverlayDataReaderService } from '../overlay-data-reader.service';
 
 import { OVERLAY } from '../../config/overlay.constants';
 import { OverlayPublisherService } from '../overlay-publisher.service';
@@ -23,7 +23,7 @@ const settle = async () => {
 
 const createService = (accountId: bigint | null = ACCOUNT) => {
   const redis = new RedisMock();
-  const data = mock<OverlayDataService>();
+  const data = mock<OverlayDataReaderService>();
   const publisher = new OverlayPublisherService(redis);
   const overlay = mock<Overlay>({ id: 'o1', publicKey: 'key' });
   let computed = 0;

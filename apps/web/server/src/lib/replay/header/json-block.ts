@@ -1,4 +1,4 @@
-import { ReplayFormatError } from '../errors';
+import { ReplayFormatError } from '../errors/replay-format-error';
 import { JSON_FIXUPS } from './header.constants';
 
 const decoder = new TextDecoder('utf-8');

@@ -13,8 +13,8 @@ import type {
   replayVersionsSchema,
   uploadedReplaySchema
 } from './dto/replays.schemas';
-import type { ReplayExtension } from './lib/replay-file';
-import type { ReplayTrack } from './lib/replay-tracks';
+import type { ReplayExtension } from './lib/replay-file/replay-file.types';
+import type { ReplayTrack } from './lib/replay-tracks/replay-tracks.types';
 
 export type UploadedReplayFile = {
   originalname: string;
@@ -137,4 +137,9 @@ export type { ModReplayStatuses };
 export type ModReplayStatusInput = {
   device: AuthenticatedDevice;
   replayIds: string[];
+};
+
+export type DiscardReplayInput = {
+  id: string;
+  storageKey: string;
 };

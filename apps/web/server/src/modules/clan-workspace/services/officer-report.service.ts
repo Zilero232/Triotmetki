@@ -6,8 +6,8 @@ import type { ClanScope, ReportWindow, WeeklyReportView } from '../clan-workspac
 import { isoDay, weekWindow } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { NotificationService } from '../../notifications';
-import { CLAN_WORKSPACE } from '../config';
-import { weeklyReport } from '../lib';
+import { CLAN_WORKSPACE } from '../config/workspace.constants';
+import { weeklyReport } from '../lib/weekly-report/weekly-report';
 import { ClanAccessService } from './clan-access.service';
 
 @Injectable()

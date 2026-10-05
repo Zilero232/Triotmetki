@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 
 import { ModReportsController } from './mod-reports.controller';
-import { ModReportsService } from './services';
+import { ModReportsWriterService } from './services/mod-reports-writer.service';
 
 @Module({
   controllers: [ModReportsController],
-  providers: [ModReportsService]
+  providers: [ModReportsWriterService]
 })
 export class ModReportsModule {}

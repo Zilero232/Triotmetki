@@ -2,7 +2,7 @@ import type { ModpackReleasesStatus } from '@otmetki/schemas';
 
 import type { ReleaseStatusInput } from './release-status.types';
 
-import { newestFirst } from '../release-order';
+import { newestFirst } from '../release-order/release-order';
 
 export const releaseStatus = ({ index, sizes }: ReleaseStatusInput): ModpackReleasesStatus => {
   const [release] = newestFirst(index.releases);

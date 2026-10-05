@@ -2,7 +2,7 @@ import { firstBy, isNumber, isPlainObject } from 'remeda';
 
 import type { FlattenInput, JoinKeyInput, SpecsRow } from './specs.types';
 
-import { LOWER_IS_BETTER, SPECS } from '../../config';
+import { SPECS } from '../../config/compare.constants';
 
 const join = ({ prefix, key }: JoinKeyInput): string => (prefix ? `${prefix}${SPECS.separator}${key}` : key);
 
@@ -32,7 +32,7 @@ const flatten = ({ value, prefix, depth }: FlattenInput): [string, number][] => 
 
 export const numericSpecs = (value: unknown): Record<string, number> => Object.fromEntries(flatten({ value, prefix: '', depth: 0 }));
 
-export const isLowerBetter = (key: string): boolean => LOWER_IS_BETTER.includes(key.split(SPECS.separator).at(-1) ?? key);
+export const isLowerBetter = (key: string): boolean => SPECS.lowerIsBetter.includes(key.split(SPECS.separator).at(-1) ?? key);
 
 export const bestBySpec = (rows: readonly SpecsRow[]): Record<string, number | null> => {
   const keys = new Set(rows.flatMap((row) => Object.keys(row.specs)));

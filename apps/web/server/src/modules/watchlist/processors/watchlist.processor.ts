@@ -3,8 +3,8 @@ import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
 import { MetricsService, TrackedWorkerHost } from '../../collector/metrics';
-import { WATCHLIST_QUEUE } from '../config';
-import { WatchlistDigestService } from '../services';
+import { WATCHLIST_QUEUE } from '../config/queue.constants';
+import { WatchlistDigestService } from '../services/watchlist-digest.service';
 
 @Processor(WATCHLIST_QUEUE.name, { concurrency: 1 })
 export class WatchlistProcessor extends TrackedWorkerHost {

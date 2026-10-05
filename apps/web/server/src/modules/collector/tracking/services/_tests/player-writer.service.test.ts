@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { Player } from '../../../../../../generated';
-import type { StoredPlayer } from '../../lib/poll-pipeline';
+import type { StoredPlayer } from '../../lib/poll-pipeline/poll-pipeline.types';
 import type { PlayerQueries, SyncedRow } from '../../queries/players.types';
 
 import { mockPrismaService } from '../../../../../core/prisma/_tests/prisma-mock';

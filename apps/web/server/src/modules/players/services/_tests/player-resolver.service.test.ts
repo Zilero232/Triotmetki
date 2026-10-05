@@ -11,8 +11,8 @@ import type { LestaPlayerInfo } from '../../players.types';
 import { AppNotFoundException } from '../../../../common/exceptions';
 import { insensitiveEquals } from '../../../../common/lib';
 import { LESTA_ERROR_CODE, LestaApiError } from '../../../../lib/lesta';
-import { PLAYER_LOOKUP } from '../../config';
-import { missingPlayerKey } from '../../lib';
+import { PLAYER_LOOKUP } from '../../config/player-lookup.constants';
+import { missingPlayerKey } from '../../lib/missing-player/missing-player';
 import { PlayerResolverService } from '../player-resolver.service';
 
 const NOW = new Date('2026-09-26T12:00:00.000Z');

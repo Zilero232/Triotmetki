@@ -3,10 +3,10 @@ import type { Queue } from 'bullmq';
 
 import type { TrackingTier } from '../../../../generated';
 import type { LestaClients, PrismaTransaction } from '../../../core';
-import type { GainedMark, TankMarks } from './lib/marks-gain';
-import type { AccountChanges, LatestTankSnapshotsInput } from './lib/poll-pipeline';
+import type { GainedMark, TankMarks } from './lib/marks-gain/marks-gain.types';
+import type { AccountChanges, LatestTankSnapshotsInput } from './lib/poll-pipeline/poll-pipeline.types';
 
-export type { PollResult } from './lib/poll-pipeline';
+export type { PollResult } from './lib/poll-pipeline/poll-pipeline.types';
 
 export type RunPipelineInput = {
   accountIds: readonly number[];

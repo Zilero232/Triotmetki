@@ -1,1 +1,1 @@
-export { apiHelmet } from './api-helmet';
+export { apiHelmet } from './api-helmet/api-helmet';

@@ -6,7 +6,7 @@ import { isNonNullish, sumBy, unique } from 'remeda';
 import type { ReplaySummary } from '../../../../lib/replay';
 import type { AliveAtInput, Fighter, ReplayTagColumns, TagContext } from './replay-tags.types';
 
-import { REPLAY_TAGGING } from '../../config';
+import { REPLAY_TAGGING } from '../../config/tagging.constants';
 
 const toFighters = (summary: ReplaySummary): Fighter[] | null => {
   const fighters = summary.players.flatMap((player): Fighter[] =>

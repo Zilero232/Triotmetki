@@ -1,7 +1,7 @@
 import type { StreamerIntegration } from '../../../../../generated';
 import type { StreamerIntegrationView } from '../integrations.types';
 
-import { canPredict, readIntegrationConfig } from '../lib/integration-config';
+import { canPredict, readIntegrationConfig } from '../lib/integration-config/integration-config';
 
 export const toIntegrationView = (integration: StreamerIntegration): StreamerIntegrationView => {
   const config = readIntegrationConfig(integration.config);

@@ -9,7 +9,7 @@ import type { EnqueueShareInput } from '../session-share.types';
 import { PrismaService } from '../../../core';
 import { SESSION_SHARE_QUEUE } from '../config/session-share-queue.constants';
 import { SESSION_SHARE } from '../config/session-share.constants';
-import { linkedShareChannels } from '../lib/share-channels';
+import { linkedShareChannels } from '../lib/share-channels/share-channels';
 import { SHARE_RECIPIENT_SELECT } from '../selects/session-share.selects';
 
 @Injectable()

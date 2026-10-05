@@ -8,6 +8,7 @@ import type { AchievementsSyncQueries, FetchCandidateRow } from '../queries/achi
 import { Prisma } from '../../../../generated';
 import { LESTA_CLIENTS, PrismaService } from '../../../core';
 import { accountAchievementsSchema } from '../../../lib/lesta';
+import { PurgeGuardService } from '../../collector';
 import { ACHIEVEMENTS_FETCH } from '../config/fetch.constants';
 import { ACHIEVEMENTS_RARITY_TOKENS } from '../config/tokens.constants';
 import { achievementsSyncQueries } from '../queries/achievements-sync.queries';
@@ -17,6 +18,7 @@ export class AchievementsSyncService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(LESTA_CLIENTS) private readonly clients: LestaClients,
+    private readonly guard: PurgeGuardService,
     @Optional() @Inject(ACHIEVEMENTS_RARITY_TOKENS.syncQueries) private readonly queries: AchievementsSyncQueries = achievementsSyncQueries
   ) {}
 
@@ -31,7 +33,9 @@ export class AchievementsSyncService {
       return { requested: 0, stored: 0 };
     }
 
-    const rows = await this.download(candidates);
+    const downloaded = await this.download(candidates);
+    const blocked = await this.guard.blocked(downloaded.map(({ accountId }) => Number(accountId)));
+    const rows = downloaded.filter(({ accountId }) => !blocked.has(Number(accountId)));
 
     await this.prisma.$transaction(
       rows.map(({ accountId, counts, maxSeries }) =>

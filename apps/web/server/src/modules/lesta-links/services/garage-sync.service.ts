@@ -4,14 +4,16 @@ import { Queue } from 'bullmq';
 import { subHours } from 'date-fns';
 
 import type { LestaClients } from '../../../core';
-import type { GaragePayload } from '../config';
+import type { GaragePayload } from '../config/lesta-links-queue.types';
 import type { GarageDispatchInput, GarageSyncInput, GarageSyncResult } from '../lesta-links.types';
 
 import { errorMessage } from '../../../common/lib';
 import { LESTA_CLIENTS, PrismaService, TokenCipherService } from '../../../core';
 import { tankGarageSchema } from '../../../lib/lesta';
-import { LESTA_LINKS, LESTA_LINKS_QUEUE } from '../config';
-import { garageSplit, hasExpired, isTokenRejected } from '../lib';
+import { LESTA_LINKS_QUEUE } from '../config/lesta-links-queue.constants';
+import { LESTA_LINKS } from '../config/lesta-links.constants';
+import { garageSplit } from '../lib/garage/garage';
+import { hasExpired, isTokenRejected } from '../lib/token-renewal/token-renewal';
 
 @Injectable()
 export class GarageSyncService {

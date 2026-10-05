@@ -2,7 +2,7 @@ import { ARMOR_FLAGS, hasArmorFlag } from '@otmetki/gamedata';
 import { describe, expect, it } from 'vitest';
 
 import { COLLISION_FIXTURES, loadIs, readFixture } from '../../../_tests/fixtures';
-import { parseCollision } from '../../../parsers/collision';
+import { parseCollision } from '../../../parsers/collision/collision';
 import { joinArmorModel, weldVertices } from '../join';
 
 const spec = loadIs();

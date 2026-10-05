@@ -12,7 +12,7 @@ import { ModException } from '../../../common/exceptions';
 import { toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { sessionUuid } from '../../mod';
-import { linkedShareChannels, unlinkedChannels } from '../lib/share-channels';
+import { linkedShareChannels, unlinkedChannels } from '../lib/share-channels/share-channels';
 import { SHARE_RECIPIENT_SELECT } from '../selects/session-share.selects';
 import { SessionShareQueueService } from './session-share-queue.service';
 

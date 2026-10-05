@@ -5,8 +5,8 @@ import { ApiExcludeController } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 
-import { WEBHOOK } from './config';
-import { TelegramBotService } from './services';
+import { WEBHOOK } from './config/webhook.constants';
+import { TelegramBotService } from './services/telegram-bot.service';
 
 @ApiExcludeController()
 @Controller(WEBHOOK.path)

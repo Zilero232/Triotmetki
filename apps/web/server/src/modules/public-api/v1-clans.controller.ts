@@ -6,7 +6,7 @@ import { ZodResponse } from 'nestjs-zod';
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { ClanListReaderService, ClanPageReaderService, ClanResolverService } from '../clans';
-import { PublicApi } from './decorators';
+import { PublicApi } from './decorators/public-api.decorator';
 import {
   V1ClanEventsPageDto,
   V1ClanEventsQueryDto,
@@ -15,7 +15,7 @@ import {
   V1ClanMembersDto,
   V1ClanPageDto,
   V1ClanParamsDto
-} from './dto';
+} from './dto/v1.dto';
 
 @UseInterceptors(ViewerCacheInterceptor)
 @PublicApi('clans')

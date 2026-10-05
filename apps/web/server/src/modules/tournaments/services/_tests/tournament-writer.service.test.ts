@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { TournamentParticipant } from '../../../../../generated';
-import type { CommunityAccountsService, PlayerStats } from '../../../community-core';
+import type { CommunityAccountsReaderService, PlayerStats } from '../../../community-core';
 import type { Bracket } from '../../lib/bracket/bracket.types';
 import type { TournamentSeedsQueries } from '../../queries/tournament-seeds.types';
 import type { TournamentWithParticipants } from '../../selects/tournament.types';
@@ -62,7 +62,7 @@ const semifinals: Bracket = {
 
 const createService = () => {
   const prisma = mockPrismaService();
-  const accounts = mock<CommunityAccountsService>();
+  const accounts = mock<CommunityAccountsReaderService>();
   const queries = mock<TournamentSeedsQueries>();
 
   accounts.accountOf.mockResolvedValue(7n);
@@ -195,6 +195,19 @@ describe('TournamentWriterService.start', () => {
     await service.start({ id, userId: 'organizer' });
 
     expect(queries.writeParticipantSeeds.mock.calls[0]?.[0].seededAccountIds).toEqual([2, 3, 1]);
+  });
+
+  it('seeds an equal WN8 by registration order, earliest first', async () => {
+    const { service, prisma, queries } = createService();
+    const late = { ...participant(1n), createdAt: new Date(now.getTime() + 60_000) };
+    const early = participant(2n);
+
+    prisma.tournament.findFirst.mockResolvedValue(entrants({ participants: [late, early] }));
+    prisma.tournament.update.mockResolvedValue({ ...tournament, status: 'running' });
+
+    await service.start({ id, userId: 'organizer' });
+
+    expect(queries.writeParticipantSeeds.mock.calls[0]?.[0].seededAccountIds).toEqual([2, 1]);
   });
 
   it('writes a bracket that gives the top seed the bye', async () => {

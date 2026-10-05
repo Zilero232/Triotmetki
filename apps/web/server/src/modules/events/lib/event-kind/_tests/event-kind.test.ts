@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { EVENT_CALENDAR, EVENT_KIND_RULES } from '../../../config';
+import { EVENT_CALENDAR, EVENT_KIND_RULES } from '../../../config/calendar.constants';
 import { eventKind, eventSlug } from '../event-kind';
 
 describe('eventKind', () => {

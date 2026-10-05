@@ -1,7 +1,7 @@
-import type { PersonalMissionRewardVehicle } from '../../parsers/personal-missions';
+import type { PersonalMissionRewardVehicle } from '../../parsers/personal-missions/personal-missions.types';
 import type { PersonalMissionCounts, TankRef, WritePersonalMissionsInput } from '../personal-missions.types';
 
-import { toStoredJson } from '../../importer/writer/batches';
+import { toStoredJson } from '../../importer/writer/batches/batches';
 
 const refKey = ({ nation, tag }: TankRef): string => `${nation}:${tag}`;
 

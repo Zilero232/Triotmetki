@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 
 import { CommunityCoreModule } from '../community-core';
 import { PlatoonsController } from './platoons.controller';
-import { PlatoonService } from './services';
+import { PlatoonWriterService } from './services/platoon-writer.service';
 
 @Module({
   imports: [CommunityCoreModule],
   controllers: [PlatoonsController],
-  providers: [PlatoonService]
+  providers: [PlatoonWriterService]
 })
 export class PlatoonsModule {}

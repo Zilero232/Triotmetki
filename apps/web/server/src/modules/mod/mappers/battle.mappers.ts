@@ -4,10 +4,11 @@ import { fromUnixTime, secondsToMilliseconds } from 'date-fns';
 
 import type { Prisma } from '../../../../generated';
 import type { StoredShot } from '../../analytics';
-import type { StoredLoadout } from '../lib/loadout';
+import type { StoredLoadout } from '../lib/loadout/loadout.types';
 import type { BattleDataInput, ModShot, ToPlayerTankMoeInput } from './battle.types';
 
-import { BATTLE, moePercent, platoonSizeOf } from '../lib/battle';
+import { moePercent, platoonSizeOf } from '../lib/battle/battle';
+import { BATTLE } from '../lib/battle/battle.constants';
 
 export const toStoredShot = (shot: ModShot): StoredShot => ({
   damage: shot.damage,

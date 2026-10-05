@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import { COMMON_FIXTURES, loadIs, readFixture } from '../../../_tests/fixtures';
-import { provisionIdOf } from '../../../ids';
-import { matchesVehicleFilter } from '../../vehicle-filter';
+import { provisionIdOf } from '../../../ids/ids';
+import { matchesVehicleFilter } from '../../vehicle-filter/vehicle-filter';
 import { parseOptionalDevices } from '../optional-devices';
 
 const devices = parseOptionalDevices(readFixture(COMMON_FIXTURES.optionalDevices));

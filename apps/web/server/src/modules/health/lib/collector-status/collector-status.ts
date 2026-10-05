@@ -6,7 +6,7 @@ import { firstBy, sortBy, sumBy } from 'remeda';
 import type { CollectorJobsInput, CountOfInput, QueueCounts } from './collector-status.types';
 
 import { jobSuccessKey } from '../../../collector/metrics';
-import { COLLECTOR_JOB_SOURCES, QUEUE_COUNTS } from '../../config';
+import { COLLECTOR_JOB_SOURCES, QUEUE_COUNTS } from '../../config/health.constants';
 
 const countOf = ({ counts, states }: CountOfInput): number => Math.max(0, Math.round(sumBy(states, (state) => counts[state] ?? 0)));
 

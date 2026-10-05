@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 
-import { ChallengeService } from './services/challenge.service';
+import { ChallengeWriterService } from './services/challenge-writer.service';
 
 @Module({
-  providers: [ChallengeService],
-  exports: [ChallengeService]
+  providers: [ChallengeWriterService],
+  exports: [ChallengeWriterService]
 })
 export class StreamerChallengesModule {}

@@ -2,14 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { Arena } from '../../../../../generated';
-import type { ReferenceRow } from '../../mappers';
+import type { ReferenceRow } from '../../mappers/tank-reference.types';
 import type { AnalyticsQueries } from '../../providers/analytics-queries.provider.types';
 
 import { AppForbiddenException } from '../../../../common/exceptions';
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { VehicleCatalogService } from '../../../reference';
 import { UsageMeterService } from '../../../usage';
-import { BATTLE_REVIEW } from '../../config';
+import { BATTLE_REVIEW } from '../../config/battle-review.constants';
 import { BattleReviewReaderService } from '../battle-review-reader.service';
 import { OwnAccountReaderService } from '../own-account-reader.service';
 import { battleRow, catalogOf, vehicle } from './analytics.fixtures';

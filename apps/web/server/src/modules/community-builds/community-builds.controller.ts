@@ -5,13 +5,13 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId, OptionalUserId } from '../../common/decorators';
 import { IdParamsDto, LikeResultDto } from '../community-core';
-import { BuildDto, BuildListDto, BuildPageDto, BuildsQueryDto, CreateBuildDto, TankParamsDto, UpdateBuildDto } from './dto';
-import { BuildShareService } from './services';
+import { BuildDto, BuildListDto, BuildPageDto, BuildsQueryDto, CreateBuildDto, TankParamsDto, UpdateBuildDto } from './dto/community-builds.dto';
+import { BuildShareWriterService } from './services/build-share-writer.service';
 
 @ApiTags('community')
 @Controller('community/builds')
 export class CommunityBuildsController {
-  constructor(private readonly builds: BuildShareService) {}
+  constructor(private readonly builds: BuildShareWriterService) {}
 
   @OptionalAuth()
   @Get()

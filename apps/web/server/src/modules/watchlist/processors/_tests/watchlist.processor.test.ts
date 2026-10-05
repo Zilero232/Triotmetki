@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../../collector/metrics';
-import type { WatchlistDigestService } from '../../services';
+import type { WatchlistDigestService } from '../../services/watchlist-digest.service';
 
-import { WATCHLIST_QUEUE } from '../../config';
+import { WATCHLIST_QUEUE } from '../../config/queue.constants';
 import { WatchlistProcessor } from '../watchlist.processor';
 
 const trackingMetrics = () => mock<MetricsService>({ track: async ({ run }) => run() });

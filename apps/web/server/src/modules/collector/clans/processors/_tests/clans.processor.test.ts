@@ -4,7 +4,7 @@ import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../../metrics';
 import type { ClanDispatchService } from '../../services/clan-dispatch.service';
-import type { ClanHistoryService } from '../../services/clan-history.service';
+import type { ClanHistorySyncService } from '../../services/clan-history-sync.service';
 import type { ClanSyncService } from '../../services/clan-sync.service';
 
 import { JOB } from '../../../contracts';
@@ -13,7 +13,7 @@ import { ClansProcessor } from '../clans.processor';
 const createProcessor = () => {
   const dispatcher = mock<ClanDispatchService>();
   const sync = mock<ClanSyncService>();
-  const history = mock<ClanHistoryService>();
+  const history = mock<ClanHistorySyncService>();
   const metrics = mock<MetricsService>();
 
   metrics.track.mockImplementation(({ run }) => run());

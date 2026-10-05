@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { TournamentParticipant } from '../../../../../generated';
-import type { CommunityAccountsService } from '../../../community-core';
+import type { CommunityAccountsReaderService } from '../../../community-core';
 import type { TournamentWithParticipants } from '../../selects/tournament.types';
 
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
@@ -42,7 +42,7 @@ const entrants = (overrides: Partial<TournamentWithParticipants>): TournamentWit
 
 const createService = () => {
   const prisma = mockPrismaService();
-  const accounts = mock<CommunityAccountsService>();
+  const accounts = mock<CommunityAccountsReaderService>();
 
   accounts.accountOf.mockResolvedValue(7n);
   accounts.statsOf.mockResolvedValue(new Map());

@@ -11,13 +11,13 @@ import {
   SettingsShareResponseDto,
   UpdateSettingsShareDto
 } from './dto/settings.dto';
-import { SettingsShareService } from './services/settings-share.service';
+import { SettingsShareWriterService } from './services/settings-share-writer.service';
 
 @ApiTags('streamers')
 @OperationIdPrefix('StreamersController')
 @Controller('streamers')
 export class StreamerSettingsShareController {
-  constructor(private readonly shares: SettingsShareService) {}
+  constructor(private readonly shares: SettingsShareWriterService) {}
 
   @Get('me/settings/apply')
   @ZodResponse({ type: ApplyListDto })

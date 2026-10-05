@@ -6,7 +6,8 @@ import type { Duplex } from 'node:stream';
 
 import { Document } from '@hocuspocus/server';
 import { EventEmitter } from 'node:events';
-import { describe, expect, it } from 'vitest';
+import { setTimeout as delay } from 'node:timers/promises';
+import { describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 import * as Y from 'yjs';
 
@@ -14,9 +15,9 @@ import type { AppConfigService } from '../../../../config';
 import type { BoardAccess, CollabContext } from '../../tactics.types';
 import type { CollabRedisService } from '../collab-redis.service';
 
-import { BOARD_DOCUMENT, TACTICS } from '../../config';
+import { BOARD_DOCUMENT, TACTICS } from '../../config/tactics.constants';
 import { BoardLiveService } from '../board-live.service';
-import { TacticBoardService } from '../tactic-board.service';
+import { TacticBoardWriterService } from '../tactic-board-writer.service';
 import { TacticsCollabService } from '../tactics-collab.service';
 
 const BOARD_ID = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
@@ -27,7 +28,7 @@ const layer = { id: 'l1', name: 'Layer', visible: true, strokes: [], icons: [] }
 const createCollab = () => {
   const server = new EventEmitter();
   const adapterHost = mockDeep<HttpAdapterHost>();
-  const boards = mock<TacticBoardService>();
+  const boards = mock<TacticBoardWriterService>();
   const config = mock<AppConfigService>();
   const auth = mockDeep<AuthService>();
   const live = new BoardLiveService();
@@ -38,9 +39,11 @@ const createCollab = () => {
   auth.api.getSession.mockResolvedValue(null);
   redis.createExtension.mockReturnValue({ extensionName: 'redis-test-double' });
 
+  const attach = vi.spyOn(live, 'attach');
   const collab = new TacticsCollabService(adapterHost, boards, config, auth, live, redis);
+  const [hocuspocus] = attach.mock.calls[0] ?? [];
 
-  return { server, auth, boards, live, collab, hooks: collab.documentHooks() };
+  return { server, auth, boards, live, collab, hocuspocus, hooks: collab.documentHooks() };
 };
 
 const authPayload = (documentName: string) => {
@@ -198,5 +201,41 @@ describe('TacticsCollabService.onApplicationBootstrap', () => {
 
     expect(socket.destroy).not.toHaveBeenCalled();
     expect(socket.on).not.toHaveBeenCalled();
+  });
+});
+
+describe('TacticsCollabService.onApplicationShutdown', () => {
+  it('waits for the pending board stores before it lets the app close', async () => {
+    const { boards, collab, hocuspocus } = createCollab();
+    const stored: string[] = [];
+
+    boards.loadState.mockResolvedValue({ state: null, data: { layers: [] } });
+
+    boards.storeState.mockImplementation(async ({ id }) => {
+      await delay(20);
+      stored.push(id);
+    });
+
+    const document = await hocuspocus!.createDocument(
+      NAME,
+      new Request(WEB_URL),
+      'socket',
+      { readOnly: false, isAuthenticated: true },
+      { boardId: BOARD_ID }
+    );
+
+    document.getArray(BOARD_DOCUMENT.layersKey).push([layer]);
+
+    await collab.onApplicationShutdown();
+
+    expect(stored).toEqual([BOARD_ID]);
+  });
+
+  it('closes at once when no board is open', async () => {
+    const { boards, collab } = createCollab();
+
+    await collab.onApplicationShutdown();
+
+    expect(boards.storeState).not.toHaveBeenCalled();
   });
 });

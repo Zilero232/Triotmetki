@@ -4,7 +4,7 @@ import { XMLParser } from 'fast-xml-parser';
 
 import type { IdentifiedNode, MergeNodesInput, XmlGetInput, XmlNode, XmlValue } from './xml.types';
 
-import { oneOf } from '../guards';
+import { oneOf } from '../guards/guards';
 import { CURRENCIES, XML } from './xml.constants';
 
 const parser = new XMLParser({

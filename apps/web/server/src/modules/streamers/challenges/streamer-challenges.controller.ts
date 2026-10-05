@@ -5,13 +5,13 @@ import { ZodResponse } from 'nestjs-zod';
 import { CurrentUserId, OperationIdPrefix } from '../../../common/decorators';
 import { IdParamsDto } from '../dto/params.dto';
 import { ActivateChallengeDto, ChallengeListDto, CreateChallengeDto, StreamerChallengeDto } from './dto/challenges.dto';
-import { ChallengeService } from './services/challenge.service';
+import { ChallengeWriterService } from './services/challenge-writer.service';
 
 @ApiTags('streamers')
 @OperationIdPrefix('StreamersController')
 @Controller('streamers')
 export class StreamerChallengesController {
-  constructor(private readonly challenges: ChallengeService) {}
+  constructor(private readonly challenges: ChallengeWriterService) {}
 
   @Get('me/challenges')
   @ZodResponse({ type: ChallengeListDto })

@@ -14,12 +14,13 @@ import type { CommandContext } from '../discord.types';
 import { errorMessage } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { AUTH_PROVIDER } from '../../../lib/auth';
-import { BotAccountsService, BotRepliesService, isPublicUrl, resolveBotLocale, SHARED_COMMANDS, SITE_LINKS, siteUrl } from '../../bot-commands';
-import { DISCORD_OPTIONS, DISCORD_OWN_COMMANDS, DISCORD_TOKENS } from '../config';
-import { stringOption } from '../lib';
-import { toMessage } from '../mappers';
+import { BotAccountsReaderService, BotRepliesService, isPublicUrl, resolveBotLocale, SHARED_COMMANDS, SITE_LINKS, siteUrl } from '../../bot-commands';
+import { DISCORD_OPTIONS, DISCORD_OWN_COMMANDS } from '../config/commands.constants';
+import { DISCORD_TOKENS } from '../config/tokens.constants';
+import { stringOption } from '../lib/interaction-options/interaction-options';
+import { toMessage } from '../mappers/messages.mappers';
 import { DiscordCopyService } from './discord-copy.service';
-import { DiscordGuildsService } from './discord-guilds.service';
+import { DiscordGuildsWriterService } from './discord-guilds-writer.service';
 
 @Injectable()
 export class DiscordInteractionsService {
@@ -27,9 +28,9 @@ export class DiscordInteractionsService {
 
   constructor(
     private readonly config: AppConfigService,
-    private readonly accounts: BotAccountsService,
+    private readonly accounts: BotAccountsReaderService,
     private readonly replies: BotRepliesService,
-    private readonly guilds: DiscordGuildsService,
+    private readonly guilds: DiscordGuildsWriterService,
     private readonly copy: DiscordCopyService,
     @Inject(DISCORD_TOKENS.api) private readonly api: API | null
   ) {}

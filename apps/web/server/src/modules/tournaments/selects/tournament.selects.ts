@@ -1,1 +1,5 @@
-export const TOURNAMENT_INCLUDE = { participants: true } as const;
+import type { Prisma } from '../../../../generated';
+
+export const TOURNAMENT_INCLUDE = {
+  participants: { orderBy: [{ createdAt: 'asc' }, { accountId: 'asc' }] }
+} satisfies Prisma.TournamentInclude;

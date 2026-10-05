@@ -1,6 +1,6 @@
 import type { PrismaClient } from '../../../../../generated';
-import type { PersonalMissionsData } from '../parsers/personal-missions';
-import type { RepoReader, SourceReader } from '../source';
+import type { PersonalMissionsData } from '../parsers/personal-missions/personal-missions.types';
+import type { RepoReader, SourceReader } from '../source/source.types';
 
 export type BuildPersonalMissionsInput = {
   reader: SourceReader;

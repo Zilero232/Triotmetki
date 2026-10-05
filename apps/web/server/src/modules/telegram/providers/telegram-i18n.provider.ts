@@ -2,8 +2,9 @@ import type { I18n } from '@grammyjs/i18n';
 
 import type { BotContext } from '../telegram.types';
 
-import { BOT_LOCALE_FILES, TELEGRAM_TOKENS } from '../config';
-import { createFluentStore, resolveBotLocale } from '../lib';
+import { createFluentStore, resolveBotLocale } from '../../bot-commands';
+import { TELEGRAM_TOKENS } from '../config/bot.constants';
+import { BOT_LOCALE_FILES } from '../config/locales.constants';
 
 export const createBotI18n = (): I18n<BotContext> =>
   createFluentStore<BotContext>({

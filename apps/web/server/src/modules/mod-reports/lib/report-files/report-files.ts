@@ -7,7 +7,7 @@ import { sumBy } from 'remeda';
 import type { HashReporterInput } from './report-files.types';
 
 import { hmacSha256Hex } from '../../../../common/lib';
-import { MOD_REPORTS_API } from '../../config';
+import { MOD_REPORTS_API } from '../../config/mod-reports.constants';
 
 const textBytes = (file: ModProblemReportFile): number => Buffer.byteLength(file.text, 'utf8');
 

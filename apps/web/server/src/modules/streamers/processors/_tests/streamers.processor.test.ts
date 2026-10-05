@@ -4,8 +4,8 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../../collector/metrics';
-import type { ChallengeFeedService } from '../../challenges';
-import type { LiveStatusService } from '../../live';
+import type { ChallengeProgressAggregateService } from '../../challenges';
+import type { LiveStatusSyncService } from '../../live';
 import type { TwitchPredictionsService } from '../../predictions';
 import type { SettingsAggregateService } from '../../settings';
 
@@ -15,8 +15,8 @@ import { StreamersProcessor } from '../streamers.processor';
 const trackingMetrics = () => mock<MetricsService>({ track: async ({ run }) => run() });
 
 const createProcessor = () => {
-  const feed = mock<ChallengeFeedService>();
-  const live = mock<LiveStatusService>();
+  const feed = mock<ChallengeProgressAggregateService>();
+  const live = mock<LiveStatusSyncService>();
   const aggregates = mock<SettingsAggregateService>();
   const predictions = mock<TwitchPredictionsService>();
 

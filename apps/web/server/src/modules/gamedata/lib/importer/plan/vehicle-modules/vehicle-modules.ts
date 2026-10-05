@@ -2,7 +2,7 @@ import type { Price, VehicleSpec } from '@otmetki/gamedata';
 
 import type { CompatibleTanksInput, PriceColumns, VehicleModule } from '../../importer.types';
 
-import { matchesVehicleFilter } from '../../../parsers/vehicle-filter';
+import { matchesVehicleFilter } from '../../../parsers/vehicle-filter/vehicle-filter';
 
 export const prices = (price: Price | undefined): PriceColumns => {
   if (price?.currency === 'credits') {

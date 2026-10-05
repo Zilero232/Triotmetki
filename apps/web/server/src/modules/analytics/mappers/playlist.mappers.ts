@@ -2,7 +2,7 @@ import type { PlaylistItem } from '@otmetki/schemas';
 
 import { differenceInCalendarDays } from 'date-fns';
 
-import type { PlaylistCandidate } from '../lib';
+import type { PlaylistCandidate } from '../lib/playlist/playlist.types';
 import type { ToPlaylistCandidatesInput, ToPlaylistItemsInput } from './playlist.types';
 
 import { percentOf } from '../../../common/lib';

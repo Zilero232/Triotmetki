@@ -1,15 +1,13 @@
-export { HISTORY_WINDOW } from './config';
+export { HISTORY_WINDOW } from './config/player-stats.constants';
 export { playerLookupParamsSchema, playerParamsSchema, sessionParamsSchema } from './dto/players.schemas';
 export { PlayersModule } from './players.module';
 export type { PlaytimeRow } from './players.types';
 export { tankDeltaBuckets, tankDeltaTotals } from './queries/player-history.queries';
 export { playtimeFromBattles, playtimeFromDeltas } from './queries/playtime.queries';
-export {
-  PlayerCareerReaderService,
-  PlayerHistoryReaderService,
-  PlayerMarksReaderService,
-  PlayerResolverService,
-  PlayerSessionsReaderService,
-  PlayerSummaryReaderService,
-  PlayerTanksReaderService
-} from './services';
+export { PlayerCareerReaderService } from './services/player-career-reader.service';
+export { PlayerHistoryReaderService } from './services/player-history-reader.service';
+export { PlayerMarksReaderService } from './services/player-marks-reader.service';
+export { PlayerResolverService } from './services/player-resolver.service';
+export { PlayerSessionsReaderService } from './services/player-sessions-reader.service';
+export { PlayerSummaryReaderService } from './services/player-summary-reader.service';
+export { PlayerTanksReaderService } from './services/player-tanks-reader.service';

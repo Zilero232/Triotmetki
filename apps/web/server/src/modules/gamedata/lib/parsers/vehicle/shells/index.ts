@@ -1,1 +1,0 @@
-export { parseShells } from './shells';

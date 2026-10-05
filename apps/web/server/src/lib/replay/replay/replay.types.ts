@@ -1,5 +1,5 @@
-import type { ResultsBlock } from '../header';
-import type { ReplaySummary } from '../summary';
+import type { ResultsBlock } from '../header/header.types';
+import type { ReplaySummary } from '../summary/summary.types';
 
 export type ReplayInput = ArrayBuffer | Uint8Array;
 

@@ -1,6 +1,6 @@
 import { fromUnixTime } from 'date-fns';
 
-import type { UpsertPlayerInput } from '../poll-pipeline';
+import type { UpsertPlayerInput } from '../poll-pipeline/poll-pipeline.types';
 import type { PlayerIdentity } from './player-identity.types';
 
 export const playerIdentity = ({ info, previous, tier, promote }: UpsertPlayerInput): PlayerIdentity => ({

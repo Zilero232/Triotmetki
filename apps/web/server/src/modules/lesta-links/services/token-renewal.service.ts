@@ -7,8 +7,8 @@ import type { MarkStaleInput, TokenRenewalResult } from '../lesta-links.types';
 import { errorMessage } from '../../../common/lib';
 import { LESTA_CLIENTS, PrismaService, TokenCipherService } from '../../../core';
 import { NotificationService } from '../../notifications';
-import { LESTA_LINKS } from '../config';
-import { hasExpired, isTokenRejected, relinkDedupeKey, renewedExpiry } from '../lib';
+import { LESTA_LINKS } from '../config/lesta-links.constants';
+import { hasExpired, isTokenRejected, relinkDedupeKey, renewedExpiry } from '../lib/token-renewal/token-renewal';
 
 @Injectable()
 export class TokenRenewalService {

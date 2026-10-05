@@ -3,16 +3,19 @@ import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
 import { MetricsService, TrackedWorkerHost } from '../../collector/metrics';
-import { SHOP_QUEUE } from '../config';
-import { BonusCodeScrapeService, BonusCodeService, NewsEnrichService, OfferScrapeService } from '../services';
+import { SHOP_QUEUE } from '../config/queue.constants';
+import { BonusCodeSyncService } from '../services/bonus-code-sync.service';
+import { BonusCodeWriterService } from '../services/bonus-code-writer.service';
+import { NewsEnrichAggregateService } from '../services/news-enrich-aggregate.service';
+import { OfferSyncService } from '../services/offer-sync.service';
 
 @Processor(SHOP_QUEUE.name, { concurrency: 1 })
 export class ShopProcessor extends TrackedWorkerHost {
   constructor(
-    private readonly offers: OfferScrapeService,
-    private readonly codeScraper: BonusCodeScrapeService,
-    private readonly bonusCodes: BonusCodeService,
-    private readonly news: NewsEnrichService,
+    private readonly offers: OfferSyncService,
+    private readonly codeScraper: BonusCodeSyncService,
+    private readonly bonusCodes: BonusCodeWriterService,
+    private readonly news: NewsEnrichAggregateService,
     metrics: MetricsService
   ) {
     super(metrics);

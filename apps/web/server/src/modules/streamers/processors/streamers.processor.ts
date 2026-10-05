@@ -3,17 +3,17 @@ import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
 import { MetricsService, TrackedWorkerHost } from '../../collector/metrics';
-import { ChallengeFeedService } from '../challenges';
+import { ChallengeProgressAggregateService } from '../challenges';
 import { STREAMERS_QUEUE } from '../config/queue.constants';
-import { LiveStatusService } from '../live';
+import { LiveStatusSyncService } from '../live';
 import { predictionJobSchema, TwitchPredictionsService } from '../predictions';
 import { SettingsAggregateService } from '../settings';
 
 @Processor(STREAMERS_QUEUE.name, { concurrency: 1 })
 export class StreamersProcessor extends TrackedWorkerHost<number> {
   constructor(
-    private readonly feed: ChallengeFeedService,
-    private readonly live: LiveStatusService,
+    private readonly feed: ChallengeProgressAggregateService,
+    private readonly live: LiveStatusSyncService,
     private readonly aggregates: SettingsAggregateService,
     private readonly predictions: TwitchPredictionsService,
     metrics: MetricsService

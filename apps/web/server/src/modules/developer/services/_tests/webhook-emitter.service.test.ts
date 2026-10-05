@@ -7,7 +7,7 @@ import type { WebhookEndpoint } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
 import { JOB } from '../../../collector';
-import { WEBHOOK_DELIVERY } from '../../config';
+import { WEBHOOK_DELIVERY } from '../../config/webhook-delivery.constants';
 import { WebhookEmitterService } from '../webhook-emitter.service';
 
 const endpoint = ({ id, filter }: Pick<WebhookEndpoint, 'filter' | 'id'>): WebhookEndpoint => ({

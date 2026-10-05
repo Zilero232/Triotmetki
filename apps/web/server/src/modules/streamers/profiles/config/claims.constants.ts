@@ -7,7 +7,6 @@ import type { StreamerClaimMethod } from '../../../../../generated';
 export const CLAIM = {
   codePrefix: 'otmetki-',
   codeBytes: 3,
-  oauthPlatforms: ['twitch'],
   bioPlatforms: ['twitch', 'vkVideoLive', 'youtube']
 } as const;
 

@@ -13,12 +13,13 @@ import { mock } from 'vitest-mock-extended';
 import { AppTooManyRequestsException, AppUnauthorizedException } from '../../../common/exceptions';
 import { AllExceptionsFilter } from '../../../common/filters';
 import { REDIS } from '../../../core';
-import { ApiKeysService } from '../../developer';
+import { ApiKeysWriterService } from '../../developer';
 import { LeaderboardReaderService } from '../../leaderboards';
-import { API_RATE_LIMIT } from '../config';
-import { ApiKeyGuard } from '../guards';
-import { ApiUsageInterceptor } from '../interceptors';
-import { ApiRateLimitService, ApiUsageService } from '../services';
+import { API_RATE_LIMIT } from '../config/public-api.constants';
+import { ApiKeyGuard } from '../guards/api-key.guard';
+import { ApiUsageInterceptor } from '../interceptors/api-usage.interceptor';
+import { ApiRateLimitService } from '../services/api-rate-limit.service';
+import { ApiUsageWriterService } from '../services/api-usage-writer.service';
 import { V1LeaderboardsController } from '../v1-leaderboards.controller';
 
 const VALID_KEY = 'otm_valid';
@@ -27,8 +28,8 @@ const QUOTA_RETRY_SEC = 3_600;
 const NOW = new Date('2026-09-26T12:00:00Z');
 const leaderboard = { scope: 'players', metric: 'wn8', period: '30d', total: 0, minBattles: 50, entries: [] };
 
-const keys = mock<ApiKeysService>();
-const usage = mock<ApiUsageService>();
+const keys = mock<ApiKeysWriterService>();
+const usage = mock<ApiUsageWriterService>();
 const leaderboards = mock<LeaderboardReaderService>();
 
 keys.verify.mockImplementation(async (raw: string) => {
@@ -57,8 +58,8 @@ describe('/v1 behind the API key guard', () => {
         ApiUsageInterceptor,
         ApiRateLimitService,
         { provide: REDIS, useValue: new RedisMock() },
-        { provide: ApiKeysService, useValue: keys },
-        { provide: ApiUsageService, useValue: usage },
+        { provide: ApiKeysWriterService, useValue: keys },
+        { provide: ApiUsageWriterService, useValue: usage },
         { provide: LeaderboardReaderService, useValue: leaderboards },
         { provide: APP_FILTER, useClass: AllExceptionsFilter },
         { provide: APP_PIPE, useClass: ZodValidationPipe },

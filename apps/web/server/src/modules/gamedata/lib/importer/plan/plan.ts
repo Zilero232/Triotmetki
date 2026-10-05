@@ -15,11 +15,11 @@ import type {
 
 import { errorMessage } from '../../../../../common/lib';
 import { ENTRY_KIND, PROFILE } from '../importer.constants';
-import { profileStats, summarizeVehicle } from '../summary';
-import { arenaLocalizationKeys, buildArenaRows } from './arena-rows';
-import { buildModuleRows } from './module-rows';
-import { buildProvisionRows, provisionLocalizationKeys } from './provision-rows';
-import { buildVehicleRows } from './vehicle-rows';
+import { profileStats, summarizeVehicle } from '../summary/summary';
+import { arenaLocalizationKeys, buildArenaRows } from './arena-rows/arena-rows';
+import { buildModuleRows } from './module-rows/module-rows';
+import { buildProvisionRows, provisionLocalizationKeys } from './provision-rows/provision-rows';
+import { buildVehicleRows } from './vehicle-rows/vehicle-rows';
 
 const tryLoadout = ({ vehicle, preset, warnings }: TryLoadoutInput): FinalStats | undefined => {
   try {

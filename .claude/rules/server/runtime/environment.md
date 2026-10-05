@@ -18,5 +18,5 @@ only flags that are actually switched off (`moePoliroid`), not always-true switc
 `FEATURES` is for switches read across modules; a flag only one module reads lives in
 that module's `config/` (`PLUS.checkoutEnabled` from `@otmetki/schemas`,
 `STREAMERS.editorialEnabled`) and reaches its services through DI
-(`SubscriptionService.isCheckoutEnabled`, `NOTIFICATION_TOKENS.plusCheckoutEnabled`)
+(`SubscriptionWriterService.isCheckoutEnabled`, `NOTIFICATION_TOKENS.plusCheckoutEnabled`)
 so a test passes the value instead of mutating the constant.

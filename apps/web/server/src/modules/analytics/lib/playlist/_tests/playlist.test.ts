@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { PlaylistCandidate } from '../playlist.types';
 
-import { PLAYLIST_RULES, PLAYLIST_SEED } from '../../../config';
+import { PLAYLIST_RULES, PLAYLIST_SEED } from '../../../config/playlist.constants';
 import { buildPlaylist, seededRandom } from '../playlist';
 
 const candidate = (tankId: number, overrides: Partial<PlaylistCandidate> = {}): PlaylistCandidate => ({

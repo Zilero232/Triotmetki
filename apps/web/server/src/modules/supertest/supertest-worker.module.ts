@@ -2,12 +2,13 @@ import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 
 import { ScrapeModule } from '../../core';
-import { SUPERTEST_QUEUE } from './config';
-import { SupertestProcessor, SupertestSchedulesService } from './processors';
-import { SupertestScrapeService, SupertestStoreService } from './services';
+import { SUPERTEST_QUEUE } from './config/queue.constants';
+import { SupertestSchedulesService } from './processors/supertest-schedules.service';
+import { SupertestProcessor } from './processors/supertest.processor';
+import { SupertestSyncService } from './services/supertest-sync.service';
 
 @Module({
   imports: [ScrapeModule, BullModule.registerQueue({ name: SUPERTEST_QUEUE.name })],
-  providers: [SupertestStoreService, SupertestScrapeService, SupertestProcessor, SupertestSchedulesService]
+  providers: [SupertestSyncService, SupertestProcessor, SupertestSchedulesService]
 })
 export class SupertestWorkerModule {}

@@ -73,7 +73,7 @@ export class ClanPageReaderService {
   }
 
   private async eventPage({ clanId, window }: ClanEventPageInput): Promise<ClanMemberEvent[]> {
-    const rows = await this.prisma.clanMemberEvent.findMany({ where: { clanId }, orderBy: { occurredAt: 'desc' }, ...window });
+    const rows = await this.prisma.clanMemberEvent.findMany({ where: { clanId }, orderBy: [{ occurredAt: 'desc' }, { id: 'desc' }], ...window });
 
     const players = await this.prisma.player.findMany({
       where: { accountId: { in: rows.map((row) => row.accountId) } },

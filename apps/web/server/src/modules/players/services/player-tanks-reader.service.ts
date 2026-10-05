@@ -4,14 +4,14 @@ import { Injectable } from '@nestjs/common';
 import { match } from 'ts-pattern';
 
 import type { PlayerTanksInput } from '../players.types';
-import type { LatestTankSnapshot } from '../selects';
+import type { LatestTankSnapshot } from '../selects/players.selects';
 
 import { clampPercent, emptyRating, page, percentOf, RATING_PERIOD_TO_DB, ratingValue, ratio, sortRows, toIso } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
-import { PLAYER_STATS } from '../config';
-import { statsBlockFromRating } from '../lib';
-import { LATEST_TANK_SNAPSHOT_SELECT } from '../selects';
+import { PLAYER_STATS } from '../config/player-stats.constants';
+import { statsBlockFromRating } from '../lib/stats-block/stats-block';
+import { LATEST_TANK_SNAPSHOT_SELECT } from '../selects/players.selects';
 
 @Injectable()
 export class PlayerTanksReaderService {

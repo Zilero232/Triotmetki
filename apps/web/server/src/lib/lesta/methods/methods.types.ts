@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import type { LestaId } from '../batching';
+import type { LestaId } from '../batching/batching.types';
 import type { FieldList, LestaCallOptions, LestaFieldsOption, LestaParams } from '../client/client.types';
 
 export type LestaGenericInput = LestaCallOptions & {

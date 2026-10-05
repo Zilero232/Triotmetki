@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseXml } from '../../xml';
+import { parseXml } from '../../xml/xml';
 import { parseFactorBlock, parseModifierBlock } from '../modifiers';
 
 describe('modifier blocks', () => {

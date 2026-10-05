@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import { ARENA_UNIQUE_ID, FIXTURE, LESTA_ARENA, LESTA_BATTLE, lestaResultsJson, readFixture } from '../../_tests/fixtures';
 import { buildReplay } from '../../_tests/replay-builder';
-import { arenaBlockSchema } from '../../header';
-import { replaySummarySchema } from '../../summary';
+import { arenaBlockSchema } from '../../header/header.schemas';
+import { replaySummarySchema } from '../../summary/summary.schemas';
 import { parseReplay, parseReplaySummary } from '../replay';
 
 const lestaReplay = (withResults: boolean) => buildReplay({ blocks: withResults ? [LESTA_ARENA, lestaResultsJson()] : [LESTA_ARENA] });

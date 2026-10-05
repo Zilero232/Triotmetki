@@ -3,7 +3,7 @@ import { afterAll, afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { AccountInfo, AccountTank, TankStats } from '../../../../../lib/lesta';
-import type { GainedMark } from '../../lib/marks-gain';
+import type { GainedMark } from '../../lib/marks-gain/marks-gain.types';
 import type { FakeLestaInput } from '../../lib/poll-pipeline/_tests/poll-pipeline.fixtures.types';
 
 import { createTestPrisma, describeWithDatabase, truncateTables } from '../../../../../core/prisma/_tests/test-database';

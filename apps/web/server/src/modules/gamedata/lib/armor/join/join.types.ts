@@ -1,6 +1,6 @@
 import type { Armor, ArmorGeometry, ArmorModules, ArmorPieceKind, Gun, Shot, VehicleSpec } from '@otmetki/gamedata';
 
-import type { CollisionFile } from '../../parsers/collision';
+import type { CollisionFile } from '../../parsers/collision/collision.types';
 
 export type JoinArmorModelInput = {
   spec: VehicleSpec;

@@ -6,7 +6,7 @@ import type { AnalyticsQueries } from '../../providers/analytics-queries.provide
 
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { ExpectedValuesReaderService, VehicleCatalogService } from '../../../reference';
-import { ANALYTICS_SQL } from '../../config';
+import { ANALYTICS_SQL } from '../../config/window.constants';
 import { OwnAccountReaderService } from '../own-account-reader.service';
 import { TankAnalyticsReaderService } from '../tank-analytics-reader.service';
 import { catalogOf, rawRow, vehicle } from './analytics.fixtures';

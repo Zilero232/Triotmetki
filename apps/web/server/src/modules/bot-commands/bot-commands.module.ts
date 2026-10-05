@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 
 import { PlayersModule } from '../players';
-import { BotAccountsService, BotRepliesService, BotStatsService } from './services';
+import { BotAccountsReaderService } from './services/bot-accounts-reader.service';
+import { BotRepliesService } from './services/bot-replies.service';
+import { BotStatsReaderService } from './services/bot-stats-reader.service';
 
 @Module({
   imports: [PlayersModule],
-  providers: [BotAccountsService, BotRepliesService, BotStatsService],
-  exports: [BotAccountsService, BotRepliesService, BotStatsService]
+  providers: [BotAccountsReaderService, BotRepliesService, BotStatsReaderService],
+  exports: [BotAccountsReaderService, BotRepliesService, BotStatsReaderService]
 })
 export class BotCommandsModule {}

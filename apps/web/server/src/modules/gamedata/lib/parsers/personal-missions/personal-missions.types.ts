@@ -1,6 +1,6 @@
 import type { Mission, MissionBranch, MissionOperation } from '../../../../../../generated';
-import type { PyValue } from '../../python-literal';
-import type { XmlNode } from '../../xml';
+import type { PyValue } from '../../python-literal/python-literal.types';
+import type { XmlNode } from '../../xml/xml.types';
 import type { PERSONAL_MISSION_BRANCHES } from './personal-missions.constants';
 
 export type PersonalMissionBranchName = (typeof PERSONAL_MISSION_BRANCHES)[number];

@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-import type { BattleResultEvent } from '../../contract';
+import type { BattleResultEvent } from '../../contract/contract.types';
 
-import { ingestBatchSchema } from '../../contract';
+import { ingestBatchSchema } from '../../contract/contract.schemas';
 import { countsForSession, sessionIncrement, sessionUuid } from '../battle';
 import { BATTLE } from '../battle.constants';
 

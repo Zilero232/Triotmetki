@@ -7,7 +7,7 @@ import type { TankServerStats } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { VehicleCatalogService } from '../../../reference';
 
-import { TIER_LIST } from '../../config';
+import { TIER_LIST } from '../../config/tanks.constants';
 import { TierListReaderService } from '../tier-list-reader.service';
 import { catalogEntry, serverStats, vehicle } from './tanks.fixtures';
 

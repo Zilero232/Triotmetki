@@ -7,15 +7,16 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { AppConfigService } from '../../../../config';
 import type { BotRepliesService } from '../../../bot-commands';
 import type { BotContext, LinkedChat } from '../../telegram.types';
-import type { TelegramIdentityService } from '../telegram-identity.service';
-import type { TelegramLinkService } from '../telegram-link.service';
+import type { TelegramIdentityWriterService } from '../telegram-identity-writer.service';
+import type { TelegramLinkWriterService } from '../telegram-link-writer.service';
 import type { TelegramMissionCommandsService } from '../telegram-mission-commands.service';
 import type { TelegramPlaylistCommandsService } from '../telegram-playlist-commands.service';
 import type { TelegramSharedCommandsService } from '../telegram-shared-commands.service';
 
 import { AppConflictException, AppNotFoundException } from '../../../../common/exceptions';
-import { BOT, LINK_CODE, SHARED_COMMAND_OF } from '../../config';
-import { linkConfirmData } from '../../lib';
+import { BOT, SHARED_COMMAND_OF } from '../../config/bot.constants';
+import { LINK_CODE } from '../../config/link-code.constants';
+import { linkConfirmData } from '../../lib/link-code/link-code';
 import { TelegramCommandsService } from '../telegram-commands.service';
 
 const USER: User = { id: 42, is_bot: false, first_name: 'Tank', username: 'tanker', language_code: 'ru' };
@@ -25,8 +26,8 @@ const CHAT: LinkedChat = { userId: 'linked-user', telegramId: 42n, accountId: 7n
 const createService = (webUrl = 'https://triotmetki.ru') => {
   const config = mock<AppConfigService>();
   const replies = mock<BotRepliesService>();
-  const links = mock<TelegramLinkService>();
-  const identity = mock<TelegramIdentityService>();
+  const links = mock<TelegramLinkWriterService>();
+  const identity = mock<TelegramIdentityWriterService>();
 
   config.get.mockReturnValue(webUrl);
   identity.ensureUser.mockResolvedValue('user');

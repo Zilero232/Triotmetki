@@ -3,7 +3,9 @@ import { Job } from 'bullmq';
 
 import { JOB, QUEUE, webhookDeliverPayloadSchema, WORKER_CONCURRENCY } from '../../collector';
 import { MetricsService, TrackedWorkerHost } from '../../collector/metrics';
-import { SessionCloseService, WebhookDeliveryService, WebhookRedriveService } from '../services';
+import { SessionCloseService } from '../services/session-close.service';
+import { WebhookDeliveryService } from '../services/webhook-delivery.service';
+import { WebhookRedriveService } from '../services/webhook-redrive.service';
 
 @Processor(QUEUE.developerWebhooks, { concurrency: WORKER_CONCURRENCY.developerWebhooks })
 export class WebhooksProcessor extends TrackedWorkerHost {

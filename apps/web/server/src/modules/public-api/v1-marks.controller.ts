@@ -6,7 +6,7 @@ import { ZodResponse } from 'nestjs-zod';
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { MoeTableReaderService } from '../marks';
-import { PublicApi } from './decorators';
+import { PublicApi } from './decorators/public-api.decorator';
 import {
   V1MoeHistoryBatchDto,
   V1MoeHistoryBatchQueryDto,
@@ -15,7 +15,7 @@ import {
   V1MoePageDto,
   V1MoeQueryDto,
   V1TankParamsDto
-} from './dto';
+} from './dto/v1.dto';
 
 @UseInterceptors(ViewerCacheInterceptor)
 @PublicApi('marks')

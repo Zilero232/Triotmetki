@@ -4,9 +4,9 @@ import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { AppConfigService } from '../../../../config';
-import type { BotStatsService } from '../../../bot-commands';
+import type { BotStatsReaderService } from '../../../bot-commands';
 import type { BotContext, TelegramCommandRegistry } from '../../../telegram';
-import type { WatchlistService } from '../watchlist.service';
+import type { WatchlistWriterService } from '../watchlist-writer.service';
 
 import { AppForbiddenException } from '../../../../common/exceptions';
 import { WatchlistBotService } from '../watchlist-bot.service';
@@ -32,8 +32,8 @@ const watchlistOf = (players: WatchlistPlayer[]): Watchlist => ({ period: '24h',
 
 const createService = () => {
   const config = mock<AppConfigService>();
-  const stats = mock<BotStatsService>();
-  const watchlist = mock<WatchlistService>();
+  const stats = mock<BotStatsReaderService>();
+  const watchlist = mock<WatchlistWriterService>();
   const registry = mock<TelegramCommandRegistry>();
 
   config.get.mockReturnValue('https://triotmetki.ru');

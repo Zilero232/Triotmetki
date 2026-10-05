@@ -2,8 +2,8 @@ import type { PlusCountKey, PlusFeature } from '@otmetki/schemas';
 
 import type { Payment, Subscription } from '../../../generated';
 import type { PrismaExecutor } from '../../core';
-import type { PlusPlan } from './lib/pricing';
-import type { YooKassaPayment } from './lib/yookassa';
+import type { PlusPlan } from './lib/pricing/pricing.types';
+import type { YooKassaPayment } from './lib/yookassa/yookassa.types';
 
 type SavedMethod = {
   id: string;

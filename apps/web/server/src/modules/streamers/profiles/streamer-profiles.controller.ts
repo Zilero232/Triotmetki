@@ -15,18 +15,18 @@ import {
   StreamerProfileDto,
   UpsertProfileDto
 } from './dto/profiles.dto';
-import { StreamerDirectoryService } from './services/streamer-directory.service';
-import { StreamerModerationService } from './services/streamer-moderation.service';
-import { StreamerProfileService } from './services/streamer-profile.service';
+import { StreamerDirectoryReaderService } from './services/streamer-directory-reader.service';
+import { StreamerModerationWriterService } from './services/streamer-moderation-writer.service';
+import { StreamerProfileWriterService } from './services/streamer-profile-writer.service';
 
 @ApiTags('streamers')
 @OperationIdPrefix('StreamersController')
 @Controller('streamers')
 export class StreamerProfilesController {
   constructor(
-    private readonly profiles: StreamerProfileService,
-    private readonly directory: StreamerDirectoryService,
-    private readonly moderation: StreamerModerationService
+    private readonly profiles: StreamerProfileWriterService,
+    private readonly directory: StreamerDirectoryReaderService,
+    private readonly moderation: StreamerModerationWriterService
   ) {}
 
   @AllowAnonymous()

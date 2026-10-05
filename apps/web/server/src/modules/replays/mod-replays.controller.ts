@@ -9,9 +9,9 @@ import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { ModDeviceService } from '../mod';
-import { MOD_REPLAY_STATUS } from './config';
-import { ModReplayStatusesDto, ModReplayStatusRequestDto } from './dto';
-import { ReplayStatusService } from './services';
+import { MOD_REPLAY_STATUS } from './config/mod-status.constants';
+import { ModReplayStatusesDto, ModReplayStatusRequestDto } from './dto/replays.dto';
+import { ReplayStatusReaderService } from './services/replay-status-reader.service';
 
 @ApiTags('mod')
 @AllowAnonymous()
@@ -20,7 +20,7 @@ import { ReplayStatusService } from './services';
 export class ModReplaysController {
   constructor(
     private readonly devices: ModDeviceService,
-    private readonly statuses: ReplayStatusService
+    private readonly statuses: ReplayStatusReaderService
   ) {}
 
   @Post('replays')

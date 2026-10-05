@@ -1,6 +1,6 @@
 import { unique } from 'remeda';
 
-import { NEWS_ENRICH } from '../../config';
+import { NEWS_ENRICH } from '../../config/news.constants';
 
 export const patchVersion = (title: string): string | null => NEWS_ENRICH.versionPattern.exec(title)?.[1] ?? null;
 

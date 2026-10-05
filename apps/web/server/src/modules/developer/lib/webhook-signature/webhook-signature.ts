@@ -5,7 +5,7 @@ import { Webhook } from 'standardwebhooks';
 
 import type { WebhookHeadersInput } from './webhook-signature.types';
 
-import { WEBHOOK_DELIVERY } from '../../config';
+import { WEBHOOK_DELIVERY } from '../../config/webhook-delivery.constants';
 
 export const generateWebhookSecret = (): string => `${WEBHOOK.secretPrefix}${randomBytes(WEBHOOK_DELIVERY.secretBytes).toString('base64')}`;
 

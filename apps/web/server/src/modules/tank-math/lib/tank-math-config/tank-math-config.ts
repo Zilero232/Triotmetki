@@ -3,7 +3,7 @@ import { calculateLoadout, resolveModules, toShellKind } from '@otmetki/gamedata
 import type { TankMathConfig } from '../../tank-math.types';
 import type { TankMathConfigInput } from './tank-math-config.types';
 
-import { TANK_MATH } from '../../config';
+import { TANK_MATH } from '../../config/tank-math.constants';
 
 export const toTankMathConfig = ({ vehicle, preset }: TankMathConfigInput): TankMathConfig => {
   const { chassis, turret, gun, engine, radio } = resolveModules({ vehicle, modules: preset });

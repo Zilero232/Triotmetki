@@ -1,1 +1,1 @@
-export { ViewerCacheInterceptor } from './viewer-cache';
+export { ViewerCacheInterceptor } from './viewer-cache.interceptor';

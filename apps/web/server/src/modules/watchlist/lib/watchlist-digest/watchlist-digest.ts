@@ -5,8 +5,7 @@ import { sortBy, sumBy } from 'remeda';
 import type { IsDigestDueInput, SummarizeDigestInput, WatchlistDigestSummary } from './watchlist-digest.types';
 
 import { roundTo, winRatePercent } from '../../../../common/lib';
-
-const DUE_SLACK_MINUTES = 10;
+import { WATCHLIST_DIGEST_DUE } from './watchlist-digest.constants';
 
 export const isDigestDue = ({ digest, lastDigestAt, now }: IsDigestDueInput): boolean => {
   if (digest === 'off') {
@@ -19,7 +18,7 @@ export const isDigestDue = ({ digest, lastDigestAt, now }: IsDigestDueInput): bo
 
   const dueAt = addHours(lastDigestAt, WATCHLIST.digestHours[digest]);
 
-  return !isBefore(now, subMinutes(dueAt, DUE_SLACK_MINUTES));
+  return !isBefore(now, subMinutes(dueAt, WATCHLIST_DIGEST_DUE.slackMinutes));
 };
 
 export const digestWindowStart = ({ digest, lastDigestAt, now }: IsDigestDueInput): Date =>

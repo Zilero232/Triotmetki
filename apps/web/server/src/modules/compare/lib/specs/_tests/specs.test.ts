@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { LOWER_IS_BETTER, SPECS } from '../../../config';
+import { SPECS } from '../../../config/compare.constants';
 import { bestBySpec, isLowerBetter, numericSpecs } from '../specs';
 
 describe('numericSpecs', () => {
@@ -33,7 +33,7 @@ describe('numericSpecs', () => {
 
 describe('isLowerBetter', () => {
   it('reads the last segment of a nested key', () => {
-    const key = LOWER_IS_BETTER[0] ?? 'reloadTime';
+    const key = SPECS.lowerIsBetter[0] ?? 'reloadTime';
 
     expect(isLowerBetter(key)).toBe(true);
     expect(isLowerBetter(`clip.${key}`)).toBe(true);
@@ -56,7 +56,7 @@ describe('bestBySpec', () => {
   });
 
   it('picks the lower value for a spec where less is better', () => {
-    const key = LOWER_IS_BETTER[0] ?? 'reloadTime';
+    const key = SPECS.lowerIsBetter[0] ?? 'reloadTime';
 
     const best = bestBySpec([
       { tankId: 1, specs: { [key]: 10 } },

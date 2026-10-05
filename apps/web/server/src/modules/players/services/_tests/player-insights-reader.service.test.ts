@@ -7,7 +7,7 @@ import type { VehicleCatalogService } from '../../../reference';
 import type { CatalogEntry } from '../../../reference/reference.types';
 
 import { unknownVehicle } from '../../../reference';
-import { PLAYER_STATS } from '../../config';
+import { PLAYER_STATS } from '../../config/player-stats.constants';
 import { PlayerInsightsReaderService } from '../player-insights-reader.service';
 
 const entry = (tankId: number): CatalogEntry => ({

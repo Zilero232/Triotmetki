@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { MODPACK_RELEASES_SOURCE } from '../../../config';
+import { MODPACK_RELEASES_SOURCE } from '../../../config/modpack-releases.constants';
 import { parseReleaseIndex } from '../release-index';
 import { INDEX } from './fixtures';
 

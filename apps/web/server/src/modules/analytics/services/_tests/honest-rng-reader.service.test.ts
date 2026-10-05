@@ -4,7 +4,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { Battle } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
-import { ANALYTICS_WINDOW } from '../../config';
+import { ANALYTICS_WINDOW } from '../../config/window.constants';
 import { HonestRngReaderService } from '../honest-rng-reader.service';
 import { OwnAccountReaderService } from '../own-account-reader.service';
 

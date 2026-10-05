@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { createJobSchedules } from '../../../common/schedules';
-import { COMMUNITY_SCHEDULES } from '../config';
+import { COMMUNITY_SCHEDULES } from '../config/community-maintenance.constants';
 
 @Injectable()
 export class CommunitySchedulesService extends createJobSchedules({

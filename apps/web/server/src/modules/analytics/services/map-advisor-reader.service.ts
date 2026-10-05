@@ -8,9 +8,12 @@ import type { AnalyticsQueries } from '../providers/analytics-queries.provider.t
 
 import { PrismaService } from '../../../core';
 import { ExpectedValuesReaderService, VehicleCatalogService } from '../../reference';
-import { ANALYTICS_QUERIES, ANALYTICS_SQL } from '../config';
-import { mapHighlights, periodStart, statLine, winRateDelta } from '../lib';
-import { toAggregateRow } from '../mappers';
+import { ANALYTICS_QUERIES } from '../config/queries.constants';
+import { ANALYTICS_SQL } from '../config/window.constants';
+import { mapHighlights, winRateDelta } from '../lib/map-advisor/map-advisor';
+import { statLine } from '../lib/stat-line/stat-line';
+import { periodStart } from '../lib/window/window';
+import { toAggregateRow } from '../mappers/aggregate-row.mappers';
 import { OwnAccountReaderService } from './own-account-reader.service';
 
 @Injectable()

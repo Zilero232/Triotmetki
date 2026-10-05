@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import { memoryFiles } from '../../../_tests/fixtures';
-import { buildGameData } from '../../../game-data';
-import { createMemoryReader } from '../../../source';
+import { buildGameData } from '../../../game-data/game-data';
+import { createMemoryReader } from '../../../source/local/local';
 import { ENTRY_KIND, PROFILE, PROVISION_TYPE } from '../../importer.constants';
 import { createImportPlan, importLocalizationKeys } from '../plan';
 

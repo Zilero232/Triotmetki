@@ -1,7 +1,7 @@
 import type { NotificationChannel, NotificationEvent, TargetKind } from '../../../generated';
-import type { AppNotification, DeliverPayload, Digest, ParsedNotification } from './config/notifications-queue.types';
-import type { MarkBattle } from './lib/mark-gains';
-import type { NotificationLocale, RenderedNotification } from './lib/notification-copy';
+import type { AppNotification, DeliverPayload, ParsedNotification } from './config/notifications-queue.types';
+import type { MarkBattle } from './lib/mark-gains/mark-gains.types';
+import type { NotificationLocale, RenderedNotification } from './lib/notification-copy/notification-copy.types';
 
 export type NotifyInput = {
   userId: string;
@@ -86,13 +86,6 @@ export type NotificationEmailInput = {
   to: string;
   locale: NotificationLocale;
   rendered: RenderedNotification;
-};
-
-export type DigestEmailInput = {
-  to: string;
-  locale: NotificationLocale;
-  rendered: RenderedNotification;
-  digest: Digest;
 };
 
 export type DigestEmailProps = {

@@ -2,7 +2,7 @@ import type { MapStat } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 
-import { MAP_ADVISOR } from '../../../config';
+import { MAP_ADVISOR } from '../../../config/map-advisor.constants';
 import { mapHighlights, winRateDelta } from '../map-advisor';
 
 const map = (arenaId: string, delta: number, battles: number = MAP_ADVISOR.minMapBattles): MapStat => ({

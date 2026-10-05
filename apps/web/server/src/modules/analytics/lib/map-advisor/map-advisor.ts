@@ -2,7 +2,7 @@ import { sortBy } from 'remeda';
 
 import type { HighlightInput, MapHighlights, WinRateDeltaInput } from './map-advisor.types';
 
-import { MAP_ADVISOR } from '../../config';
+import { MAP_ADVISOR } from '../../config/map-advisor.constants';
 
 export const winRateDelta = ({ winRate, average }: WinRateDeltaInput): number | null =>
   winRate === null || average === null ? null : winRate - average;

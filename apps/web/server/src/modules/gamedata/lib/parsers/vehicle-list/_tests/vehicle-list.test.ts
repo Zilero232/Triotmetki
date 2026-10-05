@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-import { tankIdOf } from '../../../ids';
+import { tankIdOf } from '../../../ids/ids';
 import { isRegularVehicle, parseVehicleList } from '../vehicle-list';
 
 const xml = readFileSync(new URL('fixtures/list.xml', import.meta.url), 'utf8');

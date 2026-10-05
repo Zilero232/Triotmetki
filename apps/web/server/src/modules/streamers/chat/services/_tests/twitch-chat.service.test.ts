@@ -8,9 +8,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { StreamerIntegration } from '../../../../../../generated';
-import type { Env } from '../../../../../config/env';
-import type { IntegrationStoreService, TwitchSdkService } from '../../../integrations';
-import type { StreamerStatsService } from '../streamer-stats.service';
+import type { Env } from '../../../../../config';
+import type { IntegrationWriterService, TwitchSdkService } from '../../../integrations';
+import type { ChatReplyReaderService } from '../chat-reply-reader.service';
 
 import { AppConfigService } from '../../../../../config';
 import { TWITCH } from '../../../integrations';
@@ -42,8 +42,8 @@ const receive = (chat: ChatConnection | undefined, channel: string, text: string
 };
 
 const createService = (env: Partial<Env> = enabledEnv) => {
-  const store = mock<IntegrationStoreService>();
-  const stats = mock<StreamerStatsService>();
+  const store = mock<IntegrationWriterService>();
+  const stats = mock<ChatReplyReaderService>();
   const sdk = mock<TwitchSdkService>();
   const auth = mock<RefreshingAuthProvider>();
   const chats: ChatConnection[] = [];

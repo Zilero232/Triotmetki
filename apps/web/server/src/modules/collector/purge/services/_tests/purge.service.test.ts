@@ -51,7 +51,8 @@ describe('PurgeService.purgeAccount', () => {
       prisma.weeklyChallengeProgress.deleteMany,
       prisma.clanAttendance.deleteMany,
       prisma.recruitCandidate.deleteMany,
-      prisma.competitionEntry.deleteMany
+      prisma.competitionEntry.deleteMany,
+      prisma.tournamentParticipant.deleteMany
     ]) {
       expect(remove).toHaveBeenCalledWith({ where: { accountId: 5n } });
     }
@@ -247,6 +248,16 @@ describe('PurgeService.dispatch', () => {
     expect(cutoff && typeof cutoff === 'object' && 'lte' in cutoff ? Number(cutoff.lte) : Number.NaN).toBeLessThanOrEqual(
       now - PURGE.failedCooldownMs + 1_000
     );
+  });
+
+  it('picks a request left processing by a crashed job again, its job id keeping a live run from doubling', async () => {
+    const { prisma, purge } = createPurge();
+
+    prisma.dataDeletionRequest.findMany.mockResolvedValue([]);
+
+    await purge.dispatch();
+
+    expect(prisma.dataDeletionRequest.findMany.mock.calls[0]?.[0]?.where?.OR).toContainEqual({ status: 'processing' });
   });
 
   it('queues every request once, keyed by its id, and drops a finally failed job so a retry can reuse the id', async () => {

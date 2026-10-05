@@ -10,7 +10,9 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { AllExceptionsFilter } from '../../../common/filters';
 import { INDEX } from '../lib/release-index/_tests/fixtures';
 import { ModpackReleasesController } from '../modpack-releases.controller';
-import { DownloadFilesService, ModpackReleasesService, ReleaseIndexService } from '../services';
+import { DownloadFilesReaderService } from '../services/download-files-reader.service';
+import { ModpackReleasesReaderService } from '../services/modpack-releases-reader.service';
+import { ReleaseIndexReaderService } from '../services/release-index-reader.service';
 
 describe('modpack releases API', () => {
   let app: INestApplication;
@@ -19,9 +21,9 @@ describe('modpack releases API', () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [ModpackReleasesController],
       providers: [
-        ModpackReleasesService,
-        { provide: ReleaseIndexService, useValue: { load: async () => INDEX } },
-        { provide: DownloadFilesService, useValue: { sizes: async () => ({ modpack: 2_048, manager: null }) } },
+        ModpackReleasesReaderService,
+        { provide: ReleaseIndexReaderService, useValue: { load: async () => INDEX } },
+        { provide: DownloadFilesReaderService, useValue: { sizes: async () => ({ modpack: 2_048, manager: null }) } },
         { provide: APP_FILTER, useClass: AllExceptionsFilter },
         { provide: APP_PIPE, useClass: ZodValidationPipe },
         { provide: APP_INTERCEPTOR, useClass: ZodSerializerInterceptor }

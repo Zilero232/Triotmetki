@@ -1,4 +1,4 @@
-import type { CohortRank } from './lib/build-usage';
+import type { CohortRank } from './lib/build-usage/build-usage.types';
 import type { metaQueries } from './providers/meta-queries.provider';
 
 export type MetaQueries = typeof metaQueries;

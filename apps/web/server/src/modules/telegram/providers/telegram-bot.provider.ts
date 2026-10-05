@@ -4,7 +4,7 @@ import { Bot } from 'grammy';
 import type { BotContext } from '../telegram.types';
 
 import { AppConfigService } from '../../../config';
-import { BOT_API, TELEGRAM_TOKENS } from '../config';
+import { BOT_API, TELEGRAM_TOKENS } from '../config/bot.constants';
 
 export const telegramBotProvider = {
   provide: TELEGRAM_TOKENS.bot,

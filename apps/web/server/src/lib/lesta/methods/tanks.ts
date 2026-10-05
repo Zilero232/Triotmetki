@@ -1,12 +1,13 @@
 import { z } from 'zod';
 
 import type { FieldList, LestaRequester, Selected } from '../client/client.types';
-import type { TankAchievements, TankStats } from '../schemas';
+import type { TankAchievements, TankStats } from '../schemas/tanks/tanks.types';
 import type { AccountTanksStatsInput, PerAccountInput, TankMasteryInput } from './methods.types';
 
-import { batchById, batchList } from '../batching';
-import { callParams, fieldAwareSchema } from '../client/params';
-import { idMapOf, tankAchievementsSchema, tankMasterySchema, tankStatsSchema } from '../schemas';
+import { batchById, batchList } from '../batching/batching';
+import { callParams, fieldAwareSchema } from '../client/params/params';
+import { idMapOf } from '../schemas/common/common.schemas';
+import { tankAchievementsSchema, tankMasterySchema, tankStatsSchema } from '../schemas/tanks/tanks.schemas';
 
 export const createTanksMethods = (requester: LestaRequester) => {
   const perAccount = async <T>({ method, input, schema }: PerAccountInput<T>): Promise<T[]> => {

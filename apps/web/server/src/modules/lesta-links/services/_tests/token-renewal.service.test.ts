@@ -8,7 +8,7 @@ import type { NotificationService } from '../../../notifications';
 
 import { createTokenCipher } from '../../../../core/token-cipher/_tests/token-cipher.fixtures';
 import { LestaApiError } from '../../../../lib/lesta';
-import { relinkDedupeKey } from '../../lib';
+import { relinkDedupeKey } from '../../lib/token-renewal/token-renewal';
 import { TokenRenewalService } from '../token-renewal.service';
 
 const NOW = new Date('2026-09-28T04:40:00Z');

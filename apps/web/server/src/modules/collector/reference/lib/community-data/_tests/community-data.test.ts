@@ -1,22 +1,22 @@
 import { MASTERY_PERCENTILES } from '@otmetki/ratings';
 import { describe, expect, it } from 'vitest';
 
-import { expectedValuesDate, masteryPercentiles, masteryThresholdRows, parsePoliroidMoe } from '../community-data';
+import { expectedValuesDate, masteryPercentiles, masteryThresholdRows, poliroidMoeSchema } from '../community-data';
 import { LESTA_MASTERY } from '../community-data.constants';
 
-describe('parsePoliroidMoe', () => {
+describe('poliroidMoeSchema', () => {
   it('reads the poliroid shape with string numbers', () => {
-    const rows = parsePoliroidMoe({ status: 'ok', data: [{ id: '1', marks: { 65: '1000', 85: '1500', 95: '2000' } }] });
+    const rows = poliroidMoeSchema.parse({ status: 'ok', data: [{ id: '1', marks: { 65: '1000', 85: '1500', 95: '2000' } }] });
 
     expect(rows).toEqual([{ tankId: 1, p65: 1000, p85: 1500, p95: 2000 }]);
   });
 
   it('drops a row whose thresholds are not increasing', () => {
-    expect(parsePoliroidMoe({ data: [{ id: 1, marks: { 65: 2000, 85: 1500, 95: 2500 } }] })).toEqual([]);
+    expect(poliroidMoeSchema.parse({ data: [{ id: 1, marks: { 65: 2000, 85: 1500, 95: 2500 } }] })).toEqual([]);
   });
 
   it('rejects a payload without data', () => {
-    expect(() => parsePoliroidMoe({ status: 'error' })).toThrow();
+    expect(() => poliroidMoeSchema.parse({ status: 'error' })).toThrow();
   });
 });
 

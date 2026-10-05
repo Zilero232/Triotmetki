@@ -1,6 +1,6 @@
 import type { FitCandidate, RankedCandidate, RankTanksInput, ToCandidateInput } from './tank-fit.types';
 
-import { MISSION_METRIC_FIELD } from '../../config';
+import { MISSION_METRIC_FIELD } from '../../config/suitable-tanks.constants';
 import { TANK_FIT } from './tank-fit.constants';
 
 export const toCandidate = ({ row, metric }: ToCandidateInput): FitCandidate => ({

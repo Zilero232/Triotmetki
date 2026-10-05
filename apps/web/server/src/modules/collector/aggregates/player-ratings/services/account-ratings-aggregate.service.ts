@@ -2,14 +2,14 @@ import { Inject, Injectable } from '@nestjs/common';
 import { uniqueBy } from 'remeda';
 
 import type { AccountRatingsPayload } from '../../../contracts';
-import type { TankSnapshotTotals } from '../lib/account-ratings';
+import type { TankSnapshotTotals } from '../lib/account-ratings/account-ratings.types';
 import type { PlayerRatingsQueries } from '../player-ratings.types';
 import type { RatingMode, TankHistoryInput } from './account-ratings-aggregate.types';
 
 import { asPrismaTransaction, PrismaService } from '../../../../../core';
 import { PLAYER_RATINGS_AGGREGATE } from '../config/player-ratings.constants';
 import { PLAYER_RATINGS_TOKENS } from '../config/tokens.constants';
-import { buildAccountRatings, earliestCutoff, ratingHistoryBounds } from '../lib/account-ratings';
+import { buildAccountRatings, earliestCutoff, ratingHistoryBounds } from '../lib/account-ratings/account-ratings';
 import { TANK_TOTALS_SELECT } from '../selects/tank-totals.selects';
 import { ReferenceTablesService } from './reference-tables.service';
 

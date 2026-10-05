@@ -2,7 +2,7 @@ import { RateLimiterQueue, RateLimiterQueueError, RateLimiterRedis } from 'rate-
 
 import type { QueueRateLimiterInput, RateLimiter, RedisRateLimiterInput } from './rate-limit.types';
 
-import { LestaQueueFullError } from '../errors';
+import { LestaQueueFullError } from '../errors/lesta-api-error';
 import { RATE_LIMIT } from './rate-limit.constants';
 
 const fromQueue = ({ queue, key }: QueueRateLimiterInput): RateLimiter => ({

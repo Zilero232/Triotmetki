@@ -16,6 +16,7 @@ export const THRESHOLD_DROP = {
 
 export const WEEKLY_DIGEST = {
   lookbackDays: 7,
+  weekKeyFormat: "RRRR-'W'II",
   batchSize: 500,
   dedupePrefix: 'otmetki:notifications:digest:',
   dedupeTtlSeconds: 14 * 24 * 60 * 60

@@ -6,7 +6,8 @@ export const TACTICS = {
   maxDebounceMs: 10_000,
   maxBoardsPerUser: 200,
   maxPayloadBytes: 1_048_576,
-  maxDocumentBytes: 4_194_304
+  maxDocumentBytes: 4_194_304,
+  shutdownTimeoutMs: 10_000
 } as const;
 
 export const BOARD_DOCUMENT = {

@@ -5,7 +5,7 @@ import type { Prisma } from '../../../../../generated';
 
 import { STAT_SEED } from '../../../../core/prisma/_tests/stat-seeds';
 import { createTestPrisma, describeWithDatabase, truncateTables } from '../../../../core/prisma/_tests/test-database';
-import { WATCHLIST_DIGEST_RUN } from '../../config';
+import { WATCHLIST_DIGEST_RUN } from '../../config/queue.constants';
 import { watchlistQueries } from '../../providers/watchlist-queries.provider';
 import { WatchlistActivityReaderService } from '../watchlist-activity-reader.service';
 

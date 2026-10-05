@@ -1,6 +1,6 @@
 import type { CombinedDamageInput } from './player-marks.types';
 
-import { PLAYER_MARKS } from '../config';
+import { PLAYER_MARKS } from '../config/player-stats.constants';
 
 export const combinedDamage = ({ db, accountId }: CombinedDamageInput) =>
   db

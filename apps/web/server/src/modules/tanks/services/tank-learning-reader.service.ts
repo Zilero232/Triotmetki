@@ -5,10 +5,10 @@ import { Injectable } from '@nestjs/common';
 import type { AccountLearningLookup } from '../tanks.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
-import { clampPercentDelta, percentOf } from '../../../common/lib';
+import { clampPercentDelta, percentOf, STATS_MODE_SQL } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { bucketOf } from '../lib';
-import { toTankLearning } from '../mappers';
+import { bucketOf } from '../lib/learning-curve/learning-curve';
+import { toTankLearning } from '../mappers/tank-learning.mappers';
 
 @Injectable()
 export class TankLearningReaderService {
@@ -23,7 +23,7 @@ export class TankLearningReaderService {
   async place({ accountId, tankId }: AccountLearningLookup): Promise<MyTankLearning> {
     const [snapshot, curve] = await Promise.all([
       this.prisma.tankSnapshotLatest.findUnique({
-        where: { accountId_tankId_mode: { accountId, tankId, mode: 'random' } },
+        where: { accountId_tankId_mode: { accountId, tankId, mode: STATS_MODE_SQL.random } },
         select: { battles: true, wins: true }
       }),
       this.forTank(tankId)

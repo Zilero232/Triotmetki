@@ -6,7 +6,7 @@ import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { resolveBotLocale } from '../../bot-commands';
 import { OfficerReportService } from '../../clan-workspace';
-import { DISCORD_TOKENS } from '../config';
+import { DISCORD_TOKENS } from '../config/tokens.constants';
 import { DiscordCopyService } from './discord-copy.service';
 
 @Injectable()

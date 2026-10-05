@@ -6,7 +6,7 @@ import { WORKER_CONCURRENCY } from '../../config';
 import { accountBatchPayloadSchema, clanDispatchPayloadSchema, clanRefreshPayloadSchema, JOB, QUEUE } from '../../contracts';
 import { MetricsService, TrackedWorkerHost } from '../../metrics';
 import { ClanDispatchService } from '../services/clan-dispatch.service';
-import { ClanHistoryService } from '../services/clan-history.service';
+import { ClanHistorySyncService } from '../services/clan-history-sync.service';
 import { ClanSyncService } from '../services/clan-sync.service';
 
 @Processor(QUEUE.clans, { concurrency: WORKER_CONCURRENCY.clans })
@@ -14,7 +14,7 @@ export class ClansProcessor extends TrackedWorkerHost {
   constructor(
     private readonly dispatcher: ClanDispatchService,
     private readonly sync: ClanSyncService,
-    private readonly history: ClanHistoryService,
+    private readonly history: ClanHistorySyncService,
     metrics: MetricsService
   ) {
     super(metrics);

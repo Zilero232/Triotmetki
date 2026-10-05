@@ -5,13 +5,13 @@ import { ZodResponse } from 'nestjs-zod';
 import { CurrentUserId, OperationIdPrefix } from '../../../common/decorators';
 import { SlugParamsDto } from '../dto/params.dto';
 import { FollowStreamerDto, StreamerFollowListDto } from './dto/profiles.dto';
-import { StreamerFollowService } from './services/streamer-follow.service';
+import { StreamerFollowWriterService } from './services/streamer-follow-writer.service';
 
 @ApiTags('streamers')
 @OperationIdPrefix('StreamersController')
 @Controller('streamers')
 export class StreamerFollowsController {
-  constructor(private readonly follows: StreamerFollowService) {}
+  constructor(private readonly follows: StreamerFollowWriterService) {}
 
   @Get('me/follows')
   @ZodResponse({ type: StreamerFollowListDto })

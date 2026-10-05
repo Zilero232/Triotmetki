@@ -1,10 +1,11 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
-import type { AccountInfo, TankStats } from '../../schemas';
+import type { AccountInfo } from '../../schemas/account/account.types';
+import type { TankStats } from '../../schemas/tanks/tanks.types';
 
 import { accountInfoFixture, createFetchMock, ok, okWithMeta, tankStatsFixture } from '../../_tests/fixtures';
-import { createLestaClient } from '../../client';
-import { accountInfoSchema } from '../../schemas';
+import { createLestaClient } from '../../client/client';
+import { accountInfoSchema } from '../../schemas/account/account.schemas';
 import { parseLoginCallback } from '../auth';
 
 const APPLICATION_ID = 'test-app';

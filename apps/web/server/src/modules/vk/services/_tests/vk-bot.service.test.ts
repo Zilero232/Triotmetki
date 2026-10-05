@@ -4,11 +4,11 @@ import { ConfigService } from '@nestjs/config';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { Env } from '../../../../config/env';
-import type { BotAccountsService, BotRepliesService } from '../../../bot-commands';
+import type { Env } from '../../../../config';
+import type { BotAccountsReaderService, BotRepliesService } from '../../../bot-commands';
 
 import { AppConfigService } from '../../../../config';
-import { VK_BOT } from '../../config';
+import { VK_BOT } from '../../config/bot.constants';
 import { VkBotService } from '../vk-bot.service';
 
 const CALLBACK = { VK_CALLBACK_CONFIRMATION: 'confirm-code', VK_CALLBACK_SECRET: 'callback-secret' } satisfies Partial<Env>;
@@ -18,7 +18,7 @@ const createBot = (env: Partial<Env> = CALLBACK) => {
   const service = new VkBotService(
     vk,
     new AppConfigService(new ConfigService<Env, true>(env)),
-    mock<BotAccountsService>(),
+    mock<BotAccountsReaderService>(),
     mock<BotRepliesService>()
   );
 

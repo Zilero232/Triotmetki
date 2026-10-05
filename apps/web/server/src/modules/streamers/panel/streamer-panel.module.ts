@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 
 import { BotCommandsModule } from '../../bot-commands';
-import { TwitchPanelService } from './services/twitch-panel.service';
+import { TwitchPanelReaderService } from './services/twitch-panel-reader.service';
 
 @Module({
   imports: [BotCommandsModule],
-  providers: [TwitchPanelService],
-  exports: [TwitchPanelService]
+  providers: [TwitchPanelReaderService],
+  exports: [TwitchPanelReaderService]
 })
 export class StreamerPanelModule {}

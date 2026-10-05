@@ -44,7 +44,7 @@ export class ThresholdsReaderService {
   }
 
   async asOf({ date, source }: ThresholdsAsOfInput): Promise<ThresholdSet> {
-    const upTo = date ?? new Date('9999-12-31');
+    const upTo = date ?? new Date(CATALOG.openEndDate);
 
     const [moe, mastery] = await Promise.all([
       this.queries.latestThresholds({ db: this.prisma.$kysely, kind: 'moe', upTo, source }),

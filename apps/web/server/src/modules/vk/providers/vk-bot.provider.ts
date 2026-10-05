@@ -1,7 +1,7 @@
 import { VK } from 'vk-io';
 
 import { AppConfigService } from '../../../config';
-import { VK_TOKENS } from '../config';
+import { VK_TOKENS } from '../config/tokens.constants';
 
 export const vkBotProvider = {
   provide: VK_TOKENS.bot,

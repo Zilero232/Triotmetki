@@ -5,8 +5,8 @@ import { LRUCache } from 'lru-cache';
 import { groupBy } from 'remeda';
 
 import { PrismaService } from '../../../core';
-import { TANK_LEARNING } from '../config';
-import { toTankLearning } from '../mappers';
+import { TANK_LEARNING } from '../config/tank-traits.constants';
+import { toTankLearning } from '../mappers/tank-learning.mappers';
 
 @Injectable()
 export class TankDifficultyReaderService {

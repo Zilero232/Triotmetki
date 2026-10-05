@@ -1,5 +1,4 @@
 export const LIVE = {
-  staleAfterMs: 5 * 60_000,
   tokenMsPerSecond: 900,
   tankWindowMs: 30 * 60_000,
   alertDedupePrefix: 'streamer-live',

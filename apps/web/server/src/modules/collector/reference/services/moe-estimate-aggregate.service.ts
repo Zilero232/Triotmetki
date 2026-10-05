@@ -9,7 +9,7 @@ import type { ReplaceMoeEstimatesInput } from '../reference.types';
 import { PrismaService } from '../../../../core';
 import { moeThresholdLevels } from '../../../reference';
 import { MOE_ESTIMATE } from '../config/moe-estimate.constants';
-import { moeEstimates } from '../lib/moe-estimate';
+import { moeEstimates } from '../lib/moe-estimate/moe-estimate';
 import { REFERENCE_QUERIES } from '../providers/reference-queries.provider';
 
 @Injectable()

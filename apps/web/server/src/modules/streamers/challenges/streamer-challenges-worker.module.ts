@@ -5,7 +5,7 @@ import { ReferenceCoreModule } from '../../reference';
 import { StreamerChatModule } from '../chat';
 import { StreamerIntegrationsModule } from '../integrations';
 import { StreamerOverlayPublisherModule } from '../overlays';
-import { ChallengeFeedService } from './services/challenge-feed.service';
+import { ChallengeProgressAggregateService } from './services/challenge-progress-aggregate.service';
 import { DonationListenerService } from './services/donation-listener.service';
 import { StreamerChallengesModule } from './streamer-challenges.module';
 
@@ -18,7 +18,7 @@ import { StreamerChallengesModule } from './streamer-challenges.module';
     StreamerIntegrationsModule,
     StreamerOverlayPublisherModule
   ],
-  providers: [ChallengeFeedService, DonationListenerService],
-  exports: [ChallengeFeedService]
+  providers: [ChallengeProgressAggregateService, DonationListenerService],
+  exports: [ChallengeProgressAggregateService]
 })
 export class StreamerChallengesWorkerModule {}

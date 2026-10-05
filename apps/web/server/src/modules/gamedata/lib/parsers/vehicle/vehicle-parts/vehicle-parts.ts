@@ -2,11 +2,25 @@ import type { Armor, ModuleBase, PitchLimits, PitchPoint, RateOfFire, Unlock } f
 
 import { chunk } from 'remeda';
 
-import type { XmlNode, XmlValue } from '../../../xml';
+import type { XmlNode, XmlValue } from '../../../xml/xml.types';
 import type { ArmorExtras, ArmorExtrasInput, ModuleBaseInput, ResolveModuleInput, ResolvePrimaryArmorInput } from '../vehicle.types';
 
-import { makeCompactDescr } from '../../../ids';
-import { entries, get, isXmlNode, list, localizationFallback, localizationKey, mergeNodes, node, num, nums, price, text, words } from '../../../xml';
+import { makeCompactDescr } from '../../../ids/ids';
+import {
+  entries,
+  get,
+  isXmlNode,
+  list,
+  localizationFallback,
+  localizationKey,
+  mergeNodes,
+  node,
+  num,
+  nums,
+  price,
+  text,
+  words
+} from '../../../xml/xml';
 
 export const resolveModule = ({ name, value, shared }: ResolveModuleInput): XmlNode => mergeNodes({ base: shared[name], override: node(value) });
 

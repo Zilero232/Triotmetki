@@ -4,7 +4,8 @@ import type { Request } from 'express';
 import type { z, ZodType } from 'zod';
 
 import type { ModDevice, Player, UserLestaAccount } from '../../../generated';
-import type { BattleResultEvent, bindRequestSchema, IngestBatch, IngestEvent, IngestResponse } from './lib/contract';
+import type { bindRequestSchema } from './lib/contract/contract.schemas';
+import type { BattleResultEvent, IngestBatch, IngestEvent, IngestResponse } from './lib/contract/contract.types';
 
 export type LedgerKeyInput = {
   accountId: bigint;

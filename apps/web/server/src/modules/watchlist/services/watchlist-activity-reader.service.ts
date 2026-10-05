@@ -5,7 +5,8 @@ import type { WatchlistQueries } from '../providers/watchlist-queries.provider.t
 import type { PlayerActivityInput, PlayerActivityRow } from '../watchlist.types';
 
 import { PrismaService } from '../../../core';
-import { WATCHLIST_DIGEST_RUN, WATCHLIST_QUERIES } from '../config';
+import { WATCHLIST_QUERIES } from '../config/queries.constants';
+import { WATCHLIST_DIGEST_RUN } from '../config/queue.constants';
 
 @Injectable()
 export class WatchlistActivityReaderService {

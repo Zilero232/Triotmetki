@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 import type { KeyMetadata, QuotaRetryAfterInput, VerifyFailure } from './api-key.types';
 
-import { API_KEY_POLICY } from '../../config';
+import { API_KEY_POLICY } from '../../config/api-keys.constants';
 
 const keyMetadataSchema = z.object({ tier: apiTierSchema });
 

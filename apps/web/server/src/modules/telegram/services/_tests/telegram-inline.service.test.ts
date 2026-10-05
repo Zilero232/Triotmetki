@@ -4,17 +4,17 @@ import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { AppConfigService } from '../../../../config';
-import type { BotRepliesService, BotStatsService } from '../../../bot-commands';
+import type { BotRepliesService, BotStatsReaderService } from '../../../bot-commands';
 import type { BotContext } from '../../telegram.types';
 
-import { BOT_TEXT_LIMITS } from '../../config';
+import { BOT_TEXT_LIMITS } from '../../config/bot.constants';
 import { TelegramInlineService } from '../telegram-inline.service';
 
 const CARD = { accountId: 7n, nickname: 'Tanker', battles: 100, winRate: 52, avgDamage: 1800, wn8: 1500, clanTag: null };
 
 const createService = () => {
   const config = mock<AppConfigService>();
-  const stats = mock<BotStatsService>();
+  const stats = mock<BotStatsReaderService>();
   const replies = mock<BotRepliesService>();
 
   config.get.mockReturnValue('https://triotmetki.ru');

@@ -20,18 +20,22 @@ import {
   UpdateClanEventDto,
   WeeklyReportDto,
   WorkspaceDto
-} from './dto';
-import { EVENT_KIND_TO_DB } from './lib';
-import { ClanEventAttendanceService, ClanEventsService, OfficerReportService, RecruitFunnelService, WorkspaceService } from './services';
+} from './dto/clan-workspace.dto';
+import { EVENT_KIND_TO_DB } from './lib/clan-event/clan-event.constants';
+import { ClanEventAttendanceWriterService } from './services/clan-event-attendance-writer.service';
+import { ClanEventsWriterService } from './services/clan-events-writer.service';
+import { OfficerReportService } from './services/officer-report.service';
+import { RecruitFunnelWriterService } from './services/recruit-funnel-writer.service';
+import { WorkspaceWriterService } from './services/workspace-writer.service';
 
 @ApiTags('clan-workspace')
 @Controller('clan-workspace/:clanId')
 export class ClanWorkspaceController {
   constructor(
-    private readonly workspaces: WorkspaceService,
-    private readonly events: ClanEventsService,
-    private readonly attendance: ClanEventAttendanceService,
-    private readonly funnel: RecruitFunnelService,
+    private readonly workspaces: WorkspaceWriterService,
+    private readonly events: ClanEventsWriterService,
+    private readonly attendance: ClanEventAttendanceWriterService,
+    private readonly funnel: RecruitFunnelWriterService,
     private readonly reports: OfficerReportService
   ) {}
 

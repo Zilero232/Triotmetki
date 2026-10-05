@@ -1,4 +1,4 @@
-import type { MyModeRow } from '../lib/my-mode-stats';
+import type { MyModeRow } from '../lib/my-mode-stats/my-mode-stats.types';
 import type { MyModeBattleRow } from './my-mode-stats.types';
 
 import { gameModeOfBonusType } from '../../reference';

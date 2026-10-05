@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { API_USAGE_REPORT } from '../../../config';
+import { API_USAGE_REPORT } from '../../../config/api-usage.constants';
 import { topEndpoints, usagePointOf, usagePoints } from '../usage';
 
 const row = ({

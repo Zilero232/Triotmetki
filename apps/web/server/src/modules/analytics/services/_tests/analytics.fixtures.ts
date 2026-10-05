@@ -2,7 +2,7 @@ import type { VehicleSummary } from '@otmetki/schemas';
 
 import type { Battle } from '../../../../../generated';
 import type { CatalogEntry } from '../../../reference';
-import type { RawTankRow } from '../../lib';
+import type { RawTankRow } from '../../lib/stat-line/stat-line.types';
 
 export const vehicle = (overrides: Partial<VehicleSummary> & Pick<VehicleSummary, 'tankId'>): VehicleSummary => ({
   name: `Tank ${overrides.tankId}`,

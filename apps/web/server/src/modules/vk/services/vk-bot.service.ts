@@ -9,9 +9,11 @@ import type { VkCallbackBody, VkKeyboardInput, VkTextInput } from '../vk.types';
 import { errorMessage, timingSafeEqual } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { AUTH_PROVIDER } from '../../../lib/auth';
-import { BOT_LOCALE, BotAccountsService, BotRepliesService, createFluentStore, isPublicUrl, SITE_LINKS, siteUrl } from '../../bot-commands';
-import { VK_BOT, VK_LOCALE_FILES, VK_TOKENS } from '../config';
-import { parseVkCommand } from '../lib';
+import { BOT_LOCALE, BotAccountsReaderService, BotRepliesService, createFluentStore, isPublicUrl, SITE_LINKS, siteUrl } from '../../bot-commands';
+import { VK_BOT } from '../config/bot.constants';
+import { VK_LOCALE_FILES } from '../config/locales.constants';
+import { VK_TOKENS } from '../config/tokens.constants';
+import { parseVkCommand } from '../lib/vk-command/vk-command';
 
 @Injectable()
 export class VkBotService implements OnApplicationBootstrap, OnModuleDestroy {
@@ -22,7 +24,7 @@ export class VkBotService implements OnApplicationBootstrap, OnModuleDestroy {
   constructor(
     @Inject(VK_TOKENS.bot) private readonly vk: VK | null,
     private readonly config: AppConfigService,
-    private readonly accounts: BotAccountsService,
+    private readonly accounts: BotAccountsReaderService,
     private readonly replies: BotRepliesService
   ) {
     this.vk?.updates.on('message_new', (ctx) => this.onMessage(ctx));

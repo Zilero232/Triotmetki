@@ -2,7 +2,8 @@ import type { MissionMetric } from '@otmetki/schemas';
 
 import type { MetricCondition, MissionMetricChoice } from './condition-metrics.types';
 
-import { CONDITION_METRIC_RULES, MISSION_TANKS } from '../../config';
+import { CONDITION_METRIC_RULES } from '../../config/conditions.constants';
+import { MISSION_TANKS } from '../../config/suitable-tanks.constants';
 
 export const conditionMetric = (progressId: string): MissionMetric | null =>
   CONDITION_METRIC_RULES.find(([pattern]) => pattern.test(progressId))?.[1] ?? null;

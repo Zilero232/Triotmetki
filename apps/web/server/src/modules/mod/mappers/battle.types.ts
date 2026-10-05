@@ -1,4 +1,4 @@
-import type { BattleResultEvent } from '../lib/contract';
+import type { BattleResultEvent } from '../lib/contract/contract.types';
 
 export type BattleDataInput = {
   event: BattleResultEvent;

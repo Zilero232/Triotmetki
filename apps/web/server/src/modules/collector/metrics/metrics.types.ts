@@ -26,6 +26,11 @@ export type WriteCountersInput = {
   bucketStart: Date;
 };
 
+export type RestoreCountersInput = {
+  queue: string;
+  counters: MetricCounters;
+};
+
 export type RecordJobInput = {
   queue: string;
   durationMs: number;

@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common';
 
 import { AccountsModule } from '../accounts';
 import { ReferenceCoreModule } from '../reference';
-import { FirstWinReaderService, OwnAccountReaderService } from './services';
+import { FirstWinReaderService } from './services/first-win-reader.service';
+import { OwnAccountReaderService } from './services/own-account-reader.service';
 
 @Module({
   imports: [AccountsModule, ReferenceCoreModule],

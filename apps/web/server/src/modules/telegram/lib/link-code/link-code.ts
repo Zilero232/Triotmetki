@@ -1,6 +1,7 @@
 import type { LinkConfirmAnswer } from './link-code.types';
 
-import { LINK_CODE, LINK_CONFIRM } from '../../config';
+import { LINK_CODE } from '../../config/link-code.constants';
+import { LINK_CONFIRM } from '../../config/link-confirm.constants';
 
 const CODE_SHAPE = new RegExp(`^[${LINK_CODE.alphabet}]{${LINK_CODE.length}}$`, 'u');
 

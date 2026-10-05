@@ -4,8 +4,9 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId } from '../../common/decorators';
 import { RequiresPlus } from '../billing';
-import { AccountEconomyDto, AccountEconomyQueryDto, MyTankLearningDto, TankParamsDto } from './dto';
-import { MyTankInsightsReaderService, TankDetailReaderService } from './services';
+import { AccountEconomyDto, AccountEconomyQueryDto, MyTankLearningDto, TankParamsDto } from './dto/tanks.dto';
+import { MyTankInsightsReaderService } from './services/my-tank-insights-reader.service';
+import { TankDetailReaderService } from './services/tank-detail-reader.service';
 
 @ApiTags('tanks')
 @Controller('tanks')

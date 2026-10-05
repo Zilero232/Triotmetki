@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 
-import { DISCORD_TOKENS } from './config';
-import { discordApiProvider } from './providers';
-import { DiscordSenderService } from './services';
+import { DISCORD_TOKENS } from './config/tokens.constants';
+import { discordApiProvider } from './providers/discord-api.provider';
+import { DiscordSenderService } from './services/discord-sender.service';
 
 @Module({
   providers: [discordApiProvider, DiscordSenderService],

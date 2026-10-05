@@ -13,15 +13,15 @@ import {
   PushSubscriptionDto,
   PushUnsubscribeDto
 } from './dto/notifications.dto';
-import { InboxService } from './services/inbox.service';
-import { PushSubscriptionsService } from './services/push-subscriptions.service';
+import { InboxReaderService } from './services/inbox-reader.service';
+import { PushSubscriptionsWriterService } from './services/push-subscriptions-writer.service';
 
 @ApiTags('notifications')
 @Controller()
 export class NotificationsController {
   constructor(
-    private readonly inbox: InboxService,
-    private readonly push: PushSubscriptionsService
+    private readonly inbox: InboxReaderService,
+    private readonly push: PushSubscriptionsWriterService
   ) {}
 
   @Get('me/inbox')

@@ -6,7 +6,7 @@ import { isIncludedIn } from 'remeda';
 
 import type { InternalTokenInput, ThrottleSubject, ThrottleSubjectInput, TrustedPeerInput } from './throttle-subject.types';
 
-import { timingSafeEqual } from '../hmac';
+import { timingSafeEqual } from '../hmac/hmac';
 import { THROTTLE_SUBJECT } from './throttle-subject.constants';
 
 const digest = (value: string): string => createHash(THROTTLE_SUBJECT.digest).update(value).digest('hex');

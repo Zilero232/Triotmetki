@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { createFetchMock, ok } from '../../_tests/fixtures';
-import { createLestaClient } from '../../client';
+import { createLestaClient } from '../../client/client';
 
 const APPLICATION_ID = 'test-app';
 

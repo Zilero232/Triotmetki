@@ -4,9 +4,9 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
-import { TANK_OBTAIN } from '../config';
-import { researchXp, tankSources } from '../lib';
-import { toTankNewsLinks, toTankOffer } from '../mappers';
+import { TANK_OBTAIN } from '../config/tank-traits.constants';
+import { researchXp, tankSources } from '../lib/vehicle-traits/vehicle-traits';
+import { toTankNewsLinks, toTankOffer } from '../mappers/tank-obtain.mappers';
 import { TankTraitsReaderService } from './tank-traits-reader.service';
 import { VehicleSourcesService } from './vehicle-sources.service';
 

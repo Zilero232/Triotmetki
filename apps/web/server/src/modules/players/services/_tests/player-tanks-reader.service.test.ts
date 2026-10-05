@@ -6,10 +6,10 @@ import type { AccountTankRating, PlayerTank, TankSnapshotLatest } from '../../..
 import type { PrismaService } from '../../../../core';
 import type { VehicleCatalogService } from '../../../reference';
 import type { CatalogEntry } from '../../../reference/reference.types';
-import type { LatestTankSnapshot } from '../../selects';
+import type { LatestTankSnapshot } from '../../selects/players.selects';
 
 import { unknownVehicle } from '../../../reference';
-import { PLAYER_STATS } from '../../config';
+import { PLAYER_STATS } from '../../config/player-stats.constants';
 import { PlayerTanksReaderService } from '../player-tanks-reader.service';
 
 const entry = (tankId: number, tier = 10): CatalogEntry => ({

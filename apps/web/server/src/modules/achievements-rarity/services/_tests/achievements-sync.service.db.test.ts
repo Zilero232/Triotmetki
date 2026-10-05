@@ -5,6 +5,7 @@ import { mockDeep } from 'vitest-mock-extended';
 import type { LestaClients } from '../../../../core';
 
 import { createTestPrisma, describeWithDatabase, truncateTables } from '../../../../core/prisma/_tests/test-database';
+import { PurgeGuardService } from '../../../collector';
 import { AchievementsSyncService } from '../achievements-sync.service';
 
 const NOW = new Date('2026-10-05T12:00:00Z');
@@ -23,7 +24,7 @@ describeWithDatabase('AchievementsSyncService.fetch', () => {
 
     clients.bulk.account.achievements.mockResolvedValue(response);
 
-    return { clients, sync: new AchievementsSyncService(prisma, clients) };
+    return { clients, sync: new AchievementsSyncService(prisma, clients, new PurgeGuardService(prisma)) };
   };
 
   const stored = async () =>

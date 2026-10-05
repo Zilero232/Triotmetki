@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
 import { memoryFiles } from '../../_tests/fixtures';
-import { createMemoryReader, ForeignClientError, GAME_PATHS, MT_CLIENT } from '../../source';
+import { createMemoryReader } from '../../source/local/local';
+import { MT_CLIENT } from '../../source/mt-client/mt-client.constants';
+import { ForeignClientError } from '../../source/mt-client/mt-client.errors';
+import { GAME_PATHS } from '../../source/source.constants';
 import { buildGameData } from '../game-data';
 
 describe('buildGameData', () => {

@@ -12,8 +12,8 @@ import { AppNotFoundException } from '../../../common/exceptions';
 import { paginate, ratio, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
-import { statsBlockFromTotals } from '../lib';
-import { toSessionListItem } from '../mappers';
+import { statsBlockFromTotals } from '../lib/stats-block/stats-block';
+import { toSessionListItem } from '../mappers/sessions.mappers';
 
 @Injectable()
 export class PlayerSessionsReaderService {

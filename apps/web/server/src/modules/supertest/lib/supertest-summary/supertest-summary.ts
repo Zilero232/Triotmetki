@@ -1,4 +1,4 @@
-import type { ChangeVerdict } from '../change-verdict';
+import type { ChangeVerdict } from '../change-verdict/change-verdict.types';
 import type { NarrowInput, SummaryAnnouncement } from './supertest-summary.types';
 
 export const tankVerdict = (verdicts: readonly ChangeVerdict[]): ChangeVerdict => {

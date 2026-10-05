@@ -1,9 +1,9 @@
 import type { Prisma, TrackingTier } from '../../../../../../generated';
 import type { AccountInfo, AccountTank, TankStats } from '../../../../../lib/lesta';
-import type { TankBaseline } from '../account-diff';
-import type { TankMarks } from '../marks-gain';
-import type { AccountModeRow, TankModeRow } from '../mode-stats';
-import type { SnapshotMode, TankSnapshotRow } from '../snapshots';
+import type { TankBaseline } from '../account-diff/account-diff.types';
+import type { TankMarks } from '../marks-gain/marks-gain.types';
+import type { AccountModeRow, TankModeRow } from '../mode-stats/mode-stats.types';
+import type { SnapshotMode, TankSnapshotRow } from '../snapshots/snapshots.types';
 
 type TankStatsRequest = {
   accountId: number;

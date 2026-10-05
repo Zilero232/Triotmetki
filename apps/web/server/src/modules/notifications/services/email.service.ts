@@ -3,12 +3,12 @@ import type { Transporter } from 'nodemailer';
 import { Injectable } from '@nestjs/common';
 import { render } from 'react-email';
 
-import type { DigestEmailInput, NotificationEmailInput } from '../notifications.types';
+import type { NotificationEmailInput } from '../notifications.types';
 
 import { AppConfigService } from '../../../config';
 import { isPlaceholderEmail } from '../../../lib/auth';
 import { SMTP_TIMEOUTS } from '../config/email.constants';
-import { notificationText } from '../lib/notification-copy';
+import { notificationText } from '../lib/notification-copy/notification-copy';
 import { DigestEmail } from '../templates/digest-email';
 import { MailTransportService } from './mail-transport.service';
 
@@ -40,10 +40,6 @@ export class EmailService {
 
   canReach(email: string | null | undefined): boolean {
     return this.isEnabled && Boolean(email) && !isPlaceholderEmail(email ?? '');
-  }
-
-  sendDigest({ to, locale, rendered }: DigestEmailInput): Promise<void> {
-    return this.sendNotification({ to, locale, rendered });
   }
 
   async sendNotification({ to, locale, rendered }: NotificationEmailInput): Promise<void> {

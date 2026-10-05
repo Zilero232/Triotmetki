@@ -26,7 +26,7 @@ export class PurgeService {
     const retryAfter = new Date(Date.now() - PURGE.failedCooldownMs);
 
     const due = await this.prisma.dataDeletionRequest.findMany({
-      where: { OR: [{ status: 'pending' }, { status: 'failed', failedAt: { lte: retryAfter } }] },
+      where: { OR: [{ status: 'pending' }, { status: 'processing' }, { status: 'failed', failedAt: { lte: retryAfter } }] },
       orderBy: { requestedAt: 'asc' },
       take: PURGE.dispatchBatch
     });
@@ -104,6 +104,7 @@ export class PurgeService {
     await tx.clanAttendance.deleteMany({ where: { accountId: id } });
     await tx.recruitCandidate.deleteMany({ where: { accountId: id } });
     await tx.competitionEntry.deleteMany({ where: { accountId: id } });
+    await tx.tournamentParticipant.deleteMany({ where: { accountId: id } });
     await tx.replay.deleteMany({ where: { id: { in: [...replayIds] } } });
     await tx.replay.updateMany({ where: { accountId: id }, data: { accountId: null } });
     await this.queries.scrubReplayPlayer({ db: tx.$kysely, accountId, placeholder: PURGE.anonymousReplayName });

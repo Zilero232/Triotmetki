@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { AppConfigService } from '../../../../config';
-import type { MissionProgressService, NextMissions } from '../../../missions';
+import type { MissionProgressReaderService, NextMissions } from '../../../missions';
 import type { BotContext, LinkedChat } from '../../telegram.types';
 
 import { TelegramMissionCommandsService } from '../telegram-mission-commands.service';
@@ -21,7 +21,7 @@ const NEXT: NextMissions = {
 
 const createService = (next: NextMissions | null) => {
   const config = mock<AppConfigService>();
-  const missions = mock<MissionProgressService>();
+  const missions = mock<MissionProgressReaderService>();
 
   config.get.mockReturnValue('https://triotmetki.ru');
   missions.next.mockResolvedValue(next);

@@ -1,6 +1,6 @@
 export { CIRCUIT_BREAKER, CIRCUIT_STATE_NAME } from './config/circuit-breaker.constants';
-export { jobSuccessKey, jobSuccessSchema } from './lib/job-success';
-export type { JobSuccessKeyInput } from './lib/job-success';
+export { jobSuccessKey, jobSuccessSchema } from './lib/job-success/job-success';
+export type { JobSuccessKeyInput } from './lib/job-success/job-success.types';
 export { MetricsModule } from './metrics.module';
 export type { CircuitStateName } from './metrics.types';
 export { TrackedWorkerHost } from './processors/tracked-worker-host';

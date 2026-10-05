@@ -1,10 +1,10 @@
 import type { Chassis, CrewMember, Engine, FuelTank, Gun, Radio, Shot, Turret, VehicleSpec } from '@otmetki/gamedata';
 
-import type { XmlNode, XmlValue } from '../../xml';
+import type { XmlNode, XmlValue } from '../../xml/xml.types';
 import type { ModuleContext, ModuleParseInput, ParseModulesInput, ParseShotsInput, ParseVehicleInput, SharedComponents } from './vehicle.types';
 
-import { nationId } from '../../ids';
-import { bool, entries, get, list, node, num, nums, parseXml, text, words } from '../../xml';
+import { nationId } from '../../ids/ids';
+import { bool, entries, get, list, node, num, nums, parseXml, text, words } from '../../xml/xml';
 import {
   armorExtras,
   parseArmor,
@@ -15,7 +15,7 @@ import {
   resolveModule,
   resolvePrimaryArmor,
   sharedRecord
-} from './vehicle-parts';
+} from './vehicle-parts/vehicle-parts';
 
 export const parseSharedComponents = (xml: string): Record<string, XmlNode> => sharedRecord(parseXml(xml));
 

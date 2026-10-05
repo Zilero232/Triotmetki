@@ -3,7 +3,7 @@ import * as Y from 'yjs';
 import type { TacticBoardData } from '../../tactics.types';
 import type { BoardIdOfInput, RestoreBoardInput, SeedBoardInput } from './board-document.types';
 
-import { BOARD_DOCUMENT } from '../../config';
+import { BOARD_DOCUMENT } from '../../config/tactics.constants';
 import { tacticBoardDataSchema } from '../../dto/tactics.schemas';
 
 export const readBoardData = (value: unknown): TacticBoardData => {

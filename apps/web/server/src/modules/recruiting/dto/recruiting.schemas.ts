@@ -2,7 +2,8 @@ import { accountIdSchema, clanIdSchema, isoDateTimeSchema, paginatedSchema, pagi
 import { z } from 'zod';
 
 import { playerStatsSchema, postStatusSchema, statRequirementsSchema } from '../../community-core';
-import { RECRUITING, RECRUITING_KIND_FROM_DB } from '../config';
+import { RECRUITING_KIND_FROM_DB } from '../config/recruiting-kind.constants';
+import { RECRUITING } from '../config/recruiting.constants';
 
 const recruitingKindSchema = z.enum(RECRUITING_KIND_FROM_DB);
 

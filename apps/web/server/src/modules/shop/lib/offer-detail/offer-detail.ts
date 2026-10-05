@@ -3,7 +3,8 @@ import { unique } from 'remeda';
 import type { OfferDetail, OfferDiscount, ParseOfferDetailInput } from './offer-detail.types';
 
 import { latestDeadline, textLines } from '../../../../lib/scrape';
-import { BONUS_CODE, OFFER_SCRAPE } from '../../config';
+import { BONUS_CODE } from '../../config/bonus-codes.constants';
+import { OFFER_SCRAPE } from '../../config/offers.constants';
 import { OFFER_DETAIL } from './offer-detail.constants';
 
 export const discountsOf = (lines: readonly string[]): OfferDiscount[] =>

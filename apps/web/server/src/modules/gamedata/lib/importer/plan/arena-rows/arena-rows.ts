@@ -3,8 +3,8 @@ import { isDefined, pickBy } from 'remeda';
 import type { ArenaRow, CreateImportPlanInput, LocalizeArenaInput, LocalizedArenaFields } from '../../importer.types';
 
 import { slugify } from '../../../../../../common/lib';
-import { translate } from '../../../localization';
-import { minimapUrl } from '../../../source';
+import { translate } from '../../../localization/localization';
+import { minimapUrl } from '../../../source/github/github';
 
 const localizeArena = ({ arena, messages = {} }: LocalizeArenaInput): LocalizedArenaFields =>
   pickBy(

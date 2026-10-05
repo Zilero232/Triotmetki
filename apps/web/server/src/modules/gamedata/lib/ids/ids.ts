@@ -4,7 +4,7 @@ import { NATIONS } from '@otmetki/gamedata';
 
 import type { CompactDescr, ItemType, MakeCompactDescrInput, ProvisionIdInput, TankIdInput } from './ids.types';
 
-import { oneOf } from '../guards';
+import { oneOf } from '../guards/guards';
 import { ITEM_TYPE, NATION_NONE } from './ids.constants';
 
 const ITEM_TYPES = Object.keys(ITEM_TYPE).filter((key): key is ItemType => key in ITEM_TYPE);

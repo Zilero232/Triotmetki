@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import type { ReplayTrack } from '../../replay-tracks';
+import type { ReplayTrack } from '../../replay-tracks/replay-tracks.types';
 
-import { HEATMAP } from '../../../config';
+import { HEATMAP } from '../../../config/heatmap.constants';
 import {
   accumulateTracks,
   arenaBounds,

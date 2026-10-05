@@ -7,15 +7,13 @@ import { UsageModule } from '../usage';
 import { AnalyticsCoreModule } from './analytics-core.module';
 import { AnalyticsController } from './analytics.controller';
 import { analyticsQueriesProvider } from './providers/analytics-queries.provider';
-import {
-  AnalyticsOverviewReaderService,
-  BattleReviewReaderService,
-  HonestRngReaderService,
-  MapAdvisorReaderService,
-  PlatoonChemistryReaderService,
-  PlaylistReaderService,
-  TankAnalyticsReaderService
-} from './services';
+import { AnalyticsOverviewReaderService } from './services/analytics-overview-reader.service';
+import { BattleReviewReaderService } from './services/battle-review-reader.service';
+import { HonestRngReaderService } from './services/honest-rng-reader.service';
+import { MapAdvisorReaderService } from './services/map-advisor-reader.service';
+import { PlatoonChemistryReaderService } from './services/platoon-chemistry-reader.service';
+import { PlaylistReaderService } from './services/playlist-reader.service';
+import { TankAnalyticsReaderService } from './services/tank-analytics-reader.service';
 
 @Module({
   imports: [AnalyticsCoreModule, BillingCoreModule, PlayersModule, MissionsModule, UsageModule],

@@ -32,15 +32,11 @@ a folder only when it outgrows one file. `lib/<concern>/` keeps its folder (logi
 `_tests/`), and a file that mixes a mapper with domain logic is still split.
 
 `index.ts` barrels exist only at boundaries other code imports through: a module root
-(`modules/<x>/index.ts`), a collector sub-module, `core/<x>/`, `src/lib/<client>/` and
-`common/lib/index.ts`. No barrel per segment and none per item; inside a module,
+(`modules/<x>/index.ts`), a collector or streamers sub-module, `core/<x>/`, `src/lib/<client>/`,
+`config/index.ts`, `common/<x>/index.ts` (`lib`, `exceptions`, `decorators`, `guards`, …) and
+`openapi/index.ts`. No barrel per segment and none per item; inside a module,
 relative imports point at the file. Import from a module's barrel across boundaries,
 never reach into its files.
-
-Code written before this rule still has the folder-per-item shape; the module packages
-of [the refactor plan](../../../../docs/specs/2026-10-05-server-refactor.md) convert it.
-New code follows this rule; an edit to an old folder leaves its shape alone unless the
-change converts the whole segment.
 
 Nest resolves providers from decorator metadata, so **no `import type` for
 injected classes** — the `otmetki/server` ESLint block turns

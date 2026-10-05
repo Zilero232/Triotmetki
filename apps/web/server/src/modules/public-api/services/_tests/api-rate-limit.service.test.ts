@@ -4,7 +4,7 @@ import RedisMock from 'ioredis-mock';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppTooManyRequestsException } from '../../../../common/exceptions';
-import { API_RATE_LIMIT } from '../../config';
+import { API_RATE_LIMIT } from '../../config/public-api.constants';
 import { ApiRateLimitService } from '../api-rate-limit.service';
 
 const NOW = new Date('2026-09-26T12:00:00Z');

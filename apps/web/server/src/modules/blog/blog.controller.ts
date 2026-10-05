@@ -6,7 +6,7 @@ import { ZodResponse } from 'nestjs-zod';
 import { BLOG_FEED } from './config/feed.constants';
 import { BLOG_IMAGES } from './config/image.constants';
 import { BlogArticleDto, BlogImageParamsDto, BlogPostPageDto, BlogPostsQueryDto, BlogSlugParamsDto, BlogTagsDto } from './dto/blog.dto';
-import { BlogImageService } from './services/blog-image.service';
+import { BlogImageWriterService } from './services/blog-image-writer.service';
 import { BlogReaderService } from './services/blog-reader.service';
 import { BlogRssReaderService } from './services/blog-rss-reader.service';
 
@@ -17,7 +17,7 @@ export class BlogController {
   constructor(
     private readonly posts: BlogReaderService,
     private readonly feed: BlogRssReaderService,
-    private readonly images: BlogImageService
+    private readonly images: BlogImageWriterService
   ) {}
 
   @Get('posts')

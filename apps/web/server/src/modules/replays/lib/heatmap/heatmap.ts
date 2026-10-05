@@ -1,7 +1,7 @@
 import { entries, groupBy, sum } from 'remeda';
 
 import type { VehicleType } from '../../../../../generated';
-import type { ReplayTrack } from '../replay-tracks';
+import type { ReplayTrack } from '../replay-tracks/replay-tracks.types';
 import type {
   AccumulateInput,
   HeatmapKeyInput,
@@ -12,7 +12,7 @@ import type {
   VehicleClassesInput
 } from './heatmap.types';
 
-import { HEATMAP } from '../../config';
+import { HEATMAP } from '../../config/heatmap.constants';
 import { arenaBoundsSchema, heatmapDataSchema } from './heatmap.schemas';
 
 export const fallbackBounds = (halfSize: number): MapBounds => ({ minX: -halfSize, maxX: halfSize, minZ: -halfSize, maxZ: halfSize });

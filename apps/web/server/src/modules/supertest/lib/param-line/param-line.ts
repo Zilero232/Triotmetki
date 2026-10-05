@@ -1,7 +1,7 @@
 import type { ParamLine, ToChangeInput, ValueCell } from './param-line.types';
 
-import { parsedUnit } from '../param-key';
-import { parseRussianNumber } from '../russian-number';
+import { parsedUnit } from '../param-key/param-key';
+import { parseRussianNumber } from '../russian-number/russian-number';
 import { PARAM_LINE_PATTERNS } from './param-line.constants';
 
 const cleanLabel = (label: string): string | null => {

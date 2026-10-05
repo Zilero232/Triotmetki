@@ -2,10 +2,10 @@ import type { DeviceTagFilter, Modifier } from '@otmetki/gamedata';
 
 import { MODIFIER_OPS } from '@otmetki/gamedata';
 
-import type { XmlValue } from '../xml';
+import type { XmlValue } from '../xml/xml.types';
 
-import { oneOf } from '../guards';
-import { entries, get, node, nodes, num, nums, text, words } from '../xml';
+import { oneOf } from '../guards/guards';
+import { entries, get, node, nodes, num, nums, text, words } from '../xml/xml';
 
 const isModifierOp = oneOf(MODIFIER_OPS);
 

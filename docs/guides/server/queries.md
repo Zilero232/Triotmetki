@@ -10,7 +10,7 @@ Part of the [style guide](../README.md). The rule digest is [.claude/rules/serve
 | Aggregates Prisma cannot express, `DISTINCT ON`, `LATERAL`, window functions, `percentile_cont`, CTEs, trigram search, `FOR UPDATE SKIP LOCKED`, conditional bulk upserts, Moscow-time bucketing | Kysely (`db.selectFrom(...)`)          |
 | Hypertables, compression, continuous aggregates                                                                           | `prisma/sql/timescale/*.sql` (schema)  |
 
-Prisma's raw API (`$queryRaw`, `$executeRaw`, `Prisma.sql` / `raw` / `join` / `empty`) is banned by ESLint outside [the allowlist](../../../apps/web/server/eslint.raw-sql-allowlist.mjs) of files not yet moved.
+Prisma's raw API (`$queryRaw`, `$executeRaw`, `Prisma.sql` / `raw` / `join` / `empty`) is banned by ESLint (`otmetki/server-raw-sql`; tests may still name it on their mocks).
 
 ## How Kysely is wired
 

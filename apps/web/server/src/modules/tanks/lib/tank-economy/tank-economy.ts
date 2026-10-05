@@ -5,7 +5,7 @@ import { groupBy, meanBy, sumBy } from 'remeda';
 
 import type { AccountEconomyInput, EconomyBattle } from './tank-economy.types';
 
-import { ACCOUNT_ECONOMY } from '../../config';
+import { ACCOUNT_ECONOMY } from '../../config/tank-economy.constants';
 
 export const battleNet = (battle: EconomyBattle): number | null =>
   battle.repairCost === null || battle.ammoCost === null || battle.consumablesCost === null

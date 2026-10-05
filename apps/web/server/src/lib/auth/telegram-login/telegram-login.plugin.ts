@@ -7,11 +7,11 @@ import { z } from 'zod';
 import type { SignInTelegramInput, TelegramLoginOptions } from './telegram-login.types';
 
 import { AUTH_PROVIDER } from '../auth.constants';
-import { integrationUnavailable } from '../integration-unavailable';
-import { placeholderEmail } from '../placeholder-email';
-import { verifyWebAppInitData } from './webapp-auth';
+import { integrationUnavailable } from '../integration-unavailable/integration-unavailable';
+import { placeholderEmail } from '../placeholder-email/placeholder-email';
+import { verifyWebAppInitData } from './webapp-auth/webapp-auth';
 import { WEBAPP_AUTH } from './webapp-auth/webapp-auth.constants';
-import { verifyWidgetPayload, widgetIdentity } from './widget-auth';
+import { verifyWidgetPayload, widgetIdentity } from './widget-auth/widget-auth';
 
 const signInTelegram = async ({ ctx, identity, store }: SignInTelegramInput) => {
   const current = await getSessionFromCtx(ctx).catch(() => null);

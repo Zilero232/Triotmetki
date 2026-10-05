@@ -1,17 +1,15 @@
 import type { LestaClientOptions } from './client.types';
 
-import {
-  createAccountMethods,
-  createAuthMethods,
-  createClanratingsMethods,
-  createClansMethods,
-  createEncyclopediaMethods,
-  createGlobalmapMethods,
-  createRatingsMethods,
-  createStrongholdMethods,
-  createTanksMethods,
-  createWgnMethods
-} from '../methods';
+import { createAccountMethods } from '../methods/account';
+import { createAuthMethods } from '../methods/auth';
+import { createClanratingsMethods } from '../methods/clanratings';
+import { createClansMethods } from '../methods/clans';
+import { createEncyclopediaMethods } from '../methods/encyclopedia';
+import { createGlobalmapMethods } from '../methods/globalmap';
+import { createRatingsMethods } from '../methods/ratings';
+import { createStrongholdMethods } from '../methods/stronghold';
+import { createTanksMethods } from '../methods/tanks';
+import { createWgnMethods } from '../methods/wgn';
 import { createRequester } from './requester';
 
 export const createLestaClient = (options: LestaClientOptions) => {

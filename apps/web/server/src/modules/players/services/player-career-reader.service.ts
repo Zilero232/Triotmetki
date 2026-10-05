@@ -6,17 +6,24 @@ import { entries, groupBy, sortBy } from 'remeda';
 
 import type { CareerSource } from '../../collector';
 import type { CareerModesInput, CareerRecordInput, CareerRecordsInput, StoredCareerLineInput } from '../players.types';
-import type { CareerRecordTimes } from '../selects';
+import type { CareerRecordTimes } from '../selects/players.selects';
 
 import { AppNotFoundException } from '../../../common/exceptions';
 import { errorMessage, toIso, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { ACCOUNT_MODE_SOURCES, careerSourceFromBlock, MODE_STATS_MODES, modeBlockOf } from '../../collector';
 import { VehicleCatalogService } from '../../reference';
-import { PLAYER_STATS } from '../config';
-import { achievedAt } from '../lib';
-import { careerRecordRefs, careerTotalsFromBlock, careerTotalsFromStored, toCareerModeLine, toCareerModeTank, toPlayerAssist } from '../mappers';
-import { CAREER_RECORD_TIMES_SELECT } from '../selects';
+import { PLAYER_STATS } from '../config/player-stats.constants';
+import { achievedAt } from '../lib/record-times/record-times';
+import {
+  careerRecordRefs,
+  careerTotalsFromBlock,
+  careerTotalsFromStored,
+  toCareerModeLine,
+  toCareerModeTank,
+  toPlayerAssist
+} from '../mappers/career.mappers';
+import { CAREER_RECORD_TIMES_SELECT } from '../selects/players.selects';
 import { PlayerResolverService } from './player-resolver.service';
 
 @Injectable()

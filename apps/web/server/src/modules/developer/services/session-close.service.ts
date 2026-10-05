@@ -7,7 +7,7 @@ import type { SessionEventsSink } from '../developer.types';
 import { percentOf, ratio, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { WEBHOOK_EMITTER } from '../../webhooks';
-import { SESSION_CLOSE } from '../config';
+import { SESSION_CLOSE } from '../config/session-close.constants';
 import { SESSION_EVENTS } from '../config/session-events.constants';
 import { isSessionEnded } from '../lib/session-end/session-end';
 

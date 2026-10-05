@@ -1,3 +1,4 @@
+import { tz } from '@date-fns/tz';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
 import { Queue } from 'bullmq';
@@ -6,6 +7,7 @@ import { format, subDays } from 'date-fns';
 import type { Digest, DigestPayload } from '../config/notifications-queue.types';
 import type { DigestOfInput } from '../notifications.types';
 
+import { TIME } from '../../../config';
 import { PrismaService } from '../../../core';
 import { UserAccountsReaderService } from '../../accounts';
 import { NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE } from '../config/notifications-queue.constants';
@@ -21,7 +23,7 @@ export class WeeklyDigestService {
 
   async run(now = new Date()): Promise<number> {
     const since = subDays(now, WEEKLY_DIGEST.lookbackDays);
-    const weekKey = format(now, "RRRR-'W'II");
+    const weekKey = format(now, WEEKLY_DIGEST.weekKeyFormat, { in: tz(TIME.zone) });
     let cursor: string | undefined;
     let queued = 0;
 

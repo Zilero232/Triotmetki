@@ -1,2 +1,2 @@
-export { MODERATION } from './config';
+export { MODERATION } from './config/moderation.constants';
 export { ModerationModule } from './moderation.module';

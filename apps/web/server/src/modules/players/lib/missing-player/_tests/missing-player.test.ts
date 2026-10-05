@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { PLAYER_LOOKUP } from '../../../config';
+import { PLAYER_LOOKUP } from '../../../config/player-lookup.constants';
 import { missingPlayerKey } from '../missing-player';
 
 describe('missingPlayerKey', () => {

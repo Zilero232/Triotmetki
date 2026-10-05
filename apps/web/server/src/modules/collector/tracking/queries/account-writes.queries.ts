@@ -1,3 +1,6 @@
+import { sql } from 'kysely';
+import { fromKeys } from 'remeda';
+
 import type {
   AccountCaptureInput,
   ModeStatsConflict,
@@ -12,6 +15,8 @@ import { valuesTable } from '../../../../core';
 import { SNAPSHOT_COLUMNS } from '../config/snapshot-columns.constants';
 import { MODE_STATS_SQL } from '../lib/mode-blocks/mode-blocks.constants';
 
+const excludedStats = () => fromKeys(SNAPSHOT_COLUMNS.cumulativeStats, (column) => sql.ref<number>(`excluded.${column}`));
+
 export const refreshLatestTankSnapshots = async ({ db, accountId, capturedAt }: AccountCaptureInput): Promise<void> => {
   await db
     .insertInto('tank_snapshot_latest')
@@ -24,21 +29,7 @@ export const refreshLatestTankSnapshots = async ({ db, accountId, capturedAt }: 
         .columns(['account_id', 'tank_id', 'mode'])
         .doUpdateSet((eb) => ({
           captured_at: eb.ref('excluded.captured_at'),
-          battles: eb.ref('excluded.battles'),
-          wins: eb.ref('excluded.wins'),
-          losses: eb.ref('excluded.losses'),
-          draws: eb.ref('excluded.draws'),
-          damage_dealt: eb.ref('excluded.damage_dealt'),
-          damage_received: eb.ref('excluded.damage_received'),
-          frags: eb.ref('excluded.frags'),
-          spotted: eb.ref('excluded.spotted'),
-          xp: eb.ref('excluded.xp'),
-          survived_battles: eb.ref('excluded.survived_battles'),
-          hits: eb.ref('excluded.hits'),
-          shots: eb.ref('excluded.shots'),
-          capture_points: eb.ref('excluded.capture_points'),
-          dropped_capture_points: eb.ref('excluded.dropped_capture_points'),
-          avg_damage_blocked: eb.ref('excluded.avg_damage_blocked'),
+          ...excludedStats(),
           mark_of_mastery: eb.ref('excluded.mark_of_mastery'),
           marks_on_gun: eb.ref('excluded.marks_on_gun'),
           max_frags: eb.ref('excluded.max_frags'),
@@ -116,21 +107,7 @@ const recordDate = ({ eb, record }: RecordDateInput) =>
     .end();
 
 const modeStatsUpdate = (eb: ModeStatsConflict) => ({
-  battles: eb.ref('excluded.battles'),
-  wins: eb.ref('excluded.wins'),
-  losses: eb.ref('excluded.losses'),
-  draws: eb.ref('excluded.draws'),
-  damage_dealt: eb.ref('excluded.damage_dealt'),
-  damage_received: eb.ref('excluded.damage_received'),
-  frags: eb.ref('excluded.frags'),
-  spotted: eb.ref('excluded.spotted'),
-  xp: eb.ref('excluded.xp'),
-  survived_battles: eb.ref('excluded.survived_battles'),
-  hits: eb.ref('excluded.hits'),
-  shots: eb.ref('excluded.shots'),
-  capture_points: eb.ref('excluded.capture_points'),
-  dropped_capture_points: eb.ref('excluded.dropped_capture_points'),
-  avg_damage_blocked: eb.ref('excluded.avg_damage_blocked'),
+  ...excludedStats(),
   avg_damage_assisted: eb.ref('excluded.avg_damage_assisted'),
   max_damage_at: recordDate({ eb, record: 'max_damage' }),
   max_xp_at: recordDate({ eb, record: 'max_xp' }),

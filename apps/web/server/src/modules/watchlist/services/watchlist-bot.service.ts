@@ -9,17 +9,17 @@ import type { WatchCommandAddInput } from '../watchlist.types';
 
 import { AppForbiddenException } from '../../../common/exceptions';
 import { AppConfigService } from '../../../config';
-import { BotStatsService } from '../../bot-commands';
-import { openButton, siteUrl, TelegramCommandRegistry } from '../../telegram';
-import { WATCH_COMMAND } from '../config';
-import { WatchlistService } from './watchlist.service';
+import { BotStatsReaderService, siteUrl } from '../../bot-commands';
+import { openButton, TelegramCommandRegistry } from '../../telegram';
+import { WATCH_COMMAND } from '../config/watch-command.constants';
+import { WatchlistWriterService } from './watchlist-writer.service';
 
 @Injectable()
 export class WatchlistBotService implements OnModuleInit {
   constructor(
     private readonly config: AppConfigService,
-    private readonly stats: BotStatsService,
-    private readonly watchlist: WatchlistService,
+    private readonly stats: BotStatsReaderService,
+    private readonly watchlist: WatchlistWriterService,
     private readonly registry: TelegramCommandRegistry
   ) {}
 

@@ -6,7 +6,7 @@ import { match } from 'ts-pattern';
 
 import type { NotificationSettings } from '../../../../generated';
 import type { DeliverPayload, DigestPayload } from '../config/notifications-queue.types';
-import type { ChannelAvailability, RoutingSettings } from '../lib/channel-routing';
+import type { ChannelAvailability, RoutingSettings } from '../lib/channel-routing/channel-routing.types';
 import type { ChannelSendInput, DeliverJob, DeliverToInput } from '../notifications.types';
 
 import { AppConfigService } from '../../../config';
@@ -15,9 +15,9 @@ import { TelegramSenderService } from '../../telegram';
 import { NOTIFICATION_DEFAULTS } from '../config/delivery.constants';
 import { NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE } from '../config/notifications-queue.constants';
 import { WEEKLY_DIGEST } from '../config/watchers.constants';
-import { routeDigest, routeEvent, splitQuiet } from '../lib/channel-routing';
-import { renderDigest, renderNotification, resolveNotificationLocale } from '../lib/notification-copy';
-import { quietDelayMs } from '../lib/quiet-hours';
+import { routeDigest, routeEvent, splitQuiet } from '../lib/channel-routing/channel-routing';
+import { renderDigest, renderNotification, resolveNotificationLocale } from '../lib/notification-copy/notification-copy';
+import { quietDelayMs } from '../lib/quiet-hours/quiet-hours';
 import { EmailService } from './email.service';
 import { NotificationLedgerService } from './notification-ledger.service';
 import { WebPushService } from './web-push.service';
@@ -117,7 +117,7 @@ export class DeliveryService {
 
       try {
         await match(channel)
-          .with('email', () => this.email.sendDigest({ to: user.email, locale, rendered, digest }))
+          .with('email', () => this.email.sendNotification({ to: user.email, locale, rendered }))
           .with('telegram', () => (telegramId === null ? undefined : this.telegram.sendNotification({ telegramId, locale, ...rendered })))
           .otherwise(() => undefined);
 

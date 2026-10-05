@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { CareerRecordTimes } from '../../../selects';
+import type { CareerRecordTimes } from '../../../selects/players.selects';
 
 import { achievedAt } from '../record-times';
 

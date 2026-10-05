@@ -1,7 +1,7 @@
 import { addDays, subDays } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
-import { REPLAY_OVERFLOW } from '../../../config';
+import { REPLAY_OVERFLOW } from '../../../config/overflow.constants';
 import { overflowPlan, overflowReplayIds } from '../replay-overflow';
 
 const accessEndedAt = new Date('2026-03-01T00:00:00Z');

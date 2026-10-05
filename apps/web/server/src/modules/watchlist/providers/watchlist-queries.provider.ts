@@ -1,4 +1,4 @@
-import { WATCHLIST_QUERIES } from '../config';
+import { WATCHLIST_QUERIES } from '../config/queries.constants';
 import { marksGained, sessionTotals } from '../queries/watchlist-activity.queries';
 
 export const watchlistQueries = { marksGained, sessionTotals };

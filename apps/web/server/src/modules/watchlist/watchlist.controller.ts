@@ -10,13 +10,13 @@ import {
   WatchlistPlayerParamsDto,
   WatchlistQueryDto,
   WatchlistSettingsDto
-} from './dto';
-import { WatchlistService } from './services';
+} from './dto/watchlist.dto';
+import { WatchlistWriterService } from './services/watchlist-writer.service';
 
 @ApiTags('watchlist')
 @Controller('me/watchlist')
 export class WatchlistController {
-  constructor(private readonly watchlist: WatchlistService) {}
+  constructor(private readonly watchlist: WatchlistWriterService) {}
 
   @Get()
   @ZodResponse({ type: WatchlistDto })

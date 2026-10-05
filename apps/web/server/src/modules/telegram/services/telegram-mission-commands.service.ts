@@ -3,15 +3,15 @@ import { Injectable } from '@nestjs/common';
 import type { BotContext } from '../telegram.types';
 
 import { AppConfigService } from '../../../config';
-import { SITE_LINKS } from '../../bot-commands';
-import { MissionProgressService } from '../../missions';
-import { openButton, siteUrl } from '../lib';
+import { SITE_LINKS, siteUrl } from '../../bot-commands';
+import { MissionProgressReaderService } from '../../missions';
+import { openButton } from '../lib/keyboard/keyboard';
 
 @Injectable()
 export class TelegramMissionCommandsService {
   constructor(
     private readonly config: AppConfigService,
-    private readonly missions: MissionProgressService
+    private readonly missions: MissionProgressReaderService
   ) {}
 
   async lbz(ctx: BotContext): Promise<void> {

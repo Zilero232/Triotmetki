@@ -5,10 +5,13 @@ import { gzipSync } from 'node:zlib';
 import type { CollectArmorModelsInput, CollectedArmorModels, VehicleOutcome } from './collect.types';
 
 import { errorMessage } from '../../../../../common/lib';
-import { parseCollision, parseModelIndex } from '../../parsers/collision';
-import { assertMtClient, GAME_DATA_SOURCES, MODEL_PATHS, MODEL_SOURCES, MT_CLIENT } from '../../source';
-import { joinArmorModel } from '../join';
-import { ARMOR_PACK, packArmorGeometry } from '../pack';
+import { parseCollision, parseModelIndex } from '../../parsers/collision/collision';
+import { assertMtClient } from '../../source/mt-client/mt-client';
+import { MT_CLIENT } from '../../source/mt-client/mt-client.constants';
+import { GAME_DATA_SOURCES, MODEL_PATHS, MODEL_SOURCES } from '../../source/source.constants';
+import { joinArmorModel } from '../join/join';
+import { packArmorGeometry } from '../pack/pack';
+import { ARMOR_PACK } from '../pack/pack.constants';
 import { ArmorVersionMismatchError } from './collect.errors';
 
 export const collectArmorModels = async ({ data, reader, onProgress }: CollectArmorModelsInput): Promise<CollectedArmorModels> => {

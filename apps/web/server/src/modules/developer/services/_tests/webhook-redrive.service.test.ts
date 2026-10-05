@@ -7,7 +7,7 @@ import type { WebhookDelivery } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { WebhookEmitterService } from '../webhook-emitter.service';
 
-import { WEBHOOK_DELIVERY } from '../../config';
+import { WEBHOOK_DELIVERY } from '../../config/webhook-delivery.constants';
 import { WebhookRedriveService } from '../webhook-redrive.service';
 
 const createService = (state: 'unknown' | JobState | null) => {

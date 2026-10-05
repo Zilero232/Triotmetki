@@ -1,6 +1,6 @@
-import type { Vector3 } from '../binary';
-import type { ReplayInput } from '../replay';
-import type { ReplayGame, ReplaySummary } from '../summary';
+import type { Vector3 } from '../binary/byte-reader.types';
+import type { ReplayInput } from '../replay/replay.types';
+import type { ReplayGame, ReplaySummary } from '../summary/summary.types';
 
 export type VehicleMethodIds = {
   onHealthChanged: number;

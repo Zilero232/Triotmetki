@@ -3,8 +3,8 @@ import type { ExpressionBuilder, OnConflictDatabase, OnConflictTables } from 'ky
 import type { Prisma } from '../../../../../generated';
 import type { DB } from '../../../../../generated/kysely/database';
 import type { Database } from '../../../../core';
-import type { TankMarks } from '../lib/marks-gain';
-import type { AccountModeRow, TankModeRow } from '../lib/mode-stats';
+import type { TankMarks } from '../lib/marks-gain/marks-gain.types';
+import type { AccountModeRow, TankModeRow } from '../lib/mode-stats/mode-stats.types';
 import type { ACCOUNT_WRITE_QUERIES } from './account-writes.queries';
 
 export type PlayerTankUpsertRow = Pick<

@@ -5,8 +5,8 @@ import { createEvents } from 'ics';
 
 import type { EventsIcsInput } from './event-ics.types';
 
-import { EVENT_ICS } from '../../config';
-import { foldIcsOctets } from '../ics-fold';
+import { EVENT_ICS } from '../../config/ics.constants';
+import { foldIcsOctets } from '../ics-fold/ics-fold';
 
 const toIcsEvent = (event: GameEvent): EventAttributes => {
   const start = new Date(event.startsAt).getTime();

@@ -4,7 +4,7 @@ import { HealthIndicatorService } from '@nestjs/terminus';
 import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
-import { HEALTH } from '../../config';
+import { HEALTH } from '../../config/health.constants';
 import { RedisIndicator } from '../redis.indicator';
 
 const createIndicator = () => {

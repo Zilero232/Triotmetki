@@ -5,14 +5,14 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId } from '../../common/decorators';
 import { IdParamsDto } from '../community-core';
-import { RECRUITING_KIND_TO_DB } from './config';
-import { CreateRecruitingDto, RecruitingPageDto, RecruitingPostDto, RecruitingQueryDto } from './dto';
-import { RecruitingService } from './services';
+import { RECRUITING_KIND_TO_DB } from './config/recruiting-kind.constants';
+import { CreateRecruitingDto, RecruitingPageDto, RecruitingPostDto, RecruitingQueryDto } from './dto/recruiting.dto';
+import { RecruitingWriterService } from './services/recruiting-writer.service';
 
 @ApiTags('community')
 @Controller('community/recruiting')
 export class RecruitingController {
-  constructor(private readonly recruiting: RecruitingService) {}
+  constructor(private readonly recruiting: RecruitingWriterService) {}
 
   @AllowAnonymous()
   @Get()

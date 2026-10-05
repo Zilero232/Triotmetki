@@ -5,7 +5,7 @@ import { subMinutes } from 'date-fns';
 
 import { PrismaService } from '../../../core';
 import { QUEUE } from '../../collector';
-import { WEBHOOK_DELIVERY } from '../config';
+import { WEBHOOK_DELIVERY } from '../config/webhook-delivery.constants';
 import { WebhookEmitterService } from './webhook-emitter.service';
 
 @Injectable()

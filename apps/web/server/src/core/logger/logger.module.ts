@@ -4,7 +4,7 @@ import { Module } from '@nestjs/common';
 import { createLogger } from '@otmetki/logger';
 import { LoggerModule } from 'nestjs-pino';
 
-import { isQuietRequest, requestId, serializeRequest, serializeResponse } from './lib';
+import { isQuietRequest, requestId, serializeRequest, serializeResponse } from './lib/request-log/request-log';
 import { LOGGER } from './logger.constants';
 
 @Module({})

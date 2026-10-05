@@ -1,7 +1,7 @@
 import type { BonusCodeStatus } from '../../../../../generated';
 import type { BonusStatusInput, ReportedStatus, ReportedStatusInput, ReportTalliesInput, ReportTally } from './bonus-status.types';
 
-import { BONUS_CODE } from '../../config';
+import { BONUS_CODE } from '../../config/bonus-codes.constants';
 
 export const bonusCodeStatus = ({ working, expired, expiresAt, now }: BonusStatusInput): BonusCodeStatus => {
   if (expiresAt && expiresAt.getTime() <= now.getTime()) {

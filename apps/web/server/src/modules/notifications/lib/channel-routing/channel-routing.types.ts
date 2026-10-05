@@ -1,5 +1,5 @@
 import type { NotificationChannel, NotificationEvent } from '../../../../../generated';
-import type { QuietHours } from '../quiet-hours';
+import type { QuietHours } from '../quiet-hours/quiet-hours.types';
 
 export type RoutingSettings = {
   channels: readonly NotificationChannel[];

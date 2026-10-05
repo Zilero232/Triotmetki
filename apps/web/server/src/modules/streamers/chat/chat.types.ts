@@ -1,8 +1,8 @@
 import type { ChatClient } from '@twurple/chat';
 
 import type { StreamerProvider } from '../../../../generated';
-import type { ChatCommand } from './lib/chat-command';
-import type { ChatMessage, ChatValues } from './lib/chat-copy';
+import type { ChatCommand } from './lib/chat-command/chat-command.types';
+import type { ChatMessage, ChatValues } from './lib/chat-copy/chat-copy.types';
 
 export type ChallengeAnnouncement = {
   streamerUserId: string;

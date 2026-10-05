@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { postWebhook } from '../lib';
+import { postWebhook } from '../lib/webhook-post/webhook-post';
 
 @Injectable()
 export class WebhookPosterService {

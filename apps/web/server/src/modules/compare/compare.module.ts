@@ -2,11 +2,12 @@ import { Module } from '@nestjs/common';
 
 import { PlayersModule } from '../players';
 import { CompareController } from './compare.controller';
-import { PlayerCompareService, TankCompareService } from './services';
+import { PlayerCompareReaderService } from './services/player-compare-reader.service';
+import { TankCompareReaderService } from './services/tank-compare-reader.service';
 
 @Module({
   imports: [PlayersModule],
   controllers: [CompareController],
-  providers: [PlayerCompareService, TankCompareService]
+  providers: [PlayerCompareReaderService, TankCompareReaderService]
 })
 export class CompareModule {}

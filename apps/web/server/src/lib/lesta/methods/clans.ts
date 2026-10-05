@@ -1,12 +1,13 @@
 import { z } from 'zod';
 
 import type { FieldList, LestaRequester, Selected } from '../client/client.types';
-import type { ClanAccountInfo, ClanInfo, ClanListItem, ClanMemberHistoryEntry } from '../schemas';
+import type { ClanAccountInfo, ClanInfo, ClanListItem, ClanMemberHistoryEntry } from '../schemas/clans/clans.types';
 import type { AccountIdsInput, ClanIdsInput, ClanListInput } from './methods.types';
 
-import { callParams, fieldAwareSchema } from '../client/params';
-import { clanAccountInfoSchema, clanInfoSchema, clanListItemSchema, clanMemberHistoryEntrySchema, idMapOf } from '../schemas';
-import { batchedMap, genericParams, passthrough } from './call-shapes';
+import { callParams, fieldAwareSchema } from '../client/params/params';
+import { clanAccountInfoSchema, clanInfoSchema, clanListItemSchema, clanMemberHistoryEntrySchema } from '../schemas/clans/clans.schemas';
+import { idMapOf } from '../schemas/common/common.schemas';
+import { batchedMap, genericParams, passthrough } from './call-shapes/call-shapes';
 
 export const createClansMethods = (requester: LestaRequester) => {
   const list = async ({ search, limit, pageNo, ...input }: ClanListInput = {}): Promise<ClanListItem[]> => {

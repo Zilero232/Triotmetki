@@ -7,7 +7,7 @@ import { Injectable } from '@nestjs/common';
 import { AppForbiddenException } from '../../../common/exceptions';
 import { AppConfigService, isProduction } from '../../../config';
 import { LOOPBACK_CIDRS, YOOKASSA_CIDRS } from '../config/webhook.constants';
-import { buildAllowList, isAllowedIp } from '../lib/webhook-ip';
+import { buildAllowList, isAllowedIp } from '../lib/webhook-ip/webhook-ip';
 
 @Injectable()
 export class WebhookIpGuard implements CanActivate {

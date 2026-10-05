@@ -10,9 +10,10 @@ import type {
   PositionPayloadInput
 } from './replay-builder.types';
 
-import { REPLAY_CONTAINER } from '../container';
-import { PACKET_TYPE } from '../packets';
-import { REPLAY_CIPHER, replayCipherKey } from '../stream';
+import { REPLAY_CONTAINER } from '../container/container.constants';
+import { PACKET_TYPE } from '../packets/packets.constants';
+import { replayCipherKey } from '../stream/stream';
+import { REPLAY_CIPHER } from '../stream/stream.constants';
 
 const encoder = new TextEncoder();
 const cipher = new Blowfish(replayCipherKey(), Blowfish.MODE.ECB, Blowfish.PADDING.PKCS5);

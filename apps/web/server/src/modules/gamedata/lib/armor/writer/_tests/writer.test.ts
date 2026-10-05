@@ -2,10 +2,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { PrismaClient, VehicleArmorModel } from '../../../../../../../generated';
-import type { CollectedArmorModels } from '../../collect';
-import type { ArmorStorage } from '../../storage';
+import type { CollectedArmorModels } from '../../collect/collect.types';
+import type { ArmorStorage } from '../../storage/storage.types';
 
-import { armorStorageKey } from '../../pack';
+import { armorStorageKey } from '../../pack/pack';
 import { purgeArmorModels, writeArmorModels } from '../writer';
 
 const MODULES = { hull: { piece: 'Hull', plates: [] }, chassis: [], turrets: [] };

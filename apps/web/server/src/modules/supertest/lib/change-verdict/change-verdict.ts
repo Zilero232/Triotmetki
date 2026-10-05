@@ -1,6 +1,6 @@
 import type { ChangeBaselineInput, ChangeVerdict, ChangeVerdictInput } from './change-verdict.types';
 
-import { paramMeta } from '../param-key';
+import { paramMeta } from '../param-key/param-key';
 import { CHANGE_VERDICT } from './change-verdict.constants';
 
 export const changeBaseline = ({ from, live }: ChangeBaselineInput): number | null => from ?? live;

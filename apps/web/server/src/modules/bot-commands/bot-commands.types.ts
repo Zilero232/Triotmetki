@@ -1,6 +1,6 @@
 import type { MoeThresholdValues } from '@otmetki/schemas';
 
-import type { BOT_LOCALE, SHARED_COMMANDS } from './config';
+import type { BOT_LOCALE, SHARED_COMMANDS } from './config/bot-commands.constants';
 
 export type BotLocale = (typeof BOT_LOCALE.locales)[number];
 

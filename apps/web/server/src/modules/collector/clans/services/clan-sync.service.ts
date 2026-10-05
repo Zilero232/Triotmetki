@@ -9,7 +9,7 @@ import { LESTA_CLIENTS, PrismaService } from '../../../../core';
 import { WEBHOOK_EMITTER } from '../../../webhooks';
 import { PurgeGuardService } from '../../purge';
 import { clanInfoFields } from '../lib/clan-info/clan-info';
-import { clanMemberEvents, diffClanRoster, rosterChanges } from '../lib/clan-roster';
+import { clanMemberEvents, diffClanRoster, rosterChanges } from '../lib/clan-roster/clan-roster';
 import { toCurrentMember, toPopulationPlayer } from '../mappers/clan-member.mappers';
 import { ClanSnapshotSyncService } from './clan-snapshot-sync.service';
 

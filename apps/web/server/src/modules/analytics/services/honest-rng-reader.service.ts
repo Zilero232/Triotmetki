@@ -7,8 +7,10 @@ import type { AnalyticsInput } from '../analytics.types';
 
 import { percentOf } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { ANALYTICS_WINDOW } from '../config';
-import { periodStart, readStoredShots, summarizeRolls } from '../lib';
+import { ANALYTICS_WINDOW } from '../config/window.constants';
+import { summarizeRolls } from '../lib/rolls/rolls';
+import { readStoredShots } from '../lib/stored-shots/stored-shots';
+import { periodStart } from '../lib/window/window';
 import { OwnAccountReaderService } from './own-account-reader.service';
 
 @Injectable()

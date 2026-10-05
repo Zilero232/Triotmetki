@@ -1,8 +1,8 @@
 import type { LestaRequester } from '../client/client.types';
 import type { ClanRatingClansInput } from './methods.types';
 
-import { looseMapSchema } from '../schemas';
-import { batchedMap, genericParams, passthrough } from './call-shapes';
+import { looseMapSchema } from '../schemas/common/common.schemas';
+import { batchedMap, genericParams, passthrough } from './call-shapes/call-shapes';
 
 export const createClanratingsMethods = (requester: LestaRequester) => {
   const clans = async ({ clanIds, date, ...input }: ClanRatingClansInput): Promise<Record<string, unknown>> =>

@@ -10,22 +10,22 @@ import {
   AdminClaimListDto,
   EditorialStreamerDto,
   ResolveClaimDto,
-  StreamerClaimService,
+  StreamerClaimWriterService,
   StreamerInvitationListDto,
-  StreamerInvitationService,
-  StreamerModerationService
+  StreamerInvitationWriterService,
+  StreamerModerationWriterService
 } from './profiles';
-import { SaveStreamerSettingsDto, StreamerSettingsService } from './settings';
+import { SaveStreamerSettingsDto, StreamerSettingsWriterService } from './settings';
 
 @ApiTags('streamers')
 @Roles([...MODERATION.roles])
 @Controller('admin/streamers')
 export class AdminStreamersController {
   constructor(
-    private readonly claims: StreamerClaimService,
-    private readonly invites: StreamerInvitationService,
-    private readonly moderation: StreamerModerationService,
-    private readonly settings: StreamerSettingsService
+    private readonly claims: StreamerClaimWriterService,
+    private readonly invites: StreamerInvitationWriterService,
+    private readonly moderation: StreamerModerationWriterService,
+    private readonly settings: StreamerSettingsWriterService
   ) {}
 
   @Post()

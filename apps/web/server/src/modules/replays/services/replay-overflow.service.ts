@@ -6,8 +6,8 @@ import { isoDay } from '../../../common/lib';
 import { ObjectStorage, PrismaService } from '../../../core';
 import { accessEndsAt, isEntitled, PLUS_SUBSCRIPTION } from '../../billing';
 import { NotificationService } from '../../notifications';
-import { REPLAY_OVERFLOW } from '../config';
-import { overflowPlan, overflowReplayIds } from '../lib';
+import { REPLAY_OVERFLOW } from '../config/overflow.constants';
+import { overflowPlan, overflowReplayIds } from '../lib/replay-overflow/replay-overflow';
 
 @Injectable()
 export class ReplayOverflowService {

@@ -2,7 +2,7 @@ import { fromUnixTime } from 'date-fns';
 
 import type { Prisma } from '../../../../../generated';
 import type { ClanMember } from '../../../../lib/lesta';
-import type { CurrentMember } from '../lib/clan-roster';
+import type { CurrentMember } from '../lib/clan-roster/clan-roster.types';
 import type { ToClanHistoryRecordInput, ToPopulationPlayerInput } from './clan-member.types';
 
 import { clanRoleToDb } from '../../../../common/lib';

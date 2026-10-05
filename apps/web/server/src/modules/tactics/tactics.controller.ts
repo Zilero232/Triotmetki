@@ -5,13 +5,13 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId, OptionalUserId } from '../../common/decorators';
 import { IdParamsDto } from '../community-core';
-import { BoardTokenQueryDto, CreateTacticBoardDto, TacticBoardDto, TacticBoardListDto, UpdateTacticBoardDto } from './dto';
-import { TacticBoardService } from './services';
+import { BoardTokenQueryDto, CreateTacticBoardDto, TacticBoardDto, TacticBoardListDto, UpdateTacticBoardDto } from './dto/tactics.dto';
+import { TacticBoardWriterService } from './services/tactic-board-writer.service';
 
 @ApiTags('tactics')
 @Controller('tactics/boards')
 export class TacticsController {
-  constructor(private readonly boards: TacticBoardService) {}
+  constructor(private readonly boards: TacticBoardWriterService) {}
 
   @Get()
   @ZodResponse({ type: TacticBoardListDto })

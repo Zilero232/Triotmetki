@@ -2,7 +2,7 @@ import ipaddr from 'ipaddr.js';
 
 import type { ResolvesPubliclyInput } from './webhook-url.types';
 
-import { WEBHOOK_URL } from '../../config';
+import { WEBHOOK_URL } from '../../config/webhook-delivery.constants';
 
 const hostOf = (url: string): string => new URL(url).hostname.replace(/^\[|\]$/g, '');
 

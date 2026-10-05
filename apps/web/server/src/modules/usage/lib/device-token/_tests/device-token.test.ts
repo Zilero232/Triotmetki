@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { USAGE_DEVICE } from '../../../config';
+import { USAGE_DEVICE } from '../../../config/usage-device.constants';
 import { hashIp, networkOf, readDeviceToken, signDeviceToken } from '../device-token';
 
 const SECRET = 'test-secret';

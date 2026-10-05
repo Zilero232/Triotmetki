@@ -6,7 +6,7 @@ import type { AccountTankInput, BuildOverlayDataInput, OverlayData } from '../ov
 import { percentOf, readRecord, toNumber } from '../../../../common/lib';
 import { PrismaService } from '../../../../core';
 import { VehicleCatalogService } from '../../../reference';
-import { winStreak } from '../lib/overlay-data';
+import { winStreak } from '../lib/overlay-data/overlay-data';
 
 @Injectable()
 export class OverlayStatsReaderService {

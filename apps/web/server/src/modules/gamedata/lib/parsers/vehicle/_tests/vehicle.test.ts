@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
 import { loadIs, readFixture, VEHICLE_FIXTURES } from '../../../_tests/fixtures';
-import { makeCompactDescr, nationId } from '../../../ids';
-import { get, num, parseXml } from '../../../xml';
-import { parseShells } from '../shells';
-import { parseCollisionPiece, parseSpacedArmor } from '../vehicle-parts';
+import { makeCompactDescr, nationId } from '../../../ids/ids';
+import { get, num, parseXml } from '../../../xml/xml';
+import { parseShells } from '../shells/shells';
+import { parseCollisionPiece, parseSpacedArmor } from '../vehicle-parts/vehicle-parts';
 
 const vehicleXml = parseXml(readFixture(VEHICLE_FIXTURES.vehicle));
 const sharedGuns = parseXml(readFixture(VEHICLE_FIXTURES.components.guns));

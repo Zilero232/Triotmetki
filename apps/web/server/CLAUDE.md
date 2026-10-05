@@ -17,7 +17,7 @@ Guidance for the server app. Extends the root [../../../CLAUDE.md](../../../CLAU
 | Schema, discriminator tables, retention, locks, `db:push`           | [docs/guides/server/data.md](../../../docs/guides/server/data.md)                             |
 | The collector: queues, lanes, schedules, polling, deletion requests | [docs/guides/server/collector.md](../../../docs/guides/server/collector.md)                   |
 | Editing rules (loaded automatically)                                | [.claude/rules/server/](../../../.claude/rules/server/)                                       |
-| The refactor in progress                                            | [docs/specs/2026-10-05-server-refactor.md](../../../docs/specs/2026-10-05-server-refactor.md) |
+| The 2026-10 refactor plan                                           | [docs/specs/2026-10-05-server-refactor.md](../../../docs/specs/2026-10-05-server-refactor.md) |
 
 ## Layout
 
@@ -37,7 +37,7 @@ generated/       # Prisma client and Kysely types (gitignored)
 
 ## The few rules that bite
 
-- **Queries**: Prisma Client for CRUD, Kysely (`this.prisma.$kysely`, `tx.$kysely`) for everything else; no new `$queryRaw` / `Prisma.sql` (ESLint enforces it outside [eslint.raw-sql-allowlist.mjs](eslint.raw-sql-allowlist.mjs)). Kysely results are plain numbers; Prisma's `BigInt` columns stay `bigint`.
+- **Queries**: Prisma Client for CRUD, Kysely (`this.prisma.$kysely`, `tx.$kysely`) for everything else; no `$queryRaw` / `Prisma.sql` (the `otmetki/server-raw-sql` ESLint block bans them). Kysely results are plain numbers; Prisma's `BigInt` columns stay `bigint`.
 - **Structure**: one file per topic inside a module segment, barrels only at module boundaries; service names end in `-reader`, `-writer`, `-sync` or `-aggregate`.
 - **Lesta** only through `core/lesta`; plain HTTP through `HttpClientService` / `getJson({ url, schema })`.
 - **Retention** is a Lesta term: every table that grows with time gets a rule in the same change ([data.md](../../../docs/guides/server/data.md#retention)).

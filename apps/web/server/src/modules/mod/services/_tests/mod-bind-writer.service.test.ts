@@ -13,8 +13,8 @@ import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { USER_LESTA_ACCOUNT_ORDER, UserAccountsReaderService } from '../../../accounts';
 import { BIND_CODE } from '../../config/bind-code.constants';
 import { MOD_DEVICE, MOD_DEVICE_LIMITS } from '../../config/device.constants';
-import { bindCodePattern } from '../../lib/contract';
-import { deviceSecret, hashSecret } from '../../lib/device-secret';
+import { bindCodePattern } from '../../lib/contract/contract.schemas';
+import { deviceSecret, hashSecret } from '../../lib/device-secret/device-secret';
 import { ModBindWriterService } from '../mod-bind-writer.service';
 
 const NOW = new Date('2026-05-01T12:00:00.000Z');

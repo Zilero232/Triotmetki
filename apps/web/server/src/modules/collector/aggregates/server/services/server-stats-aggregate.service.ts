@@ -9,7 +9,8 @@ import { PrismaService } from '../../../../../core';
 import { ReferenceTablesService } from '../../player-ratings';
 import { SERVER_STATS_AGGREGATE } from '../config/server.constants';
 import { SERVER_AGGREGATE_TOKENS } from '../config/tokens.constants';
-import { buildServerStats, periodPlayersAt, SERVER_STATS } from '../lib/server-stats';
+import { buildServerStats, periodPlayersAt } from '../lib/server-stats/server-stats';
+import { SERVER_STATS } from '../lib/server-stats/server-stats.constants';
 
 @Injectable()
 export class ServerStatsAggregateService {

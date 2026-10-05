@@ -16,10 +16,8 @@ else is Kysely** — typed from the Prisma schema (`prisma-kysely` writes
 `generated/kysely` on every `prisma generate`) and running on Prisma's connection:
 `this.prisma.$kysely` outside a transaction, `tx.$kysely` inside `$transaction` /
 `lockedTransaction`. Never `$queryRaw`, `$executeRaw`, their `Unsafe` forms,
-`Prisma.sql`, `Prisma.raw`, `Prisma.join` or `Prisma.empty` in new code: the
-`otmetki/server-raw-sql` ESLint block bans them outside
-`apps/web/server/eslint.raw-sql-allowlist.mjs`, a list of not-yet-moved files that only
-shrinks — moving a file to Kysely deletes its line.
+`Prisma.sql`, `Prisma.raw`, `Prisma.join` or `Prisma.empty`: the `otmetki/server-raw-sql`
+ESLint block bans them (tests may still name them on their mocks).
 
 1. A query function lives in `queries/<topic>.queries.ts`, takes `{ db, ...input }`
    with `db: Database` (`Kysely<DB>` from `core`) and returns typed rows. No SQL in a

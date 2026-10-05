@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { API_USAGE } from '../../../config';
+import { API_USAGE } from '../../../config/public-api.constants';
 import { addCounters, emptyCounters, endpointLabel } from '../usage-counters';
 
 describe('endpointLabel', () => {

@@ -1,8 +1,8 @@
-import type { PyValue } from '../../../python-literal';
+import type { PyValue } from '../../../python-literal/python-literal.types';
 import type { ParseConditionsInput, PersonalMissionCondition, PersonalMissionJson } from '../personal-missions.types';
 
-import { isPyDict } from '../../../python-literal';
-import { renderText } from '../localization';
+import { isPyDict } from '../../../python-literal/python-literal';
+import { renderText } from '../localization/localization';
 import { PERSONAL_MISSION_KEYS } from '../personal-missions.constants';
 
 const symbol = (name: string): string => (name.split('.').pop() ?? name).toLowerCase();

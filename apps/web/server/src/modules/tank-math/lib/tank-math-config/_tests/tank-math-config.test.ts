@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { loadIs } from '../../../../gamedata/lib/_tests/fixtures';
-import { TANK_MATH } from '../../../config';
+import { TANK_MATH } from '../../../config/tank-math.constants';
 import { toTankMathConfig } from '../tank-math-config';
 
 describe('toTankMathConfig', () => {

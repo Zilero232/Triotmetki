@@ -8,7 +8,7 @@ import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { OverlayDataDto, OverlayParamsDto } from './dto/overlays.dto';
-import { OverlayDataService } from './services/overlay-data.service';
+import { OverlayDataReaderService } from './services/overlay-data-reader.service';
 import { OverlayStreamService } from './services/overlay-stream.service';
 
 @ApiTags('overlays')
@@ -16,7 +16,7 @@ import { OverlayStreamService } from './services/overlay-stream.service';
 @Controller('overlays')
 export class OverlaysController {
   constructor(
-    private readonly data: OverlayDataService,
+    private readonly data: OverlayDataReaderService,
     private readonly streams: OverlayStreamService
   ) {}
 

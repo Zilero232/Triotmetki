@@ -1,6 +1,6 @@
 import type { AddCountersInput, EndpointLabelInput, UsageCounters } from './usage-counters.types';
 
-import { API_USAGE } from '../../config';
+import { API_USAGE } from '../../config/public-api.constants';
 
 export const endpointLabel = ({ method, route }: EndpointLabelInput): string => `${method.toUpperCase()} ${route ?? API_USAGE.unmatchedEndpoint}`;
 

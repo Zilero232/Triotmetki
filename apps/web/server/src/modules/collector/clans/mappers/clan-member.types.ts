@@ -1,5 +1,5 @@
 import type { ClanMemberHistoryEntry } from '../../../../lib/lesta';
-import type { CurrentMember } from '../lib/clan-roster';
+import type { CurrentMember } from '../lib/clan-roster/clan-roster.types';
 
 export type ToClanHistoryRecordInput = {
   accountId: bigint;

@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
 import type { LestaParams, LestaRequester } from '../client/client.types';
-import type { ProlongateResult } from '../schemas';
+import type { ProlongateResult } from '../schemas/auth/auth.types';
 import type { LoginCallbackResult, LoginUrlInput, LogoutInput, ProlongateInput } from './methods.types';
 
 import { LESTA_API } from '../client/client.constants';
-import { toSearchParams } from '../client/params';
-import { loginCallbackSchema, loginLocationSchema, prolongateSchema } from '../schemas';
+import { toSearchParams } from '../client/params/params';
+import { loginCallbackSchema, loginLocationSchema, prolongateSchema } from '../schemas/auth/auth.schemas';
 
 export const parseLoginCallback = (query: string | URLSearchParams): LoginCallbackResult => {
   const search = typeof query === 'string' ? new URLSearchParams(query) : query;

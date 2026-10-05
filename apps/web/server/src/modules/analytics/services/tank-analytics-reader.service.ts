@@ -7,9 +7,11 @@ import type { AnalyticsQueries } from '../providers/analytics-queries.provider.t
 
 import { PrismaService } from '../../../core';
 import { ExpectedValuesReaderService, VehicleCatalogService } from '../../reference';
-import { ANALYTICS_QUERIES, ANALYTICS_SQL, TANK_ANALYTICS } from '../config';
-import { statLine, trendPoints } from '../lib';
-import { toAggregateRow } from '../mappers';
+import { ANALYTICS_QUERIES } from '../config/queries.constants';
+import { TANK_ANALYTICS } from '../config/tank-analytics.constants';
+import { ANALYTICS_SQL } from '../config/window.constants';
+import { statLine, trendPoints } from '../lib/stat-line/stat-line';
+import { toAggregateRow } from '../mappers/aggregate-row.mappers';
 import { OwnAccountReaderService } from './own-account-reader.service';
 
 @Injectable()

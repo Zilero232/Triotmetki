@@ -2,7 +2,8 @@ import type { UsageAudience, UsageMeterKey } from '@otmetki/schemas';
 import type { UserSession } from '@thallesp/nestjs-better-auth';
 import type { Request, Response } from 'express';
 
-import type { MeterScope, UsagePeriod } from './lib';
+import type { MeterScope } from './lib/meter-scopes/meter-scopes.types';
+import type { UsagePeriod } from './lib/usage-period/usage-period.types';
 
 export type UsageActor = {
   userId: string | null;

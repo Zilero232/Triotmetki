@@ -1,18 +1,23 @@
 import { NATIONS } from '@otmetki/gamedata';
 
-import type { SharedComponents } from '../parsers/vehicle';
-import type { SourceReader } from '../source';
+import type { SharedComponents } from '../parsers/vehicle/vehicle.types';
+import type { SourceReader } from '../source/source.types';
 import type { ArenaData, BuildGameDataInput, GameData, NationData, ReadNationInput, ReadRequiredInput } from './game-data.types';
 
 import { errorMessage } from '../../../../common/lib';
-import { ARENA_FILES, isBattleArena, parseArena, parseArenaList } from '../parsers/arenas';
-import { parseCrew } from '../parsers/crew';
-import { parseEquipments } from '../parsers/equipment';
-import { parseOptionalDevices } from '../parsers/optional-devices';
-import { parsePostProgression } from '../parsers/post-progression';
-import { COMPONENT_FILES, emptyComponents, parseSharedComponents, parseShells, parseVehicle, SHELLS } from '../parsers/vehicle';
-import { isRegularVehicle, parseVehicleList } from '../parsers/vehicle-list';
-import { assertMtClient, GAME_DATA_SOURCES, GAME_PATHS, MT_CLIENT } from '../source';
+import { isBattleArena, parseArena, parseArenaList } from '../parsers/arenas/arenas';
+import { ARENA_FILES } from '../parsers/arenas/arenas.constants';
+import { parseCrew } from '../parsers/crew/crew';
+import { parseEquipments } from '../parsers/equipment/equipment';
+import { parseOptionalDevices } from '../parsers/optional-devices/optional-devices';
+import { parsePostProgression } from '../parsers/post-progression/post-progression';
+import { isRegularVehicle, parseVehicleList } from '../parsers/vehicle-list/vehicle-list';
+import { parseShells } from '../parsers/vehicle/shells/shells';
+import { emptyComponents, parseSharedComponents, parseVehicle } from '../parsers/vehicle/vehicle';
+import { COMPONENT_FILES, SHELLS } from '../parsers/vehicle/vehicle.constants';
+import { assertMtClient } from '../source/mt-client/mt-client';
+import { MT_CLIENT } from '../source/mt-client/mt-client.constants';
+import { GAME_DATA_SOURCES, GAME_PATHS } from '../source/source.constants';
 
 const readRequired = async ({ reader, path }: ReadRequiredInput): Promise<string> => {
   const content = await reader.read(path);

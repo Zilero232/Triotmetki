@@ -9,7 +9,7 @@ import type { AccountRating, PlayerSettingsShare, Prisma, SettingsAggregate, Str
 import type { PrismaService } from '../../../../../core';
 
 import { streamerProfileRow } from '../../../profiles/services/_tests/streamers.fixtures';
-import { aggregateCohort } from '../../lib/settings-aggregate';
+import { aggregateCohort } from '../../lib/settings-aggregate/settings-aggregate';
 import { SettingsAggregateService } from '../settings-aggregate.service';
 
 const NOW = new Date('2026-09-20T04:20:00Z');

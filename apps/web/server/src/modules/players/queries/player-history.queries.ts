@@ -1,7 +1,7 @@
 import type { AccountDeltasInput, TankDeltaBucketsInput } from './player-history.types';
 
 import { moscowBucket, moscowDayText, statSums } from '../../../core';
-import { PLAYER_STATS } from '../config';
+import { PLAYER_STATS } from '../config/player-stats.constants';
 
 export const accountDeltas = ({ db, accountId, from }: AccountDeltasInput) =>
   db

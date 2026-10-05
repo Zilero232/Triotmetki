@@ -1,6 +1,6 @@
 import type { SupertestParamMeta } from './param-key.types';
 
-import { PARSED_UNITS, SUPERTEST_PARAMS } from '../../config';
+import { PARSED_UNITS, SUPERTEST_PARAMS } from '../../config/params.constants';
 import { PARAM_KEY } from './param-key.constants';
 
 export const paramOf = (label: string): SupertestParamMeta | null => SUPERTEST_PARAMS.find((param) => param.pattern.test(label.trim())) ?? null;

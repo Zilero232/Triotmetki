@@ -24,9 +24,15 @@ import { parseReplaySummary } from '../../../lib/replay';
 import { FIXTURE, readFixture } from '../../../lib/replay/_tests/fixtures';
 import { EntitlementsService } from '../../billing';
 import { ModDeviceService } from '../../mod';
-import { REPLAY_UPLOAD, REPLAYS_QUEUE } from '../config';
+import { REPLAYS_QUEUE } from '../config/queue.constants';
+import { REPLAY_UPLOAD } from '../config/upload.constants';
 import { ReplaysController } from '../replays.controller';
-import { HeatmapService, ReplayOwnerService, ReplayParseService, ReplayQueryService, ReplayUploadService } from '../services';
+import { HeatmapReaderService } from '../services/heatmap-reader.service';
+import { HeatmapWriterService } from '../services/heatmap-writer.service';
+import { ReplayOwnerWriterService } from '../services/replay-owner-writer.service';
+import { ReplayParseService } from '../services/replay-parse.service';
+import { ReplayReaderService } from '../services/replay-reader.service';
+import { ReplayUploadWriterService } from '../services/replay-upload-writer.service';
 
 const prisma = mockPrismaService();
 const queue = mock<Queue>();
@@ -116,15 +122,15 @@ beforeAll(async () => {
     imports: [CacheModule.register()],
     controllers: [ReplaysController],
     providers: [
-      ReplayUploadService,
+      ReplayUploadWriterService,
       { provide: PrismaService, useValue: prisma },
       { provide: ObjectStorage, useValue: storage },
       { provide: ModDeviceService, useValue: devices },
       { provide: EntitlementsService, useValue: entitlements },
       { provide: getQueueToken(REPLAYS_QUEUE.name), useValue: queue },
-      { provide: ReplayQueryService, useValue: mock<ReplayQueryService>() },
-      { provide: ReplayOwnerService, useValue: mock<ReplayOwnerService>() },
-      { provide: HeatmapService, useValue: mock<HeatmapService>() },
+      { provide: ReplayReaderService, useValue: mock<ReplayReaderService>() },
+      { provide: ReplayOwnerWriterService, useValue: mock<ReplayOwnerWriterService>() },
+      { provide: HeatmapReaderService, useValue: mock<HeatmapReaderService>() },
       { provide: APP_PIPE, useClass: ZodValidationPipe },
       { provide: APP_FILTER, useClass: AllExceptionsFilter },
       { provide: APP_INTERCEPTOR, useClass: ZodSerializerInterceptor }
@@ -169,7 +175,7 @@ describe('POST /replays', () => {
 
     prisma.replay.findUnique.mockResolvedValueOnce(replayRow({ id: replayId, storageKey: String(created?.storageKey) }));
 
-    const heatmaps = mock<HeatmapService>();
+    const heatmaps = mock<HeatmapWriterService>();
     const outcome = await new ReplayParseService(prisma, storage, heatmaps).parse({ replayId, isFinalAttempt: true });
     const update = prisma.replay.update.mock.calls.at(-1)?.[0].data;
 
@@ -217,6 +223,23 @@ describe('POST /replays', () => {
 
     expect(response.status).toBe(409);
     expect(JSON.stringify(response.body)).not.toContain(replayId);
+  });
+
+  it('removes the row and the file when the parse job cannot be queued, so the replay can be uploaded again', async () => {
+    prisma.replay.findUnique.mockResolvedValueOnce(null);
+    prisma.replay.create.mockResolvedValue(replayRow({ id: replayId, status: 'uploaded' }));
+    prisma.replay.delete.mockClear();
+    queue.add.mockRejectedValueOnce(new Error('redis is down'));
+
+    const response = await request(app.getHttpServer())
+      .post('/replays')
+      .attach('file', Buffer.from(readFixture(FIXTURE.wgFull)), 'battle.wotreplay');
+
+    const storageKey = String(prisma.replay.create.mock.calls.at(-1)?.[0].data.storageKey);
+
+    expect(response.status).toBe(500);
+    expect(prisma.replay.delete).toHaveBeenCalledWith({ where: { id: replayId } });
+    await expect(storage.get(storageKey)).rejects.toThrow();
   });
 });
 

@@ -1,7 +1,7 @@
 import type { ParseWotexpressInput, ScrapedBonusCode } from './wotexpress-codes.types';
 
 import { absoluteUrl, parseRussianDay } from '../../../../lib/scrape';
-import { BONUS_CODE } from '../../config';
+import { BONUS_CODE } from '../../config/bonus-codes.constants';
 
 export const codesInTitle = (title: string): string[] =>
   [...title.matchAll(BONUS_CODE.titlePattern)].flatMap((found) =>

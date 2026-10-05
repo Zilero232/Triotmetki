@@ -1,7 +1,8 @@
 import { afterAll, beforeEach, expect, it } from 'vitest';
 
+import { battleRow } from '../../../../core/prisma/_tests/stat-seeds';
 import { createTestPrisma, describeWithDatabase, truncateTables } from '../../../../core/prisma/_tests/test-database';
-import { wrappedBusiestMonth, wrappedTopTanks } from '../wrapped.queries';
+import { wrappedBestBattle, wrappedBusiestMonth, wrappedTopTanks } from '../wrapped.queries';
 
 const SEED = {
   accountId: 1_000_000_201n,
@@ -61,7 +62,7 @@ describeWithDatabase('wrapped queries', () => {
   const range = { db: prisma.$kysely, accountId: Number(SEED.accountId), start: SEED.start, end: SEED.end };
 
   beforeEach(async () => {
-    await truncateTables({ prisma, tables: ['tank_snapshot', 'play_session', 'player'] });
+    await truncateTables({ prisma, tables: ['tank_snapshot', 'play_session', 'battle', 'player'] });
 
     await prisma.player.createMany({
       data: [
@@ -123,10 +124,54 @@ describeWithDatabase('wrapped queries', () => {
       ]
     });
 
-    expect(await wrappedBusiestMonth(range)).toEqual({ month: 3, battles: 20 });
+    expect(await wrappedBusiestMonth(range)).toEqual({ monthStart: new Date('2025-02-28T21:00:00Z'), battles: 20 });
+  });
+
+  it('buckets the sessions by Moscow month, so a late-evening UTC session counts for the next month', async () => {
+    await prisma.playSession.createMany({
+      data: [
+        daySession({ startedAt: '2025-03-31T22:00:00Z', battles: 10 }),
+        daySession({ startedAt: '2025-04-30T20:00:00Z', battles: 10 }),
+        daySession({ startedAt: '2025-03-15T10:00:00Z', battles: 15 })
+      ]
+    });
+
+    expect(await wrappedBusiestMonth(range)).toEqual({ monthStart: new Date('2025-03-31T21:00:00Z'), battles: 20 });
+  });
+
+  it('breaks a tie between months by the earlier month', async () => {
+    await prisma.playSession.createMany({
+      data: [daySession({ startedAt: '2025-09-10T10:00:00Z', battles: 10 }), daySession({ startedAt: '2025-02-10T10:00:00Z', battles: 10 })]
+    });
+
+    expect(await wrappedBusiestMonth(range)).toEqual({ monthStart: new Date('2025-01-31T21:00:00Z'), battles: 10 });
   });
 
   it('has no busiest month without sessions', async () => {
     expect(await wrappedBusiestMonth(range)).toBeUndefined();
+  });
+
+  it('picks the highest-damage battle of the year and breaks a tie by the earlier battle', async () => {
+    await prisma.battle.createMany({
+      data: [
+        battleRow({
+          accountId: SEED.accountId,
+          arenaUniqueId: 1n,
+          battleType: '22',
+          startedAt: new Date('2025-08-01T10:00:00Z'),
+          damageDealt: 5_000
+        }),
+        battleRow({
+          accountId: SEED.accountId,
+          arenaUniqueId: 2n,
+          battleType: '22',
+          startedAt: new Date('2025-02-01T10:00:00Z'),
+          damageDealt: 5_000
+        }),
+        battleRow({ accountId: SEED.accountId, arenaUniqueId: 3n, battleType: '22', startedAt: new Date('2026-01-02T10:00:00Z'), damageDealt: 9_000 })
+      ]
+    });
+
+    expect(await wrappedBestBattle(range)).toMatchObject({ arenaUniqueId: 2, damageDealt: 5_000 });
   });
 });

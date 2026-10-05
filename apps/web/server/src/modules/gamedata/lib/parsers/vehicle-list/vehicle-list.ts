@@ -2,9 +2,9 @@ import type { VehicleListEntry } from '@otmetki/gamedata';
 
 import type { ParseVehicleListInput } from './vehicle-list.types';
 
-import { oneOf } from '../../guards';
-import { makeCompactDescr, nationId } from '../../ids';
-import { bool, entries, isXmlNode, localizationFallback, localizationKey, num, parseXml, price, words } from '../../xml';
+import { oneOf } from '../../guards/guards';
+import { makeCompactDescr, nationId } from '../../ids/ids';
+import { bool, entries, isXmlNode, localizationFallback, localizationKey, num, parseXml, price, words } from '../../xml/xml';
 import { EXCLUDED_VEHICLE_NAME, EXCLUDED_VEHICLE_TAGS, VEHICLE_CLASSES, VEHICLE_TAG } from './vehicle-list.constants';
 
 const isVehicleClass = oneOf(VEHICLE_CLASSES);

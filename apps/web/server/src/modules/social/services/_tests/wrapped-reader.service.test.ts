@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { AccountSnapshot, Player } from '../../../../../generated';
@@ -84,6 +84,10 @@ const createService = () => {
 };
 
 describe('WrappedReaderService.wrapped', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('links the best battle only to a public parsed replay, so unlisted replay ids stay private', async () => {
     const { service, prisma, queries } = createService();
 
@@ -133,16 +137,32 @@ describe('WrappedReaderService.wrapped', () => {
     );
   });
 
-  it('reads the snapshots of that calendar year only', async () => {
+  it('reads the snapshots of that Moscow calendar year only', async () => {
     const { service, prisma } = createService();
 
     await service.wrapped(input);
 
     expect(prisma.accountSnapshot.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { accountId: 1n, mode: 'all', capturedAt: { gte: new Date(Date.UTC(year, 0, 1)), lt: new Date(Date.UTC(year + 1, 0, 1)) } }
+        where: { accountId: 1n, mode: 'all', capturedAt: { gte: new Date('2024-12-31T21:00:00Z'), lt: new Date('2025-12-31T21:00:00Z') } }
       })
     );
+  });
+
+  it('defaults to the current Moscow year', async () => {
+    const { service } = createService();
+
+    vi.useFakeTimers({ now: new Date('2025-12-31T22:00:00Z'), toFake: ['Date'] });
+
+    expect(await service.wrapped({ accountId: 1 })).toEqual(expect.objectContaining({ year: 2026 }));
+  });
+
+  it('names the busiest month by its Moscow calendar month', async () => {
+    const { service, queries } = createService();
+
+    queries.wrappedBusiestMonth.mockResolvedValue({ monthStart: new Date('2025-03-31T21:00:00Z'), battles: 20 });
+
+    expect(await service.wrapped(input)).toEqual(expect.objectContaining({ busiestMonth: 4 }));
   });
 
   it('leaves the rates empty for a year without snapshots', async () => {

@@ -1,7 +1,7 @@
 import type { ReplayContainer, ReplayStreamSection } from './container.types';
 
-import { ByteReader } from '../binary';
-import { ReplayFormatError } from '../errors';
+import { ByteReader } from '../binary/byte-reader';
+import { ReplayFormatError } from '../errors/replay-format-error';
 import { REPLAY_CONTAINER } from './container.constants';
 
 const readStreamSection = (reader: ByteReader): ReplayStreamSection | null => {

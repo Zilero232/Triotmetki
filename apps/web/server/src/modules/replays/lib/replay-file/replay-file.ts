@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 
 import type { ReplayExtension, ReplayStorageKeyInput } from './replay-file.types';
 
-import { REPLAY_UPLOAD } from '../../config';
+import { REPLAY_UPLOAD } from '../../config/upload.constants';
 
 export const replayExtension = (fileName: string): ReplayExtension | null => {
   const lower = fileName.trim().toLowerCase();

@@ -1,7 +1,7 @@
 import type { ArmorModules } from '@otmetki/gamedata';
 
-import type { GameData } from '../../game-data';
-import type { RepoReader } from '../../source';
+import type { GameData } from '../../game-data/game-data.types';
+import type { RepoReader } from '../../source/source.types';
 
 export type CollectArmorModelsInput = {
   data: GameData;

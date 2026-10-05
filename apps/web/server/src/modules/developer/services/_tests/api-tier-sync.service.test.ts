@@ -5,11 +5,11 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { ApiKey } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { ApiTierService } from '../api-tier.service';
-import type { WebhookEndpointsService } from '../webhook-endpoints.service';
+import type { ApiTierReaderService } from '../api-tier-reader.service';
+import type { WebhookEndpointsWriterService } from '../webhook-endpoints-writer.service';
 
 import { EntitlementsBusService } from '../../../billing';
-import { API_TIERS } from '../../config';
+import { API_TIERS } from '../../config/api-keys.constants';
 import { ApiTierSyncService } from '../api-tier-sync.service';
 
 const plusKey = (overrides: Partial<ApiKey> = {}) =>
@@ -17,8 +17,8 @@ const plusKey = (overrides: Partial<ApiKey> = {}) =>
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
-  const tiers = mock<ApiTierService>();
-  const webhooks = mock<WebhookEndpointsService>();
+  const tiers = mock<ApiTierReaderService>();
+  const webhooks = mock<WebhookEndpointsWriterService>();
   const redis = new RedisMock();
   const bus = new EntitlementsBusService(redis);
   const otherProcess = new EntitlementsBusService(redis);

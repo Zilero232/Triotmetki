@@ -1,1 +1,0 @@
-export { writeCatalog } from './catalog';

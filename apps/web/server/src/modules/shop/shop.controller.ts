@@ -5,7 +5,7 @@ import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId } from '../../common/decorators';
-import { BONUS_CODE } from './config';
+import { BONUS_CODE } from './config/bonus-codes.constants';
 import {
   BonusCodeDto,
   BonusCodeListDto,
@@ -17,16 +17,18 @@ import {
   OfferArchiveQueryDto,
   OfferPageDto,
   OffersQueryDto
-} from './dto';
-import { BonusCodeService, NewsQueryService, OfferQueryService } from './services';
+} from './dto/shop.dto';
+import { BonusCodeWriterService } from './services/bonus-code-writer.service';
+import { NewsReaderService } from './services/news-reader.service';
+import { OfferReaderService } from './services/offer-reader.service';
 
 @ApiTags('shop')
 @Controller()
 export class ShopController {
   constructor(
-    private readonly offers: OfferQueryService,
-    private readonly bonusCodes: BonusCodeService,
-    private readonly news: NewsQueryService
+    private readonly offers: OfferReaderService,
+    private readonly bonusCodes: BonusCodeWriterService,
+    private readonly news: NewsReaderService
   ) {}
 
   @AllowAnonymous()

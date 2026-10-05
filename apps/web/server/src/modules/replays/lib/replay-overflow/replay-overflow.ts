@@ -3,7 +3,7 @@ import { drop, map, pipe, sortBy } from 'remeda';
 
 import type { OverflowPlan, OverflowPlanInput, OverflowReplayIdsInput } from './replay-overflow.types';
 
-import { REPLAY_OVERFLOW } from '../../config';
+import { REPLAY_OVERFLOW } from '../../config/overflow.constants';
 
 export const overflowPlan = ({ accessEndedAt, now }: OverflowPlanInput): OverflowPlan => {
   const deleteAt = addDays(accessEndedAt, REPLAY_OVERFLOW.readOnlyDays);

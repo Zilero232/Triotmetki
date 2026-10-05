@@ -8,7 +8,7 @@ import type { PlayerQueries } from '../../providers/player-queries.provider.type
 
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { unknownVehicle } from '../../../reference';
-import { PLAYER_MARKS } from '../../config';
+import { PLAYER_MARKS } from '../../config/player-stats.constants';
 import { PlayerMarksReaderService } from '../player-marks-reader.service';
 
 const UPDATED_AT = new Date('2026-09-20T00:00:00.000Z');

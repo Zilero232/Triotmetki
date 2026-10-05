@@ -54,6 +54,16 @@ describe('WeeklyDigestService.run', () => {
     expect(queue.add.mock.calls.map((call) => call[2]?.jobId)).toEqual(['digest__a__2026-W40', 'digest__b__2026-W40']);
   });
 
+  it('names the week by the Moscow calendar when the UTC date is still the previous Sunday', async () => {
+    const { service, prisma, queue } = createService();
+
+    prisma.notificationSettings.findMany.mockResolvedValue([settings('a')]);
+
+    await service.run(new Date('2026-09-27T22:30:00.000Z'));
+
+    expect(queue.add.mock.calls[0]?.[2]?.jobId).toBe('digest__a__2026-W40');
+  });
+
   it('keeps the job id stable within a week so a rerun does not send twice', async () => {
     const { service, prisma, queue } = createService();
 

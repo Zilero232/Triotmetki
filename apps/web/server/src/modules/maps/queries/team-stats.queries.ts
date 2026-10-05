@@ -2,9 +2,13 @@ import { sql } from 'kysely';
 
 import type { TeamStatsInput } from './team-stats.types';
 
-const winnerTeam = sql<number | null>`(${sql.ref('replay.summary')}->>'winnerTeam')::int`;
+import { MAP_TEAM_STATS } from '../config/maps.constants';
 
-export const battleSides = ({ db, arenaId }: TeamStatsInput) =>
+const winnerText = sql<string | null>`(${sql.ref('replay.summary')}->>'winnerTeam')`;
+
+const winnerTeam = sql<number | null>`case when ${winnerText} ~ ${sql.lit(MAP_TEAM_STATS.winnerPattern)} then ${winnerText}::int end`;
+
+const battleSides = ({ db, arenaId }: TeamStatsInput) =>
   db
     .selectFrom((eb) =>
       eb
@@ -21,7 +25,7 @@ export const battleSides = ({ db, arenaId }: TeamStatsInput) =>
     .groupBy(['team', 'result'])
     .execute();
 
-export const replayWinners = ({ db, arenaId }: TeamStatsInput) =>
+const replayWinners = ({ db, arenaId }: TeamStatsInput) =>
   db
     .selectFrom('replay')
     .select((eb) => [

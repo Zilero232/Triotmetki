@@ -7,8 +7,8 @@ import type { UsageActor } from '../usage';
 
 import { ARMOR_VIEWER } from '../../config';
 import { CurrentUsageActor, MeteredUsage } from '../usage';
-import { TankArmorDto, TankArmorGunsDto, TankLookupParamsDto } from './dto';
-import { TankArmorReaderService } from './services';
+import { TankArmorDto, TankArmorGunsDto, TankLookupParamsDto } from './dto/tanks.dto';
+import { TankArmorReaderService } from './services/tank-armor-reader.service';
 
 @ApiTags('tanks')
 @AllowAnonymous()

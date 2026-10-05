@@ -1,4 +1,4 @@
-import type { VK_COMMAND_ALIASES } from '../../config';
+import type { VK_COMMAND_ALIASES } from '../../config/commands.constants';
 
 type VkCommand = keyof typeof VK_COMMAND_ALIASES;
 

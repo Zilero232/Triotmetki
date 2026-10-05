@@ -1,4 +1,4 @@
-import type { BattleResultEvent } from '../contract';
+import type { BattleResultEvent } from '../contract/contract.types';
 import type { SessionIncrement, SessionUuidInput } from './battle.types';
 
 import { stableUuid } from '../../../../common/lib';

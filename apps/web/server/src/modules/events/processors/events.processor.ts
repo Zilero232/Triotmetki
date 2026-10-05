@@ -3,14 +3,15 @@ import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
 import { MetricsService, TrackedWorkerHost } from '../../collector/metrics';
-import { EVENTS_QUEUE } from '../config';
-import { DropsService, EventCalendarService } from '../services';
+import { EVENTS_QUEUE } from '../config/queue.constants';
+import { DropsAggregateService } from '../services/drops-aggregate.service';
+import { EventCalendarSyncService } from '../services/event-calendar-sync.service';
 
 @Processor(EVENTS_QUEUE.name, { concurrency: 1 })
 export class EventsProcessor extends TrackedWorkerHost {
   constructor(
-    private readonly calendar: EventCalendarService,
-    private readonly drops: DropsService,
+    private readonly calendar: EventCalendarSyncService,
+    private readonly drops: DropsAggregateService,
     metrics: MetricsService
   ) {
     super(metrics);

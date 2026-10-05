@@ -3,13 +3,13 @@ import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
 import { MetricsService, TrackedWorkerHost } from '../../collector/metrics';
-import { GOAL_PROGRESS_QUEUE } from '../config';
-import { GoalProgressService } from '../services';
+import { GOAL_PROGRESS_QUEUE } from '../config/goal-progress.constants';
+import { GoalProgressAggregateService } from '../services/goal-progress-aggregate.service';
 
 @Processor(GOAL_PROGRESS_QUEUE.name, { concurrency: 1 })
 export class GoalProgressProcessor extends TrackedWorkerHost<number> {
   constructor(
-    private readonly progress: GoalProgressService,
+    private readonly progress: GoalProgressAggregateService,
     metrics: MetricsService
   ) {
     super(metrics);

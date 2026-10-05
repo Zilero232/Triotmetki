@@ -10,9 +10,9 @@ import type {
 
 import type { ParsePostProgressionInput, ResolveVehicleProgressionInput } from './post-progression.types';
 
-import { fieldModificationIdOf } from '../../ids';
-import { parseModifierBlock } from '../../modifiers';
-import { entries, get, isXmlNode, nodes, num, nums, parseXml, price, text } from '../../xml';
+import { fieldModificationIdOf } from '../../ids/ids';
+import { parseModifierBlock } from '../../modifiers/modifiers';
+import { entries, get, isXmlNode, nodes, num, nums, parseXml, price, text } from '../../xml/xml';
 import { FIELD_MODIFICATION_TEXT } from './post-progression.constants';
 
 const parseTrees = (xml: string): ProgressionTree[] =>

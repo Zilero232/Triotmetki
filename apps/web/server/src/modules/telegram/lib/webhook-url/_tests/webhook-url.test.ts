@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { WEBHOOK } from '../../../config';
+import { WEBHOOK } from '../../../config/webhook.constants';
 import { webhookUrl } from '../webhook-url';
 
 describe('webhookUrl', () => {

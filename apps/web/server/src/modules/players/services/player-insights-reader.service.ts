@@ -9,8 +9,8 @@ import type { InsightsInput } from '../players.types';
 import { RATING_PERIOD_TO_DB } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
-import { PLAYER_STATS } from '../config';
-import { computeInsights } from '../lib';
+import { PLAYER_STATS } from '../config/player-stats.constants';
+import { computeInsights } from '../lib/insights/insights';
 
 @Injectable()
 export class PlayerInsightsReaderService {

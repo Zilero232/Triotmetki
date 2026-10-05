@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { loadCatalog } from '../../../_tests/fixtures';
-import { fieldModificationIdOf } from '../../../ids';
+import { fieldModificationIdOf } from '../../../ids/ids';
 import { resolveVehicleProgression } from '../post-progression';
 
 const { postProgression } = loadCatalog();

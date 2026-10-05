@@ -1,5 +1,4 @@
-export { createFluentStore, openButton, siteUrl } from './lib';
-export type { CreateFluentStoreInput } from './lib';
+export { openButton } from './lib/keyboard/keyboard';
 export { TelegramCommandRegistry } from './services/telegram-command-registry.service';
 export { TelegramSenderService } from './services/telegram-sender.service';
 export { TelegramCoreModule } from './telegram-core.module';

@@ -6,13 +6,13 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { OperationIdPrefix } from '../../../common/decorators';
 import { TwitchChannelParamsDto, TwitchPanelDto } from './dto/panel.dto';
-import { TwitchPanelService } from './services/twitch-panel.service';
+import { TwitchPanelReaderService } from './services/twitch-panel-reader.service';
 
 @ApiTags('streamers')
 @OperationIdPrefix('StreamersController')
 @Controller('streamers')
 export class TwitchPanelController {
-  constructor(private readonly panels: TwitchPanelService) {}
+  constructor(private readonly panels: TwitchPanelReaderService) {}
 
   @AllowAnonymous()
   @SkipThrottle()

@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { ReviewedBattle } from '../battle-review.types';
 
-import { BATTLE_REVIEW } from '../../../config';
+import { BATTLE_REVIEW } from '../../../config/battle-review.constants';
 import { combinedOf, movingAverageBefore, reviewBattle } from '../battle-review';
 
 const DURATION = 400;

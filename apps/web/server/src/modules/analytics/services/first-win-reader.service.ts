@@ -8,8 +8,8 @@ import type { AccountInput, TakenInput } from '../analytics.types';
 import { toIso } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
-import { FIRST_WIN } from '../config';
-import { dailyWindow } from '../lib';
+import { FIRST_WIN } from '../config/playlist.constants';
+import { dailyWindow } from '../lib/daily-reset/daily-reset';
 import { OwnAccountReaderService } from './own-account-reader.service';
 
 @Injectable()

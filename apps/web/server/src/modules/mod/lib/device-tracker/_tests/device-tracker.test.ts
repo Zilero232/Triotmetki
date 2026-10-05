@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { MOD_DEVICE } from '../../../config/device.constants';
-import { newDeviceId } from '../../device-secret';
+import { newDeviceId } from '../../device-secret/device-secret';
 import { isModDeviceRequest, modDeviceTracker } from '../device-tracker';
 
 const ip = '198.51.100.7';

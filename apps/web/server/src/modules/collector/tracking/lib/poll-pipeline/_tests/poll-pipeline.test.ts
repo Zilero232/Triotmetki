@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { assignCohort } from '../../cohort';
-import { tankSnapshotRow } from '../../snapshots';
+import { assignCohort } from '../../cohort/cohort';
+import { tankSnapshotRow } from '../../snapshots/snapshots';
 import { runPollPipeline } from '../poll-pipeline';
 import { accountInfo, accountTank, block, createFakeLesta, createFakeStore, tankStats } from './poll-pipeline.fixtures';
 

@@ -5,12 +5,12 @@ import { mock } from 'vitest-mock-extended';
 
 import type { ExpectedValuesReaderService } from '../../../reference';
 import type { WebhookEmitter } from '../../../webhooks';
-import type { BattleResultEvent } from '../../lib/contract';
+import type { BattleResultEvent } from '../../lib/contract/contract.types';
 import type { AuthenticatedDevice } from '../../mod.types';
 
 import { createTestPrisma, describeWithDatabase, truncateTables } from '../../../../core/prisma/_tests/test-database';
-import { sessionUuid } from '../../lib/battle';
-import { ingestBatchSchema } from '../../lib/contract';
+import { sessionUuid } from '../../lib/battle/battle';
+import { ingestBatchSchema } from '../../lib/contract/contract.schemas';
 import { EventLedgerService } from '../event-ledger.service';
 import { ModIngestWriterService } from '../mod-ingest-writer.service';
 

@@ -41,8 +41,17 @@ export const searchWhere = ({ query, playerAccountId, tankIds }: SearchWhereInpu
 
 export const searchOrder = (sort: ReplaySearchQuery['sort']): Prisma.ReplayOrderByWithRelationInput[] =>
   match(sort)
-    .with('damage', () => [{ damageDealt: { sort: 'desc', nulls: 'last' } }, { playedAt: 'desc' }] satisfies Prisma.ReplayOrderByWithRelationInput[])
-    .with('xp', () => [{ xp: { sort: 'desc', nulls: 'last' } }, { playedAt: 'desc' }] satisfies Prisma.ReplayOrderByWithRelationInput[])
-    .with('views', () => [{ views: 'desc' }, { playedAt: 'desc' }] satisfies Prisma.ReplayOrderByWithRelationInput[])
-    .with('recent', () => [{ playedAt: { sort: 'desc', nulls: 'last' } }, { createdAt: 'desc' }] satisfies Prisma.ReplayOrderByWithRelationInput[])
+    .with(
+      'damage',
+      () => [{ damageDealt: { sort: 'desc', nulls: 'last' } }, { playedAt: 'desc' }, { id: 'desc' }] satisfies Prisma.ReplayOrderByWithRelationInput[]
+    )
+    .with(
+      'xp',
+      () => [{ xp: { sort: 'desc', nulls: 'last' } }, { playedAt: 'desc' }, { id: 'desc' }] satisfies Prisma.ReplayOrderByWithRelationInput[]
+    )
+    .with('views', () => [{ views: 'desc' }, { playedAt: 'desc' }, { id: 'desc' }] satisfies Prisma.ReplayOrderByWithRelationInput[])
+    .with(
+      'recent',
+      () => [{ playedAt: { sort: 'desc', nulls: 'last' } }, { createdAt: 'desc' }, { id: 'desc' }] satisfies Prisma.ReplayOrderByWithRelationInput[]
+    )
     .exhaustive();

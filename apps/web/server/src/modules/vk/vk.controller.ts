@@ -6,15 +6,16 @@ import { ZodResponse } from 'nestjs-zod';
 
 import type { VkCallbackBody } from './vk.types';
 
-import { VkStatusDto } from './dto';
-import { VkBotService, VkStatusService } from './services';
+import { VkStatusDto } from './dto/vk.dto';
+import { VkBotService } from './services/vk-bot.service';
+import { VkStatusReaderService } from './services/vk-status-reader.service';
 
 @ApiTags('vk')
 @Controller('vk')
 export class VkController {
   constructor(
     private readonly bot: VkBotService,
-    private readonly statuses: VkStatusService
+    private readonly statuses: VkStatusReaderService
   ) {}
 
   @AllowAnonymous()

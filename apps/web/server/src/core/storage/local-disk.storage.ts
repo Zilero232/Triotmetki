@@ -4,7 +4,7 @@ import { dirname, resolve, sep } from 'node:path';
 import type { PutObjectInput } from './storage.types';
 
 import { isMissingFileError } from '../../common/lib';
-import { StorageObjectMissingError } from './errors';
+import { StorageObjectMissingError } from './errors/object-missing-error';
 import { ObjectStorage } from './object-storage';
 
 export class LocalDiskStorage extends ObjectStorage {

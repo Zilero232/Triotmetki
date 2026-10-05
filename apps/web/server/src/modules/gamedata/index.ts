@@ -1,22 +1,21 @@
-export { ArmorVersionMismatchError, collectArmorModels, createArmorStorage, purgeArmorModels, writeArmorModels } from './lib/armor';
-export type { ArmorStorage, CollectedArmorModels } from './lib/armor';
-export { buildGameData } from './lib/game-data';
-export { isNation } from './lib/ids';
-export { createImportPlan, importLocalizationKeys, writeImportPlan } from './lib/importer';
-export { loadLocalization } from './lib/localization';
-export { resolveVehicleProgression } from './lib/parsers/post-progression';
-export { buildPersonalMissions, writePersonalMissions } from './lib/personal-missions';
-export type { PersonalMissionCounts } from './lib/personal-missions';
-export type { RepoReader } from './lib/source';
-export {
-  compareEncyclopediaVersion,
-  createGithubReader,
-  createLocalReader,
-  createLocalRepoReader,
-  createRepoReader,
-  GAME_DATA_SOURCES,
-  LOCALE_SOURCES,
-  MODEL_SOURCES,
-  MT_CLIENT,
-  vehicleRenderUrl
-} from './lib/source';
+export { collectArmorModels } from './lib/armor/collect/collect';
+export { ArmorVersionMismatchError } from './lib/armor/collect/collect.errors';
+export type { CollectedArmorModels } from './lib/armor/collect/collect.types';
+export { createArmorStorage } from './lib/armor/storage/storage';
+export type { ArmorStorage } from './lib/armor/storage/storage.types';
+export { purgeArmorModels, writeArmorModels } from './lib/armor/writer/writer';
+export { buildGameData } from './lib/game-data/game-data';
+export { isNation } from './lib/ids/ids';
+export { createImportPlan, importLocalizationKeys } from './lib/importer/plan/plan';
+export { writeImportPlan } from './lib/importer/writer/writer';
+export { loadLocalization } from './lib/localization/localization';
+export { resolveVehicleProgression } from './lib/parsers/post-progression/post-progression';
+export { buildPersonalMissions } from './lib/personal-missions/build/build';
+export type { PersonalMissionCounts } from './lib/personal-missions/personal-missions.types';
+export { writePersonalMissions } from './lib/personal-missions/writer/writer';
+export { createGithubReader, createRepoReader, vehicleRenderUrl } from './lib/source/github/github';
+export { createLocalReader, createLocalRepoReader } from './lib/source/local/local';
+export { compareEncyclopediaVersion } from './lib/source/mt-client/mt-client';
+export { MT_CLIENT } from './lib/source/mt-client/mt-client.constants';
+export { GAME_DATA_SOURCES, LOCALE_SOURCES, MODEL_SOURCES } from './lib/source/source.constants';
+export type { RepoReader } from './lib/source/source.types';

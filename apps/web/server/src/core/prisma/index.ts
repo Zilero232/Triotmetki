@@ -1,5 +1,6 @@
 export type { Database } from './kysely';
-export { isPrismaRequestError, isTransactionConflict, isUniqueViolation, isUniqueViolationOn, lockedTransaction } from './lib';
+export { lockedTransaction } from './lib/advisory-lock/advisory-lock';
+export { isPrismaRequestError, isTransactionConflict, isUniqueViolation, isUniqueViolationOn } from './lib/prisma-error/prisma-error';
 export { asPrismaTransaction } from './prisma-transaction';
 export { LIMIT_LOCK_SCOPE, PRISMA_CODE, PRISMA_TIMEOUT } from './prisma.constants';
 export { createPrismaClient } from './prisma.factory';
@@ -22,4 +23,4 @@ export {
   valuesTable,
   widthBucket
 } from './sql-expressions';
-export { HYPERTABLE } from './timescale';
+export { HYPERTABLE } from './timescale/timescale.constants';

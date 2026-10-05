@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { COMMON_FIXTURES, readFixture } from '../../../_tests/fixtures';
-import { provisionIdOf } from '../../../ids';
+import { provisionIdOf } from '../../../ids/ids';
 import { parseEquipments } from '../equipment';
 
 const items = parseEquipments(readFixture(COMMON_FIXTURES.equipments));

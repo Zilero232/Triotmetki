@@ -4,15 +4,14 @@ import { InlineQueryResultBuilder } from 'grammy';
 import type { BotContext } from '../telegram.types';
 
 import { AppConfigService } from '../../../config';
-import { BotRepliesService, BotStatsService } from '../../bot-commands';
-import { BOT_TEXT_LIMITS } from '../config';
-import { isPublicUrl, resolveBotLocale, statCardUrl } from '../lib';
+import { BotRepliesService, BotStatsReaderService, isPublicUrl, resolveBotLocale, statCardUrl } from '../../bot-commands';
+import { BOT_TEXT_LIMITS } from '../config/bot.constants';
 
 @Injectable()
 export class TelegramInlineService {
   constructor(
     private readonly config: AppConfigService,
-    private readonly stats: BotStatsService,
+    private readonly stats: BotStatsReaderService,
     private readonly replies: BotRepliesService
   ) {}
 

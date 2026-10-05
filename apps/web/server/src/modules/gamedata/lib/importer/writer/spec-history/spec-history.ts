@@ -1,7 +1,7 @@
 import type { PlanWriteInput, SpecHistoryCounts } from '../../importer.types';
 
-import { diffSpecs } from '../../diff';
-import { inBatches, toStoredJson } from '../batches';
+import { diffSpecs } from '../../diff/diff';
+import { inBatches, toStoredJson } from '../batches/batches';
 
 export const writeSpecHistory = async ({ prisma, plan, gameVersionId }: PlanWriteInput): Promise<SpecHistoryCounts> => {
   const previous = await prisma.vehicleSpecHistory.findMany({

@@ -8,10 +8,10 @@ import type { PlayerTank } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
 import { EntitlementsService } from '../../../billing';
-import { MissionProgressService } from '../../../missions';
+import { MissionProgressReaderService } from '../../../missions';
 import { PlayerMarksReaderService } from '../../../players';
 import { VehicleCatalogService } from '../../../reference';
-import { PLAYLIST_RULES } from '../../config';
+import { PLAYLIST_RULES } from '../../config/playlist.constants';
 import { FirstWinReaderService } from '../first-win-reader.service';
 import { OwnAccountReaderService } from '../own-account-reader.service';
 import { PlaylistReaderService } from '../playlist-reader.service';
@@ -44,7 +44,7 @@ const setup = ({ isPlus }: { isPlus: boolean }) => {
   const accounts = mock<OwnAccountReaderService>();
   const firstWin = mock<FirstWinReaderService>();
   const marks = mock<PlayerMarksReaderService>();
-  const missions = mock<MissionProgressService>();
+  const missions = mock<MissionProgressReaderService>();
   const entitlements = mock<EntitlementsService>();
 
   entitlements.isPlus.mockResolvedValue(isPlus);

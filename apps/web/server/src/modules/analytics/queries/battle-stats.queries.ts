@@ -3,7 +3,7 @@ import { expressionBuilder } from 'kysely';
 import type { DB } from '../../../../generated/kysely/database';
 import type { OwnBattlesInput, TankReferenceInput } from './battle-stats.types';
 
-import { BATTLE_REVIEW } from '../config';
+import { BATTLE_REVIEW } from '../config/battle-review.constants';
 
 const battle = expressionBuilder<DB, 'battle'>();
 

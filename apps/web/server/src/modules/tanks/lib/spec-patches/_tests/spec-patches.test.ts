@@ -2,7 +2,7 @@ import type { TankPatchChange } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 
-import { SPEC_DIRECTION } from '../../../config';
+import { SPEC_DIRECTION } from '../../../config/patches.constants';
 import { changeEffect, patchVerdict, readSpecChanges } from '../spec-patches';
 
 const [higher = ''] = SPEC_DIRECTION.higher;

@@ -28,7 +28,7 @@ import type { UploadedReplayFile } from './replays.types';
 import { CACHE_TTL } from '../../common/cache';
 import { CurrentUserId, OptionalUserId } from '../../common/decorators';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
-import { REPLAY_UPLOAD } from './config';
+import { REPLAY_UPLOAD } from './config/upload.constants';
 import {
   BestOfWeekDto,
   BestOfWeekQueryDto,
@@ -45,19 +45,22 @@ import {
   UpdateReplayDto,
   UploadedReplayDto,
   UploadReplayDto
-} from './dto';
-import { ModDeviceGuard } from './guards';
-import { ReplayFileInterceptor } from './interceptors';
-import { HeatmapService, ReplayOwnerService, ReplayQueryService, ReplayUploadService } from './services';
+} from './dto/replays.dto';
+import { ModDeviceGuard } from './guards/mod-device.guard';
+import { ReplayFileInterceptor } from './interceptors/replay-file.interceptor';
+import { HeatmapReaderService } from './services/heatmap-reader.service';
+import { ReplayOwnerWriterService } from './services/replay-owner-writer.service';
+import { ReplayReaderService } from './services/replay-reader.service';
+import { ReplayUploadWriterService } from './services/replay-upload-writer.service';
 
 @ApiTags('replays')
 @Controller('replays')
 export class ReplaysController {
   constructor(
-    private readonly uploads: ReplayUploadService,
-    private readonly queries: ReplayQueryService,
-    private readonly owners: ReplayOwnerService,
-    private readonly heatmaps: HeatmapService
+    private readonly uploads: ReplayUploadWriterService,
+    private readonly queries: ReplayReaderService,
+    private readonly owners: ReplayOwnerWriterService,
+    private readonly heatmaps: HeatmapReaderService
   ) {}
 
   @Post()

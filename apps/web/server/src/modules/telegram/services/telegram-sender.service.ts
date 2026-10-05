@@ -5,8 +5,8 @@ import { Bot } from 'grammy';
 
 import type { BotContext, SendNotificationInput, SendTextInput } from '../telegram.types';
 
-import { TELEGRAM_TOKENS } from '../config';
-import { openButton } from '../lib';
+import { TELEGRAM_TOKENS } from '../config/bot.constants';
+import { openButton } from '../lib/keyboard/keyboard';
 
 @Injectable()
 export class TelegramSenderService {

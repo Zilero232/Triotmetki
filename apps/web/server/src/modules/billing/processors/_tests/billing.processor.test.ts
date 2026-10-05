@@ -4,8 +4,8 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../../collector/metrics';
-import type { PromoService } from '../../services/promo.service';
-import type { RenewalService } from '../../services/renewal.service';
+import type { PromoWriterService } from '../../services/promo-writer.service';
+import type { RenewalWriterService } from '../../services/renewal-writer.service';
 
 import { BILLING_QUEUE } from '../../config/queue.constants';
 import { BillingProcessor } from '../billing.processor';
@@ -13,8 +13,8 @@ import { BillingProcessor } from '../billing.processor';
 const trackingMetrics = () => mock<MetricsService>({ track: async ({ run }) => run() });
 
 const createProcessor = () => {
-  const renewals = mock<RenewalService>();
-  const promos = mock<PromoService>();
+  const renewals = mock<RenewalWriterService>();
+  const promos = mock<PromoWriterService>();
 
   renewals.chargeDue.mockResolvedValue(3);
   renewals.expireDue.mockResolvedValue(5);

@@ -1,4 +1,4 @@
-import type { GarageScope } from './config';
+import type { GarageScope } from './config/lesta-links-queue.types';
 
 export type GarageDispatchInput = {
   scope: GarageScope;

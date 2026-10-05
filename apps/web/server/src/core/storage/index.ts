@@ -1,4 +1,4 @@
-export { StorageObjectMissingError } from './errors';
+export { StorageObjectMissingError } from './errors/object-missing-error';
 export { LocalDiskStorage } from './local-disk.storage';
 export { ObjectStorage } from './object-storage';
 export { STORAGE_ROOT } from './storage.constants';

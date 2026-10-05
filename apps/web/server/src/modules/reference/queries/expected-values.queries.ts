@@ -1,6 +1,6 @@
 import type { Database } from '../../../core';
 
-export const latestExpectedValues = (db: Database) =>
+const latestExpectedValues = (db: Database) =>
   db
     .selectFrom('wn8_expected_value')
     .distinctOn('tank_id')

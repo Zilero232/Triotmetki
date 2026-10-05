@@ -41,14 +41,16 @@ export class ProgressionAggregateService {
 
   async run(now: Date): Promise<number> {
     const subscriptions = await this.prisma.subscription.findMany({ where: entitledSubscriptionWhere(now), select: { userId: true } });
-    const links = await this.prisma.userLestaAccount.findMany({
+    const entitled = await this.prisma.userLestaAccount.findMany({
       where: { userId: { in: subscriptions.map((subscription) => subscription.userId) } },
       select: { userId: true, accountId: true },
-      take: PROGRESSION_RUN.maxAccountsPerRun
+      orderBy: [{ player: { progressionProcessedUntil: { sort: 'asc', nulls: 'first' } } }, { accountId: 'asc' }]
     });
 
+    const links = entitled.slice(0, PROGRESSION_RUN.maxAccountsPerRun);
+
     await this.prisma.player.updateMany({
-      where: { accountId: { notIn: links.map((link) => link.accountId) }, progressionProcessedUntil: { lt: now } },
+      where: { accountId: { notIn: entitled.map((link) => link.accountId) }, progressionProcessedUntil: { lt: now } },
       data: { progressionProcessedUntil: now }
     });
 

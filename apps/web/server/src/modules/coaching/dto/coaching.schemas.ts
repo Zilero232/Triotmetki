@@ -11,7 +11,7 @@ import {
 import { z } from 'zod';
 
 import { playerStatsSchema } from '../../community-core';
-import { COACHING } from '../config';
+import { COACHING } from '../config/coaching.constants';
 
 const priceSchema = z.number().min(COACHING.minPriceRub).max(COACHING.maxPriceRub);
 

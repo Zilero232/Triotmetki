@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import type { CollabContext, TacticBoardData } from '../../tactics.types';
 
-import { BOARD_DOCUMENT, TACTICS } from '../../config';
+import { BOARD_DOCUMENT, TACTICS } from '../../config/tactics.constants';
 import { BoardLiveService } from '../board-live.service';
 
 const BOARD_ID = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';

@@ -46,13 +46,6 @@ describe('HttpClientService.getJson', () => {
     expect(item).toEqual({ id: 2, name: 'IS-7' });
     expect(calls).toHaveLength(2);
   });
-
-  it('keeps the unparsed single-attempt read for callers that pass no schema', async () => {
-    const { fetch, calls } = replies(() => new Response(null, { status: 503 }));
-
-    await expect(new HttpClientService().getJson({ url: URL, options: { fetch } })).rejects.toBeInstanceOf(HTTPError);
-    expect(calls).toHaveLength(1);
-  });
 });
 
 describe('HttpClientService.requestJson', () => {

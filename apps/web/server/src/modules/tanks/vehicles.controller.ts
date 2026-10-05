@@ -6,8 +6,8 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
-import { VehicleCatalogDto, VehicleFilterDto } from './dto';
-import { VehiclesReaderService } from './services';
+import { VehicleCatalogDto, VehicleFilterDto } from './dto/tanks.dto';
+import { VehiclesReaderService } from './services/vehicles-reader.service';
 
 @ApiTags('tanks')
 @AllowAnonymous()

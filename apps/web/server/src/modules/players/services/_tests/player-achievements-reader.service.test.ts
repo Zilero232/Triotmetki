@@ -4,7 +4,7 @@ import { mockDeep } from 'vitest-mock-extended';
 import type { PrismaService } from '../../../../core';
 import type { LestaClient } from '../../../../lib/lesta';
 
-import { PLAYER_ACHIEVEMENTS } from '../../config';
+import { PLAYER_ACHIEVEMENTS } from '../../config/player-lookup.constants';
 import { PlayerAchievementsReaderService } from '../player-achievements-reader.service';
 
 const createService = () => {

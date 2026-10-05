@@ -7,7 +7,7 @@ import type { PrismaService } from '../../../../core';
 import type { NotificationService } from '../../../notifications';
 import type { ClanAccessService } from '../clan-access.service';
 
-import { CLAN_WORKSPACE } from '../../config';
+import { CLAN_WORKSPACE } from '../../config/workspace.constants';
 import { OfficerReportService } from '../officer-report.service';
 
 const now = new Date('2026-09-23T10:00:00Z');

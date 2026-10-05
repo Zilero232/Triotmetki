@@ -1,19 +1,18 @@
-export const LOWER_IS_BETTER: readonly string[] = [
-  'reloadTime',
-  'aimingTime',
-  'dispersion',
-  'dispersionMovement',
-  'dispersionHullRotation',
-  'dispersionTurretRotation',
-  'dispersionAfterShot',
-  'weight',
-  'interval'
-];
-
-export const SPECS: Readonly<{ maxDepth: number; separator: string; skip: readonly string[] }> = {
+export const SPECS: Readonly<{ maxDepth: number; separator: string; skip: readonly string[]; lowerIsBetter: readonly string[] }> = {
   maxDepth: 4,
   separator: '.',
-  skip: ['moduleIds', 'modules']
+  skip: ['moduleIds', 'modules'],
+  lowerIsBetter: [
+    'reloadTime',
+    'aimingTime',
+    'dispersion',
+    'dispersionMovement',
+    'dispersionHullRotation',
+    'dispersionTurretRotation',
+    'dispersionAfterShot',
+    'weight',
+    'interval'
+  ]
 };
 
 export const COMPARE_PROFILE = {

@@ -1,6 +1,6 @@
 import type { Modifier, ModifierCondition } from '@otmetki/gamedata';
 
-import type { XmlNode } from '../../xml';
+import type { XmlNode } from '../../xml/xml.types';
 
 export type SpecialModifierInput = {
   script: XmlNode;

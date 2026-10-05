@@ -3,7 +3,9 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../../collector/metrics';
-import type { SessionCloseService, WebhookDeliveryService, WebhookRedriveService } from '../../services';
+import type { SessionCloseService } from '../../services/session-close.service';
+import type { WebhookDeliveryService } from '../../services/webhook-delivery.service';
+import type { WebhookRedriveService } from '../../services/webhook-redrive.service';
 
 import { JOB } from '../../../collector';
 import { WebhooksProcessor } from '../webhooks.processor';

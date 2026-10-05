@@ -1,13 +1,14 @@
 import { z } from 'zod';
 
 import type { FieldList, LestaCallOptions, LestaRequester, LestaResponse, Selected } from '../client/client.types';
-import type { EncyclopediaInfo, Vehicle, VehicleProfile } from '../schemas';
+import type { EncyclopediaInfo, Vehicle, VehicleProfile } from '../schemas/encyclopedia/encyclopedia.types';
 import type { VehicleProfileInput, VehicleProfilesInput, VehiclesInput } from './methods.types';
 
 import { LESTA_API } from '../client/client.constants';
-import { callParams, fieldAwareSchema } from '../client/params';
-import { encyclopediaInfoSchema, idMapOf, vehicleProfileSchema, vehicleSchema } from '../schemas';
-import { batchedMap, passthrough, passthroughById } from './call-shapes';
+import { callParams, fieldAwareSchema } from '../client/params/params';
+import { idMapOf } from '../schemas/common/common.schemas';
+import { encyclopediaInfoSchema, vehicleProfileSchema, vehicleSchema } from '../schemas/encyclopedia/encyclopedia.schemas';
+import { batchedMap, passthrough, passthroughById } from './call-shapes/call-shapes';
 
 export const createEncyclopediaMethods = (requester: LestaRequester) => {
   const vehicles = async <const F extends FieldList | undefined = undefined>({

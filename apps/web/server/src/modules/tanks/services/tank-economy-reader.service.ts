@@ -10,9 +10,9 @@ import type { AccountEconomyLookup, TankEconomyListInput } from '../tanks.types'
 import { page, sortRows } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
-import { ACCOUNT_ECONOMY } from '../config';
-import { accountEconomy } from '../lib';
-import { toTankEconomy } from '../mappers';
+import { ACCOUNT_ECONOMY } from '../config/tank-economy.constants';
+import { accountEconomy } from '../lib/tank-economy/tank-economy';
+import { toTankEconomy } from '../mappers/tank-economy.mappers';
 import { TankTraitsReaderService } from './tank-traits-reader.service';
 
 @Injectable()

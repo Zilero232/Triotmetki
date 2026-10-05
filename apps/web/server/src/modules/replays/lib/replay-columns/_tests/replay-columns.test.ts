@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { parseReplaySummary } from '../../../../../lib/replay';
 import { FIXTURE, readFixture } from '../../../../../lib/replay/_tests/fixtures';
-import { REPLAY_PARSE } from '../../../config';
+import { REPLAY_PARSE } from '../../../config/parse.constants';
 import { replayColumns, replayPlayedAt } from '../replay-columns';
 
 const full = parseReplaySummary(readFixture(FIXTURE.wgFull));

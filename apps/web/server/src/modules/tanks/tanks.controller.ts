@@ -23,16 +23,14 @@ import {
   TierListQueryDto,
   TopPlayersDto,
   TopPlayersQueryDto
-} from './dto';
-import {
-  TankDetailReaderService,
-  TankEconomyReaderService,
-  TankPatchesReaderService,
-  TankStatsReaderService,
-  TankTrendReaderService,
-  TierListReaderService,
-  TopPlayersReaderService
-} from './services';
+} from './dto/tanks.dto';
+import { TankDetailReaderService } from './services/tank-detail-reader.service';
+import { TankEconomyReaderService } from './services/tank-economy-reader.service';
+import { TankPatchesReaderService } from './services/tank-patches-reader.service';
+import { TankStatsReaderService } from './services/tank-stats-reader.service';
+import { TankTrendReaderService } from './services/tank-trend-reader.service';
+import { TierListReaderService } from './services/tier-list-reader.service';
+import { TopPlayersReaderService } from './services/top-players-reader.service';
 
 @ApiTags('tanks')
 @AllowAnonymous()

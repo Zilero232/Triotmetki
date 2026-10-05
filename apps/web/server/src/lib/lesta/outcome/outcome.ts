@@ -1,6 +1,6 @@
 import type { ClassifyLestaResponseInput, LestaOutcome } from './outcome.types';
 
-import { RETRYABLE_LESTA_CODES } from '../errors';
+import { RETRYABLE_LESTA_CODES } from '../errors/errors.constants';
 import { LESTA_HTTP } from './outcome.constants';
 
 export const classifyLestaResponse = ({ status, errorCode }: ClassifyLestaResponseInput): LestaOutcome => {

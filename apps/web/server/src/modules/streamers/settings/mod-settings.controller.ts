@@ -12,7 +12,7 @@ import { ModDeviceService } from '../../mod';
 import { IdParamsDto } from '../dto/params.dto';
 import { STREAMERS } from '../profiles';
 import { ModApplyListDto } from './dto/settings.dto';
-import { SettingsShareService } from './services/settings-share.service';
+import { SettingsShareWriterService } from './services/settings-share-writer.service';
 
 @ApiTags('mod')
 @AllowAnonymous()
@@ -21,7 +21,7 @@ import { SettingsShareService } from './services/settings-share.service';
 export class ModSettingsController {
   constructor(
     private readonly devices: ModDeviceService,
-    private readonly shares: SettingsShareService
+    private readonly shares: SettingsShareWriterService
   ) {}
 
   @Post()

@@ -4,7 +4,7 @@ import type { z } from 'zod';
 import type { TacticBoard } from '../../../generated';
 import type { ById, Owned } from '../community-core';
 import type { createTacticBoardSchema, tacticBoardDataSchema, tacticBoardSchema, updateTacticBoardSchema } from './dto/tactics.schemas';
-import type { BoardRole } from './lib/board-access';
+import type { BoardRole } from './lib/board-access/board-access.types';
 
 export type TacticBoardView = z.infer<typeof tacticBoardSchema>;
 export type TacticBoardData = z.infer<typeof tacticBoardDataSchema>;

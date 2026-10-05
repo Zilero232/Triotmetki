@@ -5,13 +5,13 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId, OptionalUserId } from '../../common/decorators';
 import { IdParamsDto, LikeResultDto, SlugParamsDto } from '../community-core';
-import { CreateGuideDto, GuideAuthorsDto, GuideDto, GuideListDto, GuidePageDto, GuidesQueryDto, UpdateGuideDto } from './dto';
-import { GuideService } from './services';
+import { CreateGuideDto, GuideAuthorsDto, GuideDto, GuideListDto, GuidePageDto, GuidesQueryDto, UpdateGuideDto } from './dto/guides.dto';
+import { GuideWriterService } from './services/guide-writer.service';
 
 @ApiTags('community')
 @Controller('community/guides')
 export class GuidesController {
-  constructor(private readonly guides: GuideService) {}
+  constructor(private readonly guides: GuideWriterService) {}
 
   @OptionalAuth()
   @Get()

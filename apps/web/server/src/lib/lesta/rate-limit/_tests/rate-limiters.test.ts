@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { RateLimiter } from '../rate-limit.types';
 
-import { LestaQueueFullError } from '../../errors';
+import { LestaQueueFullError } from '../../errors/lesta-api-error';
 import { RATE_LIMIT } from '../rate-limit.constants';
 import { createRedisRateLimiter } from '../rate-limiters';
 

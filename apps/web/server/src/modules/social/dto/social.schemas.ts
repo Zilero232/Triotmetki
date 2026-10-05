@@ -105,7 +105,7 @@ export const signatureParamsSchema = z.object({
 export const wrappedParamsSchema = z.object({ id: accountIdSchema });
 
 export const wrappedQuerySchema = z.object({
-  year: z.coerce.number().int().min(WRAPPED.minYear).max(2100).optional()
+  year: z.coerce.number().int().min(WRAPPED.minYear).max(WRAPPED.maxYear).optional()
 });
 
 export const wrappedSchema = z.object({

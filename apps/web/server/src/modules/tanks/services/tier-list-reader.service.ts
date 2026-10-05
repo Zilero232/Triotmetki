@@ -6,8 +6,8 @@ import { firstBy } from 'remeda';
 import { clampPercentDelta, SERVER_PERIOD_TO_DB, STATS_MODE_TO_DB } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
-import { TIER_LIST } from '../config';
-import { rankTierList } from '../lib';
+import { TIER_LIST } from '../config/tanks.constants';
+import { rankTierList } from '../lib/tier-list/tier-list';
 
 @Injectable()
 export class TierListReaderService {

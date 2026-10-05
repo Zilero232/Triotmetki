@@ -4,7 +4,7 @@ import { ApplicationCommandOptionType, ChannelType, InteractionContextType, Perm
 
 import type { CommandDefinitionsInput } from './command-definitions.types';
 
-import { DISCORD_OPTIONS } from '../../config';
+import { DISCORD_OPTIONS } from '../../config/commands.constants';
 
 export const commandDefinitions = ({ describe }: CommandDefinitionsInput): RESTPutAPIApplicationCommandsJSONBody => {
   const textChannels: ApplicationCommandOptionAllowedChannelType[] = [ChannelType.GuildText, ChannelType.GuildAnnouncement];

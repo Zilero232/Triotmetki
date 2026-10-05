@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { StorageObjectMissingError } from '../errors';
+import { StorageObjectMissingError } from '../errors/object-missing-error';
 import { LocalDiskStorage } from '../local-disk.storage';
 
 const body = new TextEncoder().encode('replay bytes');

@@ -11,7 +11,7 @@ import type {
 } from '@otmetki/schemas';
 
 import type { Goal as GoalRow } from '../../../generated';
-import type { GoalWindow } from './lib';
+import type { GoalWindow } from './lib/goal/goal.types';
 
 export type { Favorite, Goal, LinkedAccounts, ModGoals };
 

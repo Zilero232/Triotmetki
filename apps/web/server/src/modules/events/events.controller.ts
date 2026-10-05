@@ -3,15 +3,15 @@ import { ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
-import { EVENT_ICS } from './config';
-import { GameEventListDto, GameEventsQueryDto } from './dto';
-import { EventQueryService } from './services';
+import { EVENT_ICS } from './config/ics.constants';
+import { GameEventListDto, GameEventsQueryDto } from './dto/events.dto';
+import { EventReaderService } from './services/event-reader.service';
 
 @ApiTags('events')
 @AllowAnonymous()
 @Controller('events')
 export class EventsController {
-  constructor(private readonly events: EventQueryService) {}
+  constructor(private readonly events: EventReaderService) {}
 
   @Get()
   @ZodResponse({ type: GameEventListDto })

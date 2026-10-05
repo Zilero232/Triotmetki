@@ -4,7 +4,7 @@ import { isNumber } from 'remeda';
 
 import type { ChangeEffect, PatchVerdictInput, SpecChange } from './spec-patches.types';
 
-import { SPEC_DIRECTION } from '../../config';
+import { SPEC_DIRECTION } from '../../config/patches.constants';
 import { specChangesSchema } from './spec-patches.schemas';
 
 const higherIsBetter = (path: string): boolean | null => {

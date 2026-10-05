@@ -11,9 +11,13 @@ import { paginate } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
 import { UsageMeterService } from '../../usage';
-import { ANALYTICS_QUERIES, BATTLE_REVIEW } from '../config';
-import { readStoredShots, reviewBattle, shotRolls } from '../lib';
-import { toMyBattle, toTankReference } from '../mappers';
+import { BATTLE_REVIEW } from '../config/battle-review.constants';
+import { ANALYTICS_QUERIES } from '../config/queries.constants';
+import { reviewBattle } from '../lib/battle-review/battle-review';
+import { shotRolls } from '../lib/rolls/rolls';
+import { readStoredShots } from '../lib/stored-shots/stored-shots';
+import { toMyBattle } from '../mappers/my-battle.mappers';
+import { toTankReference } from '../mappers/tank-reference.mappers';
 import { OwnAccountReaderService } from './own-account-reader.service';
 
 @Injectable()

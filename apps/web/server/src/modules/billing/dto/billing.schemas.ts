@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { yookassaWebhookSchema } from '../lib/yookassa';
+import { yookassaWebhookSchema } from '../lib/yookassa/yookassa.schemas';
 
 export const webhookAckSchema = z.object({
   received: z.literal(true)

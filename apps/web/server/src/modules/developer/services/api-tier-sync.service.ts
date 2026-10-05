@@ -9,9 +9,9 @@ import type { ApplyTierInput } from '../developer.types';
 import { errorMessage } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { EntitlementsBusService } from '../../billing';
-import { keyTierOf, tierMetadata } from '../lib';
-import { ApiTierService } from './api-tier.service';
-import { WebhookEndpointsService } from './webhook-endpoints.service';
+import { keyTierOf, tierMetadata } from '../lib/api-key/api-key';
+import { ApiTierReaderService } from './api-tier-reader.service';
+import { WebhookEndpointsWriterService } from './webhook-endpoints-writer.service';
 
 @Injectable()
 export class ApiTierSyncService implements OnModuleInit, OnModuleDestroy {
@@ -20,8 +20,8 @@ export class ApiTierSyncService implements OnModuleInit, OnModuleDestroy {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly tiers: ApiTierService,
-    private readonly webhooks: WebhookEndpointsService,
+    private readonly tiers: ApiTierReaderService,
+    private readonly webhooks: WebhookEndpointsWriterService,
     private readonly bus: EntitlementsBusService
   ) {}
 

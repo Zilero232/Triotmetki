@@ -1,6 +1,6 @@
 import type { ChatTextInput } from './chat-copy.types';
 
-import { createFluentStore } from '../../../../telegram';
+import { createFluentStore } from '../../../../bot-commands';
 import { CHAT_COPY } from '../../config/chat.constants';
 
 const store = createFluentStore({ files: CHAT_COPY.files });

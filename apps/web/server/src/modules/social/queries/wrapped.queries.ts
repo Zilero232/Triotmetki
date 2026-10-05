@@ -1,5 +1,6 @@
 import type { WrappedRangeInput, WrappedTopTanksInput } from './wrapped.types';
 
+import { moscowBucket } from '../../../core';
 import { ownerTrustedBattle } from '../../mod';
 
 export const wrappedTopTanks = ({ db, accountId, start, end, limit }: WrappedTopTanksInput) =>
@@ -23,12 +24,13 @@ export const wrappedTopTanks = ({ db, accountId, start, end, limit }: WrappedTop
 export const wrappedBusiestMonth = ({ db, accountId, start, end }: WrappedRangeInput) =>
   db
     .selectFrom('play_session')
-    .select((eb) => [eb.fn<number>('date_part', [eb.val('month'), 'started_at']).as('month'), eb.fn.sum<number>('battles').as('battles')])
+    .select((eb) => [moscowBucket({ granularity: 'month', column: 'started_at' }).as('monthStart'), eb.fn.sum<number>('battles').as('battles')])
     .where('account_id', '=', accountId)
     .where('started_at', '>=', start)
     .where('started_at', '<', end)
-    .groupBy('month')
+    .groupBy('monthStart')
     .orderBy('battles', 'desc')
+    .orderBy('monthStart', 'asc')
     .limit(1)
     .executeTakeFirst();
 
@@ -48,6 +50,7 @@ export const wrappedBestBattle = ({ db, accountId, start, end }: WrappedRangeInp
     .where('battle.started_at', '<', end)
     .where(ownerTrustedBattle)
     .orderBy('battle.damage_dealt', 'desc')
+    .orderBy('battle.started_at', 'asc')
     .limit(1)
     .executeTakeFirst();
 

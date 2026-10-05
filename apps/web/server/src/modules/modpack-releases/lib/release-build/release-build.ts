@@ -4,7 +4,7 @@ import { sortBy } from 'remeda';
 
 import type { BuildReleaseInput, MergeReleaseIndexInput, ModpackCatalog, ReleasePayloadInput, UnsignedModpackRelease } from './release-build.types';
 
-import { newestFirst } from '../release-order';
+import { newestFirst } from '../release-order/release-order';
 import { RELEASE_BUILD } from './release-build.constants';
 
 const hex = (digest: string) => digest.trim().toLowerCase();

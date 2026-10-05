@@ -1,6 +1,6 @@
 import type { MatchDonationInput, OpenChallenge } from './donation-match.types';
 
-import { extractChallengeCodes } from '../challenge-code';
+import { extractChallengeCodes } from '../challenge-code/challenge-code';
 
 export const matchDonation = <T extends OpenChallenge>({ message, amount, currency, challenges }: MatchDonationInput<T>): T | null => {
   const codes = extractChallengeCodes(message);

@@ -15,7 +15,7 @@ import { AllExceptionsFilter } from '../../../common/filters';
 import { AppConfigService } from '../../../config';
 import { PrismaService, REDIS } from '../../../core';
 import { ModReportsController } from '../mod-reports.controller';
-import { ModReportsService } from '../services';
+import { ModReportsWriterService } from '../services/mod-reports-writer.service';
 
 const prisma = mockDeep<PrismaService>();
 const config = mock<AppConfigService>();
@@ -38,7 +38,7 @@ beforeAll(async () => {
   const moduleRef = await Test.createTestingModule({
     controllers: [ModReportsController],
     providers: [
-      ModReportsService,
+      ModReportsWriterService,
       { provide: PrismaService, useValue: prisma },
       { provide: AppConfigService, useValue: config },
       { provide: REDIS, useValue: new RedisMock() },

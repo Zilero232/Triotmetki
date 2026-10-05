@@ -3,8 +3,10 @@ import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
 import { MetricsService, TrackedWorkerHost } from '../../collector/metrics';
-import { DISCORD_QUEUE } from '../config';
-import { DiscordRemindersService, DiscordReportService, DiscordRolesService } from '../services';
+import { DISCORD_QUEUE } from '../config/queue.constants';
+import { DiscordRemindersService } from '../services/discord-reminders.service';
+import { DiscordReportService } from '../services/discord-report.service';
+import { DiscordRolesService } from '../services/discord-roles.service';
 
 @Processor(DISCORD_QUEUE.name, { concurrency: 1 })
 export class DiscordProcessor extends TrackedWorkerHost {

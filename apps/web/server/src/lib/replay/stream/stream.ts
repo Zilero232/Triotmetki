@@ -1,9 +1,9 @@
 import { Blowfish } from 'egoroof-blowfish';
 import { inflateSync } from 'node:zlib';
 
-import type { ReplayStreamSection } from '../container';
+import type { ReplayStreamSection } from '../container/container.types';
 
-import { ReplayFormatError } from '../errors';
+import { ReplayFormatError } from '../errors/replay-format-error';
 import { REPLAY_CIPHER } from './stream.constants';
 
 export const replayCipherKey = () => Uint8Array.from(Buffer.from(REPLAY_CIPHER.keyHex, 'hex'));

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 
-import { TechTreeService } from './services';
+import { TechTreeReaderService } from './services/tech-tree-reader.service';
 import { TreeController } from './tree.controller';
 
 @Module({
   controllers: [TreeController],
-  providers: [TechTreeService]
+  providers: [TechTreeReaderService]
 })
 export class TreeModule {}

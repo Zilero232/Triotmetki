@@ -9,9 +9,9 @@ import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { ModDeviceService } from '../mod';
-import { MOD_GOALS } from './config';
-import { ModGoalsDto, ModGoalsRequestDto } from './dto';
-import { GoalsService } from './services';
+import { MOD_GOALS } from './config/me.constants';
+import { ModGoalsDto, ModGoalsRequestDto } from './dto/me.dto';
+import { GoalsWriterService } from './services/goals-writer.service';
 
 @ApiTags('mod')
 @AllowAnonymous()
@@ -20,7 +20,7 @@ import { GoalsService } from './services';
 export class ModGoalsController {
   constructor(
     private readonly devices: ModDeviceService,
-    private readonly goals: GoalsService
+    private readonly goals: GoalsWriterService
   ) {}
 
   @Post('goals')

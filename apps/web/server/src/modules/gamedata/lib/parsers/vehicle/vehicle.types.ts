@@ -1,6 +1,6 @@
 import type { Armor, Nation, Shell, VehicleListEntry } from '@otmetki/gamedata';
 
-import type { XmlNode, XmlValue } from '../../xml';
+import type { XmlNode, XmlValue } from '../../xml/xml.types';
 
 export type SharedComponents = {
   chassis: Record<string, XmlNode>;

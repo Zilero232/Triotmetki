@@ -9,7 +9,7 @@ import type { NotificationService } from '../../../notifications';
 import type { PlayerActivityRow } from '../../watchlist.types';
 import type { WatchlistActivityReaderService } from '../watchlist-activity-reader.service';
 
-import { WATCHLIST_DIGEST_RUN } from '../../config';
+import { WATCHLIST_DIGEST_RUN } from '../../config/queue.constants';
 import { WatchlistDigestService } from '../watchlist-digest.service';
 
 const now = new Date('2026-09-26T10:05:00Z');

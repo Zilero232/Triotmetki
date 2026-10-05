@@ -13,14 +13,14 @@ import {
   ModpackManagerUpdateDto,
   ModpackManagerUpdateQueryDto,
   ModpackReleasesStatusDto
-} from './dto';
-import { ModpackReleasesService } from './services';
+} from './dto/modpack-releases.dto';
+import { ModpackReleasesReaderService } from './services/modpack-releases-reader.service';
 
 @ApiTags('modpack')
 @AllowAnonymous()
 @Controller('modpack')
 export class ModpackReleasesController {
-  constructor(private readonly releases: ModpackReleasesService) {}
+  constructor(private readonly releases: ModpackReleasesReaderService) {}
 
   @Get('releases/latest')
   @ApiOperation({ operationId: 'getLatestModpackRelease', summary: 'The newest modpack release that supports a game client version' })

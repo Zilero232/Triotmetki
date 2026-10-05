@@ -1,6 +1,6 @@
 import type { ApiErrorCode } from '@otmetki/schemas';
 
-import type { PromoRejection } from '../lib/promo-check';
+import type { PromoRejection } from '../lib/promo-check/promo-check.types';
 
 export const PROMO_REJECTION_CODE = {
   unknown: 'PROMO_INVALID',

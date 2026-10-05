@@ -5,9 +5,11 @@ import type { DeliverInput, FailDeliveryInput } from '../developer.types';
 
 import { errorMessage } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { WEBHOOK_DELIVERY } from '../config';
-import { publicAddressOf, webhookHeaders, WebhookResponseError } from '../lib';
-import { webhookEventFromDb } from '../mappers';
+import { WEBHOOK_DELIVERY } from '../config/webhook-delivery.constants';
+import { WebhookResponseError } from '../lib/webhook-post/webhook-post';
+import { webhookHeaders } from '../lib/webhook-signature/webhook-signature';
+import { publicAddressOf } from '../lib/webhook-url/webhook-url';
+import { webhookEventFromDb } from '../mappers/webhooks.mappers';
 import { HostLookupService } from './host-lookup.service';
 import { WebhookPosterService } from './webhook-poster.service';
 

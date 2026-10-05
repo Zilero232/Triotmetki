@@ -8,7 +8,7 @@ import { cleanupOpenApiDoc } from 'nestjs-zod';
 import type { PublicDocumentInput, SetupDocsInput } from './openapi.types';
 
 import { OPENAPI } from './openapi.constants';
-import { repairNullable } from './repair-nullable';
+import { repairNullable } from './repair-nullable/repair-nullable';
 
 export const internalDocument = (app: INestApplication): OpenAPIObject => {
   const config = new DocumentBuilder()

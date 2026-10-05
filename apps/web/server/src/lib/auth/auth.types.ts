@@ -2,11 +2,11 @@ import type { LoggerService } from '@nestjs/common';
 import type { Redis } from 'ioredis';
 
 import type { PrismaClient } from '../../../generated';
-import type { Env } from '../../config/env';
+import type { Env } from '../../config/env/env.types';
 import type { LestaClient } from '../lesta';
 import type { createAuth } from './auth';
-import type { LestaAccountStore } from './lesta-id';
-import type { TelegramAccountStore } from './telegram-login';
+import type { LestaAccountStore } from './lesta-id/lesta-id.types';
+import type { TelegramAccountStore } from './telegram-login/telegram-login.types';
 
 export type PlaceholderEmailInput = {
   provider: string;

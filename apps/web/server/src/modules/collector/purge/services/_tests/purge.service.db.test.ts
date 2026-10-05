@@ -37,6 +37,13 @@ describeWithDatabase('PurgeService.purgeAccount', () => {
     await prisma.weeklyChallengeProgress.createMany({
       data: [purged, kept].map((accountId) => ({ accountId, weekStart: PURGE_SEED.weekStart, code: 'battles', progress: 1, target: 10 }))
     });
+
+    const organizer = await prisma.user.create({ data: { name: 'organizer', email: 'organizer@example.com' } });
+    const tournament = await prisma.tournament.create({
+      data: { organizerUserId: organizer.id, slug: 'cup', title: 'Cup', startsAt: PURGE_SEED.capturedAt }
+    });
+
+    await prisma.tournamentParticipant.createMany({ data: [purged, kept].map((accountId) => ({ tournamentId: tournament.id, accountId })) });
   };
 
   const openRequest = async (status: 'pending' | 'superseded' = 'pending') =>
@@ -49,7 +56,8 @@ describeWithDatabase('PurgeService.purgeAccount', () => {
     players: await prisma.player.count({ where: { accountId } }),
     playerTanks: await prisma.playerTank.count({ where: { accountId } }),
     clanMemberEvents: await prisma.clanMemberEvent.count({ where: { accountId } }),
-    weeklyChallengeProgress: await prisma.weeklyChallengeProgress.count({ where: { accountId } })
+    weeklyChallengeProgress: await prisma.weeklyChallengeProgress.count({ where: { accountId } }),
+    tournamentParticipants: await prisma.tournamentParticipant.count({ where: { accountId } })
   });
 
   const replaySummary = async (storageKey: string) => (await prisma.replay.findUniqueOrThrow({ where: { storageKey } })).summary;
@@ -61,7 +69,8 @@ describeWithDatabase('PurgeService.purgeAccount', () => {
     players: 1,
     playerTanks: 1,
     clanMemberEvents: 1,
-    weeklyChallengeProgress: 1
+    weeklyChallengeProgress: 1,
+    tournamentParticipants: 1
   };
 
   const noRows = {
@@ -71,7 +80,8 @@ describeWithDatabase('PurgeService.purgeAccount', () => {
     players: 0,
     playerTanks: 0,
     clanMemberEvents: 0,
-    weeklyChallengeProgress: 0
+    weeklyChallengeProgress: 0,
+    tournamentParticipants: 0
   };
 
   beforeEach(async () => {
@@ -85,6 +95,9 @@ describeWithDatabase('PurgeService.purgeAccount', () => {
         'clan',
         'clan_member_event',
         'weekly_challenge_progress',
+        'tournament_participant',
+        'tournament',
+        'user',
         'replay',
         'rng_daily',
         'data_deletion_request'

@@ -9,8 +9,8 @@ import type { ModeMetaInput, ToModeTanksInput } from '../modes.types';
 
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
-import { MODE_SEASON_EVENT } from '../config';
-import { rankModeTanks } from '../lib/mode-rank';
+import { MODE_SEASON_EVENT } from '../config/modes.constants';
+import { rankModeTanks } from '../lib/mode-rank/mode-rank';
 
 @Injectable()
 export class ModeMetaReaderService {

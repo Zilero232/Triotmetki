@@ -2,7 +2,7 @@ import type { ModpackRelease } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 
-import { parseChangelog } from '../../changelog';
+import { parseChangelog } from '../../changelog/changelog';
 import { release } from '../../release-index/_tests/fixtures';
 import { changedPackages, modpackChangelog, packageVersion, releaseChanges } from '../release-changes';
 

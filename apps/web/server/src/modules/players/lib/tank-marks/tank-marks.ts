@@ -4,7 +4,7 @@ import { clamp } from 'remeda';
 
 import type { MarkCounts } from './tank-marks.types';
 
-import { PLAYER_MARKS } from '../../config';
+import { PLAYER_MARKS } from '../../config/player-stats.constants';
 
 export const clampMastery = (markOfMastery: number): number => clamp(markOfMastery, { min: 0, max: PLAYER_MARKS.maxMastery });
 

@@ -3,13 +3,13 @@ import { ApiTags } from '@nestjs/swagger';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId } from '../../common/decorators';
-import { ModSyncLibrariesDto } from './dto';
-import { ModSyncService } from './services';
+import { ModSyncLibrariesDto } from './dto/mod-sync.dto';
+import { ModSyncWriterService } from './services/mod-sync-writer.service';
 
 @ApiTags('mod')
 @Controller('mod/sync')
 export class ModSyncAccountController {
-  constructor(private readonly sync: ModSyncService) {}
+  constructor(private readonly sync: ModSyncWriterService) {}
 
   @Get()
   @ZodResponse({ type: ModSyncLibrariesDto })

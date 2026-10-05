@@ -6,7 +6,7 @@ import type { AnalyticsQueries } from '../../providers/analytics-queries.provide
 
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { ExpectedValuesReaderService, VehicleCatalogService } from '../../../reference';
-import { MAP_ADVISOR } from '../../config';
+import { MAP_ADVISOR } from '../../config/map-advisor.constants';
 import { MapAdvisorReaderService } from '../map-advisor-reader.service';
 import { OwnAccountReaderService } from '../own-account-reader.service';
 import { catalogOf, rawRow, vehicle } from './analytics.fixtures';

@@ -3,7 +3,7 @@ import { afterAll, beforeEach, expect, it } from 'vitest';
 
 import { battleRow, STAT_SEED } from '../../../../core/prisma/_tests/stat-seeds';
 import { createTestPrisma, describeWithDatabase, truncateTables } from '../../../../core/prisma/_tests/test-database';
-import { PLAYER_MARKS } from '../../config';
+import { PLAYER_MARKS } from '../../config/player-stats.constants';
 import { combinedDamage } from '../player-marks.queries';
 
 const START = new Date('2026-10-01T10:00:00Z');

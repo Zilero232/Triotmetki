@@ -119,4 +119,22 @@ describe('MarksWatchService', () => {
 
     expect(await service.run()).toBe(0);
   });
+
+  it('finishes the battles that share the last timestamp of a full batch so the cursor skips none of them', async () => {
+    const { service, prisma, notifications, redis } = createService();
+    const tied = new Date(Date.UTC(2026, 8, 25, 13));
+    const full = Array.from({ length: MARKS_WATCH.batchSize }, (_, index) =>
+      mock<Battle>({ id: `f${index}`, accountId: 7n, tankId: 1, marksOnGun: 1, startedAt: tied, receivedAt: tied })
+    );
+
+    const late = mock<Battle>({ id: 'tie', accountId: 7n, tankId: 1, marksOnGun: 2, startedAt: new Date(tied.getTime() + 1), receivedAt: tied });
+
+    await redis.set(MARKS_WATCH.cursorKey, CURSOR);
+    prisma.battle.findMany.mockResolvedValueOnce(full).mockResolvedValueOnce([late]);
+    prisma.playerTank.findMany.mockResolvedValue([mock<PlayerTank>({ accountId: 7n, tankId: 1, marksOnGun: 1 })]);
+
+    await service.run();
+
+    expect(notifications.notifyAccount).toHaveBeenCalledWith(expect.objectContaining({ dedupeKey: 'moe-tie' }));
+  });
 });

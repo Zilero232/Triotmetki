@@ -3,7 +3,7 @@ import type { CrewSkill } from '@otmetki/gamedata';
 import { SPOTTING } from '@otmetki/gamedata';
 import { describe, expect, it } from 'vitest';
 
-import { TANK_MATH } from '../../../config';
+import { TANK_MATH } from '../../../config/tank-math.constants';
 import { camoSkillRate } from '../camo-skill-rate';
 
 const skill = (perLevel: number): CrewSkill => ({

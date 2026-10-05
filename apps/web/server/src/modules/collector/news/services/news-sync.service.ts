@@ -3,8 +3,8 @@ import Parser from 'rss-parser';
 
 import { SOURCES } from '../../../../config';
 import { HttpClientService, PrismaService } from '../../../../core';
-import { NEWS } from '../config';
-import { toNewsItems } from '../mappers';
+import { NEWS } from '../config/news.constants';
+import { toNewsItems } from '../mappers/news-item.mappers';
 
 @Injectable()
 export class NewsSyncService {

@@ -1,6 +1,6 @@
 import type { RedisConnection } from './redis-connection.types';
 
-import { REDIS_CONNECTION } from '../../config';
+import { REDIS_CONNECTION } from '../../config/tactics.constants';
 
 export const redisConnection = (url: string): RedisConnection => {
   const parsed = new URL(url);

@@ -6,7 +6,7 @@ import type { AppConfigService } from '../../../../config';
 import type { PrismaService } from '../../../../core';
 import type { CreateBlogPostRequest } from '../../blog.types';
 import type { BlogPostRow } from '../../selects/blog-post.types';
-import type { BlogImageService } from '../blog-image.service';
+import type { BlogImageWriterService } from '../blog-image-writer.service';
 
 import { Prisma } from '../../../../../generated';
 import { AppBadRequestException, AppConflictException, AppNotFoundException } from '../../../../common/exceptions';
@@ -61,7 +61,7 @@ const CREATE: CreateBlogPostRequest = {
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
   const config = mock<AppConfigService>();
-  const images = mock<BlogImageService>();
+  const images = mock<BlogImageWriterService>();
 
   config.get.mockReturnValue('http://localhost:4000');
 

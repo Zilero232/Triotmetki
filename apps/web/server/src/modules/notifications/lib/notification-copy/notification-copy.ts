@@ -16,7 +16,7 @@ import type {
 } from './notification-copy.types';
 
 import { winRatePercent } from '../../../../common/lib';
-import { createFluentStore } from '../../../telegram';
+import { createFluentStore } from '../../../bot-commands';
 import { NOTIFICATION_COPY, NOTIFICATION_GROUPS, NOTIFICATION_LINKS } from '../../config/copy.constants';
 
 const store = createFluentStore({ files: NOTIFICATION_COPY.files });

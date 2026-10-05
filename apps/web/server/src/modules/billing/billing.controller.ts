@@ -17,23 +17,23 @@ import {
   WebhookEventDto
 } from './dto/billing.dto';
 import { WebhookIpGuard } from './guards/webhook-ip.guard';
-import { CheckoutService } from './services/checkout.service';
-import { PromoService } from './services/promo.service';
-import { ReferralService } from './services/referral.service';
-import { SubscriptionService } from './services/subscription.service';
-import { TrialService } from './services/trial.service';
-import { WebhookService } from './services/webhook.service';
+import { CheckoutWriterService } from './services/checkout-writer.service';
+import { PromoWriterService } from './services/promo-writer.service';
+import { ReferralWriterService } from './services/referral-writer.service';
+import { SettlementWriterService } from './services/settlement-writer.service';
+import { SubscriptionWriterService } from './services/subscription-writer.service';
+import { TrialWriterService } from './services/trial-writer.service';
 
 @ApiTags('billing')
 @Controller()
 export class BillingController {
   constructor(
-    private readonly subscriptions: SubscriptionService,
-    private readonly checkout: CheckoutService,
-    private readonly promos: PromoService,
-    private readonly referrals: ReferralService,
-    private readonly trials: TrialService,
-    private readonly webhooks: WebhookService
+    private readonly subscriptions: SubscriptionWriterService,
+    private readonly checkout: CheckoutWriterService,
+    private readonly promos: PromoWriterService,
+    private readonly referrals: ReferralWriterService,
+    private readonly trials: TrialWriterService,
+    private readonly settlements: SettlementWriterService
   ) {}
 
   @AllowAnonymous()
@@ -105,7 +105,7 @@ export class BillingController {
   @HttpCode(HttpStatus.OK)
   @ZodResponse({ type: WebhookAckDto })
   async webhook(@Body() event: WebhookEventDto) {
-    await this.webhooks.handle(event);
+    await this.settlements.handle(event);
 
     return { received: true as const };
   }

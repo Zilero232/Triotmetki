@@ -3,15 +3,15 @@ import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
 import { MetricsService, TrackedWorkerHost } from '../../collector/metrics';
-import { PlatoonService } from '../../platoons';
-import { RecruitingService } from '../../recruiting';
-import { COMMUNITY_QUEUE } from '../config';
+import { PlatoonWriterService } from '../../platoons';
+import { RecruitingWriterService } from '../../recruiting';
+import { COMMUNITY_QUEUE } from '../config/community-maintenance.constants';
 
 @Processor(COMMUNITY_QUEUE.name, { concurrency: 1 })
 export class CommunityProcessor extends TrackedWorkerHost {
   constructor(
-    private readonly platoons: PlatoonService,
-    private readonly recruiting: RecruitingService,
+    private readonly platoons: PlatoonWriterService,
+    private readonly recruiting: RecruitingWriterService,
     metrics: MetricsService
   ) {
     super(metrics);

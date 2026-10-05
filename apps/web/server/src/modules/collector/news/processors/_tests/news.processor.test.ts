@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { MetricsService } from '../../../metrics';
-import type { NewsSyncService } from '../../services';
+import type { NewsSyncService } from '../../services/news-sync.service';
 
 import { NewsProcessor } from '../news.processor';
 

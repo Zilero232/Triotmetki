@@ -4,7 +4,7 @@ import { parseXvmExpectedValues } from '@otmetki/ratings';
 import { isoDay } from '../../../../common/lib';
 import { SOURCES } from '../../../../config';
 import { HttpClientService, PrismaService } from '../../../../core';
-import { expectedValuesDate } from '../lib/community-data';
+import { expectedValuesDate } from '../lib/community-data/community-data';
 import { toExpectedValueRecord } from '../mappers/expected-value.mappers';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class ExpectedValuesSyncService {
   ) {}
 
   async sync() {
-    const { header, table } = parseXvmExpectedValues(await this.http.getJson({ url: SOURCES.wn8Expected }));
+    const { header, table } = parseXvmExpectedValues(await this.http.getText({ url: SOURCES.wn8Expected }));
     const date = expectedValuesDate({ header, now: new Date() });
 
     const rows = [...table.values()].map((values) => toExpectedValueRecord({ values, date }));

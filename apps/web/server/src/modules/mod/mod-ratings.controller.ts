@@ -10,7 +10,7 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { MOD_RATINGS_READ } from './config/ratings.constants';
 import { ModOverviewDto, ModRatingsRequestDto, ModTankRatingsDto, ModTankRatingsRequestDto } from './dto/mod.dto';
-import { modDeviceTracker } from './lib/device-tracker';
+import { modDeviceTracker } from './lib/device-tracker/device-tracker';
 import { ModDeviceService } from './services/mod-device.service';
 import { ModRatingsReaderService } from './services/mod-ratings-reader.service';
 

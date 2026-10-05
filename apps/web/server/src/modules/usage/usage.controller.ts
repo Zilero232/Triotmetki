@@ -5,10 +5,10 @@ import { ZodResponse } from 'nestjs-zod';
 
 import type { UsageActor } from './usage.types';
 
-import { USAGE_ROUTE } from './config';
-import { CurrentUsageActor, MeteredUsage } from './decorators';
-import { UsageDto } from './dto';
-import { UsageMeterService } from './services';
+import { USAGE_ROUTE } from './config/usage-meter.constants';
+import { CurrentUsageActor, MeteredUsage } from './decorators/usage-actor.decorator';
+import { UsageDto } from './dto/usage.dto';
+import { UsageMeterService } from './services/usage-meter.service';
 
 @ApiTags('me')
 @AllowAnonymous()

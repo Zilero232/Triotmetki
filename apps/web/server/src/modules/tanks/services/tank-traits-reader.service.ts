@@ -6,7 +6,7 @@ import type { CatalogEntry } from '../../reference';
 import type { FilterByTraitsInput, TraitsEntry } from '../tanks.types';
 
 import { VehicleCatalogService } from '../../reference';
-import { matchesTraits } from '../lib';
+import { matchesTraits } from '../lib/vehicle-traits/vehicle-traits';
 import { TankDifficultyReaderService } from './tank-difficulty-reader.service';
 
 @Injectable()

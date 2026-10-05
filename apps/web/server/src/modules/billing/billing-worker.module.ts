@@ -5,10 +5,10 @@ import { BillingCoreModule } from './billing-core.module';
 import { BILLING_QUEUE } from './config/queue.constants';
 import { BillingSchedulesService } from './processors/billing-schedules.service';
 import { BillingProcessor } from './processors/billing.processor';
-import { RenewalService } from './services/renewal.service';
+import { RenewalWriterService } from './services/renewal-writer.service';
 
 @Module({
   imports: [BillingCoreModule, BullModule.registerQueue({ name: BILLING_QUEUE.name })],
-  providers: [RenewalService, BillingProcessor, BillingSchedulesService]
+  providers: [RenewalWriterService, BillingProcessor, BillingSchedulesService]
 })
 export class BillingWorkerModule {}

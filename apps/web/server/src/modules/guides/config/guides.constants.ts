@@ -6,5 +6,6 @@ export const GUIDES = {
 
 export const COMMENTS = {
   maxBodyLength: 4000,
-  pageLimit: 100
+  pageLimit: 100,
+  targetIdPattern: /^[\da-f]{8}-(?:[\da-f]{4}-){3}[\da-f]{12}$/i
 } as const;

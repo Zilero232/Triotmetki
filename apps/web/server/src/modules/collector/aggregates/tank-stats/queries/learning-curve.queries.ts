@@ -5,14 +5,12 @@ import type { LearningCurveRowsInput } from './tank-stats.types';
 import { widthBucket } from '../../../../../core';
 import { LEARNING_CURVE_AGGREGATE } from '../config/tank-stats.constants';
 
-const SERIES_COLUMNS = ['account_id', 'tank_id', 'captured_at', 'battles', 'wins', 'damage_dealt'] as const;
-
 export const learningCurveRows = ({ db, since }: LearningCurveRowsInput) => {
   const { bucketStarts, maxBattleDelta, minBattles } = LEARNING_CURVE_AGGREGATE;
 
   return db
     .with('windowed', (query) =>
-      query.selectFrom('tank_snapshot').select(SERIES_COLUMNS).where('mode', '=', 'random').where('captured_at', '>', since)
+      query.selectFrom('tank_snapshot').select(LEARNING_CURVE_AGGREGATE.seriesColumns).where('mode', '=', 'random').where('captured_at', '>', since)
     )
     .with('series', (query) =>
       query
@@ -25,7 +23,7 @@ export const learningCurveRows = ({ db, since }: LearningCurveRowsInput) => {
               (eb) =>
                 eb
                   .selectFrom('tank_snapshot')
-                  .select(SERIES_COLUMNS)
+                  .select(LEARNING_CURVE_AGGREGATE.seriesColumns)
                   .whereRef('tank_snapshot.account_id', '=', 'pair.account_id')
                   .whereRef('tank_snapshot.tank_id', '=', 'pair.tank_id')
                   .where('tank_snapshot.mode', '=', 'random')

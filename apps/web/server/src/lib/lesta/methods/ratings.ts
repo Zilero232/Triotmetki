@@ -1,10 +1,11 @@
 import type { LestaRequester } from '../client/client.types';
-import type { RatingAccount, RatingDates, RatingTypes } from '../schemas';
+import type { RatingAccount, RatingDates, RatingTypes } from '../schemas/ratings/ratings.types';
 import type { RatingAccountsInput, RatingDatesInput, RatingListInput, RatingNeighborsInput } from './methods.types';
 
-import { callParams } from '../client/params';
-import { idMapOf, ratingAccountSchema, ratingDatesSchema, ratingListSchema, ratingTypesSchema } from '../schemas';
-import { batchedMap, genericParams, passthrough } from './call-shapes';
+import { callParams } from '../client/params/params';
+import { idMapOf } from '../schemas/common/common.schemas';
+import { ratingAccountSchema, ratingDatesSchema, ratingListSchema, ratingTypesSchema } from '../schemas/ratings/ratings.schemas';
+import { batchedMap, genericParams, passthrough } from './call-shapes/call-shapes';
 
 export const createRatingsMethods = (requester: LestaRequester) => {
   const accounts = async ({ type, accountIds, date, ...input }: RatingAccountsInput): Promise<Record<string, RatingAccount | null>> =>

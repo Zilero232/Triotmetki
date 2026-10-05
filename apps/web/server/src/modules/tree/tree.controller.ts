@@ -6,15 +6,15 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
-import { TechTreeDto, TechTreeParamsDto } from './dto';
-import { TechTreeService } from './services';
+import { TechTreeDto, TechTreeParamsDto } from './dto/tree.dto';
+import { TechTreeReaderService } from './services/tech-tree-reader.service';
 
 @ApiTags('tanks')
 @AllowAnonymous()
 @UseInterceptors(ViewerCacheInterceptor)
 @Controller('tree')
 export class TreeController {
-  constructor(private readonly trees: TechTreeService) {}
+  constructor(private readonly trees: TechTreeReaderService) {}
 
   @Get(':nation')
   @CacheTTL(CACHE_TTL.reference)

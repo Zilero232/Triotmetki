@@ -14,9 +14,11 @@ import type {
 
 import { formatNumberOr, formatPercentOr } from '../../../common/lib';
 import { AppConfigService, TIME } from '../../../config';
-import { BOT_COMMAND_LOCALE_FILES, SITE_LINKS } from '../config';
-import { createFluentStore, isPublicUrl, playerUrl, siteUrl, statCardUrl } from '../lib';
-import { BotStatsService } from './bot-stats.service';
+import { SITE_LINKS } from '../config/links.constants';
+import { BOT_COMMAND_LOCALE_FILES } from '../config/locales.constants';
+import { createFluentStore } from '../lib/fluent-store/fluent-store';
+import { isPublicUrl, playerUrl, siteUrl, statCardUrl } from '../lib/site-url/site-url';
+import { BotStatsReaderService } from './bot-stats-reader.service';
 
 @Injectable()
 export class BotRepliesService {
@@ -24,7 +26,7 @@ export class BotRepliesService {
 
   constructor(
     private readonly config: AppConfigService,
-    private readonly stats: BotStatsService
+    private readonly stats: BotStatsReaderService
   ) {}
 
   reply({ command, ...input }: BotReplyInput): Promise<BotReply> {

@@ -1,13 +1,14 @@
 import { z } from 'zod';
 
 import type { FieldList, LestaRequester, Selected } from '../client/client.types';
-import type { AccountAchievements, AccountInfo, AccountListItem, AccountTank } from '../schemas';
+import type { AccountAchievements, AccountInfo, AccountListItem, AccountTank } from '../schemas/account/account.types';
 import type { AccountIdsInput, AccountListInput, AccountTanksInput } from './methods.types';
 
-import { batchList } from '../batching';
-import { callParams, fieldAwareSchema } from '../client/params';
-import { accountAchievementsSchema, accountInfoSchema, accountListSchema, accountTankSchema, idMapOf } from '../schemas';
-import { batchedMap } from './call-shapes';
+import { batchList } from '../batching/batching';
+import { callParams, fieldAwareSchema } from '../client/params/params';
+import { accountAchievementsSchema, accountInfoSchema, accountListSchema, accountTankSchema } from '../schemas/account/account.schemas';
+import { idMapOf } from '../schemas/common/common.schemas';
+import { batchedMap } from './call-shapes/call-shapes';
 
 export const createAccountMethods = (requester: LestaRequester) => {
   const list = async ({ search, type, limit, ...options }: AccountListInput): Promise<AccountListItem[]> => {

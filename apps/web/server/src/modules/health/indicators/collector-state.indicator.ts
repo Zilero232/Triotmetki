@@ -7,8 +7,8 @@ import { differenceInMilliseconds } from 'date-fns';
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { COLLECTOR_STATE_KEY } from '../../collector';
-import { HEALTH } from '../config';
-import { circuitSchema, heartbeatSchema } from '../dto';
+import { HEALTH } from '../config/health.constants';
+import { circuitSchema, heartbeatSchema } from '../dto/health.schemas';
 
 @Injectable()
 export class CollectorStateIndicator {

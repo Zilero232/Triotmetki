@@ -1,1 +1,1 @@
-export { OriginGuard } from './origin';
+export { OriginGuard } from './origin.guard';

@@ -6,8 +6,8 @@ import type { LestaClient } from '../../../lib/lesta';
 
 import { LESTA_CLIENT, PrismaService } from '../../../core';
 import { accountAchievementsSchema } from '../../../lib/lesta';
-import { PLAYER_ACHIEVEMENTS } from '../config';
-import { playerAchievements } from '../lib';
+import { PLAYER_ACHIEVEMENTS } from '../config/player-lookup.constants';
+import { playerAchievements } from '../lib/achievements/achievements';
 
 @Injectable()
 export class PlayerAchievementsReaderService {

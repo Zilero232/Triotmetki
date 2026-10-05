@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { TiltBattle } from '../tilt.types';
 
-import { TILT } from '../../../config';
+import { TILT } from '../../../config/tilt.constants';
 import { tilt } from '../tilt';
 
 const START = new Date('2026-09-01T18:00:00Z');

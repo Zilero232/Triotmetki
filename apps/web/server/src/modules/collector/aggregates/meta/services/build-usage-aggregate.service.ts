@@ -3,7 +3,7 @@ import { BUILD_USAGE } from '@otmetki/schemas';
 import { subDays } from 'date-fns';
 import { entries, groupBy } from 'remeda';
 
-import type { UsageSample } from '../lib/build-usage';
+import type { UsageSample } from '../lib/build-usage/build-usage.types';
 import type { ComputeTankUsageInput, MetaQueries, UsageSamplesInput } from '../meta.types';
 
 import { Prisma } from '../../../../../../generated';
@@ -11,7 +11,8 @@ import { toJsonValue } from '../../../../../common/lib';
 import { PrismaService } from '../../../../../core';
 import { readStoredLoadout } from '../../../../mod';
 import { META_TOKENS } from '../config/tokens.constants';
-import { BUILD_MODE_BONUS_TYPES, BUILD_USAGE_AGGREGATE, groupUsage, modeOfBonusType } from '../lib/build-usage';
+import { groupUsage, modeOfBonusType } from '../lib/build-usage/build-usage';
+import { BUILD_MODE_BONUS_TYPES, BUILD_USAGE_AGGREGATE } from '../lib/build-usage/build-usage.constants';
 
 @Injectable()
 export class BuildUsageAggregateService {

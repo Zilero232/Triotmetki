@@ -7,7 +7,7 @@ import type { CollectorState } from '../../../../../generated';
 import type { AppConfigService } from '../../../../config';
 import type { PrismaService } from '../../../../core';
 
-import { HEALTH } from '../../config';
+import { HEALTH } from '../../config/health.constants';
 import { CollectorStateIndicator } from '../collector-state.indicator';
 
 const state = (value: unknown) => mock<CollectorState>({ value: JSON.parse(JSON.stringify(value)) });

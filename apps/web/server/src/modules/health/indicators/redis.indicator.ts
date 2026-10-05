@@ -6,7 +6,7 @@ import { Redis } from 'ioredis';
 
 import { errorMessage } from '../../../common/lib';
 import { REDIS } from '../../../core';
-import { HEALTH } from '../config';
+import { HEALTH } from '../config/health.constants';
 
 @Injectable()
 export class RedisIndicator {

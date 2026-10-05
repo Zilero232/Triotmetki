@@ -7,7 +7,8 @@ import { unique } from 'remeda';
 import { errorMessage } from '../../../common/lib';
 import { PrismaService, REDIS } from '../../../core';
 import { resolveBotLocale } from '../../bot-commands';
-import { DISCORD_LIMITS, DISCORD_TOKENS } from '../config';
+import { DISCORD_LIMITS } from '../config/queue.constants';
+import { DISCORD_TOKENS } from '../config/tokens.constants';
 import { DiscordCopyService } from './discord-copy.service';
 
 @Injectable()

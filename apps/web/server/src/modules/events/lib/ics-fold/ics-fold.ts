@@ -1,4 +1,4 @@
-import { EVENT_ICS } from '../../config';
+import { EVENT_ICS } from '../../config/ics.constants';
 
 const foldLine = (line: string): string => {
   const parts: string[] = [];

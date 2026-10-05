@@ -1,8 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-import { BOT_COMMAND_LOCALE_FILES, BOT_LOCALE } from '..';
-import { createFluentStore } from '../../lib';
+import { createFluentStore } from '../../lib/fluent-store/fluent-store';
+import { BOT_LOCALE } from '../bot-commands.constants';
+import { BOT_COMMAND_LOCALE_FILES } from '../locales.constants';
 
 const messageKeys = (locale: (typeof BOT_LOCALE.locales)[number]) =>
   readFileSync(BOT_COMMAND_LOCALE_FILES[locale], 'utf8')

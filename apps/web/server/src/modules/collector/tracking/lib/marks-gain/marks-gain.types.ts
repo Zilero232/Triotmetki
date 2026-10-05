@@ -1,4 +1,4 @@
-import type { TankSnapshotRow } from '../snapshots';
+import type { TankSnapshotRow } from '../snapshots/snapshots.types';
 
 export type TankKey = {
   accountId: bigint;

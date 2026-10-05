@@ -7,13 +7,13 @@ import { Prisma } from '../../../../../generated';
 import { toJsonValue } from '../../../../common/lib';
 import { PrismaService } from '../../../../core';
 import { invitationChannelsSchema } from '../dto/profiles.schemas';
-import { StreamerProfileService } from './streamer-profile.service';
+import { StreamerProfileWriterService } from './streamer-profile-writer.service';
 
 @Injectable()
 export class ClaimTransferWriterService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly profiles: StreamerProfileService
+    private readonly profiles: StreamerProfileWriterService
   ) {}
 
   async complete({ claim, verifiedPlatform, moderatorId }: CompleteClaimInput): Promise<StreamerClaim> {

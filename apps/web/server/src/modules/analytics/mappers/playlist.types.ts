@@ -2,7 +2,7 @@ import type { PlayerMarks } from '@otmetki/schemas';
 
 import type { PlayerTank } from '../../../../generated';
 import type { CatalogEntry } from '../../reference';
-import type { PlaylistPick } from '../lib';
+import type { PlaylistPick } from '../lib/playlist/playlist.types';
 
 type MarkItem = PlayerMarks['items'][number];
 

@@ -5,14 +5,14 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId, OptionalUserId } from '../../common/decorators';
 import { IdParamsDto } from '../community-core';
-import { COMMENT_TARGET_TO_DB } from './config';
-import { CommentDto, CommentListDto, CommentsQueryDto, CreateCommentDto } from './dto';
-import { CommentService } from './services';
+import { COMMENT_TARGET_TO_DB } from './config/comment-target.constants';
+import { CommentDto, CommentListDto, CommentsQueryDto, CreateCommentDto } from './dto/guides.dto';
+import { CommentWriterService } from './services/comment-writer.service';
 
 @ApiTags('community')
 @Controller('community/comments')
 export class CommentsController {
-  constructor(private readonly comments: CommentService) {}
+  constructor(private readonly comments: CommentWriterService) {}
 
   @AllowAnonymous()
   @Get()

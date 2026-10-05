@@ -5,7 +5,7 @@ import { winRateShare } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { isSessionEnded } from '../../developer';
 import { SESSION_REPORT } from '../config/watchers.constants';
-import { sessionReportKey } from '../lib/session-report-key';
+import { sessionReportKey } from '../lib/session-report-key/session-report-key';
 import { NotificationService } from './notification.service';
 
 @Injectable()
@@ -54,22 +54,28 @@ export class SessionReportsService {
         continue;
       }
 
-      const owners = await this.prisma.userLestaAccount.findMany({ where: { accountId: session.accountId }, select: { userId: true } });
+      try {
+        const owners = await this.prisma.userLestaAccount.findMany({ where: { accountId: session.accountId }, select: { userId: true } });
 
-      reported += await this.notifications.notifyMany({
-        userIds: owners.map((owner) => owner.userId),
-        notification: {
-          event: 'sessionFinished',
-          accountId: Number(session.accountId),
-          nickname: session.player.nickname,
-          sessionId: session.id,
-          battles: session.battles,
-          winRate: winRateShare({ wins: session.wins, battles: session.battles }) ?? 0,
-          avgDamage: session.damageDealt / session.battles,
-          wn8: session.wn8
-        },
-        dedupeKey: sessionReportKey(session.id)
-      });
+        reported += await this.notifications.notifyMany({
+          userIds: owners.map((owner) => owner.userId),
+          notification: {
+            event: 'sessionFinished',
+            accountId: Number(session.accountId),
+            nickname: session.player.nickname,
+            sessionId: session.id,
+            battles: session.battles,
+            winRate: winRateShare({ wins: session.wins, battles: session.battles }) ?? 0,
+            avgDamage: session.damageDealt / session.battles,
+            wn8: session.wn8
+          },
+          dedupeKey: sessionReportKey(session.id)
+        });
+      } catch (error) {
+        await this.prisma.playSession.updateMany({ where: { id: session.id, reportSentAt: now }, data: { reportSentAt: null } });
+
+        throw error;
+      }
     }
 
     return reported;

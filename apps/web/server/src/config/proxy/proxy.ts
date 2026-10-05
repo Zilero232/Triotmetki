@@ -1,6 +1,6 @@
-import type { Env } from '../env';
+import type { Env } from '../env/env.types';
 
-import { envList } from '../env-list';
+import { envList } from '../env-list/env-list';
 import { PROXY } from './proxy.constants';
 
 export const trustedProxies = (env: Pick<Env, 'TRUSTED_PROXIES'>): string[] => envList(env.TRUSTED_PROXIES);

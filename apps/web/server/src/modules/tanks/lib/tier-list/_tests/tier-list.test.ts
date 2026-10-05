@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { TierListCandidate } from '../tier-list.types';
 
-import { TIER_LIST } from '../../../config';
+import { TIER_LIST } from '../../../config/tanks.constants';
 import { rankTierList } from '../tier-list';
 
 const candidate = ({

@@ -1,6 +1,6 @@
 import type { ModVisibility, RecordedByInput } from './mod-upload.types';
 
-import { REPLAY_UPLOAD } from '../../config';
+import { REPLAY_UPLOAD } from '../../config/upload.constants';
 import { modVisibilitySchema } from './mod-upload.schemas';
 
 export const modVisibility = (header: string | undefined): ModVisibility | null => {

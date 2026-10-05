@@ -1,6 +1,6 @@
-import { NUMBER_SOURCE } from '../russian-number';
+import { RUSSIAN_NUMBER } from '../russian-number/russian-number.constants';
 
-const N = `(${NUMBER_SOURCE})`;
+const N = `(${RUSSIAN_NUMBER.source})`;
 const VERB = String.raw`(?:был[аио]?\s+)?(?:изменен\p{L}*|измен[её]н\p{L}*|увеличен\p{L}*|уменьшен\p{L}*|снижен\p{L}*|повышен\p{L}*|улучшен\p{L}*|ухудшен\p{L}*|сокращен\p{L}*|ускорен\p{L}*|замедлен\p{L}*)`;
 const ARROW = String.raw`(?:→|->|—>|=>|➝|⟶|➔|>)`;
 

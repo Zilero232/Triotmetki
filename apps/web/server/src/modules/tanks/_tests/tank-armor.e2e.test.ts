@@ -20,8 +20,9 @@ import { PrismaService, REDIS } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { VehicleCatalogService } from '../../reference';
 import { USAGE_DEVICE, UsageActorGuard, UsageMeterService } from '../../usage';
-import { ARMOR_STORAGE } from '../config';
-import { TankArmorReaderService, TankDetailReaderService } from '../services';
+import { ARMOR_STORAGE } from '../config/armor.constants';
+import { TankArmorReaderService } from '../services/tank-armor-reader.service';
+import { TankDetailReaderService } from '../services/tank-detail-reader.service';
 import { TankArmorController } from '../tank-armor.controller';
 
 const USER_HEADER = 'x-test-user';

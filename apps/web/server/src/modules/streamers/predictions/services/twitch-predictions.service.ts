@@ -5,16 +5,16 @@ import { addMinutes } from 'date-fns';
 import { Redis } from 'ioredis';
 import { meanBy } from 'remeda';
 
-import type { PredictionJob, PredictionState } from '../lib/prediction';
+import type { PredictionJob, PredictionState } from '../lib/prediction/prediction.types';
 import type { AccountTankInput, SettlePredictionInput } from '../predictions.types';
 
 import { errorMessage } from '../../../../common/lib';
 import { PrismaService, REDIS } from '../../../../core';
 import { VehicleCatalogService } from '../../../reference';
-import { CHAT_COPY, StreamerStatsService, TwitchChatService } from '../../chat';
+import { CHAT_COPY, ChatReplyReaderService, TwitchChatService } from '../../chat';
 import { TwitchSdkService } from '../../integrations';
 import { PREDICTIONS } from '../config/predictions.constants';
-import { clipText, predictionThreshold, predictionWinner, readPredictionState } from '../lib/prediction';
+import { clipText, predictionThreshold, predictionWinner, readPredictionState } from '../lib/prediction/prediction';
 
 @Injectable()
 export class TwitchPredictionsService {
@@ -24,7 +24,7 @@ export class TwitchPredictionsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly chat: TwitchChatService,
-    private readonly stats: StreamerStatsService,
+    private readonly stats: ChatReplyReaderService,
     private readonly catalog: VehicleCatalogService,
     @Inject(REDIS) private readonly redis: Redis,
     private readonly sdk: TwitchSdkService

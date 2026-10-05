@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { WORKSPACE_ROLES } from '../../../config';
+import { WORKSPACE_ROLES } from '../../../config/roles.constants';
 import { canOwnWorkspace, isClanOfficer } from '../workspace-roles';
 
 describe('isClanOfficer', () => {

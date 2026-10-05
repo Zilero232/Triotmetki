@@ -1,8 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-import { BOT, BOT_COMMANDS, BOT_LOCALE_FILES, SETTINGS_MENU } from '..';
-import { createBotI18n } from '../../providers';
+import { createBotI18n } from '../../providers/telegram-i18n.provider';
+import { BOT, BOT_COMMANDS } from '../bot.constants';
+import { BOT_LOCALE_FILES } from '../locales.constants';
+import { SETTINGS_MENU } from '../settings-menu.constants';
 
 const messageKeys = (locale: (typeof BOT.locales)[number]) =>
   readFileSync(BOT_LOCALE_FILES[locale], 'utf8')

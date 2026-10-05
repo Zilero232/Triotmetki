@@ -6,9 +6,9 @@ import { subDays } from 'date-fns';
 import type { PlayerQueries } from '../providers/player-queries.provider.types';
 
 import { PrismaService } from '../../../core';
-import { PLAYER_QUERIES } from '../config';
-import { PLAYTIME } from '../lib';
-import { toPlaytime } from '../mappers';
+import { PLAYER_QUERIES } from '../config/queries.constants';
+import { PLAYTIME } from '../lib/playtime/playtime.constants';
+import { toPlaytime } from '../mappers/playtime.mappers';
 
 @Injectable()
 export class PlayerPlaytimeReaderService {
@@ -22,8 +22,8 @@ export class PlayerPlaytimeReaderService {
       db: this.prisma.$kysely,
       accountId: Number(accountId),
       from: subDays(new Date(), PLAYTIME.windowDays),
-      weekStartsOn: 'monday'
-    } as const;
+      weekStartsOn: PLAYTIME.weekStartsOn
+    };
 
     const battles = await this.queries.playtimeFromBattles(window);
 

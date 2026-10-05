@@ -3,8 +3,8 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import type { SendDirectInput } from '../discord.types';
 
-import { DISCORD_TOKENS } from '../config';
-import { toNotificationMessage } from '../mappers';
+import { DISCORD_TOKENS } from '../config/tokens.constants';
+import { toNotificationMessage } from '../mappers/messages.mappers';
 
 @Injectable()
 export class DiscordSenderService {

@@ -3,15 +3,15 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Replay } from '../../../../../generated';
 import type { ObjectStorage, PrismaService } from '../../../../core';
-import type { HeatmapService } from '../heatmap.service';
+import type { HeatmapWriterService } from '../heatmap-writer.service';
 
-import { REPLAY_PARSE } from '../../config';
+import { REPLAY_PARSE } from '../../config/parse.constants';
 import { ReplayParseService } from '../replay-parse.service';
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
   const storage = mock<ObjectStorage>();
-  const heatmaps = mock<HeatmapService>();
+  const heatmaps = mock<HeatmapWriterService>();
 
   return { service: new ReplayParseService(prisma, storage, heatmaps), prisma, storage, heatmaps };
 };

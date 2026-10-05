@@ -4,9 +4,9 @@ import type { BuildVehicleRowsInput, LocalizedVehicleFields, LocalizeVehicleInpu
 
 import { slugify } from '../../../../../../common/lib';
 import { vehicleImages } from '../../../../../../lib/lesta';
-import { translate } from '../../../localization';
+import { translate } from '../../../localization/localization';
 import { MODULE_TYPE, VEHICLE_TYPE } from '../../importer.constants';
-import { prices, vehicleModules } from '../vehicle-modules';
+import { prices, vehicleModules } from '../vehicle-modules/vehicle-modules';
 
 const localizeVehicle = ({ vehicle, messages = {} }: LocalizeVehicleInput): LocalizedVehicleFields => {
   const name = translate({ messages, key: vehicle.nameKey });

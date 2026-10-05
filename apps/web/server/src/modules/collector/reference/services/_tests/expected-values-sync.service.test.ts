@@ -24,7 +24,7 @@ describe('ExpectedValuesSyncService.sync', () => {
   it('adds the table dated by the XVM header without touching earlier dates', async () => {
     const { prisma, http, service } = createSync(1);
 
-    http.getJson.mockResolvedValue(xvm);
+    http.getText.mockResolvedValue(JSON.stringify(xvm));
 
     expect(await service.sync()).toEqual({ date: '2026-09-23', vehicles: 1, inserted: 1 });
 
@@ -39,7 +39,7 @@ describe('ExpectedValuesSyncService.sync', () => {
   it('writes nothing when the source is down', async () => {
     const { prisma, http, service } = createSync(0);
 
-    http.getJson.mockRejectedValue(new Error('HTTP 502'));
+    http.getText.mockRejectedValue(new Error('HTTP 502'));
 
     await expect(service.sync()).rejects.toThrow();
     expect(prisma.wn8ExpectedValue.createMany).not.toHaveBeenCalled();

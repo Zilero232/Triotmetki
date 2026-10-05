@@ -1,8 +1,12 @@
 export { BotCommandsModule } from './bot-commands.module';
 export type { BotLink, BotLocale, BotReply, FailureInput, LinkedBotUser } from './bot-commands.types';
-export { BOT_LOCALE, SHARED_COMMANDS, SITE_LINKS } from './config';
-export { createFluentStore, isPublicUrl, playerUrl, resolveBotLocale, siteUrl, statCardUrl } from './lib';
-export type { CreateFluentStoreInput } from './lib';
-export { toLinkedBotUser } from './mappers';
-export { BOT_USER_SELECT } from './selects';
-export { BotAccountsService, BotRepliesService, BotStatsService } from './services';
+export { BOT_LOCALE, SHARED_COMMANDS } from './config/bot-commands.constants';
+export { SITE_LINKS } from './config/links.constants';
+export { resolveBotLocale } from './lib/bot-locale/bot-locale';
+export { createFluentStore } from './lib/fluent-store/fluent-store';
+export { isPublicUrl, playerUrl, siteUrl, statCardUrl } from './lib/site-url/site-url';
+export { toLinkedBotUser } from './mappers/bot-user.mappers';
+export { BOT_USER_SELECT } from './selects/bot-user.selects';
+export { BotAccountsReaderService } from './services/bot-accounts-reader.service';
+export { BotRepliesService } from './services/bot-replies.service';
+export { BotStatsReaderService } from './services/bot-stats-reader.service';

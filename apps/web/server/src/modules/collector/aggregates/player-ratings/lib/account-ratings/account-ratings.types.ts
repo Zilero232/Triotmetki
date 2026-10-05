@@ -1,4 +1,4 @@
-import type { ExpectedValuesTable, PeriodWindow, TankReferenceTable, TankTiers } from '@otmetki/ratings';
+import type { ExpectedValuesTable, PeriodWindow, TankReferenceTable, TankTiers, TankTotals } from '@otmetki/ratings';
 
 import type { Prisma, RatingPeriod, TankSnapshot } from '../../../../../../../generated';
 
@@ -68,4 +68,9 @@ export type PeriodRowsInput = {
   input: BuildAccountRatingsInput;
   period: RatingPeriod;
   cutoff: Date | null;
+};
+
+export type ZeroBaselinesInput = {
+  from: TankTotals[];
+  to: TankTotals[];
 };

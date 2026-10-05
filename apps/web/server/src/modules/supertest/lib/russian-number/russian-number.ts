@@ -1,5 +1,3 @@
-export const NUMBER_SOURCE = String.raw`[-−–]?\d{1,3}(?:[ \xA0\u202F]\d{3})+(?:[.,]\d+)?|[-−–]?\d+(?:[.,]\d+)?`;
-
 export const parseRussianNumber = (text: string): number | null => {
   const normalized = text
     .trim()

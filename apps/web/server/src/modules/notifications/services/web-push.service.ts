@@ -8,7 +8,7 @@ import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { HostLookupService, publicAddressOf } from '../../developer';
 import { WEB_PUSH } from '../config/delivery.constants';
-import { vapidDetails } from '../lib/web-push-config';
+import { vapidDetails } from '../lib/web-push-config/web-push-config';
 import { WebPushSenderService } from './web-push-sender.service';
 
 @Injectable()

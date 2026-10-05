@@ -6,14 +6,14 @@ import { startOfMinute } from 'date-fns';
 import { AsyncLocalStorage } from 'node:async_hooks';
 
 import type { LestaOutcomeRecorder, RecordLestaInput } from '../../../../core';
-import type { JobContext, MetricCounters, RecordJobInput, TrackJobInput, WriteCountersInput } from '../metrics.types';
+import type { JobContext, MetricCounters, RecordJobInput, RestoreCountersInput, TrackJobInput, WriteCountersInput } from '../metrics.types';
 import type { MetricsQueries } from '../providers/metrics-queries.types';
 
 import { errorMessage } from '../../../../common/lib';
 import { PrismaService } from '../../../../core';
 import { COLLECTOR_STATE_KEY } from '../../config';
 import { EMPTY_COUNTERS, METRICS } from '../config/metrics.constants';
-import { jobSuccessKey } from '../lib/job-success';
+import { jobSuccessKey } from '../lib/job-success/job-success';
 import { METRICS_QUERIES } from '../providers/metrics-queries.provider';
 import { CircuitBreakerService } from './circuit-breaker.service';
 
@@ -106,6 +106,7 @@ export class MetricsService implements LestaOutcomeRecorder, OnApplicationShutdo
       });
     } catch (error) {
       this.logger.warn(`metrics flush for ${queue} failed: ${errorMessage(error)}`);
+      this.restoreCounters({ queue, counters });
     }
   }
 
@@ -122,7 +123,19 @@ export class MetricsService implements LestaOutcomeRecorder, OnApplicationShutdo
       await this.queries.mergeCollectorState({ db: this.prisma.$kysely, key: COLLECTOR_STATE_KEY.jobSuccess, value });
     } catch (error) {
       this.logger.warn(`job success flush failed: ${errorMessage(error)}`);
+      this.succeeded = new Map([...Object.entries(value), ...this.succeeded]);
     }
+  }
+
+  private restoreCounters({ queue, counters }: RestoreCountersInput) {
+    const current = this.countersFor(queue);
+
+    current.processed += counters.processed;
+    current.failed += counters.failed;
+    current.retried += counters.retried;
+    current.durationMs += counters.durationMs;
+    current.lestaRequests += counters.lestaRequests;
+    current.lestaErrors += counters.lestaErrors;
   }
 
   private recordJob({ queue, durationMs, ok, retried }: RecordJobInput) {

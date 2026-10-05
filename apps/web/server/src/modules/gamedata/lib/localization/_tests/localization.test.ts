@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import type { RepoReader } from '../../source';
+import type { RepoReader } from '../../source/source.types';
 
-import { GAME_PATHS } from '../../source';
+import { GAME_PATHS } from '../../source/source.constants';
 import { loadLocalization, localizationDomains, translate } from '../localization';
 import { LOCALIZATION } from '../localization.constants';
 

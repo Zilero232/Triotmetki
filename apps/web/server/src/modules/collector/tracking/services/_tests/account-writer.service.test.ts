@@ -4,8 +4,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { AccountRating, AccountSnapshot, PlayerTank, TankBattleDelta, TankSnapshotLatest } from '../../../../../../generated';
-import type { AccountChanges, AccountStorePort } from '../../lib/poll-pipeline';
-import type { TankSnapshotRow } from '../../lib/snapshots';
+import type { AccountChanges, AccountStorePort } from '../../lib/poll-pipeline/poll-pipeline.types';
+import type { TankSnapshotRow } from '../../lib/snapshots/snapshots.types';
 import type { AccountWriteQueries } from '../../queries/account-writes.types';
 
 import { moscowCalendarDate } from '../../../../../common/lib';
@@ -13,7 +13,7 @@ import { advisoryLocks, mockPrismaService } from '../../../../../core/prisma/_te
 import { ExpectedValuesReaderService } from '../../../../reference';
 import { TRACKING } from '../../config/tracking.constants';
 import { block, tankStats } from '../../lib/poll-pipeline/_tests/poll-pipeline.fixtures';
-import { tankSnapshotRow } from '../../lib/snapshots';
+import { tankSnapshotRow } from '../../lib/snapshots/snapshots';
 import { AccountWriterService } from '../account-writer.service';
 import { TrackingAnnounceService } from '../tracking-announce.service';
 

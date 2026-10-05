@@ -10,6 +10,7 @@ import { FEED } from '../config/feed.constants';
 import { SOCIAL_QUERY_TOKENS } from '../config/queries.constants';
 import { WRAPPED } from '../config/wrapped.constants';
 import { isMarkGain, isMasteryGain } from '../lib/feed/feed';
+import { moscowMonth, moscowYear, wrappedYearWindow } from '../lib/wrapped-year/wrapped-year';
 import { SnapshotEventsReaderService } from './snapshot-events-reader.service';
 
 @Injectable()
@@ -20,10 +21,9 @@ export class WrappedReaderService {
     @Inject(SOCIAL_QUERY_TOKENS.wrapped) private readonly queries: WrappedQueries
   ) {}
 
-  async wrapped({ accountId, year = new Date().getUTCFullYear() }: WrappedInput): Promise<WrappedView> {
+  async wrapped({ accountId, year = moscowYear(new Date()) }: WrappedInput): Promise<WrappedView> {
     const id = BigInt(accountId);
-    const start = new Date(Date.UTC(year, 0, 1));
-    const end = new Date(Date.UTC(year + 1, 0, 1));
+    const { start, end } = wrappedYearWindow(year);
     const player = await this.prisma.player.findUnique({ where: { accountId: id }, select: { nickname: true, isHidden: true } });
 
     if (!player || player.isHidden) {
@@ -73,7 +73,7 @@ export class WrappedReaderService {
       masteriesGained: snapshotEvents.filter((row) => isMasteryGain({ row, aceMastery: FEED.aceMastery })).length,
       badges: badges.map((badge) => badge.badgeCode),
       sessions,
-      busiestMonth: busiestMonth?.month ?? null,
+      busiestMonth: busiestMonth ? moscowMonth(busiestMonth.monthStart) : null,
       bestBattle: battle
         ? {
             tankId: battle.tankId,

@@ -2,10 +2,10 @@ import type { CorsOptions } from '@nestjs/common/interfaces/external/cors-option
 
 import { unique } from 'remeda';
 
-import type { Env } from '../env';
+import type { Env } from '../env/env.types';
 import type { CorsOptionsForInput } from './cors.types';
 
-import { envList } from '../env-list';
+import { envList } from '../env-list/env-list';
 import { CORS } from './cors.constants';
 
 const originOf = (url: string): string | null => {

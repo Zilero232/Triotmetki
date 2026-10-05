@@ -1,7 +1,7 @@
 import type { CrewData, Equipment, Nation, OptionalDevice, PostProgression, Shell, VehicleListEntry, VehicleSpec } from '@otmetki/gamedata';
 
-import type { Arena } from '../parsers/arenas';
-import type { SourceReader, SourceRevision } from '../source';
+import type { Arena } from '../parsers/arenas/arenas.types';
+import type { SourceReader, SourceRevision } from '../source/source.types';
 
 export type GameData = {
   version?: string;

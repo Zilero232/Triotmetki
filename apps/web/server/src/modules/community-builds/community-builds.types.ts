@@ -3,7 +3,7 @@ import type { z } from 'zod';
 
 import type { Owned, OwnedById, Viewer } from '../community-core';
 import type { buildPageSchema, buildsQuerySchema, updateBuildSchema } from './dto/community-builds.schemas';
-import type { BuildRow } from './selects';
+import type { BuildRow } from './selects/build.types';
 
 export type { BuildView };
 

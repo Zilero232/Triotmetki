@@ -2,10 +2,11 @@ import { getUnixTime } from 'date-fns';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-import type { BattleResultEvent } from '../../lib/contract';
+import type { BattleResultEvent } from '../../lib/contract/contract.types';
 
-import { BATTLE, moePercent } from '../../lib/battle';
-import { ingestBatchSchema } from '../../lib/contract';
+import { moePercent } from '../../lib/battle/battle';
+import { BATTLE } from '../../lib/battle/battle.constants';
+import { ingestBatchSchema } from '../../lib/contract/contract.schemas';
 import { toBattleData, toStoredLoadout, toStoredShot } from '../battle.mappers';
 
 const example = ingestBatchSchema.parse(

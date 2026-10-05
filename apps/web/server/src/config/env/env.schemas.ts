@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { envList } from '../env-list';
+import { envList } from '../env-list/env-list';
 import { LESTA } from '../lesta.constants';
 
 const ipAddress = z.union([z.ipv4(), z.ipv6()]);

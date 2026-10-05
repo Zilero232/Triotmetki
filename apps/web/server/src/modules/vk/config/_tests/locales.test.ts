@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-import { VK_LOCALE_FILES } from '..';
+import { VK_LOCALE_FILES } from '../locales.constants';
 
 const messageKeys = (locale: keyof typeof VK_LOCALE_FILES) =>
   readFileSync(VK_LOCALE_FILES[locale], 'utf8')

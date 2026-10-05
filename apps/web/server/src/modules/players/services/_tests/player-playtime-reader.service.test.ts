@@ -4,7 +4,7 @@ import { mock } from 'vitest-mock-extended';
 import type { PlayerQueries } from '../../providers/player-queries.provider.types';
 
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
-import { PLAYTIME } from '../../lib';
+import { PLAYTIME } from '../../lib/playtime/playtime.constants';
 import { PlayerPlaytimeReaderService } from '../player-playtime-reader.service';
 
 const cell = { weekday: 0, hour: 20, battles: 4, wins: 3, damage: 8_000 };

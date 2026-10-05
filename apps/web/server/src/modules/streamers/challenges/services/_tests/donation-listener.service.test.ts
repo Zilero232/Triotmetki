@@ -8,11 +8,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { Challenge, StreamerIntegration } from '../../../../../../generated';
-import type { Env } from '../../../../../config/env';
-import type { ChatAnnouncerService, StreamerStatsService } from '../../../chat';
-import type { DonationAlertsSdkService, IntegrationStoreService } from '../../../integrations';
+import type { Env } from '../../../../../config';
+import type { ChatAnnouncerService, ChatReplyReaderService } from '../../../chat';
+import type { DonationAlertsSdkService, IntegrationWriterService } from '../../../integrations';
 import type { OverlayPublisherService } from '../../../overlays';
-import type { ChallengeService } from '../challenge.service';
+import type { ChallengeWriterService } from '../challenge-writer.service';
 
 import { AppConfigService } from '../../../../../config';
 import { CHAT_COPY } from '../../../chat';
@@ -23,7 +23,8 @@ const sdk = {
   addUser: vi.fn<DonationAlertsAuthProvider['addUser']>(),
   removeUser: vi.fn<DonationAlertsAuthProvider['removeUser']>(),
   onRefresh: vi.fn<DonationAlertsAuthProvider['onRefresh']>(),
-  onDonation: vi.fn<EventsClient['onDonation']>()
+  onDonation: vi.fn<EventsClient['onDonation']>(),
+  removeEventsUser: vi.fn<EventsClient['removeUser']>()
 };
 
 const NOW = new Date('2026-09-01T12:00:00.000Z');
@@ -52,11 +53,11 @@ const flush = () =>
   });
 
 const createService = (env: Partial<Env> = ENV) => {
-  const store = mock<IntegrationStoreService>();
-  const challenges = mock<ChallengeService>();
+  const store = mock<IntegrationWriterService>();
+  const challenges = mock<ChallengeWriterService>();
   const announcer = mock<ChatAnnouncerService>();
   const publisher = mock<OverlayPublisherService>();
-  const stats = mock<StreamerStatsService>();
+  const stats = mock<ChatReplyReaderService>();
   const listener = mock<EventsListener>();
   const factory = mock<DonationAlertsSdkService>();
 
@@ -64,13 +65,14 @@ const createService = (env: Partial<Env> = ENV) => {
   store.storeToken.mockResolvedValue(undefined);
   listener.remove.mockResolvedValue();
   sdk.onDonation.mockResolvedValue(listener);
+  sdk.removeEventsUser.mockResolvedValue();
   stats.text.mockResolvedValue('announcement');
 
   factory.createAuthProvider.mockReturnValue(
     mock<DonationAlertsAuthProvider>({ addUser: sdk.addUser, removeUser: sdk.removeUser, onRefresh: sdk.onRefresh })
   );
 
-  factory.createEventsClient.mockReturnValue(mock<EventsClient>({ onDonation: sdk.onDonation }));
+  factory.createEventsClient.mockReturnValue(mock<EventsClient>({ onDonation: sdk.onDonation, removeUser: sdk.removeEventsUser }));
 
   const service = new DonationListenerService(
     new AppConfigService(new ConfigService<Env, true>(env)),
@@ -197,6 +199,16 @@ describe('DonationListenerService.sync', () => {
 
     expect(setup.listener.remove).toHaveBeenCalledTimes(1);
     expect(sdk.removeUser).toHaveBeenCalledWith(42);
+  });
+
+  it('drops the events client of an account whose integration was removed', async () => {
+    const setup = createService();
+
+    await boot(setup, [integration()]);
+    setup.store.byProvider.mockResolvedValue([]);
+    await setup.service.sync();
+
+    expect(sdk.removeEventsUser).toHaveBeenCalledWith(42);
   });
 
   it('resubscribes an account that comes back after being removed', async () => {

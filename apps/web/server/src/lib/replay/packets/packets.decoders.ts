@@ -1,6 +1,6 @@
 import type { DecodePacketInput, DecodeVehicleMethodInput, EntityMethodPacket, RawPacket, ReplayPacket } from './packets.types';
 
-import { ByteReader } from '../binary';
+import { ByteReader } from '../binary/byte-reader';
 import { PACKET_TYPE } from './packets.constants';
 import { htmlToText } from './packets.support';
 

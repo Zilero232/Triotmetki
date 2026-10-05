@@ -2,8 +2,8 @@ import type { ModpackChangelog, ModpackReleaseChange } from '@otmetki/schemas';
 
 import type { ChangedPackagesInput, ModpackChangelogInput, PackageFile, ReleaseChangesInput } from './release-changes.types';
 
-import { componentNotes } from '../changelog';
-import { newestFirst } from '../release-order';
+import { componentNotes } from '../changelog/changelog';
+import { newestFirst } from '../release-order/release-order';
 import { RELEASE_CHANGES } from './release-changes.constants';
 
 export const packageVersion = (file: string): string | null => RELEASE_CHANGES.packageVersion.exec(file)?.[1] ?? null;

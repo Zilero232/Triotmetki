@@ -15,14 +15,14 @@ import { outlineArticle } from '../lib/article-outline/article-outline';
 import { blogSlug, uniqueBlogSlug } from '../lib/blog-slug/blog-slug';
 import { toBlogEditorPostView } from '../mappers/blog-post-view.mappers';
 import { BLOG_POST_INCLUDE } from '../selects/blog-post.selects';
-import { BlogImageService } from './blog-image.service';
+import { BlogImageWriterService } from './blog-image-writer.service';
 
 @Injectable()
 export class BlogWriterService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly config: AppConfigService,
-    private readonly images: BlogImageService
+    private readonly images: BlogImageWriterService
   ) {}
 
   async access(userId: string | null): Promise<BlogEditorAccess> {

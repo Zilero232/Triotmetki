@@ -8,11 +8,11 @@ import type { CreateAuthInput } from './auth.types';
 
 import { allowedOrigins, isProduction, trustedProxies } from '../../config';
 import { API_KEY_PLUGIN, AUTH_RATE_LIMIT, SESSION } from './auth.constants';
-import { lestaId } from './lesta-id';
-import { authRateLimitRules, redisRateLimit } from './rate-limit';
-import { socialProviders } from './social-providers';
-import { telegramLogin } from './telegram-login';
-import { vkMiniApp } from './vk-mini-app';
+import { lestaId } from './lesta-id/lesta-id.plugin';
+import { authRateLimitRules, redisRateLimit } from './rate-limit/rate-limit';
+import { socialProviders } from './social-providers/social-providers';
+import { telegramLogin } from './telegram-login/telegram-login.plugin';
+import { vkMiniApp } from './vk-mini-app/vk-mini-app.plugin';
 
 export const createAuth = ({ env, prisma, redis, lesta, lestaStore, telegramStore, accountPurge, logger }: CreateAuthInput) => {
   const magicLinkEnabled = !isProduction(env);

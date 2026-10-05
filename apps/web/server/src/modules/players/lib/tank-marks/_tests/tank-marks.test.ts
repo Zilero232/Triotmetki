@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { PLAYER_MARKS } from '../../../config';
+import { PLAYER_MARKS } from '../../../config/player-stats.constants';
 import { clampMastery, marksSummary } from '../tank-marks';
 
 describe('clampMastery', () => {

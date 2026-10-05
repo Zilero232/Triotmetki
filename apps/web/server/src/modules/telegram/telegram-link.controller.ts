@@ -5,14 +5,14 @@ import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId } from '../../common/decorators';
-import { WEB_LOGIN } from './config';
-import { TelegramLinkCodeDto, TelegramSessionTokenDto, TelegramStatusDto, TelegramWebLoginDto } from './dto';
-import { TelegramLinkService } from './services';
+import { WEB_LOGIN } from './config/web-login.constants';
+import { TelegramLinkCodeDto, TelegramSessionTokenDto, TelegramStatusDto, TelegramWebLoginDto } from './dto/telegram.dto';
+import { TelegramLinkWriterService } from './services/telegram-link-writer.service';
 
 @ApiTags('telegram')
 @Controller()
 export class TelegramLinkController {
-  constructor(private readonly links: TelegramLinkService) {}
+  constructor(private readonly links: TelegramLinkWriterService) {}
 
   @Get('me/telegram')
   @ZodResponse({ type: TelegramStatusDto })

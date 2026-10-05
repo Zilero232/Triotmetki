@@ -5,13 +5,13 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CurrentUserId } from '../../common/decorators';
 import { IdParamsDto } from '../community-core';
-import { CreatePlatoonDto, PlatoonPageDto, PlatoonPostDto, PlatoonQueryDto } from './dto';
-import { PlatoonService } from './services';
+import { CreatePlatoonDto, PlatoonPageDto, PlatoonPostDto, PlatoonQueryDto } from './dto/platoons.dto';
+import { PlatoonWriterService } from './services/platoon-writer.service';
 
 @ApiTags('community')
 @Controller('community/platoons')
 export class PlatoonsController {
-  constructor(private readonly platoons: PlatoonService) {}
+  constructor(private readonly platoons: PlatoonWriterService) {}
 
   @AllowAnonymous()
   @Get()

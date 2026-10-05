@@ -44,7 +44,7 @@ const replayRotationSamples = ({ db, from, to }: MapStatsWindowInput) =>
     .where('replay.played_at', '<=', to)
     .$narrowType<{ uid: number; arena_id: string }>();
 
-export const rotationCounts = (input: MapStatsWindowInput) =>
+const rotationCounts = (input: MapStatsWindowInput) =>
   input.db
     .with('samples', () => battleRotationSamples(input).unionAll(replayRotationSamples(input)))
     .selectFrom('samples')
@@ -79,7 +79,7 @@ const queueSamples = ({ db, from, to }: MapStatsWindowInput) =>
     .where('battle.started_at', '>=', from)
     .where('battle.started_at', '<=', to);
 
-export const queueTimes = (input: MapStatsWindowInput) =>
+const queueTimes = (input: MapStatsWindowInput) =>
   input.db
     .with('samples', () => queueSamples(input))
     .selectFrom('samples')

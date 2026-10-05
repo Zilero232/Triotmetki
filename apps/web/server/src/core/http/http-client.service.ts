@@ -13,15 +13,11 @@ export class HttpClientService {
     return http.get(url, options).text();
   }
 
-  getJson<Schema extends StandardSchemaV1>(input: GetJsonInput<Schema>): Promise<StandardSchemaV1InferOutput<Schema>>;
-  getJson(input: HttpRequestInput): Promise<unknown>;
-  getJson(input: GetJsonInput<StandardSchemaV1> | HttpRequestInput): Promise<unknown> {
-    return 'schema' in input ? getJson(input) : http.get(input.url, input.options).json();
+  getJson<Schema extends StandardSchemaV1>(input: GetJsonInput<Schema>): Promise<StandardSchemaV1InferOutput<Schema>> {
+    return getJson(input);
   }
 
-  requestJson<Schema extends StandardSchemaV1>(input: RequestJsonInput<Schema>): Promise<StandardSchemaV1InferOutput<Schema>>;
-  requestJson(input: HttpRequestInput): Promise<unknown>;
-  requestJson(input: HttpRequestInput | RequestJsonInput<StandardSchemaV1>): Promise<unknown> {
-    return 'schema' in input ? http(input.url, input.options).json(input.schema) : http(input.url, input.options).json();
+  requestJson<Schema extends StandardSchemaV1>({ url, schema, options }: RequestJsonInput<Schema>): Promise<StandardSchemaV1InferOutput<Schema>> {
+    return http(url, options).json(schema);
   }
 }

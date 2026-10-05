@@ -1,6 +1,6 @@
 import type { BuildRanksInput } from './meta.types';
 
-import { BUILD_USAGE_AGGREGATE } from '../lib/build-usage';
+import { BUILD_USAGE_AGGREGATE } from '../lib/build-usage/build-usage.constants';
 
 export const buildRanks = ({ db, since, battleTypes }: BuildRanksInput) =>
   db

@@ -11,11 +11,12 @@ import type {
   ProvisionRow
 } from '../../importer.types';
 
-import { translate } from '../../../localization';
-import { resolveVehicleProgression } from '../../../parsers/post-progression';
-import { ASSET_PATHS, assetUrl } from '../../../source';
+import { translate } from '../../../localization/localization';
+import { resolveVehicleProgression } from '../../../parsers/post-progression/post-progression';
+import { assetUrl } from '../../../source/github/github';
+import { ASSET_PATHS } from '../../../source/source.constants';
 import { PROVISION_ICON, PROVISION_TYPE } from '../../importer.constants';
-import { compatibleTanks, prices } from '../vehicle-modules';
+import { compatibleTanks, prices } from '../vehicle-modules/vehicle-modules';
 
 const localizeProvision = ({ messages, nameKey, descriptionKey }: LocalizeProvisionInput): LocalizedProvisionFields => {
   const name = translate({ messages, key: nameKey });

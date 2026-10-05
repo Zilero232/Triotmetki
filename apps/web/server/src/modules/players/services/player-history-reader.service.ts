@@ -4,7 +4,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { subDays } from 'date-fns';
 import { sortBy } from 'remeda';
 
-import type { HistoryWindowPolicy } from '../lib';
+import type { HistoryWindowPolicy } from '../lib/history-window/history-window.types';
 import type { ActivityInput, HistoryInput, HistoryPolicyInput } from '../players.types';
 import type { PlayerQueries } from '../providers/player-queries.provider.types';
 
@@ -12,9 +12,11 @@ import { moscowDay, moscowDayStart, percentOf } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
 import { BronyaReferencesReaderService, ExpectedValuesReaderService, VehicleCatalogService } from '../../reference';
-import { HISTORY_WINDOW, PLAYER_QUERIES } from '../config';
-import { historyWindow, seriesPoints } from '../lib';
-import { toClanHistoryEntry, toNicknameHistoryEntry } from '../mappers';
+import { HISTORY_WINDOW } from '../config/player-stats.constants';
+import { PLAYER_QUERIES } from '../config/queries.constants';
+import { historyWindow } from '../lib/history-window/history-window';
+import { seriesPoints } from '../lib/time-series/time-series';
+import { toClanHistoryEntry, toNicknameHistoryEntry } from '../mappers/player-history.mappers';
 
 @Injectable()
 export class PlayerHistoryReaderService {

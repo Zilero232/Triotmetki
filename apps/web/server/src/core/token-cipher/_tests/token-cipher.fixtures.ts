@@ -1,6 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 
-import type { Env } from '../../../config/env';
+import type { Env } from '../../../config/env/env.types';
 
 import { AppConfigService } from '../../../config';
 import { TokenCipherService } from '../token-cipher.service';

@@ -9,7 +9,7 @@ import { toJsonValue } from '../../../../common/lib';
 import { LESTA_CLIENTS, PrismaService } from '../../../../core';
 import { masteryThresholdLevels } from '../../../reference';
 import { REFERENCE } from '../config/reference.constants';
-import { masteryPercentiles, masteryThresholdRows } from '../lib/community-data';
+import { masteryPercentiles, masteryThresholdRows } from '../lib/community-data/community-data';
 
 @Injectable()
 export class MasteryThresholdsSyncService {

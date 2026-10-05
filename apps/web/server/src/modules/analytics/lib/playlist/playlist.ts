@@ -6,7 +6,7 @@ import { sortBy, sumBy } from 'remeda';
 
 import type { BuildPlaylistInput, PlaylistCandidate, PlaylistPick } from './playlist.types';
 
-import { PLAYLIST_RULES, PLAYLIST_SEED } from '../../config';
+import { PLAYLIST_RULES, PLAYLIST_SEED } from '../../config/playlist.constants';
 
 const REASON_TESTS: Record<PlaylistReason, (candidate: PlaylistCandidate) => boolean> = {
   closeToMark: (candidate) =>

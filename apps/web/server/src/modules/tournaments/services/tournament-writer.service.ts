@@ -19,7 +19,7 @@ import type {
 
 import { AppBadRequestException, AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
 import { asPrismaTransaction, isTransactionConflict, isUniqueViolation, PrismaService } from '../../../core';
-import { CommunityAccountsService, readRequirements, titleSlug, unmetRequirements } from '../../community-core';
+import { CommunityAccountsReaderService, readRequirements, titleSlug, unmetRequirements } from '../../community-core';
 import { TOURNAMENT_QUERY_TOKENS } from '../config/queries.constants';
 import { TOURNAMENT } from '../config/tournaments.constants';
 import { BracketError, champion, reportWinner, seedBracket } from '../lib/bracket/bracket';
@@ -31,7 +31,7 @@ import { TournamentReaderService } from './tournament-reader.service';
 export class TournamentWriterService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly accounts: CommunityAccountsService,
+    private readonly accounts: CommunityAccountsReaderService,
     private readonly reader: TournamentReaderService,
     @Inject(TOURNAMENT_QUERY_TOKENS.seeds) private readonly queries: TournamentSeedsQueries
   ) {}
@@ -166,7 +166,12 @@ export class TournamentWriterService {
       }
 
       const stats = await this.accounts.statsOf(tournament.participants.map((participant) => participant.accountId));
-      const seeded = sortBy(tournament.participants, [(participant) => stats.get(participant.accountId)?.wn8 ?? 0, 'desc']);
+      const seeded = sortBy(
+        tournament.participants,
+        [(participant) => stats.get(participant.accountId)?.wn8 ?? 0, 'desc'],
+        [(participant) => participant.createdAt.getTime(), 'asc'],
+        [(participant) => participant.accountId, 'asc']
+      );
 
       await this.queries.writeParticipantSeeds({
         db: asPrismaTransaction(tx).$kysely,

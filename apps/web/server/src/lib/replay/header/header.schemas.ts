@@ -3,7 +3,7 @@ import { z } from 'zod';
 const count = z.number().nullish();
 const flag = z.union([z.boolean(), z.number()]).nullish();
 
-export const arenaVehicleSchema = z.looseObject({
+const arenaVehicleSchema = z.looseObject({
   name: z.string().nullish(),
   fakeName: z.string().nullish(),
   vehicleType: z.string().nullish(),
@@ -68,7 +68,7 @@ export const personalResultSchema = vehicleResultSchema.extend({
   markOfMastery: count
 });
 
-export const battleResultSchema = z.looseObject({
+const battleResultSchema = z.looseObject({
   arenaUniqueID: z.union([z.string(), z.number()]).nullish(),
   common: z
     .looseObject({

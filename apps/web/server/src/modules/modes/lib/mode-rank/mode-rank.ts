@@ -5,7 +5,7 @@ import { sortBy, sumBy } from 'remeda';
 import type { RankedTank, RankModeTanksInput } from './mode-rank.types';
 
 import { roundTo, winRateShare } from '../../../../common/lib';
-import { MODE_RANKING } from '../../config';
+import { MODE_RANKING } from '../../config/modes.constants';
 import { MODE_RANK_SCORE } from './mode-rank.constants';
 
 const rankAt = (position: number): ModeRank => MODE_RANKING.shares.find((share) => position < share.upTo)?.rank ?? 'D';

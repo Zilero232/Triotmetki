@@ -7,13 +7,13 @@ import RedisMock from 'ioredis-mock';
 import { describe, expect, it, vi } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
-import type { Env } from '../../../../config/env';
+import type { Env } from '../../../../config';
 import type { BotContext } from '../../telegram.types';
-import type { TelegramChatService } from '../telegram-chat.service';
+import type { TelegramChatReaderService } from '../telegram-chat-reader.service';
 import type { TelegramCommandRegistry } from '../telegram-command-registry.service';
 import type { TelegramCommandsService } from '../telegram-commands.service';
 import type { TelegramInlineService } from '../telegram-inline.service';
-import type { TelegramSettingsService } from '../telegram-settings.service';
+import type { TelegramSettingsWriterService } from '../telegram-settings-writer.service';
 
 import { AppConfigService } from '../../../../config';
 import { TelegramBotService } from '../telegram-bot.service';
@@ -21,16 +21,16 @@ import { TelegramBotService } from '../telegram-bot.service';
 const SECRET = 'webhook-secret-of-the-bot';
 const update = mock<Update>({ update_id: 1 });
 
-const createBot = (secret = SECRET) => {
+const createBot = ({ secret = SECRET, nodeEnv = 'test' }: { secret?: string; nodeEnv?: Env['NODE_ENV'] } = {}) => {
   const bot = mockDeep<Bot<BotContext>>();
   const service = new TelegramBotService(
     bot,
     mock<I18n<BotContext>>(),
-    new AppConfigService(new ConfigService<Env, true>({ TELEGRAM_WEBHOOK_SECRET: secret })),
-    mock<TelegramChatService>(),
+    new AppConfigService(new ConfigService<Env, true>({ TELEGRAM_WEBHOOK_SECRET: secret, NODE_ENV: nodeEnv })),
+    mock<TelegramChatReaderService>(),
     mock<TelegramCommandsService>({ commands: [] }),
     mock<TelegramInlineService>(),
-    mock<TelegramSettingsService>(),
+    mock<TelegramSettingsWriterService>(),
     mock<TelegramCommandRegistry>(),
     new RedisMock()
   );
@@ -84,10 +84,32 @@ describe('TelegramBotService.handleWebhook', () => {
   });
 
   it('drops every update while no webhook secret is configured', async () => {
-    const { bot, service } = createBot('');
+    const { bot, service } = createBot({ secret: '' });
 
     await service.handleWebhook({ update, secret: '' });
 
     expect(bot.handleUpdate).not.toHaveBeenCalled();
+  });
+});
+
+describe('TelegramBotService lifecycle', () => {
+  it('never starts polling when the app shuts down while the bot is still starting', async () => {
+    const { bot, service } = createBot({ secret: '', nodeEnv: 'development' });
+    let finishInit = (): void => undefined;
+
+    bot.init.mockReturnValue(
+      new Promise<void>((resolve) => {
+        finishInit = resolve;
+      })
+    );
+
+    service.onApplicationBootstrap();
+    await service.onModuleDestroy();
+    finishInit();
+
+    await vi.waitFor(() => expect(bot.api.deleteWebhook).toHaveBeenCalled());
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(bot.start).not.toHaveBeenCalled();
   });
 });

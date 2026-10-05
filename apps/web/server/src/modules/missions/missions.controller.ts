@@ -6,8 +6,16 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
-import { MissionCampaignsDto, MissionOperationDto, MissionOperationParamsDto, MissionParamsDto, MissionTanksDto, MissionTanksQueryDto } from './dto';
-import { MissionCatalogService, MissionTanksService } from './services';
+import {
+  MissionCampaignsDto,
+  MissionOperationDto,
+  MissionOperationParamsDto,
+  MissionParamsDto,
+  MissionTanksDto,
+  MissionTanksQueryDto
+} from './dto/missions.dto';
+import { MissionCatalogReaderService } from './services/mission-catalog-reader.service';
+import { MissionTanksReaderService } from './services/mission-tanks-reader.service';
 
 @ApiTags('missions')
 @AllowAnonymous()
@@ -15,8 +23,8 @@ import { MissionCatalogService, MissionTanksService } from './services';
 @Controller('missions')
 export class MissionsController {
   constructor(
-    private readonly catalog: MissionCatalogService,
-    private readonly tanks: MissionTanksService
+    private readonly catalog: MissionCatalogReaderService,
+    private readonly tanks: MissionTanksReaderService
   ) {}
 
   @Get()

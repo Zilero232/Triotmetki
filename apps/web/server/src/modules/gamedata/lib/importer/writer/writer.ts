@@ -1,9 +1,9 @@
 import type { ImportCounts, WriteImportPlanInput } from '../importer.types';
 
-import { writeCatalog } from './catalog';
-import { writeEntries } from './entries';
-import { upsertGameVersion } from './game-version';
-import { writeSpecHistory } from './spec-history';
+import { writeCatalog } from './catalog/catalog';
+import { writeEntries } from './entries/entries';
+import { upsertGameVersion } from './game-version/game-version';
+import { writeSpecHistory } from './spec-history/spec-history';
 
 export const writeImportPlan = async ({ prisma, plan, mode, markCurrent, onProgress }: WriteImportPlanInput): Promise<ImportCounts> => {
   const gameVersionId = await upsertGameVersion({ prisma, plan, markCurrent });

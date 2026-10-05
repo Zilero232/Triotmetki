@@ -2,6 +2,7 @@ import { invert } from 'remeda';
 
 export const OVERLAY = {
   cacheTtlMs: 5_000,
+  cacheKeyPrefix: 'overlay:',
   streamRefreshMs: 30_000,
   channelPrefix: 'otmetki:overlay:account:',
   publicPath: '/overlay/{publicKey}'

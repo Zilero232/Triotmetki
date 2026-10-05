@@ -14,7 +14,15 @@ import { isPrismaRequestError } from '../../../core';
 import { LestaNotConfiguredError } from '../../../lib/lesta';
 import { errorMessage } from '../../lib';
 import { LESTA_NOT_CONNECTED, MOD_REPLY, PRISMA_TO_HTTP } from './all-exceptions.constants';
-import { bodyWithField, codeForStatus, isLestaError, middlewareStatus, modErrorForStatus, retryAfterSeconds, zodIssues } from './lib';
+import {
+  bodyWithField,
+  codeForStatus,
+  isLestaError,
+  middlewareStatus,
+  modErrorForStatus,
+  retryAfterSeconds,
+  zodIssues
+} from './lib/exception-reply/exception-reply';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {

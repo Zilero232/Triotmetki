@@ -6,7 +6,7 @@ import { ZodResponse } from 'nestjs-zod';
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { TankDetailReaderService, TankStatsReaderService, TierListReaderService } from '../tanks';
-import { PublicApi } from './decorators';
+import { PublicApi } from './decorators/public-api.decorator';
 import {
   V1TankDetailDto,
   V1TankDetailQueryDto,
@@ -15,7 +15,7 @@ import {
   V1TankStatsQueryDto,
   V1TierListDto,
   V1TierListQueryDto
-} from './dto';
+} from './dto/v1.dto';
 
 @UseInterceptors(ViewerCacheInterceptor)
 @PublicApi('tanks')

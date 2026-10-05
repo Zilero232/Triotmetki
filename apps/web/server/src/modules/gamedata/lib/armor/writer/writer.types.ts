@@ -1,6 +1,6 @@
 import type { PrismaClient } from '../../../../../../generated';
-import type { CollectedArmorModels } from '../collect';
-import type { ArmorStorage } from '../storage';
+import type { CollectedArmorModels } from '../collect/collect.types';
+import type { ArmorStorage } from '../storage/storage.types';
 
 export type WriteArmorModelsInput = {
   prisma: PrismaClient;

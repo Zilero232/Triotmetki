@@ -3,7 +3,7 @@ import { Redis } from 'ioredis';
 
 import type { Prisma } from '../../../../generated';
 import type { LestaClient } from '../../../lib/lesta';
-import type { MissingPlayerLookup } from '../lib';
+import type { MissingPlayerLookup } from '../lib/missing-player/missing-player.types';
 import type { LestaPlayerInfo } from '../players.types';
 
 import { AppNotFoundException } from '../../../common/exceptions';
@@ -11,8 +11,8 @@ import { errorMessage, fromUnixSeconds, insensitiveEquals } from '../../../commo
 import { LESTA_CLIENT, PrismaService, REDIS } from '../../../core';
 import { accountInfoSchema, isExtraRejected, isSearchRejected } from '../../../lib/lesta';
 import { CollectorProducerService, PurgeGuardService } from '../../collector';
-import { PLAYER_LOOKUP } from '../config';
-import { missingPlayerKey } from '../lib';
+import { PLAYER_LOOKUP } from '../config/player-lookup.constants';
+import { missingPlayerKey } from '../lib/missing-player/missing-player';
 
 @Injectable()
 export class PlayerResolverService {

@@ -13,10 +13,11 @@ import type {
   PeriodRowsInput,
   RatingHistoryBounds,
   TankPeriodTotalsInput,
-  TankSnapshotTotals
+  TankSnapshotTotals,
+  ZeroBaselinesInput
 } from './account-ratings.types';
 
-import { RATING_PERIOD_WINDOWS } from './account-ratings.constants';
+import { RATING_PERIOD_WINDOWS, ZERO_TANK_BASELINE } from './account-ratings.constants';
 
 const toTankTotals = (row: TankSnapshotTotals): TankTotals => ({
   tankId: row.tankId,
@@ -88,9 +89,15 @@ export const tankPeriodTotals = ({ tankSnapshots, cutoff }: TankPeriodTotalsInpu
   return { from, to, toCapturedAt };
 };
 
+const withZeroBaselines = ({ from, to }: ZeroBaselinesInput): TankTotals[] => {
+  const known = new Set(from.map((tank) => tank.tankId));
+
+  return [...from, ...to.flatMap((tank) => (known.has(tank.tankId) ? [] : [{ ...ZERO_TANK_BASELINE, tankId: tank.tankId }]))];
+};
+
 const periodRows = ({ input, period, cutoff }: PeriodRowsInput): AccountRatingsResult => {
   const { from, to, toCapturedAt } = tankPeriodTotals({ tankSnapshots: input.tankSnapshots, cutoff });
-  const result = periodRatings({ from, to, expected: input.expected, tiers: input.tiers });
+  const result = periodRatings({ from: withZeroBaselines({ from, to }), to, expected: input.expected, tiers: input.tiers });
 
   if (result.totals.battles === 0) {
     return { ratings: [], tankRatings: [] };

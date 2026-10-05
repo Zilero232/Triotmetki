@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import type { LestaOutcome } from '../../outcome';
+import type { LestaOutcome } from '../../outcome/outcome.types';
 
 import { createFetchMock, FAST_RETRY, lestaError, ok } from '../../_tests/fixtures';
-import { LESTA_ERROR_CODE, LestaApiError, LestaHttpError, LestaNetworkError, LestaNotConfiguredError } from '../../errors';
+import { LESTA_ERROR_CODE } from '../../errors/errors.constants';
+import { LestaApiError, LestaHttpError, LestaNetworkError, LestaNotConfiguredError } from '../../errors/lesta-api-error';
 import { createLestaClient } from '../client';
 
 const APPLICATION_ID = 'test-app';

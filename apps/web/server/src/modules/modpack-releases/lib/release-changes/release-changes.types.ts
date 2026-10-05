@@ -1,6 +1,6 @@
 import type { ModpackReleaseIndex, ModpackReleasePackage } from '@otmetki/schemas';
 
-import type { ChangelogEntries } from '../changelog';
+import type { ChangelogEntries } from '../changelog/changelog.types';
 
 export type PackageFile = Pick<ModpackReleasePackage, 'file' | 'id'>;
 

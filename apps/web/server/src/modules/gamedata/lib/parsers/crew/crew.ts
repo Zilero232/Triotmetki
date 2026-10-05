@@ -4,8 +4,8 @@ import { CREW_ROLES } from '@otmetki/gamedata';
 
 import type { CollectParamsInput, ParseCrewInput } from './crew.types';
 
-import { oneOf } from '../../guards';
-import { bool, entries, get, isXmlNode, localizationFallback, localizationKey, nodes, num, parseXml, scalars, text, words } from '../../xml';
+import { oneOf } from '../../guards/guards';
+import { bool, entries, get, isXmlNode, localizationFallback, localizationKey, nodes, num, parseXml, scalars, text, words } from '../../xml/xml';
 import { SINGLE_ON_VEHICLE_TAG, SKILL_NODE_KEYS } from './crew.constants';
 
 const isRole = oneOf(CREW_ROLES);

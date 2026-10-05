@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import type { WebhookEmitter } from '../../../webhooks';
-import type { GainedMark } from '../lib/marks-gain';
+import type { GainedMark } from '../lib/marks-gain/marks-gain.types';
 
 import { PrismaService } from '../../../../core';
 import { entitledSubscriptionWhere } from '../../../billing';

@@ -6,7 +6,7 @@ import { entries } from 'remeda';
 
 import type { CreateFluentStoreInput } from './fluent-store.types';
 
-import { BOT_LOCALE } from '../../config';
+import { BOT_LOCALE } from '../../config/bot-commands.constants';
 
 export const createFluentStore = <C extends Context = Context>({ files, localeNegotiator }: CreateFluentStoreInput<C>): I18n<C> => {
   const i18n = new I18n<C>({

@@ -6,9 +6,9 @@ import { AppNotFoundException } from '../../../common/exceptions';
 import { CLAN_ROLE_FROM_DB, errorMessage, RATING_PERIOD_FROM_DB, RATING_PERIOD_TO_DB, toIso, toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { clanEmblem } from '../../clans';
-import { PLAYER_STATS } from '../config';
-import { statsBlockFromRating, statsBlockFromTotals, totalsFromLestaBlock } from '../lib';
-import { toSnapshotStats } from '../mappers';
+import { PLAYER_STATS } from '../config/player-stats.constants';
+import { statsBlockFromRating, statsBlockFromTotals, totalsFromLestaBlock } from '../lib/stats-block/stats-block';
+import { toSnapshotStats } from '../mappers/snapshot-stats.mappers';
 import { PlayerResolverService } from './player-resolver.service';
 
 @Injectable()

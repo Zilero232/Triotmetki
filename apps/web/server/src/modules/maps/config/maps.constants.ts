@@ -9,3 +9,7 @@ export const MAP_TEAMS: Readonly<{ teams: readonly number[] }> = {
 export const TANK_MAP_STATS = {
   randomBattleType: '1'
 } as const;
+
+export const MAP_TEAM_STATS = {
+  winnerPattern: '^[0-9]{1,9}$'
+} as const;

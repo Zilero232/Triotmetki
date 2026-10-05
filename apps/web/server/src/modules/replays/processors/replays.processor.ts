@@ -3,17 +3,20 @@ import { Job } from 'bullmq';
 import { match } from 'ts-pattern';
 
 import { MetricsService, TrackedWorkerHost } from '../../collector/metrics';
-import { REPLAYS_QUEUE } from '../config';
-import { replayParseJobSchema } from '../dto';
-import { BestOfWeekService, ReplayOverflowService, ReplayParseService, ReplayTagBackfillService } from '../services';
+import { REPLAYS_QUEUE } from '../config/queue.constants';
+import { replayParseJobSchema } from '../dto/replays.schemas';
+import { BestOfWeekAggregateService } from '../services/best-of-week-aggregate.service';
+import { ReplayOverflowService } from '../services/replay-overflow.service';
+import { ReplayParseService } from '../services/replay-parse.service';
+import { ReplayTagAggregateService } from '../services/replay-tag-aggregate.service';
 
 @Processor(REPLAYS_QUEUE.name, { concurrency: REPLAYS_QUEUE.concurrency })
 export class ReplaysProcessor extends TrackedWorkerHost {
   constructor(
     private readonly parser: ReplayParseService,
-    private readonly bestOfWeek: BestOfWeekService,
+    private readonly bestOfWeek: BestOfWeekAggregateService,
     private readonly overflow: ReplayOverflowService,
-    private readonly tagBackfill: ReplayTagBackfillService,
+    private readonly tagBackfill: ReplayTagAggregateService,
     metrics: MetricsService
   ) {
     super(metrics);

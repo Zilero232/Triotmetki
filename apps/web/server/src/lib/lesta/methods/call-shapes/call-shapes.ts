@@ -3,9 +3,9 @@ import { z } from 'zod';
 import type { IdListInput, LestaGenericInput } from '../methods.types';
 import type { BatchedMapInput, PassthroughByIdInput, PassthroughInput } from './call-shapes.types';
 
-import { batchById } from '../../batching';
-import { callParams } from '../../client/params';
-import { looseMapSchema } from '../../schemas';
+import { batchById } from '../../batching/batching';
+import { callParams } from '../../client/params/params';
+import { looseMapSchema } from '../../schemas/common/common.schemas';
 
 export const genericParams = ({ params, ...options }: LestaGenericInput) => ({ ...callParams(options), ...params });
 

@@ -17,7 +17,7 @@ import type { ClanActivityRow } from '../queries/clan-activity.types';
 import { errorMessage, readNumber, readRecord, toJsonValue } from '../../../../common/lib';
 import { LESTA_CLIENTS, PrismaService } from '../../../../core';
 import { CLANS } from '../config/clans.constants';
-import { ownedProvinces } from '../lib/clan-provinces';
+import { ownedProvinces } from '../lib/clan-provinces/clan-provinces';
 import { CLANS_QUERIES } from '../providers/clans-queries.provider';
 
 @Injectable()

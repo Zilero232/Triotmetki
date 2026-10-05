@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { randomCode } from '../../../../../common/lib';
-import { LINK_CODE } from '../../../config';
+import { LINK_CODE } from '../../../config/link-code.constants';
 import { linkConfirmData, looksLikeLinkCode, normaliseLinkCode, parseLinkConfirm } from '../link-code';
 
 describe('link codes', () => {

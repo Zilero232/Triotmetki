@@ -1,6 +1,6 @@
 import type { VehicleType } from '../../../../generated';
 import type { Vehicle } from '../../../lib/lesta';
-import type { MoeEstimate } from './lib/moe-estimate';
+import type { MoeEstimate } from './lib/moe-estimate/moe-estimate.types';
 
 export type SectionRunner = () => Promise<number>;
 

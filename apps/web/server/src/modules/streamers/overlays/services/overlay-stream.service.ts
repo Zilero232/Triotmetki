@@ -7,7 +7,7 @@ import { defer, from, interval, map, merge, Observable, startWith, switchMap } f
 import { errorMessage } from '../../../../common/lib';
 import { REDIS } from '../../../../core';
 import { OVERLAY } from '../config/overlay.constants';
-import { OverlayDataService } from './overlay-data.service';
+import { OverlayDataReaderService } from './overlay-data-reader.service';
 import { OverlayPublisherService } from './overlay-publisher.service';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class OverlayStreamService implements OnModuleDestroy {
 
   constructor(
     @Inject(REDIS) private readonly redis: Redis,
-    private readonly data: OverlayDataService,
+    private readonly data: OverlayDataReaderService,
     private readonly publisher: OverlayPublisherService
   ) {}
 

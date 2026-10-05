@@ -13,7 +13,7 @@ import type { TankObtainReaderService } from '../tank-obtain-reader.service';
 import type { TopPlayersReaderService } from '../top-players-reader.service';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
-import { TANK_PROFILES } from '../../config';
+import { TANK_PROFILES } from '../../config/tanks.constants';
 import { TankDetailReaderService } from '../tank-detail-reader.service';
 import { catalogEntry, serverStats, vehicle } from './tanks.fixtures';
 

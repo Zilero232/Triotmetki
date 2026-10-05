@@ -3,8 +3,9 @@ import type { ApiClient } from '@twurple/api';
 
 import { Injectable, Logger } from '@nestjs/common';
 import { chunk } from 'remeda';
+import Parser from 'rss-parser';
 
-import type { LiveStream } from '../lib/live-status';
+import type { LiveStream } from '../lib/live-status/live-status.types';
 import type { CachedToken } from '../live.types';
 
 import { errorMessage } from '../../../../common/lib';
@@ -13,19 +14,18 @@ import { HttpClientService } from '../../../../core';
 import { TwitchSdkService } from '../../integrations';
 import { LIVE } from '../config/live.constants';
 import { vkChannelsSchema, vkTokenSchema, youtubeChannelSchema, youtubeLiveSchema } from '../dto/live.schemas';
-import { FeedReaderService } from './feed-reader.service';
 
 @Injectable()
 export class LivePlatformsService {
   private readonly logger = new Logger(LivePlatformsService.name);
   private twitchClient: ApiClient | null = null;
   private vkToken: CachedToken | null = null;
+  private readonly feedParser = new Parser();
 
   constructor(
     private readonly config: AppConfigService,
     private readonly http: HttpClientService,
-    private readonly twitch: TwitchSdkService,
-    private readonly feeds: FeedReaderService
+    private readonly twitch: TwitchSdkService
   ) {}
 
   hasTwitch(): boolean {
@@ -48,7 +48,9 @@ export class LivePlatformsService {
     const streams: LiveStream[] = [];
 
     for (const part of chunk([...logins], LIVE.twitch.batch)) {
-      for (const stream of await this.twitchApi().streams.getStreamsByUserNames(part)) {
+      const page = await this.twitchApi().streams.getStreams({ userName: part, limit: part.length });
+
+      for (const stream of page.data) {
         streams.push({ platform: 'twitch', handle: stream.userName.toLowerCase(), viewers: stream.viewers });
       }
     }
@@ -105,10 +107,11 @@ export class LivePlatformsService {
       try {
         const body = await this.http.getJson({
           url: `${LIVE.youtube.apiUrl}/search`,
-          options: { searchParams: { part: 'id', channelId, eventType: 'live', type: 'video', key: this.config.get('YOUTUBE_API_KEY') } }
+          schema: youtubeLiveSchema,
+          options: { retry: 0, searchParams: { part: 'id', channelId, eventType: 'live', type: 'video', key: this.config.get('YOUTUBE_API_KEY') } }
         });
 
-        if (youtubeLiveSchema.parse(body).items.length > 0) {
+        if (body.items.length > 0) {
           streams.push({ platform: 'youtube', handle: channelId.toLowerCase(), viewers: null });
         }
       } catch (error) {
@@ -126,15 +129,17 @@ export class LivePlatformsService {
 
     const body = await this.http.getJson({
       url: `${LIVE.youtube.apiUrl}/channels`,
-      options: { searchParams: { part: 'snippet', id: channelId, key: this.config.get('YOUTUBE_API_KEY') } }
+      schema: youtubeChannelSchema,
+      options: { retry: 0, searchParams: { part: 'snippet', id: channelId, key: this.config.get('YOUTUBE_API_KEY') } }
     });
 
-    return youtubeChannelSchema.parse(body).items[0]?.snippet.description ?? null;
+    return body.items[0]?.snippet.description ?? null;
   }
 
   async youtubeVideos(channelId: string): Promise<StreamerVideo[]> {
     try {
-      const feed = await this.feeds.read(`${LIVE.youtube.rssUrl}?channel_id=${encodeURIComponent(channelId)}`);
+      const xml = await this.http.getText({ url: LIVE.youtube.rssUrl, options: { searchParams: { channel_id: channelId } } });
+      const feed = await this.feedParser.parseString(xml);
 
       return feed.items
         .slice(0, LIVE.youtube.videosLimit)
@@ -152,6 +157,7 @@ export class LivePlatformsService {
     const token = await this.vkAccess();
     const body = await this.http.requestJson({
       url: `${LIVE.vk.apiUrl}/v1/channels`,
+      schema: vkChannelsSchema,
       options: {
         method: 'post',
         json: { channels: handles.map((handle) => ({ url: `${LIVE.vk.channelUrl}/${handle}` })) },
@@ -159,7 +165,7 @@ export class LivePlatformsService {
       }
     });
 
-    return vkChannelsSchema.parse(body).data.channels;
+    return body.data.channels;
   }
 
   private twitchApi(): ApiClient {
@@ -177,12 +183,11 @@ export class LivePlatformsService {
     }
 
     const credentials = Buffer.from(`${this.config.get('VK_LIVE_CLIENT_ID')}:${this.config.get('VK_LIVE_CLIENT_SECRET')}`).toString('base64');
-    const body = await this.http.requestJson({
+    const token = await this.http.requestJson({
       url: LIVE.vk.tokenUrl,
+      schema: vkTokenSchema,
       options: { method: 'post', body: new URLSearchParams({ grant_type: 'client_credentials' }), headers: { authorization: `Basic ${credentials}` } }
     });
-
-    const token = vkTokenSchema.parse(body);
 
     this.vkToken = { value: token.access_token, expiresAt: Date.now() + token.expires_in * LIVE.tokenMsPerSecond };
 

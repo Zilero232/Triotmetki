@@ -1,4 +1,4 @@
-import { MODES_QUERIES } from '../config';
+import { MODES_QUERIES } from '../config/queries.constants';
 import { myModeBattles } from '../queries/my-mode-stats.queries';
 
 export const modesQueries = { myModeBattles };

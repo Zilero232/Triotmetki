@@ -5,7 +5,7 @@ import type { BuildServerStatsInput, DailyStatsRow, PeriodPlayersAtInput, Player
 
 import { CohortFilter } from '../../../../../../../generated';
 import { ratio } from '../../../../../../common/lib';
-import { tierListRanks } from '../tier-list';
+import { tierListRanks } from '../tier-list/tier-list';
 import { SERVER_STATS } from './server-stats.constants';
 
 const cohortFilters: ReadonlySet<string> = new Set(Object.values(CohortFilter));

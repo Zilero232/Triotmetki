@@ -4,7 +4,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { BotRepliesService } from '../../../bot-commands';
 import type { BotContext, LinkedChat } from '../../telegram.types';
 
-import { SHARED_COMMAND_OF } from '../../config';
+import { SHARED_COMMAND_OF } from '../../config/bot.constants';
 import { TelegramSharedCommandsService } from '../telegram-shared-commands.service';
 
 const CHAT: LinkedChat = { userId: 'user', telegramId: 42n, accountId: 7n, nickname: 'Tanker', locale: 'en' };

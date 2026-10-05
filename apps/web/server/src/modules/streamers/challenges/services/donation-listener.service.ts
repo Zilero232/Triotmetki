@@ -12,10 +12,10 @@ import type { DonationConnection, DonationEventInput } from '../challenges.types
 
 import { errorMessage } from '../../../../common/lib';
 import { AppConfigService } from '../../../../config';
-import { CHAT_COPY, ChatAnnouncerService, StreamerStatsService } from '../../chat';
-import { DONATION_ALERTS, DonationAlertsSdkService, INTEGRATIONS, IntegrationStoreService } from '../../integrations';
+import { CHAT_COPY, ChatAnnouncerService, ChatReplyReaderService } from '../../chat';
+import { DONATION_ALERTS, DonationAlertsSdkService, INTEGRATIONS, IntegrationWriterService } from '../../integrations';
 import { OverlayPublisherService } from '../../overlays';
-import { ChallengeService } from './challenge.service';
+import { ChallengeWriterService } from './challenge-writer.service';
 
 @Injectable()
 export class DonationListenerService implements OnApplicationBootstrap, OnModuleDestroy {
@@ -26,11 +26,11 @@ export class DonationListenerService implements OnApplicationBootstrap, OnModule
 
   constructor(
     private readonly config: AppConfigService,
-    private readonly store: IntegrationStoreService,
-    private readonly challenges: ChallengeService,
+    private readonly store: IntegrationWriterService,
+    private readonly challenges: ChallengeWriterService,
     private readonly announcer: ChatAnnouncerService,
     private readonly publisher: OverlayPublisherService,
-    private readonly stats: StreamerStatsService,
+    private readonly stats: ChatReplyReaderService,
     private readonly sdk: DonationAlertsSdkService
   ) {}
 
@@ -93,6 +93,7 @@ export class DonationListenerService implements OnApplicationBootstrap, OnModule
       for (const [externalId, { listener }] of this.connections) {
         if (!active.has(externalId)) {
           await listener.remove();
+          await this.events?.removeUser(externalId);
           this.auth?.removeUser(externalId);
           this.connections.delete(externalId);
         }

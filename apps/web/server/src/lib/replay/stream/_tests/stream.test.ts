@@ -2,7 +2,7 @@ import { deflateSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 
 import { encryptStream } from '../../_tests/replay-builder';
-import { ReplayFormatError } from '../../errors';
+import { ReplayFormatError } from '../../errors/replay-format-error';
 import { decryptStream, unpackStream } from '../stream';
 
 const BOMB_BYTES = 64 * 1024 * 1024 + 1;

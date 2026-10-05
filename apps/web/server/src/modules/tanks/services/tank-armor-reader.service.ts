@@ -14,7 +14,7 @@ import { PrismaService, StorageObjectMissingError } from '../../../core';
 import { MODEL_SOURCES } from '../../gamedata';
 import { VehicleCatalogService } from '../../reference';
 import { UsageMeterService } from '../../usage';
-import { ARMOR_STORAGE } from '../config';
+import { ARMOR_STORAGE } from '../config/armor.constants';
 import { TankDetailReaderService } from './tank-detail-reader.service';
 
 @Injectable()

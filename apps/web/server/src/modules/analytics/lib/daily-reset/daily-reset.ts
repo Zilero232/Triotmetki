@@ -4,7 +4,7 @@ import { addDays, addHours, startOfDay, subDays } from 'date-fns';
 import type { DailyWindow } from './daily-reset.types';
 
 import { TIME } from '../../../../config';
-import { FIRST_WIN } from '../../config';
+import { FIRST_WIN } from '../../config/playlist.constants';
 
 const zone = tz(TIME.zone);
 

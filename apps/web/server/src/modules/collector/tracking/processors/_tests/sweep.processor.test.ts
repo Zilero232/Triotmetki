@@ -4,8 +4,8 @@ import { mock } from 'vitest-mock-extended';
 
 import type { CircuitBreakerService, MetricsService } from '../../../metrics';
 import type { DispatchService } from '../../services/dispatch.service';
+import type { PlayerSeedSyncService } from '../../services/player-seed-sync.service';
 import type { PollSyncService } from '../../services/poll-sync.service';
-import type { SeedService } from '../../services/seed.service';
 
 import { JOB } from '../../../contracts';
 import { SweepProcessor } from '../sweep.processor';
@@ -19,7 +19,7 @@ const createProcessor = (open: boolean) => {
   breaker.isOpen.mockReturnValue(open);
   metrics.track.mockImplementation(({ run }) => run());
 
-  return { pipeline, dispatch, processor: new SweepProcessor(pipeline, dispatch, mock<SeedService>(), breaker, metrics) };
+  return { pipeline, dispatch, processor: new SweepProcessor(pipeline, dispatch, mock<PlayerSeedSyncService>(), breaker, metrics) };
 };
 
 describe('SweepProcessor', () => {

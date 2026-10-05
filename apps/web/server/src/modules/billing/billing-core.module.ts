@@ -5,31 +5,31 @@ import { PlusGuard } from './guards/plus.guard';
 import { yooKassaProvider } from './providers/yookassa.provider';
 import { EntitlementsBusService } from './services/entitlements-bus.service';
 import { EntitlementsService } from './services/entitlements.service';
-import { PromoService } from './services/promo.service';
-import { ReferralService } from './services/referral.service';
-import { SubscriptionService } from './services/subscription.service';
-import { WebhookService } from './services/webhook.service';
+import { PromoWriterService } from './services/promo-writer.service';
+import { ReferralWriterService } from './services/referral-writer.service';
+import { SettlementWriterService } from './services/settlement-writer.service';
+import { SubscriptionWriterService } from './services/subscription-writer.service';
 
 @Module({
   imports: [HttpModule],
   providers: [
     yooKassaProvider,
     EntitlementsBusService,
-    SubscriptionService,
+    SubscriptionWriterService,
     EntitlementsService,
-    PromoService,
-    ReferralService,
-    WebhookService,
+    PromoWriterService,
+    ReferralWriterService,
+    SettlementWriterService,
     PlusGuard
   ],
   exports: [
     yooKassaProvider,
     EntitlementsBusService,
-    SubscriptionService,
+    SubscriptionWriterService,
     EntitlementsService,
-    PromoService,
-    ReferralService,
-    WebhookService,
+    PromoWriterService,
+    ReferralWriterService,
+    SettlementWriterService,
     PlusGuard
   ]
 })

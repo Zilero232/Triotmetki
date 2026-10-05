@@ -10,10 +10,10 @@ import { playerQueriesProvider } from './providers/player-queries.provider';
 import { AccountWriterService } from './services/account-writer.service';
 import { DispatchService } from './services/dispatch.service';
 import { EnrolService } from './services/enrol.service';
+import { PlayerSeedSyncService } from './services/player-seed-sync.service';
 import { PlayerWriterService } from './services/player-writer.service';
 import { PollSyncService } from './services/poll-sync.service';
 import { RatingsTriggerService } from './services/ratings-trigger.service';
-import { SeedService } from './services/seed.service';
 import { TrackingAnnounceService } from './services/tracking-announce.service';
 import { TrackingLestaService } from './services/tracking-lesta.service';
 
@@ -29,7 +29,7 @@ import { TrackingLestaService } from './services/tracking-lesta.service';
     RatingsTriggerService,
     PollSyncService,
     DispatchService,
-    SeedService,
+    PlayerSeedSyncService,
     EnrolService,
     EnrolProcessor,
     PollProcessor,

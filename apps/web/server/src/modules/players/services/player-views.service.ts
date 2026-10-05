@@ -9,7 +9,7 @@ import type { PopularPlayersInput, PopularRow } from '../players.types';
 
 import { errorMessage, ratingValue, toNumber } from '../../../common/lib';
 import { PrismaService, REDIS } from '../../../core';
-import { PLAYER_VIEWS } from '../config';
+import { PLAYER_VIEWS } from '../config/player-lookup.constants';
 
 @Injectable()
 export class PlayerViewsService {

@@ -89,6 +89,46 @@ describe('MetricsService.track', () => {
 });
 
 describe('MetricsService.flush', () => {
+  it('keeps the counters of a failed write for the next flush', async () => {
+    const setup = createMetrics();
+
+    setup.prisma.collectorJobMetric.upsert.mockRejectedValueOnce(new Error('db down'));
+
+    await setup.metrics.track({ job: job(), run: async () => 'done' });
+    await setup.metrics.flush();
+    await setup.metrics.track({ job: job(), run: async () => 'done' });
+
+    const rows = await flushed(setup);
+
+    expect(rows.at(-1)).toMatchObject({ queue: 'collector.poll', processed: 2 });
+  });
+
+  it('keeps job successes when the state write fails', async () => {
+    const setup = createMetrics();
+    let failures = 1;
+
+    const metrics = new MetricsService(setup.prisma, setup.breaker, {
+      ...metricsQueries,
+      mergeCollectorState: async (input) => {
+        if (failures > 0) {
+          failures -= 1;
+
+          throw new Error('db down');
+        }
+
+        setup.merges.push(omit(input, ['db']));
+
+        return [];
+      }
+    });
+
+    await metrics.track({ job: job(), run: async () => 'done' });
+    await metrics.flush();
+    await metrics.flush();
+
+    expect(setup.merges).toEqual([{ key: COLLECTOR_STATE_KEY.jobSuccess, value: { 'collector.poll:batch': expect.any(String) } }]);
+  });
+
   it('stores when each job last succeeded', async () => {
     const setup = createMetrics();
 

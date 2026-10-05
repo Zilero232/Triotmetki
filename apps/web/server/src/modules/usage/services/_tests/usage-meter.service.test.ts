@@ -11,7 +11,7 @@ import type { UsageActor } from '../../usage.types';
 
 import { AppForbiddenException } from '../../../../common/exceptions';
 import { EntitlementsService } from '../../../billing';
-import { USAGE_METER } from '../../config';
+import { USAGE_METER } from '../../config/usage-meter.constants';
 import { UsageMeterService } from '../usage-meter.service';
 
 const NOW = new Date('2026-09-10T12:00:00Z');

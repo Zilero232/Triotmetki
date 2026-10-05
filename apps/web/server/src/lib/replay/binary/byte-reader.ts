@@ -1,6 +1,6 @@
 import type { Vector3 } from './byte-reader.types';
 
-import { ReplayFormatError } from '../errors';
+import { ReplayFormatError } from '../errors/replay-format-error';
 
 export class ByteReader {
   offset = 0;

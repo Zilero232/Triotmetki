@@ -7,13 +7,13 @@ import type { Battle, Player, PlayerTank } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { ExpectedValuesReaderService } from '../../../reference';
 import type { WebhookEmitter } from '../../../webhooks';
-import type { IngestEvent } from '../../lib/contract';
+import type { IngestEvent } from '../../lib/contract/contract.types';
 import type { AuthenticatedDevice, BattleEventsSink } from '../../mod.types';
 
 import { Prisma } from '../../../../../generated';
 import { MOD_INGEST } from '../../config/ingest.constants';
-import { moePercent } from '../../lib/battle';
-import { ingestBatchSchema } from '../../lib/contract';
+import { moePercent } from '../../lib/battle/battle';
+import { ingestBatchSchema } from '../../lib/contract/contract.schemas';
 import { EventLedgerService } from '../event-ledger.service';
 import { ModIngestWriterService } from '../mod-ingest-writer.service';
 

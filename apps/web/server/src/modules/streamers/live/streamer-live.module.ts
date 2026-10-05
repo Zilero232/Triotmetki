@@ -3,13 +3,12 @@ import { Module } from '@nestjs/common';
 import { HttpModule } from '../../../core';
 import { NotificationsProducerModule } from '../../notifications';
 import { StreamerIntegrationsModule } from '../integrations';
-import { FeedReaderService } from './services/feed-reader.service';
 import { LivePlatformsService } from './services/live-platforms.service';
-import { LiveStatusService } from './services/live-status.service';
+import { LiveStatusSyncService } from './services/live-status-sync.service';
 
 @Module({
   imports: [HttpModule, NotificationsProducerModule, StreamerIntegrationsModule],
-  providers: [LivePlatformsService, FeedReaderService, LiveStatusService],
-  exports: [LivePlatformsService, LiveStatusService]
+  providers: [LivePlatformsService, LiveStatusSyncService],
+  exports: [LivePlatformsService, LiveStatusSyncService]
 })
 export class StreamerLiveModule {}

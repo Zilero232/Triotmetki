@@ -4,7 +4,7 @@ import { match } from 'ts-pattern';
 
 import type { StatsRankValueInput, StatsSampleFloor, StatsSampleFloorInput } from './stats-ranking.types';
 
-import { TANK_STATS_RANKING } from '../../config';
+import { TANK_STATS_RANKING } from '../../config/tank-stats.constants';
 
 export const statsSampleFloor = ({ sort, minBattles }: StatsSampleFloorInput): StatsSampleFloor =>
   isIncludedIn(sort, TANK_STATS_RANKING.rawSorts)

@@ -8,8 +8,8 @@ import type { RegisterCommandsInput } from '../discord.types';
 
 import { errorMessage } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
-import { DISCORD_TOKENS } from '../config';
-import { commandDefinitions } from '../lib';
+import { DISCORD_TOKENS } from '../config/tokens.constants';
+import { commandDefinitions } from '../lib/command-definitions/command-definitions';
 import { DiscordCopyService } from './discord-copy.service';
 import { DiscordInteractionsService } from './discord-interactions.service';
 

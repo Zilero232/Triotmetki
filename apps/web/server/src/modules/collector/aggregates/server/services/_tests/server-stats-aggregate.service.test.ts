@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
-import type { DailyStatsRow } from '../../lib/server-stats';
+import type { DailyStatsRow } from '../../lib/server-stats/server-stats.types';
 import type { ServerQueries } from '../../server.types';
 
 import { mockPrismaService } from '../../../../../../core/prisma/_tests/prisma-mock';
 import { ReferenceTablesService } from '../../../player-ratings';
 import { SERVER_STATS_AGGREGATE } from '../../config/server.constants';
-import { SERVER_STATS } from '../../lib/server-stats';
+import { SERVER_STATS } from '../../lib/server-stats/server-stats.constants';
 import { ServerStatsAggregateService } from '../server-stats-aggregate.service';
 
 const NOW = new Date('2026-09-26T12:00:00Z');

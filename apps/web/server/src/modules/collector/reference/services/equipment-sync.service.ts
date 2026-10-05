@@ -5,7 +5,8 @@ import type { LestaClients } from '../../../../core';
 
 import { toJsonValue } from '../../../../common/lib';
 import { LESTA_CLIENTS, PrismaService } from '../../../../core';
-import { crewRoleSchema, crewSkillSchema, keyedEntries, moduleSchema, provisionSchema, toModuleType, toProvisionType } from '../lib/encyclopedia';
+import { keyedEntries, toModuleType, toProvisionType } from '../lib/encyclopedia/encyclopedia';
+import { crewRoleSchema, crewSkillSchema, moduleSchema, provisionSchema } from '../lib/encyclopedia/encyclopedia.schemas';
 
 @Injectable()
 export class EquipmentSyncService {

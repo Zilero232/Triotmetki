@@ -9,8 +9,8 @@ import type { TankTrendInput } from '../tanks.types';
 import { moscowDay, moscowDayStart, STATS_MODE_SQL } from '../../../common/lib';
 import { TIMESCALE } from '../../../config';
 import { PrismaService } from '../../../core';
-import { TANKS_QUERIES } from '../config';
-import { toTrendPoints } from '../mappers';
+import { TANKS_QUERIES } from '../config/queries.constants';
+import { toTrendPoints } from '../mappers/tank-trend.mappers';
 
 @Injectable()
 export class TankTrendReaderService {

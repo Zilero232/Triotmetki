@@ -1,2 +1,2 @@
 export { PlatoonsModule } from './platoons.module';
-export { PlatoonService } from './services';
+export { PlatoonWriterService } from './services/platoon-writer.service';

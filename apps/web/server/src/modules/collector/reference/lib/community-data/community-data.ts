@@ -20,11 +20,11 @@ const poliroidSchema = z.object({
   )
 });
 
-export const parsePoliroidMoe = (input: unknown): MoeThresholdRow[] =>
-  poliroidSchema
-    .parse(input)
-    .data.map((row) => ({ tankId: row.id, p65: row.marks[POLIROID_MARK.p65], p85: row.marks[POLIROID_MARK.p85], p95: row.marks[POLIROID_MARK.p95] }))
-    .filter((row) => row.p65 < row.p85 && row.p85 < row.p95);
+export const poliroidMoeSchema = poliroidSchema.transform((body): MoeThresholdRow[] =>
+  body.data
+    .map((row) => ({ tankId: row.id, p65: row.marks[POLIROID_MARK.p65], p85: row.marks[POLIROID_MARK.p85], p95: row.marks[POLIROID_MARK.p95] }))
+    .filter((row) => row.p65 < row.p85 && row.p85 < row.p95)
+);
 
 export const masteryThresholdRows = (distribution: Readonly<Record<string, Readonly<Record<string, number>>>>): MasteryThresholdRow[] =>
   Object.entries(distribution).flatMap(([tankId, percentiles]) => {

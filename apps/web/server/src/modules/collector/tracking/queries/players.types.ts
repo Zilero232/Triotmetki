@@ -1,5 +1,5 @@
 import type { Database } from '../../../../core';
-import type { PlayerIdentity } from '../lib/player-identity';
+import type { PlayerIdentity } from '../lib/player-identity/player-identity.types';
 import type { PLAYER_QUERIES } from './players.queries';
 
 export type PlayerIdentityRow = PlayerIdentity & {

@@ -2,15 +2,16 @@ import ky from 'ky';
 import pRetry from 'p-retry';
 import { isNonNullish, pickBy } from 'remeda';
 
-import type { LestaEnvelope } from '../schemas';
+import type { LestaEnvelope } from '../schemas/common/common.types';
 import type { LestaClientOptions, LestaRequester, LestaRequestInput, LestaResponse, ReadEnvelopeInput, SendInput } from './client.types';
 
-import { isRetryableLestaError, LESTA_ERROR_CODE, LestaApiError, LestaHttpError, LestaNetworkError, LestaNotConfiguredError } from '../errors';
-import { classifyLestaResponse } from '../outcome';
-import { noopRateLimiter } from '../rate-limit';
-import { lestaEnvelopeSchema } from '../schemas';
+import { LESTA_ERROR_CODE } from '../errors/errors.constants';
+import { isRetryableLestaError, LestaApiError, LestaHttpError, LestaNetworkError, LestaNotConfiguredError } from '../errors/lesta-api-error';
+import { classifyLestaResponse } from '../outcome/outcome';
+import { noopRateLimiter } from '../rate-limit/rate-limiters';
+import { lestaEnvelopeSchema } from '../schemas/common/common.schemas';
 import { LESTA_API, LESTA_RETRY } from './client.constants';
-import { toSearchParams } from './params';
+import { toSearchParams } from './params/params';
 
 const normalizeBaseUrl = (baseUrl: string): string => (baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`);
 

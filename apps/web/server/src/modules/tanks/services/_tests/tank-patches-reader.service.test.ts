@@ -4,7 +4,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { GameVersion, VehicleSpecHistory } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
-import { SPEC_DIRECTION } from '../../config';
+import { SPEC_DIRECTION } from '../../config/patches.constants';
 import { TankPatchesReaderService } from '../tank-patches-reader.service';
 
 type HistoryRow = VehicleSpecHistory & { gameVersion: GameVersion };

@@ -12,28 +12,31 @@ import type { BotContext, TelegramWebhookInput } from '../telegram.types';
 import { errorMessage, timingSafeEqual } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { REDIS } from '../../../core';
-import { BOT, BOT_API, BOT_COMMANDS, EXTERNAL_BOT_COMMANDS, TELEGRAM_TOKENS, WEBHOOK } from '../config';
-import { LINK_CONFIRM_DATA, looksLikeLinkCode, webhookUrl } from '../lib';
-import { TelegramChatService } from './telegram-chat.service';
+import { BOT, BOT_API, BOT_COMMANDS, EXTERNAL_BOT_COMMANDS, TELEGRAM_TOKENS } from '../config/bot.constants';
+import { WEBHOOK } from '../config/webhook.constants';
+import { LINK_CONFIRM_DATA, looksLikeLinkCode } from '../lib/link-code/link-code';
+import { webhookUrl } from '../lib/webhook-url/webhook-url';
+import { TelegramChatReaderService } from './telegram-chat-reader.service';
 import { TelegramCommandRegistry } from './telegram-command-registry.service';
 import { TelegramCommandsService } from './telegram-commands.service';
 import { TelegramInlineService } from './telegram-inline.service';
-import { TelegramSettingsService } from './telegram-settings.service';
+import { TelegramSettingsWriterService } from './telegram-settings-writer.service';
 
 @Injectable()
 export class TelegramBotService implements OnApplicationBootstrap, OnModuleDestroy {
   private readonly logger = new Logger(TelegramBotService.name);
   private ready: Promise<void> = Promise.resolve();
   private isPolling = false;
+  private isShuttingDown = false;
 
   constructor(
     @Inject(TELEGRAM_TOKENS.bot) private readonly bot: Bot<BotContext> | null,
     @Inject(TELEGRAM_TOKENS.i18n) private readonly i18n: I18n<BotContext>,
     private readonly config: AppConfigService,
-    private readonly chats: TelegramChatService,
+    private readonly chats: TelegramChatReaderService,
     private readonly commands: TelegramCommandsService,
     private readonly inline: TelegramInlineService,
-    private readonly settings: TelegramSettingsService,
+    private readonly settings: TelegramSettingsWriterService,
     private readonly registry: TelegramCommandRegistry,
     @Inject(REDIS) private readonly redis: Redis
   ) {
@@ -65,6 +68,8 @@ export class TelegramBotService implements OnApplicationBootstrap, OnModuleDestr
   }
 
   async onModuleDestroy(): Promise<void> {
+    this.isShuttingDown = true;
+
     if (this.bot && this.isPolling) {
       await this.bot.stop();
     }
@@ -174,6 +179,11 @@ export class TelegramBotService implements OnApplicationBootstrap, OnModuleDestr
     }
 
     await bot.api.deleteWebhook();
+
+    if (this.isShuttingDown) {
+      return;
+    }
+
     this.isPolling = true;
 
     void bot.start({ onStart: ({ username }) => this.logger.log(`telegram bot @${username} is polling`) }).catch((error: unknown) => {

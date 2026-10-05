@@ -4,7 +4,7 @@ import { Queue } from 'bullmq';
 import { differenceInSeconds } from 'date-fns';
 
 import type { BattleEventsSink, BattleStartedEvent } from '../../../mod';
-import type { PredictionJob } from '../lib/prediction';
+import type { PredictionJob } from '../lib/prediction/prediction.types';
 
 import { errorMessage } from '../../../../common/lib';
 import { PrismaService } from '../../../../core';

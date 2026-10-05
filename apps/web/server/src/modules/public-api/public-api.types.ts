@@ -3,7 +3,7 @@ import type { Request } from 'express';
 
 import type { ApiErrorLog } from '../../../generated';
 import type { AuthenticatedApiKey } from '../developer';
-import type { UsageCounters } from './lib';
+import type { UsageCounters } from './lib/usage-counters/usage-counters.types';
 
 export type ApiRequest = Request & {
   apiKey?: AuthenticatedApiKey;

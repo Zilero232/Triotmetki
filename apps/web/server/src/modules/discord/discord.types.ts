@@ -3,8 +3,8 @@ import type { APIChatInputApplicationCommandInteraction } from 'discord-api-type
 
 import type { DiscordGuild } from '../../../generated';
 import type { BotLocale, LinkedBotUser } from '../bot-commands';
-import type { MemberStanding } from './lib';
-import type { NotificationMessageInput } from './mappers';
+import type { MemberStanding } from './lib/member-roles/member-roles.types';
+import type { NotificationMessageInput } from './mappers/messages.types';
 
 export type CommandContext = {
   interaction: APIChatInputApplicationCommandInteraction;

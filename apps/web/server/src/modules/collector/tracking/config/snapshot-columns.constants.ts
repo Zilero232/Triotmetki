@@ -1,6 +1,23 @@
 import type { DB } from '../../../../../generated/kysely/database';
 
 export const SNAPSHOT_COLUMNS = {
+  cumulativeStats: [
+    'battles',
+    'wins',
+    'losses',
+    'draws',
+    'damage_dealt',
+    'damage_received',
+    'frags',
+    'spotted',
+    'xp',
+    'survived_battles',
+    'hits',
+    'shots',
+    'capture_points',
+    'dropped_capture_points',
+    'avg_damage_blocked'
+  ],
   tankSnapshot: [
     'account_id',
     'tank_id',
@@ -49,4 +66,8 @@ export const SNAPSHOT_COLUMNS = {
     'max_xp',
     'max_frags'
   ]
-} as const satisfies { tankSnapshot: readonly (keyof DB['tank_snapshot'])[]; accountModeStats: readonly (keyof DB['account_snapshot'])[] };
+} as const satisfies {
+  cumulativeStats: readonly (keyof DB['tank_snapshot_latest'] & keyof DB['account_mode_stats'])[];
+  tankSnapshot: readonly (keyof DB['tank_snapshot'])[];
+  accountModeStats: readonly (keyof DB['account_snapshot'])[];
+};

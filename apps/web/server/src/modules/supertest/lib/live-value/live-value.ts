@@ -4,7 +4,7 @@ import { match, P } from 'ts-pattern';
 
 import type { LiveValueInput, ShellForInput } from './live-value.types';
 
-import { SHELL_QUALIFIERS } from '../../config';
+import { SHELL_QUALIFIERS } from '../../config/params.constants';
 
 const shellFor = ({ stats, label }: ShellForInput): ShellStats | null => {
   const qualifier = SHELL_QUALIFIERS.find((entry) => entry.pattern.test(label));

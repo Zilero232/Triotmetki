@@ -3,7 +3,7 @@ import type { CreateChallengeInput, streamerChallengeSchema } from '@otmetki/sch
 import type { z } from 'zod';
 
 import type { Challenge, StreamerProvider } from '../../../../generated';
-import type { ChallengeVerdict } from './lib/challenge-evaluator';
+import type { ChallengeVerdict } from './lib/challenge-evaluator/challenge-evaluator.types';
 
 export type StreamerChallengeView = z.infer<typeof streamerChallengeSchema>;
 

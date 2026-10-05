@@ -1,6 +1,6 @@
 import { PermissionFlagsBits } from 'discord-api-types/v10';
 
-import { DISCORD } from '../../config';
+import { DISCORD } from '../../config/discord.constants';
 
 export const inviteUrl = (applicationId: string): string => {
   const url = new URL(DISCORD.inviteUrl);

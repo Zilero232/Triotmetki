@@ -1,8 +1,8 @@
 import { vi } from 'vitest';
 
 import type { AccountInfo, AccountTank, BattleStatsBlock, TankStats } from '../../../../../../lib/lesta';
-import type { TankBaseline } from '../../account-diff';
-import type { SnapshotMode, TankSnapshotRow } from '../../snapshots';
+import type { TankBaseline } from '../../account-diff/account-diff.types';
+import type { SnapshotMode, TankSnapshotRow } from '../../snapshots/snapshots.types';
 import type {
   AccountChanges,
   AccountStorePort,
@@ -16,7 +16,7 @@ import type {
 } from '../poll-pipeline.types';
 import type { FakeLestaInput, FakeStoreInput, InfoInput, TankStatInput } from './poll-pipeline.fixtures.types';
 
-import { SNAPSHOT_MODES } from '../../snapshots';
+import { SNAPSHOT_MODES } from '../../snapshots/snapshots.constants';
 
 export const block = (battles: number): BattleStatsBlock => ({
   battles,

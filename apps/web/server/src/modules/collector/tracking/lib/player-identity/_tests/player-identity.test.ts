@@ -1,7 +1,7 @@
 import { fromUnixTime } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
-import type { StoredPlayer } from '../../poll-pipeline';
+import type { StoredPlayer } from '../../poll-pipeline/poll-pipeline.types';
 
 import { accountInfo } from '../../poll-pipeline/_tests/poll-pipeline.fixtures';
 import { changesClan, playerIdentity } from '../player-identity';

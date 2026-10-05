@@ -1,9 +1,9 @@
 import type { CollectTracksInput, DecodeContext, ParsedPackets, ParsePacketsInput, RawPacket, ReplayPacket, TrackPoint } from './packets.types';
 
-import { readContainer } from '../container';
-import { ReplayFormatError } from '../errors';
-import { parseContainerHeader, toBytes } from '../replay';
-import { unpackStream } from '../stream';
+import { readContainer } from '../container/container';
+import { ReplayFormatError } from '../errors/replay-format-error';
+import { parseContainerHeader, toBytes } from '../replay/replay';
+import { unpackStream } from '../stream/stream';
 import { BATTLE_PERIOD, PACKET_FRAME, PACKET_TYPE } from './packets.constants';
 import { decodePacket } from './packets.decoders';
 import { resolveSupport } from './packets.support';

@@ -1,7 +1,7 @@
 import { addDays, addHours, differenceInHours } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
-import { GOALS, MOD_GOALS } from '../../../config';
+import { GOALS, MOD_GOALS } from '../../../config/me.constants';
 import { goalBattles, goalWindow, hangarGoalsSince, isGoalEndAllowed } from '../goal';
 
 const now = new Date('2026-09-26T12:00:00Z');

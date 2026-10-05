@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { STORED_SHOT } from '../../config';
+import { STORED_SHOT } from '../../config/battle-review.constants';
 
 export const storedShotSchema = z.object({
   damage: z.number().int().nonnegative(),

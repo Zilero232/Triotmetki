@@ -113,6 +113,18 @@ describe('buildAccountRatings', () => {
     expect(byPeriod.get('d7')?.avgTier).toBeCloseTo(expectedTier);
   });
 
+  it('averages the experience of every tank in the overall period', () => {
+    const overall = tankRatings.filter((rating) => rating.period === 'overall');
+
+    expect(overall.map((rating) => rating.avgXp)).toEqual(overall.map(() => 700));
+  });
+
+  it('averages the experience of a tank first seen after the cutoff', () => {
+    const fresh = tankRatings.find((rating) => rating.period === 'd7' && rating.tankId === 2);
+
+    expect(fresh?.avgXp).toBe(700);
+  });
+
   it('leaves WN8 empty without expected values', () => {
     expect(byPeriod.get('overall')?.wn8).toBeNull();
   });

@@ -18,8 +18,8 @@ import {
   CreateBlogPostDto,
   UpdateBlogPostDto
 } from './dto/blog.dto';
-import { BlogImageFileInterceptor } from './interceptors/image-file/image-file.interceptor';
-import { BlogImageService } from './services/blog-image.service';
+import { BlogImageFileInterceptor } from './interceptors/image-file.interceptor';
+import { BlogImageWriterService } from './services/blog-image-writer.service';
 import { BlogWriterService } from './services/blog-writer.service';
 
 @ApiTags('blog')
@@ -27,7 +27,7 @@ import { BlogWriterService } from './services/blog-writer.service';
 export class BlogEditorController {
   constructor(
     private readonly editor: BlogWriterService,
-    private readonly images: BlogImageService
+    private readonly images: BlogImageWriterService
   ) {}
 
   @OptionalAuth()

@@ -1,5 +1,5 @@
 import type { Vehicle, VehicleType } from '../../../../../generated';
-import type { ReplayTrack } from '../replay-tracks';
+import type { ReplayTrack } from '../replay-tracks/replay-tracks.types';
 
 export type MapBounds = {
   minX: number;

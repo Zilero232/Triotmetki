@@ -2,10 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { addDays } from 'date-fns';
 import { groupBy } from 'remeda';
 
-import type { TankBaseline } from '../lib/account-diff';
-import type { GainedMark } from '../lib/marks-gain';
-import type { AccountStorePort, WithAccountInput } from '../lib/poll-pipeline';
-import type { SnapshotMode, TankSnapshotRow } from '../lib/snapshots';
+import type { TankBaseline } from '../lib/account-diff/account-diff.types';
+import type { GainedMark } from '../lib/marks-gain/marks-gain.types';
+import type { AccountStorePort, WithAccountInput } from '../lib/poll-pipeline/poll-pipeline.types';
+import type { SnapshotMode, TankSnapshotRow } from '../lib/snapshots/snapshots.types';
 import type { AccountWriteQueries } from '../queries/account-writes.types';
 import type {
   AccountStoreInput,
@@ -21,9 +21,9 @@ import { moscowCalendarDate, moscowDayStart } from '../../../../common/lib';
 import { lockedTransaction, PrismaService } from '../../../../core';
 import { ExpectedValuesReaderService } from '../../../reference';
 import { TRACKING, TRACKING_TOKENS } from '../config/tracking.constants';
-import { buildDaySession } from '../lib/day-session';
-import { gainedMarks, snapshotMarks } from '../lib/marks-gain';
-import { SNAPSHOT_MODES } from '../lib/snapshots';
+import { buildDaySession } from '../lib/day-session/day-session';
+import { gainedMarks, snapshotMarks } from '../lib/marks-gain/marks-gain';
+import { SNAPSHOT_MODES } from '../lib/snapshots/snapshots.constants';
 import { DAY_SESSION_DELTA_SELECT } from '../selects/day-session.selects';
 import { TrackingAnnounceService } from './tracking-announce.service';
 

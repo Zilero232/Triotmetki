@@ -16,14 +16,16 @@ import {
   StreamerSettingsViewDto
 } from './dto/settings.dto';
 import { SettingsAggregateService } from './services/settings-aggregate.service';
-import { StreamerSettingsService } from './services/streamer-settings.service';
+import { StreamerSettingsReaderService } from './services/streamer-settings-reader.service';
+import { StreamerSettingsWriterService } from './services/streamer-settings-writer.service';
 
 @ApiTags('streamers')
 @OperationIdPrefix('StreamersController')
 @Controller('streamers')
 export class StreamerSettingsController {
   constructor(
-    private readonly settings: StreamerSettingsService,
+    private readonly settings: StreamerSettingsReaderService,
+    private readonly writer: StreamerSettingsWriterService,
     private readonly aggregates: SettingsAggregateService
   ) {}
 
@@ -57,7 +59,7 @@ export class StreamerSettingsController {
   @Put('me/settings')
   @ZodResponse({ type: StreamerSettingsViewDto })
   saveSettings(@CurrentUserId() userId: string, @Body() body: SaveStreamerSettingsDto) {
-    return this.settings.saveMine({ userId, source: body.source, values: body.values, sourceUrls: body.sourceUrls });
+    return this.writer.saveMine({ userId, source: body.source, values: body.values, sourceUrls: body.sourceUrls });
   }
 
   @AllowAnonymous()

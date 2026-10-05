@@ -7,9 +7,10 @@ import type { PlayerQueries } from '../providers/player-queries.provider.types';
 
 import { PrismaService } from '../../../core';
 import { ThresholdsReaderService, VehicleCatalogService } from '../../reference';
-import { PLAYER_MARKS, PLAYER_QUERIES } from '../config';
-import { marksSummary } from '../lib';
-import { toPlayerMark } from '../mappers';
+import { PLAYER_MARKS } from '../config/player-stats.constants';
+import { PLAYER_QUERIES } from '../config/queries.constants';
+import { marksSummary } from '../lib/tank-marks/tank-marks';
+import { toPlayerMark } from '../mappers/player-marks.mappers';
 
 @Injectable()
 export class PlayerMarksReaderService {

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
 import type { DiscordTextInput } from '../discord.types';
-import type { LocalizedDescription } from '../lib';
+import type { LocalizedDescription } from '../lib/command-definitions/command-definitions.types';
 
 import { BOT_LOCALE, createFluentStore } from '../../bot-commands';
-import { DISCORD_LOCALE_FILES } from '../config';
+import { DISCORD_LOCALE_FILES } from '../config/locales.constants';
 
 @Injectable()
 export class DiscordCopyService {

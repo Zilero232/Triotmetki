@@ -3,7 +3,7 @@ import { unique } from 'remeda';
 import type { ReplaySummary } from '../../../../lib/replay';
 import type { ReplayColumns } from './replay-columns.types';
 
-import { REPLAY_PARSE } from '../../config';
+import { REPLAY_PARSE } from '../../config/parse.constants';
 
 const toDate = (value: string): Date | null => {
   const date = new Date(value);

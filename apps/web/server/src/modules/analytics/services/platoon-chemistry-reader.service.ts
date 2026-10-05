@@ -7,9 +7,13 @@ import type { AnalyticsQueries } from '../providers/analytics-queries.provider.t
 
 import { PrismaService } from '../../../core';
 import { ExpectedValuesReaderService } from '../../reference';
-import { ANALYTICS_QUERIES, ANALYTICS_SQL, PLATOON_CHEMISTRY } from '../config';
-import { periodStart, statLine, winRateDelta } from '../lib';
-import { toAggregateRow } from '../mappers';
+import { PLATOON_CHEMISTRY } from '../config/platoon-chemistry.constants';
+import { ANALYTICS_QUERIES } from '../config/queries.constants';
+import { ANALYTICS_SQL } from '../config/window.constants';
+import { winRateDelta } from '../lib/map-advisor/map-advisor';
+import { statLine } from '../lib/stat-line/stat-line';
+import { periodStart } from '../lib/window/window';
+import { toAggregateRow } from '../mappers/aggregate-row.mappers';
 import { OwnAccountReaderService } from './own-account-reader.service';
 
 @Injectable()

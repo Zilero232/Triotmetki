@@ -3,8 +3,8 @@ import { gzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 
 import { COLLISION_FIXTURES, loadIs, readFixture } from '../../../_tests/fixtures';
-import { parseCollision } from '../../../parsers/collision';
-import { joinArmorModel } from '../../join';
+import { parseCollision } from '../../../parsers/collision/collision';
+import { joinArmorModel } from '../../join/join';
 import { armorStorageKey, packArmorGeometry } from '../pack';
 import { ARMOR_PACK } from '../pack.constants';
 
