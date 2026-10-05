@@ -1,4 +1,5 @@
 import about from './about.json';
+import account from './account.json';
 import client from './client.json';
 import common from './common.json';
 import components from './components.json';
@@ -31,6 +32,7 @@ export const EN_MESSAGES = {
   profiles,
   settings,
   about,
+  account,
   errors,
   errorHelp,
   help,

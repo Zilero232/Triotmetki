@@ -3,15 +3,15 @@
   "sections": {
     "home": "Home",
     "components": "Components",
-    "sets": "Sets & profiles",
+    "sets": "Builds",
+    "profiles": "Profiles",
     "settings": "Settings",
     "help": "Help"
   },
   "tabs": {
     "label": "Section tabs",
-    "sets": "Sets",
-    "profiles": "Profiles",
     "settings": "General",
+    "account": "Account & site",
     "about": "About",
     "help": "Questions",
     "changelog": "What’s new"

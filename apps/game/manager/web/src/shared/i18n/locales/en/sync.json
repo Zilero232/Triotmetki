@@ -1,10 +1,10 @@
 {
   "title": "Sync through the site",
-  "description": "Your sets and profiles on every PC: the manager keeps them on triotmetki.ru under your account and brings them back on another computer.",
+  "description": "Your builds and profiles on every PC: the manager keeps them on triotmetki.ru under your account and brings them back on another computer.",
   "account": "Account",
   "accountOption": "Lesta account {id}",
   "libraries": {
-    "sets": "Sets",
+    "sets": "Builds",
     "profiles": "Profiles"
   },
   "syncedAt": "synced {date}",
@@ -21,14 +21,14 @@
   "linked": "The manager is linked to your site account",
   "linkAnother": "Link another account",
   "hideLink": "Hide",
-  "privacy": "Only set names and component lists and profile settings go to the site — never the binding code, the statistics upload or other privacy switches. You can delete the copy on the site from your account.",
+  "privacy": "Only build names and component lists and profile settings go to the site — never the binding code, the statistics upload or other privacy switches. You can delete the copy on the site from your account.",
   "conflictTitle": "Changes here and on the site",
-  "conflictDescription": "Since the last sync your sets or profiles changed both on this PC and on another one. Choose what to keep.",
+  "conflictDescription": "Since the last sync your builds or profiles changed both on this PC and on another one. Choose what to keep.",
   "conflictLine": "{library}: {local} changed here, {remote} on the site",
   "resolutions": {
     "merge": {
       "label": "Merge",
-      "hint": "Each set and profile keeps its newer version; what was deleted on one side is deleted on the other"
+      "hint": "Each build and profile keeps its newer version; what was deleted on one side is deleted on the other"
     },
     "keep_local": {
       "label": "Keep mine",

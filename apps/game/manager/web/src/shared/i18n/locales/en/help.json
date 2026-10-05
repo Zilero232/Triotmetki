@@ -32,8 +32,8 @@
       "answer": "“Recommended” is everything for every day. “Minimal” keeps only light components for slower PCs. “Streamer” is what viewers see on a stream. Any set can be adjusted with the checkboxes — it then becomes “Custom”."
     },
     "sets": {
-      "question": "How is a set different from a profile?",
-      "answer": "A set is the list of installed components (“what is installed”). A profile is the component settings from the in-game mod window (“how they look”). Both can be shared with a code."
+      "question": "How is a build different from a profile?",
+      "answer": "A build is the list of installed components (“what is installed”). A profile is the component settings from the in-game mod window (“how they look”). Both can be shared with a code."
     },
     "fairPlay": {
       "question": "Can I get banned?",
@@ -56,7 +56,8 @@
     "home": "The essentials at a glance: is the game found, is the modpack installed, are there updates. The manager checks for updates on its own, on the schedule from Settings.",
     "install": "Four steps: game, components, other mods, install. If the install fails halfway, the previous files are put back.",
     "components": "The switch turns a component on or off without reinstalling. Changes apply on the next game launch.",
-    "sets": "A set remembers a list of components. “Apply” opens the install wizard with that list — you see the changes before installing.",
-    "profiles": "A profile keeps the component settings from the in-game mod window. Apply a profile while the game is closed."
+    "sets": "A build remembers a list of components. “Apply” opens the install wizard with that list — you see the changes before installing.",
+    "profiles": "A profile keeps the component settings from the in-game mod window. Apply a profile while the game is closed.",
+    "account": "The same binding to your triotmetki.ru account as the in-game mod uses. Once linked, your builds and profiles are kept on the site and come back on another computer."
   }
 }

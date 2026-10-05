@@ -1,6 +1,6 @@
 {
   "title": "Profiles",
-  "description": "A profile is the component settings from the in-game mod window; a set (the next tab) is which components are installed. Profiles are shared with the in-game settings window. The manager keeps a copy in %APPDATA% so they survive a client reinstall.",
+  "description": "A profile is the component settings from the in-game mod window; a build (the Builds section) is which components are installed. Profiles are shared with the in-game settings window. The manager keeps a copy in %APPDATA% so they survive a client reinstall.",
   "count": "{count} of {max}",
   "saveTitle": "Save the current settings",
   "name": "Name",
