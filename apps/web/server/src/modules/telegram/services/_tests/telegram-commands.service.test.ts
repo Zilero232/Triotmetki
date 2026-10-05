@@ -46,13 +46,13 @@ const createService = (webUrl = 'https://triotmetki.ru') => {
   return { service, config, replies, links, identity };
 };
 
-type ContextInput = { from?: User | undefined; match?: string; chat?: LinkedChat | null };
+type ContextInput = { from?: User | undefined; match?: string; chat?: LinkedChat | null; chatType?: 'group' | 'private' };
 
 const contextOf = (input: ContextInput = {}) => {
-  const { match = '', chat = null } = input;
+  const { match = '', chat = null, chatType = 'private' } = input;
   const ctx = mockDeep<BotContext>();
 
-  Object.assign(ctx, { from: 'from' in input ? input.from : USER });
+  Object.assign(ctx, { from: 'from' in input ? input.from : USER, chat: { id: chatType === 'private' ? 42 : -100, type: chatType } });
   ctx.match = match;
   ctx.chat$ = chat;
   ctx.t.mockImplementation((key) => key);
@@ -109,6 +109,24 @@ describe('TelegramCommandsService.start', () => {
         : [];
 
     expect(data).toEqual([linkConfirmData({ answer: 'yes', code: CODE }), linkConfirmData({ answer: 'no' })]);
+  });
+
+  it('refuses a link code sent in a group, so another member cannot confirm it', async () => {
+    const { service, links } = createService();
+    const ctx = contextOf({ match: CODE, chatType: 'group' });
+
+    await service.start(ctx);
+
+    expect(links.previewCode).not.toHaveBeenCalled();
+    expect(ctx.reply).toHaveBeenCalledWith('private-only');
+  });
+
+  it('offers no sign-in button in a group', async () => {
+    const { service, links } = createService();
+
+    await service.start(contextOf({ chatType: 'group' }));
+
+    expect(links.issueWebLogin).not.toHaveBeenCalled();
   });
 
   it('reports an unknown code without asking for confirmation', async () => {
@@ -172,6 +190,16 @@ describe('TelegramCommandsService.confirmLink', () => {
 
     expect(links.consumeCode).toHaveBeenCalledWith(expect.objectContaining({ code: CODE, identity: expect.objectContaining({ telegramId: 42n }) }));
     expect(ctx.reply).toHaveBeenCalledWith('start-linked');
+  });
+
+  it('links nothing when the confirmation is pressed in a group', async () => {
+    const { service, links } = createService();
+    const ctx = confirmContext(linkConfirmData({ answer: 'yes', code: CODE }));
+
+    Object.assign(ctx, { chat: { id: -100, type: 'group' } });
+    await service.confirmLink(ctx);
+
+    expect(links.consumeCode).not.toHaveBeenCalled();
   });
 
   it('links nothing when the user declines', async () => {
@@ -283,6 +311,16 @@ describe('TelegramCommandsService login and help', () => {
 
     expect(identity.ensureUser).not.toHaveBeenCalled();
     expect(links.issueWebLogin).toHaveBeenCalledWith(CHAT.userId);
+  });
+
+  it('never posts a sign-in link into a group, where every member could use it', async () => {
+    const { service, links } = createService();
+    const ctx = contextOf({ chat: CHAT, chatType: 'group' });
+
+    await run(service, 'login', ctx);
+
+    expect(links.issueWebLogin).not.toHaveBeenCalled();
+    expect(ctx.reply).toHaveBeenCalledWith('private-only');
   });
 
   it('creates a user for an unlinked chat before issuing the login', async () => {

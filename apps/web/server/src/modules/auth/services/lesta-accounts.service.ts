@@ -6,7 +6,7 @@ import type { LestaClient } from '../../../lib/lesta';
 import { errorMessage } from '../../../common/lib';
 import { LESTA_CLIENT, LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService, TokenCipherService, USER_LESTA_ACCOUNT_ORDER } from '../../../core';
 import { EntitlementsService } from '../../billing';
-import { CollectorProducerService } from '../../collector';
+import { CollectorProducerService, PurgeGuardService } from '../../collector';
 
 @Injectable()
 export class LestaAccountsService implements LestaAccountStore {
@@ -17,7 +17,8 @@ export class LestaAccountsService implements LestaAccountStore {
     private readonly collector: CollectorProducerService,
     private readonly entitlements: EntitlementsService,
     @Inject(LESTA_CLIENT) private readonly lesta: LestaClient,
-    private readonly cipher: TokenCipherService
+    private readonly cipher: TokenCipherService,
+    private readonly purgeGuard: PurgeGuardService
   ) {}
 
   async findUserId(accountId: number): Promise<string | null> {
@@ -41,7 +42,7 @@ export class LestaAccountsService implements LestaAccountStore {
     const limit = await this.entitlements.limit({ userId, key: 'linkedAccounts' });
     const sealedToken = await this.cipher.seal(accessToken);
 
-    const isLinked = await lockedTransaction({
+    const { isLinked, isCleared } = await lockedTransaction({
       prisma: this.prisma,
       scope: LIMIT_LOCK_SCOPE.linkedAccounts,
       key: userId,
@@ -50,20 +51,26 @@ export class LestaAccountsService implements LestaAccountStore {
         const isKnown = (await tx.userLestaAccount.count({ where: { userId, accountId: id } })) > 0;
 
         if (!isKnown && others >= limit) {
-          return false;
+          return { isLinked: false, isCleared: false };
         }
+
+        const isAccountCleared = await this.purgeGuard.liftUserRequests({ db: tx, accountId: id });
 
         await tx.player.upsert({
           where: { accountId: id },
-          create: { accountId: id, nickname, trackingTier: 'active' },
-          update: { nickname, trackingTier: 'active' }
+          create: isAccountCleared
+            ? { accountId: id, nickname, trackingTier: 'active', isHidden: false }
+            : { accountId: id, nickname, isHidden: true },
+          update: isAccountCleared ? { nickname, trackingTier: 'active', isHidden: false } : { isHidden: true }
         });
 
-        await tx.playerNickname.upsert({
-          where: { accountId_nickname: { accountId: id, nickname } },
-          create: { accountId: id, nickname },
-          update: { lastSeenAt: new Date() }
-        });
+        if (isAccountCleared) {
+          await tx.playerNickname.upsert({
+            where: { accountId_nickname: { accountId: id, nickname } },
+            create: { accountId: id, nickname },
+            update: { lastSeenAt: new Date() }
+          });
+        }
 
         const hasPrimary = await tx.userLestaAccount.count({ where: { userId, isPrimary: true, NOT: { accountId: id } } });
 
@@ -73,12 +80,15 @@ export class LestaAccountsService implements LestaAccountStore {
           update: { userId, accessToken: sealedToken, tokenExpiresAt: expiresAt, tokenStaleAt: null, garageSyncedAt: null }
         });
 
-        return true;
+        return { isLinked: true, isCleared: isAccountCleared };
       }
     });
 
     if (isLinked) {
       this.entitlements.invalidate(userId);
+    }
+
+    if (isCleared) {
       await this.collector.enrol({ accountId, priority: 'high', reason: 'login' });
     }
 

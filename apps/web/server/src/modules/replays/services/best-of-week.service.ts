@@ -11,12 +11,16 @@ export class BestOfWeekService {
 
   async feature(now: Date): Promise<number> {
     const { start, end } = previousWeek(now);
-    const top = await this.prisma.replay.findMany({
+    const candidates = await this.prisma.replay.findMany({
       where: { ...publicReplayWhere, playedAt: { gte: start, lt: end }, damageDealt: { not: null } },
       orderBy: { damageDealt: 'desc' },
-      take: BEST_OF_WEEK.size,
-      select: { id: true }
+      take: BEST_OF_WEEK.candidates,
+      select: { id: true, accountId: true, uploader: { select: { lestaAccounts: { select: { accountId: true } } } } }
     });
+
+    const top = candidates
+      .filter(({ accountId, uploader }) => accountId !== null && (uploader?.lestaAccounts ?? []).some((link) => link.accountId === accountId))
+      .slice(0, BEST_OF_WEEK.size);
 
     if (top.length === 0) {
       return 0;

@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
 import { changedGroups, diffSettings, flattenSettings, toSettingsValues, valuesForApply, zoomMax } from '../streamer-settings';
-import { modDeviceRequestSchema, settingsCompareQuerySchema, streamerSettingsSchema } from '../streamer-settings.schemas';
+import { STREAMER_SETTINGS, STREAMER_SETTINGS_APPLICABLE } from '../streamer-settings.constants';
+import {
+  controlsValuesSchema,
+  createApplyRequestSchema,
+  markersValuesSchema,
+  modDeviceRequestSchema,
+  settingsCompareQuerySchema,
+  streamerSettingsSchema
+} from '../streamer-settings.schemas';
 
 const provenance = { source: 'creator', sourceUrl: null, checkedAt: '2026-09-26T10:00:00.000Z' } as const;
 
@@ -97,5 +105,23 @@ describe('modDeviceRequestSchema', () => {
 
   it('refuses ids with characters outside the device alphabet', () => {
     expect(modDeviceRequestSchema.safeParse({ device_id: 'dev/../x', account_id: 7 }).success).toBe(false);
+  });
+});
+
+describe('settings input bounds', () => {
+  it('collapses repeated apply groups and refuses more groups than exist', () => {
+    expect(createApplyRequestSchema.parse({ slug: 'a', groups: ['zoom', 'zoom'] }).groups).toEqual(['zoom']);
+
+    const tooMany = Array.from({ length: STREAMER_SETTINGS_APPLICABLE.length + 1 }).fill('zoom');
+
+    expect(createApplyRequestSchema.safeParse({ slug: 'a', groups: tooMany }).success).toBe(false);
+  });
+
+  it('caps the notable binds and the marker fields', () => {
+    const binds = Object.fromEntries(Array.from({ length: STREAMER_SETTINGS.maxNotableBinds + 1 }, (_, index) => [`k${index}`, 'v']));
+    const markers = Array.from({ length: STREAMER_SETTINGS.markerFields.length + 1 }).fill('icon');
+
+    expect(controlsValuesSchema.safeParse({ notableBinds: binds }).success).toBe(false);
+    expect(markersValuesSchema.safeParse({ enemy: { base: markers } }).success).toBe(false);
   });
 });

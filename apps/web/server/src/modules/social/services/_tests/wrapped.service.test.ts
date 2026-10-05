@@ -80,6 +80,20 @@ const createService = () => {
 };
 
 describe('WrappedService.wrapped', () => {
+  it('links the best battle only to a public parsed replay, so unlisted replay ids stay private', async () => {
+    const { service, prisma } = createService();
+    const best = { id: 7n, arenaUniqueId: 42n, damageDealt: 5_000, frags: 3, startedAt: at, tankId: 1 };
+
+    prisma.$queryRaw.mockResolvedValueOnce([]).mockResolvedValueOnce([]).mockResolvedValueOnce([best]);
+    prisma.replay.findFirst.mockResolvedValue(null);
+
+    await service.wrapped(input);
+
+    expect(prisma.replay.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ visibility: 'public', status: 'parsed' }) })
+    );
+  });
+
   it('reports a hidden player as missing', async () => {
     const { service, prisma } = createService();
 

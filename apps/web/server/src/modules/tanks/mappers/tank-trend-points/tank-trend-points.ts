@@ -12,7 +12,7 @@ export const toTrendPoints = (rows: readonly TrendRow[]): TankTrendPoint[] =>
     return {
       date: row.day,
       battles,
-      players: Math.max(0, Math.round(row.players)),
+      players: row.players === null ? null : Math.max(0, Math.round(row.players)),
       winRate: percentOf({ value: row.wins, by: battles }),
       avgDamage: avgDamage === null ? null : Math.max(0, avgDamage)
     };

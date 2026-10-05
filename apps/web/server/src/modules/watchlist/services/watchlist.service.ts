@@ -39,7 +39,7 @@ export class WatchlistService {
     const [players, ratings, activity] = await Promise.all([
       this.prisma.player.findMany({
         where: { accountId: { in: accountIds } },
-        select: { accountId: true, nickname: true, clanId: true, lastBattleAt: true }
+        select: { accountId: true, nickname: true, clanId: true, lastBattleAt: true, isHidden: true }
       }),
       this.prisma.accountRating.findMany({ where: { accountId: { in: accountIds }, period: 'd7' }, select: { accountId: true, wn8: true } }),
       this.activity.activity({ accountIds, since })
@@ -50,6 +50,7 @@ export class WatchlistService {
       clanIds.length > 0 ? await this.prisma.clan.findMany({ where: { clanId: { in: clanIds } }, select: { clanId: true, tag: true } }) : [];
 
     const playerOf = new Map(players.map((player) => [player.accountId, player]));
+    const hidden = new Set(players.filter((player) => player.isHidden).map((player) => player.accountId));
     const tagOf = new Map(clans.map((clan) => [clan.clanId, clan.tag]));
     const wn8Of = new Map(ratings.map((rating) => [rating.accountId, rating.wn8]));
 
@@ -58,27 +59,29 @@ export class WatchlistService {
       digest: settings.digest,
       lastDigestAt: settings.lastDigestAt,
       limit,
-      players: follows.map((follow) => {
-        const player = playerOf.get(follow.targetId);
-        const stats = activity.get(follow.targetId);
-        const battles = stats?.battles ?? 0;
-        const lastBattleAt = player?.lastBattleAt ?? stats?.lastBattleAt ?? null;
+      players: follows
+        .filter((follow) => !hidden.has(follow.targetId))
+        .map((follow) => {
+          const player = playerOf.get(follow.targetId);
+          const stats = activity.get(follow.targetId);
+          const battles = stats?.battles ?? 0;
+          const lastBattleAt = player?.lastBattleAt ?? stats?.lastBattleAt ?? null;
 
-        return {
-          followId: follow.id,
-          accountId: Number(follow.targetId),
-          nickname: player?.nickname ?? null,
-          clanTag: player?.clanId ? (tagOf.get(player.clanId) ?? null) : null,
-          watchedSince: follow.createdAt.toISOString(),
-          lastBattleAt: lastBattleAt?.toISOString() ?? null,
-          battles,
-          wins: stats?.wins ?? 0,
-          winRate: percentOf({ value: stats?.wins ?? 0, by: battles }),
-          avgDamage: ratio({ value: stats?.damage ?? 0, by: battles }),
-          marksGained: stats?.marksGained ?? 0,
-          wn8: wn8Of.get(follow.targetId) ?? null
-        };
-      })
+          return {
+            followId: follow.id,
+            accountId: Number(follow.targetId),
+            nickname: player?.nickname ?? null,
+            clanTag: player?.clanId ? (tagOf.get(player.clanId) ?? null) : null,
+            watchedSince: follow.createdAt.toISOString(),
+            lastBattleAt: lastBattleAt?.toISOString() ?? null,
+            battles,
+            wins: stats?.wins ?? 0,
+            winRate: percentOf({ value: stats?.wins ?? 0, by: battles }),
+            avgDamage: ratio({ value: stats?.damage ?? 0, by: battles }),
+            marksGained: stats?.marksGained ?? 0,
+            wn8: wn8Of.get(follow.targetId) ?? null
+          };
+        })
     };
   }
 

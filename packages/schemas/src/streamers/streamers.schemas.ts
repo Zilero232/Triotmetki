@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { accountIdSchema, countSchema, httpUrlSchema, isoDateTimeSchema, tankIdSchema, uuidSchema } from '../common/primitives/primitives.schemas';
+import { PAGINATION } from '../common/query/query.constants';
 import { tierSchema, vehicleTypeSchema } from '../vehicles/vehicles.schemas';
 import { OVERLAY_THEMES, STREAMER_DIRECTORY, STREAMER_PLATFORMS, STREAMER_PROFILE } from './streamers.constants';
 
@@ -153,7 +154,7 @@ export const streamerDirectoryQuerySchema = z.object({
   tankId: tankIdSchema.optional(),
   hasSettings: z.stringbool().optional(),
   kind: streamerProfileKindSchema.optional(),
-  cursor: z.coerce.number().int().nonnegative().default(0),
+  cursor: z.coerce.number().int().nonnegative().max(PAGINATION.maxOffset).default(0),
   limit: z.coerce.number().int().min(1).max(STREAMER_DIRECTORY.maxLimit).default(STREAMER_DIRECTORY.defaultLimit)
 });
 

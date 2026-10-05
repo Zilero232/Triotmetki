@@ -5,7 +5,7 @@ import { max, subDays } from 'date-fns';
 
 import type { TankTrendInput, TrendRow } from '../tanks.types';
 
-import { moscowDayStart, STATS_MODE_SQL } from '../../../common/lib';
+import { moscowDay, moscowDayStart, STATS_MODE_SQL } from '../../../common/lib';
 import { TIME, TIMESCALE } from '../../../config';
 import { PrismaService } from '../../../core';
 import { toTrendPoints } from '../mappers';
@@ -37,7 +37,8 @@ export class TankTrendService {
         WHERE tank_id = ${tankId} AND mode = ${mode}::stats_mode AND captured_at >= ${recent}
         GROUP BY 1
       )
-      SELECT sums.day, sums.battles, sums.wins, sums.damage, coalesce(players.players, 0) AS players
+      SELECT sums.day, sums.battles, sums.wins, sums.damage,
+             CASE WHEN sums.day >= ${moscowDay(recent)} THEN coalesce(players.players, 0) END AS players
       FROM sums
       LEFT JOIN players ON players.day = sums.day
       ORDER BY 1

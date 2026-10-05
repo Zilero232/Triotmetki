@@ -35,7 +35,7 @@ export type TrendRow = {
   battles: number;
   wins: number;
   damage: number;
-  players: number;
+  players: number | null;
 };
 
 export type TraitsEntry = {

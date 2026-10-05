@@ -21,4 +21,12 @@ describe('best battles and unverified mod data', () => {
     expect(sql).toMatch(/NOT EXISTS \(SELECT 1 FROM battle b WHERE b\.account_id = r\.account_id AND b\.arena_unique_id = r\.arena_unique_id AND/u);
     expect(sql).toContain(corroboratedBattleSql.sql);
   });
+
+  it('lists only replays the recorder uploaded, so nobody can put a crafted replay under another player name', () => {
+    const { sql } = replayFeedSql({ ...SCOPE, metric: 'damage', take: 10 });
+
+    expect(sql).toMatch(
+      /EXISTS \(SELECT 1 FROM user_lesta_account uploader WHERE uploader\.user_id = r\.uploader_user_id AND uploader\.account_id = r\.account_id\)/u
+    );
+  });
 });

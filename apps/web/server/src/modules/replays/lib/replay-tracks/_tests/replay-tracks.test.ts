@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { parsePackets, parseReplaySummary } from '../../../../../lib/replay';
 import { FIXTURE, readFixture } from '../../../../../lib/replay/_tests/fixtures';
 import { buildTracks, downsample } from '../replay-tracks';
+import { REPLAY_TRACKS } from '../replay-tracks.constants';
 
 const point = (time: number) => ({ time, x: time, y: 0, z: -time, yaw: 0, pitch: 0, roll: 0 });
 
@@ -11,6 +12,12 @@ describe('downsample', () => {
     const samples = downsample({ points: [point(0), point(0.4), point(0.9), point(1), point(2.5)], stepSeconds: 1 });
 
     expect(samples.map(([time]) => time)).toEqual([0, 1, 2.5]);
+  });
+
+  it('caps a track so a crafted replay cannot grow it without bound', () => {
+    const points = Array.from({ length: REPLAY_TRACKS.maxSamples + 10 }, (_, index) => point(index));
+
+    expect(downsample({ points, stepSeconds: 1 })).toHaveLength(REPLAY_TRACKS.maxSamples);
   });
 
   it('returns nothing for an empty track', () => {

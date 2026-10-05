@@ -54,7 +54,7 @@ export class ClanPageService {
 
   async members(clanId: bigint): Promise<ClanMember[]> {
     const rows = await this.prisma.clanMember.findMany({
-      where: { clanId },
+      where: { clanId, player: { isHidden: false } },
       include: CLAN_MEMBER_INCLUDE
     });
 
@@ -71,13 +71,14 @@ export class ClanPageService {
 
     const players = await this.prisma.player.findMany({
       where: { accountId: { in: rows.map((row) => row.accountId) } },
-      select: { accountId: true, nickname: true }
+      select: { accountId: true, nickname: true, isHidden: true }
     });
 
     const nicknameOf = new Map(players.map((player) => [player.accountId, player.nickname]));
+    const hidden = new Set(players.filter((player) => player.isHidden).map((player) => player.accountId));
 
     return {
-      items: rows.map((row) => toClanEvent({ row, nickname: nicknameOf.get(row.accountId) ?? null })),
+      items: rows.filter((row) => !hidden.has(row.accountId)).map((row) => toClanEvent({ row, nickname: nicknameOf.get(row.accountId) ?? null })),
       total,
       limit,
       offset

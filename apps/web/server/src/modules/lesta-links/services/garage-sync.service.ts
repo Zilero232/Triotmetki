@@ -32,7 +32,7 @@ export class GarageSyncService {
         accessToken: { not: null },
         tokenStaleAt: null,
         tokenExpiresAt: { gt: now },
-        player: { lastPolledAt: { not: null } },
+        player: { lastPolledAt: { not: null }, isHidden: false },
         ...(scope === 'pending' ? { garageSyncedAt: null } : { OR: [{ garageSyncedAt: null }, { garageSyncedAt: { lt: stale } }] })
       },
       orderBy: { garageSyncedAt: { sort: 'asc', nulls: 'first' } },

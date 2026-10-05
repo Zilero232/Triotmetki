@@ -42,7 +42,7 @@ export class WrappedService {
 
     const replay = battle
       ? await this.prisma.replay.findFirst({
-          where: { OR: [{ battleId: battle.id }, { accountId: id, arenaUniqueId: battle.arenaUniqueId }] },
+          where: { visibility: 'public', status: 'parsed', OR: [{ battleId: battle.id }, { accountId: id, arenaUniqueId: battle.arenaUniqueId }] },
           select: { id: true }
         })
       : null;

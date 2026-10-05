@@ -60,6 +60,10 @@ export class TacticBoardService {
       throw new AppForbiddenException('FORBIDDEN', 'This link is view-only');
     }
 
+    if (current.hiddenAt && visibility !== undefined && visibility !== 'private') {
+      throw new AppForbiddenException('FORBIDDEN', 'A moderator hid this board');
+    }
+
     const ownerChanges = role === 'owner' ? { title, arenaId, mode, visibility } : {};
     const isLive = data !== undefined && this.live.replaceData({ id, data });
     const dataChanges = data === undefined ? {} : isLive ? { data: toJsonValue(data) } : { data: toJsonValue(data), document: null };

@@ -85,7 +85,7 @@ export class TelegramCommandsService {
     const keyboard = new InlineKeyboard();
     const webUrl = this.config.get('WEB_URL');
 
-    if (isPublicUrl(webUrl)) {
+    if (isPublicUrl(webUrl) && this.isPrivate(ctx)) {
       const userId = await this.identity.ensureUser(identity);
 
       keyboard
@@ -98,6 +98,12 @@ export class TelegramCommandsService {
   }
 
   async askLink({ ctx, code }: LinkPromptInput): Promise<void> {
+    if (!this.isPrivate(ctx)) {
+      await ctx.reply(ctx.t('private-only'));
+
+      return;
+    }
+
     const preview = await this.links.previewCode(code);
 
     if (!preview) {
@@ -120,7 +126,7 @@ export class TelegramCommandsService {
     await ctx.answerCallbackQuery();
     await ctx.editMessageReplyMarkup().catch(() => undefined);
 
-    if (!answer || !identity) {
+    if (!answer || !identity || !this.isPrivate(ctx)) {
       return;
     }
 
@@ -151,6 +157,12 @@ export class TelegramCommandsService {
       return;
     }
 
+    if (!this.isPrivate(ctx)) {
+      await ctx.reply(ctx.t('private-only'));
+
+      return;
+    }
+
     const userId = ctx.chat$?.userId ?? (await this.identity.ensureUser(identity));
     const url = await this.links.issueWebLogin(userId);
 
@@ -158,6 +170,10 @@ export class TelegramCommandsService {
       link_preview_options: { is_disabled: true },
       reply_markup: isPublicUrl(url) ? new InlineKeyboard().url(ctx.t('login-button'), url) : undefined
     });
+  }
+
+  private isPrivate(ctx: BotContext): boolean {
+    return ctx.chat?.type === 'private';
   }
 
   private async help(ctx: BotContext): Promise<void> {

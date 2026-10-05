@@ -18,6 +18,7 @@ enum DeletionStatus {
   processing
   completed
   failed
+  superseded
 
   @@map("deletion_status")
 }
@@ -71,9 +72,10 @@ model DataDeletionRequest {
   reason    String?
   error     String?
 
-  requestedAt DateTime  @default(now()) @map("requested_at") @db.Timestamptz(3)
-  completedAt DateTime? @map("completed_at") @db.Timestamptz(3)
-  failedAt    DateTime? @map("failed_at") @db.Timestamptz(3)
+  requestedAt  DateTime  @default(now()) @map("requested_at") @db.Timestamptz(3)
+  completedAt  DateTime? @map("completed_at") @db.Timestamptz(3)
+  failedAt     DateTime? @map("failed_at") @db.Timestamptz(3)
+  supersededAt DateTime? @map("superseded_at") @db.Timestamptz(3)
 
   @@index([status, requestedAt])
   @@index([accountId])

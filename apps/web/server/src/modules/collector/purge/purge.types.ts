@@ -26,3 +26,8 @@ export type OpenDeletionRequestsInput = {
   source: DeletionSource;
   reason: string;
 };
+
+export type LiftUserRequestsInput = {
+  db: PrismaExecutor;
+  accountId: bigint;
+};

@@ -1,7 +1,7 @@
 import { modBattleLoadoutSchema } from '@otmetki/schemas';
 import { z } from 'zod';
 
-import { BIND_CODE, MOD_ACHIEVEMENTS, MOD_PLATOON, MOD_SHOTS } from '../../config';
+import { BIND_CODE, MOD_ACHIEVEMENTS, MOD_INGEST, MOD_PLATOON, MOD_SHOTS } from '../../config';
 
 const id = z
   .string()
@@ -12,6 +12,10 @@ const id = z
 const accountId = z.number().int().min(1);
 const tankId = z.number().int().min(1);
 const unixTime = z.number().int().min(0);
+const eventTime = unixTime.refine((seconds) => seconds <= Date.now() / 1000 + MOD_INGEST.maxFutureSeconds, {
+  message: 'The event is dated in the future'
+});
+
 const count = z.number().int().min(0);
 const damageRating = z.number().int().min(0).max(10_000);
 const marksOnGun = z.number().int().min(0).max(3);
@@ -59,13 +63,13 @@ const platoonSchema = z.strictObject({
 export const battleResultEventSchema = z.strictObject({
   type: z.literal('battle_result'),
   event_id: z.string().regex(/^battle:\d+$/),
-  occurred_at: unixTime,
+  occurred_at: eventTime,
   arena_unique_id: z.string().regex(/^\d+$/),
   arena_type_id: count,
   map_name: z.string().max(64).nullable(),
   bonus_type: count,
   gui_type: count,
-  arena_created_at: unixTime,
+  arena_created_at: eventTime,
   duration_s: count,
   finish_reason: count,
   winner_team: z.number().int().min(0).max(2),
@@ -117,7 +121,7 @@ export const battleResultEventSchema = z.strictObject({
 const moeSnapshotEventSchema = z.strictObject({
   type: z.literal('moe_snapshot'),
   event_id: id,
-  occurred_at: unixTime,
+  occurred_at: eventTime,
   tank_id: tankId,
   damage_rating: damageRating,
   moving_avg_damage: count,
@@ -128,14 +132,14 @@ const moeSnapshotEventSchema = z.strictObject({
 const battleStartEventSchema = z.strictObject({
   type: z.literal('battle_start'),
   event_id: id,
-  occurred_at: unixTime,
+  occurred_at: eventTime,
   tank_id: tankId.nullable()
 });
 
 const queueEventSchema = z.strictObject({
   type: z.literal('queue'),
   event_id: id,
-  occurred_at: unixTime,
+  occurred_at: eventTime,
   queue_type: count,
   wait_s: z.number().min(0).max(1_800),
   outcome: z.enum(['arena', 'dequeued']),

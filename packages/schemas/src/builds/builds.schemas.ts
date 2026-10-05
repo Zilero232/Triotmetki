@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { countSchema, isoDateTimeSchema, percentSchema, ratioSchema, tankIdSchema } from '../common/primitives/primitives.schemas';
 import { listParam } from '../common/query/query.schemas';
+import { LOADOUT } from '../community/community.constants';
 import { loadoutSchema } from '../community/community.schemas';
 import { learningDifficultySchema } from '../tanks/insights/insights.schemas';
 import { vehicleFilterSchema, vehicleSummarySchema } from '../vehicles/vehicles.schemas';
@@ -118,12 +119,14 @@ export const buildOptionsSchema = z.object({
   slots: z.object({ optionalDevices: countSchema, consumables: countSchema, directives: countSchema })
 });
 
+const moduleName = z.string().max(LOADOUT.nameLength);
+
 const moduleSelectionSchema = z.object({
-  chassis: z.string().optional(),
-  turret: z.string().optional(),
-  gun: z.string().optional(),
-  engine: z.string().optional(),
-  radio: z.string().optional()
+  chassis: moduleName.optional(),
+  turret: moduleName.optional(),
+  gun: moduleName.optional(),
+  engine: moduleName.optional(),
+  radio: moduleName.optional()
 });
 
 export const moduleSlotSchema = moduleSelectionSchema.keyof();

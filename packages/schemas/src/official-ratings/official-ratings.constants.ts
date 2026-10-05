@@ -17,7 +17,7 @@ export const OFFICIAL_RATINGS = {
   profilePeriods: ['7d', '28d'],
   defaultPeriod: 'overall',
   defaultField: 'globalRating',
-  top: { defaultLimit: 50, maxLimit: 100 },
+  top: { defaultLimit: 50, maxLimit: 100, maxPage: 100 },
   neighbors: { defaultLimit: 5, maxLimit: 20 },
   history: { defaultDays: 14, maxDays: 30 }
 } as const;

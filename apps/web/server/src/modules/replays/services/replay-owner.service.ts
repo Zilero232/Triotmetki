@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 
 import type { OwnReplayInput, UpdateVisibilityInput } from '../replays.types';
 
-import { AppNotFoundException } from '../../../common/exceptions';
+import { AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
 import { AppConfigService } from '../../../config';
 import { ObjectStorage, PrismaService } from '../../../core';
 import { toReplayView } from '../mappers';
@@ -18,7 +18,11 @@ export class ReplayOwnerService {
   ) {}
 
   async updateVisibility({ id, userId, visibility }: UpdateVisibilityInput): Promise<ReplayView> {
-    await this.owned({ id, userId });
+    const { hiddenAt } = await this.owned({ id, userId });
+
+    if (hiddenAt && visibility !== 'private') {
+      throw new AppForbiddenException('FORBIDDEN', 'A moderator hid this replay');
+    }
 
     const replay = await this.prisma.replay.update({ where: { id }, data: { visibility } });
 
@@ -37,7 +41,10 @@ export class ReplayOwnerService {
   }
 
   private async owned({ id, userId }: OwnReplayInput) {
-    const replay = await this.prisma.replay.findFirst({ where: { id, uploaderUserId: userId }, select: { storageKey: true, timelineKey: true } });
+    const replay = await this.prisma.replay.findFirst({
+      where: { id, uploaderUserId: userId },
+      select: { storageKey: true, timelineKey: true, hiddenAt: true }
+    });
 
     if (!replay) {
       throw new AppNotFoundException('NOT_FOUND', `No replay ${id} of yours`);

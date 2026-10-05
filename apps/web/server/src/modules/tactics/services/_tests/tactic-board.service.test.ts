@@ -24,6 +24,7 @@ const board: TacticBoard = {
   shareToken,
   editToken,
   visibility: 'unlisted',
+  hiddenAt: null,
   createdAt: new Date('2026-09-25T12:00:00Z'),
   updatedAt: new Date('2026-09-25T12:00:00Z')
 };
@@ -70,6 +71,13 @@ describe('TacticBoardService.update', () => {
         data: expect.objectContaining({ title: 'Renamed', visibility: 'public' })
       })
     );
+  });
+
+  it('refuses to reopen a board a moderator hid', async () => {
+    const { service, prisma } = createService({ ...board, visibility: 'private', hiddenAt: new Date() });
+
+    await expect(service.update({ id: board.id, userId: 'owner', token: null, visibility: 'public' })).rejects.toBeInstanceOf(AppForbiddenException);
+    expect(prisma.tacticBoard.update).not.toHaveBeenCalled();
   });
 
   it('keeps the stored document when the drawing is not sent', async () => {

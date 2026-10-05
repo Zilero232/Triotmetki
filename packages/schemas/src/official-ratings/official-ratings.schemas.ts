@@ -35,7 +35,7 @@ export const officialRatingQuerySchema = z.object({
 
 export const officialTopQuerySchema = officialRatingQuerySchema.extend({
   limit: z.coerce.number().int().min(1).max(OFFICIAL_RATINGS.top.maxLimit).default(OFFICIAL_RATINGS.top.defaultLimit),
-  page: z.coerce.number().int().min(1).default(1)
+  page: z.coerce.number().int().min(1).max(OFFICIAL_RATINGS.top.maxPage).default(1)
 });
 
 export const officialNeighborsQuerySchema = officialRatingQuerySchema.extend({

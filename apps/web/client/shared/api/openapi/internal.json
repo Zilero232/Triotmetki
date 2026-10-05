@@ -21612,9 +21612,16 @@
                   "maximum": 9007199254740991
                 },
                 "players": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "winRate": {
                   "anyOf": [
@@ -26344,7 +26351,8 @@
             "properties": {
               "profileId": {
                 "type": "string",
-                "minLength": 1
+                "minLength": 1,
+                "maxLength": 64
               },
               "equipment": {
                 "maxItems": 3,
@@ -26419,21 +26427,25 @@
               "crewSkills": {
                 "type": "object",
                 "propertyNames": {
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 64
                 },
                 "additionalProperties": {
                   "maxItems": 10,
                   "type": "array",
                   "items": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 64
                   }
                 }
               },
               "fieldModifications": {
                 "default": [],
+                "maxItems": 16,
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 64
                 }
               }
             },
@@ -27587,7 +27599,8 @@
                 "properties": {
                   "profileId": {
                     "type": "string",
-                    "minLength": 1
+                    "minLength": 1,
+                    "maxLength": 64
                   },
                   "equipment": {
                     "maxItems": 3,
@@ -27663,21 +27676,25 @@
                   "crewSkills": {
                     "type": "object",
                     "propertyNames": {
-                      "type": "string"
+                      "type": "string",
+                      "maxLength": 64
                     },
                     "additionalProperties": {
                       "maxItems": 10,
                       "type": "array",
                       "items": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 64
                       }
                     }
                   },
                   "fieldModifications": {
                     "default": [],
+                    "maxItems": 16,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "type": "string",
+                      "maxLength": 64
                     }
                   }
                 },
@@ -57323,7 +57340,8 @@
                   "properties": {
                     "profileId": {
                       "type": "string",
-                      "minLength": 1
+                      "minLength": 1,
+                      "maxLength": 64
                     },
                     "equipment": {
                       "maxItems": 3,
@@ -57399,21 +57417,25 @@
                     "crewSkills": {
                       "type": "object",
                       "propertyNames": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 64
                       },
                       "additionalProperties": {
                         "maxItems": 10,
                         "type": "array",
                         "items": {
-                          "type": "string"
+                          "type": "string",
+                          "maxLength": 64
                         }
                       }
                     },
                     "fieldModifications": {
                       "default": [],
+                      "maxItems": 16,
                       "type": "array",
                       "items": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 64
                       }
                     }
                   },
@@ -57551,7 +57573,8 @@
               "properties": {
                 "profileId": {
                   "type": "string",
-                  "minLength": 1
+                  "minLength": 1,
+                  "maxLength": 64
                 },
                 "equipment": {
                   "maxItems": 3,
@@ -57627,21 +57650,25 @@
                 "crewSkills": {
                   "type": "object",
                   "propertyNames": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 64
                   },
                   "additionalProperties": {
                     "maxItems": 10,
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "type": "string",
+                      "maxLength": 64
                     }
                   }
                 },
                 "fieldModifications": {
                   "default": [],
+                  "maxItems": 16,
                   "type": "array",
                   "items": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 64
                   }
                 }
               },
@@ -57765,7 +57792,8 @@
             "properties": {
               "profileId": {
                 "type": "string",
-                "minLength": 1
+                "minLength": 1,
+                "maxLength": 64
               },
               "equipment": {
                 "maxItems": 3,
@@ -57841,21 +57869,25 @@
               "crewSkills": {
                 "type": "object",
                 "propertyNames": {
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 64
                 },
                 "additionalProperties": {
                   "maxItems": 10,
                   "type": "array",
                   "items": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 64
                   }
                 }
               },
               "fieldModifications": {
                 "default": [],
+                "maxItems": 16,
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 64
                 }
               }
             },
@@ -57976,7 +58008,8 @@
             "properties": {
               "profileId": {
                 "type": "string",
-                "minLength": 1
+                "minLength": 1,
+                "maxLength": 64
               },
               "equipment": {
                 "maxItems": 3,
@@ -58051,21 +58084,25 @@
               "crewSkills": {
                 "type": "object",
                 "propertyNames": {
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 64
                 },
                 "additionalProperties": {
                   "maxItems": 10,
                   "type": "array",
                   "items": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 64
                   }
                 }
               },
               "fieldModifications": {
                 "default": [],
+                "maxItems": 16,
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 64
                 }
               }
             },
@@ -58096,7 +58133,8 @@
             "properties": {
               "profileId": {
                 "type": "string",
-                "minLength": 1
+                "minLength": 1,
+                "maxLength": 64
               },
               "equipment": {
                 "maxItems": 3,
@@ -58171,21 +58209,25 @@
               "crewSkills": {
                 "type": "object",
                 "propertyNames": {
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 64
                 },
                 "additionalProperties": {
                   "maxItems": 10,
                   "type": "array",
                   "items": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 64
                   }
                 }
               },
               "fieldModifications": {
                 "default": [],
+                "maxItems": 16,
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 64
                 }
               }
             },

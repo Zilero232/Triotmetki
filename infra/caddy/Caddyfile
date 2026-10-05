@@ -9,7 +9,7 @@
 	}
 }
 
-# Drop tokens from logged query strings and the internal token header.
+# Drop tokens from logged query strings and every credential header (Caddy redacts only cookies and Authorization).
 (access_log) {
 	log {
 		output stdout
@@ -17,6 +17,10 @@
 			wrap console
 			fields {
 				request>headers>X-Otmetki-Internal-Token delete
+				request>headers>X-Api-Key delete
+				request>headers>X-Telegram-Bot-Api-Secret-Token delete
+				request>headers>Referer delete
+				resp_headers>Set-Auth-Token delete
 				request>uri query {
 					delete access_token
 					delete token

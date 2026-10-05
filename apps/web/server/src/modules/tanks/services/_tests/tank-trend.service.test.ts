@@ -53,6 +53,18 @@ describe('TankTrendService.trend', () => {
     expect(windowDates(prisma)[1]).toEqual(windowDates(prisma)[0]);
   });
 
+  it('leaves the players of the compressed days unknown rather than zero', async () => {
+    const { service, prisma } = createService();
+
+    await service.trend({ tankId: 1, query: { days: 60, mode: 'random' } });
+
+    const [query] = prisma.$queryRaw.mock.calls[0] ?? [];
+    const sql = query && 'raw' in query ? query.join('?') : '';
+
+    expect(sql).toMatch(/CASE WHEN sums\.day >= \? THEN coalesce\(players\.players, 0\) END AS players/);
+    expect(prisma.$queryRaw.mock.calls[0]).toContain('2026-09-13');
+  });
+
   it('turns the daily rows into points', async () => {
     const { service, prisma } = createService();
 

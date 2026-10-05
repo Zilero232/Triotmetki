@@ -133,7 +133,7 @@ export const marksSql = (query: LeaderboardQuery): LeaderboardSql => ({
     FROM player_tank pt
     JOIN player p ON p.account_id = pt.account_id AND NOT p.is_hidden
     LEFT JOIN clan c ON c.clan_id = p.clan_id
-    WHERE pt.marks_on_gun = 3
+    WHERE pt.marks_on_gun = 3 AND pt.battles > 0
     GROUP BY pt.account_id, p.nickname, c.tag
     ORDER BY value DESC
     ${pageOf(query)}
@@ -142,6 +142,6 @@ export const marksSql = (query: LeaderboardQuery): LeaderboardSql => ({
     SELECT count(DISTINCT pt.account_id) AS total
     FROM player_tank pt
     JOIN player p ON p.account_id = pt.account_id AND NOT p.is_hidden
-    WHERE pt.marks_on_gun = 3
+    WHERE pt.marks_on_gun = 3 AND pt.battles > 0
   `
 });

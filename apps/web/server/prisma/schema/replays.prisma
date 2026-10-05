@@ -30,6 +30,7 @@ model Replay {
   status     ReplayStatus @default(uploaded)
   parseError String?      @map("parse_error")
   visibility Visibility   @default(public)
+  hiddenAt   DateTime?    @map("hidden_at") @db.Timestamptz(3)
 
   gameVersion    String?       @map("game_version")
   arenaUniqueId  BigInt?       @map("arena_unique_id")

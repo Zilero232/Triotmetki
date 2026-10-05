@@ -115,7 +115,17 @@ describe('GarageSyncService.dispatch', () => {
     expect(prisma.userLestaAccount.findMany.mock.calls[0]?.[0]?.where).toMatchObject({
       garageSyncedAt: null,
       tokenStaleAt: null,
-      player: { lastPolledAt: { not: null } }
+      player: { lastPolledAt: { not: null }, isHidden: false }
     });
+  });
+
+  it('skips the garage of a player hidden by a deletion request', async () => {
+    const { service, prisma } = createService();
+
+    prisma.userLestaAccount.findMany.mockResolvedValue([]);
+
+    await service.dispatch({ scope: 'all', now: NOW });
+
+    expect(prisma.userLestaAccount.findMany.mock.calls[0]?.[0]?.where?.player).toMatchObject({ isHidden: false });
   });
 });

@@ -33,6 +33,12 @@ describe('toTrendPoints', () => {
     expect(point?.players).toBe(0);
   });
 
+  it('reports an unknown player count as null instead of zero', () => {
+    const [point] = toTrendPoints([{ ...row, players: null }]);
+
+    expect(point?.players).toBeNull();
+  });
+
   it('rounds a fractional battle count before dividing by it', () => {
     const battles = 199.6;
     const [point] = toTrendPoints([{ ...row, battles }]);

@@ -58,7 +58,10 @@ describe('ModerationService.resolve', () => {
     await service.resolve({ id: report.id, userId: 'moderator', status: 'resolved', hideTarget: true });
 
     expect(prisma.replay.updateMany).toHaveBeenCalledWith(
-      expect.objectContaining({ where: expect.objectContaining({ id: targetId }), data: expect.objectContaining({ visibility: 'private' }) })
+      expect.objectContaining({
+        where: expect.objectContaining({ id: targetId }),
+        data: expect.objectContaining({ visibility: 'private', hiddenAt: expect.any(Date) })
+      })
     );
   });
 

@@ -22,6 +22,7 @@ export const STREAMER_SETTINGS = {
   zoomSteps: ['x2', 'x4', 'x8', 'x16', 'x25'],
   gunMarkers: ['server', 'client'],
   markerTargets: ['enemy', 'ally', 'destroyed'],
+  maxNotableBinds: 32,
   markerFields: ['icon', 'tier', 'vehicleName', 'playerName', 'hpBar', 'hpValue', 'damage'],
   modsKinds: ['clean', 'modpack', 'custom'],
   applyStatuses: ['pending', 'applied', 'rejected', 'expired'],

@@ -204,6 +204,7 @@ model TacticBoard {
   shareToken  String     @unique @default(dbgenerated("replace((gen_random_uuid())::text, '-'::text, ''::text)")) @map("share_token")
   editToken   String     @unique @default(dbgenerated("replace((gen_random_uuid())::text, '-'::text, ''::text)")) @map("edit_token")
   visibility  Visibility @default(unlisted)
+  hiddenAt    DateTime?  @map("hidden_at") @db.Timestamptz(3)
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)

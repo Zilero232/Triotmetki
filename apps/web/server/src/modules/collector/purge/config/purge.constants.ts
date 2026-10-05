@@ -6,6 +6,7 @@ import type { RetentionRule } from '../purge.types';
 export const PURGE = {
   blockingSources: ['user', 'lesta'] satisfies DeletionSource[],
   blockingStatuses: ['pending', 'processing', 'completed', 'failed'] satisfies DeletionStatus[],
+  claimableStatuses: ['pending', 'processing', 'failed'] satisfies DeletionStatus[],
   dispatchBatch: 50,
   failedCooldownMs: 6 * 60 * 60 * 1_000
 } as const;

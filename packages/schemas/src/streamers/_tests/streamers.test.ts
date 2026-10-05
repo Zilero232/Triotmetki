@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { challengeConditionSchema, overlayConfigSchema } from '../streamers.schemas';
+import { PAGINATION } from '../../common/query';
+import { challengeConditionSchema, overlayConfigSchema, streamerDirectoryQuerySchema } from '../streamers.schemas';
 
 describe('overlayConfigSchema', () => {
   it('fills defaults around the chosen metrics', () => {
@@ -29,5 +30,11 @@ describe('challengeConditionSchema', () => {
 
   it('rejects an unknown vehicle type', () => {
     expect(challengeConditionSchema.safeParse({ metric: 'damage', value: 3000, tankType: 'tank' }).success).toBe(false);
+  });
+});
+
+describe('streamerDirectoryQuerySchema', () => {
+  it('caps the offset like every other paginated list', () => {
+    expect(streamerDirectoryQuerySchema.safeParse({ cursor: String(PAGINATION.maxOffset + 1) }).success).toBe(false);
   });
 });

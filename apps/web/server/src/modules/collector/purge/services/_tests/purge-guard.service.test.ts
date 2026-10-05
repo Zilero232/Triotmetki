@@ -62,7 +62,46 @@ describe('PurgeGuardService.open', () => {
   });
 });
 
+describe('PurgeGuardService.liftUserRequests', () => {
+  it('supersedes every user request of the account, the in-flight ones included', async () => {
+    const { prisma, guard } = createGuard();
+
+    prisma.dataDeletionRequest.count.mockResolvedValue(0);
+
+    await guard.liftUserRequests({ db: prisma, accountId: 7n });
+
+    expect(prisma.dataDeletionRequest.updateMany).toHaveBeenCalledWith({
+      where: { accountId: 7n, source: 'user', status: { in: PURGE.blockingStatuses } },
+      data: { status: 'superseded', supersededAt: expect.any(Date) }
+    });
+  });
+
+  it('clears the account when no request is left blocking it', async () => {
+    const { prisma, guard } = createGuard();
+
+    prisma.dataDeletionRequest.count.mockResolvedValue(0);
+
+    await expect(guard.liftUserRequests({ db: prisma, accountId: 7n })).resolves.toBe(true);
+  });
+
+  it('keeps the account blocked while a Lesta request stands', async () => {
+    const { prisma, guard } = createGuard();
+
+    prisma.dataDeletionRequest.count.mockResolvedValue(1);
+
+    await expect(guard.liftUserRequests({ db: prisma, accountId: 7n })).resolves.toBe(false);
+
+    expect(prisma.dataDeletionRequest.count).toHaveBeenCalledWith({
+      where: { accountId: 7n, source: { in: PURGE.blockingSources }, status: { in: PURGE.blockingStatuses } }
+    });
+  });
+});
+
 describe('PURGE.blockingStatuses', () => {
+  it('never counts a superseded request as blocking', () => {
+    expect(PURGE.blockingStatuses).not.toContain('superseded');
+  });
+
   it('keeps a failed user or Lesta request blocking collection until it is retried', () => {
     expect(PURGE.blockingStatuses).toContain('failed');
   });

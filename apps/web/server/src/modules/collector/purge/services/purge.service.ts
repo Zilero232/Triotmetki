@@ -42,8 +42,10 @@ export class PurgeService {
   async purgeAccount({ accountId, requestId, isFinalAttempt }: PurgeAccountInput) {
     const id = BigInt(accountId);
 
-    if (requestId) {
-      await this.prisma.dataDeletionRequest.update({ where: { id: requestId }, data: { status: 'processing' } });
+    if (requestId && !(await this.claim(requestId))) {
+      this.logger.log(`skipped the purge of account ${accountId}: its request ${requestId} was superseded`);
+
+      return;
     }
 
     try {
@@ -51,7 +53,18 @@ export class PurgeService {
         await this.prisma.$executeRawUnsafe(`DELETE FROM ${table} WHERE account_id = $1`, id);
       }
 
-      await this.prisma.$transaction(async (tx) => {
+      const isPurged = await this.prisma.$transaction(async (tx) => {
+        if (requestId) {
+          const closed = await tx.dataDeletionRequest.updateMany({
+            where: { id: requestId, status: 'processing' },
+            data: { status: 'completed', completedAt: new Date(), failedAt: null, error: null }
+          });
+
+          if (closed.count === 0) {
+            return false;
+          }
+        }
+
         await tx.clanMemberEvent.deleteMany({ where: { accountId: id } });
         await tx.weeklyChallengeProgress.deleteMany({ where: { accountId: id } });
         await tx.clanAttendance.deleteMany({ where: { accountId: id } });
@@ -61,20 +74,15 @@ export class PurgeService {
         await tx.$executeRaw`UPDATE replay SET player_account_ids = array_remove(player_account_ids, ${id}) WHERE player_account_ids @> ARRAY[${id}]::bigint[]`;
         await tx.$executeRaw`UPDATE rng_daily SET players = array_remove(players, ${id}) WHERE players @> ARRAY[${id}]::bigint[]`;
         await tx.player.deleteMany({ where: { accountId: id } });
+
+        return true;
       });
 
-      if (requestId) {
-        await this.prisma.dataDeletionRequest.update({
-          where: { id: requestId },
-          data: { status: 'completed', completedAt: new Date(), failedAt: null, error: null }
-        });
-      }
-
-      this.logger.log(`purged account ${accountId}`);
+      this.logger.log(isPurged ? `purged account ${accountId}` : `kept account ${accountId}: it was re-linked while its purge ran`);
     } catch (error) {
       if (requestId) {
-        await this.prisma.dataDeletionRequest.update({
-          where: { id: requestId },
+        await this.prisma.dataDeletionRequest.updateMany({
+          where: { id: requestId, status: 'processing' },
           data: isFinalAttempt
             ? { status: 'failed', failedAt: new Date(), error: errorMessage(error) }
             : { status: 'pending', error: errorMessage(error) }
@@ -83,5 +91,14 @@ export class PurgeService {
 
       throw error;
     }
+  }
+
+  private async claim(requestId: string): Promise<boolean> {
+    const claimed = await this.prisma.dataDeletionRequest.updateMany({
+      where: { id: requestId, status: { in: [...PURGE.claimableStatuses] } },
+      data: { status: 'processing' }
+    });
+
+    return claimed.count > 0;
   }
 }

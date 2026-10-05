@@ -19,11 +19,13 @@ const createPurge = () => {
   const queue = mock<Queue>();
 
   prisma.$transaction.mockImplementation(async (run) => run(prisma));
+  prisma.dataDeletionRequest.updateMany.mockResolvedValue({ count: 1 });
 
   return { prisma, queue, purge: new PurgeService(prisma, queue) };
 };
 
-const statuses = (prisma: ReturnType<typeof createPurge>['prisma']) => prisma.dataDeletionRequest.update.mock.calls.map(([{ data }]) => data.status);
+const statuses = (prisma: ReturnType<typeof createPurge>['prisma']) =>
+  prisma.dataDeletionRequest.updateMany.mock.calls.map(([{ data }]) => data.status);
 
 describe('PurgeService.purgeAccount', () => {
   it('deletes the account from every hypertable and closes the request', async () => {
@@ -83,7 +85,7 @@ describe('PurgeService.purgeAccount', () => {
     prisma.player.deleteMany.mockRejectedValue(new Error('lock timeout'));
 
     await expect(purge.purgeAccount({ accountId: 5, requestId, isFinalAttempt: false })).rejects.toThrow('lock timeout');
-    expect(statuses(prisma)).toEqual(['processing', 'pending']);
+    expect([statuses(prisma)[0], statuses(prisma).at(-1)]).toEqual(['processing', 'pending']);
   });
 
   it('marks the request failed on the last attempt and rethrows', async () => {
@@ -92,7 +94,7 @@ describe('PurgeService.purgeAccount', () => {
     prisma.player.deleteMany.mockRejectedValue(new Error('lock timeout'));
 
     await expect(purge.purgeAccount({ accountId: 5, requestId, isFinalAttempt: true })).rejects.toThrow('lock timeout');
-    expect(statuses(prisma)).toEqual(['processing', 'failed']);
+    expect([statuses(prisma)[0], statuses(prisma).at(-1)]).toEqual(['processing', 'failed']);
   });
 
   it('purges without touching deletion requests when run without one', async () => {
@@ -101,7 +103,7 @@ describe('PurgeService.purgeAccount', () => {
     await purge.purgeAccount({ accountId: 5, isFinalAttempt: true });
 
     expect(prisma.player.deleteMany).toHaveBeenCalledOnce();
-    expect(prisma.dataDeletionRequest.update).not.toHaveBeenCalled();
+    expect(prisma.dataDeletionRequest.updateMany).not.toHaveBeenCalled();
   });
 
   it('rethrows a failed purge without a request so the job retries', async () => {
@@ -110,7 +112,64 @@ describe('PurgeService.purgeAccount', () => {
     prisma.player.deleteMany.mockRejectedValue(new Error('lock timeout'));
 
     await expect(purge.purgeAccount({ accountId: 5, isFinalAttempt: true })).rejects.toThrow('lock timeout');
-    expect(prisma.dataDeletionRequest.update).not.toHaveBeenCalled();
+    expect(prisma.dataDeletionRequest.updateMany).not.toHaveBeenCalled();
+  });
+});
+
+describe('PurgeService.purgeAccount after a re-link', () => {
+  it('claims only a request that is still open, so a superseded one is never started', async () => {
+    const { prisma, purge } = createPurge();
+
+    await purge.purgeAccount({ accountId: 5, requestId, isFinalAttempt: true });
+
+    expect(prisma.dataDeletionRequest.updateMany.mock.calls[0]?.[0]).toEqual({
+      where: { id: requestId, status: { in: PURGE.claimableStatuses } },
+      data: { status: 'processing' }
+    });
+  });
+
+  it('skips the purge when the request was superseded before it started', async () => {
+    const { prisma, purge } = createPurge();
+
+    prisma.dataDeletionRequest.updateMany.mockResolvedValueOnce({ count: 0 });
+
+    await purge.purgeAccount({ accountId: 5, requestId, isFinalAttempt: true });
+
+    expect(prisma.$executeRawUnsafe).not.toHaveBeenCalled();
+    expect(prisma.player.deleteMany).not.toHaveBeenCalled();
+  });
+
+  it('closes the request inside the relational transaction, before it deletes the player', async () => {
+    const { prisma, purge } = createPurge();
+
+    await purge.purgeAccount({ accountId: 5, requestId, isFinalAttempt: true });
+
+    const [, complete] = prisma.dataDeletionRequest.updateMany.mock.calls;
+    const [, completeOrder = Number.POSITIVE_INFINITY] = prisma.dataDeletionRequest.updateMany.mock.invocationCallOrder;
+    const [deleteOrder = 0] = prisma.player.deleteMany.mock.invocationCallOrder;
+
+    expect(complete?.[0].where).toEqual({ id: requestId, status: 'processing' });
+    expect(completeOrder).toBeLessThan(deleteOrder);
+  });
+
+  it('keeps the relational rows when the account was re-linked while the purge ran', async () => {
+    const { prisma, purge } = createPurge();
+
+    prisma.dataDeletionRequest.updateMany.mockResolvedValueOnce({ count: 1 }).mockResolvedValueOnce({ count: 0 });
+
+    await purge.purgeAccount({ accountId: 5, requestId, isFinalAttempt: true });
+
+    expect(prisma.player.deleteMany).not.toHaveBeenCalled();
+    expect(prisma.clanMemberEvent.deleteMany).not.toHaveBeenCalled();
+  });
+
+  it('never overwrites a superseded request when the purge fails', async () => {
+    const { prisma, purge } = createPurge();
+
+    prisma.player.deleteMany.mockRejectedValue(new Error('lock timeout'));
+
+    await expect(purge.purgeAccount({ accountId: 5, requestId, isFinalAttempt: false })).rejects.toThrow('lock timeout');
+    expect(prisma.dataDeletionRequest.updateMany.mock.calls.at(-1)?.[0].where).toEqual({ id: requestId, status: 'processing' });
   });
 });
 

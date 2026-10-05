@@ -5,7 +5,7 @@ import type { Replay } from '../../../../../generated';
 import type { AppConfigService } from '../../../../config';
 import type { ObjectStorage, PrismaService } from '../../../../core';
 
-import { AppNotFoundException } from '../../../../common/exceptions';
+import { AppForbiddenException, AppNotFoundException } from '../../../../common/exceptions';
 import { ReplayOwnerService } from '../replay-owner.service';
 
 const createService = () => {
@@ -69,6 +69,15 @@ describe('ReplayOwnerService.updateVisibility', () => {
     prisma.replay.findFirst.mockResolvedValue(null);
 
     await expect(service.updateVisibility({ id: 'r1', userId: 'stranger', visibility: 'private' })).rejects.toBeInstanceOf(AppNotFoundException);
+    expect(prisma.replay.update).not.toHaveBeenCalled();
+  });
+
+  it('keeps a replay a moderator hid private, so the uploader cannot undo the moderation', async () => {
+    const { service, prisma } = createService();
+
+    prisma.replay.findFirst.mockResolvedValue(mock<Replay>({ storageKey: 'replays/r1.mtreplay', timelineKey: null, hiddenAt: new Date() }));
+
+    await expect(service.updateVisibility({ id: 'r1', userId: 'owner', visibility: 'public' })).rejects.toBeInstanceOf(AppForbiddenException);
     expect(prisma.replay.update).not.toHaveBeenCalled();
   });
 });

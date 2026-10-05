@@ -44,6 +44,7 @@ const replayRow = (overrides: Partial<Replay>): Replay => ({
   status: 'uploaded',
   parseError: null,
   visibility: 'public',
+  hiddenAt: null,
   gameVersion: null,
   arenaUniqueId: null,
   arenaId: null,

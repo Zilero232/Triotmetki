@@ -134,7 +134,7 @@ export const tankTrendQuerySchema = z.object({
 export const tankTrendPointSchema = z.object({
   date: isoDateSchema,
   battles: countSchema,
-  players: countSchema,
+  players: countSchema.nullable(),
   winRate: percentSchema.nullable(),
   avgDamage: z.number().nonnegative().nullable()
 });

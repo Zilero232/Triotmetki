@@ -31,3 +31,9 @@ describe('official ratings schemas', () => {
     expect(parsed.fields.avgDamage).toBeUndefined();
   });
 });
+
+describe('officialTopQuerySchema page', () => {
+  it('caps the page so anonymous visitors cannot spend the Lesta quota on endless pages', () => {
+    expect(officialTopQuerySchema.safeParse({ page: String(OFFICIAL_RATINGS.top.maxPage + 1) }).success).toBe(false);
+  });
+});

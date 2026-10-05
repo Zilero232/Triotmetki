@@ -5,17 +5,20 @@ import type { UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { LestaClient } from '../../../../lib/lesta';
 import type { EntitlementsService } from '../../../billing';
-import type { CollectorProducerService } from '../../../collector';
+import type { CollectorProducerService, PurgeGuardService } from '../../../collector';
 
 import { createTokenCipher } from '../../../../core/token-cipher/_tests/token-cipher.fixtures';
 import { LestaAccountsService } from '../lesta-accounts.service';
 
 const identity = { userId: 'user', accountId: 7, nickname: 'Tanker', accessToken: 'token', expiresAt: new Date() };
 
-const createService = ({ others, isKnown }: { others: number; isKnown: boolean }) => {
+const createService = ({ others, isKnown, isCleared = true }: { others: number; isKnown: boolean; isCleared?: boolean }) => {
   const prisma = mockDeep<PrismaService>();
   const entitlements = mock<EntitlementsService>();
   const collector = mock<CollectorProducerService>();
+  const purgeGuard = mock<PurgeGuardService>();
+
+  purgeGuard.liftUserRequests.mockResolvedValue(isCleared);
 
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
 
@@ -29,7 +32,14 @@ const createService = ({ others, isKnown }: { others: number; isKnown: boolean }
   const lesta = mockDeep<LestaClient>();
   const cipher = createTokenCipher();
 
-  return { service: new LestaAccountsService(prisma, collector, entitlements, lesta, cipher), prisma, collector, lesta, cipher };
+  return {
+    service: new LestaAccountsService(prisma, collector, entitlements, lesta, cipher, purgeGuard),
+    prisma,
+    collector,
+    lesta,
+    cipher,
+    purgeGuard
+  };
 };
 
 describe('LestaAccountsService.link', () => {
@@ -82,6 +92,51 @@ describe('LestaAccountsService.link', () => {
     await service.link(identity);
 
     expect(prisma.userLestaAccount.upsert.mock.calls[0]?.[0].update).toMatchObject({ tokenStaleAt: null, garageSyncedAt: null });
+  });
+});
+
+describe('LestaAccountsService.link after a deletion request', () => {
+  it('lifts the user deletion requests of the account inside the link transaction', async () => {
+    const { service, prisma, purgeGuard } = createService({ others: 0, isKnown: false });
+
+    await service.link(identity);
+
+    expect(purgeGuard.liftUserRequests).toHaveBeenCalledWith({ db: prisma, accountId: 7n });
+  });
+
+  it('unhides and tracks the player again once nothing blocks the account', async () => {
+    const { service, prisma, collector } = createService({ others: 0, isKnown: false });
+
+    await expect(service.link(identity)).resolves.toBe(true);
+
+    expect(prisma.player.upsert.mock.calls[0]?.[0]).toMatchObject({
+      create: { trackingTier: 'active', isHidden: false },
+      update: { trackingTier: 'active', isHidden: false }
+    });
+
+    expect(collector.enrol).toHaveBeenCalledWith({ accountId: 7, priority: 'high', reason: 'login' });
+  });
+
+  it('signs in but keeps the player hidden and untracked while a Lesta request stands', async () => {
+    const { service, prisma, collector } = createService({ others: 0, isKnown: false, isCleared: false });
+
+    await expect(service.link(identity)).resolves.toBe(true);
+
+    const upsert = prisma.player.upsert.mock.calls[0]?.[0];
+
+    expect(upsert?.create).toMatchObject({ isHidden: true });
+    expect(upsert?.create).not.toHaveProperty('trackingTier');
+    expect(upsert?.update).toEqual({ isHidden: true });
+    expect(prisma.userLestaAccount.upsert).toHaveBeenCalled();
+    expect(collector.enrol).not.toHaveBeenCalled();
+  });
+
+  it('records no nickname history for an account Lesta asked to delete', async () => {
+    const { service, prisma } = createService({ others: 0, isKnown: false, isCleared: false });
+
+    await service.link(identity);
+
+    expect(prisma.playerNickname.upsert).not.toHaveBeenCalled();
   });
 });
 

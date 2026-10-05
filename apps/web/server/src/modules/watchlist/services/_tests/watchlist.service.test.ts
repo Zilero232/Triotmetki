@@ -61,6 +61,21 @@ describe('WatchlistService.list', () => {
     expect(activity.activity).toHaveBeenCalledWith(expect.objectContaining({ since: subHours(now, WATCHLIST.periodHours['7d']) }));
   });
 
+  it('shows nothing about a watched player who asked for their data to be hidden', async () => {
+    const { prisma, service } = setup();
+
+    prisma.follow.findMany.mockResolvedValue([follow(1n), follow(2n)]);
+
+    prisma.player.findMany.mockResolvedValue([
+      mock<Player>({ accountId: 1n, nickname: 'hidden', clanId: null, lastBattleAt: null, isHidden: true }),
+      mock<Player>({ accountId: 2n, nickname: 'tanker', clanId: null, lastBattleAt: null, isHidden: false })
+    ]);
+
+    const { players } = await service.list({ userId: 'u1', query: { period: '24h' } });
+
+    expect(players.map((player) => player.accountId)).toEqual([2]);
+  });
+
   it('reports the plan limit for watched players', async () => {
     const { entitlements, service } = setup();
 
@@ -95,7 +110,10 @@ describe('WatchlistService.list', () => {
     const playerLast = new Date('2026-09-26T09:00:00Z');
 
     prisma.follow.findMany.mockResolvedValue([follow(1n), follow(2n)]);
-    prisma.player.findMany.mockResolvedValue([mock<Player>({ accountId: 1n, nickname: 'A', clanId: null, lastBattleAt: playerLast })]);
+
+    prisma.player.findMany.mockResolvedValue([
+      mock<Player>({ accountId: 1n, nickname: 'A', clanId: null, lastBattleAt: playerLast, isHidden: false })
+    ]);
 
     activity.activity.mockResolvedValue(
       new Map([
@@ -113,7 +131,7 @@ describe('WatchlistService.list', () => {
     const { prisma, service } = setup();
 
     prisma.follow.findMany.mockResolvedValue([follow(1n)]);
-    prisma.player.findMany.mockResolvedValue([mock<Player>({ accountId: 1n, nickname: 'A', clanId: null, lastBattleAt: null })]);
+    prisma.player.findMany.mockResolvedValue([mock<Player>({ accountId: 1n, nickname: 'A', clanId: null, lastBattleAt: null, isHidden: false })]);
 
     await service.list({ userId: 'u1', query: { period: '24h' } });
 
@@ -124,7 +142,7 @@ describe('WatchlistService.list', () => {
     const { prisma, service } = setup();
 
     prisma.follow.findMany.mockResolvedValue([follow(1n)]);
-    prisma.player.findMany.mockResolvedValue([mock<Player>({ accountId: 1n, nickname: 'A', clanId: 42n, lastBattleAt: null })]);
+    prisma.player.findMany.mockResolvedValue([mock<Player>({ accountId: 1n, nickname: 'A', clanId: 42n, lastBattleAt: null, isHidden: false })]);
     prisma.clan.findMany.mockResolvedValue([mock<Clan>({ clanId: 42n, tag: 'TAG' })]);
     prisma.accountRating.findMany.mockResolvedValue([mock<AccountRating>({ accountId: 1n, wn8: 2_100 })]);
 

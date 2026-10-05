@@ -203,6 +203,16 @@ describe('ClanPageService.members', () => {
     expect(member?.role).toBe('executive_officer');
   });
 
+  it('leaves out members who asked for their data to be hidden', async () => {
+    const { prisma, service } = createPage();
+
+    prisma.clanMember.findMany.mockResolvedValue([]);
+
+    await service.members(CLAN_ID);
+
+    expect(prisma.clanMember.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { clanId: CLAN_ID, player: { isHidden: false } } }));
+  });
+
   it('leaves battles unknown for a member without an overall rating', async () => {
     const { prisma, service } = createPage();
 
@@ -216,6 +226,26 @@ describe('ClanPageService.members', () => {
 });
 
 describe('ClanPageService.events', () => {
+  it('drops the events of a player who asked for their data to be hidden', async () => {
+    const { prisma, service } = createPage();
+
+    prisma.clanMemberEvent.findMany.mockResolvedValue([
+      event({ id: 'a', accountId: 1n, type: 'left' }),
+      event({ id: 'b', accountId: 2n, type: 'left' })
+    ]);
+
+    prisma.clanMemberEvent.count.mockResolvedValue(2);
+
+    prisma.player.findMany.mockResolvedValue([
+      mock<Player>({ accountId: 1n, nickname: 'hidden', isHidden: true }),
+      mock<Player>({ accountId: 2n, nickname: 'tanker', isHidden: false })
+    ]);
+
+    const page = await service.events({ clanId: CLAN_ID, limit: 2, offset: 0 });
+
+    expect(page.items.map((item) => item.accountId)).toEqual([2]);
+  });
+
   it('names each event by the player nickname and keeps unknown players anonymous', async () => {
     const { prisma, service } = createPage();
 
@@ -225,7 +255,7 @@ describe('ClanPageService.events', () => {
     ]);
 
     prisma.clanMemberEvent.count.mockResolvedValue(5);
-    prisma.player.findMany.mockResolvedValue([mock<Player>({ accountId: 1n, nickname: 'tanker' })]);
+    prisma.player.findMany.mockResolvedValue([mock<Player>({ accountId: 1n, nickname: 'tanker', isHidden: false })]);
 
     const page = await service.events({ clanId: CLAN_ID, limit: 2, offset: 0 });
 

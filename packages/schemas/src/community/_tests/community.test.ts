@@ -16,6 +16,16 @@ describe('community schemas', () => {
     expect(loadoutSchema.safeParse({ ...BASE_LOADOUT, equipment: tooMany }).success).toBe(false);
   });
 
+  it('caps the free-form loadout parts so a request stays small', () => {
+    const names = (count: number) => Array.from({ length: count }, (_, index) => `item-${index}`);
+    const crew = Object.fromEntries(names(LOADOUT.crewRoles + 1).map((role) => [role, []]));
+
+    expect(loadoutSchema.safeParse({ ...BASE_LOADOUT, fieldModifications: names(LOADOUT.fieldModifications + 1) }).success).toBe(false);
+    expect(loadoutSchema.safeParse({ ...BASE_LOADOUT, crewSkills: crew }).success).toBe(false);
+    expect(loadoutSchema.safeParse({ ...BASE_LOADOUT, crewSkills: { commander: ['x'.repeat(LOADOUT.nameLength + 1)] } }).success).toBe(false);
+    expect(loadoutSchema.safeParse({ ...BASE_LOADOUT, profileId: 'x'.repeat(LOADOUT.nameLength + 1) }).success).toBe(false);
+  });
+
   it('defaults a new build to public and trims the title', () => {
     const build = createBuildSchema.parse({ tankId: '1', title: '  Build  ', loadout: BASE_LOADOUT });
 

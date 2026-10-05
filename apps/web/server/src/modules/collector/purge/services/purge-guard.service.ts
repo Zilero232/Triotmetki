@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import type { OpenDeletionRequestsInput } from '../purge.types';
+import type { LiftUserRequestsInput, OpenDeletionRequestsInput } from '../purge.types';
 
 import { PrismaService } from '../../../../core';
 import { PURGE } from '../config';
@@ -34,5 +34,18 @@ export class PurgeGuardService {
 
     await db.dataDeletionRequest.createMany({ data: accountIds.map((accountId) => ({ accountId, source, reason })) });
     await db.player.updateMany({ where: { accountId: { in: [...accountIds] } }, data: { isHidden: true } });
+  }
+
+  async liftUserRequests({ db, accountId }: LiftUserRequestsInput): Promise<boolean> {
+    await db.dataDeletionRequest.updateMany({
+      where: { accountId, source: 'user', status: { in: [...PURGE.blockingStatuses] } },
+      data: { status: 'superseded', supersededAt: new Date() }
+    });
+
+    const remaining = await db.dataDeletionRequest.count({
+      where: { accountId, source: { in: [...PURGE.blockingSources] }, status: { in: [...PURGE.blockingStatuses] } }
+    });
+
+    return remaining === 0;
   }
 }

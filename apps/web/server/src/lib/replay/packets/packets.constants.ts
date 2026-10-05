@@ -12,7 +12,7 @@ export const PACKET_TYPE = {
 
 export const PACKET_FRAME = {
   headerSize: 12,
-  maxPayloadSize: 64 * 1024 * 1024
+  maxPayloadSize: 4 * 1024 * 1024
 } as const;
 
 export const BATTLE_PERIOD = {

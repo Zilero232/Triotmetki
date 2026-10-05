@@ -21,6 +21,7 @@ const replayScopeSql = ({ since, battleTypes, tankIds, arenaId, medal }: FeedSco
   AND r.account_id IS NOT NULL
   AND r.tank_id IS NOT NULL
   AND p.is_hidden IS NOT TRUE
+  AND EXISTS (SELECT 1 FROM user_lesta_account uploader WHERE uploader.user_id = r.uploader_user_id AND uploader.account_id = r.account_id)
   AND NOT EXISTS (SELECT 1 FROM battle b WHERE b.account_id = r.account_id AND b.arena_unique_id = r.arena_unique_id AND ${corroboratedBattleSql})
   ${tankIds ? Prisma.sql`AND r.tank_id = ANY(${tankIds}::int[])` : Prisma.empty}
   ${arenaId ? Prisma.sql`AND r.arena_id = ${arenaId}` : Prisma.empty}

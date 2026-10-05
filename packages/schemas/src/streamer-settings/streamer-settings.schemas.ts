@@ -51,7 +51,12 @@ export const cameraValuesSchema = z.object({
 export const controlsValuesSchema = z.object({
   sensitivity: z.object({ arcade: sensitivity.optional(), sniper: sensitivity.optional(), artillery: sensitivity.optional() }).optional(),
   invert: z.boolean().optional(),
-  notableBinds: z.record(text, text).optional()
+  notableBinds: z
+    .record(text, text)
+    .refine((binds) => Object.keys(binds).length <= STREAMER_SETTINGS.maxNotableBinds, {
+      message: `At most ${STREAMER_SETTINGS.maxNotableBinds} binds`
+    })
+    .optional()
 });
 
 export const zoomValuesSchema = z.object({
@@ -69,7 +74,8 @@ export const sightValuesSchema = z.object({
   sniper: sightModeSchema.optional()
 });
 
-const markerSetSchema = z.object({ base: z.array(markerFieldSchema).optional(), alt: z.array(markerFieldSchema).optional() });
+const markerFieldsSchema = z.array(markerFieldSchema).max(STREAMER_SETTINGS.markerFields.length);
+const markerSetSchema = z.object({ base: markerFieldsSchema.optional(), alt: markerFieldsSchema.optional() });
 
 export const markersValuesSchema = z.object({
   enemy: markerSetSchema.optional(),
@@ -217,7 +223,11 @@ export const settingsAggregatesSchema = z.object({
 
 export const createApplyRequestSchema = z.object({
   slug: z.string().min(1).max(32),
-  groups: z.array(applicableGroupSchema).min(1),
+  groups: z
+    .array(applicableGroupSchema)
+    .min(1)
+    .max(STREAMER_SETTINGS_APPLICABLE.length)
+    .transform((groups) => [...new Set(groups)]),
   includeResolution: z.boolean().default(false),
   includeSensitivity: z.boolean().default(false),
   deviceId: uuidSchema.optional()

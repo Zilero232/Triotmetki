@@ -5,6 +5,8 @@ import { encryptStream } from '../../_tests/replay-builder';
 import { ReplayFormatError } from '../../errors';
 import { decryptStream, unpackStream } from '../stream';
 
+const BOMB_BYTES = 64 * 1024 * 1024 + 1;
+
 describe('replay stream cipher', () => {
   it('undoes Blowfish ECB with the chained XOR over whole blocks', () => {
     const plain = Uint8Array.from({ length: 64 }, (_, index) => (index * 37) % 256);
@@ -23,6 +25,14 @@ describe('replay stream cipher', () => {
     });
 
     expect(inflated).toEqual(plain);
+  });
+
+  it('refuses a decompression bomb that inflates past what a real battle produces', () => {
+    const compressed = new Uint8Array(deflateSync(new Uint8Array(BOMB_BYTES)));
+
+    expect(() =>
+      unpackStream({ compressedSize: compressed.byteLength, data: encryptStream(compressed), decompressedSize: compressed.byteLength })
+    ).toThrow(ReplayFormatError);
   });
 
   it('reports a stream that does not inflate as a format error', () => {

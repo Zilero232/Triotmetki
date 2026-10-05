@@ -22,6 +22,7 @@ link-confirm-yes = Yes, link
 link-confirm-no = No
 link-cancelled = Cancelled. Nothing was linked.
 login-link = Your sign-in link (valid for { $minutes } min):
+private-only = For your safety, sign-in links and account linking work only in a private chat with the bot.
 login-button = Sign in
 open-site = Open on the site
 open-app = Open Three Marks

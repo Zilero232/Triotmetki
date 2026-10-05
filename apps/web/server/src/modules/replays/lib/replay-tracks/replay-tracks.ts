@@ -10,6 +10,10 @@ export const downsample = ({ points, stepSeconds }: DownsampleInput): TrackSampl
   let lastTime = Number.NEGATIVE_INFINITY;
 
   for (const point of points) {
+    if (samples.length >= REPLAY_TRACKS.maxSamples) {
+      break;
+    }
+
     if (point.time - lastTime < stepSeconds) {
       continue;
     }

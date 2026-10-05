@@ -97,12 +97,12 @@ export class ModerationService {
       .with('build', () => db.build.updateMany({ where: { id: targetId }, data: { status: 'hidden' } }))
       .with('guide', () => db.guide.updateMany({ where: { id: targetId }, data: { status: 'hidden' } }))
       .with('comment', () => db.comment.updateMany({ where: { id: targetId }, data: { status: 'hidden' } }))
-      .with('replay', () => db.replay.updateMany({ where: { id: targetId }, data: { visibility: 'private' } }))
+      .with('replay', () => db.replay.updateMany({ where: { id: targetId }, data: { visibility: 'private', hiddenAt: new Date() } }))
       .with('platoon_post', () => db.platoonPost.updateMany({ where: { id: targetId }, data: { status: 'hidden' } }))
       .with('recruiting_post', () => db.recruitingPost.updateMany({ where: { id: targetId }, data: { status: 'hidden' } }))
       .with('coach', () => db.coachProfile.updateMany({ where: { userId: targetId }, data: { isActive: false, hiddenAt: new Date() } }))
       .with('tournament', () => db.tournament.updateMany({ where: { id: targetId }, data: { status: 'cancelled' } }))
-      .with('tactic_board', () => db.tacticBoard.updateMany({ where: { id: targetId }, data: { visibility: 'private' } }))
+      .with('tactic_board', () => db.tacticBoard.updateMany({ where: { id: targetId }, data: { visibility: 'private', hiddenAt: new Date() } }))
       .with('streamer_profile', () => db.streamerProfile.updateMany({ where: { id: targetId }, data: { hiddenAt: new Date(), isLive: false } }))
       .otherwise(() => ({ count: 0 }));
   }
