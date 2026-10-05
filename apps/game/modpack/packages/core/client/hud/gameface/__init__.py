@@ -122,6 +122,12 @@ if IMPORT_ERROR is None:
             super(HudWindow, self).__init__(wndFlags=WindowFlags.WINDOW, content=HudView(layout, backend),
                                             layer=getattr(WindowLayer, WINDOW_LAYER), parent=main_window())
 
+        # RU 1.45 client source: frameworks/wulf/windows_system/window.py `_onReady` calls `self.show()`, whose `focus`
+        # defaults to True. The HUD window took the keyboard from the battle page (chat no longer opened) and, closed
+        # while focused on the way back, left the hangar deaf to clicks until the game window lost and regained focus.
+        def _onReady(self):
+            self.show(focus=False)
+
 else:
     HudWindow = None
 
