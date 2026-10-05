@@ -7,6 +7,7 @@ import unittest
 import _support
 from otmetki.core.format import COLOR_DOWN, COLOR_UP
 from otmetki.core.me import tank_rows
+from otmetki.core.hud.panel import ATTACHED
 from otmetki.core.settings import Settings
 from otmetki.features.battle_progress.i18n import STRINGS
 from otmetki.features.battle_progress.model import BattleCounts, progress_state
@@ -345,10 +346,14 @@ class SettingsTest(unittest.TestCase):
     def test_an_unknown_record_metric_falls_back_to_damage(self):
         assert settings(record_metric='xp').get('record_metric') == 'damage'
 
-    def test_defaults_to_the_right_top_column(self):
+    def test_defaults_to_the_right_of_the_team_hp_strip(self):
         defaults = SCHEMA.defaults
 
-        assert (defaults['x'], defaults['y'], defaults['align_x'], defaults['align_y']) == (-372, 60, 'right', 'top')
+        assert (defaults['x'], defaults['y'], defaults['align_x'], defaults['align_y']) == (423, 4, 'center', 'top')
+        assert ATTACHED['otmetki.hud.battle_progress'] == 'score_right'
+
+    def test_a_plate_left_in_the_old_right_column_moves(self):
+        assert (-372, 60, 'right', 'top') in SCHEMA.retired
 
 
 class PreviewTest(unittest.TestCase):

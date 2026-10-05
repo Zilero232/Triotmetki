@@ -1,6 +1,6 @@
-import type { BindFindKeyInput, FindKey } from './find-key.types';
+import { KEYS } from '@/shared/config';
 
-import { KEYS } from '../../config';
+import type { BindFindKeyInput, FindKey } from './find-key.types';
 
 export const isFindKey = (event: FindKey): boolean => {
   if (!event.ctrlKey) {

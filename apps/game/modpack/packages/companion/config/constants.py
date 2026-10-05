@@ -18,7 +18,6 @@ FEATURES = (
     'battle_team_hp',
     'battle_sixth_sense',
     'hangar_battle_results',
-    'battle_summary',
     'battle_last_results',
     'hangar_replay_manager',
     'hangar_tweaks',
@@ -51,7 +50,6 @@ FEATURES = (
     'hangar_hit_viewer',
     'hangar_update_notice',
     'hangar_quick_demount',
-    'config_backup',
     'hangar_preset_advisor',
     'free_camera',
     'share_settings',
@@ -89,7 +87,7 @@ SHARE_CHANNELS = ('telegram', 'discord', 'both')
 # one when it still holds the old default and the file predates the change (`defaults_revision`).
 # (revision, key, old default, new default). A switch of a removed component is left out of DEFAULTS: Settings ignores
 # a key its schema does not know, so the leftover drops out of the file on the next save.
-DEFAULTS_REVISION = 3
+DEFAULTS_REVISION = 4
 RETIRED_DEFAULTS = (
     (1, 'battle_loadout', False, True),
     (3, 'hangar_tweaks', True, False),
@@ -107,7 +105,8 @@ ONE_TIME_SWITCHES = (
     (2, 'battle_loadout', True),
 )
 # Revision 3 (docs/specs/2026-09-30-hud-consolidation-and-design.md section 0): the components merged into one another
-# and the ones removed. It runs on the stored config.json and components.json before any feature reads them.
+# and the ones removed. It runs on the stored config.json and components.json before any feature reads them; the later
+# revisions (RETIRED_VALUES, DROPPED_SECTIONS) run on every file older than DEFAULTS_REVISION.
 MIGRATION_REVISION = 3
 COMPONENTS_FILE = 'components.json'
 COMPONENTS_BACKUP = 'components.json.r2.bak'
@@ -178,21 +177,29 @@ SWITCHED_OFF_PARTS = (
     (('battle_moe_panel',), 'marks_panel', 'show_battle_panel'),
     (('hangar_marks', 'hangar_marks_history'), 'marks_panel', 'hangar_card'),
 )
-# (section, key, old default, new default): moved only while the key still holds the old default and the player never
-# set it in the window.
+# (revision, section, key, old default, new default): moved in a file older than the revision, only while the key still
+# holds the old default and the player never set it in the window. Revision 4: the crosshair keeps the game's own
+# centre unless the player picks a mark (docs/research/competitors/2026-10-05-behavior-parity.md section 2).
 RETIRED_VALUES = (
-    ('damage_log', 'alt_mode', False, True),
-    ('hangar_info', 'clock_format', '%H:%M:%S', '%H:%M'),
-    ('hangar_info', 'date_format', '%d.%m.%Y', '%d.%m'),
-    ('marks_panel', 'style', 'extended', 'compact'),
-    ('marks_panel', 'alt_detail', False, True),
+    (3, 'damage_log', 'alt_mode', False, True),
+    (3, 'hangar_info', 'clock_format', '%H:%M:%S', '%H:%M'),
+    (3, 'hangar_info', 'date_format', '%d.%m.%Y', '%d.%m'),
+    (3, 'marks_panel', 'style', 'extended', 'compact'),
+    (3, 'marks_panel', 'alt_detail', False, True),
+    (4, 'crosshair', 'mark', 'chevron_thin', 'none'),
+    (4, 'crew_xp', 'show_card', True, False),
 )
-# (section, old default place, new default place) as (x, y, align_x, align_y): a component that is not a HUD panel (no
-# RETIRED_PLACES of its own) moves only while it still sits at the old default.
+# (revision, section, old default place, new default place) as (x, y, align_x, align_y): a component that is not a HUD
+# panel (no RETIRED_PLACES of its own) moves in a file older than the revision only while it still sits at the old
+# default; the rows apply in order, so an older file walks through every move. Revision 4: the clock strip goes top left
+# under the header, where Battle Observer keeps its hangar clock.
 MOVED_PLACES = (
-    ('hangar_info', (-16, 76, 'right', 'top'), (0, -196, 'left', 'bottom')),
+    (3, 'hangar_info', (-16, 76, 'right', 'top'), (0, -196, 'left', 'bottom')),
+    (4, 'hangar_info', (0, -196, 'left', 'bottom'), (50, 83, 'left', 'top')),
 )
-# The sections of the removed components and panels (ComponentConfig keeps unknown sections, so they go here).
+# The sections of the removed components and panels (ComponentConfig keeps unknown sections, so they go here), dropped
+# from every file older than DEFAULTS_REVISION. Revision 4: battle_summary (the card of the battle being played) and
+# config_backup (the settings copy beside preferences.xml; core.durable keeps the files a wipe would lose).
 DROPPED_SECTIONS = (
     'hit_log',
     'received_hits',
@@ -210,6 +217,8 @@ DROPPED_SECTIONS = (
     'reload_timer',
     'marks_history',
     'battle_sounds',
+    'battle_summary',
+    'config_backup',
 )
 # The keys the player set in the settings window (config switches by name, component values as `<section>.<key>`),
 # space-separated: a later default change never moves them.
@@ -232,7 +241,6 @@ DEFAULTS = {
     'battle_team_hp': True,
     'battle_sixth_sense': True,
     'hangar_battle_results': True,
-    'battle_summary': True,
     'battle_last_results': True,
     'hangar_replay_manager': True,
     'hangar_tweaks': False,
@@ -265,7 +273,6 @@ DEFAULTS = {
     'hangar_hit_viewer': True,
     'hangar_update_notice': True,
     'hangar_quick_demount': False,
-    'config_backup': True,
     'hangar_preset_advisor': True,
     'free_camera': False,
     'share_settings': True,
@@ -279,11 +286,12 @@ DEFAULTS = {
     'settings_include_resolution': False,
     'settings_include_sensitivity': False,
     'hud_modifier': DEFAULT_MODIFIER,
+    'hud_hide_under_windows': True,
     'defaults_revision': DEFAULTS_REVISION,
     USER_SET_KEY: '',
 }
 CHOICES = {
-    'settings_action': ('', 'export', 'restore'),
+    'settings_action': ('', 'export'),
     'settings_target': ('profile', 'private'),
     'share_session_channel': SHARE_CHANNELS,
     'hud_modifier': MODIFIER_CHOICES,

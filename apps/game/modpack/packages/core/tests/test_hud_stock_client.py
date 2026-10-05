@@ -61,65 +61,6 @@ class Event(object):
         self.ctx = ctx
 
 
-class View(object):
-
-    def __init__(self, modal):
-        self.modal = modal
-        self.onDispose = ClientEvent()
-
-    def isViewModal(self):
-        return self.modal
-
-    def close(self):
-        self.onDispose(self)
-
-
-class ContainerManager(object):
-
-    def __init__(self):
-        self.onViewAddedToContainer = ClientEvent()
-
-    def show(self, view):
-        self.onViewAddedToContainer('container', view)
-
-
-class App(object):
-
-    def __init__(self):
-        self.containerManager = ContainerManager()
-
-
-class ClientEvent(object):
-
-    def __init__(self):
-        self.handlers = []
-
-    def __iadd__(self, handler):
-        self.handlers.append(handler)
-        return self
-
-    def __isub__(self, handler):
-        self.handlers.remove(handler)
-        return self
-
-    def __call__(self, *args):
-        for handler in list(self.handlers):
-            handler(*args)
-
-
-class InputHandler(object):
-
-    def __init__(self):
-        self.onPostmortemKillerVisionEnter = ClientEvent()
-        self.onPostmortemKillerVisionExit = ClientEvent()
-
-
-class Avatar(object):
-
-    def __init__(self):
-        self.inputHandler = InputHandler()
-
-
 class Backend(HudBackend):
 
     def available(self):
@@ -305,132 +246,46 @@ class StockControlTest(unittest.TestCase):
 
         assert page.applied[-1] == (set(), {'fragCorrelationBar'})
 
-    def test_panels_hide_with_the_stock_gui(self):
-        self.populated_page()
-        self.layer.show('panel', 'text')
-
-        self.control._on_gui_visibility(Event({'visible': False}))
-
-        assert self.layer.gui_hidden
-
-    def test_panels_stay_dimmed_while_full_stats_is_open(self):
-        self.populated_page()
-        self.layer.show('panel', 'text')
-        self.control._on_gui_visibility(Event({'visible': False}))
-        self.control._on_gui_visibility(Event({'visible': True}))
-
-        self.control._on_full_stats(Event({'isDown': True}))
-
-        assert not self.layer.gui_hidden
-        assert self.layer.full_stats
-
-    def test_the_dim_mark_goes_when_full_stats_closes(self):
-        self.populated_page()
-        self.layer.show('panel', 'text')
-        self.control._on_full_stats(Event({'isDown': True}))
-
-        self.control._on_full_stats(Event({'isDown': False}))
-
-        assert not self.layer.full_stats
-
-    def test_the_page_end_shows_the_panels_and_forgets_the_page(self):
+    def test_a_muted_panel_gives_its_stock_element_back(self):
         page = self.populated_page()
-        self.layer.show('panel', 'text')
-        self.control._on_full_stats(Event({'isDown': True}))
+        self.control.want('panel', ('fragCorrelationBar',))
 
-        page._dispose()
+        self.layer.set_muted(True)
 
-        assert not self.layer.full_stats
-        assert self.control.page is None
+        assert page.applied[-1] == ({'fragCorrelationBar'}, set())
 
-    def page_with_app(self):
-        page = ClassicPage()
-        page.app = App()
-        page._populate()
-        self.layer.show('panel', 'text')
-        return page
+    def test_the_stock_element_is_hidden_again_when_the_panel_is_back(self):
+        page = self.populated_page()
+        self.control.want('panel', ('fragCorrelationBar',))
+        self.layer.set_muted(True)
 
-    def test_a_modal_view_fades_every_panel(self):
-        page = self.page_with_app()
+        self.layer.set_muted(False)
 
-        page.app.containerManager.show(View(modal=True))
+        assert page.applied[-1] == (set(), {'fragCorrelationBar'})
 
-        assert self.layer.cover == 'modal'
+    def test_a_panel_muted_before_it_asks_hides_nothing(self):
+        page = self.populated_page()
+        self.layer.set_muted(True)
 
-    def test_a_view_that_is_not_modal_changes_nothing(self):
-        page = self.page_with_app()
+        self.control.want('panel', ('fragCorrelationBar',))
 
-        page.app.containerManager.show(View(modal=False))
+        assert page.applied == []
 
-        assert self.layer.cover == ''
+    def test_the_killer_camera_gives_the_stock_element_back(self):
+        page = self.populated_page()
+        self.control.want('panel', ('fragCorrelationBar',))
 
-    def test_the_fade_goes_when_the_last_modal_view_closes(self):
-        page = self.page_with_app()
-        menu, help_window = View(modal=True), View(modal=True)
-        page.app.containerManager.show(menu)
-        page.app.containerManager.show(help_window)
+        self.layer.set_cover('killcam', True)
 
-        menu.close()
-        faded = self.layer.cover
-        help_window.close()
+        assert page.applied[-1] == ({'fragCorrelationBar'}, set())
 
-        assert (faded, self.layer.cover) == ('modal', '')
-
-    def test_the_page_end_stops_following_modal_views(self):
-        page = self.page_with_app()
-        page._dispose()
-
-        assert page.app.containerManager.onViewAddedToContainer.handlers == []
-
-    def page_with_avatar(self):
-        avatar = Avatar()
-        sys.modules['BigWorld'].player = lambda: avatar
+    def test_tab_keeps_the_stock_element_hidden(self):
         self.populated_page()
-        self.layer.show('panel', 'text')
-        return avatar
+        self.control.want('panel', ('fragCorrelationBar',))
 
-    def test_panels_hide_while_the_camera_is_on_the_killer(self):
-        avatar = self.page_with_avatar()
+        self.layer.set_cover('full_stats', True)
 
-        avatar.inputHandler.onPostmortemKillerVisionEnter(42)
-
-        assert self.layer.gui_hidden
-
-    def test_panels_come_back_when_the_camera_leaves_the_killer(self):
-        avatar = self.page_with_avatar()
-        avatar.inputHandler.onPostmortemKillerVisionEnter(42)
-
-        avatar.inputHandler.onPostmortemKillerVisionExit()
-
-        assert not self.layer.gui_hidden
-
-    def test_the_page_end_stops_following_the_killer_camera(self):
-        avatar = self.page_with_avatar()
-        self.control.page._dispose()
-
-        assert avatar.inputHandler.onPostmortemKillerVisionEnter.handlers == []
-
-    def test_panels_hide_under_the_loading_screen(self):
-        self.page_with_avatar()
-
-        self.control._on_loading(Event({'isShown': True}))
-
-        assert self.layer.gui_hidden
-
-    def test_panels_come_back_when_the_loading_screen_goes(self):
-        self.page_with_avatar()
-        self.control._on_loading(Event({'isShown': True}))
-
-        self.control._on_loading(Event({'isShown': False}))
-
-        assert not self.layer.gui_hidden
-
-    def test_a_loading_screen_before_the_page_hides_the_panels_once_it_is_up(self):
-        self.control._on_loading(Event({'isShown': True}))
-
-        self.page_with_avatar()
-
-        assert self.layer.gui_hidden
+        assert self.control.hidden == frozenset(('fragCorrelationBar',))
 
     def test_alt_down_goes_out_on_the_bus_once(self):
         held = []

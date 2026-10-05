@@ -6,12 +6,7 @@ import os
 
 from ..codec import canonical_json
 from ..compat import to_bytes
-from ..vendor.blinker import Signal
 from .constants import PRETTY
-
-# Sent with the file's path after every JsonFile write (core.backup copies each saved settings file). A receiver must
-# not raise: the write has already happened and the caller would see the error.
-FILE_SAVED = Signal()
 
 
 def replace_file(src, dst):
@@ -47,7 +42,6 @@ class JsonFile(object):
         with io.open(temp_path, 'wb') as handle:
             handle.write(to_bytes(text))
         replace_file(temp_path, self.path)
-        FILE_SAVED.send(self.path)
 
     def delete(self):
         if os.path.exists(self.path):

@@ -1,12 +1,13 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { GAMEFACE } from '../../../api/gameface';
-import { createGamefaceMock, installGamefaceMock } from '../../../api/gameface/mock';
-import { SCROLL_AREA } from '../../../config';
-import { isRecord } from '../../is-record';
-import { forgetReports } from '../../page-diag';
-import { SMOOTH_SCROLL } from '../../smooth-scroll';
+import { GAMEFACE } from '@/shared/api/gameface';
+import { createGamefaceMock, installGamefaceMock } from '@/shared/api/gameface/mock';
+import { SCROLL_AREA } from '@/shared/config';
+import { isRecord } from '@/shared/lib/is-record';
+import { forgetReports } from '@/shared/lib/page-diag';
+import { SMOOTH_SCROLL } from '@/shared/lib/smooth-scroll';
+
 import { bindWheelScroll, blockPageWheel, thumbOf, topFromThumb, wheelDelta, wheelScroll } from '../wheel-scroll';
 
 const STEP = 60;

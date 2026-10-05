@@ -39,7 +39,7 @@ SLUG_SEPARATORS = re.compile(r'[^a-z0-9]+')
 CLOCK_SIZE_STEP = 4
 DETAIL_SEPARATOR = u' | '
 
-# The hangar strip's widget (ui-web entities/hud-widgets/clock-strip).
+# The hangar strip's widget (ui-web entities/hud/clock-strip).
 STRIP_KIND = 'clock_strip'
 
 # The settings window's editor (docs/specs/2026-09-30-hud-consolidation-and-design.md section 12.3): its field groups

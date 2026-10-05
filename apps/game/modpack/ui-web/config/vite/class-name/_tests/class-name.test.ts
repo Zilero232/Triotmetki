@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import { scopedClassName } from '../class-name';
 
-const WINDOWS_PATH = String.raw`C:\work\ui-web\src\settings\ui\toggle\Toggle.module.scss`;
-const POSIX_PATH_WITH_QUERY = '/home/ci/ui-web/src/settings/ui/toggle/Toggle.module.scss?used';
+const WINDOWS_PATH = String.raw`C:\work\ui-web\src\ui-kit\atoms\Toggle\Toggle.module.scss`;
+const POSIX_PATH_WITH_QUERY = '/home/ci/ui-web/src/ui-kit/atoms/Toggle/Toggle.module.scss?used';
 
 describe('scopedClassName', () => {
   it('names a module class after its component on a Windows path', () => {

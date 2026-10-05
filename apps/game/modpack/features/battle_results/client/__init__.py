@@ -1,15 +1,29 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import time
+
 from ....core.client.game import map_label
 from ....core.client.component import FeatureComponent
-from ....core.events import EVENT_HIT_VIEWER_OPEN, hit_viewer_battles
+from ....core.events import EVENT_HIT_VIEWER_OPEN, battle_notice_lines, hit_viewer_battles
 from ..i18n import STRINGS
-from ..model import build_page, build_summary, compact, counts, format_summary, page_actions, restore_history
+from ..model import (
+    APPEND,
+    PUSH,
+    StockNotices,
+    build_page,
+    build_summary,
+    compact,
+    counts,
+    format_summary,
+    page_actions,
+    restore_history,
+    stock_lines,
+)
 from ..model.constants import ACTION_CLEAR, ACTION_HITS, STATE_KEY
 from ..settings import SCHEMA, SECTION, SWITCH
 from .hits import HitRecorder
 from .last_battle import LastBattlePanel
-from .summary import BattleSummaryPanel
+from .stock_message import StockMessageHook, appended
 
 
 class BattleResultsSummary(FeatureComponent):
@@ -20,10 +34,15 @@ class BattleResultsSummary(FeatureComponent):
         self.history = restore_history(app.state.get(STATE_KEY))
         app.register_state(STATE_KEY, lambda: self.history)
         self.hits = HitRecorder(self)
-        self.summary_card = BattleSummaryPanel(app)
         self.last_battle = LastBattlePanel(app)
+        self.notices = StockNotices()
+        self.stock_hook = StockMessageHook(self._on_stock_message)
+        self.recorded = []
         app.bus.on('battle_event', self._on_battle_event)
+        app.bus.on('battle_recorded', self._on_battle_recorded)
         app.bus.on('hangar', self._on_hangar)
+        app.bus.on('battle_enter', self._on_battle_enter)
+        app.bus.on('tick', self._on_tick)
 
     def settings_changed(self, changed):
         if 'hits_keep_battles' in changed:
@@ -40,7 +59,7 @@ class BattleResultsSummary(FeatureComponent):
         self._remember(summary)
         if self.app.in_battle:
             self.last_battle.offer(summary)
-        self._announce(format_summary(summary, self.settings, self.app.translate))
+        self.recorded.append(summary)
 
     def _summary_of(self, event):
         tank_id = (event.get('vehicle') or {}).get('tank_id')
@@ -51,15 +70,57 @@ class BattleResultsSummary(FeatureComponent):
         self.history.append(compact(summary))
         del self.history[:-self.settings.get('history_size')]
 
-    def _announce(self, text):
+    # After every package took the battle (bus battle_recorded), so the session line counts it too.
+    def _on_battle_recorded(self):
+        while self.recorded:
+            self._offer_notice(self.recorded.pop(0))
+
+    def _offer_notice(self, summary):
+        if not self.stock_hook.installed:
+            self._announce(summary)
+            return
+        action, deliver = self.notices.results_arrived(summary.get('arena'), summary)
+        if action == APPEND:
+            deliver(self._stock_lines(summary))
+        elif action == PUSH:
+            self._announce(summary)
+
+    def _on_stock_message(self, arena, messages, callback):
+        def deliver(lines):
+            callback(appended(messages, arena, lines))
+
+        if not self.enabled():
+            callback(messages)
+            return
+        summary = self.notices.stock_arrived(arena, deliver, time.time())
+        if summary is not None:
+            deliver(self._stock_lines(summary))
+
+    def _stock_lines(self, summary):
+        own = stock_lines(summary, self.settings, self.app.translate)
+        return own + battle_notice_lines(self.app.bus, summary.get('arena'))
+
+    def _announce(self, summary):
+        text = format_summary(summary, self.settings, self.app.translate)
         if self.app.in_battle:
             self.pending.append(text)
         else:
             self.app.ui.notify(text)
 
     def _on_hangar(self):
+        self.notices.entered_hangar(time.time())
         while self.pending:
             self.app.ui.notify(self.pending.pop(0))
+
+    def _on_battle_enter(self):
+        self.notices.left_hangar()
+
+    def _on_tick(self, now):
+        delivers, unclaimed = self.notices.expired(now)
+        for deliver in delivers:
+            deliver([])
+        for summary in unclaimed:
+            self._announce(summary)
 
     def ui_actions(self):
         if not self.enabled():

@@ -1,0 +1,23 @@
+@use 'sass:color';
+@use '@/shared/styles/gameface' as *;
+
+.chip {
+  display: flex;
+  min-width: 20px;
+  height: 14px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2px;
+  border: 1px solid color.change(token(hud-text), $alpha: 0.45);
+  border-radius: token(hud-slot-radius);
+  color: token(hud-text);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 12px;
+}
+
+.gold {
+  border-color: color.change(token(hud-gold), $alpha: 0.45);
+  color: token(hud-gold);
+}

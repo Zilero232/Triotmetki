@@ -1,1 +1,0 @@
-export { BindForm } from './BindForm';

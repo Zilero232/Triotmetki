@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { DOM } from '../../../../config';
+import { DOM } from '@/shared/config';
+
 import { onDomReady } from '../on-dom-ready';
 
 const setReadyState = (state: DocumentReadyState): void => {

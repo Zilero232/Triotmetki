@@ -1,0 +1,35 @@
+@use '@/shared/styles/gameface' as *;
+
+.cards {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.card {
+  display: flex;
+  min-width: 110px;
+  flex-direction: column;
+  padding: 6px 8px;
+  border: 1px solid token(color-border-strong);
+  border-radius: token(radius-sm);
+  margin: 0 6px 6px 0;
+}
+
+.cardLabel {
+  color: token(color-text-muted);
+  font-size: 11px;
+
+  @include caps;
+}
+
+.cardValue {
+  color: token(color-text);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.delta {
+  font-size: 13px;
+}

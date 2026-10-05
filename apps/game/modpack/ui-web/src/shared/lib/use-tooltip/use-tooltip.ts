@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react';
 
-import type { TooltipProps } from './use-tooltip.types';
+import { nativeTooltip } from '@/shared/api/gameface';
 
-import { nativeTooltip } from '../../api/gameface';
+import type { TooltipProps } from './use-tooltip.types';
 
 export const useTooltip = (text: string | undefined): TooltipProps => {
   const shownRef = useRef(false);

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { KEYS } from '../../../config';
+import { KEYS } from '@/shared/config';
+
 import { onEnterKey } from '../enter-key';
 
 describe(onEnterKey, () => {

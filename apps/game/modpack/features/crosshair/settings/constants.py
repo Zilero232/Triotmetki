@@ -15,15 +15,17 @@ FULL_COLOUR_MARKS = ('colorblind', 'triad', 'arcs', 'stack', 'kenney_cluster', '
 MARKS = ('none',) + VECTOR_MARKS + FULL_COLOUR_MARKS
 
 # preset: the recommended client value (core.client.native.ClientDefaults), the game's own reticle without the grid.
-# mark: a thin chevron in the HUD index orange with its dark outline (docs/research/design/2026-10-03-competitor-ui.md
-# B.1); the readouts beside the reticle show the own reload and repairs, the arcs are opt-in.
+# mark: the game's own centre; a centre mark is a reticle pack the player picks, no pack replaces the stock centre by
+# default (docs/research/competitors/2026-10-05-behavior-parity.md section 2), so the chevron and the others wait in
+# the gallery, each with its colour and outline below. The readouts beside the reticle show the own reload and
+# repairs, the arcs are opt-in.
 # x/y are the mark's offset from the reticle centre, not a screen position: the mark follows the reticle,
 # so it is not dragged (a drag would save a screen position).
 DEFAULTS = {
     'preset': 'minimal',
     'modes': 'both',
     'server_reticle': NATIVE,
-    'mark': 'chevron_thin',
+    'mark': 'none',
     'mark_size': 32,
     'mark_color': 'orange',
     'mark_outline': True,

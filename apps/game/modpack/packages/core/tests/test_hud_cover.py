@@ -5,7 +5,14 @@ import unittest
 
 import _support  # noqa: F401
 from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer, panel_schema
-from otmetki.core.hud.layer.constants import COVER_FULL_STATS, COVER_GUI, COVER_KILLCAM, COVER_LOADING, COVER_MENU
+from otmetki.core.hud.layer.constants import (
+    COVER_FULL_STATS,
+    COVER_GUI,
+    COVER_KILLCAM,
+    COVER_LOADING,
+    COVER_MENU,
+    COVER_SCREEN,
+)
 from otmetki.core.hud.panel import fit_place
 from otmetki.core.storage import MemoryFile
 
@@ -56,12 +63,12 @@ class CoverTest(unittest.TestCase):
 
         assert backend.calls == [('update', {'visible': False})]
 
-    def test_tab_dims_the_panels(self):
+    def test_tab_hides_the_panels(self):
         layer, backend = shown_layer()
 
         layer.set_cover(COVER_FULL_STATS, True)
 
-        assert backend.calls == [('update', {'cover': 'stats'})]
+        assert backend.calls == [('update', {'visible': False})]
 
     def test_a_modal_stock_view_fades_every_panel(self):
         layer, backend = shown_layer()
@@ -78,14 +85,14 @@ class CoverTest(unittest.TestCase):
 
         assert layer.cover == 'modal'
 
-    def test_the_full_stats_fade_stays_when_the_modal_view_closes(self):
-        layer, backend = shown_layer()
+    def test_the_full_stats_keep_the_panels_hidden_when_the_modal_view_closes(self):
+        layer, _ = shown_layer()
         layer.set_cover(COVER_FULL_STATS, True)
         layer.set_cover(COVER_MENU, True)
 
         layer.set_cover(COVER_MENU, False)
 
-        assert backend.calls[-1] == ('update', {'cover': 'stats'})
+        assert layer.gui_hidden
 
     def test_a_panel_shown_under_a_modal_view_is_created_faded(self):
         backend = Recorder()
@@ -130,6 +137,52 @@ class CoverTest(unittest.TestCase):
         layer.set_cover(COVER_LOADING, False)
 
         assert backend.calls[-1] == ('update', {'visible': True})
+
+    def test_a_screen_over_the_battle_hides_the_panels(self):
+        layer, backend = shown_layer()
+
+        layer.set_cover(COVER_SCREEN, True)
+
+        assert backend.calls == [('update', {'visible': False})]
+
+    def test_the_killer_camera_releases_the_stock_elements(self):
+        layer, _ = shown_layer()
+
+        layer.set_cover(COVER_KILLCAM, True)
+
+        assert layer.releases_stock('panel')
+
+    def test_tab_keeps_the_stock_elements_suppressed(self):
+        layer, _ = shown_layer()
+
+        layer.set_cover(COVER_FULL_STATS, True)
+
+        assert not layer.releases_stock('panel')
+
+    def test_a_muted_panel_releases_the_stock_elements(self):
+        layer, _ = shown_layer()
+
+        layer.set_muted(True)
+
+        assert layer.releases_stock('panel')
+
+    def test_watchers_hear_a_new_cover_reason(self):
+        layer, _ = shown_layer()
+        heard = []
+        layer.watch(lambda: heard.append(True))
+
+        layer.set_cover(COVER_KILLCAM, True)
+
+        assert heard == [True]
+
+    def test_watchers_hear_the_mute(self):
+        layer, _ = shown_layer()
+        heard = []
+        layer.watch(lambda: heard.append(True))
+
+        layer.set_muted(True)
+
+        assert heard == [True]
 
     def test_an_unknown_reason_changes_nothing(self):
         layer, backend = shown_layer()

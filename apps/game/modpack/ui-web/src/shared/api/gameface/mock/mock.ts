@@ -1,6 +1,6 @@
 import { entries } from 'remeda';
 
-import type { GamefaceMock, GamefaceMockInput, GamefaceMockPush } from './mock.types';
+import type { CreateEngineInput, EngineListener, GamefaceMock, GamefaceMockInput, GamefaceMockPush } from './mock.types';
 
 import { GAMEFACE } from '../gameface.constants';
 import { GAMEFACE_MOCK } from './mock.constants';
@@ -16,10 +16,25 @@ const tooltipResources = () => ({
   }
 });
 
-export const createGamefaceMock = ({ state, feed = '', clientSize, mouse, tooltips = false, onSend }: GamefaceMockInput): GamefaceMock => {
-  const listeners: ((data: unknown, indexes: unknown, callbackIds: number[]) => void)[] = [];
+const createEngine = ({ listeners, engineListeners }: CreateEngineInput) => ({
+  [GAMEFACE.engine.whenReady]: Promise.resolve(),
+  [GAMEFACE.engine.on]: (event: string, listener: EngineListener) => {
+    if (event === GAMEFACE.engine.dataChangedEvent) {
+      listeners.push(listener);
+
+      return;
+    }
+
+    engineListeners.set(event, [...(engineListeners.get(event) ?? []), () => listener(null, [], [])]);
+  }
+});
+
+export const createGamefaceMock = ({ state, feed = '', clientSize, remScale, mouse, tooltips = false, onSend }: GamefaceMockInput): GamefaceMock => {
+  const listeners: EngineListener[] = [];
   const sent: string[] = [];
   const inputAreas: number[][] = [];
+  const resizes: number[][] = [];
+  const engineListeners = new Map<string, (() => void)[]>();
   const viewEvents: unknown[] = [];
   const tooltipScope = tooltips ? { [GAMEFACE.globals.resources]: tooltipResources() } : {};
   const tooltipEnv = tooltips ? { [GAMEFACE.viewEvent.handle]: (event: unknown) => viewEvents.push(event) } : {};
@@ -50,14 +65,7 @@ export const createGamefaceMock = ({ state, feed = '', clientSize, mouse, toolti
     }
   };
 
-  const engine = {
-    [GAMEFACE.engine.whenReady]: Promise.resolve(),
-    [GAMEFACE.engine.on]: (event: string, listener: (data: unknown, indexes: unknown, callbackIds: number[]) => void) => {
-      if (event === GAMEFACE.engine.dataChangedEvent) {
-        listeners.push(listener);
-      }
-    }
-  };
+  const engine = createEngine({ listeners, engineListeners });
 
   return {
     scope: {
@@ -65,6 +73,8 @@ export const createGamefaceMock = ({ state, feed = '', clientSize, mouse, toolti
       [GAMEFACE.globals.engine]: engine,
       [GAMEFACE.globals.viewEnv]: {
         [GAMEFACE.viewEnv.clientSize]: clientSize,
+        [GAMEFACE.viewEnv.remToPx]: remScale ? (rem: number) => rem * remScale() : undefined,
+        [GAMEFACE.viewEnv.resizeView]: (...size: number[]) => resizes.push(size),
         [GAMEFACE.dataChanged.register]: () => GAMEFACE_MOCK.callbackId,
         [GAMEFACE.viewEnv.inputArea]: (...area: number[]) => inputAreas.push(area),
         [GAMEFACE.viewEnv.mousePosition]: mouse,
@@ -75,7 +85,9 @@ export const createGamefaceMock = ({ state, feed = '', clientSize, mouse, toolti
     push,
     sent: () => [...sent],
     inputAreas: () => [...inputAreas],
-    viewEvents: () => [...viewEvents]
+    viewEvents: () => [...viewEvents],
+    emit: (event) => engineListeners.get(event)?.forEach((listener) => listener()),
+    resizes: () => [...resizes]
   };
 };
 

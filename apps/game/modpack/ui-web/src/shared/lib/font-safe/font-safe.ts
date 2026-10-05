@@ -1,8 +1,9 @@
 import { mapValues } from 'remeda';
 
-import type { RichLine } from '../rich-text';
+import type { RichLine } from '@/shared/lib/rich-text';
 
-import { isRecord } from '../is-record';
+import { isRecord } from '@/shared/lib/is-record';
+
 import { FONT_SAFE } from './font-safe.constants';
 
 const kept = new Set(FONT_SAFE.kept);

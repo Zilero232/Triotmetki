@@ -10,7 +10,7 @@ from ..model import mark_offset, mark_text, shows_in, to_native
 from ..model.constants import PREVIEW_SIZE, READOUT_TICK_S
 from ..model.editor import editor
 from ..model.preview import preview_text, preview_widget
-from ..model.readouts import Readouts, readouts_data, readouts_text, wants_readouts
+from ..model.readouts import Readouts, readouts_data, readouts_text, replaced_reticle_parts, wants_readouts
 from ..model.widget import crosshair_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .constants import CLIP_EVENTS, DEVICE_DESTROYED, READOUT_STATES, VIEW_ARCADE, VIEW_SNIPER
@@ -52,13 +52,15 @@ def own_health():
 # The presets are the player's client settings, written only on the player's change in the hangar; the centre mark
 # and the readouts follow the client's own reticle position (CrosshairDataProxy). Fair play: the readouts are the own
 # gun's reload (the ammo controller the stock reticle's reload indicator reads) and the own damage panel's HP and
-# repairs; every update is dropped while the camera follows an ally (controls_own_vehicle).
+# repairs; every update is dropped while the camera follows an ally (controls_own_vehicle). While the readouts are
+# drawn the stock reticle parts they stand in for are hidden (core.hud.stock reticle parts), only for this battle.
 class CrosshairComponent(BattlePanel):
 
     def __init__(self, app):
         is_new_section = section_is_new(app, PANEL_ID)
         self.states = values_by_name(VEHICLE_VIEW_STATE, READOUT_STATES)
         self.readouts = None
+        self.drawn_readouts = None
         self.ticker = Ticker(READOUT_TICK_S, self._on_tick)
         BattlePanel.__init__(self, app, PANEL_SPEC)
         self.view = None
@@ -115,7 +117,11 @@ class CrosshairComponent(BattlePanel):
     def stop(self):
         self.ticker.stop()
         self.readouts = None
+        self.drawn_readouts = None
         self.view = None
+
+    def stock_aliases(self):
+        return replaced_reticle_parts(self.settings, self.drawn_readouts)
 
     def _on_view(self, view):
         self.view = view
@@ -173,11 +179,16 @@ class CrosshairComponent(BattlePanel):
     def render(self):
         ctrl = crosshair()
         if ctrl is None or not self._shows_in_current_view():
+            self.drawn_readouts = None
             self.hide()
+            self.sync_stock()
             return
         readouts = self.readouts if controls_own_vehicle() else None
         payload = crosshair_widget(self.settings, self.app.translate, readouts, sketch=False)
+        self.drawn_readouts = readouts
         if not self.show(self._text(readouts), payload):
+            self.drawn_readouts = None
+            self.sync_stock()
             return
 
         position = call(ctrl, 'getScaledPosition', (0, 0))

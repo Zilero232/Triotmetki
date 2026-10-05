@@ -8,10 +8,14 @@ API used: `g_guiFlash.createComponent(alias, COMPONENT_TYPE.LABEL, props, battle
 is drawn only in the spaces it is created for; 0.3 has no such arguments and draws in battle only),
 `updateComponent(alias, props)`, `deleteComponent(alias)` and `COMPONENT_EVENT.UPDATED(alias, props)`, which
 GUIFlash fires from its `py_update` when the player drags a component (hold Ctrl for the cursor).
+
+GUIFlash labels cannot fade: a label the layer covers (its `cover` prop, `core.hud.cover.flash_visible`) is hidden until
+the stock overlay closes.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....hud import HudBackend
+from ....hud.cover import flash_visible
 from ....hud.panel import GAMEFACE_PROPS
 from ....hud.surface import SPACE_BATTLE, SPACE_LOBBY
 from ....log import log, safe
@@ -50,6 +54,7 @@ class GuiFlashBackend(HudBackend):
     def __init__(self):
         self.listeners = []
         self.listening = False
+        self.covers = {}
         self.spaces = accepts_spaces(getattr(g_guiFlash, 'createComponent', None))
 
     @classmethod
@@ -65,7 +70,8 @@ class GuiFlashBackend(HudBackend):
 
     @safe
     def create(self, alias, props):
-        props = dict(LABEL_PROPS, **flash_props(props))
+        self.covers[alias] = {}
+        props = dict(LABEL_PROPS, **flash_props(flash_visible(self.covers[alias], props)))
         if self.spaces:
             space = current_space()
             g_guiFlash.createComponent(
@@ -81,11 +87,12 @@ class GuiFlashBackend(HudBackend):
 
     @safe
     def update(self, alias, props):
-        g_guiFlash.updateComponent(alias, flash_props(props))
+        g_guiFlash.updateComponent(alias, flash_props(flash_visible(self.covers.setdefault(alias, {}), props)))
         return True
 
     @safe
     def delete(self, alias):
+        self.covers.pop(alias, None)
         g_guiFlash.deleteComponent(alias)
         return True
 

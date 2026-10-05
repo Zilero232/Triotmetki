@@ -22,7 +22,15 @@ from otmetki.core.hud.icons import (
     split,
     tier_icon,
 )
-from otmetki.core.hud.stock import BATTLE_DAMAGE_LOG_PANEL, FRAG_CORRELATION_BAR, SIXTH_SENSE, StockSuppression
+from otmetki.core.hud.stock import (
+    BATTLE_DAMAGE_LOG_PANEL,
+    FRAG_CORRELATION_BAR,
+    RETICLE_PARTS,
+    RETICLE_RELOAD_TIMER,
+    SIXTH_SENSE,
+    StockSuppression,
+    hide_reticle_parts,
+)
 from otmetki.core.hud.surface import SPACE_BATTLE, HudSurface
 from otmetki.core.hud.widget import TONES, WIDGET_VERSION, color_override, tone, widget
 from otmetki.core.storage import MemoryFile
@@ -184,17 +192,17 @@ class WidgetPayloadTest(unittest.TestCase):
         assert backend.calls[-1] == ('update', {'visible': True})
         assert [call[0] for call in backend.calls].count('create') == 1
 
-    def test_full_stats_keeps_the_panel_and_marks_it_dim(self):
+    def test_full_stats_keeps_the_panel_and_hides_it(self):
         backend = Recorder()
         layer = layer_with_a_panel(backend)
         layer.show('panel', 'text', widget('x', {}))
 
         layer.set_full_stats(True)
 
-        assert backend.calls[-1] == ('update', {'cover': 'stats'})
+        assert backend.calls[-1] == ('update', {'visible': False})
         assert 'delete' not in [call[0] for call in backend.calls]
 
-    def test_closed_full_stats_takes_the_dim_mark_off(self):
+    def test_closed_full_stats_shows_the_panel_again(self):
         backend = Recorder()
         layer = layer_with_a_panel(backend)
         layer.show('panel', 'text', widget('x', {}))
@@ -202,7 +210,7 @@ class WidgetPayloadTest(unittest.TestCase):
 
         layer.set_full_stats(False)
 
-        assert backend.calls[-1] == ('update', {'cover': ''})
+        assert backend.calls[-1] == ('update', {'visible': True})
 
     def test_surface_keeps_a_dict_widget(self):
         surface = HudSurface()
@@ -384,6 +392,52 @@ class StockSuppressionTest(unittest.TestCase):
 
     def test_filter_without_sets_is_empty(self):
         assert StockSuppression().filter(None, None) == (set(), set())
+
+
+class ReticlePartsTest(unittest.TestCase):
+
+    def test_a_suppression_over_reticle_parts_keeps_only_those(self):
+        parts = StockSuppression(RETICLE_PARTS)
+
+        changes = parts.want('crosshair', (RETICLE_RELOAD_TIMER, SIXTH_SENSE))
+
+        assert changes == (frozenset([RETICLE_RELOAD_TIMER]), frozenset())
+
+    def test_a_hidden_part_gets_opacity_zero_in_every_view(self):
+        settings = {1: {RETICLE_RELOAD_TIMER: 1.0}, 2: {RETICLE_RELOAD_TIMER: 0.6}}
+
+        hidden = hide_reticle_parts(settings, (RETICLE_RELOAD_TIMER,))
+
+        assert hidden == {1: {RETICLE_RELOAD_TIMER: 0.0}, 2: {RETICLE_RELOAD_TIMER: 0.0}}
+
+    def test_hiding_leaves_the_client_settings_untouched(self):
+        settings = {1: {RETICLE_RELOAD_TIMER: 1.0, 'netAlphaValue': 0.5}}
+
+        hide_reticle_parts(settings, (RETICLE_RELOAD_TIMER,))
+
+        assert settings == {1: {RETICLE_RELOAD_TIMER: 1.0, 'netAlphaValue': 0.5}}
+
+    def test_other_keys_keep_their_values(self):
+        settings = {1: {RETICLE_RELOAD_TIMER: 1.0, 'netAlphaValue': 0.5}}
+
+        hidden = hide_reticle_parts(settings, (RETICLE_RELOAD_TIMER,))
+
+        assert hidden[1]['netAlphaValue'] == 0.5
+
+    def test_nothing_to_hide_returns_the_same_settings(self):
+        settings = {1: {RETICLE_RELOAD_TIMER: 1.0}}
+
+        assert hide_reticle_parts(settings, ()) is settings
+
+    def test_a_view_without_the_part_gains_nothing(self):
+        settings = {3: {'spgScaleWidgetEnabled': True}}
+
+        hidden = hide_reticle_parts(settings, (RETICLE_RELOAD_TIMER,))
+
+        assert hidden == {3: {'spgScaleWidgetEnabled': True}}
+
+    def test_unexpected_settings_pass_through(self):
+        assert hide_reticle_parts(None, (RETICLE_RELOAD_TIMER,)) is None
 
 
 if __name__ == '__main__':

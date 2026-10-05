@@ -1,0 +1,131 @@
+@use '@/shared/styles/gameface' as *;
+
+.stage {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  height: 200px;
+  flex-direction: column;
+  justify-content: flex-end;
+  border: 1px solid token(win-stage-line);
+  border-radius: token(radius-lg);
+  background-color: token(color-bg-deep);
+  background-image: token(win-stage);
+  box-shadow: token(win-well-shadow);
+}
+
+.caption {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  color: token(color-text-dim);
+  font-size: 10px;
+
+  @include caps(0.5px);
+}
+
+.chip {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 0 10px;
+  border: 1px solid token(color-accent);
+  border-radius: token(radius-full);
+  background-color: token(color-surface);
+  background-image: token(win-accent-tint);
+  color: token(color-text);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 22px;
+}
+
+.chipNative {
+  border-color: token(color-border-strong);
+  background-image: none;
+  color: token(color-text-muted);
+}
+
+.tank {
+  position: absolute;
+  top: 44px;
+  left: 50%;
+  width: 150px;
+  height: 36px;
+  border-radius: 10px 18px 6px 6px;
+  margin-left: -75px;
+  background-color: token(color-armor-deep);
+  background-image: token(gradient-armor);
+  box-shadow: token(elev-2);
+}
+
+.floor {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  width: 260px;
+  height: 14px;
+  border-radius: token(radius-full);
+  margin-left: -130px;
+  background-color: token(hud-slot);
+}
+
+.carousel {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 8px;
+  border-top: 1px solid token(win-frame-line);
+  background-color: token(hud-plate-line);
+  background-image: token(hud-plate-solid);
+
+  @include ease(opacity);
+}
+
+.carouselNative {
+  opacity: 0.55;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-bottom: 3px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.tile {
+  display: flex;
+  width: 58px;
+  height: 30px;
+  align-items: flex-end;
+  justify-content: center;
+  border: 1px solid token(hud-slot-line);
+  border-radius: token(radius-sm);
+  margin-right: 3px;
+  background-color: token(hud-slot);
+
+  @include ease(height);
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.tileSmall {
+  height: 18px;
+}
+
+.tileOn {
+  border-color: token(color-accent);
+}
+
+.tileShape {
+  width: 30px;
+  height: 6px;
+  border-radius: 3px 5px 1px 1px;
+  margin-bottom: 3px;
+  background-color: token(color-steel);
+  opacity: 0.6;
+}

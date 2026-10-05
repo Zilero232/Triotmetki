@@ -1,0 +1,75 @@
+@use '@/shared/styles/gameface' as *;
+
+.art {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  height: 118px;
+  background-color: token(color-armor-deep);
+  background-image: token(win-art);
+  border-top-left-radius: token(radius-lg);
+  border-top-right-radius: token(radius-lg);
+}
+
+.fallback {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 210px;
+  height: 118px;
+  align-items: center;
+  justify-content: center;
+}
+
+.image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 210px;
+  height: 118px;
+}
+
+.scrim {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 118px;
+  background-image: token(win-art-scrim);
+}
+
+.badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 0 8px;
+  border: 1px solid token(color-border-strong);
+  border-radius: token(radius-full);
+  background-color: token(color-overlay);
+  color: token(color-text);
+  font-size: 10px;
+  line-height: 18px;
+
+  @include caps(0.5px);
+}
+
+.badgeOn {
+  border-color: token(color-accent);
+  background-color: token(color-accent);
+  color: token(color-accent-contrast);
+}
+
+.check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  border-radius: token(radius-full);
+  background-color: token(color-accent);
+  box-shadow: token(win-accent-shadow);
+}

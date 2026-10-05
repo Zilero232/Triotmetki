@@ -30,7 +30,13 @@ from otmetki.features.crosshair.model.constants import (
 )
 from otmetki.features.crosshair.model.editor import editor
 from otmetki.features.crosshair.model.preview import preview_text, preview_widget, sample_readouts
-from otmetki.features.crosshair.model.readouts import Readouts, readouts_data, wants_readouts
+from otmetki.core.hud.stock import RETICLE_CASSETTE, RETICLE_CONDITION, RETICLE_RELOAD, RETICLE_RELOAD_TIMER
+from otmetki.features.crosshair.model.readouts import (
+    Readouts,
+    readouts_data,
+    replaced_reticle_parts,
+    wants_readouts,
+)
 from otmetki.features.crosshair.model.widget import crosshair_widget
 from otmetki.features.crosshair.settings import SCHEMA, SETTINGS
 from otmetki.features.crosshair.settings.constants import MARKS
@@ -98,8 +104,13 @@ class PresetTest(unittest.TestCase):
     def test_native_values_change_nothing_without_a_mark(self):
         assert native({'mark': 'none'}) == {}
 
-    def test_the_default_is_the_minimal_preset_with_the_mark_in_place_of_the_game_centre(self):
+    def test_the_default_is_the_minimal_preset_with_the_games_own_centre(self):
         result = to_native(Settings(None, SCHEMA).to_dict())
+
+        assert result['arcade'] == PRESET_PARTS['minimal']
+
+    def test_a_picked_mark_takes_the_place_of_the_game_centre(self):
+        result = to_native(Settings({'mark': 'chevron_thin'}, SCHEMA).to_dict())
 
         assert result['arcade'] == dict(PRESET_PARTS['minimal'], centralTag=0)
 
@@ -260,10 +271,14 @@ class CentreMarkReticleTest(unittest.TestCase):
 class CentreMarkSettingsTest(unittest.TestCase):
 
     def test_an_unknown_mark_falls_back_to_the_default(self):
-        assert Settings({'mark': 'laser'}, SCHEMA).get('mark') == 'chevron_thin'
+        assert Settings({'mark': 'laser'}, SCHEMA).get('mark') == 'none'
 
-    def test_the_recommended_mark_is_a_thin_orange_chevron(self):
-        assert Settings(None, SCHEMA).get('mark') == 'chevron_thin'
+    def test_the_default_keeps_the_games_own_centre(self):
+        assert Settings(None, SCHEMA).get('mark') == 'none'
+
+    def test_the_chevron_stays_a_choice_in_orange(self):
+        assert 'chevron_thin' in SCHEMA.choices['mark']
+        assert Settings({'mark': 'chevron_thin'}, SCHEMA).get('mark') == 'chevron_thin'
         assert Settings(None, SCHEMA).get('mark_color') == 'orange'
 
     def test_the_recommended_mark_has_its_outline(self):
@@ -436,6 +451,37 @@ class EditorTest(unittest.TestCase):
         swatches = editor(Settings(None, SCHEMA), str)['swatches']['mark_color']
 
         assert sorted(swatches) == sorted(MARK_COLORS)
+
+
+class ReplacedReticlePartsTest(unittest.TestCase):
+
+    def test_the_reload_box_replaces_the_stock_reload_timer(self):
+        parts = replaced_reticle_parts(Settings(None, SCHEMA), Readouts())
+
+        assert parts == (RETICLE_RELOAD_TIMER,)
+
+    def test_the_magazine_cells_replace_the_stock_magazine_indicator(self):
+        readouts = Readouts()
+        readouts.set_clip(4, 3)
+
+        parts = replaced_reticle_parts(Settings(None, SCHEMA), readouts)
+
+        assert RETICLE_CASSETTE in parts
+
+    def test_the_arcs_replace_the_stock_reload_and_hp_indicators(self):
+        settings = Settings({'reload_box': False, 'reload_arcs': True}, SCHEMA)
+
+        parts = replaced_reticle_parts(settings, Readouts())
+
+        assert parts == (RETICLE_RELOAD, RETICLE_CONDITION)
+
+    def test_repair_timers_alone_keep_the_whole_stock_reticle(self):
+        settings = Settings({'reload_box': False, 'reload_arcs': False, 'repair_timers': True}, SCHEMA)
+
+        assert replaced_reticle_parts(settings, Readouts()) == ()
+
+    def test_nothing_is_replaced_while_the_readouts_are_not_drawn(self):
+        assert replaced_reticle_parts(Settings(None, SCHEMA), None) == ()
 
 
 if __name__ == '__main__':

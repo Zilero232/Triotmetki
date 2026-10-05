@@ -3,7 +3,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from .catalog import FeatureInfo, build_catalog, find  # noqa: F401
 from .constants import (  # noqa: F401
     ACTION_SETTINGS_EXPORT,
-    ACTION_SETTINGS_RESTORE,
     COMPANION_ACTIONS,
     COMPANION_ID,
     COMPANION_KEYS,

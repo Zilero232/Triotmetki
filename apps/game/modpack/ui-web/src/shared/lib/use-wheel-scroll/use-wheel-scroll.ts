@@ -1,8 +1,8 @@
 import { useCallback, useRef } from 'react';
 
-import type { UseWheelScrollInput, WheelScrollRef } from './use-wheel-scroll.types';
+import { bindWheelScroll } from '@/shared/lib/wheel-scroll';
 
-import { bindWheelScroll } from '../wheel-scroll';
+import type { UseWheelScrollInput, WheelScrollRef } from './use-wheel-scroll.types';
 
 export const useWheelScroll = ({ onScrolled }: UseWheelScrollInput = {}): WheelScrollRef => {
   const unbindRef = useRef<(() => void) | null>(null);

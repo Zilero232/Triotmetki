@@ -1,0 +1,33 @@
+@use '@/shared/styles/gameface' as *;
+
+.chips {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.chip {
+  display: flex;
+  height: 20px;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.icon {
+  margin-right: 4px;
+}
+
+.label {
+  margin-right: 4px;
+  color: token(hud-muted);
+
+  @include hud-type(caption);
+}
+
+.value {
+  white-space: nowrap;
+
+  @include hud-type(value);
+}

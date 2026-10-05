@@ -2,7 +2,8 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { SCROLL_AREA } from '../../../config';
+import { SCROLL_AREA } from '@/shared/config';
+
 import { useScrollArea } from '../use-scroll-area';
 
 const unmounts: (() => void)[] = [];

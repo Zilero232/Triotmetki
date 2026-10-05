@@ -337,7 +337,7 @@ class BridgeStateTest(BridgeTestCase):
     def test_companion_card_offers_the_settings_share_actions(self):
         companion = card(self.bridge.state(), COMPANION_ID)
 
-        assert [action['id'] for action in companion['actions']] == ['settings_export', 'settings_restore']
+        assert [action['id'] for action in companion['actions']] == ['settings_export']
 
     def test_config_feature_card_uses_its_switch(self):
         session = card(self.bridge.state(), 'session_stats')

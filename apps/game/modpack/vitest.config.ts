@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { defineProject, mergeConfig } from 'vitest/config';
 
 import { sharedConfig } from './ui-web/config/vite/shared';
@@ -12,7 +13,7 @@ export default mergeConfig(
       isolate: true,
       environment: 'node',
       include: ['**/_tests/**/*.test.{ts,tsx}'],
-      setupFiles: ['./ui-web/src/shared/lib/testing/setup/setup.ts']
+      setupFiles: [path.resolve(import.meta.dirname, 'ui-web/src/shared/lib/testing/setup/setup.ts')]
     }
   })
 );

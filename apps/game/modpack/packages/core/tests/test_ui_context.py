@@ -151,7 +151,7 @@ class UiContextTest(unittest.TestCase):
 
         props = self.backend.calls[0][2]
         assert props['widget'] == {'kind': 'card'}
-        assert props['dock'] == {'group': 'hangar_right', 'order': 1, 'reserve': 190}
+        assert props['dock'] == {'group': 'hangar_right', 'order': 0, 'reserve': 190}
 
     def test_a_moved_label_reports_the_move_and_leaves_the_column(self):
         moved = []

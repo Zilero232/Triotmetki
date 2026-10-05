@@ -1,9 +1,9 @@
 import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 
-import type { MountOnceInput, Unmount } from './mount-once.types';
+import { DOM } from '@/shared/config';
 
-import { DOM } from '../../../config';
+import type { MountOnceInput, Unmount } from './mount-once.types';
 
 const mountedHosts = new WeakSet<HTMLElement>();
 

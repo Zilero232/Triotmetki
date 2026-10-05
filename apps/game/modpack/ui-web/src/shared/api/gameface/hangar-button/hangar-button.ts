@@ -1,6 +1,7 @@
+import { isRecord } from '@/shared/lib/is-record';
+
 import type { HangarButton } from './hangar-button.types';
 
-import { isRecord } from '../../../lib/is-record';
 import { GAMEFACE } from '../gameface.constants';
 import { invoke, readGlobal } from '../scope';
 

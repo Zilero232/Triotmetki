@@ -1,0 +1,159 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+
+import stateSample from '@/shared/api/protocol/_tests/fixtures/state.sample.json?raw';
+
+import { CONTEXT_FILTER, SECTION, SECTION_NAV } from '../../../config';
+import {
+  $editor,
+  $focusSeq,
+  $hits,
+  $invalid,
+  $query,
+  $state,
+  $summaries,
+  $view,
+  closeEditor,
+  openEditor,
+  openSection,
+  receiveState,
+  setContextFilter,
+  setQuery,
+  toggleExpanded
+} from '../store';
+
+const sample = stateSample;
+
+const withRevision = (revision: number): string => JSON.stringify({ ...JSON.parse(sample), revision });
+
+const focusedOnReplays = (seq: number): string => JSON.stringify({ ...JSON.parse(sample), revision: seq + 10, focus: { section: 'replays', seq } });
+
+beforeEach(() => {
+  $state.set(null);
+  $invalid.set(false);
+  $query.set('');
+  $focusSeq.set(0);
+  $editor.set(null);
+  $view.set({ section: SECTION_NAV.first, expanded: [], context: CONTEXT_FILTER.all });
+});
+
+describe(receiveState, () => {
+  it('takes a pushed state', () => {
+    const taken = receiveState(withRevision(5));
+
+    expect(taken).toBe(true);
+    expect($state.get()?.revision).toBe(5);
+  });
+
+  it('accepts an older push but keeps the newest revision', () => {
+    receiveState(withRevision(5));
+
+    const taken = receiveState(withRevision(3));
+
+    expect(taken).toBe(true);
+    expect($state.get()?.revision).toBe(5);
+  });
+
+  it('flags an invalid push and keeps the state it has', () => {
+    receiveState(withRevision(5));
+
+    const taken = receiveState('{');
+
+    expect(taken).toBe(false);
+    expect($invalid.get()).toBe(true);
+    expect($state.get()?.revision).toBe(5);
+  });
+
+  it('rejects a missing push', () => {
+    expect(receiveState(null)).toBe(false);
+  });
+
+  it('opens the page a package asked for', () => {
+    receiveState(focusedOnReplays(1));
+
+    expect($view.get().section).toBe(SECTION.replays);
+  });
+
+  it('does not reopen the page for a request it already served', () => {
+    receiveState(focusedOnReplays(1));
+    openSection(SECTION.hud);
+
+    receiveState(focusedOnReplays(1));
+
+    expect($view.get().section).toBe(SECTION.hud);
+  });
+
+  it('opens the page again for a new request', () => {
+    receiveState(focusedOnReplays(1));
+    openSection(SECTION.hud);
+
+    receiveState(focusedOnReplays(2));
+
+    expect($view.get().section).toBe(SECTION.replays);
+  });
+});
+
+describe('$summaries', () => {
+  it('summarises the pages of the latest state', () => {
+    receiveState(sample);
+
+    expect($summaries.get()).toHaveLength(7);
+  });
+});
+
+describe('$hits', () => {
+  it('searches the cards of the latest state', () => {
+    receiveState(sample);
+
+    setQuery('minimap');
+
+    expect($hits.get().map(({ component }) => component.id)).toEqual(['minimap']);
+  });
+});
+
+describe(openSection, () => {
+  it('opens a page with its filter cleared and the search closed', () => {
+    setQuery('zoom');
+    setContextFilter(CONTEXT_FILTER.hangar);
+
+    openSection(SECTION.profiles);
+
+    expect($query.get()).toBe('');
+    expect($view.get()).toMatchObject({ section: SECTION.profiles, context: CONTEXT_FILTER.all });
+  });
+});
+
+describe(toggleExpanded, () => {
+  it('opens and closes cards and remembers the open ones across pages', () => {
+    toggleExpanded('minimap');
+    toggleExpanded('damage_log');
+    toggleExpanded('minimap');
+
+    openSection(SECTION.profiles);
+
+    expect($view.get().expanded).toEqual(['damage_log']);
+  });
+});
+
+describe(openEditor, () => {
+  it('opens the editor of a component', () => {
+    openEditor('crosshair');
+
+    expect($editor.get()).toBe('crosshair');
+  });
+
+  it('closes it', () => {
+    openEditor('crosshair');
+
+    closeEditor();
+
+    expect($editor.get()).toBeNull();
+  });
+
+  it('closes it when another section opens', () => {
+    openEditor('crosshair');
+
+    openSection(SECTION.hud);
+
+    expect($editor.get()).toBeNull();
+  });
+});

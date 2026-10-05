@@ -1,6 +1,7 @@
+import { gameface } from '@/shared/api/gameface';
+
 import type { HudMessage, HudState } from './hud-protocol.types';
 
-import { gameface } from '../gameface';
 import { hudStateSchema } from './hud-protocol.schemas';
 
 export const parseHudState = (raw: string): HudState | null => {

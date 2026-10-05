@@ -1,13 +1,8 @@
-export { BADGE } from './badge.constants';
 export { DOM } from './dom.constants';
-export { HUD_DELTA } from './hud-delta.constants';
 export { HUD_FIGURE } from './hud-figure.constants';
 export { HUD_GLYPHS } from './hud-glyphs.constants';
-export { HUD_INDEX } from './hud-index.constants';
-export { HUD_PLATE_FILLS } from './hud-plate.constants';
 export { HUD_SILHOUETTES } from './hud-silhouettes.constants';
 export { HUD_TONE_COLORS } from './hud-tones.constants';
-export { ICON_BUTTON } from './icon-button.constants';
 export { KEYS } from './keys.constants';
 export { SCROLL_AREA } from './scroll-area.constants';
 export { UI_ICON_NAMES, UI_ICON_TONES, UI_ICONS } from './ui-icons.constants';

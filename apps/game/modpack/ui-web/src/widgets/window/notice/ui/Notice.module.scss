@@ -1,0 +1,42 @@
+@use '@/shared/styles/gameface' as *;
+
+.notice {
+  position: absolute;
+  top: 72px;
+  right: 16px;
+  display: flex;
+  width: 380px;
+  flex-direction: column;
+  padding: 10px 14px;
+  border: 1px solid token(color-border-strong);
+  border-radius: token(radius-md);
+  border-left: 3px solid token(color-armor);
+  background-color: token(color-surface-overlay);
+  box-shadow: token(shadow-popover);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.info {
+  color: token(color-text);
+}
+
+.error {
+  border-left-color: token(color-danger);
+  color: token(color-danger);
+}
+
+.code {
+  border-left-color: token(color-gold);
+  color: token(color-gold);
+}
+
+.codeField {
+  @include field-box;
+
+  height: 56px;
+  padding: 6px 10px;
+  margin-top: 6px;
+  font-family: monospace;
+  font-size: 11px;
+}

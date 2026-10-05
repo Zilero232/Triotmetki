@@ -1,0 +1,20 @@
+@use '@/shared/styles/gameface' as *;
+
+.stepper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.range {
+  margin-right: 10px;
+  color: token(color-text-dim);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.value {
+  width: 56px;
+  margin: 0 4px;
+  text-align: center;
+}

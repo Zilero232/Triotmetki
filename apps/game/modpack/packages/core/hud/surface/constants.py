@@ -41,6 +41,7 @@ PANEL_KEYS = (
     ('kind', 'kind', KIND_LABEL),
     ('widget', 'widget', None),
     ('dock', 'dock', None),
+    ('attach', 'attach', None),
     ('hint', 'hint', ''),
     ('cover', 'cover', ''),
 )
@@ -49,6 +50,8 @@ PANEL_KEYS = (
 COVERS = ('', 'stats', 'modal')
 # The optional int keys of a panel's `dock` (core.hud.panel.dock_of).
 DOCK_NUMBERS = ('reserve', 'ceiling')
+# The int keys of a panel's `attach` (core.hud.panel.attach_of): the measured stock sizes in design px.
+ATTACH_NUMBERS = ('bar', 'minimap')
 
 # A label in the page-ready log line: its alias without the common prefix and its widget kind (or `text`).
 SUMMARY_PREFIXES = ('otmetki.hud.', 'otmetki.')

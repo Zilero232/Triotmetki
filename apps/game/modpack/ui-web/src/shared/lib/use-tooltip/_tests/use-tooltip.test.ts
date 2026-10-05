@@ -2,7 +2,8 @@
 import { renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { GAMEFACE } from '../../../api/gameface';
+import { GAMEFACE } from '@/shared/api/gameface';
+
 import { useTooltip } from '../use-tooltip';
 
 const CONTENT_ID = 11;

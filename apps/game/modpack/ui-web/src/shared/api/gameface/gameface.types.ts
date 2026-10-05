@@ -16,6 +16,7 @@ export type GamefaceBridge = {
   mousePosition: () => { x: number; y: number } | null;
   resizeView: (size: ClientSize) => boolean;
   fitView: () => boolean;
+  onScreenChanged: (callback: () => void) => void;
   state: () => string | null;
   feed: () => string | null;
   escape: () => number | null;

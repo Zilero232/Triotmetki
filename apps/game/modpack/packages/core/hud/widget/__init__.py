@@ -2,10 +2,10 @@
 
 A panel is `{id, text, widget, ...}`: `text` stays the GUIFlash HTML, `widget` (`{kind, v, data}`, or None) is what the
 Gameface page draws with its own component for `kind`. The page falls back to `text` when it does not know the kind or
-the data fails its schema (`ui-web/src/entities/hud-widgets/<kind>`). Icon fields are strings from `core.hud.icons`.
+the data fails its schema (`ui-web/src/entities/hud/<kind>`). Icon fields are strings from `core.hud.icons`.
 
 `card(...)` is the shared plate of the hangar labels and the smaller battle panels (kind `card`,
-`ui-web/src/entities/hud-widgets/card`): a caps header with an icon, an optional big value, rows of icon + text + value
+`ui-web/src/entities/hud/card`): a caps header with an icon, an optional big value, rows of icon + text + value
 with an optional one-line detail and a progress bar, a strip of icon + number chips, a strip of colour marks and a
 dimmed footer; `card_hero(...)` adds a tank silhouette filled to a percent, a threshold scale and a sparkline.
 """

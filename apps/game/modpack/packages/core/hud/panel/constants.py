@@ -45,7 +45,7 @@ HEX_COLOR = re.compile(r'^#[0-9A-Fa-f]{6}$')
 MOVED_ALIGNS = (('alignX', 'align_x'), ('alignY', 'align_y'))
 
 # Renderer props only the Gameface HUD page draws; GUIFlash's Flash labels are never sent them.
-GAMEFACE_PROPS = ('scale', 'kind', 'widget', 'dock', 'hint', 'cover')
+GAMEFACE_PROPS = ('scale', 'kind', 'widget', 'dock', 'attach', 'hint', 'cover')
 
 # A panel's tooltip on the Gameface page is the short description of the component that draws it, its
 # `component_<id>_hint` string: the id follows the alias prefix (`otmetki.hud.<id>`, `otmetki.<id>[.<part>]`) unless the
@@ -55,7 +55,7 @@ HINT_PREFIXES = (ALIAS_PREFIX, 'otmetki.')
 HINT_COMPONENTS = {'otmetki.session': 'session_stats', 'otmetki.ui.button': 'settings_button'}
 
 # Docked columns: panels at their group's anchor stack one under (or, for a bottom anchor, above) the other with the
-# page's gap between them (ui-web widgets/hud-overlay/lib/dock), in `order`, so default places never overlap whatever
+# page's gap between them (ui-web views/hud/lib/dock), in `order`, so default places never overlap whatever
 # each panel's height is. A panel the player moved (its place differs from the anchor) leaves the column. Keys are the
 # panels' aliases (HUD panels `otmetki.hud.<id>`, hangar labels their own alias); every member's default place is its
 # group's anchor (tools/tests check it).
@@ -81,30 +81,34 @@ DOCK_ANCHORS = {
     'battle_left_bottom': {'x': 232, 'y': -6, 'align_x': 'left', 'align_y': 'bottom', 'reserve': 560},
     # Right of the left team list in its widest mode and under the score strip, above the damage log column.
     'battle_left_top': {'x': 372, 'y': 60, 'align_x': 'left', 'align_y': 'top', 'reserve': 290, 'ceiling': 60},
-    # The mirror of the left column, left of the right team list and above the largest minimap (610 px square at the
-    # bottom right, MinimapSizeConst.as, plus its 6 px margin).
-    'battle_right_top': {'x': -372, 'y': 60, 'align_x': 'right', 'align_y': 'top', 'reserve': 620, 'ceiling': 60},
-    # Right on top of the stock consumables panel (ConsumablesPanel.as: y = H - 58), centred with it.
-    'battle_bottom_center': {'x': 0, 'y': -64, 'align_x': 'center', 'align_y': 'bottom', 'reserve': 560},
-    # Hangar: left column under the crew, right column under the vehicle parameters, both above the tank carousel. The
-    # left one also ends above the clock and server strip (hangar_info: 196 px over the bottom edge, about 30 tall).
-    'hangar_left': {'x': 16, 'y': 440, 'align_x': 'left', 'align_y': 'top', 'reserve': 236},
+    # Hangar: left column under the crew (the Tank card, then Session, docs/specs/2026-09-30-hud-consolidation-and-
+    # design.md section 7.2), right column under the vehicle parameters, both above the tank carousel (one row with its
+    # filter bar is about 190 tall).
+    'hangar_left': {'x': 16, 'y': 440, 'align_x': 'left', 'align_y': 'top', 'reserve': 196},
     'hangar_right': {'x': -16, 'y': 570, 'align_x': 'right', 'align_y': 'top', 'reserve': 190},
 }
 DOCKS = {
     'otmetki.hud.damage_log': ('battle_left_bottom', 0),
-    'otmetki.hud.marks_panel': ('battle_left_top', 0),
-    'otmetki.hud.platoon_points': ('battle_left_top', 1),
-    'otmetki.hud.last_battle': ('battle_left_top', 2),
-    'otmetki.hud.battle_progress': ('battle_right_top', 0),
-    'otmetki.hud.battle_summary': ('battle_right_top', 1),
-    'otmetki.hud.battle_loadout': ('battle_bottom_center', 0),
+    'otmetki.hud.platoon_points': ('battle_left_top', 0),
     'otmetki.hud.hangar_marks': ('hangar_left', 0),
-    'otmetki.session': ('hangar_right', 0),
-    'otmetki.personal_missions': ('hangar_right', 1),
-    'otmetki.comp7_helper': ('hangar_right', 2),
-    'otmetki.event_trackers.triathlon': ('hangar_right', 3),
-    'otmetki.event_trackers.caravan': ('hangar_right', 4),
-    'otmetki.update_notice': ('hangar_right', 5),
-    'otmetki.crew_xp': ('hangar_left', 1),
+    'otmetki.session': ('hangar_left', 1),
+    'otmetki.crew_xp': ('hangar_left', 2),
+    'otmetki.personal_missions': ('hangar_right', 0),
+    'otmetki.comp7_helper': ('hangar_right', 1),
+    'otmetki.event_trackers.triathlon': ('hangar_right', 2),
+    'otmetki.event_trackers.caravan': ('hangar_right', 3),
+    'otmetki.update_notice': ('hangar_right', 4),
+}
+# Panels whose default place follows a stock battle element (docs/research/competitors/2026-10-05-behavior-parity.md,
+# the places Battle Observer, Lebwa, PROTanki and kurzdor's battleequipment use): while a panel sits at its default
+# place its `attach` prop names the rule, with the measured stock sizes (core.hud.stock.stock_metrics), and the page
+# places it from them (ui-web views/hud/lib/attach); the default place itself is where GUIFlash draws it.
+# `bar_right`: right of the consumables panel (marks); `bar_left`: left of it (equipment row); `minimap_above`: right
+# aligned above the minimap (the previous battle's results); `score_right`: right of the score strip (battle progress).
+ATTACH_KINDS = ('bar_right', 'bar_left', 'minimap_above', 'score_right')
+ATTACHED = {
+    'otmetki.hud.marks_panel': 'bar_right',
+    'otmetki.hud.battle_loadout': 'bar_left',
+    'otmetki.hud.last_battle': 'minimap_above',
+    'otmetki.hud.battle_progress': 'score_right',
 }

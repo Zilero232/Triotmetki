@@ -10,8 +10,8 @@ DATE_FORMATS = ('', '%d.%m', '%d.%m.%Y', '%Y-%m-%d')
 ALIGN_X = ('left', 'center', 'right')
 ALIGN_Y = ('top', 'center', 'bottom')
 
-# UNVERIFIED on Lesta 1.45: the strip's place just above the tank carousel takes the one-row carousel with its filter
-# bar as about 190 design px tall.
+# Battle Observer's hangar clock (res/gui/gameface/.../hangar/clock/clock.css: left 2.6vw, top 83px): top left, under
+# the hangar's header; 2.6 % of a 1920 px wide screen is 50 px.
 DEFAULTS = {
     'clock_format': '%H:%M',
     'date_format': '%d.%m',
@@ -21,10 +21,10 @@ DEFAULTS = {
     'battle_clock': True,
     'replace_timer': False,
     'template': '',
-    'x': 0,
-    'y': -196,
+    'x': 50,
+    'y': 83,
     'align_x': 'left',
-    'align_y': 'bottom',
+    'align_y': 'top',
     'scale': 100,
 }
 

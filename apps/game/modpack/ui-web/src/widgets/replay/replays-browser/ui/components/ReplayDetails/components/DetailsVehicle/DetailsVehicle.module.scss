@@ -1,0 +1,53 @@
+@use '@/shared/styles/gameface' as *;
+
+.vehicle {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.vehicleImage {
+  width: 96px;
+  height: 60px;
+  flex: 0 0 auto;
+  margin-right: 10px;
+}
+
+.vehicleText {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.vehicleName {
+  font-size: 16px;
+  font-weight: 700;
+
+  @include ellipsis;
+}
+
+.tier {
+  margin-right: 6px;
+  color: token(color-gold);
+  font-size: 13px;
+}
+
+.fate {
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+.alive {
+  color: token(color-success);
+}
+
+.dead {
+  color: token(color-text-muted);
+}
+
+.mastery {
+  margin-left: 8px;
+}

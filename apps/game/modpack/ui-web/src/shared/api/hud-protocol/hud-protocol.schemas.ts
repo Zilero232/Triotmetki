@@ -1,6 +1,7 @@
 import * as z from 'zod/mini';
 
-import { PROTOCOL, widgetSchema } from '../protocol';
+import { PROTOCOL, widgetSchema } from '@/shared/api/protocol';
+
 import { HUD_PROTOCOL } from './hud-protocol.constants';
 
 const alignX = z.enum(PROTOCOL.alignX);
@@ -19,6 +20,12 @@ export const hudDockSchema = z.object({
   ceiling: z.optional(z.number())
 });
 
+export const hudAttachSchema = z.object({
+  kind: z.enum(HUD_PROTOCOL.attachKinds),
+  bar: z.number(),
+  minimap: z.number()
+});
+
 export const hudPanelSchema = z.object({
   id: z.string(),
   text: z.string(),
@@ -34,6 +41,7 @@ export const hudPanelSchema = z.object({
   kind: z.enum(HUD_PROTOCOL.kinds),
   widget: z.nullable(hudWidgetSchema),
   dock: z.optional(z.nullable(hudDockSchema)),
+  attach: z.optional(z.nullable(hudAttachSchema)),
   hint: z.optional(z.string()),
   cover: z.optional(z.enum(HUD_PROTOCOL.covers))
 });

@@ -1,0 +1,33 @@
+@use '@/shared/styles/gameface' as *;
+
+.plate {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.value {
+  @include hud-type(value);
+}
+
+.unit {
+  margin-left: 3px;
+  color: token(hud-muted);
+
+  @include hud-type(caption);
+}
+
+.extra {
+  margin-left: 8px;
+  color: token(hud-muted);
+
+  @include hud-type(caption);
+}
+
+.number {
+  margin-left: 3px;
+  color: token(hud-text);
+
+  @include hud-type(body);
+}

@@ -1,0 +1,16 @@
+@use '@/shared/styles/gameface' as *;
+
+.pair {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 8px;
+}
+
+.value {
+  margin-left: 4px;
+  text-align: right;
+  white-space: nowrap;
+
+  @include hud-type(value);
+}

@@ -1,5 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import BigWorld
+
 from ....core.client.battle import call, controls_own_vehicle, crosshair, feedback
 from ....core.client.game import client_attr
 from ....core.client.hud.panel import BattlePanel, PanelSpec
@@ -9,7 +11,7 @@ from ....core.log import log, safe
 from ..i18n import STRINGS
 from ..model import has_body, scaled_size, shell_lines, shell_stats, with_lines
 from ..model.armor import TickGate, format_armor, reticle_place, view_offset
-from ..model.constants import NO_RESOLVER, NO_TARGET, PLACEMENT_RETICLE, PREVIEW_SIZE
+from ..model.constants import NO_RESOLVER, NO_TARGET, PLACEMENT_RETICLE, PREVIEW_SIZE, TICK_S, VIEW_POSTMORTEM
 from ..model.preview import preview_text, preview_widget
 from ..model.widget import armor_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
@@ -22,8 +24,10 @@ from .constants import (
     MARKER_METHOD,
     MARKER_RELAX_ARG,
     MARKER_STATE_EVENT,
+    POSITION_EVENT,
     SHELL_TOOLTIP_METHOD,
     TRACK_METHOD,
+    VIEW_EVENT,
 )
 
 try:
@@ -72,7 +76,8 @@ PANEL_SPEC = PanelSpec(
 
 # The overrides (the reticle distance, the shell tooltips, the aim circle) are installed once and read their switch
 # on every call; the armour readout is the panel: it follows the client's own shot-result resolution while the
-# player's own battle runs and shows only while an enemy vehicle is under the reticle.
+# player's own battle runs and shows only while an enemy vehicle is under the reticle, in every camera view with a
+# gun marker (arcade, sniper, the SPG's top view), as the stock marker colour and Battle Observer's armour calculator.
 class AimInfo(BattlePanel):
 
     def __init__(self, app):
@@ -81,6 +86,8 @@ class AimInfo(BattlePanel):
         self.gate = TickGate()
         self.piercing_multiplier = 1
         self.shown = None
+        self.aim = None
+        self.flush_due = False
         BattlePanel.__init__(self, app, PANEL_SPEC)
         self.install()
 
@@ -154,17 +161,22 @@ class AimInfo(BattlePanel):
         self.piercing_multiplier = 1
         self.gate.clear()
         self.shown = None
+        self.aim = None
+        self.flush_due = False
         if not self.reader.available():
             self.reader = None
             self.wait(NO_RESOLVER)
             return
         self.wait(NO_TARGET)
         self.hooks.add(crosshair, MARKER_STATE_EVENT, self._on_marker_state)
+        self.hooks.add(crosshair, VIEW_EVENT, self._on_view)
+        self.hooks.add(crosshair, POSITION_EVENT, self._on_reticle_moved)
         self.hooks.add(feedback, 'onVehicleFeedbackReceived', self._on_vehicle_feedback)
 
     def stop(self):
         self.reader = None
         self.shown = None
+        self.aim = None
         self.gate.clear()
 
     def settings_changed(self, changed):
@@ -175,15 +187,47 @@ class AimInfo(BattlePanel):
         if event_id == _attrs_changed_event() and isinstance(value, dict):
             self.piercing_multiplier = value.get(GUN_PIERCING, 1)
 
+    def _reads(self):
+        return self.reader is not None and bool(self.settings.get('armor_under_aim'))
+
+    # RU 1.45 client source: aih_global_binding._Observable sends the marker state only when it changes, so once the
+    # aim settles no update follows; the latest state of a tick is resolved when the tick ends, never dropped.
     def _on_marker_state(self, marker_type, position, direction, collision):
-        if self.reader is None or not self.settings.get('armor_under_aim'):
+        if not self._reads():
             return
-        if not self.gate.allow(game_time()):
+        self.aim = (position, direction, collision)
+        if self.gate.allow(game_time()):
+            self._resolve()
             return
+        if not self.flush_due:
+            self.flush_due = True
+            BigWorld.callback(TICK_S, self._flush)
+
+    @safe
+    def _flush(self):
+        self.flush_due = False
+        if self.aim is not None and self._reads():
+            self._resolve()
+
+    def _resolve(self):
+        position, direction, collision = self.aim
+        self.aim = None
         readout = None
         if controls_own_vehicle():
             readout = self.reader.read(position, direction, collision, self.piercing_multiplier)
         self.render(readout)
+
+    # The dead player's view has no gun marker, so no marker update would ever take the readout off.
+    def _on_view(self, view):
+        if view == VIEW_POSTMORTEM:
+            self.aim = None
+            self._hide_readout()
+            return
+        self._on_reticle_moved()
+
+    def _on_reticle_moved(self, *args):
+        if self.shown is not None:
+            self._follow_reticle()
 
     @safe
     def render(self, readout):

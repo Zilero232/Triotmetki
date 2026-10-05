@@ -1,0 +1,45 @@
+@use '@/shared/styles/gameface' as *;
+
+.row {
+  position: absolute;
+  left: 0;
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 12px 0 0;
+  border: none;
+  border-bottom: 1px solid token(color-border);
+  background-color: transparent;
+  color: token(color-text);
+  cursor: pointer;
+  text-align: left;
+
+  &:hover {
+    background-color: token(color-row-hover);
+  }
+}
+
+.rowOn {
+  background-color: token(color-surface-hover);
+}
+
+.stripe {
+  width: 4px;
+  height: 100%;
+  flex: 0 0 auto;
+  margin-right: 10px;
+  background-color: token(color-border-strong);
+}
+
+.win {
+  background-color: token(color-success);
+}
+
+.loss {
+  background-color: token(color-danger);
+}
+
+.draw {
+  background-color: token(color-warning);
+}

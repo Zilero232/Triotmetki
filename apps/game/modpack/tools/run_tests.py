@@ -1,7 +1,7 @@
 """Run every modpack unittest suite: packages/*/tests, features/*/tests and tools/**/tests.
 
 Works on Python 3 and on Python 2.7 with no third-party packages; `pytest` runs the same tests
-(see pyproject.toml). The build tool's own tests need Python 3 and are left out on Python 2.7.
+(see pyproject.toml). The build tool's and the dev loop's own tests need Python 3 and are left out on Python 2.7.
 Usage: python tools/run_tests.py [-v]
 """
 import os
@@ -11,14 +11,15 @@ import unittest
 TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
 MODPACK_DIR = os.path.dirname(TOOLS_DIR)
 PY3 = sys.version_info[0] >= 3
+PYTHON3_TOOLS = ('build', 'dev')
 sys.path.insert(0, os.path.join(TOOLS_DIR, 'testing'))
 
 import _support  # noqa: E402  (maps the repo layout onto the otmetki package)
 
 
 def python3_only(directory):
-    """The build tooling (tools/build/**) needs Python 3."""
-    return directory.startswith(os.path.join(TOOLS_DIR, 'build'))
+    """The build tooling (tools/build/**) and the dev loop (tools/dev/**) need Python 3."""
+    return directory.startswith(tuple(os.path.join(TOOLS_DIR, name) for name in PYTHON3_TOOLS))
 
 
 def is_tests_dir(directory):

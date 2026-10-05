@@ -1,0 +1,21 @@
+@use '@/shared/styles/gameface' as *;
+
+.root {
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  align-items: center;
+  white-space: pre;
+
+  @include ease(color);
+}
+
+.digit {
+  display: flex;
+  width: 0.58em;
+  justify-content: center;
+}
+
+.char {
+  display: flex;
+}

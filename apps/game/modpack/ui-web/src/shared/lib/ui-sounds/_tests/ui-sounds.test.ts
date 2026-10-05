@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { GAMEFACE } from '../../../api/gameface';
+import { GAMEFACE } from '@/shared/api/gameface';
+
 import { bindUiSounds } from '../ui-sounds';
 
 let played: unknown[][];

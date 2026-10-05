@@ -1,0 +1,40 @@
+@use '@/shared/styles/gameface' as *;
+
+.badge {
+  display: flex;
+  height: 20px;
+  flex-direction: row;
+  flex-shrink: 0;
+  align-items: center;
+  padding: 0 8px;
+  border: 1px solid token(color-border-strong);
+  border-radius: token(radius-full);
+  margin-left: 6px;
+  background-color: token(color-surface-sunken);
+  color: token(color-text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 18px;
+  text-transform: uppercase;
+}
+
+.icon {
+  margin-right: 4px;
+}
+
+.text {
+  white-space: nowrap;
+}
+
+.accent {
+  border-color: token(color-accent);
+  background-color: token(color-accent-soft);
+  color: token(color-accent);
+}
+
+.gold {
+  border-color: token(color-gold);
+  background-color: token(color-gold);
+  color: token(color-gold-contrast);
+}

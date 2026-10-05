@@ -1,0 +1,59 @@
+@use '@/shared/styles/gameface' as *;
+
+.field {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  height: 32px;
+  flex-direction: row;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  min-width: 0;
+  flex: 1 1 auto;
+
+  @include field-box;
+
+  &:focus {
+    border-color: token(color-accent);
+  }
+}
+
+.inputWithIcon {
+  padding-left: 32px;
+}
+
+.icon {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  pointer-events: none;
+}
+
+.placeholder {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  left: 11px;
+  color: token(color-text-dim);
+  font-size: 13px;
+  line-height: 32px;
+  pointer-events: none;
+
+  @include ellipsis;
+}
+
+.placeholderWithIcon {
+  left: 33px;
+}
+
+.code {
+  width: 280px;
+}
+
+.wide {
+  min-width: 200px;
+  flex: 1 1 auto;
+}

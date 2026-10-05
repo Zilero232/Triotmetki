@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ..components import ACTION_SETTINGS_EXPORT, ACTION_SETTINGS_RESTORE
+from ..components import ACTION_SETTINGS_EXPORT
 
 
 class CompanionActions(object):
@@ -12,15 +12,9 @@ class CompanionActions(object):
     def ui_actions(self):
         if not self.config.is_enabled('share_settings'):
             return []
-        labels = self.labels()
         export = {
             'id': ACTION_SETTINGS_EXPORT,
-            'label': labels.text('action_settings_export'),
+            'label': self.labels().text('action_settings_export'),
             'confirm': None,
         }
-        restore = {
-            'id': ACTION_SETTINGS_RESTORE,
-            'label': labels.text('action_settings_restore'),
-            'confirm': labels.text('confirm_settings_restore'),
-        }
-        return [export, restore]
+        return [export]

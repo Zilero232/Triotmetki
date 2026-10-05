@@ -17,6 +17,7 @@ from ...compat import is_number, string_types, to_text
 from ...settings import Schema, fix
 from .constants import (
     ALIAS_PREFIX,
+    ATTACHED,
     DOCK_ANCHORS,
     DOCKS,
     FIT_AXES,
@@ -36,6 +37,7 @@ from .constants import (
 
 __all__ = (
     'ALIAS_PREFIX',
+    'ATTACHED',
     'DOCK_ANCHORS',
     'DOCKS',
     'GAMEFACE_PROPS',
@@ -45,6 +47,7 @@ __all__ = (
     'PanelSchema',
     'alias_of',
     'anchor_of',
+    'attach_of',
     'component_of',
     'component_schema',
     'dock_layout',
@@ -241,3 +244,12 @@ def dock_of(alias, values):
     if 'ceiling' in anchor:
         dock['ceiling'] = anchor['ceiling']
     return dock
+
+
+def attach_of(alias, values, defaults, metrics):
+    """The `attach` prop of a panel: `{kind, bar, minimap}` while it sits at its default place and follows a stock
+    element (`ATTACHED`), else None (moved, or not attached). `metrics` is core.hud.stock.stock_metrics."""
+    kind = ATTACHED.get(alias)
+    if kind is None or values is None or not defaults or _place(values) != place_of(defaults):
+        return None
+    return {'kind': kind, 'bar': metrics['bar'], 'minimap': metrics['minimap']}

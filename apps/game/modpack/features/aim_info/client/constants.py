@@ -41,6 +41,10 @@ SHOT_RESULTS = (
 # CrosshairDataProxy.onGunMarkerStateChanged(markerType, position, direction, collision): the rotator's marker update,
 # the event the stock plugin resolves the shot on.
 MARKER_STATE_EVENT = 'onGunMarkerStateChanged'
+# CrosshairDataProxy.onCrosshairViewChanged(viewID) on every control mode change and
+# onCrosshairPositionChanged(x, y) when the reticle moves on the screen (another mode, the arcade aim offset).
+VIEW_EVENT = 'onCrosshairViewChanged'
+POSITION_EVENT = 'onCrosshairPositionChanged'
 # FEEDBACK_EVENT_ID.VEHICLE_ATTRS_CHANGED carries the own vehicle's `gunPiercing` multiplier (the stock plugin keeps
 # it for the resolver).
 FEEDBACK_MODULE = 'gui.battle_control.battle_constants'

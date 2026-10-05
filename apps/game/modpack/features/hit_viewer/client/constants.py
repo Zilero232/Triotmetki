@@ -40,3 +40,8 @@ PROJECTION_FUNCTION = 'getViewProjectionMatrix'
 # vehicle_systems.tankStructure.TankPartIndexes: CHASSIS 0, HULL 1, TURRET 2, GUN 3; the materials of each part.
 MATERIAL_PARTS = ('chassis', 'hull', 'turret', 'gun')
 LAST_STRUCTURAL_INDEX = 3
+
+# poliroid BattleHits (gui/battlehits/hooks.py): its own ModsList entry in the hangar, greyed out while in a battle
+# queue. The icon is the ui package's (the window this one opens over ships with it); ModsList draws its own without it.
+MODS_LIST_ID = 'otmetki_hit_viewer'
+MODS_LIST_ICON = 'gui/gameface/mods/triotmetki/ui/icon.png'

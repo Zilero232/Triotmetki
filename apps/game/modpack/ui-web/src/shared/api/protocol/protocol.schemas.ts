@@ -1,6 +1,7 @@
 import * as z from 'zod/mini';
 
-import { LANGUAGES } from '../../i18n';
+import { LANGUAGES } from '@/shared/i18n';
+
 import { PROTOCOL } from './protocol.constants';
 
 const text = z.string();

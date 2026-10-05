@@ -1,0 +1,35 @@
+@use '@/shared/styles/gameface' as *;
+
+.state {
+  border: 1px solid token(color-steel-blue);
+  border-radius: token(radius-sm);
+  color: token(color-steel-blue);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.row {
+  padding: 2px 6px;
+  font-size: 10px;
+
+  @include ellipsis;
+}
+
+.details {
+  padding: 3px 8px;
+  font-size: 11px;
+}
+
+.queued {
+  border-color: token(color-border-strong);
+  color: token(color-text-muted);
+}
+
+.uploaded {
+  border-color: token(color-steel-blue);
+}
+
+.analysed {
+  border-color: token(color-success);
+  color: token(color-success);
+}

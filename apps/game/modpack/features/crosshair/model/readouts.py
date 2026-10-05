@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import math
 
+from ....core.hud.stock import RETICLE_CASSETTE, RETICLE_CONDITION, RETICLE_RELOAD, RETICLE_RELOAD_TIMER
 from .constants import FINAL_S, MAX_CLIP_CELLS, MAX_REPAIRS, NO_SHELLS, READY_HOLD_S, TRACK_DEVICES
 
 # Fair play: the own vehicle only. The reload and the magazine are the own gun's (the stock reticle's reload indicator
@@ -189,3 +190,20 @@ def readouts_text(data):
 
 def wants_readouts(settings):
     return any(settings.get(key) for key in ('reload_box', 'reload_arcs', 'repair_timers'))
+
+
+# The stock reticle parts the readouts stand in for while they are drawn, so the player never sees both: the reload
+# box the stock reload timer, and the stock magazine indicator while the box shows the magazine cells; the arcs the
+# stock reload indicator and the stock HP indicator. The repair timers keep the stock damage panel, which every pack
+# keeps.
+def replaced_reticle_parts(settings, readouts):
+    if readouts is None:
+        return ()
+    parts = []
+    if settings.get('reload_box'):
+        parts.append(RETICLE_RELOAD_TIMER)
+        if readouts.clip is not None:
+            parts.append(RETICLE_CASSETTE)
+    if settings.get('reload_arcs'):
+        parts.extend((RETICLE_RELOAD, RETICLE_CONDITION))
+    return tuple(parts)

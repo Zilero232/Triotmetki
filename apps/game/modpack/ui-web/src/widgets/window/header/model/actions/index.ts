@@ -1,0 +1,1 @@
+export { closeWindow } from './actions';

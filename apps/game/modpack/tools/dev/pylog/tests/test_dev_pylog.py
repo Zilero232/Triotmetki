@@ -1,0 +1,40 @@
+import os
+import sys
+import unittest
+
+TOOLS_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+if TOOLS_DIR not in sys.path:
+    sys.path.insert(0, TOOLS_DIR)
+
+from dev import pylog  # noqa: E402
+
+LOG = [
+    '2026-10-05 12:00:00.000: INFO: [OTMETKI] app started',
+    '2026-10-05 12:00:00.100: INFO: [Gameface] page loaded',
+    '2026-10-05 12:00:01.000: INFO: [OTMETKI] error in on_battle',
+    'Traceback (most recent call last):',
+    '  File "scripts/client/gui/mods/otmetki/core/hooks/__init__.py", line 10, in run',
+    "KeyError: 'damage'",
+    '2026-10-05 12:00:02.000: ERROR: (scripts/client/gui/battle_control/ammo_ctrl.py, 1021) Shell is not found.',
+    '  File "scripts/client/gui/mods/mod_otmetki_damage_log.py", line 3, in <module>',
+]
+
+
+class OurLinesTest(unittest.TestCase):
+
+    def test_keeps_our_lines_and_the_traceback_after_them(self):
+        kept = pylog.OurLines().filter(LOG)
+
+        self.assertEqual(kept, [LOG[0], LOG[2], LOG[3], LOG[4], LOG[5], LOG[7]])
+
+    def test_keep_all_keeps_every_line(self):
+        self.assertEqual(pylog.OurLines(keep_all=True).filter(LOG), LOG)
+
+    def test_an_indented_client_line_after_a_foreign_one_is_dropped(self):
+        lines = ['2026-10-05: ERROR: client failure', '  File "scripts/client/gui/battle.py", line 1']
+
+        self.assertEqual(pylog.OurLines().filter(lines), [])
+
+
+if __name__ == '__main__':
+    unittest.main()

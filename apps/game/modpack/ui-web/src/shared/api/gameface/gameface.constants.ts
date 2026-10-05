@@ -10,7 +10,9 @@ export const GAMEFACE = {
     whenReady: 'whenReady',
     on: 'on',
     call: 'call',
-    dataChangedEvent: 'viewEnv.onDataChanged'
+    dataChangedEvent: 'viewEnv.onDataChanged',
+    clientResized: 'clientResized',
+    scaleUpdated: 'self.onScaleUpdated'
   },
   dataChanged: {
     register: 'addDataChangedCallback',

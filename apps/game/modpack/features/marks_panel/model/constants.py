@@ -141,5 +141,8 @@ DELTA_GLYPHS = {1: 'trend_up', 0: 'dot', -1: 'trend_down'}
 EDITOR_GROUPS = (
     ('battle', ('show_battle_panel', 'style', 'color_mode', 'alt_detail')),
     ('numbers', ('show_targets', 'show_battles')),
-    ('hangar', ('hangar_card', 'hangar_style', 'show_trend', 'show_tank_ratings')),
+    ('hangar', ('hangar_card', 'hangar_style', 'show_trend', 'show_tank_ratings', 'carousel_percent')),
 )
+
+# The percent joins the stock stats row of a carousel tile (mastery, wins, marks), after the stock gap between them.
+CAROUSEL_GAP = u'   '

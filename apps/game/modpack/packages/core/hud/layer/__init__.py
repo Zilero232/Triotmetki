@@ -26,9 +26,11 @@ from ...compat import is_number, string_types
 from ..backend import NullBackend
 from ..modes import MODE_RANDOM, ModePlaces
 from ..panel import (
+    ATTACHED,
     LAYOUT_KEYS,
     fit_place,
     alias_of,
+    attach_of,
     dock_of,
     is_pinned,
     layout_props,
@@ -38,7 +40,17 @@ from ..panel import (
     pinned_values,
     retired_reset,
 )
-from .constants import COVER_EFFECTS, COVER_FADES, COVER_FULL_STATS, COVER_GUI, COVER_HIDE, COVER_MENU, COVER_NONE
+from ..stock import stock_metrics
+from .constants import (
+    COVER_EFFECTS,
+    COVER_FADES,
+    COVER_FULL_STATS,
+    COVER_GUI,
+    COVER_HIDE,
+    COVER_MENU,
+    COVER_NONE,
+    COVER_RELEASES_STOCK,
+)
 
 
 class HudLayer(object):
@@ -62,6 +74,8 @@ class HudLayer(object):
         self.own_places = False
         self.policy = None
         self.mode_places = ModePlaces(config)
+        self.watchers = []
+        self.metrics = stock_metrics()
         self.backend.listen(self.on_moved)
 
     @property
@@ -125,7 +139,23 @@ class HudLayer(object):
         values = self.place_values(panel_id)
         props = layout_props(values)
         props['dock'] = dock_of(alias_of(panel_id), values)
+        props['attach'] = self._attach(panel_id, values)
         return props
+
+    def _attach(self, panel_id, values):
+        return attach_of(alias_of(panel_id), values, self.panels[panel_id].schema.defaults, self.metrics)
+
+    def set_stock_metrics(self, metrics):
+        """The measured stock sizes (core.hud.stock.stock_metrics) the attached panels follow; a shown attached panel
+        is placed again when they changed."""
+        if not metrics or metrics == self.metrics:
+            return False
+        self.metrics = dict(metrics)
+        for alias in sorted(self.shown):
+            panel_id = panel_of(alias)
+            if alias in ATTACHED and panel_id in self.panels:
+                self.backend.update(alias, {'attach': self._attach(panel_id, self.place_values(panel_id))})
+        return True
 
     def props(self, panel_id, text, widget=None):
         props = self.layout(panel_id)
@@ -136,6 +166,21 @@ class HudLayer(object):
     def allows(self, panel_id):
         """Whether the current battle type shows this panel (every panel outside a battle type)."""
         return self.allowed is None or panel_id in self.allowed
+
+    def watch(self, callback):
+        """`callback()` after every change of what keeps panels off the screen: mute, blocked panels, the battle type,
+        a cover reason."""
+        if callback not in self.watchers:
+            self.watchers.append(callback)
+
+    def _notify(self):
+        for callback in list(self.watchers):
+            callback()
+
+    def releases_stock(self, panel_id):
+        """Whether the stock elements this panel replaces must come back: the panel is off the screen for a reason the
+        stock HUD does not share (muted, blocked, left out of the battle type, `COVER_RELEASES_STOCK`)."""
+        return self.suppressed(panel_id) or bool(self.covers & frozenset(COVER_RELEASES_STOCK))
 
     def suppressed(self, panel_id):
         return self.muted or panel_id in self.blocked or not self.allows(panel_id)
@@ -247,12 +292,14 @@ class HudLayer(object):
         `COVER_EFFECTS` says; only the props that changed are sent."""
         if reason not in COVER_EFFECTS:
             return False
-        before = self._cover_props()
+        before, covers = self._cover_props(), self.covers
         self.covers = self.covers | {reason} if on else self.covers - {reason}
         after = self._cover_props()
         changed = dict((key, value) for key, value in after.items() if before[key] != value)
         if changed:
             self._update_shown(changed)
+        if self.covers != covers:
+            self._notify()
         return bool(changed)
 
     def _cover_props(self):
@@ -285,6 +332,7 @@ class HudLayer(object):
                 del self.held[panel_id]
                 if text is not None:
                     self.show(panel_id, text, widget)
+        self._notify()
 
     def update_settings(self, panel_id, values):
         """Apply new settings (a settings window, a preset); a shown panel is moved or restyled at once."""
@@ -306,5 +354,6 @@ class HudLayer(object):
         else:
             changed = bool(self.config.update(panel_id, moved_values(props)))
         if changed and alias in self.shown:
-            self.backend.update(alias, {'dock': dock_of(alias, self.place_values(panel_id))})
+            values = self.place_values(panel_id)
+            self.backend.update(alias, {'dock': dock_of(alias, values), 'attach': self._attach(panel_id, values)})
         return changed

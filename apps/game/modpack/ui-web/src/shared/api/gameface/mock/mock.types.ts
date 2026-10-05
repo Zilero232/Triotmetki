@@ -9,7 +9,8 @@ export type GamefaceMockPush = {
 export type GamefaceMockInput = {
   state: string;
   feed?: string;
-  clientSize: () => ClientSize;
+  clientSize: () => ClientSize | null;
+  remScale?: () => number;
   mouse?: () => { x: number; y: number };
   tooltips?: boolean;
   onSend: (message: string) => string | GamefaceMockPush | null;
@@ -21,4 +22,10 @@ export type GamefaceMock = {
   sent: () => string[];
   inputAreas: () => number[][];
   viewEvents: () => unknown[];
+  emit: (event: string) => void;
+  resizes: () => number[][];
 };
+
+export type EngineListener = (data: unknown, indexes: unknown, callbackIds: number[]) => void;
+
+export type CreateEngineInput = { listeners: EngineListener[]; engineListeners: Map<string, (() => void)[]> };

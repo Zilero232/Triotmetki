@@ -1,9 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import json
-import os
-import shutil
-import tempfile
 import unittest
 
 import _support
@@ -12,9 +9,7 @@ from otmetki.companion.config import Config
 from otmetki.companion.settings_share import (
     POLL_PATH,
     RESULT_PATH,
-    SettingsBackup,
     SettingsShareError,
-    backup_path,
     build_export,
     build_export_request,
     build_poll_request,
@@ -27,7 +22,6 @@ from otmetki.companion.settings_share import (
     signed_post,
 )
 from otmetki.core.net.signing import DEVICE_HEADER, verify_request
-from otmetki.core.storage import JsonFile, MemoryFile
 
 SECRET = 'q' * 43
 CREDS = Credentials('dev_1', SECRET, 7, 1)
@@ -217,61 +211,6 @@ class PlanApplyTest(unittest.TestCase):
         self.assertEqual(changes_to_values(changes), {'fov': 110, 'volumeMaster': 50})
 
 
-class BackupOnDiskTest(unittest.TestCase):
-
-    def setUp(self):
-        self.directory = tempfile.mkdtemp()
-        self.path = backup_path(os.path.join(self.directory, 'otmetki'), 7)
-
-    def tearDown(self):
-        shutil.rmtree(self.directory)
-
-    def saved_backup(self):
-        backup = SettingsBackup(JsonFile(self.path))
-        backup.save(MINE, plan_apply(MINE, apply_request(['camera', 'sound'])), REQUEST_ID, 100)
-        return backup
-
-    def test_backup_file_is_per_account(self):
-        self.assertTrue(self.path.endswith('settings_backup_7.json'))
-
-    def test_no_backup_has_no_values(self):
-        self.assertEqual(SettingsBackup(JsonFile(self.path)).values(), {})
-
-    def test_saved_values_are_read_back_from_disk(self):
-        self.saved_backup()
-
-        self.assertEqual(SettingsBackup(JsonFile(self.path)).values(), {'fov': 95, 'volumeMaster': 80})
-
-    def test_clear_deletes_the_file(self):
-        backup = self.saved_backup()
-
-        backup.clear()
-
-        self.assertFalse(os.path.exists(self.path))
-        self.assertEqual(backup.values(), {})
-
-
-class BackupTest(unittest.TestCase):
-
-    def test_second_apply_keeps_original_values(self):
-        backup = SettingsBackup(MemoryFile())
-        backup.save(MINE, plan_apply(MINE, apply_request(['camera'])), 'a', 1)
-        after = dict(MINE, fov=110)
-        second_request = apply_request(['camera', 'zoom'], {'camera': {'fov': 100}, 'zoom': {'steps': ['x2']}})
-
-        backup.save(after, plan_apply(after, second_request), 'b', 2)
-
-        self.assertEqual(backup.values(), {'fov': 95, 'zoomSteps': ['x2', 'x4', 'x8']})
-
-    def test_invalid_backup_values_are_ignored(self):
-        backup = SettingsBackup(MemoryFile({'values': {'login': 'me', 'fov': 500, 'vsync': True}}))
-
-        self.assertEqual(backup.values(), {'vsync': True})
-
-    def test_a_corrupt_backup_has_no_values(self):
-        self.assertEqual(SettingsBackup(MemoryFile('junk')).values(), {})
-
-
 class ExportRequestTest(unittest.TestCase):
 
     def setUp(self):
@@ -412,6 +351,13 @@ class ConfigSwitchTest(unittest.TestCase):
 
         self.assertEqual(config.get('settings_target'), 'profile')
         self.assertEqual(config.get('settings_action'), 'export')
+
+    def test_the_retired_restore_action_falls_back(self):
+        config = Config()
+
+        config.update({'settings_action': 'restore'})
+
+        self.assertEqual(config.get('settings_action'), '')
 
 
 if __name__ == '__main__':

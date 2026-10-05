@@ -1,0 +1,45 @@
+@use '@/shared/styles/gameface' as *;
+
+.toggle {
+  position: relative;
+  width: 36px;
+  height: 18px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 1px solid token(win-line-soft);
+  border-radius: token(win-radius-control);
+  background-color: token(win-well-bg);
+  cursor: pointer;
+
+  @include ease(background-color, border-color);
+
+  &:hover {
+    border-color: token(color-text-muted);
+  }
+}
+
+.toggleOn {
+  border-color: token(win-index);
+  background-color: token(win-index);
+
+  &:hover {
+    border-color: token(win-index);
+  }
+}
+
+.knob {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 14px;
+  height: 14px;
+  border-radius: 1px;
+  background-color: token(win-text-caption);
+
+  @include ease(left, background-color);
+}
+
+.knobOn {
+  left: 19px;
+  background-color: token(color-text);
+}

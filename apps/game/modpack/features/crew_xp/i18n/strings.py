@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 STRINGS = {
     'ru': {
         'component_crew_xp': u'Опыт экипажа',
-        'component_crew_xp_hint': u'Сколько опыта и примерно сколько боёв осталось каждому члену экипажа выбранной машины до конца изучаемого навыка: карточка под экипажем в ангаре и строка в подсказке танкиста. Бои — по среднему опыту машины, как в экранах экипажа самой игры.',
+        'component_crew_xp_hint': u'Сколько опыта и примерно сколько боёв осталось каждому члену экипажа выбранной машины до конца изучаемого навыка — строкой в подсказке танкиста (по желанию и карточкой под экипажем в ангаре). Бои — по среднему опыту машины, как в экранах экипажа самой игры.',
         'crew_xp_show_card': u'Карточка в ангаре',
         'crew_xp_show_tooltip': u'Строка в подсказке танкиста',
         'crew_xp_card_title': u'Экипаж',
@@ -17,7 +17,7 @@ STRINGS = {
     },
     'en': {
         'component_crew_xp': u'Crew XP',
-        'component_crew_xp_hint': u'How much XP and roughly how many battles each crew member of the selected vehicle needs to finish the skill in training: a card under the crew in the hangar and a line in the crew member\'s tooltip. Battles come from the vehicle\'s average XP, as in the game\'s own crew screens.',
+        'component_crew_xp_hint': u'How much XP and roughly how many battles each crew member of the selected vehicle needs to finish the skill in training, as a line in the crew member\'s tooltip (and, if you want, a card under the crew in the hangar). Battles come from the vehicle\'s average XP, as in the game\'s own crew screens.',
         'crew_xp_show_card': u'Hangar card',
         'crew_xp_show_tooltip': u'Line in the crew member tooltip',
         'crew_xp_card_title': u'Crew',

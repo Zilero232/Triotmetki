@@ -1,9 +1,9 @@
 {
   "data": {
-    "color": "#ff8a2a",
-    "hides_centre": true,
+    "color": null,
+    "hides_centre": false,
     "mark": null,
-    "outline": true,
+    "outline": false,
     "readouts": {
       "arcs": {
         "health": 0.65,
@@ -25,7 +25,7 @@
         }
       ]
     },
-    "shape": "chevron_thin",
+    "shape": null,
     "size": 32,
     "sketch": true
   },

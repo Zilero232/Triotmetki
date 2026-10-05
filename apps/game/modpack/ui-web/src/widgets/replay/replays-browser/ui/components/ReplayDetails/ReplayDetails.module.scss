@@ -1,0 +1,29 @@
+@use '@/shared/styles/gameface' as *;
+
+.details {
+  display: flex;
+  overflow: hidden;
+  width: 340px;
+  min-height: 0;
+  flex: 0 0 auto;
+  flex-direction: column;
+  border: 1px solid token(color-border);
+  border-radius: token(radius-md);
+  margin-left: 12px;
+  background-color: token(color-surface-sunken);
+}
+
+.scroll {
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  padding: 12px 14px;
+}
+
+.actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+}

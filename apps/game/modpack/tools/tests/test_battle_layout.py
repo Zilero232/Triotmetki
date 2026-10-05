@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 import importlib
+import io
+import os
+import re
 import unittest
 
 import _support  # noqa: F401
-from otmetki.core.hud.panel import DOCK_ANCHORS
+from otmetki.core.hud.panel import ATTACHED, DOCK_ANCHORS
 from otmetki.core.settings import Settings
 
 # Every battle screen the client allows, as (width, height, interface scale): gui/shared/utils/graphics.py _SCALES.
@@ -37,6 +40,35 @@ BATTLE_PANELS = (
     'aim_info', 'battle_hotkeys', 'battle_loadout', 'battle_progress', 'damage_log', 'gun_arc', 'marks_panel',
     'platoon_points', 'sixth_sense',
 )
+# The page's places of the attached panels (ui-web views/hud/lib/attach, HUD_OVERLAY.attach), design px: the gap to
+# the stock element, the bottom margin, the consumables panel's height, the gap over it and the gap between the two
+# halves above it, the battle log's right edge, the gap over the minimap, and the place right of the score strip
+# (under it below 1700 px).
+ATTACH_GAP = 12
+ATTACH_EDGE = 8
+BAR_HEIGHT = 58
+BAR_ABOVE = 6
+BAR_SPLIT = 6
+LOG_RIGHT = 507
+MINIMAP_GAP = 12
+SCORE_OFFSET = 308
+SCORE_TOP = 4
+SCORE_NARROW = 1700
+SCORE_UNDER = 52
+
+
+PAGE_CONSTANTS = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    'ui-web', 'src', 'views', 'hud', 'config', 'hud-overlay.constants.ts',
+)
+
+
+def read_page_constants():
+    with io.open(PAGE_CONSTANTS, encoding='utf-8') as handle:
+        text = handle.read()
+    block = text[text.index('attach:'):]
+    block = block[:block.index('\n  }')]
+    return dict((key, int(value)) for key, value in re.findall(r'(\w+): (\d+)', block))
 
 
 def design_screen(width, height, scale):
@@ -145,6 +177,7 @@ PLAYERS_BOTTOM = PLAYERS_TOP + 15 * 25
 PLAYERS_WIDTH = 339
 MINIMAP_DEFAULT = 260
 MINIMAP_LARGEST = 610
+MINIMAPS = (MINIMAP_DEFAULT, MINIMAP_LARGEST)
 CONSUMABLES_WIDTH = 9 * 57
 
 
@@ -161,9 +194,6 @@ STOCK_RECTS = (
     ('consumables', lambda w, h: ((w - CONSUMABLES_WIDTH) / 2, h - 58, (w + CONSUMABLES_WIDTH) / 2, h)),
     # BaseBattlePage.VEHICLE_MESSAGES_LIST_OFFSET (500, 111): two lines growing up from H - 111.
     ('vehicle messages', lambda w, h: ((w - 500) / 2, h - 159, (w + 500) / 2, h - 111)),
-    # MinimapSizeConst.MAP_SIZE: the default size (index 1) and the largest one (index 5, plus its 6 px margin).
-    ('minimap', lambda w, h: (w - MINIMAP_DEFAULT, h - MINIMAP_DEFAULT, w, h)),
-    ('largest minimap', lambda w, h: (w - MINIMAP_LARGEST, h - MINIMAP_LARGEST - 6, w, h)),
     # PLAYER_MESSAGES_LIST_OFFSET (350, -38): 30 lines of 20 px growing up from 38 px above the minimap.
     ('player messages', lambda w, h: (w - 350, h - MINIMAP_DEFAULT - 638, w, h - MINIMAP_DEFAULT - 38)),
     # PlayersPanel: 15 rows of 25 px, at most 339 wide in the full mode.
@@ -191,16 +221,27 @@ PANEL_SIZES = {
     'battle_hotkeys': (300, 30),
     'battle_loadout': (300, 44),
     'sixth_sense': (48, 48),
+    'marks_panel': (260, 44),
+    'battle_progress': (260, 80),
+    'last_battle': (260, 110),
 }
 COLUMN_WIDTH = 340
 DAMAGE_LOG_SIZE = (330, 260)
 RETICLE_SIZES = (('aim_info', (220, 40)), ('gun_arc', (160, 20)))
 DOCKED = (
-    ('marks_panel', 'battle_left_top'),
-    ('battle_progress', 'battle_right_top'),
+    ('platoon_points', 'battle_left_top'),
     ('damage_log', 'battle_left_bottom'),
-    ('battle_loadout', 'battle_bottom_center'),
 )
+# (panel, stock element) pairs a default place may share: the previous battle's card sits where the packs put their
+# results notice, over the stock player messages above the minimap (a few lines that show for a moment); battle
+# progress sits right of our team HP strip, which replaces the stock score strip (its vehicle icons reach 345 px off
+# the centre), as Battle Observer places its main gun beside its own strip.
+SHARED = (('last_battle', 'player messages'), ('battle_progress', 'score strip'))
+# The same with the largest minimap: at 1080 px it ends 18 px under the right team list, so the card over it meets the
+# list's last rows for its few seconds; there is no other place above the minimap.
+SHARED_LARGEST = (('last_battle', 'right team list'),)
+# Our team HP strip (team_hp, 600 px wide, centred at the top): half its width and its height.
+TEAM_HP_STRIP = (300, 0, 44)
 
 
 # The hangar: the «Clock and server» strip (hangar_info, free) at its widest with every part on, and the docked columns.
@@ -230,16 +271,54 @@ def clock_place():
     return CLOCK_SCHEMA.defaults
 
 
-def default_rects(screen):
+def sized(left, top, size):
+    return left, top, left + size[0], top + size[1]
+
+
+def beside_bar(kind, size, screen, minimap, bar):
+    width, height = screen
+    if kind == 'bar_right':
+        left = width / 2 + bar / 2 + ATTACH_GAP
+        lifted = left + size[0] > width - minimap - ATTACH_EDGE
+        lifted_left = width / 2 + BAR_SPLIT
+    else:
+        left = width / 2 - bar / 2 - ATTACH_GAP - size[0]
+        lifted = left < LOG_RIGHT
+        lifted_left = width / 2 - BAR_SPLIT - size[0]
+    if lifted:
+        return sized(lifted_left, height - BAR_HEIGHT - BAR_ABOVE - size[1], size)
+    return sized(left, height - ATTACH_EDGE - size[1], size)
+
+
+def attached_rect(kind, size, screen, minimap, bar=CONSUMABLES_WIDTH):
+    width, height = screen
+    if kind in ('bar_right', 'bar_left'):
+        return beside_bar(kind, size, screen, minimap, bar)
+    if kind == 'minimap_above':
+        return sized(width - ATTACH_EDGE - size[0], height - minimap - MINIMAP_GAP - size[1], size)
+    if width < SCORE_NARROW:
+        return sized((width - size[0]) / 2, SCORE_UNDER, size)
+    return sized(width / 2 + SCORE_OFFSET, SCORE_TOP, size)
+
+
+def attached_rects(screen, minimap):
+    rects = {}
+    for alias, kind in ATTACHED.items():
+        panel = alias.split('.')[-1]
+        rects[panel] = attached_rect(kind, PANEL_SIZES[panel], screen, minimap)
+    return rects
+
+
+def default_rects(screen, minimap=MINIMAP_DEFAULT):
     rects = {
-        'team_hp': centre_box(SCORE_STRIP, screen),
+        'team_hp': centre_box(TEAM_HP_STRIP, screen),
         'battle_clock': panel_rect(clock_place(), screen, PANEL_SIZES['battle_clock']),
-        'marks_panel and platoon_points': top_column(DOCK_ANCHORS['battle_left_top'], screen),
-        'battle_progress': top_column(DOCK_ANCHORS['battle_right_top'], screen),
+        'platoon_points': top_column(DOCK_ANCHORS['battle_left_top'], screen),
         'damage_log': bottom_column(DOCK_ANCHORS['battle_left_bottom'], screen),
     }
-    for feature_id in ('battle_hotkeys', 'battle_loadout', 'sixth_sense'):
+    for feature_id in ('battle_hotkeys', 'sixth_sense'):
         rects[feature_id] = panel_rect(default_place(feature_id), screen, PANEL_SIZES[feature_id])
+    rects.update(attached_rects(screen, minimap))
     return rects
 
 
@@ -251,12 +330,16 @@ def hangar_rects(screen):
     return rects
 
 
-def stock_rects(screen):
-    return [(name, rect(*screen)) for name, rect in STOCK_RECTS]
+def stock_rects(screen, minimap=MINIMAP_DEFAULT):
+    width, height = screen
+    # MinimapSizeConst.MAP_SIZE: the square at the bottom right, by the player's size setting.
+    minimap_rect = (width - minimap, height - minimap, width, height)
+    return [(name, rect(*screen)) for name, rect in STOCK_RECTS] + [('minimap', minimap_rect)]
 
 
-def replaced(panel, stock):
-    return panel == 'team_hp' and stock == 'score strip'
+def replaced(panel, stock, minimap=MINIMAP_DEFAULT):
+    shared = SHARED + (SHARED_LARGEST if minimap == MINIMAP_LARGEST else ())
+    return (panel == 'team_hp' and stock == 'score strip') or (panel, stock) in shared
 
 
 class DefaultPlacesTest(unittest.TestCase):
@@ -271,21 +354,22 @@ class DefaultPlacesTest(unittest.TestCase):
 
     def test_no_default_panel_covers_a_stock_element(self):
         covered = [
-            (screen, panel, stock)
+            (screen, minimap, panel, stock)
             for screen in HUD_RESOLUTIONS
-            for panel, rect in sorted(default_rects(screen).items())
-            for stock, box in stock_rects(screen)
-            if not replaced(panel, stock) and overlaps(rect, box)
+            for minimap in MINIMAPS
+            for panel, rect in sorted(default_rects(screen, minimap).items())
+            for stock, box in stock_rects(screen, minimap)
+            if not replaced(panel, stock, minimap) and overlaps(rect, box)
         ]
 
         assert covered == []
 
     def test_no_two_default_panels_overlap(self):
         crowded = []
-        for screen in HUD_RESOLUTIONS:
-            rects = sorted(default_rects(screen).items())
+        for screen, minimap in [(screen, minimap) for screen in HUD_RESOLUTIONS for minimap in MINIMAPS]:
+            rects = sorted(default_rects(screen, minimap).items())
             crowded += [
-                (screen, first[0], second[0])
+                (screen, minimap, first[0], second[0])
                 for index, first in enumerate(rects)
                 for second in rects[index + 1:]
                 if overlaps(first[1], second[1])
@@ -313,13 +397,33 @@ class DefaultPlacesTest(unittest.TestCase):
 
         assert not overlaps(first, second)
 
-    def test_the_equipment_row_keeps_a_gap_over_the_consumables(self):
-        gaps = [
-            dict(stock_rects(screen))['consumables'][1] - default_rects(screen)['battle_loadout'][3]
+    def test_the_equipment_row_sits_beside_the_consumables_or_above_them(self):
+        screen = (2560, 1440)
+        beside = attached_rect('bar_left', PANEL_SIZES['battle_loadout'], screen, MINIMAP_DEFAULT, 7 * 57)
+        lifted = attached_rect('bar_left', PANEL_SIZES['battle_loadout'], (1920, 1080), MINIMAP_DEFAULT)
+        consumables = dict(stock_rects((1920, 1080)))['consumables']
+
+        assert (beside[2], beside[3]) == (screen[0] / 2 - 7 * 57 / 2 - ATTACH_GAP, screen[1] - ATTACH_EDGE)
+        assert consumables[1] - lifted[3] >= 6
+
+    def test_the_marks_end_left_of_the_minimap(self):
+        crowded = [
+            (screen, minimap)
             for screen in HUD_RESOLUTIONS
+            for minimap in MINIMAPS
+            if default_rects(screen, minimap)['marks_panel'][2] > screen[0] - minimap - ATTACH_EDGE
         ]
 
-        assert min(gaps) >= 6
+        assert crowded == []
+
+    def test_the_attached_places_are_the_page_constants(self):
+        page = read_page_constants()
+
+        expected = {
+            'gap': ATTACH_GAP, 'edge': ATTACH_EDGE, 'height': BAR_HEIGHT, 'above': BAR_ABOVE, 'split': BAR_SPLIT,
+            'right': LOG_RIGHT, 'offset': SCORE_OFFSET, 'top': SCORE_TOP, 'narrow': SCORE_NARROW, 'under': SCORE_UNDER,
+        }
+        assert dict((key, page.get(key)) for key in expected) == expected
 
 
 if __name__ == '__main__':

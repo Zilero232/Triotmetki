@@ -1,4 +1,4 @@
-import type { ScrollMetrics } from '../scroll-metrics';
+import type { ScrollMetrics } from '@/shared/lib/scroll-metrics';
 
 export type WheelScrollInput = {
   top: number;

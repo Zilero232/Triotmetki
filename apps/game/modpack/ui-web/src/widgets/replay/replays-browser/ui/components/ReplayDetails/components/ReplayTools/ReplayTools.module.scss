@@ -1,0 +1,27 @@
+@use '@/shared/styles/gameface' as *;
+
+.tools {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 10px -4px 0;
+}
+
+.tool {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 0 4px 4px;
+}
+
+.favourite {
+  color: token(color-gold);
+}
+
+.remove {
+  color: token(color-danger);
+}
+
+.buttonIcon {
+  margin-right: 6px;
+}

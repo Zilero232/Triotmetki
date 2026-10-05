@@ -1,4 +1,4 @@
-import { DOM } from '../../../config';
+import { DOM } from '@/shared/config';
 
 export const onDomReady = (callback: () => void): void => {
   if (document.readyState !== DOM.loadingState) {

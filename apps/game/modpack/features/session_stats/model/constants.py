@@ -137,7 +137,7 @@ MAX_BATTLE_DELTA = 10.0
 # The settings window's editor (docs/specs/2026-09-30-hud-consolidation-and-design.md section 12.3): its field groups
 # and the Session card it previews, an evening of seven battles with two site goals and the account line.
 EDITOR_GROUPS = (
-    ('session', ('show_moe',)),
+    ('session', ('show_moe', 'notice_line')),
     ('goals', ('show_goals',)),
     ('account', ('show_account', 'metric_wn8', 'metric_win_rate', 'metric_avg_damage', 'metric_eff')),
 )

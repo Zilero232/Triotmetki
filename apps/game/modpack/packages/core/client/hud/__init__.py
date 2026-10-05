@@ -4,7 +4,7 @@
 installed one joins a `BackendChain`, which draws each label with the first backend available at that
 moment (GUIFlash before 0.6 draws in battle only); with none, panels stay hidden and features fall back
 to system messages. The layer and the hangar labels (`core.client.ui`) share one chain, so there is one
-Gameface window.
+Gameface window. The layer comes with its `cover.CoverWatch`: the stock overlays over the battle cover its panels.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -12,16 +12,18 @@ import BigWorld
 
 from ...durable import open_config
 from ...hud import BackendChain, ComponentConfig, HudLayer
+from ...hud.cover import HIDE_UNDER_WINDOWS_KEY
 from ...hud.report import PanelReport
 from ...log import log, safe
 from .constants import CONFIG_NAME, REPORT_DELAY_S
+from .cover import CoverWatch
 from .gameface import GamefaceBackend
 from .guiflash import GuiFlashBackend
 from .stock import StockControl
 
 BACKENDS = (GamefaceBackend, GuiFlashBackend)
 
-_state = {'layer': None, 'config': None, 'backend': None, 'stock': None, 'report': None}
+_state = {'layer': None, 'config': None, 'backend': None, 'stock': None, 'report': None, 'cover': None}
 
 
 def build_backend(backends=BACKENDS, log_missing=True):
@@ -54,7 +56,21 @@ def hud_layer(app):
     """The process-wide HUD layer (created on first use, so features need no load order)."""
     if _state['layer'] is None:
         _state['layer'] = HudLayer(create_backend(), component_config(app), getattr(app, 'translate', None))
+        battle_cover(app)
     return _state['layer']
+
+
+def battle_cover(app):
+    """The process-wide watch of what covers the battle view (`cover.CoverWatch`), created with the layer."""
+    if _state['cover'] is None:
+        _state['cover'] = CoverWatch(hud_layer(app), lambda: _config_value(app, HIDE_UNDER_WINDOWS_KEY))
+        _state['cover'].install()
+    return _state['cover']
+
+
+def _config_value(app, key):
+    config = getattr(app, 'config', None)
+    return config.get(key) if config is not None else None
 
 
 def stock_control(app):

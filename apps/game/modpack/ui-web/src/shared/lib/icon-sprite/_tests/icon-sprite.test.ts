@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { UI_ICONS } from '../../../config';
+import { UI_ICONS } from '@/shared/config';
+
 import { spriteCell, spriteRowsPerTone, spriteSize, spriteStyle } from '../icon-sprite';
 
 const SECOND_ROW_SECOND_NAME = UI_ICONS.names[UI_ICONS.columns + 1] ?? 'logo';

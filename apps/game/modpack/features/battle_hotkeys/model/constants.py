@@ -23,5 +23,5 @@ HOTKEYS = {
 HOTKEY_CHOICES = ('ctrl_shift_j', 'ctrl_shift_k', 'ctrl_shift_n', 'ctrl_shift_m', 'none')
 
 PREVIEW_SIZE = (260, 30)
-# The widget the Gameface page draws (ui-web entities/hud-widgets/option-notice).
+# The widget the Gameface page draws (ui-web entities/hud/option-notice).
 KIND = 'option_notice'

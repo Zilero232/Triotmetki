@@ -1,0 +1,43 @@
+@use '@/shared/styles/gameface' as *;
+
+.swatches {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.swatch {
+  display: flex;
+  width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: token(radius-xs);
+  margin-left: 6px;
+  background-color: transparent;
+  cursor: pointer;
+
+  @include ease(border-color);
+
+  &:hover {
+    border-color: token(color-text-muted);
+  }
+}
+
+.swatchOn {
+  border-color: token(color-text);
+
+  &:hover {
+    border-color: token(color-text);
+  }
+}
+
+.chip {
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgb(255 255 255 / 20%);
+  border-radius: token(radius-xs);
+  background-color: token(color-text);
+}

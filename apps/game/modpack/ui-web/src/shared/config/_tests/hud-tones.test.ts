@@ -1,7 +1,8 @@
 import { readDesignTokens } from '@otmetki/design-tokens';
 import { describe, expect, it } from 'vitest';
 
-import { HUD_PROTOCOL } from '../../api/hud-protocol';
+import { HUD_PROTOCOL } from '@/shared/api/hud-protocol';
+
 import { HUD_TONE_COLORS } from '../hud-tones.constants';
 
 describe('HUD_TONE_COLORS', () => {

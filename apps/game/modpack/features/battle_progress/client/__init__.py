@@ -10,7 +10,6 @@ from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.me import tank_ratings
 from ....core.client.timer import Ticker
 from ....core.compat import is_number
-from ....core.events import EVENT_BATTLE_PROGRESS
 from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import BattleCounts, progress_state
@@ -211,7 +210,6 @@ class BattleProgressPanel(BattlePanel):
             self.settle.start()
 
         state = progress_state(self.counts.values, main_gun, self.record, self.row, self.settled)
-        self.app.bus.emit(EVENT_BATTLE_PROGRESS, state)
         rows = progress_rows(state, self.settings, self.app.translate, self.extended())
         if not rows:
             self.hide()

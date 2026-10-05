@@ -2,13 +2,14 @@ import { useInterval } from '@siberiacancode/reactuse';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { funnel, isDeepEqual } from 'remeda';
 
-import type { ScrollMetrics } from '../scroll-metrics';
-import type { UseScrollAreaInput } from './use-scroll-area.types';
+import type { ScrollMetrics } from '@/shared/lib/scroll-metrics';
 
-import { SCROLL_AREA } from '../../config';
-import { scrollMetricsOf } from '../scroll-metrics';
-import { useThumbDrag } from '../use-thumb-drag';
-import { bindWheelScroll, thumbOf } from '../wheel-scroll';
+import { SCROLL_AREA } from '@/shared/config';
+import { scrollMetricsOf } from '@/shared/lib/scroll-metrics';
+import { useThumbDrag } from '@/shared/lib/use-thumb-drag';
+import { bindWheelScroll, thumbOf } from '@/shared/lib/wheel-scroll';
+
+import type { UseScrollAreaInput } from './use-scroll-area.types';
 
 export const useScrollArea = ({ initialTop = 0, onScrollEnd }: UseScrollAreaInput = {}) => {
   const viewportRef = useRef<HTMLDivElement>(null);

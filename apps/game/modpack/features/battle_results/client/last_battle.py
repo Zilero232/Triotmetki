@@ -3,7 +3,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.client.battle import player
 from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.timer import Ticker
-from ....core.hud import alias_of
 from ....core.log import safe
 from ..i18n import STRINGS
 from ..model.battle import CardQueue, card_text, card_widget, last_view
@@ -23,17 +22,15 @@ PANEL_SPEC = PanelSpec(
 
 
 # The results of an earlier battle that reach the client during the next one (RU 1.45 Avatar.receiveBattleResults fires
-# g_playerEvents.onBattleResultsReceived in battle): one card at a time for LAST_SHOW_S, the others queued; the close
-# mark on the Gameface page (with the battle cursor) moves on to the next one. Left for the hangar notification: the
-# results of this very battle, which the summary card already shows.
+# g_playerEvents.onBattleResultsReceived in battle): they show by themselves, one card at a time for LAST_SHOW_S above
+# the minimap, the others queued; nothing to click. The results of this very battle are left to the hangar
+# notification (no pack shows a summary of the battle being played).
 class LastBattlePanel(BattlePanel):
 
     def __init__(self, app):
         self.queue = CardQueue()
         self.ticker = Ticker(LAST_SHOW_S, self._on_shown)
         BattlePanel.__init__(self, app, PANEL_SPEC)
-        self.alias = alias_of(LAST_PANEL_ID)
-        self.hud.backend.listen_press(self._on_pressed)
         app.bus.on('battle_leave', self.queue.clear)
 
     def enabled(self):
@@ -71,19 +68,9 @@ class LastBattlePanel(BattlePanel):
         return self._advance()
 
     @safe
-    def _on_pressed(self, alias):
-        if alias != self.alias or self.queue.current is None:
-            return
-        self.ticker.stop()
-        if self._advance():
-            self.ticker.start()
-
-    @safe
     def render(self):
         card = self.queue.current
         if card is None or not self.running:
             return
-        translate = self.app.translate
-        view = last_view(card, translate)
-        dismiss = {'id': self.alias, 'label': translate('br_dismiss')}
-        self.show(card_text(view, self.settings.get('font_size')), card_widget(view, dismiss))
+        view = last_view(card, self.app.translate)
+        self.show(card_text(view, self.settings.get('font_size')), card_widget(view, LAST_SHOW_S))

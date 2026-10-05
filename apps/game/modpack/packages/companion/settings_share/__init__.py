@@ -4,7 +4,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ...core.codec import encode_json
 from ...core.compat import string_types, to_text
 from ...core.net.signing import SignedRequest, signed_request
-from .backup import SettingsBackup, backup_path  # noqa: F401
 from .constants import POLL_PATH, RESULT_PATH, RESULT_STATUSES, SETTINGS_PATH, TARGETS, UUID_RE  # noqa: F401
 from .errors import SettingsShareError
 from .values import (  # noqa: F401

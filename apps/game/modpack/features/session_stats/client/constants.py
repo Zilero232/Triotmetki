@@ -4,6 +4,6 @@ from ....core.hud.panel import dock_layout
 from ....core.me import OK_STATUS
 
 HANGAR_PANEL = 'otmetki.session'
-LAYOUT = dock_layout('hangar_right')
+LAYOUT = dock_layout('hangar_left')
 STATE_KEY = 'session'
 SENT_STATUSES = (OK_STATUS, 202)

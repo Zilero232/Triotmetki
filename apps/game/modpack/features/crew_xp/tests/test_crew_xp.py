@@ -78,8 +78,10 @@ class CardTest(unittest.TestCase):
 
 class SettingsTest(unittest.TestCase):
 
-    def test_card_and_tooltip_are_on_by_default(self):
-        assert DEFAULTS['show_card'] is True
+    def test_the_card_is_off_by_default(self):
+        assert DEFAULTS['show_card'] is False
+
+    def test_the_tooltip_line_is_on_by_default(self):
         assert DEFAULTS['show_tooltip'] is True
 
     def test_the_component_switch_is_hangar_crew_xp(self):

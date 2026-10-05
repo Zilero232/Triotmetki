@@ -1,0 +1,47 @@
+@use '@/shared/styles/gameface' as *;
+
+.toast {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  display: flex;
+  width: 520px;
+  height: 44px;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 8px 0 16px;
+  border: 1px solid token(win-line-strong);
+  border-radius: token(win-radius);
+  border-left: 3px solid token(win-index);
+  margin-left: -260px;
+  background-color: token(color-surface-overlay);
+  background-image: token(win-toast);
+  box-shadow: token(win-shadow);
+}
+
+.icon {
+  margin-right: 10px;
+}
+
+.text {
+  min-width: 0;
+  flex: 1 1 auto;
+  margin-right: 10px;
+  font-size: 13px;
+
+  @include ellipsis;
+}
+
+.undo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.undoIcon {
+  margin-right: 6px;
+}
+
+.close {
+  margin-left: 4px;
+}

@@ -1,4 +1,5 @@
-import type { RichImageRun, RichTextRun } from '../rich-text';
+import type { RichImageRun, RichTextRun } from '@/shared/lib/rich-text';
+
 import type { RunStyle } from './run-style.types';
 
 import { RUN_STYLE } from './run-style.constants';

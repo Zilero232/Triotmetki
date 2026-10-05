@@ -73,3 +73,12 @@ HISTORY_KEYS = (
 # restore_history): a percent up to this, and a change past MAX_BATTLE_DELTA percent, which no battle makes.
 WRONG_SCALE_PERCENT = 1.0
 MAX_BATTLE_DELTA = 10.0
+
+# The stock post-battle message (RU 1.45 messenger/formatters/service_channel.py BattleResultsFormatter): the results
+# reach the mod either before it (the player stayed to the end: they come in battle) or a little after it (the client's
+# own results request). The message waits this long for them; held results nobody's message took are pushed as a
+# message of their own this long after the hangar opened (the battle's message came before the mod's hook, or never).
+STOCK_WAIT_S = 3.0
+UNCLAIMED_AFTER_S = 20.0
+# Results and released arenas kept for the messages still to come.
+NOTICE_ARENAS_LIMIT = 20

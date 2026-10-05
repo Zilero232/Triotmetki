@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 GROUP = 'hangar'
@@ -9,6 +10,8 @@ SHARE_CHANNEL = 'share_session_channel'
 
 DEFAULTS = {
     'show_moe': True,
+    # PMOD's «сессионная статистика в системном канале»: a line in the stock post-battle message, off as there.
+    'notice_line': False,
     'show_goals': True,
     'max_goals': 3,
     'show_account': True,

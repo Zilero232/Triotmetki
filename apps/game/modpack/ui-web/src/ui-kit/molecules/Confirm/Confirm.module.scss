@@ -1,0 +1,21 @@
+@use '@/shared/styles/gameface' as *;
+
+.confirm {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid token(color-danger);
+  border-radius: token(radius-md);
+  margin-top: 12px;
+  background-color: token(color-surface-sunken);
+}
+
+.text {
+  flex: 1 1 auto;
+  font-size: 13px;
+}
+
+.button {
+  margin-left: 8px;
+}

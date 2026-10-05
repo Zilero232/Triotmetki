@@ -4,6 +4,8 @@ const UI_WEB_ROOT = path.resolve(import.meta.dirname, '../..');
 
 export const UI_BUILD = {
   root: UI_WEB_ROOT,
+  source: path.resolve(UI_WEB_ROOT, 'src'),
+  alias: '@',
   outDir: path.resolve(UI_WEB_ROOT, '../packages/ui/gameface'),
   hudMode: 'hud',
   advisorMode: 'advisor',
@@ -14,13 +16,13 @@ export const UI_BUILD = {
     viewer: path.resolve(UI_WEB_ROOT, 'viewer.html')
   },
   scripts: {
-    advisor: { entry: path.resolve(UI_WEB_ROOT, 'src/app/preset-advisor/main.ts'), file: 'preset_advisor.js' }
+    advisor: { entry: path.resolve(UI_WEB_ROOT, 'src/advisor.ts'), file: 'preset_advisor.js' }
   },
   script: {
     target: 'chrome94'
   },
   dev: {
-    mockEntry: '/src/app/dev/main.ts'
+    mockEntry: '/src/dev.ts'
   },
   html: {
     extension: '.html',

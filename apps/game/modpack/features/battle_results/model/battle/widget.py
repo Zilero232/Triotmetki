@@ -37,15 +37,15 @@ def _row(row):
     }
 
 
-# The `battle_summary` widget of a card view (view.live_view, view.last_view). `dismiss` is the panel's alias the page's
-# close mark sends back as `pressed` (the previous battle's card), None for a card without one.
-def card_widget(view, dismiss=None):
+# The `battle_summary` widget of the previous battle's card (view.last_view), shown for `show_s` seconds.
+def card_widget(view, show_s):
     return widget(WIDGET_KIND, {
+        'card': _text(view['card'], 'card') or u'',
         'title': _text(view['title'], 'title') or u'',
         'subtitle': _text(view['subtitle'], 'subtitle'),
         'result': _text(view['result'], 'value'),
         'result_tone': tone(view['result_tone'], 'muted'),
         'tiles': [_tile(tile) for tile in view['tiles']][:LIMITS['tiles']],
         'rows': [_row(row) for row in view['rows']][:LIMITS['rows']],
-        'dismiss': dismiss,
+        'show_s': show_s,
     })

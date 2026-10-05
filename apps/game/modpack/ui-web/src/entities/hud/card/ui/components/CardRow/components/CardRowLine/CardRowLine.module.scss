@@ -1,0 +1,46 @@
+@use '@/shared/styles/gameface' as *;
+
+.line {
+  display: flex;
+  min-height: 20px;
+  flex-direction: row;
+  align-items: center;
+}
+
+.icon {
+  margin-right: 4px;
+}
+
+.label {
+  flex-shrink: 0;
+  margin-right: 8px;
+  color: token(hud-muted);
+
+  @include hud-type(caption);
+}
+
+.text {
+  flex-grow: 1;
+  flex-shrink: 1;
+
+  @include hud-type(body);
+  @include ellipsis;
+}
+
+.value {
+  flex-shrink: 0;
+  padding-left: 8px;
+  margin-left: auto;
+  white-space: nowrap;
+
+  @include hud-type(value);
+}
+
+.note {
+  flex-shrink: 0;
+  margin-left: 4px;
+  color: token(hud-muted);
+  white-space: nowrap;
+
+  @include hud-type(caption);
+}

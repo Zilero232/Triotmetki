@@ -22,13 +22,12 @@ LIMITS = {'history_size': (10, 100)}
 FIXED = {'colored': True, 'hits_keep_battles': 10}
 ADVANCED = ('hits_show_attacker', 'history_size', 'template')
 
-# The two battle cards: their switches stay in config.json beside the component's own, each card's place in its own
-# panel section.
-SUMMARY_SWITCH = 'battle_summary'
+# The previous battle's card: its switch stays in config.json beside the component's own, its place in its own panel
+# section. Right aligned 8 px from the right edge and 12 px above the minimap, where the packs show the results notice
+# (docs/research/competitors/2026-10-05-behavior-parity.md section 1.2): the page follows the player's minimap size
+# (core/hud/panel ATTACHED minimap_above); this place is the one for the middle size (310 px).
 LAST_SWITCH = 'battle_last_results'
-SUMMARY_PANEL_ID = 'battle_summary'
 LAST_PANEL_ID = 'last_battle'
-# The right top column under «Прогресс боя» (core/hud/panel DOCKS battle_right_top) and the left top column under the
-# marks and the platoon (battle_left_top): beside the team lists, never over the centre of the screen.
-SUMMARY_DEFAULTS = {'x': -372, 'y': 60, 'align_x': 'right', 'align_y': 'top'}
-LAST_DEFAULTS = {'x': 372, 'y': 60, 'align_x': 'left', 'align_y': 'top'}
+LAST_DEFAULTS = {'x': -8, 'y': -322, 'align_x': 'right', 'align_y': 'bottom'}
+# The default places of older versions (x, y, align_x, align_y): a card still at one moves to today's default.
+LAST_RETIRED_PLACES = ((372, 60, 'left', 'top'),)

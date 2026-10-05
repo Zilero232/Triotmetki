@@ -22,7 +22,7 @@
       "ignoreDependencies": ["@otmetki/design-tokens"]
     },
     "apps/game/modpack": {
-      "entry": ["ui-web/src/app/hud/main.tsx", "ui-web/src/app/dev/main.ts", "ui-web/stylelint.config.mjs"],
+      "entry": ["ui-web/src/hud.tsx", "ui-web/src/dev.ts", "ui-web/stylelint.config.mjs"],
       "project": ["ui-web/**/*.{ts,tsx,scss}"],
       "ignoreDependencies": ["lucide-react"]
     },

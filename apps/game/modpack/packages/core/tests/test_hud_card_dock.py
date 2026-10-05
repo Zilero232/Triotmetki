@@ -6,8 +6,9 @@ import unittest
 import _support
 from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer, panel_schema
 from otmetki.core.hud.icons import glyph
-from otmetki.core.hud.panel import DOCK_ANCHORS, DOCKS, anchor_of, dock_layout, dock_of
-from otmetki.core.hud.surface import SPACE_LOBBY, HudSurface
+from otmetki.core.hud.panel import ATTACHED, DOCK_ANCHORS, DOCKS, anchor_of, attach_of, dock_layout, dock_of
+from otmetki.core.hud.stock import bar_slots, stock_metrics
+from otmetki.core.hud.surface import SPACE_BATTLE, SPACE_LOBBY, HudSurface
 from otmetki.core.hud.widget import CARD_KIND, card, card_chip, card_row
 from otmetki.core.lobby_view import plain_hangar
 from otmetki.core.storage import MemoryFile
@@ -58,15 +59,13 @@ def oversized_card_data():
 
 
 def docked_feature_schemas():
-    from otmetki.features.battle_loadout.settings import SCHEMA as BATTLE_LOADOUT
     from otmetki.features.damage_log.settings import SCHEMA as DAMAGE_LOG
     from otmetki.features.marks_panel.settings import CARD_SCHEMA as HANGAR_MARKS
-    from otmetki.features.marks_panel.settings import SCHEMA as MARKS_PANEL
+    from otmetki.features.platoon_points.settings import SCHEMA as PLATOON_POINTS
     return (
         ('otmetki.hud.hangar_marks', HANGAR_MARKS),
-        ('otmetki.hud.marks_panel', MARKS_PANEL),
+        ('otmetki.hud.platoon_points', PLATOON_POINTS),
         ('otmetki.hud.damage_log', DAMAGE_LOG),
-        ('otmetki.hud.battle_loadout', BATTLE_LOADOUT),
     )
 
 
@@ -200,7 +199,7 @@ class DockTest(unittest.TestCase):
 
         dock = dock_of('otmetki.personal_missions', layout)
 
-        assert dock == {'group': 'hangar_right', 'order': 1, 'reserve': 190}
+        assert dock == {'group': 'hangar_right', 'order': 0, 'reserve': 190}
 
     def test_a_moved_panel_leaves_its_column(self):
         moved = dict(dock_layout('hangar_right'), x=-40)
@@ -216,9 +215,9 @@ class DockTest(unittest.TestCase):
     def test_layer_docks_at_the_anchor(self):
         backend = Recorder()
         layer = HudLayer(backend, ComponentConfig(MemoryFile()))
-        layer.register('marks_panel', panel_schema(anchor_of('battle_left_top')))
+        layer.register('platoon_points', panel_schema(anchor_of('battle_left_top')))
 
-        layer.show('marks_panel', u'text')
+        layer.show('platoon_points', u'text')
 
         expected = {'group': 'battle_left_top', 'order': 0, 'reserve': 290, 'ceiling': 60}
         assert backend.calls[0][2]['dock'] == expected
@@ -226,12 +225,12 @@ class DockTest(unittest.TestCase):
     def test_layer_undocks_a_panel_after_a_move(self):
         backend = Recorder()
         layer = HudLayer(backend, ComponentConfig(MemoryFile()))
-        layer.register('marks_panel', panel_schema(anchor_of('battle_left_top')))
-        layer.show('marks_panel', u'text')
+        layer.register('platoon_points', panel_schema(anchor_of('battle_left_top')))
+        layer.show('platoon_points', u'text')
 
-        layer.on_moved('otmetki.hud.marks_panel', {'x': 300, 'y': -40})
+        layer.on_moved('otmetki.hud.platoon_points', {'x': 300, 'y': -40})
 
-        assert backend.calls[-1] == ('update', 'otmetki.hud.marks_panel', {'dock': None})
+        assert backend.calls[-1] == ('update', 'otmetki.hud.platoon_points', {'dock': None, 'attach': None})
 
     def test_surface_keeps_a_valid_dock(self):
         surface = HudSurface()
@@ -280,6 +279,86 @@ class LobbyViewTest(unittest.TestCase):
 
     def test_our_own_window_alone_is_not_the_hangar(self):
         assert not plain_hangar([own_settings_window()])
+
+
+MARKS_DEFAULTS = {'x': 330, 'y': -8, 'align_x': 'center', 'align_y': 'bottom'}
+
+
+def attached_layer():
+    backend = Recorder()
+    layer = HudLayer(backend, ComponentConfig(MemoryFile()))
+    layer.register('marks_panel', panel_schema(MARKS_DEFAULTS))
+    return backend, layer
+
+
+class AttachTest(unittest.TestCase):
+
+    def test_a_panel_at_its_default_place_follows_its_stock_element(self):
+        attach = attach_of('otmetki.hud.marks_panel', MARKS_DEFAULTS, MARKS_DEFAULTS, stock_metrics())
+
+        assert attach == {'kind': 'bar_right', 'bar': 7 * 57, 'minimap': 310}
+
+    def test_a_moved_panel_keeps_its_own_place(self):
+        moved = dict(MARKS_DEFAULTS, x=200)
+
+        assert attach_of('otmetki.hud.marks_panel', moved, MARKS_DEFAULTS, stock_metrics()) is None
+
+    def test_a_panel_without_a_rule_is_not_attached(self):
+        assert attach_of('otmetki.hud.damage_log', MARKS_DEFAULTS, MARKS_DEFAULTS, stock_metrics()) is None
+
+    def test_the_attached_panels_are_the_parity_places(self):
+        assert sorted(ATTACHED.values()) == ['bar_left', 'bar_right', 'minimap_above', 'score_right']
+
+    def test_the_minimap_side_follows_the_setting(self):
+        sides = [stock_metrics(index)['minimap'] for index in range(6)]
+
+        assert sides == [210, 260, 310, 390, 490, 610]
+
+    def test_an_unreadable_minimap_setting_takes_the_middle_size(self):
+        assert [stock_metrics(value)['minimap'] for value in (None, 9, -1, True)] == [310, 310, 310, 310]
+
+    def test_the_bar_width_counts_the_slots_the_panel_added(self):
+        assert (bar_slots(0b111000111), stock_metrics(slots=bar_slots(0b111000111))['bar']) == (6, 6 * 57)
+
+    def test_an_empty_bar_takes_the_fallback_width(self):
+        assert (bar_slots(0), bar_slots(None), stock_metrics(slots=None)['bar']) == (None, None, 7 * 57)
+
+    def test_the_layer_sends_the_attach_with_the_measured_sizes(self):
+        backend, layer = attached_layer()
+        layer.set_stock_metrics(stock_metrics(4, 9))
+
+        layer.show('marks_panel', u'text')
+
+        assert backend.calls[0][2]['attach'] == {'kind': 'bar_right', 'bar': 9 * 57, 'minimap': 490}
+
+    def test_new_sizes_move_a_shown_attached_panel(self):
+        backend, layer = attached_layer()
+        layer.show('marks_panel', u'text')
+
+        layer.set_stock_metrics(stock_metrics(0, 8))
+
+        attach = {'kind': 'bar_right', 'bar': 8 * 57, 'minimap': 210}
+        assert backend.calls[-1] == ('update', 'otmetki.hud.marks_panel', {'attach': attach})
+
+    def test_the_same_sizes_send_nothing(self):
+        backend, layer = attached_layer()
+        layer.show('marks_panel', u'text')
+
+        assert layer.set_stock_metrics(stock_metrics()) is False
+        assert len(backend.calls) == 1
+
+    def test_surface_keeps_a_valid_attach(self):
+        surface = HudSurface()
+        attach = {'kind': 'minimap_above', 'bar': 399, 'minimap': 260}
+        surface.create('otmetki.hud.last_battle', {'attach': attach}, SPACE_BATTLE)
+
+        assert surface.state(SPACE_BATTLE, False)['panels'][0]['attach'] == attach
+
+    def test_surface_drops_an_invalid_attach(self):
+        surface = HudSurface()
+        surface.create('otmetki.hud.last_battle', {'attach': {'kind': 'centre', 'bar': 1, 'minimap': 2}}, SPACE_BATTLE)
+
+        assert surface.state(SPACE_BATTLE, False)['panels'][0]['attach'] is None
 
 
 if __name__ == '__main__':

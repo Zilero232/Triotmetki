@@ -10,6 +10,7 @@ import { UI_BUILD } from '../vite.constants';
 export const sharedConfig = (): UserConfig => ({
   root: UI_BUILD.root,
   plugins: [react()],
+  resolve: { alias: { [UI_BUILD.alias]: UI_BUILD.source } },
   css: {
     modules: { generateScopedName: scopedClassName, localsConvention: 'camelCaseOnly' },
     // Gameface scales the page through the root font size, so every length is written in px

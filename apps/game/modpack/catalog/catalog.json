@@ -300,8 +300,8 @@
         "en": "Marks of Excellence"
       },
       "description": {
-        "ru": "Отметка на орудии везде, где она нужна: в бою — процент и прогноз после боя, урон до следующей цели одной строкой, по Alt — пороги 65/85/95 %, среднее и боёв до отметки; в ангаре — карточка танка с тем же процентом, трендом последних боёв, уроном до отметок, включая 100 %, а по Alt — WN8 танка с сайта, опытом за бой на знаки классности и опытом до элиты и следующих танков; в окне мода — история по каждому танку и расчёт отметок.",
-        "en": "Marks of excellence wherever you need them: in battle the percent and its projection with the damage to the next goal in one line, and on Alt the 65/85/95% thresholds, the average and battles to the mark; in the hangar a tank card with the same percent, the trend of the last battles, the damage to each mark, 100% included, and on Alt the tank’s WN8 from the site, the XP per battle for the mastery badges and the XP to elite and to the next tanks; in the mod window the history per tank and the marks report."
+        "ru": "Отметка на орудии везде, где она нужна: в бою — процент и прогноз после боя, урон до следующей цели одной строкой, по Alt — пороги 65/85/95 %, среднее и боёв до отметки; в ангаре — карточка танка с тем же процентом, трендом последних боёв, уроном до отметок, включая 100 %, а по Alt — WN8 танка с сайта, опытом за бой на знаки классности и опытом до элиты и следующих танков; в окне мода — история по каждому танку и расчёт отметок. По желанию — процент отметки в строке статистики под танками карусели, как в XVM.",
+        "en": "Marks of excellence wherever you need them: in battle the percent and its projection with the damage to the next goal in one line, and on Alt the 65/85/95% thresholds, the average and battles to the mark; in the hangar a tank card with the same percent, the trend of the last battles, the damage to each mark, 100% included, and on Alt the tank’s WN8 from the site, the XP per battle for the mastery badges and the XP to elite and to the next tanks; in the mod window the history per tank and the marks report. Optionally the MoE percent in the stats row under the carousel tanks, as in XVM."
       },
       "fairPlay": {
         "ru": "Считается по вашему урону и помощи, как в итогах боя.",
@@ -454,8 +454,8 @@
         "en": "Aim and shells"
       },
       "description": {
-        "ru": "Броня под прицелом: приведённая и номинальная броня цели в точке прицеливания и пробитие вашего снаряда на этой дистанции — цветом штатного маркера (зелёный, жёлтый, красный), под прицелом в любом режиме камеры. Дистанция у прицела до любой техники под ним, а не только до той, у чьего маркера дистанция скрыта. Подсказка снаряда на панели боеприпасов: урон, пробитие, скорость и урон модулям. По желанию — круг сведения меньше стандартного (40–100 %), ближе к реальному разбросу; по умолчанию выключен.",
-        "en": "Armour under the reticle: the target's effective and nominal armour at the aim point and your shell's penetration at that distance, in the stock marker colour (green, yellow, red), under the reticle in every camera mode. The reticle distance to any vehicle under it, not only to the ones whose markers hide the distance. A shell tooltip on the ammo panel: damage, penetration, speed and module damage. If you want, an aim circle smaller than the stock one (40–100 %), closer to the real dispersion; off by default."
+        "ru": "Дистанция у прицела до любой техники под ним, а не только до той, у чьего маркера дистанция скрыта, и подсказка снаряда на панели боеприпасов: урон, пробитие, скорость и урон модулям. По желанию (по умолчанию выключено) — броня под прицелом: приведённая и номинальная броня цели в точке прицеливания и пробитие вашего снаряда на этой дистанции цветом штатного маркера (зелёный, жёлтый, красный), под прицелом в любом режиме камеры; и круг сведения меньше стандартного (40–100 %), ближе к реальному разбросу.",
+        "en": "The reticle distance to any vehicle under it, not only to the ones whose markers hide the distance, and a shell tooltip on the ammo panel: damage, penetration, speed and module damage. If you want (off by default), armour under the reticle: the target's effective and nominal armour at the aim point and your shell's penetration at that distance in the stock marker colour (green, yellow, red), under the reticle in every camera mode; and an aim circle smaller than the stock one (40–100 %), closer to the real dispersion."
       },
       "fairPlay": {
         "ru": "Броня под прицелом — те же числа, которыми клиент сам красит маркер орудия (штатный расчёт исхода выстрела): только видимая техника противника под вашим прицелом, только точка прицеливания; ничего о технике вне прицела, скрытых модулях и перезарядке. Дистанцию до цели под прицелом клиент и так показывает на маркерах; подсказки — параметры своих снарядов. Круг сведения только рисуется меньше: наведение, выстрел и разброс не меняются, в реплей пишется настоящий размер.",
@@ -586,8 +586,8 @@
         "en": "Equipment in battle"
       },
       "description": {
-        "ru": "Значки оборудования и директив вашего танка — картинки из самой игры, без подписей — прямо над стандартной панелью (★ — в слоте своей специализации, значок улучшенного, трофейного и модернизированного); наведите курсор (Ctrl) на значок, и подсказка назовёт предмет и что он даёт.",
-        "en": "Your tank's equipment and directives as the game's own icons, no labels, right above the stock panel (★: in a slot of its own specialisation, the improved, trophy and modernized marks); point the cursor (Ctrl) at an icon for a tooltip with the item's name and what it does."
+        "ru": "Значки оборудования и директив вашего танка — картинки из самой игры, без подписей — слева от стандартной панели на её высоте, как в популярных модпаках (★ — в слоте своей специализации, значок улучшенного, трофейного и модернизированного); наведите курсор (Ctrl) на значок, и подсказка назовёт предмет и что он даёт.",
+        "en": "Your tank's equipment and directives as the game's own icons, no labels, left of the stock panel at its height, as the popular modpacks place them (★: in a slot of its own specialisation, the improved, trophy and modernized marks); point the cursor (Ctrl) at an icon for a tooltip with the item's name and what it does."
       },
       "fairPlay": {
         "ru": "Только свой танк: чужое оборудование клиент не показывает, и мод его не угадывает.",
@@ -630,8 +630,8 @@
         "en": "Crosshairs"
       },
       "description": {
-        "ru": "Пресеты стандартного прицела игры (сетка, центральная метка, круг сведения, индикаторы) для аркадного и снайперского режимов, серверный прицел и 20 центральных меток на выбор: 10 своих (среди них зелёные дуги, рамка с засечками и уголки поправки), 5 своих одноцветных в шести цветах и 5 из CC0-набора Kenney.",
-        "en": "Presets for the game's own reticle (net, central marker, aiming circle, indicators) in arcade and sniper modes, the server reticle and 20 centre marks to pick from: 10 of our own (green arcs, a box with ticks and stacked chevrons among them), 5 one-colour marks of ours in six colours and 5 from Kenney's CC0 pack."
+        "ru": "Пресеты стандартного прицела игры (сетка, центральная метка, круг сведения, индикаторы) для аркадного и снайперского режимов, серверный прицел и 20 центральных меток на выбор: 10 своих (среди них зелёные дуги, рамка с засечками и уголки поправки), 5 своих одноцветных в шести цветах и 5 из CC0-набора Kenney; по умолчанию центр прицела — стандартный. Таймер перезарядки и ремонт модулей у прицела; пока таймер на экране, стандартный таймер перезарядки прицела скрыт.",
+        "en": "Presets for the game's own reticle (net, central marker, aiming circle, indicators) in arcade and sniper modes, the server reticle and 20 centre marks to pick from: 10 of our own (green arcs, a box with ticks and stacked chevrons among them), 5 one-colour marks of ours in six colours and 5 from Kenney's CC0 pack; the game's own centre stays by default. A reload timer and module repairs by the reticle; while the timer is on screen the stock reticle's reload timer hides."
       },
       "fairPlay": {
         "ru": "Только внешний вид: без автоприцела, калькулятора пробития и чужих данных.",
@@ -718,8 +718,8 @@
         "en": "Session"
       },
       "description": {
-        "ru": "Бои, процент побед, средний урон и WN8 за сессию, полоска последних 10 боёв, точное изменение отметки по танкам сессии и сколько боёв ждут итогов. После привязки мода — цели из «Моего кабинета» с прогрессом и строка аккаунта (WN8, процент побед, средний урон). По желанию отчёт о сессии в свой Telegram или Discord через сайт (выключено по умолчанию).",
-        "en": "Battles, win rate, average damage and WN8 for the session, a strip of the last 10 battles, the exact MoE change per tank of the session and how many battles await results. Once the mod is bound, your goals from the site dashboard with progress, and the account line (WN8, win rate, average damage). Optionally the session report to your own Telegram or Discord through the site (off by default)."
+        "ru": "Бои, процент побед, средний урон и WN8 за сессию, полоска последних 10 боёв, точное изменение отметки по танкам сессии и сколько боёв ждут итогов. После привязки мода — цели из «Моего кабинета» с прогрессом и строка аккаунта (WN8, процент побед, средний урон). Карточка — в левой колонке ангара под карточкой танка. По желанию строка сессии в стандартном сообщении после боя и отчёт о сессии в свой Telegram или Discord через сайт (оба выключены по умолчанию).",
+        "en": "Battles, win rate, average damage and WN8 for the session, a strip of the last 10 battles, the exact MoE change per tank of the session and how many battles await results. Once the mod is bound, your goals from the site dashboard with progress, and the account line (WN8, win rate, average damage). The card sits in the hangar's left column under the tank card. Optionally a session line in the stock post-battle message and the session report to your own Telegram or Discord through the site (both off by default)."
       },
       "fairPlay": {
         "ru": "Только ваши бои, ваши цели и рейтинги вашего аккаунта.",
@@ -740,8 +740,8 @@
         "en": "Battle results"
       },
       "description": {
-        "ru": "Сводка после каждого боя в уведомлениях с точным изменением отметки и список боёв сессии в окне мода. У боя — «Попадания по мне»: схема танка сверху с местами попаданий и список с исходом, уроном и тем, кто стрелял. В бою — карточка ваших итогов после гибели танка и в конце боя, а итоги прошлого боя, пришедшие уже в новом, — короткой карточкой.",
-        "en": "A summary after each battle in the notifications with the exact MoE change and the session battles in the mod window. Each battle shows «Hits on me»: a top-down schematic with the hit spots and a list with the outcome, the damage and who fired. In battle, a card with your results once your tank is destroyed and when the battle ends, and a short card with the previous battle's results that arrive in the next one."
+        "ru": "Строки с уроном, помощью и точным изменением отметки — в стандартном сообщении после боя (одно сообщение на бой, как в PMOD) и список боёв сессии в окне мода. У боя — «Попадания по мне»: схема танка сверху с местами попаданий и список с исходом, уроном и тем, кто стрелял. В бою — итоги прошлого боя, пришедшие уже в новом: короткая карточка сама появляется справа над мини-картой и через несколько секунд исчезает.",
+        "en": "Lines with the damage, assistance and exact MoE change in the stock post-battle message (one message per battle, as in PMOD) and the session battles in the mod window. Each battle shows «Hits on me»: a top-down schematic with the hit spots and a list with the outcome, the damage and who fired. In battle, the previous battle's results that arrive in the next one: a short card shows by itself on the right above the minimap and goes after a few seconds."
       },
       "fairPlay": {
         "ru": "Только ваша часть итогов боя.",
@@ -916,8 +916,8 @@
         "en": "Crew XP"
       },
       "description": {
-        "ru": "Сколько опыта и примерно боёв осталось каждому члену экипажа выбранной машины до конца изучаемого навыка: карточка под экипажем и строка в подсказке танкиста. Включён по умолчанию: только показывает.",
-        "en": "The XP and roughly the battles each crew member of the selected vehicle needs to finish the skill in training: a card under the crew and a line in the crew member tooltip. On by default: it only shows."
+        "ru": "Сколько опыта и примерно боёв осталось каждому члену экипажа выбранной машины до конца изучаемого навыка — строка в подсказке танкиста, как в Jove. Карточка под экипажем повторяет стандартную панель экипажа и выключена по умолчанию.",
+        "en": "The XP and roughly the battles each crew member of the selected vehicle needs to finish the skill in training, as a line in the crew member tooltip, as in Jove. The card under the crew repeats the stock crew panel and is off by default."
       },
       "fairPlay": {
         "ru": "Только ваш экипаж и средний опыт вашей машины.",
@@ -960,8 +960,8 @@
         "en": "Hit viewer"
       },
       "description": {
-        "ru": "Где вас пробили и куда попали вы: после боя в ангаре на модели танка — точка и направление каждого попадания, список «По мне / По врагам» со снарядом, исходом, уроном, углом встречи и приведённой бронёй, выбор из последних боёв. Включён по умолчанию.",
-        "en": "Where you were penetrated and where you hit: after the battle, on the tank model in the hangar, each hit's point and direction and an «On me / On enemies» list with the shell, result, damage, impact angle and effective armour, for the last battles. On by default."
+        "ru": "Где вас пробили и куда попали вы: после боя в ангаре на модели танка — точка и направление каждого попадания, список «По мне / По врагам» со снарядом, исходом, уроном, углом встречи и приведённой бронёй, выбор из последних боёв. Открывается своей кнопкой в списке модов ModsList (неактивна в очереди на бой, как у «Боевых ран») и из окна мода.",
+        "en": "Where you were penetrated and where you hit: after the battle, on the tank model in the hangar, each hit's point and direction and an «On me / On enemies» list with the shell, result, damage, impact angle and effective armour, for the last battles. Opens from its own ModsList entry (greyed out in the battle queue, as BattleHits does) and from the mod window."
       },
       "fairPlay": {
         "ru": "Только выстрелы между вашим танком и одной другой машиной, как их рисует клиент; брызги арты и авиаудары не пишутся. В бою ничего не анализируется: угол и броню ангар меряет на модели после боя.",
@@ -1026,8 +1026,8 @@
         "en": "Clock and server"
       },
       "description": {
-        "ru": "В ангаре — полоса над каруселью: время, дата, сервер, пинг по качеству связи и онлайн. В бою — часы под стандартным таймером; по желанию заменяют таймер боя.",
-        "en": "In the hangar a strip above the carousel: time, date, server, ping coloured by quality and online. In battle a clock under the stock timer that can replace the battle timer."
+        "ru": "В ангаре — строка слева вверху под шапкой, как у Battle Observer: время, дата, сервер, пинг по качеству связи и онлайн. В бою — часы под стандартным таймером; по желанию заменяют таймер боя.",
+        "en": "In the hangar a row at the top left under the header, as in Battle Observer: time, date, server, ping coloured by quality and online. In battle a clock under the stock timer that can replace the battle timer."
       },
       "fairPlay": {
         "ru": "Работает только в ангаре и читает только ваше подключение.",
@@ -1123,28 +1123,6 @@
       "perf": "medium",
       "preview": {
         "image": "previews/replay_upload.svg"
-      }
-    },
-    {
-      "id": "config_backup",
-      "category": "hangar",
-      "context": "any",
-      "presets": ["recommended", "streamer"],
-      "title": {
-        "ru": "Резервная копия настроек",
-        "en": "Settings backup"
-      },
-      "description": {
-        "ru": "Копия всех настроек мода рядом с preferences.xml игры, обновляется при каждом сохранении. Если установщик модпака стёр mods/configs, при запуске удалённые файлы вернутся сами.",
-        "en": "A copy of every mod setting next to the game's preferences.xml, refreshed on every save. When a modpack installer wiped mods/configs, the deleted files come back on the next start."
-      },
-      "fairPlay": {
-        "ru": "Работает только с файлами настроек мода, ничего не читает из боя и ничего не отправляет.",
-        "en": "Touches only the mod's own settings files; reads nothing from battles and sends nothing."
-      },
-      "perf": "low",
-      "preview": {
-        "image": "previews/config_backup.svg"
       }
     },
     {
@@ -1309,8 +1287,8 @@
         "en": "ModsList"
       },
       "description": {
-        "ru": "Кнопка модов в ряду кнопок внизу справа ангара: из неё открывается окно «Три отметки»",
-        "en": "The mods button in the hangar's bottom-right button row: it opens the «Три отметки» window"
+        "ru": "Кнопка модов в ряду кнопок внизу справа ангара: из неё открываются окно «Три отметки» и «Просмотр попаданий»",
+        "en": "The mods button in the hangar's bottom-right button row: it opens the «Три отметки» window and the hit viewer"
       },
       "author": {
         "name": "poliroid (Andrii Andruschyshyn)",
@@ -1324,7 +1302,7 @@
       "sourceUrl": "https://gitlab.com/-/project/26509092/uploads/9705f0b2627e9a074ecac2e84f38c9ca/me.poliroid.modslistapi_1.6.01.wotmod",
       "sha256": "b312adfcd005405d49b711e79b4032be7d624b6e38d4156364d1c04bc5dba71f",
       "size": 79776,
-      "requiredBy": ["ui"],
+      "requiredBy": ["ui", "hit_viewer"],
       "optional": true,
       "restartRequired": false
     }

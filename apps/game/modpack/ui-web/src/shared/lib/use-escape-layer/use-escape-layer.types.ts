@@ -1,4 +1,4 @@
-import type { EscapeLayerKind } from '../escape-stack';
+import type { EscapeLayerKind } from '@/shared/lib/escape-stack';
 
 export type UseEscapeLayerInput = {
   kind: EscapeLayerKind;

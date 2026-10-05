@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-import type { FieldFocusHandlers, UseFieldEscapeInput } from './use-field-escape.types';
+import { useEscapeLayer } from '@/shared/lib/use-escape-layer';
 
-import { useEscapeLayer } from '../use-escape-layer';
+import type { FieldFocusHandlers, UseFieldEscapeInput } from './use-field-escape.types';
 
 export const useFieldEscape = ({ onEscape, onFocus, onBlur }: UseFieldEscapeInput): FieldFocusHandlers => {
   const [field, setField] = useState<HTMLInputElement | null>(null);

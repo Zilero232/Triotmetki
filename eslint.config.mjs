@@ -124,12 +124,11 @@ export default eslint(
         'TSExportAssignment',
         {
           selector: 'JSXOpeningElement[name.name=/^(ul|ol|li|dl|dt|dd|select|option|optgroup|datalist)$/]',
-          message:
-            'Gameface renders this element only through a polyfill: use a div with a role (shared/ui/list, shared/ui/detail-list, shared/ui/segmented).'
+          message: 'Gameface renders this element only through a polyfill: use a div with a role (ui-kit List, DetailList, Segmented).'
         },
         {
           selector: 'JSXOpeningElement[name.name="input"] > JSXAttribute[name.name="type"][value.value=/^(radio|range|checkbox)$/]',
-          message: 'Gameface has no radio, range or checkbox input: use shared/ui/segmented, shared/ui/toggle or a stepper.'
+          message: 'Gameface has no radio, range or checkbox input: use the ui-kit Segmented, Toggle or a stepper.'
         },
         {
           selector: 'JSXAttribute[name.name=/^onWheel(Capture)?$/]',
@@ -145,7 +144,7 @@ export default eslint(
   // config's list with the shims as their own first group.
   {
     name: 'otmetki/modpack-engine-shims-first',
-    files: ['apps/game/modpack/ui-web/src/app/*/main.tsx'],
+    files: ['apps/game/modpack/ui-web/src/*.tsx'],
     rules: {
       'perfectionist/sort-imports': [
         'error',

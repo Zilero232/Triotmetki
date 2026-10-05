@@ -1,6 +1,7 @@
+import { uiSound } from '@/shared/api/gameface';
+
 import type { SoundRoot } from './ui-sounds.types';
 
-import { uiSound } from '../../api/gameface';
 import { UI_SOUNDS } from './ui-sounds.constants';
 
 const isControl = (element: HTMLElement): boolean => {

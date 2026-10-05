@@ -1,0 +1,132 @@
+@use '@/shared/styles/gameface' as *;
+
+@keyframes card-show {
+  0% {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+
+  2.25% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  95% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.card {
+  animation-fill-mode: forwards;
+  animation-name: card-show;
+  animation-timing-function: ease-out;
+}
+
+.plate {
+  display: flex;
+  width: 260px;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.title {
+  flex-grow: 1;
+  color: token(hud-text);
+
+  @include hud-type(key);
+  @include ellipsis;
+}
+
+.result {
+  flex-shrink: 0;
+  margin-left: 8px;
+
+  @include hud-type(key);
+}
+
+.subtitle {
+  color: token(hud-muted);
+
+  @include hud-type(caption);
+  @include ellipsis;
+}
+
+.tiles {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 6px 0 4px;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.figure {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.value {
+  margin-left: 3px;
+  color: token(hud-text);
+  white-space: nowrap;
+
+  @include hud-type(value);
+}
+
+.label {
+  color: token(hud-dim);
+  white-space: nowrap;
+
+  @include hud-type(caption);
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+}
+
+.line {
+  display: flex;
+  min-height: 18px;
+  flex-direction: row;
+  align-items: center;
+}
+
+.text {
+  flex-grow: 1;
+  margin-left: 4px;
+  color: token(hud-muted);
+
+  @include hud-type(body);
+  @include ellipsis;
+}
+
+.amount {
+  flex-shrink: 0;
+  color: token(hud-text);
+  white-space: nowrap;
+
+  @include hud-type(value);
+}
+
+.note {
+  flex-shrink: 0;
+  margin-left: 4px;
+  white-space: nowrap;
+
+  @include hud-type(caption);
+}

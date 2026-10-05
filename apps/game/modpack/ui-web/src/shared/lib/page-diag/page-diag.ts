@@ -1,8 +1,9 @@
 import { round } from 'remeda';
 
+import { send } from '@/shared/api/protocol';
+
 import type { ReportOnceInput } from './page-diag.types';
 
-import { send } from '../../api/protocol';
 import { PAGE_DIAG } from './page-diag.constants';
 
 const reported = new Set<string>();

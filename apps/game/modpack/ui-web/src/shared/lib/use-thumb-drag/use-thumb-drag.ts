@@ -1,11 +1,11 @@
 import { useEventListener, useWindowEvent } from '@siberiacancode/reactuse';
 import { useRef } from 'react';
 
-import type { DragOfInput, ThumbDrag, UseThumbDragInput } from './use-thumb-drag.types';
+import { SCROLL_AREA } from '@/shared/config';
+import { scrollMetricsOf } from '@/shared/lib/scroll-metrics';
+import { thumbOf, topFromThumb } from '@/shared/lib/wheel-scroll';
 
-import { SCROLL_AREA } from '../../config';
-import { scrollMetricsOf } from '../scroll-metrics';
-import { thumbOf, topFromThumb } from '../wheel-scroll';
+import type { DragOfInput, ThumbDrag, UseThumbDragInput } from './use-thumb-drag.types';
 
 const dragOf = ({ element, clientY }: DragOfInput): ThumbDrag => {
   const { height } = element.getBoundingClientRect();

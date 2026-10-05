@@ -1,9 +1,6 @@
 {
   "data": {
-    "dismiss": {
-      "id": "otmetki.hud.last_battle",
-      "label": "Закрыть"
-    },
+    "card": "1",
     "result": "поражение",
     "result_tone": "bad",
     "rows": [
@@ -17,6 +14,7 @@
         "value": "84.00%"
       }
     ],
+    "show_s": 8.0,
     "subtitle": "Т-34-85 · Малиновка",
     "tiles": [
       {

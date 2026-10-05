@@ -1,0 +1,19 @@
+@use '@/shared/styles/gameface' as *;
+
+.list {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  border: 1px solid token(color-border);
+  border-radius: token(radius-md);
+  background-color: token(color-bg);
+}
+
+.canvas {
+  position: relative;
+  width: 100%;
+  flex: 0 0 auto;
+}

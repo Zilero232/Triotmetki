@@ -1,0 +1,48 @@
+@use '@/shared/styles/gameface' as *;
+
+.plate {
+  display: flex;
+  flex-direction: column;
+  border-radius: token(hud-radius);
+  color: token(hud-text);
+
+  @include hud-text;
+}
+
+.solid {
+  border-top: 1px solid token(hud-hairline);
+  border-left: 1px solid token(hud-rule);
+  background-image: token(hud-plate-solid);
+
+  @include hud-plate-padding(solid);
+}
+
+.contrast {
+  border-top: 1px solid token(hud-hairline);
+  border-left: 1px solid token(hud-rule);
+  background-image: token(hud-plate-contrast);
+
+  @include hud-plate-padding(solid);
+}
+
+.edge {
+  background-image: token(hud-plate-edge);
+
+  @include hud-plate-padding(edge);
+}
+
+.edge-end {
+  background-image: token(hud-plate-edge-end);
+
+  @include hud-plate-padding(edge-end);
+}
+
+.centre {
+  background-image: token(hud-plate-centre);
+
+  @include hud-plate-padding(centre);
+}
+
+.none {
+  padding: 0;
+}

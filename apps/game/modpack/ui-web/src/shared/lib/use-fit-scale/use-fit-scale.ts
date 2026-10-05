@@ -1,7 +1,7 @@
 import { useWindowEvent } from '@siberiacancode/reactuse';
 import { useLayoutEffect, useRef, useState } from 'react';
 
-import { fitScale } from '../fit-scale';
+import { fitScale } from '@/shared/lib/fit-scale';
 
 const sizeOf = (element: HTMLElement | null) => ({ width: element?.offsetWidth ?? 0, height: element?.offsetHeight ?? 0 });
 

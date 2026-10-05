@@ -72,12 +72,12 @@ BATTLE_PANELS = [
     'battle_clock', 'battle_progress', 'damage_log', 'sixth_sense', 'team_hp',
 ]
 DESCRIBED_PANELS = [
-    'aim_info', 'battle_clock', 'battle_hotkeys', 'battle_loadout', 'battle_progress', 'battle_summary', 'crosshair',
-    'damage_log', 'gun_arc', 'hangar_marks', 'last_battle', 'marks_panel', 'platoon_points', 'sixth_sense', 'team_hp',
+    'aim_info', 'battle_clock', 'battle_hotkeys', 'battle_loadout', 'battle_progress', 'crosshair', 'damage_log',
+    'gun_arc', 'hangar_marks', 'last_battle', 'marks_panel', 'platoon_points', 'sixth_sense', 'team_hp',
 ]
 HUD_EDIT_PREVIEWS = [
-    'aim_info', 'battle_clock', 'battle_loadout', 'battle_progress', 'battle_summary', 'crosshair', 'damage_log',
-    'gun_arc', 'hangar_marks', 'last_battle', 'marks_panel', 'platoon_points', 'sixth_sense',
+    'aim_info', 'battle_clock', 'battle_loadout', 'battle_progress', 'crosshair', 'damage_log', 'gun_arc',
+    'hangar_marks', 'last_battle', 'marks_panel', 'platoon_points', 'sixth_sense',
 ]
 # RU 1.45 aih_constants.SHOT_RESULT values.
 SHOT_RESULTS = {'UNDEFINED': 0, 'NOT_PIERCED': 1, 'LITTLE_PIERCED': 2, 'GREAT_PIERCED': 3}
@@ -87,6 +87,11 @@ OWN_PIERCING = (218.4, 180.0)
 TARGET_PLATES = ((20.0, 0), (180.0, 1))
 HIT_ANGLE_COS = 0.866
 RETICLE_SCREEN = {'position': (960, 540), 'size': (1920, 1080), 'scale': 1.0}
+# CROSSHAIR_VIEW_ID (RU 1.45): the arcade view and the dead player's view; the arcade reticle sits 15 % of the half
+# height above the centre (gui/avatar_input_handler.xml arcadeMode/defaultOffset 0 0.15).
+ARCADE_VIEW = 1
+POSTMORTEM_VIEW = 4
+ARCADE_RETICLE = (960, 459)
 OWN_SHOT = {
     'damage': 390,
     'nominal': None,
@@ -1530,50 +1535,29 @@ class BattleCardsTest(StoryTest):
         app = game.open_hangar(is_bound=True)
         app.marks.hangar_moe[1] = dict(HANGAR_MOE)
         session = game.enter_battle(NEXT_ARENA, tank_id=1)
-        session.own_feedback(
-            Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)),
-            Feedback(KINDS.DAMAGE, ALLY_VEHICLE, Extra(50)),
-            Feedback(KINDS.RADIO_ASSIST, ENEMY_VEHICLE, Extra(120)),
-            Feedback(KINDS.TANKING, ENEMY_VEHICLE, Extra(240)),
-            Feedback(KINDS.KILL, ENEMY_VEHICLE, Extra()),
-        )
-        cls.panels_alive = sorted(game.hud_components())
+        session.own_feedback(Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)))
         session.arena.onVehicleKilled(OWN_VEHICLE, ENEMY_VEHICLE, 0, 0, 1)
-        cls.summary_after_death = game.hud_text('battle_summary')
         session.arena.onPeriodChange(ARENA_PERIODS['AFTERBATTLE'], 0, 0, (2, 1))
-        cls.summary_after_end = game.hud_text('battle_summary')
+        cls.panels_after_end = sorted(game.hud_components())
 
         game.events.onBattleResultsReceived(True, _support.battle_results())
-        cls.last_battle = game.hud_text('last_battle')
-        cards = game.instances()['battle_results'].last_battle
-        cards._on_pressed('otmetki.hud.last_battle')
-        cls.panels_dismissed = sorted(game.hud_components())
+        cls.last_battle = game.hud_components()['last_battle']
+        game.run_callbacks()
+        cls.panels_after_show = sorted(game.hud_components())
         game.back_to_hangar()
         cls.panels_after_battle = sorted(game.hud_components())
 
-    def test_the_summary_waits_for_the_own_tank_or_the_battle_end(self):
-        self.assertNotIn('battle_summary', self.panels_alive)
+    def test_no_card_counts_the_battle_being_played(self):
+        self.assertNotIn('battle_summary', self.panels_after_end)
 
-    def test_the_summary_shows_the_own_numbers_once_the_tank_is_destroyed(self):
-        self.assertIn(u'Итоги боя', self.summary_after_death)
-        self.assertIn(u'390', self.summary_after_death)
+    def test_the_previous_battle_s_results_show_in_the_next_battle_by_themselves(self):
+        self.assertIn(u'Прошлый бой', self.last_battle['text'])
 
-    def test_the_summary_counts_no_ally_damage(self):
-        self.assertNotIn(u'440', self.summary_after_death)
+    def test_the_previous_battle_card_hides_by_itself(self):
+        self.assertNotIn('last_battle', self.panels_after_show)
 
-    def test_the_summary_names_the_outcome_when_the_battle_ends(self):
-        self.assertIn(u'поражение', self.summary_after_end)
-
-    def test_the_previous_battle_s_results_show_in_the_next_battle(self):
-        self.assertIn(u'Прошлый бой', self.last_battle)
-
-    def test_the_previous_battle_card_can_be_dismissed(self):
-        self.assertNotIn('last_battle', self.panels_dismissed)
-
-    def test_leaving_the_battle_removes_both_cards(self):
-        cards = [panel for panel in self.panels_after_battle if panel in ('battle_summary', 'last_battle')]
-
-        self.assertEqual(cards, [])
+    def test_leaving_the_battle_removes_the_card(self):
+        self.assertNotIn('last_battle', self.panels_after_battle)
 
 
 class HudSwitchedOffTest(StoryTest):
@@ -3326,12 +3310,16 @@ class ShotResultResolver(object):
 
 def crosshair_proxy():
     proxy = instance('CrosshairDataProxy', {
-        'getViewID': lambda proxy: 1,
-        'getScaledPosition': lambda proxy: RETICLE_SCREEN['position'],
-        'getSize': lambda proxy: RETICLE_SCREEN['size'],
-        'getScaleFactor': lambda proxy: RETICLE_SCREEN['scale'],
+        'getViewID': lambda proxy: proxy.view_id,
+        'getScaledPosition': lambda proxy: proxy.screen['position'],
+        'getSize': lambda proxy: proxy.screen['size'],
+        'getScaleFactor': lambda proxy: proxy.screen['scale'],
     })
+    proxy.view_id = ARCADE_VIEW
+    proxy.screen = dict(RETICLE_SCREEN)
     proxy.onGunMarkerStateChanged = Event()
+    proxy.onCrosshairViewChanged = Event()
+    proxy.onCrosshairPositionChanged = Event()
     return proxy
 
 
@@ -3417,6 +3405,64 @@ class AimArmorTest(StoryTest):
 
     def test_no_target_hides_the_readout(self):
         self.assertNotIn('aim_info', self.panels_without_a_target)
+
+
+class AimArmorArcadeTest(StoryTest):
+
+    @staticmethod
+    def join_arcade_battle(game):
+        app, vehicle_class = open_shots_hangar(game)
+        game.hud_module().hud_layer(app).update_settings('aim_info', {'armor_under_aim': True})
+        install_aim_armor_stubs()
+        session = BattleSession()
+        session.shared.crosshair = crosshair_proxy()
+        session.shared.crosshair.screen['position'] = ARCADE_RETICLE
+        game.player = Player(ACCOUNT, 4243)
+        game.player.vehicleTypeDescriptor = instance('Descriptor', {'shot': own_shot()})
+        game.player.getOwnVehiclePosition = lambda: Vector(0.0, 0.0, 0.0)
+        game.join(session)
+        return session, target(vehicle_class, 2)
+
+    @classmethod
+    def play(cls, game):
+        session, enemy = cls.join_arcade_battle(game)
+        crosshair = session.shared.crosshair
+
+        game.clock[0] += 0.2
+        AimArmorTest.aim(session, enemy)
+        props = game.hud_components()['aim_info']
+        cls.arcade_place = (props['x'], props['y'])
+
+        game.clock[0] += 0.2
+        AimArmorTest.aim(session, None)
+        AimArmorTest.aim(session, enemy)
+        game.run_callbacks()
+        cls.panels_once_the_aim_settles_on_an_enemy = sorted(game.hud_components())
+
+        game.clock[0] += 0.2
+        AimArmorTest.aim(session, enemy)
+        AimArmorTest.aim(session, None)
+        game.run_callbacks()
+        cls.panels_once_the_aim_leaves_the_enemy = sorted(game.hud_components())
+
+        game.clock[0] += 0.2
+        AimArmorTest.aim(session, enemy)
+        crosshair.view_id = POSTMORTEM_VIEW
+        crosshair.onCrosshairViewChanged(POSTMORTEM_VIEW)
+        cls.panels_after_death = sorted(game.hud_components())
+        game.back_to_hangar()
+
+    def test_the_readout_shows_under_the_arcade_reticle(self):
+        self.assertEqual(self.arcade_place, (0, 51))
+
+    def test_the_readout_follows_the_aim_that_settles_on_an_enemy_within_a_tick(self):
+        self.assertIn('aim_info', self.panels_once_the_aim_settles_on_an_enemy)
+
+    def test_the_readout_hides_when_the_aim_leaves_the_enemy_within_a_tick(self):
+        self.assertNotIn('aim_info', self.panels_once_the_aim_leaves_the_enemy)
+
+    def test_the_readout_hides_when_the_player_dies(self):
+        self.assertNotIn('aim_info', self.panels_after_death)
 
 
 if __name__ == '__main__':

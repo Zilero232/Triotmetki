@@ -1,0 +1,65 @@
+@use '@/shared/styles/gameface' as *;
+
+.scale {
+  position: relative;
+  display: flex;
+  height: 9px;
+  flex-direction: column;
+  flex-shrink: 0;
+  justify-content: center;
+}
+
+.labelled {
+  height: 24px;
+  justify-content: flex-start;
+  padding-top: 3px;
+}
+
+.track {
+  position: relative;
+  height: 3px;
+  background-color: token(hud-bar-track);
+}
+
+.fill {
+  height: 100%;
+  background-color: token(hud-gold);
+  transition: width token(duration-reveal) token(ease-out);
+}
+
+.tick {
+  position: absolute;
+  top: -1px;
+  width: 1px;
+  height: 5px;
+  background-color: token(hud-tick);
+}
+
+.reached {
+  background-color: token(hud-gold);
+}
+
+.cursor {
+  position: absolute;
+  top: -2px;
+  width: 2px;
+  height: 7px;
+  margin-left: -1px;
+  background-color: token(hud-index);
+  transition: left token(duration-reveal) token(ease-out);
+}
+
+.label {
+  position: absolute;
+  top: 9px;
+  width: 20px;
+  margin-left: -10px;
+  color: token(hud-muted);
+  text-align: center;
+
+  @include hud-type(caption);
+}
+
+.labelReached {
+  color: token(hud-gold);
+}

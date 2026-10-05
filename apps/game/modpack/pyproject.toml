@@ -67,6 +67,7 @@ dev = [
     "vermin>=1.6",
     "resvg-py>=0.5",
     "pillow>=11",
+    "watchdog>=6",
 ]
 
 [tool.uv]

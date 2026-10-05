@@ -16,6 +16,6 @@ EVENT_HIT_VIEWER_OPEN = 'hit_viewer_open'
 # hit_viewer_battles(reply): a package asks which battles the hit viewer can open; it answers reply(battle_ids) at once
 # (arenaUniqueIDs as text) while it can open one in the hangar, and nobody answers without it.
 EVENT_HIT_VIEWER_BATTLES = 'hit_viewer_battles'
-# battle_progress_state(state): battle_progress's state of this battle after each change (its model progress_state:
-# `main_gun`, `record`, `counts`), which the battle results card shows beside its own numbers.
-EVENT_BATTLE_PROGRESS = 'battle_progress_state'
+# battle_notice_lines(arena_id, reply): the battle results ask for the lines other packages add to the stock post-battle
+# message of one battle (the session line); each answers reply(line) at once, nobody answers when it has nothing.
+EVENT_BATTLE_NOTICE_LINES = 'battle_notice_lines'

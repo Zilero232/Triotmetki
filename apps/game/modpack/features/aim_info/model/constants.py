@@ -51,6 +51,7 @@ PLACEMENTS = (PLACEMENT_RETICLE, PLACEMENT_FIXED)
 # SPG's top view); the settings key of the readout's offset under the reticle in each. Other views leave the panel
 # where it was.
 VIEW_OFFSETS = {1: 'arcade_offset', 2: 'sniper_offset', 3: 'strategic_offset'}
+VIEW_POSTMORTEM = 4
 
 # The HUD report's reasons while the readout shows nothing.
 NO_TARGET = 'no enemy vehicle under the reticle'

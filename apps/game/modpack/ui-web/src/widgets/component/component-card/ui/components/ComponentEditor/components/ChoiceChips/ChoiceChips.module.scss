@@ -1,0 +1,41 @@
+@use '@/shared/styles/gameface' as *;
+
+.chips {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.chip {
+  min-height: 28px;
+  padding: 4px 12px;
+  border: 1px solid token(color-border-strong);
+  border-radius: 14px;
+  margin: 0 8px 8px 0;
+  background-color: token(color-surface-sunken);
+  background-image: token(win-control);
+  box-shadow: token(win-control-shadow);
+  color: token(color-text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+
+  @include ease(background-color, border-color, color);
+
+  &:hover {
+    background-color: token(color-surface-hover);
+    color: token(color-text);
+  }
+}
+
+.chipOn {
+  border-color: token(color-accent);
+  background-color: token(color-surface);
+  background-image: token(win-accent-tint);
+  box-shadow: token(win-accent-ring);
+  color: token(color-text);
+
+  &:hover {
+    background-image: token(win-accent-tint);
+  }
+}

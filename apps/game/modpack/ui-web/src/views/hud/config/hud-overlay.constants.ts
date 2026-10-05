@@ -1,0 +1,21 @@
+export const HUD_OVERLAY = {
+  unit: 'rem',
+  hoverPollMs: 50,
+  measureFrames: 4,
+  buttonSize: 36,
+  buttonIcon: 'icon.png',
+  scaleOrigin: '0 0',
+  hidden: 0,
+  emptyRect: { left: 0, top: 0, width: 0, height: 0 },
+  dock: { gap: 6, reserve: 190, ceiling: 80 },
+  hintGap: 6,
+  attach: {
+    gap: 12,
+    edge: 8,
+    bar: { height: 58, above: 6, split: 6 },
+    log: { right: 507 },
+    minimap: { gap: 12 },
+    score: { offset: 308, top: 4, narrow: 1700, under: 52 }
+  },
+  coverAlpha: { stats: 0.25, modal: 0.25 }
+} as const;

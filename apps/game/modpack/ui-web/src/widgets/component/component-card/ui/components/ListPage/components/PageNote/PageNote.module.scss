@@ -1,0 +1,24 @@
+@use '@/shared/styles/gameface' as *;
+
+.note {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border: 1px solid token(color-accent-soft);
+  border-radius: token(radius-md);
+  margin: 0 0 12px;
+  background-color: token(color-surface);
+  background-image: token(win-accent-tint);
+}
+
+.icon {
+  flex-shrink: 0;
+  margin: 1px 10px 0 0;
+}
+
+.text {
+  color: token(color-text);
+  font-size: 12px;
+  line-height: 1.45;
+}

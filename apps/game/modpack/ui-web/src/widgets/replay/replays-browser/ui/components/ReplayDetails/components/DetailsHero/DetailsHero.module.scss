@@ -1,0 +1,77 @@
+@use '@/shared/styles/gameface' as *;
+
+.hero {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 150px;
+  flex: 0 0 auto;
+  background-color: token(color-bg-deep);
+}
+
+.heroImage {
+  width: 100%;
+  height: 150px;
+}
+
+.heroEmpty {
+  width: 100%;
+  height: 150px;
+  background-color: token(color-bg-deep);
+}
+
+.heroShade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background-image: linear-gradient(to bottom, rgb(0 0 0 / 0%), rgb(0 0 0 / 85%));
+}
+
+.heroText {
+  position: absolute;
+  bottom: 10px;
+  left: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.outcome {
+  color: token(color-text);
+  font-size: 20px;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 90%);
+
+  @include caps(2px);
+}
+
+.win {
+  color: token(color-success);
+}
+
+.loss {
+  color: token(color-danger);
+}
+
+.draw {
+  color: token(color-warning);
+}
+
+.unknown {
+  color: token(color-text-muted);
+  font-size: 14px;
+}
+
+.heroMap {
+  margin-top: 2px;
+  color: token(color-on-media);
+  font-size: 15px;
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 90%);
+}
+
+.heroMeta {
+  color: token(color-on-media);
+  font-size: 12px;
+  opacity: 0.8;
+}

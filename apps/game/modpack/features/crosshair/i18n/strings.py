@@ -75,8 +75,10 @@ STRINGS = {
         'crosshair_mark_color_hint': u'Цвет векторных меток. Цветные метки и метки Kenney рисуются своими цветами.',
         'crosshair_mark_outline_hint': u'Обводка в 1 px, чтобы метку было видно на фоне неба.',
         'crosshair_reload_box_hint': u'Секунды перезарядки своего орудия слева от прицела, под ними полное время, '
-                                     u'над ними снаряды в магазине. Последняя секунда оранжевая, «ГОТОВ» — секунду.',
-        'crosshair_reload_arcs_hint': u'Дуга слева — перезарядка своего орудия, справа — прочность своего танка.',
+                                     u'над ними снаряды в магазине. Последняя секунда оранжевая, «ГОТОВ» — секунду. '
+                                     u'Стандартный таймер перезарядки прицела на это время скрыт.',
+        'crosshair_reload_arcs_hint': u'Дуга слева — перезарядка своего орудия, справа — прочность своего танка. '
+                                      u'Стандартные индикаторы перезарядки и прочности на это время скрыты.',
         'crosshair_repair_timers_hint': u'Значок и секунды ремонта своего повреждённого модуля.',
         'crosshair_mark_size_hint': u'Сторона метки в пикселях экрана, от 16 до 128. Тонкие линии чётче всего на 32 и 64.',
         'crosshair_mark_hides_centre_hint': u'Прячет центральный маркер игры, чтобы он не наслаивался на метку.',
@@ -158,8 +160,10 @@ STRINGS = {
         'crosshair_mark_color_hint': u'The colour of the vector marks. The full-colour and Kenney marks keep their own colours.',
         'crosshair_mark_outline_hint': u'A 1 px outline so the mark stays visible against the sky.',
         'crosshair_reload_box_hint': u'Your gun\'s reload seconds left of the reticle, the full reload under them, '
-                                     u'the magazine above. The last second is orange, «READY» stays a second.',
-        'crosshair_reload_arcs_hint': u'The left arc is your gun\'s reload, the right one your tank\'s HP.',
+                                     u'the magazine above. The last second is orange, «READY» stays a second. '
+                                     u'The stock reticle\'s reload timer hides meanwhile.',
+        'crosshair_reload_arcs_hint': u'The left arc is your gun\'s reload, the right one your tank\'s HP. '
+                                      u'The stock reload and HP indicators hide meanwhile.',
         'crosshair_repair_timers_hint': u'An icon and the repair seconds of your damaged module.',
         'crosshair_mark_size_hint': u'The side of the mark in screen pixels, 16 to 128. Thin lines are crispest at 32 and 64.',
         'crosshair_mark_hides_centre_hint': u'Hides the game\'s centre marker so it does not overlap the mark.',

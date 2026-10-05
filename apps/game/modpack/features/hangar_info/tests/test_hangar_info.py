@@ -155,7 +155,12 @@ class SettingsTest(unittest.TestCase):
     def test_layout_clamps_the_position(self):
         layout = layout_of(settings(x=99999, align_x='middle'))
 
-        assert layout == {'x': 4000, 'y': -196, 'alignX': 'left', 'alignY': 'bottom', 'scale': 1.0}
+        assert layout == {'x': 4000, 'y': 83, 'alignX': 'left', 'alignY': 'top', 'scale': 1.0}
+
+    def test_the_strip_sits_top_left_under_the_header(self):
+        layout = layout_of(settings())
+
+        assert layout == {'x': 50, 'y': 83, 'alignX': 'left', 'alignY': 'top', 'scale': 1.0}
 
     def test_the_config_switch(self):
         assert SETTINGS == ('hangar_info',)

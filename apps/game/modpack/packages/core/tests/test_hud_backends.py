@@ -440,6 +440,7 @@ class SurfaceTest(unittest.TestCase):
             'kind': 'label',
             'widget': None,
             'dock': None,
+            'attach': None,
             'hint': '',
             'cover': '',
         }

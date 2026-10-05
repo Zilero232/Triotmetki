@@ -1,0 +1,28 @@
+@use '@/shared/styles/gameface' as *;
+
+.numbers {
+  display: flex;
+  width: 120px;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: 12px;
+}
+
+.damage {
+  color: token(color-text);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.unknown {
+  color: token(color-text-dim);
+}
+
+.minor {
+  margin-top: 2px;
+  color: token(color-text-muted);
+  font-size: 11px;
+
+  @include ellipsis;
+}

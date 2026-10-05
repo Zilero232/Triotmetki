@@ -1,23 +1,11 @@
-import type { ViewModel, WhenReadyInput } from './view-model.types';
+import type { ViewModel } from './view-model.types';
 
 import { GAMEFACE } from '../gameface.constants';
-import { invoke, invokeIfPresent, readGlobal } from '../scope';
+import { invoke, invokeIfPresent, readGlobal, whenReady } from '../scope';
 
 const stringOrNull = (value: unknown): string | null => (typeof value === 'string' ? value : null);
 
 const numberOrNull = (value: unknown): number | null => (typeof value === 'number' ? value : null);
-
-const whenReady = ({ engine, callback }: WhenReadyInput): void => {
-  const ready = engine?.[GAMEFACE.engine.whenReady];
-
-  if (ready instanceof Promise) {
-    void ready.then(callback);
-
-    return;
-  }
-
-  callback();
-};
 
 export const createViewModel = (scope: object): ViewModel => {
   const model = () => readGlobal(scope, GAMEFACE.globals.model);

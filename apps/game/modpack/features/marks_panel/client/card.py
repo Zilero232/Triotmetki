@@ -16,6 +16,7 @@ from ..model.constants import CARD_PREVIEW_SIZE
 from ..model.preview import card_preview_text, card_preview_widget
 from ..model.research import research_state
 from ..settings import CARD_PANEL_ID, CARD_SCHEMA, SWITCH
+from .carousel import CarouselPercent
 from .history import HistoryBook
 from .research import selected_research
 
@@ -39,6 +40,7 @@ class TankCardPanel(FeatureComponent):
         self.alt = ModifierWatch(self._on_alt, _ignore_key)
         FeatureComponent.__init__(self, app, CARD_PANEL_ID, CARD_SCHEMA, SWITCH, STRINGS)
         self.history = HistoryBook(app, options, self.enabled)
+        self.carousel = CarouselPercent(lambda: self.enabled() and bool(options.get('carousel_percent')))
         self.preview = HudPreview(
             self.hud,
             CARD_PANEL_ID,

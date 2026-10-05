@@ -1,18 +1,13 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import time
-
 from ....core.client.native import apply_settings, read_settings
 from ....core.codec import decode_json
 from ....core.log import log, log_exception, safe
-from ....core.storage import JsonFile
 from ...version import MOD_ID, VERSION
 from .. import (
     POLL_PATH,
     SETTINGS_PATH,
-    SettingsBackup,
     SettingsShareError,
-    backup_path,
     build_export_request,
     build_poll_request,
     build_result_request,
@@ -54,9 +49,8 @@ def show_confirm(title, message, callback):
 
 class SettingsShare(object):
 
-    def __init__(self, app, config_dir):
+    def __init__(self, app):
         self.app = app
-        self.config_dir = config_dir
         self.last_poll = 0.0
         self.polling = False
         self.asked = set()
@@ -67,9 +61,6 @@ class SettingsShare(object):
     def _enabled(self):
         app = self.app
         return app.config.is_enabled('share_settings') and app.is_bound() and not app.auth_failed
-
-    def _backup(self):
-        return SettingsBackup(JsonFile(backup_path(self.config_dir, self.app.account_id)))
 
     def _post(self, path, payload, callback):
         app = self.app
@@ -86,8 +77,6 @@ class SettingsShare(object):
         self.app.save_config()
         if action == 'export':
             self.export()
-        elif action == 'restore':
-            self.restore()
 
     def export(self):
         if not self._in_hangar() or not self._enabled():
@@ -117,20 +106,6 @@ class SettingsShare(object):
                 self.app.ui.notify(self.app.translate('settings_export_failed', reason='http_%d' % status))
 
         self._post(SETTINGS_PATH, payload, done)
-
-    def restore(self):
-        if not self._in_hangar():
-            return
-        backup = self._backup()
-        values = backup.values()
-        if not values:
-            self.app.ui.notify(self.app.translate('settings_no_backup'))
-            return
-        if write_client_settings(values):
-            backup.clear()
-            self.app.ui.notify(self.app.translate('settings_restored'))
-        else:
-            self.app.ui.notify(self.app.translate('settings_unavailable'))
 
     def _should_poll(self, now):
         if self.polling or now - self.last_poll < POLL_EVERY_S:
@@ -182,14 +157,14 @@ class SettingsShare(object):
         if not writable:
             self._report_nothing_writable(request, changes)
             return
-        self._confirm(request, current, writable)
+        self._confirm(request, writable)
 
     def _report_nothing_writable(self, request, changes):
         if changes:
             log('apply request %s has no settings this client can write' % request['id'])
         self._report(request['id'], 'rejected' if changes else 'applied')
 
-    def _confirm(self, request, current, changes):
+    def _confirm(self, request, changes):
         translate = self.app.translate
         groups = ', '.join(sorted(set(change[0] for change in changes)))
         title = translate('settings_apply_title', slug=request['profile_slug'])
@@ -201,15 +176,14 @@ class SettingsShare(object):
                 self.asked.discard(request['id'])
                 return
             if confirmed:
-                self._apply(request, current, changes)
+                self._apply(request, changes)
             else:
                 self._report(request['id'], 'rejected')
 
         if not show_confirm(title, message, answered):
             log('confirm dialog unavailable, apply request %s stays pending' % request['id'])
 
-    def _apply(self, request, current, changes):
-        self._backup().save(current, changes, request['id'], time.time())
+    def _apply(self, request, changes):
         if write_client_settings(changes_to_values(changes)):
             self._report(request['id'], 'applied')
             self.app.ui.notify(self.app.translate('settings_applied'))

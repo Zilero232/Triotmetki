@@ -1,0 +1,42 @@
+@use '@/shared/styles/gameface' as *;
+
+.tip {
+  display: flex;
+  width: 240px;
+  flex-direction: column;
+  padding: 6px 8px;
+  border-radius: token(hud-radius);
+  background-color: token(hud-tip);
+  color: token(hud-text);
+  white-space: normal;
+
+  @include hud-text;
+}
+
+.head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.mark {
+  display: flex;
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+
+.title {
+  color: token(hud-text);
+
+  @include hud-type(value);
+}
+
+.text {
+  color: token(hud-text);
+
+  @include hud-type(caption);
+}
+
+.below {
+  margin-top: 2px;
+}

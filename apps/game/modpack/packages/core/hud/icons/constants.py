@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import re
 
 IMAGE_SCHEME = 'img://'
-# Our own glyph drawn by the page (ui-web shared/ui/hud/glyph); after `|` in an image string it is the fallback.
+# Our own glyph drawn by the page (ui-web ui-kit/hud/Glyph); after `|` in an image string it is the fallback.
 GLYPH_SCHEME = 'otmetki:'
 FALLBACK_SEPARATOR = '|'
 

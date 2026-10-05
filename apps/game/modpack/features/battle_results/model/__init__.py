@@ -5,6 +5,7 @@ from ....core.moe import rating_change
 from ....core.format import COLOR_DOWN, COLOR_UP, font, format_number
 from ....core.templates import render
 from .constants import ASSIST_KEYS, COST_KEYS, RANDOM_BONUS_TYPE, RESULT_COLORS, STAT_FIELDS
+from .notice import APPEND, HOLD, PUSH, StockNotices, with_lines  # noqa: F401
 from .page import build_page, compact, page_actions, restore_history, session_of  # noqa: F401
 from .text import percent_text, result_label, signed
 
@@ -163,3 +164,17 @@ def format_summary(summary, settings, translate):
         lines.append(_marks_line(summary, colors, translate))
 
     return '\n'.join(lines)
+
+
+# The lines added to the stock post-battle message: it already names the result, the map, the tank, the XP and the
+# credits, so only the combat numbers and the MoE change are added (or the player's own template).
+def stock_lines(summary, settings, translate):
+    if settings.get('template'):
+        return [render(settings.get('template'), macro_values(summary, translate))]
+
+    lines = []
+    if settings.get('show_combat'):
+        lines.append(_combat_line(summary, translate))
+    if settings.get('show_marks') and summary.get('moe_percent') is not None:
+        lines.append(_marks_line(summary, settings.get('colored'), translate))
+    return lines

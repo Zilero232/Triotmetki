@@ -9,17 +9,15 @@ from .constants import (  # noqa: F401
     FIXED,
     LAST_DEFAULTS,
     LAST_PANEL_ID,
+    LAST_RETIRED_PLACES,
     LAST_SWITCH,
     LIMITS,
     MAX_TEMPLATE,
     SECTION,
-    SUMMARY_DEFAULTS,
-    SUMMARY_PANEL_ID,
-    SUMMARY_SWITCH,
     SWITCH,
 )
 
-SETTINGS = (SWITCH, SUMMARY_SWITCH, LAST_SWITCH)
+SETTINGS = (SWITCH, LAST_SWITCH)
 
 SCHEMA = fix(
     component_schema(
@@ -30,5 +28,4 @@ SCHEMA = fix(
     ),
     FIXED,
 )
-SUMMARY_SCHEMA = panel_schema(SUMMARY_DEFAULTS)
-LAST_SCHEMA = panel_schema(LAST_DEFAULTS)
+LAST_SCHEMA = panel_schema(LAST_DEFAULTS, retired=LAST_RETIRED_PLACES)

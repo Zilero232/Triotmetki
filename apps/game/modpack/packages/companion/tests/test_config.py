@@ -107,6 +107,11 @@ class ConfigTest(unittest.TestCase):
         self.assertNotIn('battle_consumables', config.to_dict())
         self.assertFalse(config.is_enabled('battle_consumables'))
 
+    def test_the_switch_of_the_removed_settings_backup_drops_out_of_the_file(self):
+        config = Config({'defaults_revision': 3, 'config_backup': True})
+
+        self.assertNotIn('config_backup', config.to_dict())
+
     def test_a_fresh_config_is_stamped_with_the_current_revision(self):
         self.assertEqual(Config().get('defaults_revision'), DEFAULTS_REVISION)
 

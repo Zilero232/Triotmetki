@@ -83,11 +83,8 @@ class UiContext(object):
         self.app.settings_ui.refresh()
 
     def companion_action(self, action):
-        share = self.app.settings_share
         if action == 'settings_export':
-            share.export()
-        else:
-            share.restore()
+            self.app.settings_share.export()
 
     def bind(self, code):
         self.app.bind(code)

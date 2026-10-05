@@ -1,3 +1,3 @@
-export { invoke, invokeIfPresent, readGlobal } from './scope';
+export { invoke, invokeIfPresent, readGlobal, whenReady } from './scope';
 
-export type { InvokeInput } from './scope.types';
+export type { InvokeInput, WhenReadyInput } from './scope.types';

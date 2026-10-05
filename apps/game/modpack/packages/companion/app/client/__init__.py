@@ -6,6 +6,8 @@ Events on `app.bus` (features subscribe to these; see CLAUDE.md for the host int
     rebind()                     credentials changed, paused queues may resume
     hangar()                     the hangar GUI is shown
     vehicle_moe(snapshot)        MoE snapshot of the vehicle selected in the hangar
+    enqueued()                   the player joined a battle queue
+    dequeued()                   the player left the queue
     battle_enter()               an avatar is ready (own battle or replay playback)
     battle_start(arena_id)       own battle started (never a replay)
     battle_ready(player)         own battle set up (never a replay)
@@ -89,7 +91,7 @@ class OtmetkiApp(object):
         self.marks = MarksCapture(self)
         self.battles = BattleCapture(self)
         self.settings_ui = create_settings_ui(self)
-        self.settings_share = SettingsShare(self, CONFIG_DIR)
+        self.settings_share = SettingsShare(self)
         self.ticker = Ticker(TICK_S, self._tick)
 
     def start(self):
@@ -225,9 +227,11 @@ class OtmetkiApp(object):
 
     def _on_enqueued(self, queue_type, *args):
         self.battles.on_enqueued(queue_type)
+        self.bus.emit('enqueued')
 
     def _on_dequeued(self, queue_type, *args):
         self.battles.on_dequeued()
+        self.bus.emit('dequeued')
 
     def _on_arena_created(self, *args):
         self.battles.on_arena_created()

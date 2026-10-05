@@ -1,0 +1,19 @@
+@use '@/shared/styles/gameface' as *;
+
+.plate {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.name {
+  color: token(hud-text);
+
+  @include hud-type(body);
+}
+
+.state {
+  margin-left: 6px;
+
+  @include hud-type(value);
+}

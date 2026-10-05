@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
-import { hudWidgetSchema } from '../../../api/hud-protocol';
+import { hudWidgetSchema } from '@/shared/api/hud-protocol';
+
 import { WIDGET_FIXTURE } from './widget-fixture.constants';
 
 export const readWidget = (kind: string) =>

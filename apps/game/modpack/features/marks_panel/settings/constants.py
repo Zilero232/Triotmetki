@@ -12,11 +12,14 @@ HANGAR_STYLES = ('compact', 'extended')
 COLOR_MODES = ('delta', 'mark', 'off')
 MAX_TEMPLATE = 400
 
+# Right of the stock consumables panel, 8 px over the bottom edge, as Lebwa and PROTanki place the marks: the page puts
+# its left edge 12 px right of the panel's live width (core/hud/panel ATTACHED bar_right); this place (centred 330 px
+# right of the middle) is the one for the fallback width and the GUIFlash renderer.
 DEFAULTS = {
-    'x': 372,
-    'y': 60,
-    'align_x': 'left',
-    'align_y': 'top',
+    'x': 330,
+    'y': -8,
+    'align_x': 'center',
+    'align_y': 'bottom',
     'style': 'compact',
     'template': '',
     'show_targets': True,
@@ -34,6 +37,8 @@ DEFAULTS = {
     'show_tank_ratings': True,
     'show_mastery': True,
     'show_research': True,
+    # XVM's and PMOD's MoE percent on the carousel tiles; off as the stock stats row it joins.
+    'carousel_percent': False,
 }
 LIMITS = {
     'trend_battles': (1, 50),
@@ -51,6 +56,7 @@ RETIRED_PLACES = (
     (0, 120, 'center', 'top'),
     (208, 8, 'left', 'top'),
     (490, -6, 'left', 'bottom'),
+    (372, 60, 'left', 'top'),
 )
 
 CARD_DEFAULTS = {

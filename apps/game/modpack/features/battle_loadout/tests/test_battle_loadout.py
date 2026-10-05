@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 import _support
+from otmetki.core.hud.panel import ATTACHED
 from otmetki.core.settings import Settings
 from otmetki.features.battle_loadout.i18n import STRINGS
 from otmetki.features.battle_loadout.model import (
@@ -200,13 +201,16 @@ class SettingsTest(unittest.TestCase):
     def test_switch(self):
         assert SETTINGS == ('battle_loadout',)
 
-    def test_placed_right_over_the_stock_consumables(self):
+    def test_placed_left_of_the_stock_consumables_at_their_height(self):
         defaults = SCHEMA.defaults
 
-        assert defaults['x'] == 0
-        assert defaults['y'] == -64
-        assert defaults['align_x'] == 'center'
-        assert defaults['align_y'] == 'bottom'
+        place = (defaults['x'], defaults['y'], defaults['align_x'], defaults['align_y'])
+
+        assert place == (-360, -8, 'center', 'bottom')
+        assert ATTACHED['otmetki.hud.battle_loadout'] == 'bar_left'
+
+    def test_a_row_left_on_top_of_the_consumables_moves_beside_them(self):
+        assert (0, -64, 'center', 'bottom') in SCHEMA.retired
 
     def test_pinned_by_default(self):
         assert SCHEMA.defaults['pinned'] is True

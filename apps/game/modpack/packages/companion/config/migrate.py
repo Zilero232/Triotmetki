@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ...core.compat import is_int
 from .constants import (
+    DEFAULTS_REVISION,
     DROPPED_SECTIONS,
     GUARDED_SWITCHES,
     LAYOUT_PLACES_SECTION,
@@ -79,20 +80,20 @@ def _switched_parts(config):
     return parts
 
 
-def _moved_places(components):
-    moved = {}
-    for section_name, old, new in MOVED_PLACES:
+def _move_places(components, revision):
+    for since, section_name, old, new in MOVED_PLACES:
         section = _section(components, section_name)
-        if section is not None and tuple(section.get(key) for key in PLACE_ORDER) == old:
-            moved[section_name] = dict(zip(PLACE_ORDER, new))
-    return moved
+        if revision < since and section is not None and tuple(section.get(key) for key in PLACE_ORDER) == old:
+            _apply(components, {section_name: dict(zip(PLACE_ORDER, new))})
 
 
-def _retired_values(components, chosen):
+def _retired_values(components, chosen, revision):
     retired = {}
-    for section_name, key, old, new in RETIRED_VALUES:
+    for since, section_name, key, old, new in RETIRED_VALUES:
         section = _section(components, section_name)
-        if section is not None and section.get(key) == old and '%s.%s' % (section_name, key) not in chosen:
+        if revision >= since or section is None or section.get(key) != old:
+            continue
+        if '%s.%s' % (section_name, key) not in chosen:
             retired.setdefault(section_name, {})[key] = new
     return retired
 
@@ -115,26 +116,35 @@ def _apply(components, updates):
         components[section_name] = section
 
 
-def migrated(config, components, schema_defaults):
-    """(config, components) of a stored install moved to revision MIGRATION_REVISION: merged switches turn on when any
-    of theirs was on, a changed value moves only when the player never changed it, the sections of removed components
-    go. `schema_defaults(section)` gives a component's schema defaults, or None when it is not installed. A fresh
-    install (no stored config) and a file already at the revision come back unchanged."""
-    if not isinstance(config, dict) or not config or _stored_revision(config) >= MIGRATION_REVISION:
-        return config, components
-
-    components = dict(components) if isinstance(components, dict) else {}
+def _merged(config, components, schema_defaults):
     stored_switches = dict(config)
     config = dict(config)
     config.update(_merged_switches(config))
     config[USER_SET_KEY] = with_user_set(config.get(USER_SET_KEY), _guarded(config, components, schema_defaults))
-
-    chosen = user_set_tokens(config.get(USER_SET_KEY))
     _apply(components, _moved_values(components))
     _apply(components, _switched_off_parts(stored_switches))
     _apply(components, _switched_parts(config))
-    _apply(components, _retired_values(components, chosen))
-    _apply(components, _moved_places(components))
+    return config
+
+
+def migrated(config, components, schema_defaults):
+    """(config, components) of a stored install moved to the current revision. Below MIGRATION_REVISION merged switches
+    turn on when any of theirs was on and the merged values move; below DEFAULTS_REVISION a changed default moves only
+    when the player never changed it, and the sections of removed components go. `schema_defaults(section)` gives a
+    component's schema defaults, or None when it is not installed. A fresh install (no stored config) and a file already
+    at the revision come back unchanged."""
+    if not isinstance(config, dict) or not config:
+        return config, components
+    revision = _stored_revision(config)
+    if revision >= DEFAULTS_REVISION:
+        return config, components
+
+    components = dict(components) if isinstance(components, dict) else {}
+    if revision < MIGRATION_REVISION:
+        config = _merged(config, components, schema_defaults)
+    _move_places(components, revision)
+    chosen = user_set_tokens(config.get(USER_SET_KEY))
+    _apply(components, _retired_values(components, chosen, revision))
     for name in DROPPED_SECTIONS:
         components.pop(name, None)
     if LAYOUT_PLACES_SECTION in components:

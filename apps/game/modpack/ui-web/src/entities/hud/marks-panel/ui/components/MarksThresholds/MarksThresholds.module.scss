@@ -1,0 +1,19 @@
+@use '@/shared/styles/gameface' as *;
+
+.line {
+  display: flex;
+  height: 18px;
+  flex-direction: row;
+  align-items: center;
+
+  @include hud-type(caption);
+}
+
+.threshold {
+  margin-right: 8px;
+}
+
+.step {
+  margin-left: auto;
+  color: token(hud-muted);
+}

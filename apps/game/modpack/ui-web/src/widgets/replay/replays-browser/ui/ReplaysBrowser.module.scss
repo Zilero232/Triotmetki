@@ -1,0 +1,22 @@
+@use '@/shared/styles/gameface' as *;
+
+.browser {
+  display: flex;
+  height: 600px;
+  min-height: 0;
+  flex-direction: column;
+  margin-top: 16px;
+}
+
+.body {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: row;
+}
+
+@media (min-height: 1000px) {
+  .browser {
+    height: 720px;
+  }
+}

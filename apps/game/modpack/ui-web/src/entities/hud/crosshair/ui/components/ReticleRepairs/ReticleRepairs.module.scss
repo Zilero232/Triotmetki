@@ -1,0 +1,26 @@
+@use '@/shared/styles/gameface' as *;
+
+.repairs {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  @include hud-text;
+}
+
+.row {
+  display: flex;
+  height: 16px;
+  flex-direction: row;
+  align-items: center;
+}
+
+.seconds {
+  margin-left: 4px;
+  color: token(hud-text);
+
+  @include hud-type(value);
+}

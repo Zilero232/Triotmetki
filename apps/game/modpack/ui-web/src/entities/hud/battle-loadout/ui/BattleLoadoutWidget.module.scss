@@ -1,0 +1,77 @@
+@use '@/shared/styles/gameface' as *;
+
+.root {
+  position: relative;
+  display: flex;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.cell {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid token(hud-slot-line);
+  border-radius: token(hud-slot-radius);
+  background-color: token(hud-slot);
+}
+
+.empty {
+  opacity: 0.6;
+}
+
+.bonus {
+  border-color: token(hud-slot-bonus);
+}
+
+.boosted {
+  border-color: token(hud-blocked);
+}
+
+.active {
+  border-color: token(hud-good);
+  background-color: token(hud-slot-active);
+}
+
+.used {
+  opacity: 0.45;
+}
+
+.divider {
+  width: 1px;
+  flex-shrink: 0;
+  margin: 0 2px;
+  background-color: token(hud-divider);
+}
+
+.overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.star {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+}
+
+.attention {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+}
+
+.tip {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 4px;
+}

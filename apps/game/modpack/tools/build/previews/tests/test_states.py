@@ -9,7 +9,7 @@ from previews.states import HUD_PREVIEWS, MODPACK_DIR, job, own_images, preview_
 
 CATALOG_PATH = os.path.join(MODPACK_DIR, 'catalog', 'catalog.json')
 PAGE_WIDGETS = os.path.join(
-    MODPACK_DIR, 'ui-web', 'src', 'entities', 'hud-widgets', 'registry', 'lib', 'widget-registry', 'widget-entries.ts',
+    MODPACK_DIR, 'ui-web', 'src', 'features', 'hud', 'widget-registry', 'lib', 'widget-registry', 'widget-entries.ts',
 )
 
 

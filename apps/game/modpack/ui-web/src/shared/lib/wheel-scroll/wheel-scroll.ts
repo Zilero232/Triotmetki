@@ -1,14 +1,15 @@
 import { clamp } from 'remeda';
 
-import type { ScrollMetrics } from '../scroll-metrics';
-import type { BindWheelScrollInput, Thumb, ThumbInput, TopFromThumbInput, WheelDelta, WheelRoot, WheelScrollInput } from './wheel-scroll.types';
+import type { ScrollMetrics } from '@/shared/lib/scroll-metrics';
 
-import { gameface } from '../../api/gameface';
-import { SCROLL_AREA } from '../../config';
-import { rootScale } from '../hud-screen';
-import { reportOnce } from '../page-diag';
-import { scrollMaxOf, scrollMetricsOf } from '../scroll-metrics';
-import { createSmoothScroll } from '../smooth-scroll';
+import { gameface } from '@/shared/api/gameface';
+import { SCROLL_AREA } from '@/shared/config';
+import { rootScale } from '@/shared/lib/design-screen';
+import { reportOnce } from '@/shared/lib/page-diag';
+import { scrollMaxOf, scrollMetricsOf } from '@/shared/lib/scroll-metrics';
+import { createSmoothScroll } from '@/shared/lib/smooth-scroll';
+
+import type { BindWheelScrollInput, Thumb, ThumbInput, TopFromThumbInput, WheelDelta, WheelRoot, WheelScrollInput } from './wheel-scroll.types';
 
 const maxTop = ({ content, viewport }: Pick<ScrollMetrics, 'content' | 'viewport'>): number => Math.max(content - viewport, 0);
 

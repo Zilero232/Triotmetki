@@ -1,0 +1,56 @@
+@use '@/shared/styles/gameface' as *;
+
+.line {
+  display: flex;
+  min-height: 36px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 4px 2px 0;
+  border-bottom: 1px solid token(win-divider);
+}
+
+.stacked {
+  flex-direction: column;
+  align-items: stretch;
+  padding: 8px 0 4px;
+}
+
+.label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-right: 12px;
+  color: token(color-text);
+  font-size: 13px;
+}
+
+.labelStacked {
+  margin-bottom: 8px;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  flex-shrink: 0;
+  border-radius: 2px;
+  margin: 0 8px 0 2px;
+  background-color: transparent;
+}
+
+.dotOn {
+  background-color: token(color-accent);
+}
+
+.control {
+  display: flex;
+  max-width: 100%;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.controlStacked {
+  justify-content: flex-start;
+  padding-left: 16px;
+}

@@ -1,0 +1,12 @@
+@use '@/shared/styles/gameface' as *;
+
+.sample {
+  display: flex;
+  flex-direction: column;
+  color: token(color-text);
+  font-family: $font-family;
+  font-size: 14px;
+  text-align: left;
+  text-shadow: 1px 1px 2px rgb(0 0 0 / 90%);
+  white-space: nowrap;
+}

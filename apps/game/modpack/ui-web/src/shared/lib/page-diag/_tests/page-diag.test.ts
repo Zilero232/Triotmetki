@@ -1,7 +1,8 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { createGamefaceMock, installGamefaceMock } from '@/shared/api/gameface/mock';
+
 import { forgetReports, PAGE_DIAG, reportOnce, round2 } from '..';
-import { createGamefaceMock, installGamefaceMock } from '../../../api/gameface/mock';
 
 const install = () => {
   const mock = createGamefaceMock({ state: '', clientSize: () => ({ width: 1920, height: 1080 }), onSend: () => null });

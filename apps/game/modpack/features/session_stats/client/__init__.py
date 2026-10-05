@@ -6,6 +6,7 @@ from ....core.client.component import FeatureComponent
 from ....core.client.game import vehicle_short_name
 from ....core.client.me import SignedRead, can_read, post_signed, signed_body, signed_read
 from ....core.errors import ReasonError
+from ....core.events import EVENT_BATTLE_NOTICE_LINES
 from ....core.hud import HangarLabel
 from ....core.log import log
 from ....core.moe import rating_change, rating_to_percent
@@ -89,6 +90,7 @@ class SessionStats(FeatureComponent):
         bus.on('ingest_response', self._on_ingest_response)
         bus.on('rebind', self._on_rebind)
         bus.on('tick', self._on_tick)
+        bus.on(EVENT_BATTLE_NOTICE_LINES, self._answer_notice_line)
 
     def _stored_share(self):
         if not self.share_synced:
@@ -201,6 +203,13 @@ class SessionStats(FeatureComponent):
         app.save_state()
         for goal in goals:
             app.ui.notify(goal_done_notice(goal, app.translate, vehicle_short_name(goal.get('tank_id'))))
+
+    def _answer_notice_line(self, arena_id, reply):
+        if not self.enabled() or not self.settings.get('notice_line'):
+            return
+        summary = self.current_summary()
+        if summary.get('battles'):
+            reply(format_session_plain(summary, self.app.translate))
 
     def view(self):
         settings = self.settings

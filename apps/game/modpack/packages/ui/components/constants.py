@@ -19,6 +19,7 @@ COMPANION_KEYS = (
     'settings_include_resolution',
     'settings_include_sensitivity',
     'hud_modifier',
+    'hud_hide_under_windows',
 )
 # Rare data-sharing details, folded under the Advanced fold (docs/specs/2026-09-30-hud-consolidation-and-design.md,
 # section 12).
@@ -32,13 +33,13 @@ COMPANION_ADVANCED = (
     'settings_include_resolution',
     'settings_include_sensitivity',
     'hud_modifier',
+    'hud_hide_under_windows',
 )
 # Never editable in the window: connection, one-shot actions and the language (the header switches it).
 HIDDEN_CONFIG_KEYS = ('server_url', 'bind_code', 'settings_action', 'language', 'user_set', 'defaults_revision')
 
 ACTION_SETTINGS_EXPORT = 'settings_export'
-ACTION_SETTINGS_RESTORE = 'settings_restore'
-COMPANION_ACTIONS = (ACTION_SETTINGS_EXPORT, ACTION_SETTINGS_RESTORE)
+COMPANION_ACTIONS = (ACTION_SETTINGS_EXPORT,)
 
 PANEL_POSITION_KEYS = ('x', 'y', 'align_x', 'align_y', 'drag', 'scale')
 # The opacity of a panel is a rare choice.
@@ -91,7 +92,6 @@ PLACEMENT = {
     'hangar_cleaner': (SECTION_STREAMER, CONTEXT_HANGAR),
     'session_stats': (SECTION_MARKS, CONTEXT_HANGAR),
     'battle_results': (SECTION_MARKS, CONTEXT_ANY),
-    'battle_summary': (SECTION_MARKS, CONTEXT_BATTLE),
     'last_battle': (SECTION_MARKS, CONTEXT_BATTLE),
     'hangar_marks': (SECTION_MARKS, CONTEXT_HANGAR),
     'hangar_tweaks': (SECTION_HANGAR, CONTEXT_HANGAR),
@@ -110,7 +110,6 @@ PLACEMENT = {
     'hangar_space': (SECTION_HANGAR, CONTEXT_HANGAR),
     'hit_viewer': (SECTION_HANGAR, CONTEXT_HANGAR),
     'update_notice': (SECTION_HANGAR, CONTEXT_HANGAR),
-    'config_backup': (SECTION_DATA, CONTEXT_ANY),
     'preset_advisor': (SECTION_HANGAR, CONTEXT_HANGAR),
     'free_camera': (SECTION_REPLAYS, CONTEXT_ANY),
     'quick_demount': (SECTION_HANGAR, CONTEXT_HANGAR),

@@ -1,4 +1,4 @@
-import { KEYS } from '../../config';
+import { KEYS } from '@/shared/config';
 
 export const onEnterKey =
   (action: () => void) =>
