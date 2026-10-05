@@ -219,6 +219,24 @@ class RecorderTest(unittest.TestCase):
 
         assert self.finish()['hits'][0]['damage'] == 420
 
+    def test_the_same_account_announced_again_keeps_the_battle_being_recorded(self):
+        Vehicle(ENEMY_ID).showDamageFromShot(OWN_ID, [HULL_PEN], 0, 1.0, False)
+
+        self.recorder._on_account(1)
+
+        assert len(self.finish()['hits']) == 1
+
+    def test_a_battle_ready_again_listens_to_the_feedback_once(self):
+        added = []
+        self.recorder.hooks.add = lambda *args: added.append(args)
+        cleared = []
+        self.recorder.hooks.clear = lambda: cleared.append(len(added))
+
+        self.recorder._on_battle_ready(Avatar())
+        self.recorder._on_battle_ready(Avatar())
+
+        assert cleared == [0, 1]
+
     def test_a_switched_off_side_is_not_recorded(self):
         self.component.settings['record_dealt'] = False
 
@@ -240,6 +258,7 @@ class ScreenTest(unittest.TestCase):
         forget_client()
         stub_client()
         screen_module = importlib.import_module('otmetki.features.hit_viewer.client.screen')
+        self.screen_module = screen_module
         component = Component()
         component.app.in_battle = False
         self.screen = screen_module.HitViewerScreen(component, Namespace(book=None))
@@ -319,6 +338,25 @@ class ScreenTest(unittest.TestCase):
         self.screen.close(restore_hangar=False)
 
         assert self.hangar_shown == []
+
+    def test_a_model_no_hit_decodes_on_is_logged(self):
+        self.screen_on_two_battles()
+        lines = []
+        self.screen_module.log = lines.append
+
+        self.screen._on_model_loaded()
+
+        assert len(lines) == 1
+        assert 'decoded' in lines[0]
+
+    def test_the_old_view_going_away_after_a_reopen_does_not_close_the_new_opening(self):
+        old = self.opened_view()
+        self.screen.window.close()
+        self.screen.window.is_open = True
+
+        self.screen.window.on_destroyed(old)
+
+        assert self.screen.window.is_open is True
 
     def test_a_view_the_client_replaced_does_not_load_the_hangar_view_again(self):
         view = self.opened_view()

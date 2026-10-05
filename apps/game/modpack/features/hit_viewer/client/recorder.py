@@ -21,9 +21,8 @@ from ..model import BOOK_FILE, MODULE_KEYS, OWN_TARGET, SIDE_DEALT, SIDE_RECEIVE
 from .constants import SIDE_BY_EVENT
 
 
+# RU 1.45 avatar arena.vehicles[id]['vehicleType']: the descriptor the player panels read the tank from.
 def gun_shots(vehicle_id):
-    """(shell effects index, shell kind, calibre) of every shot of a vehicle's gun, from the arena's vehicle list
-    (RU 1.45 avatar arena.vehicles[id]['vehicleType'], the descriptor the player panels read the tank from)."""
     vehicles = getattr(arena(), 'vehicles', None) or {}
     descriptor = (vehicles.get(vehicle_id) or {}).get('vehicleType')
     shots = getattr(getattr(descriptor, 'gun', None), 'shots', None) or ()
@@ -31,7 +30,6 @@ def gun_shots(vehicle_id):
 
 
 def shot_shell(shooter_id, effects_index):
-    """(shell code, calibre in mm) of a shot, or (None, None) when the shooter's gun has no such shell."""
     return gun_shell(gun_shots(shooter_id), effects_index) or (None, None)
 
 
@@ -71,6 +69,7 @@ class HitRecorder(object):
     def __init__(self, component):
         self.component = component
         self.book = None
+        self.account_id = None
         self.sides = values_by_name(BATTLE_EVENT_TYPE, SIDE_BY_EVENT)
         self.hooks = BattleHooks()
         bus = component.app.bus
@@ -84,6 +83,9 @@ class HitRecorder(object):
         return self.component.settings.get('keep_battles')
 
     def _on_account(self, account_id):
+        if account_id == self.account_id and self.book is not None:
+            return
+        self.account_id = account_id
         self.book = HitBook(self.component.account_file(BOOK_FILE, account_id), self._keep())
 
     def battles(self):
@@ -105,6 +107,7 @@ class HitRecorder(object):
         battle_id = getattr(player, 'arenaUniqueID', None) or int(time.time())
         own_vehicle = vehicle_name(getattr(player, 'playerVehicleID', None))
         self.book.start(battle_id, time.time(), _map_label(), own_vehicle)
+        self.hooks.clear()
         self.hooks.add(feedback, 'onPlayerFeedbackReceived', self._on_feedback)
 
     def _on_battle_leave(self):

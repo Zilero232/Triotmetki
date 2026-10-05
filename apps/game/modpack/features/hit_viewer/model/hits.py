@@ -20,8 +20,6 @@ def part_of(index):
 
 
 def impact(segments):
-    """(part, outcome) of the drawn point the client plays the shot's effect on (the last one with a known effect),
-    or None."""
     known = [point for point in drawn_points(segments) if point.code in OUTCOME_BY_CODE]
     if not known:
         return None

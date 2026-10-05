@@ -62,9 +62,8 @@ def set_header_menu(visible):
     g_eventBus.handleEvent(event, scope=EVENT_BUS_SCOPE.LOBBY)
 
 
+# RU 1.45 maps_training_base_view._onMoveSpace turns and zooms the hangar camera with the same event.
 def move_camera(dx, dy, dz):
-    """Turns and zooms the hangar camera as a drag over the 3D hangar does (RU 1.45 maps_training_base_view
-    ._onMoveSpace)."""
     from gui.hangar_cameras.hangar_camera_common import CameraRelatedEvents
     from gui.shared import EVENT_BUS_SCOPE, g_eventBus
     event = CameraRelatedEvents(CameraRelatedEvents.LOBBY_VIEW_MOUSE_MOVE, ctx={'dx': dx, 'dy': dy, 'dz': dz})
@@ -146,9 +145,6 @@ else:
 
 
 class ViewerWindowHost(object):
-    """The viewer's Gameface lobby sub view: loaded in place of the hangar view over the 3D hangar, its page pushed
-    `state` and `marks`, Esc held while it is open (the client's game input manager, as the settings window holds it);
-    closing it brings the stock hangar view back."""
 
     def __init__(self, on_message, on_escape, on_ready, on_gone):
         self.on_message_cb = on_message
@@ -157,6 +153,7 @@ class ViewerWindowHost(object):
         self.on_gone = on_gone
         self.is_open = False
         self.view = None
+        self.retired = []
         self.escape_manager = None
         self.pushed = {}
 
@@ -178,6 +175,8 @@ class ViewerWindowHost(object):
     @safe
     def close(self, restore_hangar=True):
         was_open = self.is_open
+        if self.view is not None:
+            self.retired.append(self.view)
         self.is_open, self.view, self.pushed = False, None, {}
         self._release_escape()
         if was_open and restore_hangar:
@@ -208,6 +207,9 @@ class ViewerWindowHost(object):
     # The client replaces the sub view itself (a header tab, a battle that starts without a queue, a logout): the
     # screen still has its ticker and the swapped hangar vehicle to give back.
     def on_destroyed(self, view):
+        if view in self.retired:
+            self.retired.remove(view)
+            return
         is_other_view = self.view is not None and self.view is not view
         if not self.is_open or is_other_view:
             return

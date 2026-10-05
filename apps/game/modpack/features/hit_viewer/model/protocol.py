@@ -25,7 +25,6 @@ def _clamped(fields):
 
 
 def decode_message(raw):
-    """(command, fields) of a message the viewer page sent, or None for anything malformed."""
     if not isinstance(raw, string_types) or len(raw) > MAX_MESSAGE_CHARS:
         return None
     try:

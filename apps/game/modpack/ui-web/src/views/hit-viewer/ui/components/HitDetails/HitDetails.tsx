@@ -1,17 +1,11 @@
 import clsx from 'clsx';
 
-import type { DetailLineProps, HitDetailsProps } from './HitDetails.types';
+import type { HitDetailsProps } from './HitDetails.types';
 
 import { HIT_VIEWER } from '../../../config';
+import { DetailLine } from './components/DetailLine';
 
 import s from './HitDetails.module.scss';
-
-const DetailLine = ({ label, value }: DetailLineProps) => (
-  <div className={s.line}>
-    <span className={s.label}>{label}</span>
-    <span className={s.value}>{value}</span>
-  </div>
-);
 
 export const HitDetails = ({ row, labels }: HitDetailsProps) => {
   const isMeasured = row.angle !== HIT_VIEWER.dash;

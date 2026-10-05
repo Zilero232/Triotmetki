@@ -21,7 +21,6 @@ def to_screen(clip):
 
 
 def marker(index, tone, point_clip, tail_clip):
-    """The page's marker of one hit: its point and the start of its direction line, or None off the screen."""
     point = to_screen(point_clip)
     if point is None:
         return None

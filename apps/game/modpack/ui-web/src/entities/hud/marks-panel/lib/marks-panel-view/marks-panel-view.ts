@@ -82,6 +82,8 @@ const goalView = (data: MarksPanelData): LevelNeedView | null =>
 
 const share = (value: number, end: number): number => clamp(value / end, { min: 0, max: 1 });
 
+export const shareText = (share: number): string => `${String(Math.round(share * 1000) / 10)}%`;
+
 const barTone = (bar: NonNullable<MarksPanelData['bar']>): MarksBarView['tone'] => {
   if (bar.value >= bar.end) {
     return 'gold';

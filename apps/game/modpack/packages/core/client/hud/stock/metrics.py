@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....hooks import override
 from ....hud.stock import CONSUMABLES_PANEL, bar_slots, stock_metrics
-from ....log import safe
+from ....log import log, safe
 from .constants import BAR_METHODS, MINIMAP_RESIZE_METHOD, MINIMAP_SIZE_SETTING
 
 try:
@@ -49,6 +49,8 @@ class StockMetrics(object):
                 self._follow(name)
         if MinimapComponent is not None and hasattr(MinimapComponent, MINIMAP_RESIZE_METHOD):
             self._follow_minimap()
+        else:
+            log('HUD: the minimap resize is not hooked, the attached panels keep the size from the setting')
 
     def _follow(self, name):
         metrics = self

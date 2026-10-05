@@ -169,6 +169,19 @@ class StockMetricsTest(unittest.TestCase):
 
         assert self.layer.metrics['minimap'] == 310
 
+    def test_a_client_without_the_minimap_component_says_so_in_the_log(self):
+        metrics_module = sys.modules['otmetki.core.client.hud.stock.metrics']
+        lines = []
+        saved = metrics_module.MinimapComponent, metrics_module.log
+        metrics_module.MinimapComponent, metrics_module.log = None, lines.append
+        try:
+            metrics_module.StockMetrics(self.layer).install()
+        finally:
+            metrics_module.MinimapComponent, metrics_module.log = saved
+
+        assert len(lines) == 1
+        assert 'minimap' in lines[0]
+
 
 if __name__ == '__main__':
     unittest.main()

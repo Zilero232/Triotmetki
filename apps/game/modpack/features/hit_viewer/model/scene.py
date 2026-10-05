@@ -7,12 +7,10 @@ from .constants import DAMAGED_EFFECT, EFFECT_BY_OUTCOME, EFFECT_MODEL, SHELL_MO
 
 
 def shell_model(shell):
-    """The in-game path of the shell model drawn along the selected hit, or None for a shell without one."""
     return SHELL_MODELS.get(shell)
 
 
 def effect_model(outcome, damage=0):
-    """The in-game path of the outcome marker drawn where the selected hit landed, or None."""
     effect = EFFECT_BY_OUTCOME.get(outcome)
     if effect is None:
         return None
@@ -22,7 +20,6 @@ def effect_model(outcome, damage=0):
 
 
 def along(point, direction, distance):
-    """The point `distance` metres along `direction` from `point` (negative: back along the shell's path)."""
     length = math.sqrt(sum(value * value for value in direction))
     if length <= 0:
         return tuple(point)

@@ -13,12 +13,9 @@ from .stage import HangarStage, is_exact
 from .window import ViewerWindowHost, move_camera
 
 
+# poliroid BattleHits' layout: the page lists the hits at the side, the hangar shows the vehicle with its turret and gun
+# as the shot found them.
 class HitViewerScreen(object):
-    """The hit viewer, a separate view over the 3D hangar (poliroid BattleHits' layout): the page lists the hits of
-    one recorded battle at the side, the hangar shows the vehicle the selected hit landed on with the turret and gun as
-    the shot found them, the shell's model along the hit's path and its outcome marker, and the camera flies to it; the
-    other hits on that vehicle are projected onto the page every frame (the 2D markers follow the camera the player
-    turns)."""
 
     def __init__(self, component, recorder):
         self.component = component
@@ -36,7 +33,6 @@ class HitViewerScreen(object):
         return self.window.is_open
 
     def refusal(self, battle_id=None):
-        """The i18n key of why the viewer cannot open now, or None."""
         if self.component.app.in_battle:
             return 'hv_refused_battle'
         if not self.window.available():
@@ -136,6 +132,8 @@ class HitViewerScreen(object):
                 measured = self._decode(battle, index, hit) or measured
         if measured:
             self.recorder.book.save()
+        if not self.decoded:
+            log('hit viewer: no hit of the vehicle %s decoded on the model: no collisions or decoder' % self.loaded)
         self._focus()
         self.push()
 

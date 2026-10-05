@@ -7,7 +7,6 @@ from .constants import ACTION_OPEN, DAMAGING, DASH, PAGE_LABELS, SEPARATOR, SIDE
 
 
 def side_hits(battle, side):
-    """[(index in the battle, hit)] of one side, in the order they landed."""
     return [(index, hit) for index, hit in enumerate(battle.get('hits') or []) if hit.get('side') == side]
 
 
@@ -80,9 +79,6 @@ def labels(translate):
 
 
 def viewer_state(battles, selection, translate, stage=None):
-    """The hit viewer page's state: the recorded battles (newest first), the selected battle's tabs and the rows of
-    the selected tab. `selection` is {battle, tab, index (in the battle's hits)}; `stage` what the hangar shows
-    ({loading, approx})."""
     stage = stage or {}
     state = {'labels': labels(translate), 'battles': [battle_item(item, translate) for item in reversed(battles)]}
     battle = _selected_battle(battles, selection.get('battle'))

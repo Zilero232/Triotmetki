@@ -4,7 +4,7 @@ import { readWidgetFixture } from '@/shared/lib/testing/widget-fixture';
 
 import { MARKS_PANEL } from '../../../config';
 import { marksPanelSchema } from '../../../model/schemas';
-import { marksPanelView } from '../marks-panel-view';
+import { marksPanelView, shareText } from '../marks-panel-view';
 
 const data = marksPanelSchema.parse(readWidgetFixture('marks_panel'));
 
@@ -116,5 +116,11 @@ describe(marksPanelView, () => {
   it('keeps the text only for a custom template', () => {
     expect(marksPanelView({ ...data, style: 'custom', text: '86' }).text).toBe('86');
     expect(marksPanelView({ ...data, text: '86' }).text).toBeNull();
+  });
+});
+
+describe(shareText, () => {
+  it('rounds a share to a tenth of a percent', () => {
+    expect(shareText(0.12345)).toBe('12.3%');
   });
 });

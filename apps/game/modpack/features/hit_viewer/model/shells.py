@@ -4,12 +4,9 @@ from ....core.compat import is_number
 from ....core.shells import shell_code
 
 
+# A hit names only its effects index (Vehicle.showDamageFromShot) and its effects group carries no shell type and only a
+# rough calibre: the shell is found on the shooter's gun, as poliroid BattleHits does (utils.getShellParams).
 def gun_shell(shots, effects_index):
-    """(shell code, calibre in mm) of the shooter's gun shot whose shell plays the hit's effects, or None.
-
-    `shots` are the gun's shots as (shell effects index, shell kind, calibre): a hit names only its effects index
-    (Vehicle.showDamageFromShot), and the shot effects group it points to carries no shell type and only a rough
-    calibre, so the shell is found on the shooter's gun the way poliroid BattleHits does it (utils.getShellParams)."""
     for shot_effects, kind, caliber in shots or ():
         if shot_effects != effects_index:
             continue

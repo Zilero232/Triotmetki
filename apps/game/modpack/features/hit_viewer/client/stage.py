@@ -44,8 +44,6 @@ def camera_manager(space):
 
 
 def preview_descriptor(target):
-    """The packed descriptor of the recorded vehicle with its recorded chassis, turret and gun, or None (the stock
-    model is shown)."""
     from items import parseIntCompactDescr, vehicles
     _, nation_id, inner_id = parseIntCompactDescr(target['cd'])
     descriptor = vehicles.VehicleDescr(typeID=(nation_id, inner_id))
@@ -84,10 +82,9 @@ def _rotation(yaw, pitch):
     return matrix
 
 
+# poliroid BattleHits' own models (MIT, shipped unmodified), placed the way its HangarScene does it. UNVERIFIED on Lesta
+# 1.45: the models load and draw in the hangar space.
 class SceneModels(object):
-    """The shell along the selected hit's path and the marker of its outcome: poliroid BattleHits' own models (MIT,
-    shipped unmodified), placed the way its HangarScene does it (a BigWorld.Model with a Servo motor in the hangar
-    space, turned to the shot's direction). UNVERIFIED on Lesta 1.45: the models load and draw in the hangar space."""
 
     def __init__(self):
         self.models = {}
@@ -160,6 +157,8 @@ class HangarStage(object):
         if self.space is None or self.preview() is None:
             return False
         self.subscribed = subscribe(self.space, 'onVehicleChanged', self._on_vehicle_changed)
+        if client_attr(CAMERA_MANAGER_MODULE, CAMERA_MANAGER_CLASS) is None:
+            log('hit viewer: no hangar camera manager, the camera will not fly to the hits')
         return True
 
     def show(self, target):
@@ -219,8 +218,8 @@ class HangarStage(object):
     def entity(self):
         return self.space.getVehicleEntity() if self.space is not None else None
 
+    # BattleHits Vehicle.__updateAppereance poses the turret and gun the same way.
     def pose(self, aim):
-        """Turns the shown turret and gun to the recorded [yaw, pitch] (BattleHits Vehicle.__updateAppereance)."""
         model = getattr(getattr(self.entity(), 'appearance', None), 'compoundModel', None)
         if model is None or not aim:
             return
@@ -229,7 +228,6 @@ class HangarStage(object):
         model.node(GUN_NODE, _rotation(0.0, pitch))
 
     def decode(self, segments):
-        """(part node name, local point, local direction) of a shot on the shown model, or None."""
         entity = self.entity()
         decoder = client_attr(DECODER_MODULE, DECODER_CLASS)
         appearance = getattr(entity, 'appearance', None)
@@ -252,7 +250,6 @@ class HangarStage(object):
         return node.applyPoint(point), world_direction
 
     def measure(self, decoded, shell=None, caliber=None):
-        """The first plate along the shot on the shown model ({angle, armor, nominal}), or None."""
         point, direction = self.world(decoded)
         appearance = self.entity().appearance
         found = appearance.collisions.collideAllWorld(point - direction * PROBE_M, point + direction * PROBE_M)
@@ -264,7 +261,6 @@ class HangarStage(object):
         return first_plate(layers, shell, caliber)
 
     def clip(self, decoded):
-        """The clip-space (x, y, z, w) of the hit point and of its direction line's start."""
         import Math
         project = client_attr(PROJECTION_MODULE, PROJECTION_FUNCTION)
         matrix = project()

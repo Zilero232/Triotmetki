@@ -291,6 +291,19 @@ class CoverWatchTest(unittest.TestCase):
         assert setups.as_hideS(True) == 'hidden'
         assert self.layer.stock_hidden == frozenset()
 
+    def test_a_client_without_the_setups_panel_says_so_in_the_log(self):
+        cover_module = sys.modules['otmetki.core.client.hud.cover']
+        lines = []
+        saved = cover_module.PrebattleAmmunitionPanelViewMeta, cover_module.log
+        cover_module.PrebattleAmmunitionPanelViewMeta, cover_module.log = None, lines.append
+        try:
+            self.watch._follow_setups()
+        finally:
+            cover_module.PrebattleAmmunitionPanelViewMeta, cover_module.log = saved
+
+        assert len(lines) == 1
+        assert 'setups' in lines[0]
+
     def test_the_page_end_gives_every_followed_component_back(self):
         page = self.alive_page()
         page._setComponentsVisibility(hidden={'consumablesPanel'})

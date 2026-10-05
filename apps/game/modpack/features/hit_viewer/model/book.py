@@ -64,7 +64,6 @@ def _shell_of(value):
 
 
 def clean_aim(value):
-    """[turret yaw, gun pitch] of the hit vehicle as the shot found it, or None."""
     if not isinstance(value, (list, tuple)) or len(value) != 2:
         return None
     if not all(is_number(angle) and abs(angle) <= AIM_LIMIT for angle in value):
@@ -144,9 +143,6 @@ def _stored_battles(store):
 
 
 class HitBook(object):
-    """The hits between the player's own tank and other vehicles in the last `keep` battles, both ways: each with its
-    packed points (decoded again on the model in the hangar), the shell, the outcome and the damage the own feedback
-    reported; the angle and the armour are added once the hangar has measured them on the model."""
 
     def __init__(self, store, keep):
         self.store = store
@@ -179,8 +175,6 @@ class HitBook(object):
         return True
 
     def hit(self, shot, at=None):
-        """Records `shot` ({side, target, other, vehicle, class, segments, shell, caliber, aim}); `other` is the
-        other vehicle's id its damage is matched by."""
         if self.current is None or len(self.current['hits']) >= MAX_HITS:
             return False
         target = to_text(shot.get('target'))
@@ -265,7 +259,6 @@ class HitBook(object):
         return joined
 
     def battle(self, battle_id=None):
-        """The recorded battle `battle_id`, else the latest one, or None."""
         for battle in reversed(self.battles):
             if battle['id'] == battle_id:
                 return battle

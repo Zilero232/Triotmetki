@@ -4,5 +4,3 @@ export type HitDetailsProps = {
   row: ViewerRow;
   labels: Record<string, string>;
 };
-
-export type DetailLineProps = { label: string | undefined; value: string };

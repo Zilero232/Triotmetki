@@ -111,10 +111,13 @@ class CoverWatch(object):
 
     def _follow_setups(self):
         if PrebattleAmmunitionPanelViewMeta is None:
+            log('HUD cover: no pre-battle setups panel in this client, the consumables panel follows the page alone')
             return
         for name, shown in SETUPS_METHODS:
             if hasattr(PrebattleAmmunitionPanelViewMeta, name):
                 self._follow_setups_call(name, shown)
+            else:
+                log('HUD cover: the setups panel has no %s, it is not followed' % name)
 
     def _follow_setups_call(self, name, shown):
         watch = self
