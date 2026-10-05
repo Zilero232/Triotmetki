@@ -630,8 +630,8 @@
         "en": "Crosshairs"
       },
       "description": {
-        "ru": "Пресеты стандартного прицела игры (сетка, центральная метка, круг сведения, индикаторы) для аркадного и снайперского режимов, серверный прицел и 26 центральных меток на выбор: 19 своих одноцветных в восьми цветах (с тёмным контуром или без), 4 своих цветных (среди них зелёные дуги и уголки поправки) и 3 из CC0-набора Kenney; по умолчанию центр прицела — стандартный. Таймер перезарядки у прицела; пока он на экране, стандартный таймер перезарядки прицела скрыт. Ремонт модулей остаётся на стандартной панели повреждений.",
-        "en": "Presets for the game's own reticle (net, central marker, aiming circle, indicators) in arcade and sniper modes, the server reticle and 26 centre marks to pick from: 19 one-colour marks of ours in eight colours (with or without a dark outline), 4 full-colour marks of ours (green arcs and stacked chevrons among them) and 3 from Kenney's CC0 pack; the game's own centre stays by default. A reload timer by the reticle; while it is on screen the stock reticle's reload timer hides. Module repairs stay on the stock damage panel."
+        "ru": "Пресеты стандартного прицела игры (сетка, центральная метка, круг сведения, индикаторы) для аркадного и снайперского режимов, серверный прицел и 26 центральных меток на выбор: 19 своих одноцветных в восьми цветах (с тёмным контуром или без), 4 своих цветных (среди них зелёные дуги и уголки поправки) и 3 из CC0-набора Kenney; по умолчанию центр прицела — стандартный. Таймер перезарядки у прицела и барабан значками снарядов (заряженные светлые, отстрелянные тусклые, время всего барабана, дозарядка у автозаряжания), по желанию кратность снайперского прицела; пока они на экране, стандартные таймер, индикатор барабана и кратность скрыты. Ремонт модулей остаётся на стандартной панели повреждений.",
+        "en": "Presets for the game's own reticle (net, central marker, aiming circle, indicators) in arcade and sniper modes, the server reticle and 26 centre marks to pick from: 19 one-colour marks of ours in eight colours (with or without a dark outline), 4 full-colour marks of ours (green arcs and stacked chevrons among them) and 3 from Kenney's CC0 pack; the game's own centre stays by default. A reload timer by the reticle and the magazine as shell icons (loaded bright, fired dim, the whole drum's reload, the auto-reloader's refill), the sniper zoom on request; while they are on screen the stock reload timer, magazine indicator and zoom hide. Module repairs stay on the stock damage panel."
       },
       "fairPlay": {
         "ru": "Только внешний вид: без автоприцела, калькулятора пробития и чужих данных.",
@@ -766,8 +766,8 @@
         "en": "A carousel of 1–5 rows (1–2 the game's own setting, 3–5 added by the mod), tile size and interface scale from the game settings; quick actions on a button: demount removable equipment, take the style off, crew to the barracks and return the previous crew."
       },
       "fairPlay": {
-        "ru": "Работает только в ангаре. Точный масштаб интерфейса и 3–5 рядов карусели выходят за штатные настройки игры: это не запрещено Лестой, но ждёт письменного ответа МОСТ, поэтому компонент выключен по умолчанию, а оба пункта стоят «Как в игре».",
-        "en": "Works in the hangar only. The exact interface scale and 3–5 carousel rows go beyond the game's own options: Lesta does not forbid them, but they wait for МОСТ's written answer, so the component is off by default and both start at «As in the game»."
+        "ru": "Работает только в ангаре. Точный масштаб интерфейса и 3–5 рядов карусели выходят за штатные настройки игры: это не запрещено Лестой, но компонент выключен по умолчанию, а оба пункта стоят «Как в игре».",
+        "en": "Works in the hangar only. The exact interface scale and 3–5 carousel rows go beyond the game's own options: Lesta does not forbid them, but the component is kept off by default and both start at «As in the game»."
       },
       "perf": "low",
       "preview": {
@@ -898,8 +898,8 @@
         "en": "Turns the chosen personal reserves on at the game start and, when chosen, whenever one runs out. Off by default: reserves get spent, so you pick which ones."
       },
       "fairPlay": {
-        "ru": "Только ваши личные резервы, тем же запросом, что кнопка «Активировать» игры; клановые и событийные не трогает. Единственное действие ангара без нажатия кнопки: правила игры (п. 2.1.7) запрещают ботов и макросы, а об автоматической активации резервов прямо ничего не сказано, поэтому компонент и каждый резерв выключены, пока вы их не выберете, и вопрос отправлен кураторам МОСТ.",
-        "en": "Only your own personal reserves, with the same request as the game's «Activate» button; clan and event reserves are left alone. The one hangar action without a button press: the Game Rules (2.1.7) forbid bots and macros and say nothing about activating reserves automatically, so the component and every reserve stay off until you pick them, and the question is with the МОСТ curators."
+        "ru": "Только ваши личные резервы, тем же запросом, что кнопка «Активировать» игры; клановые и событийные не трогает. Единственное действие ангара без нажатия кнопки: правила игры (п. 2.1.7) запрещают ботов и макросы, а об автоматической активации резервов прямо ничего не сказано, поэтому компонент и каждый резерв выключены, пока вы их не выберете.",
+        "en": "Only your own personal reserves, with the same request as the game's «Activate» button; clan and event reserves are left alone. The one hangar action without a button press: the Game Rules (2.1.7) forbid bots and macros and say nothing about activating reserves automatically, so the component and every reserve stay off until you pick them."
       },
       "perf": "low",
       "preview": {

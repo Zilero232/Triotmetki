@@ -126,9 +126,7 @@ testpaths = ["packages", "features", "tools"]
 python_files = ["test_*.py"]
 # importlib mode: test modules are not put on sys.path by folder, _support comes from tools/testing.
 addopts = "--import-mode=importlib"
-# tools: the MOST bundler's packages import each other as `most.*`, and importlib mode loads their
-# __init__ before a test module can put tools/ on sys.path itself.
-pythonpath = ["tools/testing", "tools"]
+pythonpath = ["tools/testing"]
 # pytest skips folders named build by default; tools/build/tests must run.
 norecursedirs = [".*", "dist", "__pycache__", "entry", "fixtures"]
 

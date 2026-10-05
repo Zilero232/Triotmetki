@@ -3,7 +3,7 @@ import { ClientIcon } from '@/ui-kit';
 import type { CrosshairWidgetProps } from './CrosshairWidget.types';
 
 import { RETICLE_READOUTS } from '../config';
-import { ReloadBox, ReticleArcs, ReticleMark, ReticleSketch } from './components';
+import { ReloadBox, ReticleArcs, ReticleMark, ReticleSketch, ZoomReadout } from './components';
 
 import s from './CrosshairWidget.module.scss';
 
@@ -22,6 +22,7 @@ export const CrosshairWidget = ({ data }: CrosshairWidgetProps) => {
         {data.mark !== null && <ClientIcon className={s.image} icon={data.mark} size={data.size} />}
       </div>
       {readouts?.reload && <ReloadBox reload={readouts.reload} />}
+      {readouts?.zoom && <ZoomReadout zoom={readouts.zoom} />}
     </div>
   );
 };

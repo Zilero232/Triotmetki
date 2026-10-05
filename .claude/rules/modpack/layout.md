@@ -23,8 +23,7 @@ features/<id>/
   entry/       mod_otmetki_<id>.py loader stub
   tests/
 tools/build/     packaging, components manifest (setupkit), compiler wrapper
-tools/most/      МОСТ submission bundle
-catalog/         component catalogue (catalog.json, previews) the manager and МОСТ read
+catalog/         component catalogue (catalog.json, previews) the manager reads
 ```
 
 - A concern with more than one file is a package (folder + `__init__.py`), never

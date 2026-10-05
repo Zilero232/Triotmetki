@@ -7,7 +7,7 @@ import unittest
 
 import _support
 from otmetki.core.events import EVENT_COMPONENT_SETTINGS, EventBus
-from otmetki.core.hud.stock import RETICLE_RELOAD_TIMER
+from otmetki.core.hud.stock import RETICLE_CASSETTE, RETICLE_RELOAD_TIMER, RETICLE_ZOOM
 from otmetki.core.hud import ComponentConfig
 from otmetki.core.storage import MemoryFile
 from otmetki.features.crosshair.model.readouts import Readouts
@@ -54,6 +54,43 @@ class Crosshair(object):
 
     def getScaleFactor(self):
         return 1.0
+
+    def getZoomFactor(self):
+        return 8.0
+
+
+class Clip(object):
+    size = 6
+
+
+class Shell(object):
+    kind = 'ARMOR_PIERCING_CR'
+    isGold = True
+
+
+class GunSettings(object):
+    clip = Clip()
+
+    def getShellDescriptor(self, intCD):
+        return Shell() if intCD == 101 else None
+
+    def hasAutoReload(self):
+        return False
+
+
+class Ammo(object):
+
+    def getGunSettings(self):
+        return GunSettings()
+
+    def getCurrentShells(self):
+        return (30, 4)
+
+    def getCurrentShellCD(self):
+        return 101
+
+    def getShellChangeTime(self):
+        return 24.6
 
 
 class Layer(object):
@@ -256,6 +293,47 @@ class CrosshairStockTest(unittest.TestCase):
         self.component.render()
 
         assert self.hidden() == ()
+
+    def test_the_drum_goes_with_the_current_shell_and_hides_the_stock_magazine(self):
+        self.module.ammo = Ammo
+        self.component._on_clip()
+
+        self.reload(1.8, 2.5)
+
+        clip = self.drawn_readouts()['reload']['clip']
+        assert (clip['size'], clip['loaded'], clip['shell'], clip['gold']) == (6, 4, 'apcr', True)
+        assert self.drawn_readouts()['reload']['full'] == '24.6'
+        assert self.hidden() == (RETICLE_RELOAD_TIMER, RETICLE_CASSETTE)
+
+    def test_the_stock_magazine_stays_with_the_drum_off(self):
+        self.module.ammo = Ammo
+        self.config.update(PANEL_ID, {'drum_style': 'off'})
+        self.component._on_clip()
+
+        self.reload(1.8, 2.5)
+
+        assert self.hidden() == (RETICLE_RELOAD_TIMER,)
+
+    def test_the_zoom_is_drawn_in_the_sniper_view_only(self):
+        self.config.update(PANEL_ID, {'reload_box': False, 'show_zoom': True})
+
+        self.component._on_view(SNIPER)
+
+        assert self.drawn_readouts()['zoom'] == '8.0'
+        assert self.hidden() == (RETICLE_ZOOM,)
+
+        self.component._on_view(ARCADE)
+
+        assert PANEL_ID not in self.layer.shown
+        assert self.hidden() == ()
+
+    def test_a_zoom_change_redraws_the_multiplier(self):
+        self.config.update(PANEL_ID, {'show_zoom': True})
+        self.component._on_view(SNIPER)
+
+        self.component._on_zoom(16.0)
+
+        assert self.drawn_readouts()['zoom'] == '16.0'
 
 
 if __name__ == '__main__':

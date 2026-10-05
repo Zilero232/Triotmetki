@@ -14,7 +14,8 @@ RETICLE_RELOAD_TIMER = 'reloaderTimerAlphaValue'
 RETICLE_RELOAD = 'reloaderAlphaValue'
 RETICLE_CONDITION = 'conditionAlphaValue'
 RETICLE_CASSETTE = 'cassetteAlphaValue'
-RETICLE_PARTS = (RETICLE_RELOAD_TIMER, RETICLE_RELOAD, RETICLE_CONDITION, RETICLE_CASSETTE)
+RETICLE_ZOOM = 'zoomIndicatorAlphaValue'
+RETICLE_PARTS = (RETICLE_RELOAD_TIMER, RETICLE_RELOAD, RETICLE_CONDITION, RETICLE_CASSETTE, RETICLE_ZOOM)
 HIDDEN_ALPHA = 0.0
 
 # The stock battle elements some default places follow, in design px (RU 1.45 gui_battle AS3).

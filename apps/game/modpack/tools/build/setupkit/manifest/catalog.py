@@ -1,9 +1,9 @@
 """Reads and checks catalog/catalog.json.
 
 catalog/catalog.schema.json (JSON Schema, Draft 7) checks the shape: types, required and unknown fields, id,
-version and package id patterns, texts without control characters (they are shown by the manager and copied into
-МОСТ pages), https links, hashes. This module then checks what a schema cannot: preview files on disk, ids that
-refer to each other, presets and the third-party masks. Every problem is collected, then reported at once as a
+version and package id patterns, texts without control characters (they are shown by the manager), https links,
+hashes. This module then checks what a schema cannot: preview files on disk, ids that refer to each other, presets
+and the third-party masks. Every problem is collected, then reported at once as a
 CatalogError. Entries with `kind: "dependency"` are third-party runtime mods, passed through to components.json.
 jsonschema is a dev dependency (uv sync); on a bare Python the shape check is skipped and only the rest runs.
 """

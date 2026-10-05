@@ -3,13 +3,21 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import math
 
-from ....core.hud.stock import RETICLE_CASSETTE, RETICLE_CONDITION, RETICLE_RELOAD, RETICLE_RELOAD_TIMER
-from .constants import FINAL_S, MAX_CLIP_CELLS, NO_SHELLS, READY_HOLD_S
+from ....core.hud.stock import (
+    RETICLE_CASSETTE,
+    RETICLE_CONDITION,
+    RETICLE_RELOAD,
+    RETICLE_RELOAD_TIMER,
+    RETICLE_ZOOM,
+)
+from .constants import FINAL_S, MAX_CLIP_SIZE, NO_SHELLS, READY_HOLD_S, SHELL_ICONS
 
 # Fair play: the own vehicle only. The reload and the magazine are the own gun's (the stock reticle's reload indicator
 # reads the same ammo controller), the HP is the own damage panel's (VEHICLE_VIEW_STATE.HEALTH); nothing here reads
-# another vehicle, and the client glue drops every update while the camera follows an ally. The repair timers of the
-# own modules are left out: the stock damage panel shows them.
+# another vehicle, and the client glue drops every update while the camera follows an ally. The magazine is the own
+# gun's too (ammo_ctrl getCurrentShells, the auto-reload snapshot, the shell change time) and the zoom the own sniper
+# camera's (CrosshairDataProxy.getZoomFactor). The repair timers of the own modules are left out: the stock damage
+# panel shows them.
 
 
 def _seconds(value):
@@ -46,8 +54,14 @@ class Readouts(object):
         self.reload_base = None
         self.ready_left = 0.0
         self.clip = None
+        self.shell = None
+        self.gold = False
+        self.drum_base = None
+        self.auto_left = None
+        self.auto_base = None
         self.health = None
         self.max_health = None
+        self.zoom = None
 
     def set_reload(self, left, base):
         left, base = _seconds(left), _seconds(base)
@@ -59,14 +73,34 @@ class Readouts(object):
         self.ready_left = READY_HOLD_S if was_reloading and self.reload_left == 0 else 0.0
         return True
 
-    def set_clip(self, size, loaded):
+    def set_clip(self, size, loaded, shell=None, gold=False):
         if not size or size < 2 or loaded is None or loaded < 0:
             changed = self.clip is not None
             self.clip = None
             return changed
-        clip = (min(size, MAX_CLIP_CELLS), min(loaded, size, MAX_CLIP_CELLS))
-        changed = clip != self.clip
-        self.clip = clip
+        size = min(size, MAX_CLIP_SIZE)
+        clip = (size, min(loaded, size))
+        shell = shell if shell in SHELL_ICONS else None
+        changed = (clip, shell, bool(gold)) != (self.clip, self.shell, self.gold)
+        self.clip, self.shell, self.gold = clip, shell, bool(gold)
+        return changed
+
+    # ammo_ctrl.getShellChangeTime: the whole magazine's reload (the gun reload before the client cuts it to the
+    # interval between shells), the first shell's auto-reload on an auto-reloader.
+    def set_drum_reload(self, seconds):
+        seconds = _seconds(seconds)
+        self.drum_base = seconds if seconds is not None and seconds > 0 else None
+
+    def set_auto_reload(self, left, base):
+        left, base = _seconds(left), _seconds(base)
+        self.auto_left = left if left is not None and left > 0 else None
+        self.auto_base = base if base is not None and base > 0 else None
+
+    def set_zoom(self, factor):
+        factor = _seconds(factor)
+        zoom = factor if factor is not None and factor > 1 else None
+        changed = zoom != self.zoom
+        self.zoom = zoom
         return changed
 
     def set_health(self, health, max_health=None):
@@ -78,13 +112,15 @@ class Readouts(object):
         return True
 
     def is_counting(self):
-        return self.is_reloading() or self.ready_left > 0
+        return self.is_reloading() or self.ready_left > 0 or self.auto_left is not None
 
     def is_reloading(self):
         return self.reload_left is not None and self.reload_left > 0
 
     def tick(self, elapsed):
         self._tick_reload(elapsed)
+        if self.auto_left is not None:
+            self.auto_left = max(0.0, self.auto_left - elapsed) or None
         return self.is_counting()
 
     def _tick_reload(self, elapsed):
@@ -127,17 +163,50 @@ def _reload_value(readouts, state, translate):
     return _tenths(readouts.reload_left)
 
 
-def _reload_box(readouts, translate):
+def _refill(readouts):
+    if readouts.auto_left is None or readouts.clip[1] >= readouts.clip[0]:
+        return None
+    left = _ratio(readouts.auto_left, readouts.auto_base)
+    return {'value': _tenths(readouts.auto_left), 'progress': None if left is None else round(1.0 - left, 3)}
+
+
+def _clip(readouts, style):
+    if readouts.clip is None or style == 'off':
+        return None
+    size, loaded = readouts.clip
+    return {
+        'style': style,
+        'size': size,
+        'loaded': loaded,
+        'shell': readouts.shell,
+        'gold': readouts.gold,
+        'refill': _refill(readouts),
+    }
+
+
+# Under the value: the whole magazine's reload for a magazine gun (the value counts the next shell), else the full
+# time of the reload being counted; never the same figure twice.
+def _full(readouts, value, is_counting, clip):
+    if clip is not None and readouts.drum_base:
+        full = _tenths(readouts.drum_base)
+    elif is_counting and readouts.reload_base:
+        full = _tenths(readouts.reload_base)
+    else:
+        return None
+    return None if full == value else full
+
+
+def _reload_box(readouts, settings, translate):
     state = readouts.reload_state()
     if state is None:
         return None
-    is_counting = state in ('reloading', 'final')
-    clip = readouts.clip
+    value = _reload_value(readouts, state, translate)
+    clip = _clip(readouts, settings.get('drum_style'))
     return {
-        'value': _reload_value(readouts, state, translate),
-        'full': _tenths(readouts.reload_base) if is_counting and readouts.reload_base else None,
+        'value': value,
+        'full': _full(readouts, value, state in ('reloading', 'final'), clip),
         'state': state,
-        'clip': {'size': clip[0], 'loaded': clip[1]} if clip else None,
+        'clip': clip,
     }
 
 
@@ -148,14 +217,19 @@ def _arcs(readouts):
     return {'reload': reload_part, 'health': health}
 
 
+def _zoom(readouts):
+    return None if readouts.zoom is None else u'%.1f' % readouts.zoom
+
+
 def readouts_data(readouts, settings, translate):
     if readouts is None:
         return None
     data = {
-        'reload': _reload_box(readouts, translate) if settings.get('reload_box') else None,
+        'reload': _reload_box(readouts, settings, translate) if settings.get('reload_box') else None,
         'arcs': _arcs(readouts) if settings.get('reload_arcs') else None,
+        'zoom': _zoom(readouts) if settings.get('show_zoom') else None,
     }
-    if data['reload'] is None and data['arcs'] is None:
+    if all(value is None for value in data.values()):
         return None
     return data
 
@@ -167,13 +241,13 @@ def readouts_text(data):
 
 
 def wants_readouts(settings):
-    return any(settings.get(key) for key in ('reload_box', 'reload_arcs'))
+    return any(settings.get(key) for key in ('reload_box', 'reload_arcs', 'show_zoom'))
 
 
 # The stock reticle parts the readouts stand in for, read from what was drawn (`readouts_data` of the payload the page
 # got), so the player never sees both and never neither: the reload box the stock reload timer, and the stock magazine
-# indicator while the box shows the magazine cells; each arc the stock indicator of its value. A box or an arc with
-# nothing to show replaces nothing.
+# indicator while the box shows the magazine; each arc the stock indicator of its value, the zoom the stock zoom
+# indicator. A box or an arc with nothing to show replaces nothing.
 def replaced_reticle_parts(drawn):
     if drawn is None:
         return ()
@@ -187,4 +261,6 @@ def replaced_reticle_parts(drawn):
         parts.append(RETICLE_RELOAD)
     if arcs is not None and arcs.get('health') is not None:
         parts.append(RETICLE_CONDITION)
+    if drawn.get('zoom') is not None:
+        parts.append(RETICLE_ZOOM)
     return tuple(parts)

@@ -1,0 +1,36 @@
+@use '@/shared/styles/gameface' as *;
+
+.drum {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  margin-right: 30px;
+  margin-bottom: 4px;
+}
+
+.refill {
+  margin-right: 4px;
+  color: token(hud-index);
+
+  @include hud-type(caption);
+}
+
+.cell {
+  width: 6px;
+  height: 3px;
+  margin-left: 2px;
+  background-color: token(hud-bar-track);
+}
+
+.cell:first-child {
+  margin-left: 0;
+}
+
+.cellLoaded {
+  background-color: token(hud-text);
+}
+
+.cellRefill {
+  background-color: token(hud-index);
+  opacity: 0.6;
+}

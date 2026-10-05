@@ -32,6 +32,7 @@ from .constants import (
     RETICLE_PARTS,
     RETICLE_RELOAD,
     RETICLE_RELOAD_TIMER,
+    RETICLE_ZOOM,
     SIXTH_SENSE,
     STOCK_ALIASES,
 )
@@ -48,6 +49,7 @@ __all__ = (
     'RETICLE_PARTS',
     'RETICLE_RELOAD',
     'RETICLE_RELOAD_TIMER',
+    'RETICLE_ZOOM',
     'SIXTH_SENSE',
     'STOCK_ALIASES',
     'StockSuppression',

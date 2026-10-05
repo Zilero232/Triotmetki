@@ -1,6 +1,6 @@
 """Durable settings: a copy of the files a player cannot recreate, kept outside the game folder.
 
-MOST (Lesta's mod installer) may delete `mods/configs` (docs/ops/most-publishing.md), which holds the binding,
+A mod installer or cleaner may delete `mods/configs`, which holds the binding,
 config.json, components.json, profiles.json and state.json. `open_config` hands out a `MirroredFile` for those: every
 write goes to `mods/configs/otmetki/<name>` and to `%APPDATA%\\TriOtmetki\\<name>` with one saved-at stamp, and every
 read first restores the game-folder copy when it is missing, unreadable or older than the durable one. The newer copy

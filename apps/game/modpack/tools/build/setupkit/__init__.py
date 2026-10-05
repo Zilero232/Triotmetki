@@ -1,4 +1,4 @@
-"""setupkit: the component catalogue the modpack manager (apps/game/manager) and МОСТ (tools/most) read.
+"""setupkit: the component catalogue the modpack manager (apps/game/manager) reads.
 
     manifest/  catalog/catalog.json + tools/build/layout.py -> components.json
     artwork/   the catalog's preview SVGs -> 16:9 PNG previews next to components.json

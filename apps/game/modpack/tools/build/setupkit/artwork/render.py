@@ -4,7 +4,6 @@
 
 Every preview is drawn on one 640x360 canvas (16:9, the manager's card frame) with the bundled Fira Sans
 (catalog/fonts, OFL), never the system fonts, so a Linux release runner draws the same Cyrillic as Windows.
-tools/most reuses svg_png, cover and the libraries for its submission sizes.
 """
 import io
 import os

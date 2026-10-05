@@ -8,7 +8,7 @@ POSIX_CONFIG = '.config'
 STAMPS_NAME = 'saved_at.json'
 STAMPS_VERSION = 1
 
-# MOST (Lesta's mod installer) may delete mods/configs (docs/ops/most-publishing.md); these are what a player cannot
+# A mod installer or cleaner may delete mods/configs; these are what a player cannot
 # recreate by hand: the binding, the settings, the HUD layout, the profiles and the app state.
 DURABLE_FILES = ('credentials.json', 'config.json', 'components.json', 'profiles.json', 'state.json')
 SECRET_FILES = ('credentials.json',)

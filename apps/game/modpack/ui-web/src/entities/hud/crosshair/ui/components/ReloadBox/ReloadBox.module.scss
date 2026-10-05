@@ -69,21 +69,3 @@
 
   @include hud-type(caption);
 }
-
-.clip {
-  display: flex;
-  flex-direction: row;
-  margin-right: 30px;
-  margin-bottom: 3px;
-}
-
-.cell {
-  width: 6px;
-  height: 3px;
-  margin-left: 2px;
-  background-color: token(hud-bar-track);
-}
-
-.cellLoaded {
-  background-color: token(hud-text);
-}

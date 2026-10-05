@@ -46,6 +46,11 @@ STRINGS = {
         'crosshair_mark_outline': u'Тёмная обводка',
         'crosshair_reload_box': u'Таймер перезарядки у прицела',
         'crosshair_reload_arcs': u'Дуги перезарядки и прочности',
+        'crosshair_drum_style': u'Барабан',
+        'crosshair_drum_style_shells': u'Снаряды',
+        'crosshair_drum_style_bars': u'Полоски',
+        'crosshair_drum_style_off': u'Как в игре',
+        'crosshair_show_zoom': u'Кратность прицела',
         'crosshair_group_readouts': u'У прицела',
         'crosshair_ready': u'ГОТОВ',
         'crosshair_mark_color_white': u'Белый',
@@ -73,9 +78,15 @@ STRINGS = {
         'crosshair_mark_hint': u'Картинка поверх центра прицела игры. Следует за прицелом, ничего не рассчитывает.',
         'crosshair_mark_color_hint': u'Цвет векторных меток. Цветные метки и метки Kenney рисуются своими цветами.',
         'crosshair_mark_outline_hint': u'Обводка в 1 px, чтобы метку было видно на фоне неба.',
-        'crosshair_reload_box_hint': u'Секунды перезарядки своего орудия слева от прицела, под ними полное время, '
-                                     u'над ними снаряды в магазине. Последняя секунда оранжевая, «ГОТОВ» — секунду. '
-                                     u'Стандартный таймер перезарядки прицела на это время скрыт.',
+        'crosshair_reload_box_hint': u'Секунды перезарядки своего орудия слева от прицела, под ними полное время '
+                                     u'(у барабана — время перезарядки всего барабана). Последняя секунда оранжевая, '
+                                     u'«ГОТОВ» — секунду. Стандартный таймер перезарядки прицела на это время скрыт.',
+        'crosshair_drum_style_hint': u'Магазин своего орудия над таймером перезарядки: «Снаряды» — значок снаряда '
+                                     u'на каждый выстрел (заряженные светлые, отстрелянные тусклые, большой магазин — '
+                                     u'числом), «Полоски» — тонкие ячейки, «Как в игре» — стандартный индикатор. '
+                                     u'У автодозарядки следующий снаряд заполняется и рядом идут секунды.',
+        'crosshair_show_zoom_hint': u'Кратность снайперского прицела справа от прицела, например «x8.0». '
+                                    u'Стандартный индикатор кратности на это время скрыт.',
         'crosshair_reload_arcs_hint': u'Дуга слева — перезарядка своего орудия, справа — прочность своего танка. '
                                       u'Стандартные индикаторы перезарядки и прочности на это время скрыты.',
         'crosshair_mark_size_hint': u'Сторона метки в пикселях экрана, от 16 до 128. Тонкие линии чётче всего на 32 и 64.',
@@ -129,6 +140,11 @@ STRINGS = {
         'crosshair_mark_outline': u'Dark outline',
         'crosshair_reload_box': u'Reload timer by the reticle',
         'crosshair_reload_arcs': u'Reload and HP arcs',
+        'crosshair_drum_style': u'Magazine',
+        'crosshair_drum_style_shells': u'Shells',
+        'crosshair_drum_style_bars': u'Bars',
+        'crosshair_drum_style_off': u'Game default',
+        'crosshair_show_zoom': u'Zoom level',
         'crosshair_group_readouts': u'By the reticle',
         'crosshair_ready': u'READY',
         'crosshair_mark_color_white': u'White',
@@ -156,9 +172,15 @@ STRINGS = {
         'crosshair_mark_hint': u'An image over the game\'s reticle centre. It follows the reticle and computes nothing.',
         'crosshair_mark_color_hint': u'The colour of the vector marks. The full-colour and Kenney marks keep their own colours.',
         'crosshair_mark_outline_hint': u'A 1 px outline so the mark stays visible against the sky.',
-        'crosshair_reload_box_hint': u'Your gun\'s reload seconds left of the reticle, the full reload under them, '
-                                     u'the magazine above. The last second is orange, «READY» stays a second. '
-                                     u'The stock reticle\'s reload timer hides meanwhile.',
+        'crosshair_reload_box_hint': u'Your gun\'s reload seconds left of the reticle, the full reload under them '
+                                     u'(the whole magazine\'s reload for a magazine gun). The last second is orange, '
+                                     u'«READY» shows for a second. The stock reticle\'s reload timer is hidden meanwhile.',
+        'crosshair_drum_style_hint': u'Your gun\'s magazine above the reload timer: «Shells» draws a shell icon per round '
+                                     u'(loaded bright, fired dim, a large magazine as a count), «Bars» thin cells, '
+                                     u'«Game default» the stock indicator. On an auto-reloader the next shell fills '
+                                     u'up with its seconds beside it.',
+        'crosshair_show_zoom_hint': u'The sniper zoom right of the reticle, such as «x8.0». The stock zoom indicator '
+                                    u'is hidden meanwhile.',
         'crosshair_reload_arcs_hint': u'The left arc is your gun\'s reload, the right one your tank\'s HP. '
                                       u'The stock reload and HP indicators hide meanwhile.',
         'crosshair_mark_size_hint': u'The side of the mark in screen pixels, 16 to 128. Thin lines are crispest at 32 and 64.',

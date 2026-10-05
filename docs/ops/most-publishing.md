@@ -1,5 +1,7 @@
 # Publishing the modpack in МОСТ
 
+> **Archived 2026-10-05 — the modpack is not published on МОСТ; kept for history.** It is distributed only through the modpack manager and the site's /mod download. The `tools/most` bundler and `bun run most:bundle` this page mentions were removed.
+
 МОСТ is Lesta's official mod installer for «Мир танков». It finds the client, installs the mods a player ticks, downloads them from Lesta's server and updates them on every start, including the move to a new client version. This page covers what МОСТ asks of an author, what the repo prepares (`bun run most:bundle`), and what only the account owner can do.
 
 Researched on 2026-09-27. Lesta publishes **no author portal, upload API or package spec** for МОСТ. `mods.lesta.ru` answers 403 to anonymous requests, and no search result or forum post describes a self-service upload. Everything below comes from the МОСТ curators' forum posts, the forum section's publication rules and the client's package format. Sources are listed at the end, and every claim links to one. Recheck them before the first proposal.

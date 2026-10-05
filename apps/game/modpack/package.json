@@ -25,7 +25,6 @@
     "dev:uninstall": "uv run python tools/dev uninstall",
     "dev:watch": "uv run python tools/dev watch",
     "lint": "uv run ruff check .",
-    "most:bundle": "uv run python tools/most --packages dist --release",
     "test": "python tools/run_tests.py",
     "test:pytest": "uv run pytest",
     "typecheck": "tsc -p ui-web --noEmit",

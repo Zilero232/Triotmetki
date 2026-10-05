@@ -11,6 +11,18 @@ const data = crosshairSchema.parse(readWidgetFixture('crosshair'));
 
 const mount = (input: typeof data): HTMLElement => render(<CrosshairWidget data={input} />).container;
 
+const reload = data.readouts?.reload;
+
+const withClip = (clip: Partial<NonNullable<NonNullable<typeof reload>['clip']>>): typeof data => {
+  if (!data.readouts || !reload?.clip) {
+    throw new Error('the fixture draws a drum');
+  }
+
+  return { ...data, readouts: { ...data.readouts, reload: { ...reload, clip: { ...reload.clip, ...clip } } } };
+};
+
+const shells = (html: HTMLElement): Element[] => Array.from(html.querySelectorAll('[data-shell]'));
+
 describe(CrosshairWidget, () => {
   it('draws the vector mark as paths, not an image', () => {
     const html = mount(data);
@@ -19,11 +31,11 @@ describe(CrosshairWidget, () => {
     expect(html.querySelectorAll('svg path').length).toBeGreaterThan(0);
   });
 
-  it('writes the own reload seconds and the full reload under them', () => {
+  it('writes the next shell seconds and the whole drum reload under them', () => {
     const html = mount(data);
 
-    expect(html.textContent?.replaceAll(' ', ' ')).toContain('3.2');
-    expect(html.textContent).toContain('7.6');
+    expect(html.textContent).toContain('1.8');
+    expect(html.textContent).toContain('24.6');
   });
 
   it('turns the box to the index colour in the last second', () => {
@@ -44,7 +56,54 @@ describe(CrosshairWidget, () => {
   it('reads the loaded state from the game', () => {
     const reload = { value: '7.6', full: null, state: 'loaded', clip: null };
 
-    expect(crosshairSchema.safeParse({ ...data, readouts: { reload, arcs: null } }).success).toBe(true);
+    expect(crosshairSchema.safeParse({ ...data, readouts: { reload, arcs: null, zoom: null } }).success).toBe(true);
+  });
+
+  it('draws one shell icon per round, the fired ones dimmed', () => {
+    const states = shells(mount(data)).map((shell) => shell.getAttribute('data-shell'));
+
+    expect(states).toStrictEqual(['loaded', 'loaded', 'loaded', 'loaded', 'spent', 'spent']);
+  });
+
+  it('draws the shell of the loaded kind', () => {
+    const ap = mount(withClip({ shell: 'ap' })).innerHTML;
+    const he = mount(withClip({ shell: 'he' })).innerHTML;
+
+    expect(ap).not.toBe(he);
+  });
+
+  it('writes a large magazine as a count', () => {
+    const html = mount(withClip({ size: 30, loaded: 17 }));
+
+    expect(shells(html)).toHaveLength(0);
+    expect(html.textContent).toContain('17');
+    expect(html.textContent).toContain('30');
+  });
+
+  it('keeps the thin cells as an option', () => {
+    const html = mount(withClip({ style: 'bars' }));
+
+    expect(shells(html)).toHaveLength(0);
+    expect(html.querySelectorAll('[class*="cell"]')).toHaveLength(6);
+  });
+
+  it('fills the next shell of an auto-reloader with its seconds beside it', () => {
+    const html = mount(withClip({ refill: { value: '5.0', progress: 0.375 } }));
+
+    expect(shells(html)[4]?.getAttribute('data-shell')).toBe('refill');
+    expect(html.textContent).toContain('5.0');
+  });
+
+  it('ejects the shell a shot spends', () => {
+    const view = render(<CrosshairWidget data={data} />);
+
+    view.rerender(<CrosshairWidget data={withClip({ loaded: 3 })} />);
+
+    expect(view.container.querySelectorAll('[class*="eject"]')).toHaveLength(1);
+  });
+
+  it('writes the sniper zoom right of the reticle', () => {
+    expect(mount(data).textContent).toContain('x8.0');
   });
 
   it('draws nothing beside the mark without readouts', () => {

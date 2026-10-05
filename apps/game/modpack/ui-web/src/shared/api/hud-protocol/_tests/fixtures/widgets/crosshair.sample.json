@@ -7,17 +7,22 @@
     "readouts": {
       "arcs": {
         "health": 0.65,
-        "reload": 0.579
+        "reload": 0.28
       },
       "reload": {
         "clip": {
-          "loaded": 3,
-          "size": 4
+          "gold": false,
+          "loaded": 4,
+          "refill": null,
+          "shell": "apcr",
+          "size": 6,
+          "style": "shells"
         },
-        "full": "7.6",
+        "full": "24.6",
         "state": "reloading",
-        "value": "3.2"
-      }
+        "value": "1.8"
+      },
+      "zoom": "8.0"
     },
     "shape": null,
     "size": 32,

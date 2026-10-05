@@ -9,7 +9,7 @@ FIELDS = {
     'horizontal_stabilization': (HORIZONTAL_STABILIZATION, tri_state),
 }
 
-# Left out pending a written MOST/Lesta confirmation (README "Camera"): extra zoom steps or camera distance
+# Left out (README "Camera"): extra zoom steps or camera distance
 # beyond the client's own options, free-look / pitch limits and the commander camera. All of them need
 # overriding the camera configuration (PMOD-style), which is not a setting the game exposes.
 

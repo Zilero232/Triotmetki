@@ -30,7 +30,13 @@ from otmetki.features.crosshair.model.constants import (
 )
 from otmetki.features.crosshair.model.editor import editor
 from otmetki.features.crosshair.model.preview import preview_text, preview_widget, sample_readouts
-from otmetki.core.hud.stock import RETICLE_CASSETTE, RETICLE_CONDITION, RETICLE_RELOAD, RETICLE_RELOAD_TIMER
+from otmetki.core.hud.stock import (
+    RETICLE_CASSETTE,
+    RETICLE_CONDITION,
+    RETICLE_RELOAD,
+    RETICLE_RELOAD_TIMER,
+    RETICLE_ZOOM,
+)
 from otmetki.features.crosshair.model.readouts import (
     Readouts,
     readouts_data,
@@ -68,7 +74,9 @@ FIELD_KEYS = (
     'mark_outline',
     'mark_hides_centre',
     'reload_box',
+    'drum_style',
     'reload_arcs',
+    'show_zoom',
 )
 STYLE_COUNTS = {'netType': 4, 'centralTagType': 14, 'mixingType': 4, 'gunTagType': 15}
 
@@ -381,10 +389,99 @@ class ReadoutsTest(unittest.TestCase):
     def test_a_single_shot_gun_has_no_magazine(self):
         assert Readouts().set_clip(1, 1) is False
 
-    def test_a_magazine_shows_its_loaded_shells(self):
+    def test_a_magazine_shows_its_loaded_shells_as_shell_icons_by_default(self):
         data = readouts_data(sample_readouts(), Settings(None, SCHEMA), str)
 
-        assert data['reload']['clip'] == {'size': 4, 'loaded': 3}
+        assert data['reload']['clip'] == {
+            'style': 'shells',
+            'size': 6,
+            'loaded': 4,
+            'shell': 'apcr',
+            'gold': False,
+            'refill': None,
+        }
+
+    def test_the_magazine_can_be_drawn_as_bars(self):
+        data = readouts_data(sample_readouts(), Settings({'drum_style': 'bars'}, SCHEMA), str)
+
+        assert data['reload']['clip']['style'] == 'bars'
+
+    def test_the_magazine_can_be_left_to_the_stock_reticle(self):
+        data = readouts_data(sample_readouts(), Settings({'drum_style': 'off'}, SCHEMA), str)
+
+        assert data['reload']['clip'] is None
+
+    def test_a_large_drum_keeps_its_real_size(self):
+        readouts = Readouts()
+        readouts.set_clip(30, 17)
+
+        assert readouts.clip == (30, 17)
+
+    def test_an_unknown_shell_kind_draws_the_plain_shell(self):
+        readouts = Readouts()
+        readouts.set_clip(3, 3, 'smoke', False)
+        readouts.set_reload(0.0, 2.0)
+
+        assert readouts_data(readouts, Settings(None, SCHEMA), str)['reload']['clip']['shell'] is None
+
+    def test_a_drum_shows_its_full_reload_under_the_next_shell_timer(self):
+        data = readouts_data(sample_readouts(), Settings(None, SCHEMA), str)
+
+        assert (data['reload']['value'], data['reload']['full']) == ('1.8', '24.6')
+
+    def test_a_full_drum_does_not_write_its_reload_time_twice(self):
+        readouts = Readouts()
+        readouts.set_clip(4, 4)
+        readouts.set_drum_reload(24.6)
+        readouts.set_reload(0.0, 24.6)
+
+        assert readouts_data(readouts, Settings(None, SCHEMA), str)['reload']['full'] is None
+
+    def test_an_auto_reloader_fills_the_next_shell_while_the_drum_is_not_full(self):
+        readouts = Readouts()
+        readouts.set_clip(4, 2)
+        readouts.set_reload(0.0, 2.0)
+        readouts.set_auto_reload(6.0, 8.0)
+
+        readouts.tick(1.0)
+
+        refill = readouts_data(readouts, Settings(None, SCHEMA), str)['reload']['clip']['refill']
+        assert refill == {'value': '5.0', 'progress': 0.375}
+
+    def test_an_auto_reloader_keeps_counting_after_the_gun_is_loaded(self):
+        readouts = Readouts()
+        readouts.set_clip(4, 2)
+        readouts.set_auto_reload(6.0, 8.0)
+
+        assert readouts.tick(0.1) is True
+
+    def test_a_full_drum_has_nothing_to_refill(self):
+        readouts = Readouts()
+        readouts.set_clip(4, 4)
+        readouts.set_reload(0.0, 2.0)
+        readouts.set_auto_reload(6.0, 8.0)
+
+        assert readouts_data(readouts, Settings(None, SCHEMA), str)['reload']['clip']['refill'] is None
+
+    def test_the_zoom_is_off_by_default(self):
+        assert readouts_data(sample_readouts(), Settings(None, SCHEMA), str)['zoom'] is None
+
+    def test_the_zoom_shows_the_sniper_multiplier(self):
+        data = readouts_data(sample_readouts(), Settings({'show_zoom': True}, SCHEMA), str)
+
+        assert data['zoom'] == '8.0'
+
+    def test_no_zoom_outside_the_sniper_view(self):
+        readouts = sample_readouts()
+        readouts.set_zoom(None)
+
+        assert readouts_data(readouts, Settings({'show_zoom': True}, SCHEMA), str)['zoom'] is None
+
+    def test_the_zoom_alone_is_drawn_and_read(self):
+        settings = Settings({'reload_box': False, 'show_zoom': True}, SCHEMA)
+
+        assert wants_readouts(settings)
+        assert readouts_data(sample_readouts(), settings, str) == {'reload': None, 'arcs': None, 'zoom': '8.0'}
 
     def test_the_arcs_are_off_by_default(self):
         assert readouts_data(sample_readouts(), Settings(None, SCHEMA), str)['arcs'] is None
@@ -392,7 +489,7 @@ class ReadoutsTest(unittest.TestCase):
     def test_the_arcs_carry_the_reload_and_the_health(self):
         data = readouts_data(sample_readouts(), Settings({'reload_arcs': True}, SCHEMA), str)
 
-        assert data['arcs'] == {'reload': 0.579, 'health': 0.65}
+        assert data['arcs'] == {'reload': 0.28, 'health': 0.65}
 
     def test_the_module_repairs_are_left_to_the_stock_damage_panel(self):
         data = readouts_data(sample_readouts(), Settings(None, SCHEMA), str)
@@ -424,7 +521,7 @@ class PreviewWidgetTest(unittest.TestCase):
         data = preview_widget(Settings(None, SCHEMA), str)['data']
 
         assert data['sketch'] is True
-        assert data['readouts']['reload']['value'] == '3.2'
+        assert data['readouts']['reload']['value'] == '1.8'
 
     def test_the_battle_payload_draws_no_sketch(self):
         data = crosshair_widget(Settings(None, SCHEMA), str, None, sketch=False)['data']
@@ -436,7 +533,9 @@ class PreviewWidgetTest(unittest.TestCase):
         assert mark_text(Settings({'mark': 'none'}, SCHEMA)) == ''
 
     def test_the_preview_widget_matches_the_page_fixture(self):
-        widget = preview_widget(Settings({'reload_arcs': True}, SCHEMA), _support.translator(STRINGS))
+        settings = Settings({'reload_arcs': True, 'show_zoom': True}, SCHEMA)
+
+        widget = preview_widget(settings, _support.translator(STRINGS))
 
         assert _support.widget_fixture('crosshair', widget)
 
@@ -452,6 +551,7 @@ class EditorTest(unittest.TestCase):
         described = editor(Settings(None, SCHEMA), lambda key: 'T:' + key)
 
         assert [group['id'] for group in described['groups']] == ['shape', 'colour', 'size', 'readouts', 'reticle']
+        assert described['groups'][3]['keys'] == ['reload_box', 'drum_style', 'reload_arcs', 'show_zoom']
         assert described['groups'][0] == {'id': 'shape', 'label': 'T:crosshair_group_shape', 'keys': ['mark']}
 
     def test_every_group_has_a_label_in_both_languages(self):
@@ -504,6 +604,14 @@ class ReplacedReticlePartsTest(unittest.TestCase):
         drawn = self.drawn(sample_readouts(), reload_box=False, reload_arcs=True)
 
         assert replaced_reticle_parts(drawn) == (RETICLE_RELOAD, RETICLE_CONDITION)
+
+    def test_a_box_without_its_drum_keeps_the_stock_magazine_indicator(self):
+        assert replaced_reticle_parts(self.drawn(sample_readouts(), drum_style='off')) == (RETICLE_RELOAD_TIMER,)
+
+    def test_the_drawn_zoom_replaces_the_stock_zoom_indicator(self):
+        drawn = self.drawn(sample_readouts(), reload_box=False, show_zoom=True)
+
+        assert replaced_reticle_parts(drawn) == (RETICLE_ZOOM,)
 
     def test_an_arc_without_a_value_keeps_its_stock_indicator(self):
         readouts = Readouts()

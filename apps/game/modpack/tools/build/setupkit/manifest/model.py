@@ -1,6 +1,6 @@
 """The components manifest model: the hand-written catalog (input) and components.json (output).
 
-components.json is camelCase JSON for the modpack manager and the МОСТ bundler; the catalog uses
+components.json is camelCase JSON for the modpack manager; the catalog uses
 the same spelling. Plain frozen dataclasses: the tooling runs on a bare Python 3 (tools/run_tests.py).
 """
 import dataclasses

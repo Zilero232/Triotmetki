@@ -4,11 +4,25 @@ import { hudIconSchema } from '@/shared/api/hud-protocol';
 
 import { RETICLE_MARKS, RETICLE_READOUTS } from '../../config';
 
+const refillSchema = z.object({
+  value: z.string(),
+  progress: z.nullable(z.number())
+});
+
+const clipSchema = z.object({
+  style: z.enum(RETICLE_READOUTS.drum.styles),
+  size: z.number(),
+  loaded: z.number(),
+  shell: z.nullable(z.enum(RETICLE_READOUTS.drum.shells)),
+  gold: z.boolean(),
+  refill: z.nullable(refillSchema)
+});
+
 const reloadSchema = z.object({
   value: z.string(),
   full: z.nullable(z.string()),
   state: z.enum(RETICLE_READOUTS.states),
-  clip: z.nullable(z.object({ size: z.number(), loaded: z.number() }))
+  clip: z.nullable(clipSchema)
 });
 
 const arcsSchema = z.object({
@@ -18,7 +32,8 @@ const arcsSchema = z.object({
 
 export const readoutsSchema = z.object({
   reload: z.nullable(reloadSchema),
-  arcs: z.nullable(arcsSchema)
+  arcs: z.nullable(arcsSchema),
+  zoom: z.nullable(z.string())
 });
 
 export const crosshairSchema = z.object({

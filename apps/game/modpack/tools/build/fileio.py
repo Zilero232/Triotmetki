@@ -1,4 +1,4 @@
-"""File helpers the build, the catalogue and the МОСТ bundle share: UTF-8 text with LF endings and file hashes."""
+"""File helpers the build, and the catalogue share: UTF-8 text with LF endings and file hashes."""
 import hashlib
 import io
 import json

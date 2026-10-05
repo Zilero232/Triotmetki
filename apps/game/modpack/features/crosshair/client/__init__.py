@@ -5,6 +5,7 @@ from ....core.client.game import values_by_name
 from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.native import ClientDefaults, NativeSettingsComponent, section_is_new
 from ....core.client.timer import Ticker
+from ....core.shells import shell_code
 from ..i18n import STRINGS
 from ..model import mark_offset, mark_text, shows_in, to_native
 from ..model.constants import PREVIEW_SIZE, READOUT_TICK_S
@@ -44,11 +45,14 @@ def own_max_health():
     return getattr(vehicle_type, 'maxHealth', None)
 
 
-# RU 1.45 ammo_ctrl: the gun settings' clip (size, interval) and getCurrentShells() (quantity, quantity in clip).
+# RU 1.45 ammo_ctrl: the gun settings' clip (size, interval), getCurrentShells() (quantity, quantity in clip) and the
+# current shell's descriptor (`kind` of common/constants SHELL_TYPES, `isGold` for premium and improved shells).
 def own_clip():
-    clip = getattr(call(ammo(), 'getGunSettings'), 'clip', None)
+    settings = call(ammo(), 'getGunSettings')
     shells = call(ammo(), 'getCurrentShells', (None, None))
-    return getattr(clip, 'size', None), shells[1]
+    shell = call(settings, 'getShellDescriptor', None, call(ammo(), 'getCurrentShellCD'))
+    size = getattr(getattr(settings, 'clip', None), 'size', None)
+    return size, shells[1], shell_code(getattr(shell, 'kind', None)), bool(getattr(shell, 'isGold', False))
 
 
 def own_health():
@@ -108,11 +112,16 @@ class CrosshairComponent(BattlePanel):
         snapshot = call(ammo(), 'getGunReloadingState')
         if snapshot is not None:
             self._set_reload(snapshot)
-        self.readouts.set_clip(*own_clip())
+        self._read_clip()
+        if call(call(ammo(), 'getGunSettings'), 'hasAutoReload', False):
+            self._set_auto_reload(call(ammo(), 'getAutoReloadingState'))
+        self.readouts.set_zoom(self._zoom())
         self.hooks.add(ammo, 'onGunReloadTimeSet', self._on_reload)
+        self.hooks.add(ammo, 'onGunAutoReloadTimeSet', self._on_auto_reload)
         for event in CLIP_EVENTS:
             self.hooks.add(ammo, event, self._on_clip)
         self.hooks.add(vehicle_state, 'onVehicleStateUpdated', self._on_vehicle_state)
+        self.hooks.add(crosshair, 'onCrosshairZoomFactorChanged', self._on_zoom)
 
     def stop(self):
         self.ticker.stop()
@@ -125,7 +134,19 @@ class CrosshairComponent(BattlePanel):
 
     def _on_view(self, view):
         self.view = view
+        if self.readouts is not None:
+            self.readouts.set_zoom(self._zoom())
         self.render()
+
+    def _on_zoom(self, factor):
+        if self.readouts is not None and self.readouts.set_zoom(self._zoom(factor)):
+            self.render()
+
+    # The own sniper camera's multiplier, None in every other view (the stock zoom indicator's rule).
+    def _zoom(self, factor=None):
+        if self.view != VIEW_SNIPER:
+            return None
+        return call(crosshair(), 'getZoomFactor') if factor is None else factor
 
     def _on_position(self, *args):
         self.render()
@@ -137,8 +158,24 @@ class CrosshairComponent(BattlePanel):
         self.render()
 
     def _on_clip(self, *args):
-        if self.readouts is not None and controls_own_vehicle() and self.readouts.set_clip(*own_clip()):
+        if self.readouts is not None and controls_own_vehicle() and self._read_clip():
             self.render()
+
+    def _read_clip(self):
+        changed = self.readouts.set_clip(*own_clip())
+        self.readouts.set_drum_reload(call(ammo(), 'getShellChangeTime'))
+        return changed
+
+    def _on_auto_reload(self, snapshot, *args):
+        if self.readouts is None or not controls_own_vehicle():
+            return
+        self._set_auto_reload(snapshot)
+        self.render()
+
+    def _set_auto_reload(self, snapshot):
+        left = reload_left(call(snapshot, 'getActualValue'), call(snapshot, 'getTimeLeft'))
+        self.readouts.set_auto_reload(left, call(snapshot, 'getBaseValue'))
+        self._count()
 
     def _set_reload(self, snapshot):
         left = reload_left(call(snapshot, 'getActualValue'), call(snapshot, 'getTimeLeft'))

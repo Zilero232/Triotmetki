@@ -114,9 +114,11 @@ where d.account_id = any($1)
 
 **The marker.** Near_You's installer (a later reference from the user) offers «Отображать игроков Near_You Team в бою (0,8 МБ)» with two radio options, «Заливка с логотипом (0,1 МБ)» and «Заливка без логотипа (0,1 МБ)»: their marker is a coloured fill of the player's whole row in the team lists, optionally with their logo, not a small badge. We offer the same choice as a player setting `style` in the `community_marks` section of `components.json`:
 
+**Reference look** (the user's screenshot of Near_You players in the team lists): a purple/magenta horizontal gradient on the player's whole row, strongest at the row's outer end (behind the tank silhouette, toward the screen edge) and fading toward the nickname, with their «NEAR YOU» logo badge at the far outer end of the row. The nickname, the clan/medal icon and the tank silhouette stay readable on top. It is shown on **both teams**: enemy rows keep the stock red tint with the purple gradient over it, and the player's own gold row gets the fill too. Our version is the same idea in our colours: the `color-accent` token gradient with our «///» badge at the row's outer end (`fill_logo`), the gradient alone (`fill`), or the badge alone (`badge`); both teams by default, with the viewer setting «Отмечать: всех / только союзников / никого» (`sides`).
+
 | `style` | What the row shows | Default |
 | ------- | ------------------ | ------- |
-| `fill_logo` | A horizontal fill across the row plus our «///» (`LogoMark`) at the fill's strong end | yes |
+| `fill_logo` | The accent gradient across the row, strongest at its outer end, plus our «///» badge (`LogoMark`) at that outer end | yes |
 | `fill` | The same fill, no logo | |
 | `badge` | Only a small «///», about 10 px, just past the nickname's end (after it on the left list, before it on the right one) | |
 
@@ -124,9 +126,9 @@ The window shows the three as a `ui_gallery()` with a picture each (drawn by the
 
 **Colour and readability.** The fill uses `color-accent` from `@otmetki/design-tokens` (#ff7a1a; the HUD page already emits the tokens as CSS variables), never a hard-coded value; an optional `color` setting (swatches from the tokens, §3's colour field once it exists) lets a player change it. The stock rows already carry meaning in colour, and the fill must not take it away:
 
-- **Team colours** (ally green, enemy red, the colour-blind enemy violet) live in the name and vehicle text. The fill is a gradient, at most about 22 % opacity at its strong end fading to 0, so the text keeps its hue and contrast. The strong end and the logo sit at the inner end of the row (next to the vehicle icon, toward the screen centre), away from the nickname, so the name is never under the densest part.
+- **Team colours** (ally green, enemy red, the colour-blind enemy violet) live in the row's stock tint and in the name and vehicle text. As in the reference, the stock tint stays and our gradient lies over it: at most about 22 % opacity at the outer end, fading to 0 before the nickname, so an enemy row still reads red first and the name keeps its hue and contrast. The badge sits at the outer end, past the tank silhouette, never over the nickname or the clan/medal icon. Orange over red is closer in hue than Near_You's purple over red, so the spike checks it on enemy rows (and on the colour-blind palette) and may lower the opacity on enemy rows only.
 - **Dead players:** the stock row greys out; the fill drops to about 40 % of its strength and the logo to half opacity, so a dead marked player still reads as dead first.
-- **Own row:** the stock client highlights it in gold; the fill is skipped there (the player knows they use the mod) unless question 7 decides otherwise, and then only at half strength.
+- **Own row:** the stock client highlights it in gold; as in the reference, a visible player's own row gets the fill too, at about half strength so the gold still reads as «this is me» (orange next to gold is the hardest pair; the spike screenshots it). The own row is marked only when the player's own flag is on, so it doubles as a check that others see them.
 - **Platoon:** the platoon number icon stays visible; the fill never covers the icon column.
 - **Selected / pointed row** (the stock highlight when the player points at a row in the cursor mode): the fill must not drown that highlight. If the fill cannot sit under it (see below), it lowers its opacity while the row is highlighted, which Python learns from the panel's own events.
 - **Panel modes:** in `hidden` nothing is drawn; in `short` (frags and icon only) `fill_logo` falls back to `fill` because there is no room for the logo; `medium`, `long` and `full` show the chosen style over the row's real width in that mode.
@@ -140,7 +142,7 @@ The window shows the three as a `ui_gallery()` with a picture each (drawn by the
 
 Recommended: the HUD overlay, with the readability rules above written for a layer that sits on top. The page component is the fallback if the spike shows the overlay cannot stay aligned or readable.
 
-**Spike first (1 day)**, on RU 1.45 in the dev loop, answering in order: (1) can Python read each list's row order (the stock sorting of the arena data provider) and the panel mode, and get an event when either changes; (2) does an overlay fill at about 22 % keep ally, enemy, colour-blind, dead and own-row text readable at interface scales 1.0 to 2.0 (screenshots go into this spec); (3) does the pointed-row highlight still show through. Outcomes: all three yes → the overlay; (1) yes but (2) or (3) no → phase 1 ships only `badge` on the overlay and the fills wait for a page component; (1) no → a page component spike (2 more days), or phase 1 ships the badge on the battle loading screen only. Decorating the name text stays a fallback for `badge` only, and only in the panel's own text (never `VehicleArenaInfoVO`, which would leak the mark into markers and chat).
+**Spike first (1 day)**, on RU 1.45 in the dev loop, answering in order: (1) can Python read each list's row order (the stock sorting of the arena data provider) and the panel mode, and get an event when either changes; (2) does an overlay fill at about 22 % keep ally, enemy (red tint), colour-blind, dead and own-row (gold) rows readable at interface scales 1.0 to 2.0 (screenshots go into this spec); (3) does the pointed-row highlight still show through. Outcomes: all three yes → the overlay; (1) yes but (2) or (3) no → phase 1 ships only `badge` on the overlay and the fills wait for a page component; (1) no → a page component spike (2 more days), or phase 1 ships the badge on the battle loading screen only. Decorating the name text stays a fallback for `badge` only, and only in the panel's own text (never `VehicleArenaInfoVO`, which would leak the mark into markers and chat).
 
 Phase 2 (separate change): the Tab screen and the loading screen.
 
@@ -151,7 +153,7 @@ Phase 2 (separate change): the Tab screen and the loading screen.
 - Mod `model/` tests: id filtering (0, duplicates, cap at 100), reinforcement merge, side filter, preview.
 - `tools/tests`: the fair-play payload test extended: the presence request carries nothing but account ids and the own device fields.
 - Server: controller test (signature, account mismatch, throttle), database test of the query (revoked device, stale device, hidden player, flag off, other accounts' devices), contract test against `contract/examples/presence.example.json`.
-- ui-web: the marker's layout per style and panel mode (`short` drops the logo, `hidden` draws nothing, own row skipped, dead row dimmed) in Vitest; catalog previews of the three styles.
+- ui-web: the marker's layout per style and panel mode (`short` drops the logo, `hidden` draws nothing, own row at half strength, dead row dimmed) in Vitest; catalog previews of the three styles.
 
 ### 1.4 Rule amendment needed
 
@@ -260,7 +262,7 @@ Risks:
 4. Should seeing others' marks require being visible yourself (reciprocity), or can anyone with a bound mod see them?
 5. Do you want to commission original 3D art for a branded hangar (3–6 weeks of an outside artist, 150–400 MB optional download, upkeep per patch), try the cheaper re-dressed stock hangar first, or stay with the hangar selector for now?
 6. If a branded hangar: may we ask the МОСТ curators now whether a modpack can have its own hangar entry next to the main one?
-7. Should the marker also appear on our own row (so the player sees how they look to others) when they are visible? The proposal skips the own row because the stock gold highlight is already there.
+7. The own row gets the fill (as Near_You does) when the player is visible, at half strength over the stock gold. Keep that, or skip the own row?
 8. Default marker style: «Заливка с логотипом» (proposed, like Near_You's first option), «Заливка без логотипа», or the small badge?
 
 ## Sources

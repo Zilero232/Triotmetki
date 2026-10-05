@@ -10,7 +10,9 @@ def sample_readouts():
     readouts = Readouts()
     readouts.set_reload(SAMPLE_READOUTS['reload_left'], SAMPLE_READOUTS['reload_base'])
     readouts.set_clip(*SAMPLE_READOUTS['clip'])
+    readouts.set_drum_reload(SAMPLE_READOUTS['drum_reload'])
     readouts.set_health(SAMPLE_READOUTS['health'], SAMPLE_READOUTS['max_health'])
+    readouts.set_zoom(SAMPLE_READOUTS['zoom'])
     return readouts
 
 

@@ -62,7 +62,7 @@ SECTION_HUD = 'hud'
 SECTIONS = (SECTION_BATTLE, SECTION_HANGAR, SECTION_MARKS, SECTION_REPLAYS, SECTION_STREAMER, SECTION_DATA, SECTION_HUD)
 
 # Where a component shows anything: only in the hangar, only in battle, or in both. catalog/catalog.json carries the
-# same `context` for the manager and the MOST bundler (packages/ui/tests/test_placement.py keeps both in step).
+# same `context` for the manager (packages/ui/tests/test_placement.py keeps both in step).
 CONTEXT_HANGAR = 'hangar'
 CONTEXT_BATTLE = 'battle'
 CONTEXT_ANY = 'any'

@@ -1,0 +1,60 @@
+@use '@/shared/styles/gameface' as *;
+
+@keyframes shell-eject {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes shell-load {
+  from {
+    opacity: 0.4;
+    transform: translateY(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slot {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  margin-left: 2px;
+}
+
+.slot:first-child {
+  margin-left: 0;
+}
+
+.load {
+  animation: shell-load token(duration-lift) token(ease-out);
+}
+
+.fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+  align-items: flex-end;
+  transition: height token(duration-fast) linear;
+}
+
+.eject {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  animation: shell-eject 0.22s token(ease-out);
+  opacity: 0;
+}

@@ -1,6 +1,6 @@
 # Component catalogue
 
-The UI metadata of every modpack package: what the modpack manager ([apps/game/manager](../../manager/README.md)) shows in its wizard and component list, and what the МОСТ bundler ([tools/most](../tools/most/__init__.py)) writes on each mod page.
+The UI metadata of every modpack package: what the modpack manager ([apps/game/manager](../../manager/README.md)) shows in its wizard and component list.
 
 ```
 catalog/
@@ -11,7 +11,6 @@ catalog/
                         by its own HUD panel (below)
   fonts/                Fira Sans Regular and Bold (Latin + Cyrillic subset, SIL OFL 1.1, OFL.txt): the only fonts
                         the preview renderer loads, so a Linux release runner draws the same text as Windows
-  screenshots/<id>/     real client screenshots for МОСТ, at most 3 per component (optional)
 ```
 
 [tools/build/setupkit](../tools/build/setupkit/__init__.py) turns it into the files the manager reads: `manifest/` merges the catalog with the package layout into `components.json`, `artwork/` renders the previews with resvg-py (the fonts in `fonts/` only, never the system ones) and Pillow.
@@ -74,7 +73,7 @@ One entry per package, generated: ids, versions, file names and dependencies fro
 
 Entries with `kind: "dependency"` are not our packages: `packageId` and `file` must not match `ownedPatterns`, and `file` is `<packageId>_<version>.mtmod`. The manager installs them only when the player has no copy, and removes only what it installed ([manager README «Runtime dependencies»](../../manager/README.md#runtime-dependencies-taurisrcdependencies)). setupkit checks them (id, lowercase 64-hex `sha256` and `licence.sha256`, https links, a positive `size`, no catalogue fields such as `category`, `requiredBy` naming only our components) and copies them after our packages in `components`, as `catalog.json` pins them; `requiredBy` drops the ids a build does not ship. They are written into `catalog.json` in that same form.
 
-`requiredBy` follows the code: OpenWG Gameface is needed by the packages that import `openwg_gameface` (the in-game window, `ui`) and by every component that draws a HUD or hangar label; GUIFlash, the fallback renderer, by the label components only. A label component is one whose code uses `BattlePanel`, `hud_layer(` or `app.ui.show(` (core hosts the renderer chain and is not counted). `tools/build/setupkit/manifest/tests/test_dependencies.py` derives both sets from the sources and fails when the catalog disagrees. The МОСТ bundler lists them on each page that needs them as third-party mods installed separately (`description.<lang>.md`, `externalDependencies` in `submission.json`).
+`requiredBy` follows the code: OpenWG Gameface is needed by the packages that import `openwg_gameface` (the in-game window, `ui`) and by every component that draws a HUD or hangar label; GUIFlash, the fallback renderer, by the label components only. A label component is one whose code uses `BattlePanel`, `hud_layer(` or `app.ui.show(` (core hosts the renderer chain and is not counted). `tools/build/setupkit/manifest/tests/test_dependencies.py` derives both sets from the sources and fails when the catalog disagrees.
 
 The top level also has `schemaVersion`, `modpackVersion`, `platform`, `extension`, `categories`, `presets` and `ownedPatterns` (the file masks of our packages; the manager removes only files it listed itself or that match them), plus two fields for the manager's conflict check ([manager README «Conflicts»](../../manager/README.md#conflicts-taurisrcconflicts)):
 
@@ -83,4 +82,4 @@ The top level also has `schemaVersion`, `modpackVersion`, `platform`, `extension
 
 Preset ids (`recommended`, `minimal`, `streamer`, `custom`) are also what `triotmetki://install?preset=<id>` links from the site pass to the manager.
 
-**A new package** gets a catalog entry (and a preview in `previews/`). `tools/build/setupkit/manifest/tests/test_manifest.py` fails until it has one, and `tools/most/texts/tests/test_most_changelog.py` until [CHANGELOG.md](../CHANGELOG.md) has its entry.
+**A new package** gets a catalog entry (and a preview in `previews/`). `tools/build/setupkit/manifest/tests/test_manifest.py` fails until it has one, and `tools/build/tests/test_changelog.py` until [CHANGELOG.md](../CHANGELOG.md) has its entry.
