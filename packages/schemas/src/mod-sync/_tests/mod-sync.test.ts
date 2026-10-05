@@ -49,4 +49,26 @@ describe('modProfilesWriteRequestSchema', () => {
 
     expect(modProfilesWriteRequestSchema.safeParse({ ...device, profiles: [{ ...profile, data }], deleted: [], mode: 'merge' }).success).toBe(false);
   });
+
+  it('keeps the components a profile installs', () => {
+    const parsed = modProfilesWriteRequestSchema.safeParse({
+      ...device,
+      profiles: [{ ...profile, installed: ['core', 'hit_log'] }],
+      deleted: [],
+      mode: 'merge'
+    });
+
+    expect(parsed.data?.profiles[0]?.installed).toEqual(['core', 'hit_log']);
+  });
+
+  it('refuses an installed component id outside the allowed alphabet', () => {
+    const parsed = modProfilesWriteRequestSchema.safeParse({
+      ...device,
+      profiles: [{ ...profile, installed: ['Core!'] }],
+      deleted: [],
+      mode: 'merge'
+    });
+
+    expect(parsed.success).toBe(false);
+  });
 });

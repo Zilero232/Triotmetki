@@ -24,7 +24,7 @@ export const ModpackPreview = () => {
           </span>
         </div>
         <div className={s.body}>
-          <span className={s.profile}>{t('profile')}</span>
+          <span className={s.preset}>{t('preset')}</span>
           <ul className={s.list}>
             {HOME_MODPACK.preview.map(({ key, isOn }) => (
               <li key={key} className={s.row}>

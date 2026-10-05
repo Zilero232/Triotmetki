@@ -12,14 +12,14 @@ export const MockManager = () => {
     <MockWindow title={t('title')}>
       <div className={s.layout}>
         <ul className={s.side}>
-          {PROMO_MOCK.manager.side.map(({ key, icon: Icon }, index) => (
-            <li key={key} className={s.sideItem} data-active={index === 0 || undefined}>
+          {PROMO_MOCK.manager.side.map(({ key, icon: Icon, isActive }) => (
+            <li key={key} className={s.sideItem} data-active={isActive || undefined}>
               <Icon size={PROMO_ICON.mockSide} />
             </li>
           ))}
         </ul>
         <div className={s.main}>
-          <p className={s.profile}>{t('profile')}</p>
+          <p className={s.preset}>{t('preset')}</p>
           <ul className={s.toggles}>
             {PROMO_MOCK.manager.toggles.map(({ key, isOn }) => (
               <li key={key} className={s.toggle}>

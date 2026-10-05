@@ -1,1 +1,0 @@
-export { ModChangelog } from './ModChangelog';

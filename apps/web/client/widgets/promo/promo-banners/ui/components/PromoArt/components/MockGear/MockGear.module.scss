@@ -1,87 +1,19 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
+  @include list-reset;
+
   display: flex;
-  width: 26em;
-  flex-direction: column;
   filter: drop-shadow(0 1em 1.6em color-mix(in srgb, var(--color-shade) 55%, transparent));
-  gap: 1em;
-}
-
-.reload {
-  display: grid;
-  align-items: baseline;
-  padding: 0.8em 1em;
-  border: 1px solid color-mix(in srgb, var(--color-on-media) 14%, transparent);
-  border-radius: 0.3em;
-  background-color: color-mix(in srgb, var(--color-bg-deep) 82%, transparent);
-  gap: 0.5em 1em;
-  grid-template-columns: minmax(0, 1fr) auto;
-}
-
-.reloadLabel {
-  color: var(--color-text-dim);
-  font-family: var(--font-display);
-  font-size: 0.8em;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.reloadValue {
-  @include numeric;
-
-  color: var(--color-gold);
-  font-size: 1.8em;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.track {
-  overflow: hidden;
-  height: 0.45em;
-  background-color: color-mix(in srgb, var(--color-on-media) 10%, transparent);
-  grid-column: 1 / -1;
-}
-
-.fill {
-  display: block;
-  width: var(--value);
-  height: 100%;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--color-gold) 60%, transparent), var(--color-gold));
-}
-
-.clip {
-  @include list-reset;
-
-  display: flex;
-  gap: 0.3em;
-  grid-column: 1 / -1;
-}
-
-.round {
-  width: 0.9em;
-  height: 0.9em;
-  border: 1px solid color-mix(in srgb, var(--color-gold) 50%, transparent);
-  border-radius: 50%;
-
-  &[data-loaded] {
-    background-color: var(--color-gold);
-  }
-}
-
-.slots {
-  @include list-reset;
-
-  display: flex;
-  gap: 0.4em;
+  gap: 0.5em;
 }
 
 .slot {
   position: relative;
   display: grid;
   overflow: hidden;
-  width: 3.4em;
-  height: 3.4em;
+  width: 4.6em;
+  height: 4.6em;
   border: 1px solid color-mix(in srgb, var(--color-on-media) 16%, transparent);
   border-radius: 0.2em;
   background: linear-gradient(180deg, color-mix(in srgb, var(--color-on-media) 8%, transparent), transparent), var(--color-bg-deep);
@@ -92,19 +24,14 @@
     position: absolute;
     top: 0;
     right: 0;
-    border-width: 0 0.8em 0.8em 0;
+    border-width: 0 1em 1em 0;
     border-style: solid;
     border-color: transparent var(--color-gold) transparent transparent;
     content: '';
   }
-
-  &[data-mark='active'] {
-    border-color: color-mix(in srgb, var(--color-success) 70%, transparent);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-success) 40%, transparent);
-  }
 }
 
 .icon {
-  width: 1.5em;
-  height: 1.5em;
+  width: 2em;
+  height: 2em;
 }

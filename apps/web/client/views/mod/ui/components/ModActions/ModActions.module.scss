@@ -20,11 +20,11 @@
 .status {
   @include stack(var(--space-1));
 
-  min-height: calc(2lh + var(--space-1));
+  min-height: 1lh;
   font-size: var(--text-xs);
 
   @include below(md) {
-    min-height: calc(4lh + var(--space-1));
+    min-height: calc(2lh + var(--space-1));
   }
 }
 
@@ -43,21 +43,6 @@
     color: var(--color-text-dim);
     content: '·';
     margin-inline-end: var(--space-2);
-  }
-}
-
-.link {
-  display: inline-flex;
-  align-items: center;
-  color: var(--color-text);
-  gap: var(--space-1);
-  text-decoration: underline;
-  text-decoration-color: color-mix(in srgb, var(--color-text) 35%, transparent);
-  text-underline-offset: 3px;
-  vertical-align: baseline;
-
-  &:hover {
-    color: var(--color-accent);
   }
 }
 

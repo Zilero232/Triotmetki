@@ -14,7 +14,7 @@ import s from './ModActions.module.scss';
 
 export const ModActions = () => {
   const t = useTranslations('mod.hero');
-  const { distribution, isPreparing, manager, modpack, game } = useModDownloads();
+  const { distribution, isPreparing, manager, game } = useModDownloads();
 
   return (
     <div className={s.root}>
@@ -45,16 +45,6 @@ export const ModActions = () => {
             {game && <span className={s.part}>{t('game', { game })}</span>}
           </p>
         )}
-        <p className={s.meta}>
-          {modpack && (
-            <span className={s.part}>
-              <a className={s.link} download={distribution.packagesFileName} href={distribution.packagesUrl} rel='noreferrer' target='_blank'>
-                {t('manual')}
-              </a>{' '}
-              {t('manualFile', { file: distribution.packagesFileName, ...modpack })}
-            </span>
-          )}
-        </p>
       </div>
     </div>
   );

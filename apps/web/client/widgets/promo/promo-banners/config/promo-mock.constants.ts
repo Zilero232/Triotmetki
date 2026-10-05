@@ -1,14 +1,15 @@
 import { ShellApcrIcon, ShellApIcon, ShellHeatIcon, ShellHeIcon } from '@otmetki/icons';
-import { BookMarked, ChevronsRight, Crosshair, Fan, Gauge, LayoutGrid, ScanEye, ScrollText, Settings2 } from 'lucide-react';
+import { BookMarked, ChevronsRight, CircleHelp, Fan, Gauge, House, Layers, LayoutGrid, ScanEye, Settings2, UserCog } from 'lucide-react';
 
 export const PROMO_MOCK = {
   manager: {
     side: [
-      { key: 'components', icon: LayoutGrid },
-      { key: 'hud', icon: Gauge },
-      { key: 'crosshair', icon: Crosshair },
-      { key: 'log', icon: ScrollText },
-      { key: 'settings', icon: Settings2 }
+      { key: 'home', icon: House, isActive: false },
+      { key: 'components', icon: LayoutGrid, isActive: true },
+      { key: 'sets', icon: Layers, isActive: false },
+      { key: 'profiles', icon: UserCog, isActive: false },
+      { key: 'settings', icon: Settings2, isActive: false },
+      { key: 'help', icon: CircleHelp, isActive: false }
     ],
     toggles: [
       { key: 'marksPanel', isOn: true },
@@ -88,30 +89,25 @@ export const PROMO_MOCK = {
     ]
   },
   crosshair: {
-    boxes: [
-      { key: 'damage', value: 390 },
-      { key: 'penetration', value: 258 },
-      { key: 'distance', value: 312 }
-    ]
-  },
-  gear: {
-    equipment: [
-      { key: 'turbocharger', icon: Gauge, mark: 'bonus' },
-      { key: 'ventilation', icon: Fan, mark: undefined },
-      { key: 'rammer', icon: ChevronsRight, mark: 'bonus' },
-      { key: 'optics', icon: ScanEye, mark: 'active' },
-      { key: 'directive', icon: BookMarked, mark: undefined }
-    ],
     reload: {
       seconds: 7.4,
-      progress: 62,
       clip: [
         { id: 'c1', isLoaded: true },
         { id: 'c2', isLoaded: true },
         { id: 'c3', isLoaded: true },
         { id: 'c4', isLoaded: false }
       ]
-    }
+    },
+    zoom: 8
+  },
+  gear: {
+    equipment: [
+      { key: 'turbocharger', icon: Gauge, mark: 'bonus' },
+      { key: 'ventilation', icon: Fan, mark: undefined },
+      { key: 'rammer', icon: ChevronsRight, mark: 'bonus' },
+      { key: 'optics', icon: ScanEye, mark: undefined },
+      { key: 'directive', icon: BookMarked, mark: undefined }
+    ]
   },
   hits: {
     entries: [

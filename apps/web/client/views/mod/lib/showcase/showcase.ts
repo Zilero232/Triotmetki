@@ -1,4 +1,4 @@
-import type { BaseComponentId, ShowcaseComponentId } from './showcase.types';
+import type { BaseComponentId } from './showcase.types';
 
 import { MOD_SHOWCASE, MOD_SHOWCASE_BASE } from '../../config';
 
@@ -7,7 +7,5 @@ const SHOWCASE_IDS = new Set<string>(MOD_SHOWCASE.flatMap((group) => group.items
 const BASE_IDS = new Set<string>(MOD_SHOWCASE_BASE);
 
 export const showcaseCount = (): number => SHOWCASE_IDS.size;
-
-export const isShowcaseId = (id: string): id is ShowcaseComponentId => SHOWCASE_IDS.has(id);
 
 export const isBaseId = (id: string): id is BaseComponentId => BASE_IDS.has(id);

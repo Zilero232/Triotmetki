@@ -17,7 +17,6 @@ const COPY = messages.en.mod.hero;
 const PUBLISHED: Omit<ModDownloads, 'distribution'> = {
   isPreparing: false,
   manager: { version: '0.2.0', size: '8.4 MB' },
-  modpack: { version: '0.10.0', size: '1.2 MB' },
   game: '1.45'
 };
 
@@ -50,12 +49,6 @@ describe('ModActions', () => {
     expect(screen.getByRole('link', { name: COPY.inside })).toHaveAttribute('href', `#${ROUTE_ANCHORS.modFeatures}`);
   });
 
-  it('keeps the packages as the manual download', () => {
-    renderActions();
-
-    expect(screen.getByRole('link', { name: COPY.manual })).toHaveAttribute('href', MOD_DISTRIBUTION.packagesUrl);
-  });
-
   it('shows the published version, size and supported client', () => {
     renderActions();
 
@@ -70,15 +63,14 @@ describe('ModActions', () => {
   });
 
   it('disables the download and explains why before the first release', () => {
-    renderActions({ downloads: { isPreparing: true, manager: null, modpack: null, game: null } });
+    renderActions({ downloads: { isPreparing: true, manager: null, game: null } });
 
     expect(screen.getByRole('button', { name: COPY.download })).toBeDisabled();
-    expect(screen.queryByRole('link', { name: COPY.manual })).not.toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent(COPY.preparing);
   });
 
   it('keeps the download disabled and silent while the status loads', () => {
-    renderActions({ downloads: { isPreparing: false, manager: null, modpack: null, game: null } });
+    renderActions({ downloads: { isPreparing: false, manager: null, game: null } });
 
     expect(screen.getByRole('button', { name: COPY.download })).toBeDisabled();
     expect(screen.queryByRole('status')).not.toBeInTheDocument();

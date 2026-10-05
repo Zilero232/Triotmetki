@@ -19,10 +19,12 @@ export const modSyncTombstoneSchema = z.object({
   deleted: syncTimeSchema
 });
 
+const componentIdsSchema = z.array(z.string().max(MOD_SYNC.componentIdMaxLength).regex(MOD_SYNC.componentIdPattern)).max(MOD_SYNC.maxComponents);
+
 export const modComponentSetSchema = z.object({
   id: syncIdSchema,
   name: syncNameSchema,
-  components: z.array(z.string().max(MOD_SYNC.componentIdMaxLength).regex(MOD_SYNC.componentIdPattern)).max(MOD_SYNC.maxComponents),
+  components: componentIdsSchema,
   created: syncTimeSchema,
   updated: syncTimeSchema
 });
@@ -41,7 +43,8 @@ export const modSyncProfileSchema = z.object({
   name: syncNameSchema,
   created: syncTimeSchema.nullable(),
   updated: syncTimeSchema.nullable(),
-  data: modProfileDataSchema
+  data: modProfileDataSchema,
+  installed: componentIdsSchema.optional()
 });
 
 const modSyncTombstonesSchema = z.array(modSyncTombstoneSchema).max(MOD_SYNC.maxTombstones);

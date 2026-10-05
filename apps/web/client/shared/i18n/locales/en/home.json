@@ -54,7 +54,7 @@
       },
       "results": {
         "title": "Battle results",
-        "text": "Damage, spotting, XP and credits right after the battle, the session in the garage"
+        "text": "Damage, assistance and the mark change after every battle, the session in the garage"
       },
       "manager": {
         "title": "One-click install",
@@ -67,12 +67,12 @@
     },
     "preview": {
       "title": "Modpack manager",
-      "profile": "Profile: main",
+      "preset": "Set: Recommended",
       "items": {
-        "marks": "Marks on the barrel",
+        "marks": "Marks in battle",
         "results": "Battle results",
-        "session": "Session panel",
-        "sync": "Sync with the site"
+        "session": "Session",
+        "replayUpload": "Replay auto-upload"
       },
       "patch": "Move after a patch"
     }

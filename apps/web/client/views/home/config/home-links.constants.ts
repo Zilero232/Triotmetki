@@ -30,7 +30,7 @@ export const HOME_MODPACK = {
     { key: 'marks', isOn: true },
     { key: 'results', isOn: true },
     { key: 'session', isOn: true },
-    { key: 'sync', isOn: false }
+    { key: 'replayUpload', isOn: false }
   ]
 } as const;
 

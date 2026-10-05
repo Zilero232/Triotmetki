@@ -5,8 +5,8 @@ export const MOD_PAGE = {
   cardIconSize: 20,
   featureIconSize: 22,
   bytesPerMegabyte: 1_048_576,
-  changelogLimit: 3,
-  changelogSkeleton: [220, 190, 170],
+  latestReleaseLimit: 1,
+  gameWildcard: /\.\*$/u,
   presetCount: 3,
   price: 0,
   currency: 'RUB'

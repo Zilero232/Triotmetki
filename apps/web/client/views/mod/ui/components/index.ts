@@ -1,5 +1,4 @@
 export { ModActions } from './ModActions';
-export { ModChangelog } from './ModChangelog';
 export { ModCta } from './ModCta';
 export { ModFairPlay } from './ModFairPlay';
 export { ModFaq } from './ModFaq';

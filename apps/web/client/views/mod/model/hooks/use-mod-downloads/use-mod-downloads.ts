@@ -10,12 +10,12 @@ import { MOD_DISTRIBUTION } from '@/shared/config';
 import type { ModDownload } from './use-mod-downloads.types';
 
 import { MOD_PAGE } from '../../../config';
-import { gameLabel } from '../../../lib/release-notes';
+import { gameLabel } from '../../../lib/game-label';
 
 export const useModDownloads = () => {
   const format = useFormatter();
   const availability = useModpackAvailability();
-  const { data: changelog } = useModpackChangelog(MOD_PAGE.changelogLimit);
+  const { data: changelog } = useModpackChangelog(MOD_PAGE.latestReleaseLimit);
 
   const games = changelog?.releases[0]?.games ?? [];
 
@@ -29,7 +29,6 @@ export const useModDownloads = () => {
     distribution: MOD_DISTRIBUTION,
     isPreparing: !availability.isPending && !availability.isPublished,
     manager: toDownload(availability.manager),
-    modpack: toDownload(availability.modpack),
     game: games.length > 0 ? games.map(gameLabel).join(', ') : null
   };
 };

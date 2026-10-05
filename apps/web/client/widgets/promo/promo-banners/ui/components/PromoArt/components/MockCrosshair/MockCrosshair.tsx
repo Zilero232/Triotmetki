@@ -7,6 +7,7 @@ import s from './MockCrosshair.module.scss';
 export const MockCrosshair = () => {
   const t = useTranslations('promo.mock.crosshair');
   const format = useFormatter();
+  const { reload, zoom } = PROMO_MOCK.crosshair;
 
   return (
     <div className={s.root}>
@@ -20,12 +21,19 @@ export const MockCrosshair = () => {
         <circle className={s.dot} cx='100' cy='100' r='2.5' />
       </svg>
       <ul className={s.boxes}>
-        {PROMO_MOCK.crosshair.boxes.map(({ key, value }) => (
-          <li key={key} className={s.box} data-kind={key}>
-            <span className={s.value}>{format.number(value)}</span>
-            <span className={s.label}>{t(key)}</span>
-          </li>
-        ))}
+        <li className={s.box} data-kind='reload'>
+          <span className={s.value}>{t('seconds', { value: format.number(reload.seconds, { minimumFractionDigits: 1 }) })}</span>
+          <span className={s.label}>{t('reload')}</span>
+          <ul className={s.clip}>
+            {reload.clip.map(({ id, isLoaded }) => (
+              <li key={id} className={s.round} data-loaded={isLoaded || undefined} />
+            ))}
+          </ul>
+        </li>
+        <li className={s.box}>
+          <span className={s.value}>{t('zoomValue', { value: zoom })}</span>
+          <span className={s.label}>{t('zoom')}</span>
+        </li>
       </ul>
     </div>
   );

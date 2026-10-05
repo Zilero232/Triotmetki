@@ -9,7 +9,7 @@ import { PromoShowcase } from '@/widgets/promo/promo-banners';
 
 import { MOD_PAGE } from '../config';
 import { useModFigures } from '../model/hooks';
-import { ModActions, ModChangelog, ModCta, ModFairPlay, ModFaq, ModInstall, ModManager, ModShowcase, ModSwitches, ModTrust } from './components';
+import { ModActions, ModCta, ModFairPlay, ModFaq, ModInstall, ModManager, ModShowcase, ModSwitches, ModTrust } from './components';
 
 import s from './ModPage.module.scss';
 
@@ -58,9 +58,6 @@ export const ModPage = () => {
       </Band>
       <Reveal className={s.section}>
         <ModSwitches />
-      </Reveal>
-      <Reveal className={s.section}>
-        <ModChangelog />
       </Reveal>
       <Reveal className={s.section}>
         <ModFaq />

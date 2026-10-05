@@ -31,7 +31,7 @@
     "marksPanel": {
       "kicker": "Mod",
       "title": "“Marks of Excellence”",
-      "lead": "Your MoE percent at the start of the battle and projected after it, <hl>damage to 65, 85 and 95%</hl> and battles to the next mark.",
+      "lead": "In battle, your MoE percent and its projection after the battle, with <hl>damage to 65, 85 and 95%</hl> on Alt. In the hangar, a tank card with the trend and battles to the mark.",
       "cta": "About the mod"
     },
     "teamHp": {
@@ -49,13 +49,13 @@
     "crosshair": {
       "kicker": "Mod",
       "title": "“Crosshairs”",
-      "lead": "Presets for the game's own reticle in arcade and sniper modes and <hl>20 centre marks</hl> to pick from.",
+      "lead": "Presets for the game's own reticle in arcade and sniper modes, 26 centre marks and <hl>a reload timer with the drum</hl> next to the reticle.",
       "cta": "About the mod"
     },
     "gear": {
       "kicker": "Mod",
       "title": "“Equipment in battle”",
-      "lead": "Your equipment and directive icons from the game itself next to the shells panel, with <hl>a tooltip on hover</hl>.",
+      "lead": "Your equipment and directive icons from the game itself to the left of the shells panel, with <hl>a tooltip on hover</hl>.",
       "cta": "About the mod"
     },
     "hits": {
@@ -116,17 +116,17 @@
   "mock": {
     "manager": {
       "title": "Modpack manager",
-      "profile": "Profile: main",
+      "preset": "Set: Recommended",
       "migrate": "Moving after a patch",
       "items": {
-        "marksPanel": "MoE panel",
-        "teamHp": "Team HP",
-        "damageLog": "Damage log",
+        "marksPanel": "Marks in battle",
+        "teamHp": "Team HP and score",
+        "damageLog": "Battle log",
         "crosshair": "Crosshairs"
       }
     },
     "marks": {
-      "title": "MoE panel",
+      "title": "Tank card",
       "battles": "Battles to the mark"
     },
     "teamHp": {
@@ -142,13 +142,10 @@
       }
     },
     "crosshair": {
-      "damage": "damage",
-      "penetration": "pen",
-      "distance": "metres"
-    },
-    "gear": {
-      "reload": "Reload",
-      "seconds": "{value} s"
+      "reload": "reload",
+      "seconds": "{value} s",
+      "zoom": "zoom",
+      "zoomValue": "×{value}"
     },
     "hits": {
       "title": "Hits on you",

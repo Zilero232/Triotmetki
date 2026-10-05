@@ -11,11 +11,9 @@
     "lead": "Your marks percentage right in battle, a damage log, session stats in the hangar and a replay manager — {count} components that work only with your own data. One app installs and updates them.",
     "download": "Download the manager",
     "inside": "What's inside",
-    "manual": "Packages by hand",
     "preparing": "The first release is on its way — the button works as soon as the files are on the server.",
     "file": "Version {version} · {size} · Windows 10 and 11",
     "game": "Client {game}",
-    "manualFile": "{file}, version {version}, {size} — into mods/'<'client version'>'/",
     "figures": {
       "components": "components",
       "presets": "ready-made sets",
@@ -92,7 +90,7 @@
       },
       "battle_loadout": {
         "title": "Equipment in battle",
-        "text": "The game's own equipment and directive icons above the shell bar, no labels, with a tooltip on hover."
+        "text": "The game's own equipment and directive icons to the left of the shell bar, no labels, with a tooltip on hover."
       },
       "gun_arc": {
         "title": "Gun traverse",
@@ -104,7 +102,7 @@
       },
       "aim_info": {
         "title": "Aim and shells",
-        "text": "Armour under the reticle: the target's effective armour and your shell's penetration in the stock marker colour. The distance to any target under the reticle; damage, penetration and module damage in the shell tooltip. Optionally a smaller aim circle."
+        "text": "The distance to any vehicle under the reticle; damage, penetration, velocity and module damage in the shell tooltip. Optionally a smaller aim circle."
       },
       "platoon_points": {
         "title": "Platoon points",
@@ -124,7 +122,7 @@
       },
       "crosshair": {
         "title": "Crosshairs",
-        "text": "Presets of the stock reticle, the server reticle and 20 centre markers to pick from."
+        "text": "Presets of the stock reticle, the server reticle and 26 centre markers to pick from, plus a reload timer and the drum next to the reticle."
       },
       "camera": {
         "title": "Zoom and camera",
@@ -144,7 +142,7 @@
       },
       "hangar_tweaks": {
         "title": "Hangar tweaks",
-        "text": "A one- or two-row carousel and quick actions: demount equipment and the style, crew to barracks."
+        "text": "A carousel of 1–5 rows and quick actions: demount equipment and the style, crew to barracks."
       },
       "hangar_info": {
         "title": "Clock and server",
@@ -172,7 +170,7 @@
       },
       "comp7_helper": {
         "title": "Onslaught divisions",
-        "text": "Your rating, division, points to the next one and the Champion and Legend thresholds."
+        "text": "A card in the Onslaught hangar: the Champion and Legend thresholds, the role skill of the vehicle, your streak and your last battles."
       },
       "event_trackers": {
         "title": "Event trackers",
@@ -200,7 +198,7 @@
       },
       "update_notice": {
         "title": "New mod version",
-        "text": "A hangar card when a release is out, with «Skip this version»."
+        "text": "A badge in the mods list and a notification when a release is out, with «Skip this version»."
       },
       "preset_advisor": {
         "title": "Build hints in the loadout",
@@ -212,11 +210,11 @@
       },
       "marks_panel": {
         "title": "Marks of Excellence",
-        "text": "In battle the percent and the damage to the next threshold, in the hangar a tank card with thresholds up to 100%, XP for mastery badges and to elite, trend and history."
+        "text": "Two components with their own settings: “Marks in battle” shows the percent, the projection after the battle and the damage to the next goal, with 65, 85 and 95% on Alt; the “Tank card” in the hangar shows the trend, the damage to every mark up to 100% and the battles to the next one."
       },
       "battle_progress": {
         "title": "Battle progress",
-        "text": "One plate: damage to High Caliber, to the tank record and the WN8 of this battle."
+        "text": "One plate: the damage still needed for High Caliber and the WN8 of this battle."
       },
       "session_stats": {
         "title": "Session",
@@ -238,11 +236,6 @@
         "title": "Streamer mode",
         "text": "A key hides every mod panel for OBS scenes; the private mode hides the chat and your numbers."
       }
-    },
-    "base": {
-      "core": "Core",
-      "companion": "Companion",
-      "ui": "In-game window"
     }
   },
   "fairPlay": {
@@ -395,16 +388,6 @@
         "value": "{value} min"
       }
     }
-  },
-  "changelog": {
-    "title": "What's new",
-    "lead": "The latest modpack releases. The full history is in the manager: “Help” → “What's new”.",
-    "listLabel": "Modpack releases",
-    "version": "Version {version}",
-    "games": "client {games}",
-    "changed": "Changed",
-    "empty": "The change history appears with the first release.",
-    "errorTitle": "Could not load the change history"
   },
   "faq": {
     "title": "Questions",
