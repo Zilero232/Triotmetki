@@ -804,7 +804,7 @@ Lint and extra checks:
 
 ## Install (players)
 
-The modpack manager ([apps/game/manager](../manager/README.md), `otmetki-manager-setup.exe` from triotmetki.ru/mod) finds the client, offers presets and profiles, backs up the mod folders, can roll back and moves the modpack after a client patch. By hand:
+The modpack manager ([apps/game/manager](../manager/README.md), `otmetki-manager-setup.exe` from triotmetki.ru/mod) finds the client, offers presets and profiles, installs atomically (a failed install puts the previous files back; there are no user-facing backups) and moves the modpack after a client patch. By hand:
 
 1. Copy the packages into `<game>/mods/<client version>/`: `net.triotmetki.core_<v>.mtmod`, `otmetki.companion_<v>.mtmod` and the features you want, or the single `otmetki.<v>.mtmod`. Do not mix the single package with the split ones.
 2. Optional: OpenWG Gameface (its Lesta build) gives the settings window and binding UI; ModsList 1.6.01 (poliroid; 1.7+ does not run on Lesta) puts its entry in the hangar's bottom-right button row, which the manager installs as an optional library. Without Gameface, edit `mods/configs/otmetki/config.json` (or use ModsSettingsAPI).

@@ -39,7 +39,7 @@
       },
       "control": {
         "title": "Everything switches off",
-        "text": "Each component turns on separately, and the manager takes a backup before every update."
+        "text": "Each component turns on and off separately, without reinstalling."
       }
     }
   },
@@ -291,7 +291,7 @@
       },
       "play": {
         "title": "Install and play",
-        "text": "The manager takes a backup before installing. The Three Marks window opens from a button in the bottom-right corner of the hangar."
+        "text": "The manager leaves other mods alone unless you tick them for removal yourself. The Three Marks window opens from a button in the bottom-right corner of the hangar."
       }
     },
     "presets": {
@@ -332,9 +332,9 @@
         "title": "Updates after a patch",
         "text": "A patch is out — the manager moves the modpack to the new folder or installs a compatible version as soon as it is out."
       },
-      "backups": {
-        "title": "Backups and rollback",
-        "text": "A snapshot before every update and a one-click rollback."
+      "safeInstall": {
+        "title": "Safe install",
+        "text": "Packages are downloaded and checked first. If an install fails halfway, the previous files go back in place."
       },
       "conflicts": {
         "title": "Conflict check",
@@ -421,11 +421,11 @@
       },
       "patch": {
         "question": "What happens after a patch?",
-        "answer": "The manager notices the new client version. If the modpack is compatible, it moves it to the new folder by itself. If a new version is needed, it installs it as soon as it is out, taking a backup first."
+        "answer": "The manager notices the new client version. If the modpack is compatible, it moves it to the new folder by itself. If a new version is needed, it installs it as soon as it is out. Your mod settings stay."
       },
       "conflicts": {
         "question": "Can I run it with XVM, PMOD or another modpack?",
-        "answer": "Yes, but the same panels will show twice. The manager checks the mods folder and shows which mods overlap your components — turn off the extra ones on our side or theirs. It removes other mods' files only when you confirm, and after a backup."
+        "answer": "Yes, but the same panels will show twice. The manager checks the mods folder and shows which mods overlap your components — turn off the extra ones on our side or theirs. It removes other mods only when you tick them in the install wizard and confirm, and that removal cannot be undone."
       },
       "perf": {
         "question": "Will it cost me FPS?",
@@ -433,7 +433,7 @@
       },
       "remove": {
         "question": "How do I remove the modpack?",
-        "answer": "In the manager: “Settings” → “Backups” → remove the modpack from the client, optionally rolling back to the last backup and deleting the settings. When you uninstall the manager itself, Windows asks whether to remove the modpack too. Other mods stay where they are."
+        "answer": "In the manager: “Settings” → “General” → “Remove the modpack”. Only our files go; the mod settings and the site binding can go too or stay in case you come back. When you uninstall the manager itself, Windows asks whether to remove the modpack from every client too; the mod settings then stay. Other mods stay where they are."
       },
       "bind": {
         "question": "Why bind the mod to the site?",

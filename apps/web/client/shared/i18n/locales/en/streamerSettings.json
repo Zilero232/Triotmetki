@@ -169,7 +169,7 @@
     "sensitivityHint": "Depends on the mouse and DPI, so it is not copied by default.",
     "notes": {
       "hangar": "Applied only in the hangar, never in battle.",
-      "backup": "The mod backs up your current settings first."
+      "noUndo": "The mod keeps no copy of your previous settings: you can only change them back by hand in the game settings."
     },
     "cancel": "Cancel",
     "submit": "Send to the mod",
