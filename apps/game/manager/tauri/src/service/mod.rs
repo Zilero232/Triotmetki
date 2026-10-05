@@ -1,6 +1,6 @@
-mod backups;
 mod check;
 mod maintenance;
+mod profiles;
 mod report;
 mod sets;
 pub mod setup;
@@ -15,7 +15,7 @@ use std::time::Duration;
 use serde::Serialize;
 
 pub use check::CheckOutcome;
-pub use setup::{InstallPlan, InstallRequest, UninstallRequest};
+pub use setup::{InstallOutcome, InstallPlan, InstallRequest, UninstallRequest};
 pub use sync::{AccountLink, SyncReport, SyncStatus};
 pub use whats_new::WhatsNew;
 

@@ -160,7 +160,7 @@ None of these is in Lesta's ten forbidden categories ([8], [10]); some are in М
 МОСТ empties `mods/<version>/` and `res_mods/<version>/` on every install [1]. A player who uses МОСТ for anything loses packages installed by the modpack manager ([apps/game/manager](../../apps/game/manager/README.md)), and the manager's clean-up only knows our own `ownedPatterns`. Until the curators answer:
 
 - the site's /mod page offers **one channel per player**: the manager (primary), МОСТ once the entry is live, or the packages by hand;
-- after МОСТ has wiped them, the manager's conflict check (Главная and «Компоненты») reports the missing packages and «Восстановить набор» copies them back from the latest snapshot; without a snapshot the «Изменить набор» wizard installs them again. The same check flags third-party copies of our components, duplicate packages and mods that overwrite our files (manager README «Conflicts»);
+- after МОСТ has wiped them, the manager's conflict check (Главная and «Компоненты») reports the missing packages and «Восстановить набор» downloads them again from the installed release (or the «Изменить набор» wizard installs them again). The same check flags third-party copies of our components, duplicate packages and mods that overwrite our files (manager README «Conflicts»);
 - the mod's binding and settings survive МОСТ's config clean-up: every save is mirrored into `%APPDATA%\TriOtmetki`, and the next client start restores a missing or older `mods/configs/otmetki/` file from there (README «Durable settings»). Only a player who deletes that folder too binds again (the site's device list shows the old device, which can be revoked).
 
 ## Sources

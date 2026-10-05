@@ -1,4 +1,4 @@
-export { foreignEntrySchema, installPlanSchema } from './api';
+export { foreignEntrySchema, installOutcomeSchema, installPlanSchema } from './api';
 export type { ForeignEntry, InstallPlan, InstallRequest } from './api';
 export { BLOCKER_MESSAGES, INSTALL_WIZARD } from './config';
 export { closeDependencies, installBlocker, matchingPreset, presetSelection, toggleSelection } from './lib';

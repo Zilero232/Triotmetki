@@ -12,11 +12,10 @@ export const useUninstallModpack = (clientPath: string | null) => {
   const t = useTranslations('uninstall');
   const queryClient = useQueryClient();
   const showError = useErrorToast();
-  const [restoreSnapshot, setRestoreSnapshot] = useState(false);
   const [removeConfig, setRemoveConfig] = useState(false);
 
   const mutation = useMutation({
-    mutationFn: () => uninstallModpack({ clientPath, restoreSnapshot, removeConfig }),
+    mutationFn: () => uninstallModpack({ clientPath, removeConfig }),
     onSuccess: async (report) => {
       queryClient.setQueryData(QUERY_KEYS.patchReport, report);
       await queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] !== QUERY_KEYS.patchReport[0] });
@@ -26,10 +25,8 @@ export const useUninstallModpack = (clientPath: string | null) => {
   });
 
   return {
-    restoreSnapshot,
     removeConfig,
     isPending: mutation.isPending,
-    setRestoreSnapshot,
     setRemoveConfig,
     onUninstall: () => mutation.mutate()
   };

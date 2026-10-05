@@ -1,7 +1,8 @@
+import outcome from '@contract/install-outcome.json';
 import plan from '@contract/install-plan.json';
 import { describe, expect, it } from 'vitest';
 
-import { installPlanSchema } from '@/features/setup/install-modpack';
+import { installOutcomeSchema, installPlanSchema } from '@/features/setup/install-modpack';
 
 describe('installPlanSchema', () => {
   it('parses the install plan with the other mods to review', () => {
@@ -20,5 +21,14 @@ describe('installPlanSchema', () => {
     const parsed = installPlanSchema.parse(plan);
 
     expect(parsed.dependencies.map((status) => status.state)).toEqual(['ours', 'user']);
+  });
+});
+
+describe('installOutcomeSchema', () => {
+  it('parses an install that succeeded with a step left undone', () => {
+    const parsed = installOutcomeSchema.parse(outcome);
+
+    expect(parsed.warnings).toEqual([{ step: 'dependencies', code: 'http' }]);
+    expect(parsed.installation.installed).toBe(true);
   });
 });

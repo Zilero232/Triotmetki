@@ -1,5 +1,4 @@
 import about from './about.json';
-import backups from './backups.json';
 import client from './client.json';
 import common from './common.json';
 import components from './components.json';
@@ -30,7 +29,6 @@ export const RU_MESSAGES = {
   conflicts,
   sets,
   profiles,
-  backups,
   settings,
   about,
   errors,

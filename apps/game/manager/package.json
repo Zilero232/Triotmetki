@@ -2,7 +2,7 @@
   "name": "@otmetki/manager",
   "version": "0.1.5",
   "private": true,
-  "description": "Три отметки modpack manager: a Tauri 2 desktop app (Rust core, React UI) that detects Lesta clients, toggles modpack components, keeps profiles and snapshots, and moves the modpack to the new client folder after a game patch.",
+  "description": "Три отметки modpack manager: a Tauri 2 desktop app (Rust core, React UI) that detects Lesta clients, toggles modpack components, keeps profiles and sets, and moves the modpack to the new client folder after a game patch.",
   "homepage": "https://triotmetki.ru",
   "bugs": {
     "url": "https://github.com/Zilero232/Triotmetki/issues"

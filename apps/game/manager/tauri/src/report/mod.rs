@@ -11,7 +11,7 @@ use zip::{CompressionMethod, ZipWriter};
 pub use redact::{RedactContext, Redactor};
 
 use crate::error::AppResult;
-use crate::fsx::list_files;
+use crate::fsx::{list_files, TEMP_SUFFIX};
 
 pub const REPORTS_PATH: &str = "/mod/reports";
 pub const PYTHON_LOG: &str = "python.log";
@@ -135,7 +135,8 @@ pub fn upload<'a>(preview: &'a ReportPreview, parts: &[ReportPart], message: &st
 
 pub fn write_zip(target: &Path, preview: &ReportPreview, parts: &[ReportPart], message: &str) -> AppResult<PathBuf> {
     let target = crate::sets::with_extension(target, "zip");
-    let mut writer = ZipWriter::new(File::create(&target)?);
+    let parent = target.parent().filter(|parent| !parent.as_os_str().is_empty()).unwrap_or(Path::new("."));
+    let mut writer = ZipWriter::new(tempfile::Builder::new().suffix(TEMP_SUFFIX).tempfile_in(parent)?);
     let options = SimpleFileOptions::default().compression_method(CompressionMethod::Deflated);
     let message = clean_message(message);
 
@@ -149,7 +150,10 @@ pub fn write_zip(target: &Path, preview: &ReportPreview, parts: &[ReportPart], m
         writer.write_all(item.text.as_bytes())?;
     }
 
-    writer.finish()?;
+    let temp = writer.finish()?;
+
+    temp.as_file().sync_all()?;
+    temp.persist(&target).map_err(|error| error.error)?;
 
     Ok(target)
 }

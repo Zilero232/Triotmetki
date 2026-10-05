@@ -28,6 +28,7 @@ pub const CONFIG_EXTENSION: &str = ".json";
 pub const META_XML: &str = "meta.xml";
 pub const META_VERSION: &str = "version";
 pub const MAX_META_BYTES: u64 = 64 * 1024;
+pub const MAX_CONFIG_BYTES: u64 = 16 * 1024 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -166,10 +167,16 @@ fn read_zip_entry(path: &Path, wanted: impl Fn(&str) -> bool) -> Result<Vec<(Str
         let mut entry = archive.by_index(index).map_err(|error| unreadable(&error))?;
 
         if entry.is_file() {
+            let name = entry.name().to_owned();
             let mut bytes = Vec::new();
 
-            entry.read_to_end(&mut bytes).map_err(|error| unreadable(&error))?;
-            found.push((entry.name().to_owned(), bytes));
+            entry.by_ref().take(MAX_CONFIG_BYTES + 1).read_to_end(&mut bytes).map_err(|error| unreadable(&error))?;
+
+            if bytes.len() as u64 > MAX_CONFIG_BYTES {
+                return Err(unreadable(&format!("{name} is larger than {MAX_CONFIG_BYTES} bytes")));
+            }
+
+            found.push((name, bytes));
         }
     }
 

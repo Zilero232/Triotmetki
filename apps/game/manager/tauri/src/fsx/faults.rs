@@ -4,12 +4,17 @@ use crate::error::AppResult;
 
 #[cfg(test)]
 thread_local! {
-    static FAULT: std::cell::Cell<Option<(usize, std::io::ErrorKind)>> = const { std::cell::Cell::new(None) };
+    static FAULT: std::cell::Cell<Option<(usize, usize, std::io::ErrorKind)>> = const { std::cell::Cell::new(None) };
 }
 
 #[cfg(test)]
 pub fn fail_after(operations: usize, kind: std::io::ErrorKind) {
-    FAULT.set(Some((operations, kind)));
+    fail_times(operations, 1, kind);
+}
+
+#[cfg(test)]
+pub fn fail_times(operations: usize, times: usize, kind: std::io::ErrorKind) {
+    FAULT.set(Some((operations, times, kind)));
 }
 
 #[cfg(test)]
@@ -20,13 +25,13 @@ pub fn clear() {
 #[cfg(test)]
 pub fn check(path: &Path) -> AppResult<()> {
     match FAULT.get() {
-        Some((0, kind)) => {
-            FAULT.set(None);
+        Some((0, times, kind)) => {
+            FAULT.set((times > 1).then_some((0, times - 1, kind)));
 
             Err(std::io::Error::new(kind, format!("injected fault at {}", path.display())).into())
         }
-        Some((left, kind)) => {
-            FAULT.set(Some((left - 1, kind)));
+        Some((left, times, kind)) => {
+            FAULT.set(Some((left - 1, times, kind)));
 
             Ok(())
         }

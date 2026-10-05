@@ -284,3 +284,16 @@ fn reproduces_the_res_map_gameface_wrote() {
 
     assert!(merged == written, "the merged res_map differs from the one OpenWG Gameface wrote");
 }
+
+#[test]
+fn an_oversized_packaged_config_is_unreadable_instead_of_read_whole() {
+    let root = tempfile::tempdir().unwrap();
+    let package = root.path().join("big.mtmod");
+    let huge = vec![b' '; usize::try_from(MAX_CONFIG_BYTES).unwrap() + 1];
+
+    write_zip(&package, &[("res/mods/configs/res_map/big.json", &huge)]);
+
+    let result = read_zip_entry(&package, |name| config_name(name).is_some());
+
+    assert!(matches!(result, Err(SkipReason::Unreadable(_))));
+}

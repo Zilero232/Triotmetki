@@ -74,4 +74,4 @@ export const conflictItems = ({ report, catalog, locale }: ConflictItemsInput): 
 };
 
 export const restorableCount = (report: ConflictItemsInput['report']): number =>
-  [...report.missing, ...report.replaced].filter((item) => item.snapshot !== null).length;
+  new Set([...report.missing, ...report.replaced].map((item) => item.id)).size;

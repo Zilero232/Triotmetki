@@ -59,7 +59,6 @@ export const ConflictReport = ({ hideWhenClean = false }: ConflictReportProps) =
           )
         }
       </QueryState>
-      {hasMissing && restorable === 0 && <p className={s.note}>{t('conflicts.noSnapshot')}</p>}
     </Card>
   );
 };

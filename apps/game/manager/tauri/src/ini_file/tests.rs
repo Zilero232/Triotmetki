@@ -33,16 +33,6 @@ fn reads_plain_utf8_with_a_bom() {
 }
 
 #[test]
-fn reads_inno_booleans() {
-    let ini = parse("[snapshot]\nmods_exists=1\nres_mods_exists=0\nconfigs_exists=true\n").unwrap();
-
-    assert!(get_bool(&ini, "snapshot", "mods_exists"));
-    assert!(!get_bool(&ini, "snapshot", "res_mods_exists"));
-    assert!(get_bool(&ini, "snapshot", "configs_exists"));
-    assert!(!get_bool(&ini, "snapshot", "missing"));
-}
-
-#[test]
 fn a_missing_file_is_none() {
     let dir = tempfile::tempdir().unwrap();
 

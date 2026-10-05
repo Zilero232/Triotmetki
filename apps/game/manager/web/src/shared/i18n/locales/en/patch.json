@@ -23,7 +23,7 @@
     "no_client": "Choose a client on this page or in the settings.",
     "not_installed": "Install the modpack from the manager's Home screen.",
     "up_to_date": "Modpack {version} runs on client {gameVersion}.",
-    "update_available": "Install it while the game is closed. The manager takes a snapshot first.",
+    "update_available": "Install it while the game is closed.",
     "migrated": "The client was updated from {from} — components and settings are in place.",
     "updated": "Client {gameVersion}: the new version was downloaded, verified and installed.",
     "migration_ready": "The client was updated from {from}. The installed version {version} works with it — move it while the game is closed.",

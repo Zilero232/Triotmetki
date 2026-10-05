@@ -6,7 +6,7 @@
   "description": "Game and modpack state, updates and the mods folder check.",
   "setup": {
     "title": "Install in three steps",
-    "description": "The manager has already looked for the game. Pick a set and install it — you see the full list before installing, and a snapshot lets you roll everything back.",
+    "description": "The manager has already looked for the game. Pick a set and install it — you see the full list before installing.",
     "stepGame": "Game",
     "stepPreset": "Set",
     "stepInstall": "Install",
@@ -29,6 +29,5 @@
     "enabled": "{enabled} of {total}",
     "enabledHint": "turned on",
     "noGame": "Not found"
-  },
-  "snapshot": "Backups"
+  }
 }

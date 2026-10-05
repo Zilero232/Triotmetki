@@ -88,25 +88,6 @@ pub fn remove_durable_copies(durable_dir: &Path) -> AppResult<Vec<PathBuf>> {
     Ok(removed)
 }
 
-pub fn refresh_stamps(game_dir: &Path, durable_dir: &Path) -> AppResult<Vec<&'static str>> {
-    let mut refreshed = Vec::new();
-
-    for name in MIRRORED_FILES {
-        let path = game_dir.join(name);
-
-        if read_json(&path).is_none() {
-            continue;
-        }
-
-        let bytes = fs::read(&path)?;
-
-        MirroredFile::new(name, game_dir, durable_dir).write_bytes(&bytes)?;
-        refreshed.push(name);
-    }
-
-    Ok(refreshed)
-}
-
 pub struct MirroredFile {
     pub name: &'static str,
     pub game_dir: PathBuf,

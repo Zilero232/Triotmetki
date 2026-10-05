@@ -2890,6 +2890,7 @@ dependencies = [
  "minisign-verify",
  "regex",
  "reqwest",
+ "rfd",
  "ring",
  "roxmltree",
  "rust-ini",

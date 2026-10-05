@@ -1,6 +1,5 @@
 import { useNavigation } from '@/shared/lib';
 import { AboutView } from '@/views/about';
-import { BackupsView } from '@/views/backups';
 import { ChangelogView } from '@/views/changelog';
 import { ComponentsView } from '@/views/components';
 import { HelpView } from '@/views/help';
@@ -19,7 +18,6 @@ const VIEWS = {
   components: ComponentsView,
   sets: SetsView,
   profiles: ProfilesView,
-  backups: BackupsView,
   settings: SettingsView,
   help: HelpView,
   changelog: ChangelogView,

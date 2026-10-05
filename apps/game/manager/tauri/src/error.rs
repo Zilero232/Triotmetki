@@ -16,8 +16,6 @@ pub enum ErrorCode {
     ProfileName,
     ProfileMissing,
     ProfileCode,
-    SnapshotMissing,
-    SnapshotFailed,
     ChecksumMismatch,
     ReleaseUnavailable,
     InvalidPath,
@@ -28,7 +26,7 @@ pub enum ErrorCode {
     UntrustedHost,
     DiskFull,
     FileLocked,
-    NotEnoughSpace,
+    AccessDenied,
     RollbackFailed,
     NothingToRestore,
     SetLimit,
@@ -45,9 +43,11 @@ pub enum ErrorCode {
     SiteOffline,
 }
 
+pub const ACCESS_DENIED: i32 = 5;
 pub const SHARING_VIOLATION: i32 = 32;
 pub const LOCK_VIOLATION: i32 = 33;
 pub const DISK_FULL_OS: i32 = 112;
+pub const USER_MAPPED_FILE: i32 = 1224;
 
 #[derive(Debug, thiserror::Error)]
 pub enum AppError {
@@ -84,7 +84,8 @@ impl AppError {
 pub fn io_code(error: &std::io::Error) -> ErrorCode {
     match (error.kind(), error.raw_os_error()) {
         (std::io::ErrorKind::StorageFull, _) | (_, Some(DISK_FULL_OS)) => ErrorCode::DiskFull,
-        (_, Some(SHARING_VIOLATION | LOCK_VIOLATION)) => ErrorCode::FileLocked,
+        (_, Some(SHARING_VIOLATION | LOCK_VIOLATION | USER_MAPPED_FILE)) => ErrorCode::FileLocked,
+        (_, Some(ACCESS_DENIED)) => ErrorCode::AccessDenied,
         _ => ErrorCode::Io,
     }
 }
@@ -99,3 +100,18 @@ impl Serialize for AppError {
 }
 
 pub type AppResult<T> = Result<T, AppError>;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_file_mapped_by_another_process_is_locked() {
+        assert_eq!(io_code(&std::io::Error::from_raw_os_error(USER_MAPPED_FILE)), ErrorCode::FileLocked);
+    }
+
+    #[test]
+    fn a_refused_access_has_its_own_code() {
+        assert_eq!(io_code(&std::io::Error::from_raw_os_error(ACCESS_DENIED)), ErrorCode::AccessDenied);
+    }
+}

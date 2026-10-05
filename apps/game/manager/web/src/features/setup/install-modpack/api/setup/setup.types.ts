@@ -12,6 +12,5 @@ export type InstallRequest = {
   clientPath: string | null;
   components: string[];
   removeOthers: string[];
-  takeSnapshot: boolean;
   excludedDependencies: string[];
 };

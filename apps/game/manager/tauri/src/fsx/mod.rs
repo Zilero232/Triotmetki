@@ -8,9 +8,7 @@ use sha2::{Digest, Sha256};
 use walkdir::WalkDir;
 
 use crate::error::{AppError, AppResult, ErrorCode};
-use crate::paths::normalized;
 
-pub const STAGING_SUFFIX: &str = ".otm-new";
 pub const RETIRED_SUFFIX: &str = ".otm-old";
 pub const PART_SUFFIX: &str = ".part";
 pub const TEMP_SUFFIX: &str = ".otm-tmp";
@@ -45,10 +43,39 @@ pub fn write_atomic(path: &Path, bytes: &[u8]) -> AppResult<()> {
 
     faults::check(temp.path())?;
     temp.write_all(bytes)?;
+    temp.as_file().sync_all()?;
     faults::check(path)?;
     temp.persist(path).map_err(|error| error.error)?;
 
     Ok(())
+}
+
+#[derive(Debug)]
+#[must_use]
+pub struct Replaced {
+    path: PathBuf,
+    previous: Option<Vec<u8>>,
+}
+
+impl Replaced {
+    pub fn restore(self) -> AppResult<()> {
+        match &self.previous {
+            Some(bytes) => write_atomic(&self.path, bytes),
+            None => remove_path(&self.path),
+        }
+    }
+}
+
+pub fn replace_restorable(path: &Path, bytes: &[u8]) -> AppResult<Replaced> {
+    let previous = match fs::read(path) {
+        Ok(previous) => Some(previous),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => None,
+        Err(error) => return Err(error.into()),
+    };
+
+    write_atomic(path, bytes)?;
+
+    Ok(Replaced { path: path.to_path_buf(), previous })
 }
 
 pub fn file_sha256(path: &Path) -> AppResult<String> {
@@ -92,18 +119,6 @@ pub fn copy_expected(from: &Path, to: &Path, sha256: Option<&str>) -> AppResult<
     copied
 }
 
-pub fn available_space(path: &Path) -> Option<u64> {
-    let target = normalized(path);
-    let disks = sysinfo::Disks::new_with_refreshed_list();
-
-    disks
-        .list()
-        .iter()
-        .filter(|disk| target.starts_with(&normalized(disk.mount_point())))
-        .max_by_key(|disk| disk.mount_point().as_os_str().len())
-        .map(sysinfo::Disk::available_space)
-}
-
 pub fn ensure_removable(path: &Path) -> AppResult<()> {
     if !path.is_absolute() || path.to_string_lossy().trim_end_matches(['\\', '/']).len() < MIN_SAFE_PATH_LENGTH {
         return Err(AppError::coded(ErrorCode::InvalidPath, format!("refusing to delete {}", path.display())));
@@ -129,67 +144,29 @@ pub fn move_file(from: &Path, to: &Path) -> AppResult<()> {
         fs::create_dir_all(parent)?;
     }
 
-    if to.exists() {
-        fs::remove_file(to)?;
+    if rename_file(from, to).is_ok() {
+        return Ok(());
     }
 
-    if fs::rename(from, to).is_err() {
-        fs::copy(from, to)?;
-        fs::remove_file(from)?;
+    let existed = to.exists();
+
+    copy_verified(from, to)?;
+
+    if let Err(error) = fs::remove_file(from) {
+        if !existed {
+            let _ = fs::remove_file(to);
+        }
+
+        return Err(error.into());
     }
 
     Ok(())
-}
-
-pub fn copy_dir(from: &Path, to: &Path) -> AppResult<u64> {
-    let mut bytes = 0;
-
-    fs::create_dir_all(to)?;
-
-    for entry in WalkDir::new(from).min_depth(1).follow_links(false) {
-        let entry = entry?;
-        let relative = entry.path().strip_prefix(from).map_err(|error| AppError::coded(ErrorCode::Io, error.to_string()))?;
-        let target = to.join(relative);
-
-        if entry.file_type().is_dir() {
-            fs::create_dir_all(&target)?;
-        } else if entry.file_type().is_file() {
-            bytes += copy_file(entry.path(), &target)?;
-        }
-    }
-
-    Ok(bytes)
 }
 
 pub fn sibling(path: &Path, suffix: &str) -> PathBuf {
     let name = path.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
 
     path.with_file_name(format!("{name}{suffix}"))
-}
-
-pub fn mirror_dir(from: &Path, to: &Path) -> AppResult<()> {
-    ensure_removable(to)?;
-
-    let staging = sibling(to, STAGING_SUFFIX);
-    let retired = sibling(to, RETIRED_SUFFIX);
-
-    remove_path(&staging)?;
-    remove_path(&retired)?;
-    copy_dir(from, &staging)?;
-
-    if to.exists() {
-        fs::rename(to, &retired)?;
-    }
-
-    if let Err(error) = fs::rename(&staging, to) {
-        if retired.exists() {
-            fs::rename(&retired, to)?;
-        }
-
-        return Err(error.into());
-    }
-
-    remove_path(&retired)
 }
 
 pub fn dir_size(path: &Path) -> u64 {

@@ -21,8 +21,7 @@
   ],
   "missing": [
     {
-      "id": "marks_panel",
-      "snapshot": "20260927-214705"
+      "id": "marks_panel"
     }
   ],
   "overrides": [
@@ -38,8 +37,7 @@
   "replaced": [
     {
       "file": "net.triotmetki.hit_log_0.1.0.mtmod",
-      "id": "hit_log",
-      "snapshot": null
+      "id": "hit_log"
     }
   ]
 }

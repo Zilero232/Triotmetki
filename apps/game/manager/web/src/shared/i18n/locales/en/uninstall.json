@@ -1,8 +1,6 @@
 {
   "title": "Remove the modpack",
   "description": "Only our files are removed. Other mods stay in place.",
-  "restore": "Roll back to the latest snapshot",
-  "restoreDescription": "Brings back the mod settings and the other mods the install removed. Nothing else is deleted.",
   "removeConfig": "Delete the mod settings and the site binding",
   "removeConfigDescription": "Deletes the settings in the game folder and their copy in %APPDATA%\\TriOtmetki, including the binding key. If another client has the modpack, that copy stays — unbind the device on the site.",
   "action": "Remove the modpack",

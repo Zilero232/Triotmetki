@@ -2,8 +2,8 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use crate::error::{AppError, AppResult, ErrorCode};
-use crate::fsx::{remove_path, rename_file, sibling, write_file, PART_SUFFIX, RETIRED_SUFFIX};
-use crate::releases::{safe_file_name, sha256_hex, verify_sha256};
+use crate::fsx::{file_sha256, list_files, remove_path, rename_file, sibling, write_file, PART_SUFFIX, RETIRED_SUFFIX};
+use crate::releases::safe_file_name;
 
 pub struct StagedFile<'a> {
     pub dir: &'a Path,
@@ -23,15 +23,24 @@ struct Journal {
     placed: Vec<PathBuf>,
 }
 
+fn verify_written(part: &Path, sha256: &str) -> AppResult<()> {
+    let actual = file_sha256(part)?;
+
+    if !actual.eq_ignore_ascii_case(sha256.trim()) {
+        return Err(AppError::coded(ErrorCode::ChecksumMismatch, format!("{} does not match its sha256", part.display())));
+    }
+
+    Ok(())
+}
+
 fn stage_one(file: &StagedFile) -> AppResult<(PathBuf, PathBuf)> {
     let name = safe_file_name(file.name)?;
     let target = file.dir.join(name);
     let part = sibling(&target, PART_SUFFIX);
 
-    verify_sha256(file.bytes, file.sha256)?;
     fs::create_dir_all(file.dir)?;
 
-    let written = write_file(&part, file.bytes).and_then(|()| verify_sha256(&fs::read(&part)?, &sha256_hex(file.bytes)));
+    let written = write_file(&part, file.bytes).and_then(|()| verify_written(&part, file.sha256));
 
     if let Err(error) = written {
         let _ = fs::remove_file(&part);
@@ -102,6 +111,28 @@ fn rollback(journal: &Journal) -> bool {
     }
 
     clean
+}
+
+pub fn recover_retired(dirs: &[PathBuf]) -> Vec<PathBuf> {
+    let mut recovered = Vec::new();
+
+    for retired in dirs.iter().flat_map(|dir| list_files(dir)) {
+        let name = retired.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
+        let Some(original) = name.strip_suffix(RETIRED_SUFFIX).map(|original| retired.with_file_name(original)) else {
+            continue;
+        };
+
+        if original.exists() {
+            continue;
+        }
+
+        match rename_file(&retired, &original) {
+            Ok(()) => recovered.push(original),
+            Err(error) => log::warn!("put back {}: {error}", original.display()),
+        }
+    }
+
+    recovered
 }
 
 impl Staging {

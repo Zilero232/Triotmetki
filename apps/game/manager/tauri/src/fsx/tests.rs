@@ -15,25 +15,6 @@ fn refuses_to_delete_roots_and_relative_paths() {
 }
 
 #[test]
-fn mirrors_a_folder_exactly() {
-    let dir = tempfile::tempdir().unwrap();
-    let source = dir.path().join("снимок");
-    let target = dir.path().join("моды");
-
-    write(&source.join("a.mtmod"), "a");
-    write(&source.join("sub").join("b.txt"), "b");
-    write(&target.join("stale.mtmod"), "stale");
-
-    mirror_dir(&source, &target).unwrap();
-
-    assert_eq!(fs::read_to_string(target.join("a.mtmod")).unwrap(), "a");
-    assert_eq!(fs::read_to_string(target.join("sub").join("b.txt")).unwrap(), "b");
-    assert!(!target.join("stale.mtmod").exists());
-    assert!(!dir.path().join(format!("моды{STAGING_SUFFIX}")).exists());
-    assert!(!dir.path().join(format!("моды{RETIRED_SUFFIX}")).exists());
-}
-
-#[test]
 fn moves_a_file_over_an_existing_one() {
     let dir = tempfile::tempdir().unwrap();
     let from = dir.path().join("from").join("x.mtmod");
@@ -45,18 +26,6 @@ fn moves_a_file_over_an_existing_one() {
 
     assert!(!from.exists());
     assert_eq!(fs::read_to_string(&to).unwrap(), "new");
-}
-
-#[test]
-fn copies_a_tree_and_counts_its_bytes() {
-    let dir = tempfile::tempdir().unwrap();
-    let source = dir.path().join("source");
-
-    write(&source.join("one"), "12");
-    write(&source.join("deep").join("two"), "345");
-
-    assert_eq!(copy_dir(&source, &dir.path().join("copy")).unwrap(), 5);
-    assert_eq!(dir_size(&dir.path().join("copy")), 5);
 }
 
 #[test]
@@ -88,4 +57,68 @@ fn a_copy_that_does_not_match_the_expected_hash_never_lands() {
     copy_expected(&from, &to, Some(&hex::encode(Sha256::digest(b"changed after the check")).to_uppercase())).unwrap();
 
     assert_eq!(fs::read_to_string(&to).unwrap(), "changed after the check");
+}
+
+#[test]
+fn a_move_that_falls_back_to_a_copy_still_lands() {
+    let dir = tempfile::tempdir().unwrap();
+    let from = dir.path().join("from").join("x.mtmod");
+    let to = dir.path().join("to").join("x.mtmod");
+
+    write(&from, "new");
+    faults::fail_after(0, std::io::ErrorKind::CrossesDevices);
+
+    let moved = move_file(&from, &to);
+
+    faults::clear();
+    moved.unwrap();
+
+    assert!(!from.exists());
+    assert_eq!(fs::read_to_string(&to).unwrap(), "new");
+}
+
+#[test]
+fn a_failed_cross_drive_move_keeps_the_existing_destination() {
+    let dir = tempfile::tempdir().unwrap();
+    let from = dir.path().join("from").join("x.mtmod");
+    let to = dir.path().join("to").join("x.mtmod");
+
+    write(&from, "new");
+    write(&to, "old");
+    faults::fail_times(0, 2, std::io::ErrorKind::CrossesDevices);
+
+    let moved = move_file(&from, &to);
+
+    faults::clear();
+
+    assert!(moved.is_err());
+    assert_eq!(fs::read_to_string(&from).unwrap(), "new");
+    assert_eq!(fs::read_to_string(&to).unwrap(), "old");
+    assert!(!sibling(&to, PART_SUFFIX).exists());
+}
+
+#[test]
+fn a_replaced_file_can_be_put_back() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("каталог").join("components.json");
+
+    write(&path, "previous");
+
+    let replaced = replace_restorable(&path, b"next").unwrap();
+
+    assert_eq!(fs::read_to_string(&path).unwrap(), "next");
+
+    replaced.restore().unwrap();
+
+    assert_eq!(fs::read_to_string(&path).unwrap(), "previous");
+}
+
+#[test]
+fn a_new_file_is_removed_when_put_back() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("components.json");
+
+    replace_restorable(&path, b"next").unwrap().restore().unwrap();
+
+    assert!(!path.exists());
 }

@@ -4,7 +4,6 @@ use super::*;
 use crate::catalog::fixtures::catalog;
 use crate::detect::fixtures::lesta_client;
 use crate::releases::{sha256_hex, ReleasePackage};
-use crate::snapshots::list;
 use crate::state::disabled_dir;
 
 fn fetched(id: &str, file: &str) -> FetchedPackage {
@@ -43,7 +42,7 @@ fn lists_other_mods_but_never_ours() {
 }
 
 #[test]
-fn installs_the_selection_with_a_manifest_and_a_snapshot() {
+fn installs_the_selection_with_a_manifest() {
     let root = tempfile::tempdir().unwrap();
     let client = lesta_client(root.path(), "1.45.0.0");
     let client_dir = root.path().join("state");
@@ -53,25 +52,18 @@ fn installs_the_selection_with_a_manifest_and_a_snapshot() {
     fs::write(client.mods_dir.join("net.triotmetki.core_0.0.9.mtmod"), "old").unwrap();
     fs::write(client.mods_dir.join("izeberg.modssettingsapi_1.6.0.mtmod"), "foreign").unwrap();
 
-    let written = install(InstallInput {
-        context,
-        packages: &base_packages(),
-        modpack_version: "0.1.0",
-        remove_others: &[],
-        take_snapshot: true,
-        parked: &BTreeSet::new(),
-        durable_dir: &root.path().join("Roaming"),
-    })
-    .unwrap();
+    let installed =
+        install(InstallInput { context, packages: &base_packages(), modpack_version: "0.1.0", remove_others: &[], parked: &BTreeSet::new() })
+            .unwrap();
     let manifest = Manifest::read(&client_dir).unwrap().unwrap();
 
-    assert_eq!(written, vec!["core", "companion", "marks_panel"]);
+    assert_eq!(installed.written, vec!["core", "companion", "marks_panel"]);
+    assert_eq!(installed.others_error, None);
     assert!(!client.mods_dir.join("net.triotmetki.core_0.0.9.mtmod").exists());
     assert!(client.mods_dir.join("izeberg.modssettingsapi_1.6.0.mtmod").exists());
     assert_eq!(manifest.modpack, "0.1.0");
     assert_eq!(manifest.files.len(), 3);
     assert_eq!(manifest.component_ids(), vec!["companion", "core", "marks_panel"]);
-    assert_eq!(list(&client_dir).len(), 1);
 }
 
 #[test]
@@ -91,15 +83,12 @@ fn removes_only_the_reviewed_other_mods() {
         packages: &base_packages(),
         modpack_version: "0.1.0",
         remove_others: std::slice::from_ref(&reviewed),
-        take_snapshot: false,
         parked: &BTreeSet::new(),
-        durable_dir: &root.path().join("Roaming"),
     })
     .unwrap();
 
     assert!(!reviewed.exists());
     assert!(client.mods_dir.join("b.mtmod").exists());
-    assert_eq!(list(&client_dir).len(), 1);
 }
 
 #[test]
@@ -113,16 +102,7 @@ fn removing_the_config_also_removes_the_durable_binding() {
     let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
     let configs = configs_dir(&client.path);
 
-    install(InstallInput {
-        context,
-        packages: &base_packages(),
-        modpack_version: "0.1.0",
-        remove_others: &[],
-        take_snapshot: false,
-        parked: &BTreeSet::new(),
-        durable_dir: &durable,
-    })
-    .unwrap();
+    install(InstallInput { context, packages: &base_packages(), modpack_version: "0.1.0", remove_others: &[], parked: &BTreeSet::new() }).unwrap();
     fs::create_dir_all(&configs).unwrap();
 
     for name in ["credentials.json", "config.json"] {
@@ -134,7 +114,7 @@ fn removing_the_config_also_removes_the_durable_binding() {
 
     assert!(!installed_elsewhere(&clients_dir, &client_dir));
 
-    uninstall(UninstallInput { context, restore_snapshot: None, remove_config: true, durable_dir: &durable, shared_elsewhere: false }).unwrap();
+    uninstall(UninstallInput { context, remove_config: true, durable_dir: &durable, shared_elsewhere: false }).unwrap();
 
     let stamps: serde_json::Value = serde_json::from_str(&fs::read_to_string(durable.join(crate::durable::STAMPS_NAME)).unwrap()).unwrap();
 
@@ -162,7 +142,7 @@ fn keeps_the_durable_binding_while_another_client_has_the_modpack() {
 
     let shared = installed_elsewhere(&clients_dir, &client_dir);
 
-    uninstall(UninstallInput { context, restore_snapshot: None, remove_config: true, durable_dir: &durable, shared_elsewhere: shared }).unwrap();
+    uninstall(UninstallInput { context, remove_config: true, durable_dir: &durable, shared_elsewhere: shared }).unwrap();
 
     assert!(shared);
     assert!(durable.join("credentials.json").exists());
@@ -182,15 +162,8 @@ fn a_full_disk_during_install_keeps_the_previous_modpack() {
     fs::write(&parked, "old hit log").unwrap();
     crate::fsx::faults::fail_after(2, std::io::ErrorKind::StorageFull);
 
-    let result = install(InstallInput {
-        context,
-        packages: &base_packages(),
-        modpack_version: "0.1.0",
-        remove_others: &[],
-        take_snapshot: false,
-        parked: &BTreeSet::new(),
-        durable_dir: &root.path().join("Roaming"),
-    });
+    let result =
+        install(InstallInput { context, packages: &base_packages(), modpack_version: "0.1.0", remove_others: &[], parked: &BTreeSet::new() });
 
     crate::fsx::faults::clear();
 
@@ -215,9 +188,7 @@ fn a_reinstall_keeps_the_selected_parked_components_parked() {
         packages: &packages,
         modpack_version: "0.1.0",
         remove_others: &[],
-        take_snapshot: false,
         parked: &BTreeSet::from(["hit_log".to_owned(), "damage_log".to_owned()]),
-        durable_dir: &root.path().join("Roaming"),
     })
     .unwrap();
 
@@ -239,7 +210,7 @@ fn refuses_to_remove_a_path_outside_the_reviewed_list() {
 }
 
 #[test]
-fn a_tampered_package_aborts_before_touching_the_client() {
+fn a_tampered_package_leaves_the_client_untouched() {
     let root = tempfile::tempdir().unwrap();
     let client = lesta_client(root.path(), "1.45.0.0");
     let client_dir = root.path().join("state");
@@ -250,18 +221,8 @@ fn a_tampered_package_aborts_before_touching_the_client() {
     fs::write(client.mods_dir.join("net.triotmetki.core_0.0.9.mtmod"), "old").unwrap();
     packages[1].bytes = b"evil".to_vec();
 
-    assert!(install(InstallInput {
-        context,
-        packages: &packages,
-        modpack_version: "0.1.0",
-        remove_others: &[],
-        take_snapshot: true,
-        parked: &BTreeSet::new(),
-        durable_dir: &root.path().join("Roaming")
-    })
-    .is_err());
-    assert!(client.mods_dir.join("net.triotmetki.core_0.0.9.mtmod").exists());
-    assert!(list(&client_dir).is_empty());
+    assert!(install(InstallInput { context, packages: &packages, modpack_version: "0.1.0", remove_others: &[], parked: &BTreeSet::new() }).is_err());
+    assert_eq!(crate::fsx::list_files(&client.mods_dir), vec![client.mods_dir.join("net.triotmetki.core_0.0.9.mtmod")]);
 }
 
 #[test]
@@ -281,28 +242,12 @@ fn uninstalls_our_files_and_optionally_the_config() {
     let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
     let configs = configs_dir(&client.path);
 
-    install(InstallInput {
-        context,
-        packages: &base_packages(),
-        modpack_version: "0.1.0",
-        remove_others: &[],
-        take_snapshot: false,
-        parked: &BTreeSet::new(),
-        durable_dir: &root.path().join("Roaming"),
-    })
-    .unwrap();
+    install(InstallInput { context, packages: &base_packages(), modpack_version: "0.1.0", remove_others: &[], parked: &BTreeSet::new() }).unwrap();
     fs::write(client.mods_dir.join("izeberg.modssettingsapi_1.6.0.mtmod"), "").unwrap();
     fs::create_dir_all(&configs).unwrap();
     fs::write(configs.join("config.json"), "{}").unwrap();
 
-    uninstall(UninstallInput {
-        context,
-        restore_snapshot: None,
-        remove_config: false,
-        durable_dir: &root.path().join("Roaming"),
-        shared_elsewhere: false,
-    })
-    .unwrap();
+    uninstall(UninstallInput { context, remove_config: false, durable_dir: &root.path().join("Roaming"), shared_elsewhere: false }).unwrap();
 
     assert_eq!(list_files(&client.mods_dir), vec![client.mods_dir.join("izeberg.modssettingsapi_1.6.0.mtmod")]);
     assert!(configs.join("config.json").exists());
@@ -318,16 +263,7 @@ fn the_app_uninstaller_cleans_every_recorded_client() {
     let catalog = catalog();
     let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
 
-    install(InstallInput {
-        context,
-        packages: &base_packages(),
-        modpack_version: "0.1.0",
-        remove_others: &[],
-        take_snapshot: false,
-        parked: &BTreeSet::new(),
-        durable_dir: &root.path().join("Roaming"),
-    })
-    .unwrap();
+    install(InstallInput { context, packages: &base_packages(), modpack_version: "0.1.0", remove_others: &[], parked: &BTreeSet::new() }).unwrap();
 
     let cleaned = uninstall_everywhere(&clients_dir, &owned_patterns_catalog(None));
 
@@ -346,4 +282,38 @@ fn reads_an_installer_component_profile() {
     crate::ini_file::write(&path, &ini).unwrap();
 
     assert_eq!(read_component_profile(&path).unwrap(), vec!["core", "marks_panel", "battle"]);
+}
+
+#[cfg(windows)]
+#[test]
+fn an_other_mod_that_cannot_be_removed_does_not_fail_the_install() {
+    use std::os::windows::fs::OpenOptionsExt;
+
+    const FILE_SHARE_READ: u32 = 1;
+
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.45.0.0");
+    let client_dir = root.path().join("state");
+    let catalog = catalog();
+    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
+    let reviewed = client.mods_dir.join("a.mtmod");
+
+    fs::write(&reviewed, "").unwrap();
+
+    let lock = fs::OpenOptions::new().read(true).share_mode(FILE_SHARE_READ).open(&reviewed).unwrap();
+    let installed = install(InstallInput {
+        context,
+        packages: &base_packages(),
+        modpack_version: "0.1.0",
+        remove_others: std::slice::from_ref(&reviewed),
+        parked: &BTreeSet::new(),
+    });
+
+    drop(lock);
+
+    let installed = installed.unwrap();
+
+    assert_eq!(installed.others_error, Some(ErrorCode::FileLocked));
+    assert_eq!(installed.written, vec!["core", "companion", "marks_panel"]);
+    assert!(reviewed.exists());
 }

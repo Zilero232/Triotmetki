@@ -1,0 +1,38 @@
+{
+  "installation": {
+    "clientPath": "D:\\Игры\\Мир танков",
+    "components": [
+      {
+        "file": "net.triotmetki.core_0.1.0.mtmod",
+        "id": "core",
+        "state": "enabled",
+        "version": "0.1.0"
+      },
+      {
+        "file": "net.triotmetki.hit_log_0.1.0.mtmod",
+        "id": "hit_log",
+        "state": "disabled",
+        "version": "0.1.0"
+      },
+      {
+        "file": null,
+        "id": "damage_log",
+        "state": "missing",
+        "version": null
+      }
+    ],
+    "gameVersion": "1.45.0.0",
+    "installed": true,
+    "installedAt": "2026-09-27 21:47:05",
+    "manifestGameVersion": "1.45.0.0",
+    "modpackVersion": "0.1.0",
+    "modsDir": "D:\\Игры\\Мир танков\\mods\\1.45.0.0",
+    "needsMigration": false
+  },
+  "warnings": [
+    {
+      "code": "http",
+      "step": "dependencies"
+    }
+  ]
+}

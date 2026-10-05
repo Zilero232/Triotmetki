@@ -32,7 +32,7 @@ describe('conflictItems', () => {
 });
 
 describe('restorableCount', () => {
-  it('counts what a snapshot can bring back', () => {
-    expect(restorableCount(report)).toBe(1);
+  it('counts the packages to download again', () => {
+    expect(restorableCount(report)).toBe(2);
   });
 });

@@ -144,45 +144,70 @@ pub fn missing_for_enable(input: &ToggleInput) -> AppResult<Vec<String>> {
         .collect())
 }
 
-pub fn set_enabled(input: ToggleInput) -> AppResult<Vec<String>> {
+fn undo_moves(moved: &[(PathBuf, PathBuf)]) {
+    for (from, to) in moved.iter().rev() {
+        if let Err(error) = move_file(to, from) {
+            log::warn!("toggle rollback: {} -> {}: {error}", to.display(), from.display());
+        }
+    }
+}
+
+fn toggle_moves(input: &ToggleInput) -> AppResult<Vec<(String, PathBuf, PathBuf)>> {
     let catalog = input.context.catalog;
     let mods_dir = &input.context.client.mods_dir;
     let parked_dir = disabled_dir(input.context.client_dir);
     let enabled = packages_in(mods_dir, catalog);
     let disabled = packages_in(&parked_dir, catalog);
-    let mut changed = Vec::new();
 
     known_component(catalog, input.component_id)?;
 
     if input.enabled {
-        let missing = missing_for_enable(&input)?;
+        let missing = missing_for_enable(input)?;
 
         if !missing.is_empty() {
             return Err(AppError::coded(ErrorCode::NotInstalled, missing.join(",")));
         }
 
-        for id in catalog.with_dependencies([input.component_id]) {
-            if let (None, Some(package)) = (enabled.get(&id), disabled.get(&id)) {
-                move_file(&package.path, &mods_dir.join(&package.name))?;
-                changed.push(id);
-            }
-        }
-    } else {
-        let targets = catalog.with_dependents(input.component_id);
-
-        if let Some(required) = targets.iter().find(|id| catalog.component(id).is_some_and(|component| component.required)) {
-            return Err(AppError::coded(ErrorCode::RequiredComponent, format!("{required} is required")));
-        }
-
-        for id in targets {
-            if let Some(package) = enabled.get(&id) {
-                move_file(&package.path, &parked_dir.join(&package.name))?;
-                changed.push(id);
-            }
-        }
+        return Ok(catalog
+            .with_dependencies([input.component_id])
+            .into_iter()
+            .filter_map(|id| match (enabled.get(&id), disabled.get(&id)) {
+                (None, Some(package)) => Some((id, package.path.clone(), mods_dir.join(&package.name))),
+                _ => None,
+            })
+            .collect());
     }
 
-    sync_manifest(input.context)?;
+    let targets = catalog.with_dependents(input.component_id);
+
+    if let Some(required) = targets.iter().find(|id| catalog.component(id).is_some_and(|component| component.required)) {
+        return Err(AppError::coded(ErrorCode::RequiredComponent, format!("{required} is required")));
+    }
+
+    Ok(targets.into_iter().filter_map(|id| enabled.get(&id).map(|package| (id, package.path.clone(), parked_dir.join(&package.name)))).collect())
+}
+
+pub fn set_enabled(input: ToggleInput) -> AppResult<Vec<String>> {
+    let moves = toggle_moves(&input)?;
+    let mut moved: Vec<(PathBuf, PathBuf)> = Vec::new();
+    let mut changed = Vec::new();
+    let mut outcome = Ok(());
+
+    for (id, from, to) in moves {
+        if let Err(error) = move_file(&from, &to) {
+            undo_moves(&moved);
+            outcome = Err(error);
+            break;
+        }
+
+        moved.push((from, to));
+        changed.push(id);
+    }
+
+    let synced = sync_manifest(input.context);
+
+    outcome?;
+    synced?;
 
     Ok(changed)
 }

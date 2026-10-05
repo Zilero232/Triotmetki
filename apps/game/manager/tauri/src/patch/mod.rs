@@ -6,9 +6,9 @@ use std::path::PathBuf;
 
 use serde::Serialize;
 
-pub use install::{apply_packages, fetch_packages, install_targets, retired_files, ApplyInput, FetchedPackage};
+pub use install::{apply_packages, fetch_packages, install_targets, ApplyInput, FetchedPackage};
 pub use migrate::{migrate, MigrateInput};
-pub use stage::{stage, StagedFile};
+pub use stage::{recover_retired, stage, StagedFile};
 
 use crate::catalog::Localized;
 use crate::detect::GameVersion;

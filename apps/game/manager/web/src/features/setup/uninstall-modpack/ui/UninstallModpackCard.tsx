@@ -7,10 +7,10 @@ import type { UninstallModpackCardProps } from './UninstallModpackCard.types';
 
 import { useUninstallModpack } from '../model/hooks';
 
-export const UninstallModpackCard = ({ clientPath, hasSnapshots }: UninstallModpackCardProps) => {
+export const UninstallModpackCard = ({ clientPath }: UninstallModpackCardProps) => {
   const t = useTranslations('uninstall');
   const common = useTranslations('common');
-  const { restoreSnapshot, removeConfig, isPending, setRestoreSnapshot, setRemoveConfig, onUninstall } = useUninstallModpack(clientPath);
+  const { removeConfig, isPending, setRemoveConfig, onUninstall } = useUninstallModpack(clientPath);
 
   return (
     <Card
@@ -34,13 +34,6 @@ export const UninstallModpackCard = ({ clientPath, hasSnapshots }: UninstallModp
       description={t('description')}
       title={t('title')}
     >
-      <Checkbox
-        checked={restoreSnapshot}
-        description={t('restoreDescription')}
-        disabled={!hasSnapshots}
-        label={t('restore')}
-        onCheckedChange={setRestoreSnapshot}
-      />
       <Checkbox checked={removeConfig} description={t('removeConfigDescription')} label={t('removeConfig')} onCheckedChange={setRemoveConfig} />
     </Card>
   );

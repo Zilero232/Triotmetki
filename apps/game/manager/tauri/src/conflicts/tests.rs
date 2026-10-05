@@ -2,7 +2,6 @@ use std::fs;
 use std::io::Write;
 use std::path::Path;
 
-use chrono::{Local, TimeZone};
 use zip::write::SimpleFileOptions;
 
 use super::*;
@@ -10,10 +9,7 @@ use crate::catalog::fixtures::catalog;
 use crate::components::sync_manifest;
 use crate::detect::fixtures::lesta_client;
 use crate::detect::GameClient;
-use crate::error::ErrorCode;
 use crate::releases::sha256_hex;
-use crate::snapshots::{create, CreateInput, SnapshotKind};
-use crate::state::Manifest;
 
 const CORE: &str = "net.triotmetki.core_0.1.0.mtmod";
 const COMPANION: &str = "otmetki.companion_0.1.0.mtmod";
@@ -43,12 +39,6 @@ fn install(client: &GameClient, files: &[&str]) {
     for file in files {
         fs::write(client.mods_dir.join(file), file.as_bytes()).unwrap();
     }
-}
-
-fn snapshot(context: ClientContext, second: u32) -> String {
-    let now = Local.with_ymd_and_hms(2026, 9, 29, 12, 0, second).unwrap();
-
-    create(CreateInput { context, kind: SnapshotKind::Manual, removed: &[], now }).unwrap().id
 }
 
 #[test]
@@ -125,57 +115,10 @@ fn reports_packages_and_res_mods_that_overwrite_our_files() {
 }
 
 #[test]
-fn restores_the_packages_a_cleaner_removed_from_the_latest_snapshot() {
+fn lists_what_a_cleaner_removed_or_replaced_for_a_download() {
     let root = tempfile::tempdir().unwrap();
     let client = lesta_client(root.path(), "1.45.0.0");
     let client_dir = root.path().join("Состояние");
-    let catalog = catalog();
-    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
-
-    install(&client, &[CORE, COMPANION, MARKS_PANEL]);
-    sync_manifest(context).unwrap();
-
-    let id = snapshot(context, 1);
-
-    fs::remove_file(client.mods_dir.join(MARKS_PANEL)).unwrap();
-    fs::remove_file(client.mods_dir.join(COMPANION)).unwrap();
-
-    let report = scan(context).unwrap();
-
-    assert_eq!(
-        report.missing.iter().map(|item| (item.id.as_str(), item.snapshot.as_deref())).collect::<Vec<_>>(),
-        vec![("companion", Some(id.as_str())), ("marks_panel", Some(id.as_str()))]
-    );
-
-    let restored = restore(context).unwrap();
-
-    assert_eq!(restored, vec!["companion", "marks_panel"]);
-    assert_eq!(fs::read_to_string(client.mods_dir.join(MARKS_PANEL)).unwrap(), MARKS_PANEL);
-    assert!(scan(context).unwrap().missing.is_empty());
-    assert_eq!(Manifest::read(&client_dir).unwrap().unwrap().files.len(), 3);
-}
-
-#[test]
-fn refuses_to_restore_without_a_snapshot() {
-    let root = tempfile::tempdir().unwrap();
-    let client = lesta_client(root.path(), "1.45.0.0");
-    let client_dir = root.path().join("state");
-    let catalog = catalog();
-    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
-
-    install(&client, &[CORE, COMPANION, MARKS_PANEL]);
-    sync_manifest(context).unwrap();
-    fs::remove_file(client.mods_dir.join(MARKS_PANEL)).unwrap();
-
-    assert_eq!(scan(context).unwrap().missing[0].snapshot, None);
-    assert_eq!(restore(context).unwrap_err().code(), ErrorCode::NothingToRestore);
-}
-
-#[test]
-fn a_package_whose_hash_differs_from_the_release_is_replaced_by_the_verified_copy() {
-    let root = tempfile::tempdir().unwrap();
-    let client = lesta_client(root.path(), "1.45.0.0");
-    let client_dir = root.path().join("state");
     let mut catalog = catalog();
 
     catalog.components.iter_mut().find(|component| component.id == "marks_panel").unwrap().sha256 = Some(sha256_hex(MARKS_PANEL.as_bytes()));
@@ -184,16 +127,28 @@ fn a_package_whose_hash_differs_from_the_release_is_replaced_by_the_verified_cop
 
     install(&client, &[CORE, COMPANION, MARKS_PANEL]);
     sync_manifest(context).unwrap();
-    snapshot(context, 1);
+    fs::remove_file(client.mods_dir.join(COMPANION)).unwrap();
     fs::write(client.mods_dir.join(MARKS_PANEL), "someone else's build").unwrap();
 
     let report = scan(context).unwrap();
 
-    assert_eq!(report.replaced.len(), 1);
-    assert_eq!(report.replaced[0].file, MARKS_PANEL);
-    assert!(report.replaced[0].snapshot.is_some());
-    assert_eq!(restore(context).unwrap(), vec!["marks_panel"]);
-    assert_eq!(fs::read_to_string(client.mods_dir.join(MARKS_PANEL)).unwrap(), MARKS_PANEL);
+    assert_eq!(report.missing, vec![MissingComponent { id: "companion".into() }]);
+    assert_eq!(report.replaced, vec![ReplacedComponent { id: "marks_panel".into(), file: MARKS_PANEL.into() }]);
+    assert_eq!(report.to_restore(), vec!["companion", "marks_panel"]);
+}
+
+#[test]
+fn a_clean_install_has_nothing_to_restore() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.45.0.0");
+    let client_dir = root.path().join("state");
+    let catalog = catalog();
+    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
+
+    install(&client, &[CORE, COMPANION, MARKS_PANEL]);
+    sync_manifest(context).unwrap();
+
+    assert!(scan(context).unwrap().to_restore().is_empty());
 }
 
 #[test]

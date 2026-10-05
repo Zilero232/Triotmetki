@@ -145,7 +145,7 @@ fn installs_a_release_keeping_parked_components_parked() {
 }
 
 #[test]
-fn an_update_backs_up_and_drops_our_packages_the_catalogue_retired() {
+fn an_update_drops_our_packages_the_catalogue_retired() {
     let root = tempfile::tempdir().unwrap();
     let client = lesta_client(root.path(), "1.46.0.0");
     let client_dir = root.path().join("state");
@@ -167,20 +167,11 @@ fn an_update_backs_up_and_drops_our_packages_the_catalogue_retired() {
     manifest.components.push(crate::state::inno_name("battle", "consumables"));
     manifest.write(&client_dir).unwrap();
 
-    let mut found = retired_files(context);
+    let mut found = install::retired_files(context);
 
     found.sort();
 
     assert_eq!(found, vec![parked.clone(), retired.clone()]);
-
-    let snapshot = crate::snapshots::create(crate::snapshots::CreateInput {
-        context,
-        kind: crate::snapshots::SnapshotKind::Auto,
-        removed: &[],
-        now: chrono::Local::now(),
-    })
-    .unwrap();
-    let backup = crate::snapshots::backups_dir(&client_dir).join(&snapshot.id);
 
     apply_packages(ApplyInput {
         context,
@@ -198,8 +189,6 @@ fn an_update_backs_up_and_drops_our_packages_the_catalogue_retired() {
     assert!(!parked.exists());
     assert!(foreign.exists());
     assert!(client.mods_dir.join("net.triotmetki.core_0.2.0.mtmod").exists());
-    assert!(backup.join("modpack").join("net.triotmetki.consumables_0.1.0.mtmod").is_file());
-    assert!(backup.join("disabled").join("otmetki.consumables_0.1.0.mtmod").is_file());
     assert!(!manifest.component_ids().contains(&"consumables".to_owned()));
     assert!(manifest.component_ids().contains(&"core".to_owned()));
 }
@@ -214,7 +203,7 @@ fn a_catalogue_without_components_retires_nothing() {
 
     fs::write(client.mods_dir.join("net.triotmetki.core_0.1.0.mtmod"), "core").unwrap();
 
-    assert!(retired_files(context).is_empty());
+    assert!(install::retired_files(context).is_empty());
 }
 
 #[test]
@@ -415,4 +404,68 @@ fn serialises_the_status_for_the_ui() {
         serde_json::to_value(PatchStatus::Failed { code: crate::error::ErrorCode::DiskFull }).unwrap(),
         serde_json::json!({ "kind": "failed", "code": "disk_full" })
     );
+}
+
+#[test]
+fn a_failed_migration_keeps_a_different_copy_already_in_the_new_folder() {
+    let root = tempfile::tempdir().unwrap();
+    let old = lesta_client(root.path(), "1.45.0.0");
+    let client_dir = root.path().join("state");
+    let catalog = catalog();
+    let core = "net.triotmetki.core_0.1.0.mtmod";
+    let mut failures = 0;
+
+    fs::write(old.mods_dir.join(core), "core from the old folder").unwrap();
+    fs::write(old.mods_dir.join("otmetki.companion_0.1.0.mtmod"), "companion").unwrap();
+
+    let patched = patch_client(&old.path, "1.46.0.0");
+    let context = ClientContext { client_dir: &client_dir, client: &patched, catalog: &catalog };
+
+    for operations in 0..12 {
+        for path in crate::fsx::list_files(&patched.mods_dir) {
+            fs::remove_file(path).unwrap();
+        }
+
+        fs::write(patched.mods_dir.join(core), "the copy already there").unwrap();
+        crate::fsx::faults::fail_after(operations, std::io::ErrorKind::StorageFull);
+
+        let result = migrate(MigrateInput { context, from_mods_dir: &old.mods_dir });
+
+        crate::fsx::faults::clear();
+
+        if result.is_ok() {
+            break;
+        }
+
+        failures += 1;
+
+        let state = (fs::read_to_string(patched.mods_dir.join(core)).unwrap(), crate::fsx::list_files(&patched.mods_dir).len());
+
+        assert!(
+            state == ("the copy already there".to_owned(), 1) || state == ("core from the old folder".to_owned(), 2),
+            "fault after {operations}: {state:?}"
+        );
+    }
+
+    assert!(failures > 0);
+    assert_eq!(fs::read_to_string(patched.mods_dir.join(core)).unwrap(), "core from the old folder");
+}
+
+#[test]
+fn puts_back_the_files_a_failed_rollback_left_retired() {
+    let root = tempfile::tempdir().unwrap();
+    let mods_dir = root.path().join("моды");
+    let lost = mods_dir.join("net.triotmetki.core_0.1.0.mtmod");
+    let placed = mods_dir.join("otmetki.companion_0.2.0.mtmod");
+
+    fs::create_dir_all(&mods_dir).unwrap();
+    fs::write(crate::fsx::sibling(&lost, crate::fsx::RETIRED_SUFFIX), "old core").unwrap();
+    fs::write(&placed, "new companion").unwrap();
+    fs::write(crate::fsx::sibling(&placed, crate::fsx::RETIRED_SUFFIX), "old companion").unwrap();
+
+    let recovered = recover_retired(std::slice::from_ref(&mods_dir));
+
+    assert_eq!(recovered, vec![lost.clone()]);
+    assert_eq!(fs::read_to_string(&lost).unwrap(), "old core");
+    assert_eq!(fs::read_to_string(&placed).unwrap(), "new companion");
 }

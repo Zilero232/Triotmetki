@@ -151,3 +151,47 @@ fn flags_a_client_patched_since_the_install() {
     assert!(installation.needs_migration);
     assert_eq!(installation.manifest_game_version.as_deref(), Some("1.45.0.0"));
 }
+
+#[test]
+fn a_toggle_that_fails_halfway_moves_nothing() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.45.0.0");
+    let client_dir = root.path().join("state");
+    let catalog = catalog();
+    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
+    let parked = disabled_dir(&client_dir);
+    let mut failures = 0;
+
+    install(&client.mods_dir, &INSTALLED[..3]);
+
+    for operations in 0..10 {
+        for file in &INSTALLED[3..] {
+            let _ = fs::remove_file(client.mods_dir.join(file));
+        }
+
+        install(&parked, &INSTALLED[3..]);
+        crate::fsx::faults::fail_times(operations, 2, std::io::ErrorKind::PermissionDenied);
+
+        let result = set_enabled(ToggleInput { context, component_id: "hit_log", enabled: true });
+
+        crate::fsx::faults::clear();
+
+        if result.is_ok() {
+            break;
+        }
+
+        failures += 1;
+
+        let all_parked = INSTALLED[3..].iter().all(|file| parked.join(file).exists() && !client.mods_dir.join(file).exists());
+        let all_enabled = INSTALLED[3..].iter().all(|file| client.mods_dir.join(file).exists() && !parked.join(file).exists());
+
+        assert!(all_parked || all_enabled, "fault after {operations}");
+
+        if all_parked {
+            assert_eq!(Manifest::read(&client_dir).unwrap().unwrap().disabled, vec!["damage_log", "hit_log"], "fault after {operations}");
+        }
+    }
+
+    assert!(failures > 0);
+    assert!(client.mods_dir.join(INSTALLED[4]).exists());
+}

@@ -3,7 +3,7 @@ use std::path::Path;
 use super::Manager;
 use crate::cache::{self, CachePlan, CacheResult, PlanInput};
 use crate::conflicts::{self, ConflictReport};
-use crate::error::AppResult;
+use crate::error::{AppError, AppResult, ErrorCode};
 use crate::process::ensure_closed;
 
 impl Manager {
@@ -15,8 +15,14 @@ impl Manager {
         let _guard = self.write_guard().await?;
         let scope = self.usable_scope(client_path)?;
 
+        let wanted = conflicts::scan(scope.context())?.to_restore();
+
+        if wanted.is_empty() {
+            return Err(AppError::coded(ErrorCode::NothingToRestore, "no component is missing or replaced"));
+        }
+
         ensure_closed(&scope.client.path)?;
-        conflicts::restore(scope.context())?;
+        self.download_components(&scope, &wanted).await?;
         self.sync_res_map(&scope.client);
 
         conflicts::scan(scope.context())

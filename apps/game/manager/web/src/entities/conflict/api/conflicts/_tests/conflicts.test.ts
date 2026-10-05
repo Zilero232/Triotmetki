@@ -7,7 +7,7 @@ describe('conflictReportSchema', () => {
   it('parses the conflict report the Rust core serves', () => {
     const report = conflictReportSchema.parse(conflicts);
 
-    expect(report.missing[0]?.snapshot).not.toBeNull();
+    expect(report.missing).toEqual([{ id: 'marks_panel' }]);
     expect(report.overrides.map((entry) => entry.location)).toEqual(['res_mods']);
     expect(report.foreign[0]?.components).toEqual(['damage_log']);
   });

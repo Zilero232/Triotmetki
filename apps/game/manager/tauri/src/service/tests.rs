@@ -43,7 +43,6 @@ fn a_first_install_without_a_connection_is_offline() {
             client_path: Some(client.clone()),
             components: Vec::new(),
             remove_others: Vec::new(),
-            take_snapshot: false,
             excluded_dependencies: Vec::new(),
         };
 
@@ -79,13 +78,8 @@ fn refuses_to_write_into_an_unsupported_client() {
     assert!(manager.usable_client(Some(&supported)).is_ok());
 
     tauri::async_runtime::block_on(async {
-        let request = InstallRequest {
-            client_path: Some(old.clone()),
-            components: Vec::new(),
-            remove_others: Vec::new(),
-            take_snapshot: false,
-            excluded_dependencies: Vec::new(),
-        };
+        let request =
+            InstallRequest { client_path: Some(old.clone()), components: Vec::new(), remove_others: Vec::new(), excluded_dependencies: Vec::new() };
 
         assert_eq!(manager.install_modpack(request).await.unwrap_err().code(), ErrorCode::ClientUnsupported);
         assert_eq!(manager.migrate_now(Some(&old)).await.unwrap_err().code(), ErrorCode::ClientUnsupported);
@@ -202,4 +196,11 @@ fn remembers_whether_gameface_restarts_the_client_after_the_last_change() {
 
     assert_eq!(manager.sync_res_map(&client), ResMapOutcome::NoGameface);
     assert!(!manager.gameface_status(Some(&client_dir)).unwrap().restart_expected);
+}
+
+#[test]
+fn a_partial_install_lists_only_the_steps_that_failed() {
+    let warnings = setup::install_warnings([(setup::InstallStep::OtherMods, None), (setup::InstallStep::Dependencies, Some(ErrorCode::Http))]);
+
+    assert_eq!(warnings, vec![setup::InstallWarning { step: setup::InstallStep::Dependencies, code: ErrorCode::Http }]);
 }

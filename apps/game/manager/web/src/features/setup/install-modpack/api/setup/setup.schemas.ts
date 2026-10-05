@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 import { catalogSchema } from '@/entities/catalog';
 import { gameClientSchema } from '@/entities/client';
+import { installationSchema } from '@/entities/installation';
+import { managerErrorCodeSchema } from '@/shared/api';
 import { localizedSchema } from '@/shared/lib';
 
 export const foreignEntrySchema = z.object({
@@ -27,4 +29,14 @@ export const installPlanSchema = z.object({
   currentComponents: z.array(z.string()),
   parkedComponents: z.array(z.string()),
   dependencies: z.array(dependencyStatusSchema)
+});
+
+export const installWarningSchema = z.object({
+  step: z.enum(['other_mods', 'dependencies']),
+  code: managerErrorCodeSchema.catch('unknown')
+});
+
+export const installOutcomeSchema = z.object({
+  installation: installationSchema,
+  warnings: z.array(installWarningSchema)
 });

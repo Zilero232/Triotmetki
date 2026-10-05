@@ -110,3 +110,17 @@ fn reads_the_receipt_the_server_answers() {
     assert_eq!(receipt.expires_at, "2026-10-30T10:00:00.000Z");
     assert_eq!(serde_json::to_value(&receipt).unwrap()["expiresAt"], "2026-10-30T10:00:00.000Z");
 }
+
+#[test]
+fn a_failed_save_keeps_the_file_it_would_replace() {
+    let root = tempfile::tempdir().unwrap();
+    let target = root.path().join("отчёт.zip");
+    let mut broken = preview();
+
+    fs::write(&target, "the previous report").unwrap();
+    broken.items[1].name = broken.items[0].name.clone();
+
+    assert!(write_zip(&target, &broken, &[ReportPart::Environment, ReportPart::PythonLog], "").is_err());
+    assert_eq!(fs::read_to_string(&target).unwrap(), "the previous report");
+    assert_eq!(fs::read_dir(root.path()).unwrap().count(), 1);
+}

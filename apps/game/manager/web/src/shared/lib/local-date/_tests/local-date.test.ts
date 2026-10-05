@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { fromUnixSeconds, parseLocalDateTime } from '../local-date';
 
 describe('parseLocalDateTime', () => {
-  it('reads the manifest and snapshot timestamps as local time', () => {
+  it('reads the manifest timestamps as local time', () => {
     const date = parseLocalDateTime('2026-09-27 21:47:05');
 
     expect([date?.getFullYear(), date?.getMonth(), date?.getDate(), date?.getHours(), date?.getMinutes()]).toEqual([2026, 8, 27, 21, 47]);

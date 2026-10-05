@@ -23,12 +23,11 @@ use crate::install::{ForeignEntry, ForeignLocation};
 use crate::patch::{PatchReport, PatchStatus};
 use crate::profiles::{ProfileSummary, ProfilesView, MAX_PROFILES};
 use crate::report::{ReportItem, ReportPart, ReportPreview, ReportReceipt};
-use crate::service::setup::{PackageSource, ReleaseSummary};
+use crate::service::setup::{InstallStep, InstallWarning, PackageSource, ReleaseSummary};
 use crate::service::sync::LocalSync;
-use crate::service::{AccountLink, ClientsView, InstallPlan, SyncReport, SyncStatus, WhatsNew};
+use crate::service::{AccountLink, ClientsView, InstallOutcome, InstallPlan, SyncReport, SyncStatus, WhatsNew};
 use crate::sets::{ComponentSet, SetsView, MAX_SETS};
 use crate::settings::ManagerSettings;
-use crate::snapshots::{Snapshot, SnapshotKind, SnapshotPart};
 use crate::sync::{LibrarySync, SyncOutcome};
 
 pub const UPDATE_ENV: &str = "OTMETKI_UPDATE_FIXTURES";
@@ -134,6 +133,13 @@ fn samples() -> Vec<(&'static str, Value)> {
         ),
         ("installation", value(&installation)),
         (
+            "install-outcome",
+            value(&InstallOutcome {
+                installation: installation.clone(),
+                warnings: vec![InstallWarning { step: InstallStep::Dependencies, code: ErrorCode::Http }],
+            }),
+        ),
+        (
             "profiles",
             value(&ProfilesView {
                 max: MAX_PROFILES,
@@ -146,19 +152,6 @@ fn samples() -> Vec<(&'static str, Value)> {
                     active: true,
                 }],
             }),
-        ),
-        (
-            "snapshots",
-            value(&vec![Snapshot {
-                id: "20260927-214705".into(),
-                date: "2026-09-27 21:47:05".into(),
-                kind: SnapshotKind::Manual,
-                size_bytes: 1_048_576,
-                parts: vec![
-                    SnapshotPart { name: "modpack".into(), target: main.mods_dir.clone(), existed: true },
-                    SnapshotPart { name: "configs".into(), target: main.path.join("mods").join("configs").join("otmetki"), existed: false },
-                ],
-            }]),
         ),
         (
             "settings",
@@ -220,8 +213,8 @@ fn samples() -> Vec<(&'static str, Value)> {
         (
             "conflicts",
             value(&ConflictReport {
-                missing: vec![MissingComponent { id: "marks_panel".into(), snapshot: Some("20260927-214705".into()) }],
-                replaced: vec![ReplacedComponent { id: "hit_log".into(), file: "net.triotmetki.hit_log_0.1.0.mtmod".into(), snapshot: None }],
+                missing: vec![MissingComponent { id: "marks_panel".into() }],
+                replaced: vec![ReplacedComponent { id: "hit_log".into(), file: "net.triotmetki.hit_log_0.1.0.mtmod".into() }],
                 duplicates: vec![DuplicatePackage {
                     package_id: "net.openwg.gameface".into(),
                     files: vec!["deps/net.openwg.gameface_1.2.0.mtmod".into(), "net.openwg.gameface_1.2.2.mtmod".into()],

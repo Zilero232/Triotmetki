@@ -1,28 +1,25 @@
 mod scan;
 
 use std::collections::{BTreeMap, BTreeSet};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use serde::Serialize;
 
 pub use scan::{id_from_name, package_files, read_package, ModPackage};
 
 use crate::catalog::{wildcard_match, Catalog};
-use crate::components::{is_owned, read_installation, sync_manifest, ClientContext, ComponentState};
-use crate::error::{AppError, AppResult, ErrorCode};
-use crate::fsx::{copy_expected, file_sha256, list_files, remove_path};
+use crate::components::{is_owned, read_installation, ClientContext, ComponentState};
+use crate::error::AppResult;
+use crate::fsx::file_sha256;
 use crate::install::ForeignLocation;
-use crate::snapshots::{self, backups_dir, MODPACK_PART, MODS_PART};
 
 pub const RES_PREFIX: &str = "res/";
 pub const SAMPLE_PATHS: usize = 5;
-pub const SNAPSHOT_PARTS: [&str; 2] = [MODPACK_PART, MODS_PART];
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MissingComponent {
     pub id: String,
-    pub snapshot: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -30,7 +27,6 @@ pub struct MissingComponent {
 pub struct ReplacedComponent {
     pub id: String,
     pub file: String,
-    pub snapshot: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -67,11 +63,6 @@ pub struct ConflictReport {
     pub duplicates: Vec<DuplicatePackage>,
     pub foreign: Vec<ForeignConflict>,
     pub overrides: Vec<OverridingFiles>,
-}
-
-struct SnapshotCopy {
-    snapshot: String,
-    path: PathBuf,
 }
 
 fn relative_name(root: &Path, path: &Path) -> String {
@@ -148,36 +139,10 @@ fn res_mods_overrides(res_mods_dir: &Path, prefixes: &[String]) -> Option<Overri
     })
 }
 
-fn snapshot_copies(client_dir: &Path, catalog: &Catalog) -> BTreeMap<String, Vec<SnapshotCopy>> {
-    let mut copies: BTreeMap<String, Vec<SnapshotCopy>> = BTreeMap::new();
-
-    for snapshot in snapshots::list(client_dir) {
-        let dir = backups_dir(client_dir).join(&snapshot.id);
-
-        for part in SNAPSHOT_PARTS {
-            for path in list_files(&dir.join(part)) {
-                let name = path.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
-
-                if let Some(component) = catalog.component_for_file(&name) {
-                    copies.entry(component.id.clone()).or_default().push(SnapshotCopy { snapshot: snapshot.id.clone(), path });
-                }
-            }
-        }
-    }
-
-    copies
-}
-
 fn expected_sha256<'a>(catalog: &'a Catalog, id: &str, version: Option<&str>) -> Option<&'a str> {
     let component = catalog.component(id)?;
 
     component.sha256.as_deref().filter(|_| version == Some(component.version.as_str()))
-}
-
-fn usable_copy<'a>(catalog: &Catalog, id: &str, copies: &'a [SnapshotCopy]) -> Option<&'a SnapshotCopy> {
-    let expected = catalog.component(id).and_then(|component| component.sha256.as_deref());
-
-    copies.iter().find(|copy| expected.is_none_or(|expected| file_sha256(&copy.path).is_ok_and(|actual| actual.eq_ignore_ascii_case(expected))))
 }
 
 pub fn scan(context: ClientContext) -> AppResult<ConflictReport> {
@@ -186,21 +151,19 @@ pub fn scan(context: ClientContext) -> AppResult<ConflictReport> {
     let installation = read_installation(context)?;
     let enabled: BTreeSet<String> =
         installation.components.iter().filter(|component| component.state == ComponentState::Enabled).map(|component| component.id.clone()).collect();
-    let copies = snapshot_copies(context.client_dir, catalog);
-    let copy_of = |id: &str| copies.get(id).and_then(|found| usable_copy(catalog, id, found)).map(|copy| copy.snapshot.clone());
     let prefixes = owned_prefixes(catalog);
     let mut report = ConflictReport::default();
 
     for component in &installation.components {
         match (component.state, component.file.as_deref()) {
-            (ComponentState::Missing, _) => report.missing.push(MissingComponent { id: component.id.clone(), snapshot: copy_of(&component.id) }),
+            (ComponentState::Missing, _) => report.missing.push(MissingComponent { id: component.id.clone() }),
             (ComponentState::Enabled, Some(file)) => {
                 let Some(expected) = expected_sha256(catalog, &component.id, component.version.as_deref()) else {
                     continue;
                 };
 
                 if file_sha256(&mods_dir.join(file)).is_ok_and(|actual| !actual.eq_ignore_ascii_case(expected)) {
-                    report.replaced.push(ReplacedComponent { id: component.id.clone(), file: file.to_owned(), snapshot: copy_of(&component.id) });
+                    report.replaced.push(ReplacedComponent { id: component.id.clone(), file: file.to_owned() });
                 }
             }
             _ => {}
@@ -250,43 +213,12 @@ pub fn scan(context: ClientContext) -> AppResult<ConflictReport> {
     Ok(report)
 }
 
-pub fn restore(context: ClientContext) -> AppResult<Vec<String>> {
-    let catalog = context.catalog;
-    let mods_dir = &context.client.mods_dir;
-    let report = scan(context)?;
-    let copies = snapshot_copies(context.client_dir, catalog);
-    let wanted = report
-        .missing
-        .iter()
-        .map(|item| (item.id.as_str(), None))
-        .chain(report.replaced.iter().map(|item| (item.id.as_str(), Some(item.file.as_str()))));
-    let mut restored = Vec::new();
+impl ConflictReport {
+    pub fn to_restore(&self) -> Vec<String> {
+        let ids: BTreeSet<String> = self.missing.iter().map(|item| item.id.clone()).chain(self.replaced.iter().map(|item| item.id.clone())).collect();
 
-    for (id, replaced) in wanted {
-        let Some(copy) = copies.get(id).and_then(|found| usable_copy(catalog, id, found)) else {
-            continue;
-        };
-        let Some(name) = copy.path.file_name() else {
-            continue;
-        };
-
-        std::fs::create_dir_all(mods_dir)?;
-        copy_expected(&copy.path, &mods_dir.join(name), catalog.component(id).and_then(|component| component.sha256.as_deref()))?;
-
-        if let Some(old) = replaced.filter(|old| !Path::new(old).file_name().is_some_and(|old| old.eq_ignore_ascii_case(name))) {
-            remove_path(&mods_dir.join(old))?;
-        }
-
-        restored.push(id.to_owned());
+        ids.into_iter().collect()
     }
-
-    if restored.is_empty() {
-        return Err(AppError::coded(ErrorCode::NothingToRestore, "no snapshot has the missing packages"));
-    }
-
-    sync_manifest(context)?;
-
-    Ok(restored)
 }
 
 #[cfg(test)]

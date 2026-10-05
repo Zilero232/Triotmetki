@@ -2,27 +2,14 @@ import { Pencil } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
 import { BLOCKER_MESSAGES, INSTALL_WIZARD, useInstallWizard } from '@/features/setup/install-modpack';
-import { Badge, Button, Card, Checkbox, Notice, Spinner } from '@/ui-kit';
+import { Badge, Button, Card, Notice, Spinner } from '@/ui-kit';
 
 import s from './ReviewStep.module.scss';
 
 export const ReviewStep = () => {
   const t = useTranslations('install');
-  const {
-    plan,
-    chosenGroups,
-    selectedCount,
-    removeOthers,
-    dependencyCount,
-    isReinstall,
-    parkedCount,
-    takeSnapshot,
-    isSnapshotForced,
-    blocker,
-    isInstalling,
-    goTo,
-    onSnapshotChange
-  } = useInstallWizard();
+  const { plan, chosenGroups, selectedCount, removeOthers, dependencyCount, isReinstall, parkedCount, blocker, isInstalling, goTo } =
+    useInstallWizard();
 
   return (
     <Card title={t('steps.review')}>
@@ -77,13 +64,6 @@ export const ReviewStep = () => {
         {removeOthers.size > 0 && <li className={s.danger}>{t('reviewRemove', { count: removeOthers.size })}</li>}
         {plan && <li>{t(`source.${plan.source}`, { version: plan.release?.version ?? '' })}</li>}
       </ul>
-      <Checkbox
-        checked={takeSnapshot}
-        description={isSnapshotForced ? t('snapshotForced') : undefined}
-        disabled={isSnapshotForced || isInstalling}
-        label={t('snapshot')}
-        onCheckedChange={onSnapshotChange}
-      />
     </Card>
   );
 };

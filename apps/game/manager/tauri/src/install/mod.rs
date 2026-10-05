@@ -15,10 +15,8 @@ use crate::detect::GameClient;
 use crate::durable::remove_durable_copies;
 use crate::error::{AppError, AppResult, ErrorCode};
 use crate::fsx::{list_files, remove_path};
-use crate::patch::{apply_packages, ApplyInput, FetchedPackage};
+use crate::patch::{apply_packages, recover_retired, ApplyInput, FetchedPackage};
 use crate::paths::{configs_dir, same_path};
-use crate::releases::verify_sha256;
-use crate::snapshots::{self, CreateInput, RestoreInput, SnapshotKind};
 use crate::state::{disabled_dir, Manifest, CLIENT_INI, MANIFEST_INI};
 
 pub const DEFAULT_OWNED_PATTERNS: [&str; 4] = ["net.triotmetki.*.mtmod", "net.triotmetki.*.wotmod", "otmetki.*.mtmod", "otmetki.*.wotmod"];
@@ -119,42 +117,31 @@ pub struct InstallInput<'a> {
     pub packages: &'a [FetchedPackage],
     pub modpack_version: &'a str,
     pub remove_others: &'a [PathBuf],
-    pub take_snapshot: bool,
     pub parked: &'a BTreeSet<String>,
-    pub durable_dir: &'a Path,
 }
 
-pub fn restore_after_failure(context: ClientContext, durable_dir: &Path, snapshot: Option<&str>, error: AppError) -> AppError {
-    let Some(id) = snapshot.filter(|_| error.code() == ErrorCode::RollbackFailed) else {
-        return error;
-    };
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Installed {
+    pub written: Vec<String>,
+    pub others_error: Option<ErrorCode>,
+}
 
-    match snapshots::restore(RestoreInput { context, durable_dir, id }) {
-        Ok(_) => log::warn!("the rollback failed, restored the snapshot {id}: {error}"),
-        Err(restore_error) => log::error!("the rollback and the snapshot {id} both failed: {error}; {restore_error}"),
+pub fn restore_after_failure(context: ClientContext, error: AppError) -> AppError {
+    if error.code() != ErrorCode::RollbackFailed {
+        return error;
     }
+
+    let recovered = recover_retired(&[context.client.mods_dir.clone(), disabled_dir(context.client_dir)]);
+
+    log::warn!("the rollback failed, put back {} retired files: {error}", recovered.len());
 
     error
 }
 
-pub fn install(input: InstallInput) -> AppResult<Vec<String>> {
+pub fn install(input: InstallInput) -> AppResult<Installed> {
     let context = input.context;
-    let wants_snapshot = input.take_snapshot || !input.remove_others.is_empty();
-
-    for fetched in input.packages {
-        verify_sha256(&fetched.bytes, &fetched.package.sha256)?;
-    }
 
     ensure_reviewed(context.client, context.catalog, input.remove_others)?;
-
-    let snapshot = if wants_snapshot && (context.client.mods_dir.is_dir() || configs_dir(&context.client.path).is_dir()) {
-        let input = CreateInput { context, kind: SnapshotKind::Auto, removed: input.remove_others, now: chrono::Local::now() };
-
-        Some(snapshots::create_and_prune(input)?.id)
-    } else {
-        None
-    };
-
     fs::create_dir_all(&context.client.mods_dir)?;
 
     let disabled: BTreeSet<String> = input.packages.iter().map(|fetched| fetched.package.id.clone()).filter(|id| input.parked.contains(id)).collect();
@@ -166,11 +153,14 @@ pub fn install(input: InstallInput) -> AppResult<Vec<String>> {
         replace_all: true,
         drop_retired: true,
     })
-    .map_err(|error| restore_after_failure(context, input.durable_dir, snapshot.as_deref(), error))?;
+    .map_err(|error| restore_after_failure(context, error))?;
 
-    remove_other_mods(context.client, context.catalog, input.remove_others)?;
+    let others_error = remove_other_mods(context.client, context.catalog, input.remove_others)
+        .inspect_err(|error| log::warn!("the modpack is installed, removing the other mods failed: {error}"))
+        .err()
+        .map(|error| error.code());
 
-    Ok(written)
+    Ok(Installed { written, others_error })
 }
 
 pub fn selection(catalog: &Catalog, requested: &[String]) -> AppResult<BTreeSet<String>> {
@@ -185,7 +175,6 @@ pub fn selection(catalog: &Catalog, requested: &[String]) -> AppResult<BTreeSet<
 
 pub struct UninstallInput<'a> {
     pub context: ClientContext<'a>,
-    pub restore_snapshot: Option<&'a str>,
     pub remove_config: bool,
     pub durable_dir: &'a Path,
     pub shared_elsewhere: bool,
@@ -200,10 +189,6 @@ pub fn installed_elsewhere(clients_dir: &Path, client_dir: &Path) -> bool {
 }
 
 pub fn uninstall(input: UninstallInput) -> AppResult<()> {
-    if let Some(id) = input.restore_snapshot {
-        snapshots::restore(RestoreInput { context: input.context, durable_dir: input.durable_dir, id })?;
-    }
-
     remove_our_files(input.context)?;
 
     if input.remove_config {

@@ -5,7 +5,6 @@ export const HELP_FAQ = [
   'afterPatch',
   'notWorking',
   'conflicts',
-  'backups',
   'sets',
   'fairPlay',
   'fps',

@@ -1,4 +1,4 @@
-import { Archive, Gamepad2, Layers, Package, SlidersHorizontal } from 'lucide-react';
+import { Gamepad2, Layers, Package, SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
 import { Badge, Button } from '@/ui-kit';
@@ -9,8 +9,7 @@ import s from './HomeSummary.module.scss';
 
 export const HomeSummary = () => {
   const t = useTranslations();
-  const { client, installedVersion, latestVersion, hasUpdate, enabledCount, totalCount, onOpenComponents, onChangeSelection, onOpenBackups } =
-    useHomeSummary();
+  const { client, installedVersion, latestVersion, hasUpdate, enabledCount, totalCount, onOpenComponents, onChangeSelection } = useHomeSummary();
 
   return (
     <div className={s.root}>
@@ -58,10 +57,6 @@ export const HomeSummary = () => {
         <Button variant='secondary' onClick={onChangeSelection}>
           <SlidersHorizontal aria-hidden />
           {t('home.changeSelection')}
-        </Button>
-        <Button variant='ghost' onClick={onOpenBackups}>
-          <Archive aria-hidden />
-          {t('home.snapshot')}
         </Button>
       </div>
     </div>

@@ -54,9 +54,5 @@ pub fn get<'a>(ini: &'a Ini, section: &str, key: &str) -> Option<&'a str> {
     ini.section(Some(section)).and_then(|values| values.get(key)).map(str::trim)
 }
 
-pub fn get_bool(ini: &Ini, section: &str, key: &str) -> bool {
-    matches!(get(ini, section, key).map(str::to_ascii_lowercase).as_deref(), Some("1" | "true" | "yes"))
-}
-
 #[cfg(test)]
 mod tests;

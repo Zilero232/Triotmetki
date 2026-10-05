@@ -1,6 +1,6 @@
 {
   "title": "Install the modpack",
-  "description": "Pick a client and the components. The manager takes a snapshot first and never touches other mods without your confirmation.",
+  "description": "Pick a client and the components. The manager never touches other mods without your confirmation.",
   "steps": {
     "client": "Client",
     "components": "Components",
@@ -22,7 +22,7 @@
     "offline": "No connection — the modpack cannot be installed right now, try again later",
     "unavailable": "No modpack release supports this client version yet"
   },
-  "otherModsDescription": "Mods by other authors stay in place. Tick what you want removed: a snapshot is taken first.",
+  "otherModsDescription": "Mods by other authors stay in place. Tick what you want removed.",
   "removeOthers": "Remove the ticked mods",
   "otherModsEmpty": "No other mods in this client",
   "otherModsSelected": "To be removed: {count}",
@@ -30,15 +30,13 @@
     "mods": "mods",
     "res_mods": "res_mods"
   },
-  "snapshot": "Take a snapshot before installing",
-  "snapshotForced": "A snapshot is required when other mods are removed",
   "reviewClient": "Client {version}",
   "reviewComponents": "Components: {count}",
   "reviewDependencies": "Third-party libraries to download: {count}",
   "reviewRemove": "Other mods to remove: {count}",
   "reviewReinstall": "The modpack is already installed: it is replaced with this selection, and disabled components ({count}) stay disabled",
   "confirmRemoveTitle": "Remove {count} other mods?",
-  "confirmRemoveDescription": "Exactly the ticked files and folders are removed. The snapshot brings them back under Settings → Backups.",
+  "confirmRemoveDescription": "Exactly the ticked files and folders are removed. This cannot be undone.",
   "installed": "The modpack is installed",
   "noCatalog": "The component catalogue has not been downloaded from the server yet",
   "clientUnsupported": "The modpack cannot be installed into this client — choose Lesta's Mir Tankov at a supported version",
@@ -57,11 +55,15 @@
     "licence": "Licence:",
     "author": "Author:"
   },
-  "installedHint": "Components on: {count}. A snapshot was taken — if you do not like something, roll back in Settings → Backups.",
+  "installedHint": "Components on: {count}.",
   "installing": "Installing",
   "installingHint": "Downloading the packages, checking their checksums and putting the files in place. Do not start the game until the install finishes.",
   "reviewWhat": "What will be installed",
   "reviewWhere": "Where",
   "edit": "Change",
-  "blocked": "Cannot install right now"
+  "blocked": "Cannot install right now",
+  "partial": {
+    "other_mods": "Some of the other mods could not be removed — they are still in the game folder",
+    "dependencies": "The libraries some components need were not installed — those components may not load"
+  }
 }

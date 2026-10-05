@@ -9,7 +9,7 @@
   "faq": {
     "install": {
       "question": "How do I install the modpack?",
-      "answer": "On Home press “Install the modpack”. The manager finds Mir Tankov through Lesta Game Center, offers the recommended set and shows what will be installed. Press “Install” — a snapshot is taken first, so everything can be rolled back."
+      "answer": "On Home press “Install the modpack”. The manager finds Mir Tankov through Lesta Game Center, offers the recommended set and shows what will be installed. Press “Install” — if anything fails halfway, the previous files are put back."
     },
     "notFound": {
       "question": "The manager did not find the game",
@@ -25,11 +25,7 @@
     },
     "conflicts": {
       "question": "What is a mod conflict?",
-      "answer": "Another mod that does the same as one of our components (a second MoE calculator, say) or overwrites its files. Together such mods give double panels and errors. The manager only reports conflicts — other mods are removed only when you choose so, after a snapshot."
-    },
-    "backups": {
-      "question": "How do I roll back if something broke?",
-      "answer": "Open Settings → Backups. Before every install and update the manager takes an automatic snapshot; you can take your own too. “Roll back” restores the modpack files, its settings and the other mods removed during an install."
+      "answer": "Another mod that does the same as one of our components (a second MoE calculator, say) or overwrites its files. Together such mods give double panels and errors. The manager only reports conflicts — other mods are removed only when you choose so."
     },
     "presets": {
       "question": "How do the ready-made sets differ?",
@@ -49,7 +45,7 @@
     },
     "uninstall": {
       "question": "How do I remove the modpack?",
-      "answer": "Open Settings → Backups → “Remove the modpack”. Only our files are removed, other mods stay. You can keep the mod settings in case you come back."
+      "answer": "Open Settings → “Remove the modpack”. Only our files are removed, other mods stay. You can keep the mod settings in case you come back."
     },
     "smartscreen": {
       "question": "Windows warns me on launch",
@@ -58,10 +54,9 @@
   },
   "tips": {
     "home": "The essentials at a glance: is the game found, is the modpack installed, are there updates. The manager checks for updates on its own, on the schedule from Settings.",
-    "install": "Four steps: game, components, other mods, install. A snapshot is taken first — everything can be rolled back in Settings → Backups.",
+    "install": "Four steps: game, components, other mods, install. If the install fails halfway, the previous files are put back.",
     "components": "The switch turns a component on or off without reinstalling. Changes apply on the next game launch.",
     "sets": "A set remembers a list of components. “Apply” opens the install wizard with that list — you see the changes before installing.",
-    "profiles": "A profile keeps the component settings from the in-game mod window. Apply a profile while the game is closed.",
-    "backups": "A snapshot is a copy of the modpack files and its settings. The last three automatic snapshots are kept, manual ones up to ten."
+    "profiles": "A profile keeps the component settings from the in-game mod window. Apply a profile while the game is closed."
   }
 }

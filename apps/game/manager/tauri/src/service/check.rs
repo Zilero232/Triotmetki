@@ -6,7 +6,7 @@ use crate::components::{self, ToggleInput};
 use crate::dependencies::{self, CarryInput, DownloadPlanInput, InstallDependenciesInput, UpdatesInput};
 use crate::detect::{self, GameClient, GameVersion};
 use crate::error::{AppError, AppResult, ErrorCode};
-use crate::fsx::write_atomic;
+use crate::fsx::{replace_restorable, Replaced};
 use crate::install::restore_after_failure;
 use crate::patch::{self, ApplyInput, MigrateInput, PatchAction, PatchReport, PatchStatus, PlanInput};
 use crate::paths::same_path;
@@ -14,7 +14,6 @@ use crate::previews::{self, DownloadInput, PendingInput};
 use crate::process::{ensure_closed, is_client_running};
 use crate::releases::{verify_sha256, FetchLimits, Release, ReleaseStatus, MAX_CATALOG_BYTES};
 use crate::settings::ManagerSettings;
-use crate::snapshots::{self, CreateInput, SnapshotKind};
 use crate::state::Manifest;
 
 pub const SETTLED_KINDS: [&str; 7] = ["waiting", "offline", "failed", "deferred", "migration_ready", "update_ready", "unsupported"];
@@ -173,9 +172,9 @@ impl Manager {
         self.migrate_scope(&scope, &manifest.mods_dir)
     }
 
-    pub(super) async fn refresh_catalog(&self, release: &Release) -> AppResult<()> {
+    pub(super) async fn refresh_catalog(&self, release: &Release) -> AppResult<Option<Replaced>> {
         let Some(catalog) = &release.catalog else {
-            return Ok(());
+            return Ok(None);
         };
         let bytes = self.releases.fetch(&catalog.url, FetchLimits { expected_size: None, max_bytes: MAX_CATALOG_BYTES }).await?;
 
@@ -185,7 +184,7 @@ impl Manager {
         let cache = self.layout.catalog_cache();
         let changed = std::fs::read(&cache).ok().is_none_or(|previous| previous != bytes);
 
-        write_atomic(&cache, &bytes)?;
+        let replaced = replace_restorable(&cache, &bytes)?;
 
         let root = self.layout.manager_dir();
         let files = previews::pending(PendingInput { root: &root, files: previews::files(&parsed), refresh: changed });
@@ -201,13 +200,25 @@ impl Manager {
             });
         }
 
-        Ok(())
+        Ok(Some(replaced))
     }
 
     pub async fn install_release(&self, client_path: &Path, release: &Release) -> AppResult<Vec<String>> {
         ensure_closed(client_path)?;
-        self.refresh_catalog(release).await?;
 
+        let replaced = self.refresh_catalog(release).await?;
+        let installed = self.apply_release(client_path, release).await;
+
+        if let (Err(error), Some(replaced)) = (&installed, replaced) {
+            if let Err(restore_error) = replaced.restore() {
+                log::warn!("put the catalogue back after a failed update ({error}): {restore_error}");
+            }
+        }
+
+        installed
+    }
+
+    async fn apply_release(&self, client_path: &Path, release: &Release) -> AppResult<Vec<String>> {
         let scope = self.usable_scope(Some(client_path))?;
         let previous_mods_dir = Manifest::read(&scope.client_dir)?.map(|manifest| manifest.mods_dir).filter(|dir| dir.is_absolute());
         let (enabled, disabled) = patch::install_targets(scope.context(), &[])?;
@@ -218,14 +229,6 @@ impl Manager {
 
         ensure_closed(client_path)?;
 
-        let snapshot = if scope.client.mods_dir.is_dir() || !patch::retired_files(scope.context()).is_empty() {
-            let input = CreateInput { context: scope.context(), kind: SnapshotKind::Auto, removed: &[], now: chrono::Local::now() };
-
-            Some(snapshots::create_and_prune(input)?.id)
-        } else {
-            None
-        };
-        let durable_dir = self.layout.durable_dir();
         let written = patch::apply_packages(ApplyInput {
             context: scope.context(),
             modpack_version: &release.version,
@@ -234,7 +237,7 @@ impl Manager {
             replace_all: false,
             drop_retired: true,
         })
-        .map_err(|error| restore_after_failure(scope.context(), &durable_dir, snapshot.as_deref(), error))?;
+        .map_err(|error| restore_after_failure(scope.context(), error))?;
 
         if let Some(from_mods_dir) = previous_mods_dir {
             if let Err(error) = dependencies::carry(CarryInput { context: scope.context(), from_mods_dir: &from_mods_dir }) {
@@ -296,7 +299,7 @@ impl Manager {
         Ok(changed)
     }
 
-    async fn download_components(&self, scope: &ClientScope, ids: &[String]) -> AppResult<()> {
+    pub(super) async fn download_components(&self, scope: &ClientScope, ids: &[String]) -> AppResult<()> {
         let installed = Manifest::read(&scope.client_dir)?.map(|manifest| manifest.modpack).unwrap_or_default();
         let latest = self.releases.latest(&scope.client.version.to_string()).await?;
         let release = latest

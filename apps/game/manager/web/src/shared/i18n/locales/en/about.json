@@ -13,7 +13,7 @@
   "logsCollected": "The archive is on the desktop",
   "reveal": "Show in folder",
   "pathsTitle": "Where the data lives",
-  "stateRoot": "State and snapshots",
+  "stateRoot": "State",
   "roamingRoot": "Settings and profile copies",
   "unsignedTitle": "Unsigned build",
   "unsignedDescription": "The manager is not signed with a developer certificate, so SmartScreen may warn on the first start (“More info” → “Run anyway”). Updates of the manager itself are checked with a minisign signature.",

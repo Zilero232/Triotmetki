@@ -5,6 +5,7 @@ mod changelog;
 mod commands;
 mod components;
 mod conflicts;
+mod crash;
 mod credentials;
 mod deep_link;
 mod dependencies;
@@ -28,7 +29,6 @@ mod service;
 mod sets;
 mod settings;
 mod site;
-mod snapshots;
 mod state;
 mod sync;
 
@@ -69,7 +69,7 @@ fn uninstall_mods(layout: &Layout) {
 }
 
 pub fn run() {
-    let layout = Layout::from_env().expect("no application data folder");
+    let layout = Layout::from_env().unwrap_or_else(|error| crash::fatal(&error));
 
     if std::env::args().any(|arg| arg == UNINSTALL_ARG) {
         uninstall_mods(&layout);
@@ -79,7 +79,7 @@ pub fn run() {
 
     let log_dir = layout.logs_dir();
 
-    tauri::Builder::default()
+    let started = tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, args, _cwd| match deep_link::first_arg_link(args.iter().map(String::as_str)) {
             Some(link) => deliver_link(app, link),
             None => background::show_main(app),
@@ -165,10 +165,6 @@ pub fn run() {
             commands::delete_profile,
             commands::import_profile,
             commands::export_profile,
-            commands::list_snapshots,
-            commands::create_snapshot,
-            commands::restore_snapshot,
-            commands::delete_snapshot,
             commands::get_settings,
             commands::update_settings,
             commands::get_patch_report,
@@ -209,6 +205,9 @@ pub fn run() {
             commands::save_report,
             commands::get_game_health,
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running the Three Marks manager");
+        .run(tauri::generate_context!());
+
+    if let Err(error) = started {
+        crash::fatal(&error);
+    }
 }

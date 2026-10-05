@@ -8,7 +8,7 @@ import { previewSrc } from '@/entities/catalog';
 import { useSelectedClient } from '@/entities/client';
 import { useGamefaceNotice } from '@/entities/gameface';
 import { QUERY_KEYS } from '@/shared/config';
-import { pickLocalized, useErrorToast, useNavigation } from '@/shared/lib';
+import { pickLocalized, useErrorText, useErrorToast, useNavigation } from '@/shared/lib';
 
 import type { Selection } from '../../../lib';
 import type { ClientScoped, ToggleInput, UseInstallWizardStateInput } from './use-install-wizard-state.types';
@@ -32,6 +32,7 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
   const { navigate } = useNavigation();
   const queryClient = useQueryClient();
   const showError = useErrorToast();
+  const errorText = useErrorText();
   const notifyGameface = useGamefaceNotice();
   const { clientPath } = useSelectedClient();
   const planQuery = useInstallPlan(clientPath);
@@ -39,7 +40,6 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
   const [chosenFor, setChosenFor] = useState<ClientScoped | null>(null);
   const [removeOthersFor, setRemoveOthersFor] = useState<ClientScoped | null>(null);
   const [excludedFor, setExcludedFor] = useState<ClientScoped | null>(null);
-  const [snapshotWanted, setSnapshotWanted] = useState(true);
   const [focusedId, setFocusedId] = useState<string | null>(null);
 
   const chosen = chosenFor?.clientPath === clientPath ? chosenFor.selection : null;
@@ -105,21 +105,24 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
   };
 
   const step = INSTALL_WIZARD.steps[stepIndex] ?? INSTALL_WIZARD.steps[0];
-  const takeSnapshot = snapshotWanted || removeOthers.size > 0;
   const isClientSupported = plan !== null && plan.client.problem === null;
   const blocker = plan && installBlocker(plan);
   const canInstall = clientPath !== null && plan !== null && blocker === null;
 
   const install = useMutation({
     mutationFn: () =>
-      installModpack({ clientPath, components: [...selection], removeOthers: [...removeOthers], takeSnapshot, excludedDependencies: [...excluded] }),
-    onSuccess: async (installation) => {
+      installModpack({ clientPath, components: [...selection], removeOthers: [...removeOthers], excludedDependencies: [...excluded] }),
+    onSuccess: async ({ installation, warnings }) => {
       queryClient.setQueryData(QUERY_KEYS.installation(clientPath), installation);
       await queryClient.invalidateQueries();
 
       toast.success(t('installed'), {
         description: t('installedHint', { count: installation.components.filter((component) => component.state === 'enabled').length })
       });
+
+      for (const warning of warnings) {
+        toast.warning(t(`partial.${warning.step}`), { description: errorText({ code: warning.code, message: '' }).hint });
+      }
 
       navigate({ page: 'home' });
       await notifyGameface(clientPath);
@@ -166,8 +169,6 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
     isClientSupported,
     isOffline: blocker === 'offline',
     parkedCount: plan?.parkedComponents.filter((id) => selection.has(id)).length ?? 0,
-    takeSnapshot,
-    isSnapshotForced: removeOthers.size > 0,
     canInstall,
     blocker,
     isInstalling: install.isPending,
@@ -188,7 +189,6 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
         clientPath,
         selection: checked ? new Set([...excluded].filter((item) => item !== id)) : new Set([...excluded, id])
       }),
-    onSnapshotChange: setSnapshotWanted,
     onLoadProfile: () => loadProfile.mutate(),
     onInstall: () => install.mutate()
   };

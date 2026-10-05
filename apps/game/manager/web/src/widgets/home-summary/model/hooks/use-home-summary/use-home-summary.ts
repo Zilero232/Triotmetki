@@ -24,7 +24,6 @@ export const useHomeSummary = () => {
     enabledCount: components.filter((component) => component.state === 'enabled').length,
     totalCount: components.length,
     onOpenComponents: () => navigate({ page: 'components' }),
-    onChangeSelection: () => navigate({ page: 'install' }),
-    onOpenBackups: () => navigate({ page: 'backups' })
+    onChangeSelection: () => navigate({ page: 'install' })
   };
 };

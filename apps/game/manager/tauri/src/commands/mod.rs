@@ -1,7 +1,8 @@
 use std::path::PathBuf;
 
 use serde::Serialize;
-use tauri::{AppHandle, State};
+use tauri::async_runtime::block_on;
+use tauri::{AppHandle, Manager as _, State};
 
 use crate::background::{self, apply_autostart};
 use crate::cache::{CachePlan, CacheResult};
@@ -18,10 +19,11 @@ use crate::patch::PatchReport;
 use crate::profiles::ProfilesView;
 use crate::releases::api_url;
 use crate::report::{ReportPart, ReportPreview, ReportReceipt};
-use crate::service::{AccountLink, ClientsView, InstallPlan, InstallRequest, Manager, SyncReport, SyncStatus, UninstallRequest, WhatsNew};
+use crate::service::{
+    AccountLink, ClientsView, InstallOutcome, InstallPlan, InstallRequest, Manager, SyncReport, SyncStatus, UninstallRequest, WhatsNew,
+};
 use crate::sets::SetsView;
 use crate::settings::ManagerSettings;
-use crate::snapshots::Snapshot;
 use crate::sync::Resolution;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -32,6 +34,16 @@ pub struct AppInfo {
     pub roaming_root: PathBuf,
     pub logs_dir: PathBuf,
     pub api_url: String,
+}
+
+pub async fn run_blocking<T: Send + 'static>(work: impl FnOnce() -> AppResult<T> + Send + 'static) -> AppResult<T> {
+    tauri::async_runtime::spawn_blocking(work).await.map_err(|error| AppError::coded(ErrorCode::Io, error.to_string()))?
+}
+
+async fn with_manager<T: Send + 'static>(app: &AppHandle, work: impl FnOnce(&Manager) -> AppResult<T> + Send + 'static) -> AppResult<T> {
+    let app = app.clone();
+
+    run_blocking(move || work(&app.state::<Manager>())).await
 }
 
 async fn recheck(app: &AppHandle, manager: &Manager) -> PatchReport {
@@ -85,17 +97,13 @@ pub async fn get_installation(manager: State<'_, Manager>, client_path: Option<P
 }
 
 #[tauri::command]
-pub async fn set_component_enabled(
-    manager: State<'_, Manager>,
-    client_path: Option<PathBuf>,
-    component_id: String,
-    enabled: bool,
-) -> AppResult<Installation> {
-    manager.set_component_enabled(client_path.as_deref(), &component_id, enabled).await?;
+pub async fn set_component_enabled(app: AppHandle, client_path: Option<PathBuf>, component_id: String, enabled: bool) -> AppResult<Installation> {
+    with_manager(&app, move |manager| {
+        block_on(manager.set_component_enabled(client_path.as_deref(), &component_id, enabled))?;
 
-    let scope = manager.scope(client_path.as_deref())?;
-
-    read_installation(scope.context())
+        read_installation(manager.scope(client_path.as_deref())?.context())
+    })
+    .await
 }
 
 #[tauri::command]
@@ -139,26 +147,6 @@ pub async fn export_profile(manager: State<'_, Manager>, client_path: Option<Pat
 }
 
 #[tauri::command]
-pub async fn list_snapshots(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<Vec<Snapshot>> {
-    manager.list_snapshots(client_path.as_deref())
-}
-
-#[tauri::command]
-pub async fn create_snapshot(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<Vec<Snapshot>> {
-    manager.create_snapshot(client_path.as_deref()).await
-}
-
-#[tauri::command]
-pub async fn restore_snapshot(manager: State<'_, Manager>, client_path: Option<PathBuf>, id: String) -> AppResult<Vec<Snapshot>> {
-    manager.restore_snapshot(client_path.as_deref(), &id).await
-}
-
-#[tauri::command]
-pub async fn delete_snapshot(manager: State<'_, Manager>, client_path: Option<PathBuf>, id: String) -> AppResult<Vec<Snapshot>> {
-    manager.delete_snapshot(client_path.as_deref(), &id).await
-}
-
-#[tauri::command]
 pub async fn get_settings(manager: State<'_, Manager>) -> AppResult<ManagerSettings> {
     Ok(manager.settings())
 }
@@ -186,14 +174,14 @@ pub async fn check_now(app: AppHandle, manager: State<'_, Manager>) -> AppResult
 
 #[tauri::command]
 pub async fn update_modpack(app: AppHandle, manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<PatchReport> {
-    manager.update_now(client_path.as_deref()).await?;
+    with_manager(&app, move |manager| block_on(manager.update_now(client_path.as_deref()))).await?;
 
     Ok(recheck(&app, &manager).await)
 }
 
 #[tauri::command]
 pub async fn migrate_modpack(app: AppHandle, manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<PatchReport> {
-    manager.migrate_now(client_path.as_deref()).await?;
+    with_manager(&app, move |manager| block_on(manager.migrate_now(client_path.as_deref()))).await?;
 
     Ok(recheck(&app, &manager).await)
 }
@@ -216,17 +204,17 @@ pub async fn prepare_install(manager: State<'_, Manager>, client_path: Option<Pa
 }
 
 #[tauri::command]
-pub async fn install_modpack(app: AppHandle, manager: State<'_, Manager>, request: InstallRequest) -> AppResult<Installation> {
-    let installation = manager.install_modpack(request).await?;
+pub async fn install_modpack(app: AppHandle, manager: State<'_, Manager>, request: InstallRequest) -> AppResult<InstallOutcome> {
+    let outcome = with_manager(&app, move |manager| block_on(manager.install_modpack(request))).await?;
 
     recheck(&app, &manager).await;
 
-    Ok(installation)
+    Ok(outcome)
 }
 
 #[tauri::command]
 pub async fn uninstall_modpack(app: AppHandle, manager: State<'_, Manager>, request: UninstallRequest) -> AppResult<PatchReport> {
-    manager.uninstall_modpack(&request).await?;
+    with_manager(&app, move |manager| block_on(manager.uninstall_modpack(&request))).await?;
 
     Ok(recheck(&app, &manager).await)
 }
@@ -247,13 +235,13 @@ pub async fn take_deep_link(manager: State<'_, Manager>) -> AppResult<Option<Dee
 }
 
 #[tauri::command]
-pub async fn get_conflicts(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<ConflictReport> {
-    manager.conflicts(client_path.as_deref())
+pub async fn get_conflicts(app: AppHandle, client_path: Option<PathBuf>) -> AppResult<ConflictReport> {
+    with_manager(&app, move |manager| manager.conflicts(client_path.as_deref())).await
 }
 
 #[tauri::command]
-pub async fn restore_missing(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<ConflictReport> {
-    manager.restore_missing(client_path.as_deref()).await
+pub async fn restore_missing(app: AppHandle, client_path: Option<PathBuf>) -> AppResult<ConflictReport> {
+    with_manager(&app, move |manager| block_on(manager.restore_missing(client_path.as_deref()))).await
 }
 
 #[tauri::command]
@@ -315,13 +303,13 @@ pub async fn import_set_file(manager: State<'_, Manager>, path: PathBuf) -> AppR
 }
 
 #[tauri::command]
-pub async fn scan_cache(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<CachePlan> {
-    manager.cache_plan(client_path.as_deref())
+pub async fn scan_cache(app: AppHandle, client_path: Option<PathBuf>) -> AppResult<CachePlan> {
+    with_manager(&app, move |manager| manager.cache_plan(client_path.as_deref())).await
 }
 
 #[tauri::command]
-pub async fn clear_cache(manager: State<'_, Manager>, client_path: Option<PathBuf>, ids: Vec<String>) -> AppResult<CacheResult> {
-    manager.clear_cache(client_path.as_deref(), &ids).await
+pub async fn clear_cache(app: AppHandle, client_path: Option<PathBuf>, ids: Vec<String>) -> AppResult<CacheResult> {
+    with_manager(&app, move |manager| block_on(manager.clear_cache(client_path.as_deref(), &ids))).await
 }
 
 #[tauri::command]
@@ -384,3 +372,6 @@ pub async fn save_report(
 pub async fn get_game_health(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<HealthReport> {
     manager.game_health(client_path.as_deref())
 }
+
+#[cfg(test)]
+mod tests;

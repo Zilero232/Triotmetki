@@ -13,7 +13,6 @@ use crate::install::{self, installed_elsewhere, owned_patterns_catalog, ForeignE
 use crate::patch::fetch_packages;
 use crate::process::ensure_closed;
 use crate::releases::{Release, ReleaseStatus};
-use crate::snapshots;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -51,22 +50,39 @@ pub struct InstallRequest {
     pub components: Vec<String>,
     #[serde(default)]
     pub remove_others: Vec<PathBuf>,
-    #[serde(default = "take_snapshot_default")]
-    pub take_snapshot: bool,
     #[serde(default)]
     pub excluded_dependencies: Vec<String>,
 }
 
-fn take_snapshot_default() -> bool {
-    true
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum InstallStep {
+    OtherMods,
+    Dependencies,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct InstallWarning {
+    pub step: InstallStep,
+    pub code: ErrorCode,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct InstallOutcome {
+    pub installation: Installation,
+    pub warnings: Vec<InstallWarning>,
+}
+
+pub fn install_warnings(steps: [(InstallStep, Option<ErrorCode>); 2]) -> Vec<InstallWarning> {
+    steps.into_iter().filter_map(|(step, code)| code.map(|code| InstallWarning { step, code })).collect()
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UninstallRequest {
     pub client_path: Option<PathBuf>,
-    #[serde(default)]
-    pub restore_snapshot: bool,
     #[serde(default)]
     pub remove_config: bool,
 }
@@ -131,7 +147,7 @@ impl Manager {
 
         if let Some(release) = &release {
             let refreshed = match self.try_write_guard() {
-                Ok(_guard) => self.refresh_catalog(release).await,
+                Ok(_guard) => self.refresh_catalog(release).await.map(drop),
                 Err(error) => Err(error),
             };
 
@@ -170,7 +186,7 @@ impl Manager {
         })
     }
 
-    pub async fn install_modpack(&self, request: InstallRequest) -> AppResult<Installation> {
+    pub async fn install_modpack(&self, request: InstallRequest) -> AppResult<InstallOutcome> {
         let _guard = self.write_guard().await?;
         let client = self.usable_client(request.client_path.as_deref())?;
 
@@ -196,31 +212,35 @@ impl Manager {
         let parked: BTreeSet<String> = components_in(&read_installation(scope.context())?, Some(ComponentState::Disabled)).into_iter().collect();
 
         ensure_closed(&scope.client.path)?;
-        install::install(InstallInput {
+        let installed = install::install(InstallInput {
             context: scope.context(),
             packages: &packages,
             modpack_version: &version,
             remove_others: &request.remove_others,
-            take_snapshot: request.take_snapshot,
             parked: &parked,
-            durable_dir: &self.layout.durable_dir(),
         })?;
-        dependencies::install(InstallDependenciesInput { context: scope.context(), wanted: &wanted, fetched: &fetched })?;
+
+        let dependencies_error = dependencies::install(InstallDependenciesInput { context: scope.context(), wanted: &wanted, fetched: &fetched })
+            .inspect_err(|error| log::warn!("the modpack is installed, its dependencies failed: {error}"))
+            .err()
+            .map(|error| error.code());
+
         self.sync_res_map(&scope.client);
 
-        read_installation(scope.context())
+        Ok(InstallOutcome {
+            installation: read_installation(scope.context())?,
+            warnings: install_warnings([(InstallStep::OtherMods, installed.others_error), (InstallStep::Dependencies, dependencies_error)]),
+        })
     }
 
     pub async fn uninstall_modpack(&self, request: &UninstallRequest) -> AppResult<()> {
         let _guard = self.write_guard().await?;
         let scope = self.owned_scope(request.client_path.as_deref())?;
-        let latest = snapshots::list(&scope.client_dir).into_iter().next().map(|snapshot| snapshot.id);
 
         ensure_closed(&scope.client.path)?;
 
         install::uninstall(UninstallInput {
             context: scope.context(),
-            restore_snapshot: latest.as_deref().filter(|_| request.restore_snapshot),
             remove_config: request.remove_config,
             durable_dir: &self.layout.durable_dir(),
             shared_elsewhere: installed_elsewhere(&self.layout.clients_dir(), &scope.client_dir),

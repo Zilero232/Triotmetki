@@ -14,9 +14,8 @@
     "overrideResMods": "{subject} has files that override the modpack ({count})"
   },
   "restore": "Restore the set ({count})",
-  "restoreTitle": "Restore {count, plural, one {# file} other {# files}} from the latest snapshot?",
-  "restoreDescription": "The manager brings the missing and replaced modpack packages back from a snapshot in “Settings → Backups”. Settings and other mods do not change.",
+  "restoreTitle": "Download {count, plural, one {# package} other {# packages}} again?",
+  "restoreDescription": "The manager downloads the missing and replaced modpack packages of the installed release again. Settings and other mods do not change.",
   "restoreConfirm": "Restore",
-  "restored": "The set is restored",
-  "noSnapshot": "No snapshot has them: reinstall the modpack with “Change the selection” on the home page."
+  "restored": "The set is restored"
 }
