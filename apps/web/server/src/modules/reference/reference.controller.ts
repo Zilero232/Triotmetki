@@ -7,16 +7,16 @@ import { ZodResponse } from 'nestjs-zod';
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { GameVersionDto, ServersOnlineDto } from './dto/reference.dto';
-import { GameVersionService } from './services/game-version.service';
-import { ServersOnlineService } from './services/servers-online.service';
+import { GameVersionReaderService } from './services/game-version-reader.service';
+import { ServersOnlineReaderService } from './services/servers-online-reader.service';
 
 @ApiTags('reference')
 @AllowAnonymous()
 @Controller('reference')
 export class ReferenceController {
   constructor(
-    private readonly gameVersion: GameVersionService,
-    private readonly serversOnline: ServersOnlineService
+    private readonly gameVersion: GameVersionReaderService,
+    private readonly serversOnline: ServersOnlineReaderService
   ) {}
 
   @Get('game-version')

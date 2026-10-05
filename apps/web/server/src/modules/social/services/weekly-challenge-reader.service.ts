@@ -3,7 +3,8 @@ import { Injectable } from '@nestjs/common';
 import type { ChallengesView } from '../social.types';
 
 import { toIsoDate, weekWindow } from '../../../common/lib';
-import { PrismaService, UserLestaAccountsService } from '../../../core';
+import { PrismaService } from '../../../core';
+import { UserAccountsReaderService } from '../../accounts';
 import { WEEKLY_CHALLENGES } from '../config/challenges.constants';
 import { toWeeklyChallengeView } from '../mappers/weekly-challenge-view.mappers';
 
@@ -11,7 +12,7 @@ import { toWeeklyChallengeView } from '../mappers/weekly-challenge-view.mappers'
 export class WeeklyChallengeReaderService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly accounts: UserLestaAccountsService
+    private readonly accounts: UserAccountsReaderService
   ) {}
 
   async forUser(userId: string): Promise<ChallengesView> {

@@ -5,6 +5,7 @@ import type { Mission, MissionBranch, PlayerTank, TankServerStats, UserLestaAcco
 import type { PrismaService } from '../../../../core';
 import type { CatalogEntry } from '../../../reference';
 
+import { UserAccountsReaderService } from '../../../accounts';
 import { VehicleCatalogService } from '../../../reference';
 import { MISSION_TANKS } from '../../config';
 import { MissionCatalogService } from '../mission-catalog.service';
@@ -97,7 +98,7 @@ const setup = () => {
   missions.mission.mockResolvedValue({ mission, branch });
   vehicles.filter.mockResolvedValue([entry(1), entry(2)]);
 
-  return { prisma, vehicles, service: new MissionTanksService(prisma, vehicles, missions) };
+  return { prisma, vehicles, service: new MissionTanksService(prisma, vehicles, missions, new UserAccountsReaderService(prisma)) };
 };
 
 describe('MissionTanksService.tanks', () => {

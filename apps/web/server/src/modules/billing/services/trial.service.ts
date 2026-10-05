@@ -6,9 +6,9 @@ import { addDays } from 'date-fns';
 import type { ClaimTrialInput } from '../billing.types';
 
 import { AppConflictException } from '../../../common/exceptions';
-import { PLUS_SUBSCRIPTION } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { PLUS_PLANS } from '../config/plans.constants';
+import { PLUS_SUBSCRIPTION } from '../lib/entitlement/entitlement.constants';
 import { plusSubscriptionKey } from '../lib/subscription-key';
 import { EntitlementsService } from './entitlements.service';
 import { SubscriptionService } from './subscription.service';

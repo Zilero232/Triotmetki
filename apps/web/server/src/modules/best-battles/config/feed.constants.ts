@@ -1,4 +1,4 @@
-import { GAME_MODE_BONUS_TYPES } from '../../../common/lib';
+import { GAME_MODE_BONUS_TYPES } from '../../reference';
 
 export const BEST_BATTLES = {
   defaultPeriod: 'week',

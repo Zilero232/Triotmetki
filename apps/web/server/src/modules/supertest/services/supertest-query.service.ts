@@ -7,7 +7,7 @@ import type { SupertestAnnouncementView, SupertestList, SupertestMine } from '..
 import { AppNotFoundException } from '../../../common/exceptions';
 import { parseJsonText } from '../../../common/lib';
 import { PrismaService, REDIS } from '../../../core';
-import { OwnAccountService } from '../../analytics';
+import { OwnAccountReaderService } from '../../analytics';
 import { VehicleCatalogService } from '../../reference';
 import { SUPERTEST_VIEW } from '../config';
 import { supertestListSchema } from '../dto';
@@ -20,7 +20,7 @@ export class SupertestQueryService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService,
-    private readonly accounts: OwnAccountService,
+    private readonly accounts: OwnAccountReaderService,
     @Inject(REDIS) private readonly redis: Redis
   ) {}
 

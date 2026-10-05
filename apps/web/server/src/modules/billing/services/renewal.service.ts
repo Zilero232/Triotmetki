@@ -4,9 +4,10 @@ import { addHours, subDays } from 'date-fns';
 import type { Subscription } from '../../../../generated';
 import type { RecordPendingChargeInput } from '../billing.types';
 
-import { errorMessage, PLUS_SUBSCRIPTION } from '../../../common/lib';
+import { errorMessage } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { RENEWAL } from '../config/renewal.constants';
+import { PLUS_SUBSCRIPTION } from '../lib/entitlement/entitlement.constants';
 import { renewalIdempotenceKey } from '../lib/period';
 import { describePlan, planPrice, storedPlan } from '../lib/pricing';
 import { YooKassaClient } from '../lib/yookassa';

@@ -19,7 +19,7 @@ import type {
 
 import { moscowCalendarDate, moscowDayStart } from '../../../../common/lib';
 import { lockedTransaction, PrismaService } from '../../../../core';
-import { ExpectedValuesService } from '../../../reference';
+import { ExpectedValuesReaderService } from '../../../reference';
 import { TRACKING, TRACKING_TOKENS } from '../config/tracking.constants';
 import { buildDaySession } from '../lib/day-session';
 import { gainedMarks, snapshotMarks } from '../lib/marks-gain';
@@ -32,7 +32,7 @@ export class AccountWriterService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly announce: TrackingAnnounceService,
-    private readonly expected: ExpectedValuesService,
+    private readonly expected: ExpectedValuesReaderService,
     @Inject(TRACKING_TOKENS.accountWriteQueries) private readonly queries: AccountWriteQueries
   ) {}
 

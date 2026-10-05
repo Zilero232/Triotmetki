@@ -7,7 +7,8 @@ import type { MissionMetricChoice } from '../lib';
 import type { GarageState, MissionContext, MissionTanksInput, ServerStatsInput, ServerStatsResult, UserQuestInput } from '../missions.types';
 
 import { COHORT_TO_DB, percentOf, SERVER_PERIOD_TO_DB, STATS_MODE_TO_DB } from '../../../common/lib';
-import { PrismaService, USER_LESTA_ACCOUNT_ORDER } from '../../../core';
+import { PrismaService } from '../../../core';
+import { UserAccountsReaderService } from '../../accounts';
 import { VehicleCatalogService } from '../../reference';
 import { MISSION_TANKS } from '../config';
 import { missionFilter, missionMetric, rankTanks, toCandidate } from '../lib';
@@ -19,7 +20,8 @@ export class MissionTanksService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService,
-    private readonly missions: MissionCatalogService
+    private readonly missions: MissionCatalogService,
+    private readonly accounts: UserAccountsReaderService
   ) {}
 
   async tanks({ questId, period, limit }: MissionTanksInput): Promise<MissionTanks> {
@@ -84,18 +86,14 @@ export class MissionTanksService {
   }
 
   async garageTanks(userId: string): Promise<GarageState> {
-    const link = await this.prisma.userLestaAccount.findFirst({
-      where: { userId },
-      orderBy: USER_LESTA_ACCOUNT_ORDER,
-      select: { accountId: true }
-    });
+    const accountId = await this.accounts.primaryAccountId(userId);
 
-    if (!link) {
+    if (accountId === null) {
       return { state: 'noLink', tanks: [] };
     }
 
     const tanks = await this.prisma.playerTank.findMany({
-      where: { accountId: link.accountId, inGarage: { not: null } },
+      where: { accountId, inGarage: { not: null } },
       select: { tankId: true, battles: true, wins: true, inGarage: true }
     });
 

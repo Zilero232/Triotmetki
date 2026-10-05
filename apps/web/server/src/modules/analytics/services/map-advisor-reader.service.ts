@@ -7,19 +7,19 @@ import type { AnalyticsInput } from '../analytics.types';
 import type { AnalyticsQueries } from '../providers/analytics-queries.provider.types';
 
 import { PrismaService } from '../../../core';
-import { ExpectedValuesService, VehicleCatalogService } from '../../reference';
+import { ExpectedValuesReaderService, VehicleCatalogService } from '../../reference';
 import { ANALYTICS_QUERIES, ANALYTICS_SQL } from '../config';
 import { mapHighlights, periodStart, statLine, winRateDelta } from '../lib';
 import { toAggregateRow } from '../mappers';
-import { OwnAccountService } from './own-account.service';
+import { OwnAccountReaderService } from './own-account-reader.service';
 
 @Injectable()
 export class MapAdvisorReaderService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService,
-    private readonly expected: ExpectedValuesService,
-    private readonly accounts: OwnAccountService,
+    private readonly expected: ExpectedValuesReaderService,
+    private readonly accounts: OwnAccountReaderService,
     @Inject(ANALYTICS_QUERIES) private readonly queries: AnalyticsQueries
   ) {}
 

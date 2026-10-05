@@ -1,4 +1,4 @@
-import { GAME_MODE_BONUS_TYPES } from '../../../common/lib';
+import { GAME_MODE_BONUS_TYPES } from '../../reference';
 
 export const MOD_INGEST = {
   ledgerPrefix: 'mod:event:',

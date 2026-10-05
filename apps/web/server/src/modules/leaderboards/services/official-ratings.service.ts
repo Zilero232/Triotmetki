@@ -7,9 +7,11 @@ import { isNonNullish } from 'remeda';
 import type { LestaClient } from '../../../lib/lesta';
 import type { OfficialEntriesInput, OfficialHistoryInput, OfficialNeighborsInput, OfficialPointInput } from '../leaderboards.types';
 
-import { isoDay, OFFICIAL_FIELD_TO_LESTA, OFFICIAL_PERIOD_TO_LESTA, toNumber, toOfficialRank } from '../../../common/lib';
+import { isoDay, toNumber } from '../../../common/lib';
 import { LESTA_CLIENT, PrismaService } from '../../../core';
 import { OFFICIAL_HALL } from '../config/official-hall.constants';
+import { toOfficialRank } from '../lib/official-rating/official-rating';
+import { OFFICIAL_FIELD_TO_LESTA, OFFICIAL_PERIOD_TO_LESTA } from '../lib/official-rating/official-rating.constants';
 
 @Injectable()
 export class OfficialRatingsService {

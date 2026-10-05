@@ -10,7 +10,7 @@ import type { AccountWriteQueries } from '../../queries/account-writes.types';
 
 import { moscowCalendarDate } from '../../../../../common/lib';
 import { advisoryLocks, mockPrismaService } from '../../../../../core/prisma/_tests/prisma-mock';
-import { ExpectedValuesService } from '../../../../reference';
+import { ExpectedValuesReaderService } from '../../../../reference';
 import { TRACKING } from '../../config/tracking.constants';
 import { block, tankStats } from '../../lib/poll-pipeline/_tests/poll-pipeline.fixtures';
 import { tankSnapshotRow } from '../../lib/snapshots';
@@ -23,7 +23,7 @@ const createWriter = () => {
   const queries: CompiledQuery[] = [];
   const prisma = mockPrismaService({ queries });
   const announce = mock<TrackingAnnounceService>();
-  const expected = mock<ExpectedValuesService>();
+  const expected = mock<ExpectedValuesReaderService>();
   const writes = mock<AccountWriteQueries>();
 
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));

@@ -5,8 +5,8 @@ import { mock } from 'vitest-mock-extended';
 import type { ModeMetaRow } from '../../mappers/mode-meta.types';
 import type { MetaQueries } from '../../meta.types';
 
-import { bonusTypesOfMode } from '../../../../../../common/lib';
 import { mockPrismaService } from '../../../../../../core/prisma/_tests/prisma-mock';
+import { bonusTypesOfMode } from '../../../../../reference';
 import { MODE_META_AGGREGATE } from '../../config/meta.constants';
 import { ModeMetaAggregateService } from '../mode-meta-aggregate.service';
 

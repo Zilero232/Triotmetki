@@ -2,7 +2,8 @@ import type { PlusState, PlusStateKind } from '@otmetki/schemas';
 
 import type { PlusStateInput } from './plus-state.types';
 
-import { accessEndsAt, isEntitled, toIso } from '../../../../common/lib';
+import { toIso } from '../../../../common/lib';
+import { accessEndsAt, isEntitled } from '../entitlement/entitlement';
 
 const stateKindOf = ({ subscription, now }: Pick<PlusStateInput, 'now' | 'subscription'>): PlusStateKind => {
   if (!subscription) {

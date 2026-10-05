@@ -7,7 +7,7 @@ import type { GainedMark } from '../../lib/marks-gain';
 import type { FakeLestaInput } from '../../lib/poll-pipeline/_tests/poll-pipeline.fixtures.types';
 
 import { createTestPrisma, describeWithDatabase, truncateTables } from '../../../../../core/prisma/_tests/test-database';
-import { ExpectedValuesService } from '../../../../reference';
+import { ExpectedValuesReaderService } from '../../../../reference';
 import { PurgeGuardService } from '../../../purge';
 import { accountInfo, accountTank, block, createFakeLesta, tankStats } from '../../lib/poll-pipeline/_tests/poll-pipeline.fixtures';
 import { ACCOUNT_WRITE_QUERIES } from '../../queries/account-writes.queries';
@@ -81,7 +81,7 @@ describeWithDatabase('poll sync on the database', () => {
   const createSync = () => {
     const lesta = mock<TrackingLestaService>();
     const announce = mock<TrackingAnnounceService>();
-    const expected = mock<ExpectedValuesService>();
+    const expected = mock<ExpectedValuesReaderService>();
 
     lesta.port.mockReturnValueOnce(createFakeLesta(FIRST_POLL)).mockReturnValueOnce(createFakeLesta(SECOND_POLL));
     announce.subscribers.mockResolvedValue(new Set());

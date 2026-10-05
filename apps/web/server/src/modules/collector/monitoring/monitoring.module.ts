@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { QueueStatsService } from './services';
+import { QueueStatsService } from './queue-stats.service';
 
 @Module({
   providers: [QueueStatsService]

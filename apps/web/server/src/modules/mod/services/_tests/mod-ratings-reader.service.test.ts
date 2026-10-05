@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { AccountRating, AccountTankRating, Player, PlayerTank, PlaySession } from '../../../../../generated';
-import type { ExpectedValuesService } from '../../../reference';
+import type { ExpectedValuesReaderService } from '../../../reference';
 import type { ModRatingsQueries } from '../../queries/ratings.types';
 
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
@@ -31,7 +31,7 @@ const session = (overrides: Partial<PlaySession>) =>
 const createService = () => {
   const prisma = mockPrismaService();
   const cache = mock<Cache>();
-  const expectedValues = mock<ExpectedValuesService>();
+  const expectedValues = mock<ExpectedValuesReaderService>();
 
   expectedValues.all.mockResolvedValue(new Map());
 

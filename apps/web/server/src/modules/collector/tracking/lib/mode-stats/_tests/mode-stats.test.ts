@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { AccountStatistics, BattleStatsBlock, TankStats } from '../../../../../../lib/lesta';
 
-import { ACCOUNT_MODE_SOURCES } from '../../../../../../common/lib';
+import { ACCOUNT_MODE_SOURCES } from '../../mode-blocks/mode-blocks.constants';
 import { accountModeRows, tankModeRows } from '../mode-stats';
 
 const block = (battles: number, extra: Partial<BattleStatsBlock> = {}): BattleStatsBlock => ({

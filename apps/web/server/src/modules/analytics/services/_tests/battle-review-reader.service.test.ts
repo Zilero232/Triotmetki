@@ -11,7 +11,7 @@ import { VehicleCatalogService } from '../../../reference';
 import { UsageMeterService } from '../../../usage';
 import { BATTLE_REVIEW } from '../../config';
 import { BattleReviewReaderService } from '../battle-review-reader.service';
-import { OwnAccountService } from '../own-account.service';
+import { OwnAccountReaderService } from '../own-account-reader.service';
 import { battleRow, catalogOf, vehicle } from './analytics.fixtures';
 
 const tank = vehicle({ tankId: 1 });
@@ -30,7 +30,7 @@ const setup = () => {
   const prisma = mockPrismaService();
   const queries = mock<AnalyticsQueries>();
   const catalog = mock<VehicleCatalogService>();
-  const accounts = mock<OwnAccountService>();
+  const accounts = mock<OwnAccountReaderService>();
   const usage = mock<UsageMeterService>();
 
   accounts.resolve.mockResolvedValue(7n);

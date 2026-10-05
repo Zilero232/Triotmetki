@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { randomUUID } from 'node:crypto';
 
-import type { EmitWebhookInput, WebhookEmitter } from '../../../core';
+import type { EmitWebhookInput, WebhookEmitter } from '../../webhooks';
 
 import { stableUuid, toJsonValue } from '../../../common/lib';
 import { PrismaService } from '../../../core';

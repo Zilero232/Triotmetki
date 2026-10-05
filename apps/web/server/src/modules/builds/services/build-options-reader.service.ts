@@ -7,11 +7,11 @@ import { isCrewSkill, isFieldModification } from '../lib/game-data-guards/game-d
 import { fieldModificationSteps } from '../lib/progression/progression';
 import { toModuleOption } from '../mappers/module-option.mappers';
 import { toProvisionOption } from '../mappers/provision-option.mappers';
-import { BuildDataService } from './build-data.service';
+import { BuildDataReaderService } from './build-data-reader.service';
 
 @Injectable()
 export class BuildOptionsReaderService {
-  constructor(private readonly data: BuildDataService) {}
+  constructor(private readonly data: BuildDataReaderService) {}
 
   async options(tankId: number): Promise<BuildOptions> {
     const vehicle = await this.data.vehicle(tankId);

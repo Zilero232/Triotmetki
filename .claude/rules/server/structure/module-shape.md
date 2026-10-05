@@ -19,7 +19,7 @@ no build step. One app, two entrypoints: `src/main.ts` (the API, `AppModule`) an
 and an `index.ts` as needed; a collector module has `processors/` in place of a
 controller. Controllers and processors validate, delegate, return — logic lives
 in `services/<domain>.service.ts`, **one service per domain of work**
-(`players/services/player-summary.service.ts`, `player-marks.service.ts`, …),
+(`players/services/player-summary-reader.service.ts`, `player-marks-reader.service.ts`, …),
 never a fat `x.service.ts` at the module root.
 
 There is no facade: a consumer injects the specific domain service it uses, and

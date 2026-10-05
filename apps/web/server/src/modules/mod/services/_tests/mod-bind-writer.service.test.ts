@@ -9,8 +9,8 @@ import type { ModDevice, OneTimeCode, Player, UserLestaAccount } from '../../../
 import type { AppConfigService } from '../../../../config';
 
 import { AppForbiddenException } from '../../../../common/exceptions';
-import { USER_LESTA_ACCOUNT_ORDER, UserLestaAccountsService } from '../../../../core';
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
+import { USER_LESTA_ACCOUNT_ORDER, UserAccountsReaderService } from '../../../accounts';
 import { BIND_CODE } from '../../config/bind-code.constants';
 import { MOD_DEVICE, MOD_DEVICE_LIMITS } from '../../config/device.constants';
 import { bindCodePattern } from '../../lib/contract';
@@ -57,7 +57,7 @@ const createService = () => {
   config.get.mockReturnValue(SERVER_SECRET);
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
 
-  return { service: new ModBindWriterService(prisma, config, new RedisMock(), new UserLestaAccountsService(prisma)), prisma };
+  return { service: new ModBindWriterService(prisma, config, new RedisMock(), new UserAccountsReaderService(prisma)), prisma };
 };
 
 const readyToBind = (code: OneTimeCode = storedCode()) => {

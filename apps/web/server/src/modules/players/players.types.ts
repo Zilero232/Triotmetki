@@ -1,8 +1,8 @@
 import type { InsightsPeriod, OfficialRatingPeriod, PlayerTanksQuery, Playtime, PopularPlayersQuery, TimeSeriesQuery } from '@otmetki/schemas';
 
 import type { AccountRating, AccountSnapshot, Battle, TankModeStats } from '../../../generated';
-import type { CareerSource, ModeStatsMode } from '../../common/lib';
 import type { AccountInfo } from '../../lib/lesta';
+import type { CareerSource, ModeStatsMode } from '../collector';
 import type { HistoryWindowPolicy } from './lib';
 import type { CareerRecordRef, CareerTotals } from './mappers';
 import type { CareerRecordTimes } from './selects';

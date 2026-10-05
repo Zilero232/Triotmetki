@@ -9,7 +9,8 @@ import type { BindCode, BindCodeInput, BindInput, BindLinkInput, BindRequest, Cl
 import { AppForbiddenException, ModException } from '../../../common/exceptions';
 import { randomCode } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
-import { LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService, REDIS, USER_LESTA_ACCOUNT_ORDER, UserLestaAccountsService } from '../../../core';
+import { LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService, REDIS } from '../../../core';
+import { UserAccountsReaderService } from '../../accounts';
 import { BIND_CODE } from '../config/bind-code.constants';
 import { MOD_DEVICE_LIMITS } from '../config/device.constants';
 import { bindCodePattern, bindRequestSchema } from '../lib/contract';
@@ -21,7 +22,7 @@ export class ModBindWriterService {
     private readonly prisma: PrismaService,
     private readonly config: AppConfigService,
     @Inject(REDIS) private readonly redis: Redis,
-    private readonly accounts: UserLestaAccountsService
+    private readonly accounts: UserAccountsReaderService
   ) {}
 
   async issueCode({ userId, accountId }: BindCodeInput): Promise<BindCode> {
@@ -153,12 +154,14 @@ export class ModBindWriterService {
     });
   }
 
-  private bindLink({ userId, accountId }: BindLinkInput) {
-    return this.prisma.userLestaAccount.findFirst({
-      where: accountId === null ? { userId } : { userId, accountId },
-      orderBy: USER_LESTA_ACCOUNT_ORDER,
-      include: { player: true }
-    });
+  private async bindLink({ userId, accountId }: BindLinkInput) {
+    const linked = accountId ?? (await this.accounts.primaryAccountId(userId));
+
+    if (linked === null) {
+      return null;
+    }
+
+    return this.prisma.userLestaAccount.findFirst({ where: { userId, accountId: linked }, include: { player: true } });
   }
 
   private async refuse(failureKey: string): Promise<never> {

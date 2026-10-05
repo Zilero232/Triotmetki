@@ -3,13 +3,15 @@ import { accountWn8 } from '@otmetki/ratings';
 import { fromUnixTime } from 'date-fns';
 import { mapValues, sortBy } from 'remeda';
 
-import type { BattleEventsSink, WebhookEmitter } from '../../../core';
+import type { WebhookEmitter } from '../../webhooks';
 import type { IngestResponse } from '../lib/contract';
-import type { BattleEventInput, IngestInput, LedgeredEventInput, MarkGainedInput, SessionRef, SessionSummary } from '../mod.types';
+import type { BattleEventInput, BattleEventsSink, IngestInput, LedgeredEventInput, MarkGainedInput, SessionRef, SessionSummary } from '../mod.types';
 
 import { errorMessage } from '../../../common/lib';
-import { BATTLE_EVENTS, isUniqueViolationOn, markGainedKey, PrismaService, WEBHOOK_EMITTER } from '../../../core';
-import { ExpectedValuesService } from '../../reference';
+import { isUniqueViolationOn, PrismaService } from '../../../core';
+import { ExpectedValuesReaderService } from '../../reference';
+import { markGainedKey, WEBHOOK_EMITTER } from '../../webhooks';
+import { BATTLE_EVENTS } from '../config/battle-events.constants';
 import { MOD_INGEST } from '../config/ingest.constants';
 import { countsForSession, moePercent, sessionIncrement, sessionUuid } from '../lib/battle';
 import { sessionTankTotals } from '../lib/session-tanks';
@@ -23,7 +25,7 @@ export class ModIngestWriterService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly ledger: EventLedgerService,
-    private readonly expected: ExpectedValuesService,
+    private readonly expected: ExpectedValuesReaderService,
     @Inject(WEBHOOK_EMITTER) private readonly webhooks: WebhookEmitter,
     @Optional() @Inject(BATTLE_EVENTS) private readonly battleEvents: BattleEventsSink | null = null
   ) {}

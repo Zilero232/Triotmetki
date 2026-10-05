@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Player, UserLestaAccount } from '../../../../../../generated';
-import type { PrismaService, WebhookEmitter } from '../../../../../core';
+import type { PrismaService } from '../../../../../core';
+import type { WebhookEmitter } from '../../../../webhooks';
 
 import { TrackingAnnounceService } from '../tracking-announce.service';
 

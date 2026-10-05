@@ -3,7 +3,8 @@ import type { AnalyticsExport, RawStatsExport } from '@otmetki/schemas';
 import { Injectable } from '@nestjs/common';
 import { subDays } from 'date-fns';
 
-import { PrismaService, UserLestaAccountsService } from '../../../core';
+import { PrismaService } from '../../../core';
+import { UserAccountsReaderService } from '../../accounts';
 import { ModSyncService } from '../../mod-sync';
 import { DATA_EXPORT } from '../config';
 import { toAccountExport, toBattleExport, toSessionExport, toTankExport, toTankProgressExport } from '../mappers';
@@ -12,7 +13,7 @@ import { toAccountExport, toBattleExport, toSessionExport, toTankExport, toTankP
 export class DataExportService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly lestaAccounts: UserLestaAccountsService,
+    private readonly lestaAccounts: UserAccountsReaderService,
     private readonly modSync: ModSyncService
   ) {}
 

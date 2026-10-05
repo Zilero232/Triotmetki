@@ -3,10 +3,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { ClanInfo, LestaClient } from '../../../lib/lesta';
 
 import { AppNotFoundException } from '../../../common/exceptions';
-import { clanInfoFields, clanRoleToDb, fromUnixSeconds, insensitiveEquals } from '../../../common/lib';
+import { clanRoleToDb, fromUnixSeconds, insensitiveEquals } from '../../../common/lib';
 import { LESTA_CLIENT, PrismaService } from '../../../core';
 import { isSearchRejected } from '../../../lib/lesta';
-import { CollectorProducerService, PurgeGuardService } from '../../collector';
+import { clanInfoFields, CollectorProducerService, PurgeGuardService } from '../../collector';
 import { CLAN_PAGE } from '../config/clan-page.constants';
 
 @Injectable()

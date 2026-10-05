@@ -7,9 +7,9 @@ import type { RawTankRow } from '../../lib';
 import type { AnalyticsQueries } from '../../providers/analytics-queries.provider.types';
 
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
-import { ExpectedValuesService, VehicleCatalogService } from '../../../reference';
+import { ExpectedValuesReaderService, VehicleCatalogService } from '../../../reference';
 import { AnalyticsOverviewReaderService } from '../analytics-overview-reader.service';
-import { OwnAccountService } from '../own-account.service';
+import { OwnAccountReaderService } from '../own-account-reader.service';
 import { catalogOf, rawRow, vehicle } from './analytics.fixtures';
 
 const now = new Date('2026-09-26T10:00:00Z');
@@ -28,8 +28,8 @@ const setup = ({ totals, trend, battlePlaytime = [], deltaPlaytime = [] }: Raw) 
   const prisma = mockPrismaService();
   const queries = mock<AnalyticsQueries>();
   const catalog = mock<VehicleCatalogService>();
-  const expected = mock<ExpectedValuesService>();
-  const accounts = mock<OwnAccountService>();
+  const expected = mock<ExpectedValuesReaderService>();
+  const accounts = mock<OwnAccountReaderService>();
 
   accounts.resolve.mockResolvedValue(7n);
   expected.all.mockResolvedValue(new Map());

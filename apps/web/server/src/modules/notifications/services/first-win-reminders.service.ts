@@ -4,8 +4,9 @@ import { subDays } from 'date-fns';
 import type { FirstWinRemindInput } from '../notifications.types';
 
 import { isoDay } from '../../../common/lib';
-import { PrismaService, USER_LESTA_ACCOUNT_ORDER } from '../../../core';
-import { dailyWindow, FirstWinService } from '../../analytics';
+import { PrismaService } from '../../../core';
+import { USER_LESTA_ACCOUNT_ORDER } from '../../accounts';
+import { dailyWindow, FirstWinReaderService } from '../../analytics';
 import { FIRST_WIN_REMINDER } from '../config/watchers.constants';
 import { NotificationService } from './notification.service';
 
@@ -13,7 +14,7 @@ import { NotificationService } from './notification.service';
 export class FirstWinRemindersService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly firstWin: FirstWinService,
+    private readonly firstWin: FirstWinReaderService,
     private readonly notifications: NotificationService
   ) {}
 

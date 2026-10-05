@@ -6,18 +6,18 @@ import type { AnalyticsInput } from '../analytics.types';
 import type { AnalyticsQueries } from '../providers/analytics-queries.provider.types';
 
 import { PrismaService } from '../../../core';
-import { ExpectedValuesService } from '../../reference';
+import { ExpectedValuesReaderService } from '../../reference';
 import { ANALYTICS_QUERIES, ANALYTICS_SQL, PLATOON_CHEMISTRY } from '../config';
 import { periodStart, statLine, winRateDelta } from '../lib';
 import { toAggregateRow } from '../mappers';
-import { OwnAccountService } from './own-account.service';
+import { OwnAccountReaderService } from './own-account-reader.service';
 
 @Injectable()
 export class PlatoonChemistryReaderService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly expected: ExpectedValuesService,
-    private readonly accounts: OwnAccountService,
+    private readonly expected: ExpectedValuesReaderService,
+    private readonly accounts: OwnAccountReaderService,
     @Inject(ANALYTICS_QUERIES) private readonly queries: AnalyticsQueries
   ) {}
 

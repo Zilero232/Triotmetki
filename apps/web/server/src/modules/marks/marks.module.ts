@@ -4,13 +4,13 @@ import { MarksController } from './marks.controller';
 import { MoePublicController } from './moe-public.controller';
 import { ModThresholdsReaderService } from './services/mod-thresholds-reader.service';
 import { MoeCurveReaderService } from './services/moe-curve-reader.service';
-import { MoeTableService } from './services/moe-table.service';
+import { MoeTableReaderService } from './services/moe-table-reader.service';
 import { ProjectionReaderService } from './services/projection-reader.service';
-import { SweatIndexService } from './services/sweat-index.service';
+import { SweatIndexReaderService } from './services/sweat-index-reader.service';
 
 @Module({
   controllers: [MarksController, MoePublicController],
-  providers: [MoeTableService, MoeCurveReaderService, ModThresholdsReaderService, ProjectionReaderService, SweatIndexService],
-  exports: [MoeTableService, SweatIndexService]
+  providers: [MoeTableReaderService, MoeCurveReaderService, ModThresholdsReaderService, ProjectionReaderService, SweatIndexReaderService],
+  exports: [MoeTableReaderService, SweatIndexReaderService]
 })
 export class MarksModule {}

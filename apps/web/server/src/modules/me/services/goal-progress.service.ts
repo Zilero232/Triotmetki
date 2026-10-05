@@ -7,10 +7,10 @@ import { chunk, unique } from 'remeda';
 import type { Goal } from '../../../../generated';
 import type { EvaluateGoalInput, GoalAtInput } from '../me.types';
 
-import { bonusTypesOfMode, errorMessage } from '../../../common/lib';
+import { errorMessage } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { NotificationService } from '../../notifications';
-import { ExpectedValuesService } from '../../reference';
+import { bonusTypesOfMode, ExpectedValuesReaderService } from '../../reference';
 import { GOAL_PROGRESS, MOD_GOALS } from '../config';
 import { goalCurrent, goalOutcome, goalWindow, isWindowMetric, windowTotals } from '../lib';
 import { toApiTankTotals, toModTankTotals } from '../mappers';
@@ -22,7 +22,7 @@ export class GoalProgressService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly expectedValues: ExpectedValuesService,
+    private readonly expectedValues: ExpectedValuesReaderService,
     private readonly notifications: NotificationService
   ) {}
 

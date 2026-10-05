@@ -9,7 +9,7 @@ import type { HonestRngMine, HonestRngView, RngMineInput, RngPeriod } from '../h
 import { Prisma } from '../../../../generated';
 import { parseJsonText } from '../../../common/lib';
 import { PrismaService, REDIS } from '../../../core';
-import { OwnAccountService, readStoredShots } from '../../analytics';
+import { OwnAccountReaderService, readStoredShots } from '../../analytics';
 import { HONEST_RNG_AGGREGATE } from '../config/aggregate.constants';
 import { honestRngSchema } from '../dto/honest-rng.schemas';
 import { luckVerdict, theoryBuckets } from '../lib/rng-theory/rng-theory';
@@ -20,7 +20,7 @@ import { toRngSummary } from '../mappers/rng-view.mappers';
 export class HonestRngReaderService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly accounts: OwnAccountService,
+    private readonly accounts: OwnAccountReaderService,
     @Inject(REDIS) private readonly redis: Redis
   ) {}
 

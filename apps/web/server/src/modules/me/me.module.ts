@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { UserLestaAccountsModule } from '../../core';
+import { AccountsModule } from '../accounts';
 import { AnalyticsModule } from '../analytics';
 import { BillingCoreModule } from '../billing';
 import { ModModule } from '../mod';
@@ -12,7 +12,7 @@ import { ModGoalsController } from './mod-goals.controller';
 import { DataExportService, FavoritesService, GoalsService, LinkedAccountsService, MyMarksService, NotificationSettingsService } from './services';
 
 @Module({
-  imports: [UserLestaAccountsModule, BillingCoreModule, PlayersModule, AnalyticsModule, ModModule, ModSyncModule],
+  imports: [AccountsModule, BillingCoreModule, PlayersModule, AnalyticsModule, ModModule, ModSyncModule],
   controllers: [MeController, DataExportController, ModGoalsController],
   providers: [DataExportService, FavoritesService, GoalsService, NotificationSettingsService, LinkedAccountsService, MyMarksService]
 })

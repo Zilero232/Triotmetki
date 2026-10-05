@@ -49,3 +49,12 @@ export type FailDeliveryInput = {
   responseBody: string | null;
   isFinal: boolean;
 };
+
+export type SessionEndedEvent = {
+  sessionId: string;
+  accountId: bigint;
+};
+
+export type SessionEventsSink = {
+  ended: (event: SessionEndedEvent) => Promise<void>;
+};

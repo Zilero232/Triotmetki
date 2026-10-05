@@ -4,7 +4,8 @@ import type { LestaAccountStore, LinkLestaAccountInput } from '../../../lib/auth
 import type { LestaClient } from '../../../lib/lesta';
 
 import { errorMessage } from '../../../common/lib';
-import { LESTA_CLIENT, LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService, TokenCipherService, USER_LESTA_ACCOUNT_ORDER } from '../../../core';
+import { LESTA_CLIENT, LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService, TokenCipherService } from '../../../core';
+import { UserAccountsReaderService } from '../../accounts';
 import { EntitlementsService } from '../../billing';
 import { CollectorProducerService, PurgeGuardService } from '../../collector';
 
@@ -18,7 +19,8 @@ export class LestaAccountsService implements LestaAccountStore {
     private readonly entitlements: EntitlementsService,
     @Inject(LESTA_CLIENT) private readonly lesta: LestaClient,
     private readonly cipher: TokenCipherService,
-    private readonly purgeGuard: PurgeGuardService
+    private readonly purgeGuard: PurgeGuardService,
+    private readonly accounts: UserAccountsReaderService
   ) {}
 
   async findUserId(accountId: number): Promise<string | null> {
@@ -28,13 +30,9 @@ export class LestaAccountsService implements LestaAccountStore {
   }
 
   async primaryAccountId(userId: string): Promise<number | null> {
-    const link = await this.prisma.userLestaAccount.findFirst({
-      where: { userId },
-      orderBy: USER_LESTA_ACCOUNT_ORDER,
-      select: { accountId: true }
-    });
+    const accountId = await this.accounts.primaryAccountId(userId);
 
-    return link ? Number(link.accountId) : null;
+    return accountId === null ? null : Number(accountId);
   }
 
   async link({ userId, accountId, nickname, accessToken, expiresAt }: LinkLestaAccountInput): Promise<boolean> {

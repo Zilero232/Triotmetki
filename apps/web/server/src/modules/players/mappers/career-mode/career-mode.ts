@@ -3,7 +3,8 @@ import type { CareerModeLine, CareerModeTank } from '@otmetki/schemas';
 import type { BattleStatsBlock } from '../../../../lib/lesta';
 import type { CareerTotals, StoredModeTotals, ToCareerModeLineInput, ToCareerModeTankInput } from './career-mode.types';
 
-import { CAREER_MODE_FROM_DB, percentOf, ratio, toIso } from '../../../../common/lib';
+import { percentOf, ratio, toIso } from '../../../../common/lib';
+import { CAREER_MODE_FROM_DB } from '../../../collector';
 
 export const careerTotalsFromStored = (row: StoredModeTotals): CareerTotals => ({
   battles: row.battles,

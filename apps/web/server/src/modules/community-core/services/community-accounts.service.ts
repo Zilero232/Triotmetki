@@ -5,27 +5,26 @@ import type { AccountOfInput } from '../community-core.types';
 import type { PlayerStats } from '../lib';
 
 import { AppForbiddenException } from '../../../common/exceptions';
-import { PrismaService, USER_LESTA_ACCOUNT_ORDER } from '../../../core';
+import { PrismaService } from '../../../core';
+import { UserAccountsReaderService } from '../../accounts';
 import { toPlayerStats } from '../mappers';
 
 @Injectable()
 export class CommunityAccountsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly accounts: UserAccountsReaderService
+  ) {}
 
   async accountOf({ userId, accountId }: AccountOfInput): Promise<bigint> {
-    const links = await this.prisma.userLestaAccount.findMany({
-      where: { userId },
-      orderBy: USER_LESTA_ACCOUNT_ORDER,
-      select: { accountId: true }
-    });
+    const linked = await this.accounts.accountIds(userId);
+    const account = accountId === undefined ? linked[0] : linked.find((candidate) => candidate === BigInt(accountId));
 
-    const link = accountId === undefined ? links[0] : links.find((candidate) => candidate.accountId === BigInt(accountId));
-
-    if (!link) {
+    if (account === undefined) {
       throw new AppForbiddenException('FORBIDDEN', 'Link this game account with Lesta ID first');
     }
 
-    return link.accountId;
+    return account;
   }
 
   async statsOf(accountIds: readonly bigint[]): Promise<Map<bigint, PlayerStats>> {

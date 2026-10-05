@@ -5,10 +5,10 @@ import type { Arena } from '../../../../../generated';
 import type { AnalyticsQueries } from '../../providers/analytics-queries.provider.types';
 
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
-import { ExpectedValuesService, VehicleCatalogService } from '../../../reference';
+import { ExpectedValuesReaderService, VehicleCatalogService } from '../../../reference';
 import { MAP_ADVISOR } from '../../config';
 import { MapAdvisorReaderService } from '../map-advisor-reader.service';
-import { OwnAccountService } from '../own-account.service';
+import { OwnAccountReaderService } from '../own-account-reader.service';
 import { catalogOf, rawRow, vehicle } from './analytics.fixtures';
 
 const heavy = vehicle({ tankId: 1, type: 'heavyTank' });
@@ -28,8 +28,8 @@ const setup = (rows: MapRow[]) => {
   const prisma = mockPrismaService();
   const queries = mock<AnalyticsQueries>();
   const catalog = mock<VehicleCatalogService>();
-  const expected = mock<ExpectedValuesService>();
-  const accounts = mock<OwnAccountService>();
+  const expected = mock<ExpectedValuesReaderService>();
+  const accounts = mock<OwnAccountReaderService>();
 
   accounts.resolve.mockResolvedValue(7n);
   expected.all.mockResolvedValue(new Map());

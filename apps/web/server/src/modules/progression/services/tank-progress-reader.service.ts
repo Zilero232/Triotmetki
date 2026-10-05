@@ -6,7 +6,8 @@ import { groupBy, sortBy } from 'remeda';
 import type { UserAtInput } from '../progression.types';
 
 import { toIsoDate, weekWindow } from '../../../common/lib';
-import { PrismaService, UserLestaAccountsService } from '../../../core';
+import { PrismaService } from '../../../core';
+import { UserAccountsReaderService } from '../../accounts';
 import { EntitlementsService } from '../../billing';
 import { PROGRESS_LIST } from '../config/tank-challenges.constants';
 import { toTankChallengeSet, toTankProgressItem } from '../mappers/tank-progress-view.mappers';
@@ -16,7 +17,7 @@ export class TankProgressReaderService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly entitlements: EntitlementsService,
-    private readonly lestaAccounts: UserLestaAccountsService
+    private readonly lestaAccounts: UserAccountsReaderService
   ) {}
 
   async list(userId: string): Promise<TankProgressList> {

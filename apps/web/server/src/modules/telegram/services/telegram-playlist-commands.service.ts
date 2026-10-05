@@ -4,7 +4,7 @@ import { PLAYLIST } from '@otmetki/schemas';
 import type { BotContext, PlaylistReasonInput } from '../telegram.types';
 
 import { AppConfigService } from '../../../config';
-import { PlaylistService } from '../../analytics';
+import { PlaylistReaderService } from '../../analytics';
 import { SITE_LINKS } from '../../bot-commands';
 import { openButton, siteUrl } from '../lib';
 
@@ -12,7 +12,7 @@ import { openButton, siteUrl } from '../lib';
 export class TelegramPlaylistCommandsService {
   constructor(
     private readonly config: AppConfigService,
-    private readonly playlists: PlaylistService
+    private readonly playlists: PlaylistReaderService
   ) {}
 
   async next(ctx: BotContext): Promise<void> {

@@ -4,8 +4,8 @@ import { subDays } from 'date-fns';
 
 import type { MetaQueries } from '../meta.types';
 
-import { bonusTypesOfMode } from '../../../../../common/lib';
 import { PrismaService } from '../../../../../core';
+import { bonusTypesOfMode } from '../../../../reference';
 import { MODE_META_AGGREGATE } from '../config/meta.constants';
 import { META_TOKENS } from '../config/tokens.constants';
 import { toModeRecord } from '../mappers/mode-meta.mappers';

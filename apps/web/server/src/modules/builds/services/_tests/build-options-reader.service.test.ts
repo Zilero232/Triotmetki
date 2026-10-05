@@ -5,7 +5,7 @@ import type { CrewSkill, Provision } from '../../../../../generated';
 
 import { loadCatalog, loadIs } from '../../../gamedata/lib/_tests/fixtures';
 import { BUILD_SLOTS } from '../../config/provisions.constants';
-import { BuildDataService } from '../build-data.service';
+import { BuildDataReaderService } from '../build-data-reader.service';
 import { BuildOptionsReaderService } from '../build-options-reader.service';
 
 const is = loadIs();
@@ -45,7 +45,7 @@ const skill = ({ name, roles, isCommon }: { name: string; roles: string[]; isCom
 });
 
 const createService = () => {
-  const data = mock<BuildDataService>();
+  const data = mock<BuildDataReaderService>();
   const [device] = catalog.optionalDevices;
   const [consumable] = catalog.equipment.filter((item) => item.kind === 'consumable');
 

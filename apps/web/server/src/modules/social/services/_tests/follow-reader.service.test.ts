@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { Follow, Player } from '../../../../../generated';
-import type { UserLestaAccountsService } from '../../../../core';
+import type { UserAccountsReaderService } from '../../../accounts';
 
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { FollowReaderService } from '../follow-reader.service';
@@ -25,7 +25,7 @@ const follow = (targetId: bigint): Follow => ({
 
 const createService = () => {
   const prisma = mockPrismaService();
-  const accounts = mock<UserLestaAccountsService>();
+  const accounts = mock<UserAccountsReaderService>();
 
   prisma.follow.findMany.mockResolvedValue([]);
   prisma.player.findMany.mockResolvedValue([]);

@@ -21,7 +21,7 @@ import { EntitlementsService } from '../../billing';
 import { VehicleCatalogService } from '../../reference';
 import { USAGE_DEVICE, UsageActorGuard, UsageMeterService } from '../../usage';
 import { ARMOR_STORAGE } from '../config';
-import { TankArmorReaderService, TankDetailService } from '../services';
+import { TankArmorReaderService, TankDetailReaderService } from '../services';
 import { TankArmorController } from '../tank-armor.controller';
 
 const USER_HEADER = 'x-test-user';
@@ -55,7 +55,7 @@ const SUMMARY = {
 
 const prisma = mockDeep<PrismaService>();
 const catalog = mock<VehicleCatalogService>();
-const details = mock<TankDetailService>();
+const details = mock<TankDetailReaderService>();
 const entitlements = mock<EntitlementsService>();
 const config = mock<AppConfigService>();
 const storage: ArmorStorage = { put: async () => undefined, remove: async () => undefined, get: async () => new Uint8Array([1, 2, 3]) };
@@ -84,7 +84,7 @@ beforeAll(async () => {
       UsageActorGuard,
       { provide: PrismaService, useValue: prisma },
       { provide: VehicleCatalogService, useValue: catalog },
-      { provide: TankDetailService, useValue: details },
+      { provide: TankDetailReaderService, useValue: details },
       { provide: EntitlementsService, useValue: entitlements },
       { provide: AppConfigService, useValue: config },
       { provide: ARMOR_STORAGE, useValue: storage },

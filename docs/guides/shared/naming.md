@@ -26,7 +26,7 @@ Server app (`apps/web/server`) and packages — kebab-case for every file and fo
 | What                     | How                               | Example                                               |
 | ------------------------ | --------------------------------- | ----------------------------------------------------- |
 | Module / segment folder  | kebab-case                        | `best-battles/`, `mappers/`, `queries/`              |
-| Service / processor file | `<domain>.service.ts`, `.processor.ts` | `player-summary.service.ts`, `billing.processor.ts` |
+| Service / processor file | `<domain>.service.ts`, `.processor.ts` | `player-summary-reader.service.ts`, `billing.processor.ts` |
 | Mapper                   | `mappers/<name>/<name>.ts`, `to<Thing>` | `mappers/leaderboard-entry` → `toLeaderboardEntry` |
 | Select / query           | `SCREAMING_CASE` / `<name>Sql`     | `PROFILE_CARD_INCLUDE`, `playersSql`                 |
 | Config file              | `config/<concern>.constants.ts`   | `config/queue.constants.ts`                           |

@@ -4,10 +4,10 @@ import { addHours, max } from 'date-fns';
 import type { EntryScore, ModBattlesInput, ScoreCompetitionInput, ScoreEntryInput, SnapshotScoreInput } from '../competitions.types';
 import type { CompetitionBattleRow, CompetitionBattlesQueries } from '../queries/competition-battles.types';
 
-import { bonusTypesOfMode, moscowDayStart } from '../../../common/lib';
+import { moscowDayStart } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { NotificationService } from '../../notifications';
-import { VehicleCatalogService } from '../../reference';
+import { bonusTypesOfMode, VehicleCatalogService } from '../../reference';
 import { COMPETITION_RUN, NO_SCORE } from '../config/competitions.constants';
 import { COMPETITION_QUERY_TOKENS } from '../config/queries.constants';
 import { rankTeams, readScoring, scoreBattles, scoreTotals, teamTotals } from '../lib/competition-scoring/competition-scoring';

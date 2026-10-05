@@ -3,8 +3,8 @@ import { entries } from 'remeda';
 
 import type { BonusMode, MapStatsWindowInput } from './map-stats.types';
 
-import { GAME_MODE_BONUS_TYPES } from '../../../common/lib';
 import { moscowHour, percentile } from '../../../core';
+import { GAME_MODE_BONUS_TYPES } from '../../reference';
 import { MAP_STATS } from '../config/map-stats.constants';
 
 const BONUS_MODES: readonly BonusMode[] = entries(GAME_MODE_BONUS_TYPES).flatMap(([mode, types]) =>

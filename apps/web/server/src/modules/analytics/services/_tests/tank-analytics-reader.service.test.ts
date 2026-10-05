@@ -5,9 +5,9 @@ import type { Battle } from '../../../../../generated';
 import type { AnalyticsQueries } from '../../providers/analytics-queries.provider.types';
 
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
-import { ExpectedValuesService, VehicleCatalogService } from '../../../reference';
+import { ExpectedValuesReaderService, VehicleCatalogService } from '../../../reference';
 import { ANALYTICS_SQL } from '../../config';
-import { OwnAccountService } from '../own-account.service';
+import { OwnAccountReaderService } from '../own-account-reader.service';
 import { TankAnalyticsReaderService } from '../tank-analytics-reader.service';
 import { catalogOf, rawRow, vehicle } from './analytics.fixtures';
 
@@ -18,8 +18,8 @@ const moeBattle = (startedAt: string, moePercent: number | null) => Object.assig
 const setup = () => {
   const prisma = mockPrismaService();
   const catalog = mock<VehicleCatalogService>();
-  const expected = mock<ExpectedValuesService>();
-  const accounts = mock<OwnAccountService>();
+  const expected = mock<ExpectedValuesReaderService>();
+  const accounts = mock<OwnAccountReaderService>();
   const queries = mock<AnalyticsQueries>();
 
   accounts.resolve.mockResolvedValue(7n);

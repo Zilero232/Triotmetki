@@ -17,7 +17,7 @@ import { AppForbiddenException, AppNotFoundException } from '../../../../common/
 import { AppConfigService } from '../../../../config';
 import { LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService } from '../../../../core';
 import { EntitlementsService } from '../../../billing';
-import { CosmeticsService } from '../../../progression';
+import { CosmeticsReaderService } from '../../../progression';
 import { OVERLAY_KIND_TO_DB } from '../config/overlay.constants';
 import { pausedOverlayIds } from '../lib/overlay-pause';
 import { toOverlayView } from '../mappers/overlay.mappers';
@@ -30,7 +30,7 @@ export class OverlayService {
     private readonly config: AppConfigService,
     private readonly entitlements: EntitlementsService,
     private readonly data: OverlayDataService,
-    private readonly cosmetics: CosmeticsService
+    private readonly cosmetics: CosmeticsReaderService
   ) {}
 
   async list(userId: string): Promise<OverlayView[]> {

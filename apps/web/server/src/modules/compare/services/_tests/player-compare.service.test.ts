@@ -5,7 +5,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { PlayerTank } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { PlayerResolverService, PlayerSummaryService } from '../../../players';
+import type { PlayerResolverService, PlayerSummaryReaderService } from '../../../players';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
 import { PlayerCompareService } from '../player-compare.service';
@@ -13,7 +13,7 @@ import { PlayerCompareService } from '../player-compare.service';
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
   const resolver = mock<PlayerResolverService>();
-  const summaries = mock<PlayerSummaryService>();
+  const summaries = mock<PlayerSummaryReaderService>();
 
   resolver.ensure.mockImplementation((accountId) => Promise.resolve(accountId));
   summaries.profile.mockResolvedValue(mock<PlayerProfile>());

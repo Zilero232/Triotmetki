@@ -7,7 +7,7 @@ import { subDays } from 'date-fns';
 import type { MoeCurveQueries } from '../queries/moe-curve.types';
 
 import { PrismaService } from '../../../core';
-import { ThresholdsService, toMoeThreshold } from '../../reference';
+import { ThresholdsReaderService, toMoeThreshold } from '../../reference';
 import { MOE_CURVE_QUERIES, MOE_CURVE_SQL } from '../config/marks.constants';
 import { curvePoints, curveSteps } from '../lib/moe-curve/moe-curve';
 import { moeCurveQueries } from '../queries/moe-curve.queries';
@@ -16,7 +16,7 @@ import { moeCurveQueries } from '../queries/moe-curve.queries';
 export class MoeCurveReaderService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly thresholds: ThresholdsService,
+    private readonly thresholds: ThresholdsReaderService,
     @Optional() @Inject(MOE_CURVE_QUERIES) private readonly queries: MoeCurveQueries = moeCurveQueries
   ) {}
 

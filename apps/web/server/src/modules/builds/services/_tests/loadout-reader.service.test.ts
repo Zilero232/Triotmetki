@@ -7,7 +7,7 @@ import { mock } from 'vitest-mock-extended';
 import type { Provision } from '../../../../../generated';
 
 import { loadCatalog, loadIs } from '../../../gamedata/lib/_tests/fixtures';
-import { BuildDataService } from '../build-data.service';
+import { BuildDataReaderService } from '../build-data-reader.service';
 import { LoadoutReaderService } from '../loadout-reader.service';
 
 const is = loadIs();
@@ -45,7 +45,7 @@ const request = (loadout: Partial<ParsedLoadoutRequest['loadout']>, extra: Parti
   loadoutRequestSchema.parse({ loadout: { equipment: [], consumables: [], crewSkills: {}, ...loadout }, ...extra });
 
 const createService = (provisions: Provision[]) => {
-  const data = mock<BuildDataService>();
+  const data = mock<BuildDataReaderService>();
 
   data.vehicle.mockResolvedValue(is);
   data.provisionsByIds.mockImplementation(async (ids) => provisions.filter((row) => ids.includes(row.provisionId)));

@@ -3,7 +3,8 @@ import type { ClanSearchResult, MapSearchResult, PlayerSearchResult } from '@otm
 import type { AccountListItem } from '../../../lib/lesta';
 import type { ClanMatchRow, MapMatchRow, PlayerMatchRow } from '../queries/search.types';
 
-import { clanEmblem, emptyRating, ratingValue } from '../../../common/lib';
+import { emptyRating, ratingValue } from '../../../common/lib';
+import { clanEmblem } from '../../clans';
 
 export const toClanSearchResult = (row: ClanMatchRow): ClanSearchResult => ({
   kind: 'clan',

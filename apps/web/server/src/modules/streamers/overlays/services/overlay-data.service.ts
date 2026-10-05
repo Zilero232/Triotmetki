@@ -10,7 +10,7 @@ import type { OverlayData, PreviewOverlayRequest } from '../overlays.types';
 import { AppNotFoundException } from '../../../../common/exceptions';
 import { PrismaService } from '../../../../core';
 import { EntitlementsService } from '../../../billing';
-import { CosmeticsService } from '../../../progression';
+import { CosmeticsReaderService } from '../../../progression';
 import { OVERLAY, OVERLAY_KIND_FROM_DB } from '../config/overlay.constants';
 import { OverlayStatsReaderService } from './overlay-stats-reader.service';
 
@@ -20,7 +20,7 @@ export class OverlayDataService {
     private readonly prisma: PrismaService,
     private readonly stats: OverlayStatsReaderService,
     private readonly entitlements: EntitlementsService,
-    private readonly cosmetics: CosmeticsService,
+    private readonly cosmetics: CosmeticsReaderService,
     @Inject(CACHE_MANAGER) private readonly cache: Cache
   ) {}
 

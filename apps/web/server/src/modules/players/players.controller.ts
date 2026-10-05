@@ -36,15 +36,15 @@ import {
 import {
   PlayerAchievementsReaderService,
   PlayerCareerReaderService,
-  PlayerHistoryService,
+  PlayerHistoryReaderService,
   PlayerInsightsReaderService,
-  PlayerMarksService,
+  PlayerMarksReaderService,
   PlayerOfficialRatingsReaderService,
   PlayerPlaytimeReaderService,
   PlayerResolverService,
-  PlayerSessionsService,
-  PlayerSummaryService,
-  PlayerTanksService,
+  PlayerSessionsReaderService,
+  PlayerSummaryReaderService,
+  PlayerTanksReaderService,
   PlayerViewsService
 } from './services';
 
@@ -55,11 +55,11 @@ import {
 export class PlayersController {
   constructor(
     private readonly resolver: PlayerResolverService,
-    private readonly summary: PlayerSummaryService,
-    private readonly tanks: PlayerTanksService,
-    private readonly history: PlayerHistoryService,
-    private readonly sessions: PlayerSessionsService,
-    private readonly marksService: PlayerMarksService,
+    private readonly summary: PlayerSummaryReaderService,
+    private readonly tanks: PlayerTanksReaderService,
+    private readonly history: PlayerHistoryReaderService,
+    private readonly sessions: PlayerSessionsReaderService,
+    private readonly marksService: PlayerMarksReaderService,
     private readonly insightsService: PlayerInsightsReaderService,
     private readonly playtimeService: PlayerPlaytimeReaderService,
     private readonly views: PlayerViewsService,

@@ -14,7 +14,7 @@ import { AppTooManyRequestsException, AppUnauthorizedException } from '../../../
 import { AllExceptionsFilter } from '../../../common/filters';
 import { REDIS } from '../../../core';
 import { ApiKeysService } from '../../developer';
-import { LeaderboardService } from '../../leaderboards';
+import { LeaderboardReaderService } from '../../leaderboards';
 import { API_RATE_LIMIT } from '../config';
 import { ApiKeyGuard } from '../guards';
 import { ApiUsageInterceptor } from '../interceptors';
@@ -29,7 +29,7 @@ const leaderboard = { scope: 'players', metric: 'wn8', period: '30d', total: 0, 
 
 const keys = mock<ApiKeysService>();
 const usage = mock<ApiUsageService>();
-const leaderboards = mock<LeaderboardService>();
+const leaderboards = mock<LeaderboardReaderService>();
 
 keys.verify.mockImplementation(async (raw: string) => {
   if (raw === EXHAUSTED_KEY) {
@@ -59,7 +59,7 @@ describe('/v1 behind the API key guard', () => {
         { provide: REDIS, useValue: new RedisMock() },
         { provide: ApiKeysService, useValue: keys },
         { provide: ApiUsageService, useValue: usage },
-        { provide: LeaderboardService, useValue: leaderboards },
+        { provide: LeaderboardReaderService, useValue: leaderboards },
         { provide: APP_FILTER, useClass: AllExceptionsFilter },
         { provide: APP_PIPE, useClass: ZodValidationPipe },
         { provide: APP_INTERCEPTOR, useClass: ZodSerializerInterceptor }

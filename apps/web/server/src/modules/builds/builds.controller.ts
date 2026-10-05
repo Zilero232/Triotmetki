@@ -8,7 +8,7 @@ import { CACHE_TTL } from '../../common/cache';
 import { OptionalUserId } from '../../common/decorators';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
 import { RequiresPlus } from '../billing';
-import { TankDetailService } from '../tanks';
+import { TankDetailReaderService } from '../tanks';
 import { RECOMMENDED_BUILD } from './config/recommended.constants';
 import {
   BuildAdviceDto,
@@ -34,7 +34,7 @@ import { RecommendedBuildReaderService } from './services/recommended-build-read
 @Controller('tanks')
 export class BuildsController {
   constructor(
-    private readonly tanks: TankDetailService,
+    private readonly tanks: TankDetailReaderService,
     private readonly buildOptions: BuildOptionsReaderService,
     private readonly loadouts: LoadoutReaderService,
     private readonly popularBuilds: PopularBuildsReaderService,

@@ -2,10 +2,10 @@ import { Global, Module } from '@nestjs/common';
 
 import { expectedValuesQueriesProvider } from './providers/expected-values-queries.provider';
 import { thresholdsQueriesProvider } from './providers/thresholds-queries.provider';
-import { BronyaReferencesService } from './services/bronya-references.service';
-import { ExpectedValuesService } from './services/expected-values.service';
-import { OfficialRatingTypesService } from './services/official-rating-types.service';
-import { ThresholdsService } from './services/thresholds.service';
+import { BronyaReferencesReaderService } from './services/bronya-references-reader.service';
+import { ExpectedValuesReaderService } from './services/expected-values-reader.service';
+import { OfficialRatingTypesReaderService } from './services/official-rating-types-reader.service';
+import { ThresholdsReaderService } from './services/thresholds-reader.service';
 import { VehicleCatalogService } from './services/vehicle-catalog.service';
 
 @Global()
@@ -14,11 +14,17 @@ import { VehicleCatalogService } from './services/vehicle-catalog.service';
     expectedValuesQueriesProvider,
     thresholdsQueriesProvider,
     VehicleCatalogService,
-    ExpectedValuesService,
-    ThresholdsService,
-    BronyaReferencesService,
-    OfficialRatingTypesService
+    ExpectedValuesReaderService,
+    ThresholdsReaderService,
+    BronyaReferencesReaderService,
+    OfficialRatingTypesReaderService
   ],
-  exports: [VehicleCatalogService, ExpectedValuesService, ThresholdsService, BronyaReferencesService, OfficialRatingTypesService]
+  exports: [
+    VehicleCatalogService,
+    ExpectedValuesReaderService,
+    ThresholdsReaderService,
+    BronyaReferencesReaderService,
+    OfficialRatingTypesReaderService
+  ]
 })
 export class ReferenceCoreModule {}

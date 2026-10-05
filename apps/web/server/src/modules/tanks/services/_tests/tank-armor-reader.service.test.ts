@@ -8,7 +8,7 @@ import type { PrismaService } from '../../../../core';
 import type { ArmorStorage } from '../../../gamedata';
 import type { CatalogEntry, VehicleCatalogService } from '../../../reference';
 import type { UsageMeterService } from '../../../usage';
-import type { TankDetailService } from '../tank-detail.service';
+import type { TankDetailReaderService } from '../tank-detail-reader.service';
 
 import { AppForbiddenException, AppNotFoundException } from '../../../../common/exceptions';
 import { ARMOR_VIEWER } from '../../../../config';
@@ -45,7 +45,7 @@ const ACTOR = { userId: 'user-1', deviceId: null, ipHash: null };
 const createService = ({ row, stored, readError }: { row: VehicleArmorModel | null; stored?: Uint8Array; readError?: Error }) => {
   const prisma = mockDeep<PrismaService>();
   const catalog = mock<VehicleCatalogService>();
-  const details = mock<TankDetailService>();
+  const details = mock<TankDetailReaderService>();
   const usage = mock<UsageMeterService>();
 
   const storage: ArmorStorage = {

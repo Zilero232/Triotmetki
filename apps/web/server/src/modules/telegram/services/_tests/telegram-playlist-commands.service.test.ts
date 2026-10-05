@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { AppConfigService } from '../../../../config';
-import type { PlaylistService } from '../../../analytics';
+import type { PlaylistReaderService } from '../../../analytics';
 import type { BotContext, LinkedChat } from '../../telegram.types';
 
 import { unknownVehicle } from '../../../reference';
@@ -36,7 +36,7 @@ const playlist = (overrides: Partial<Playlist>): Playlist => ({
 
 const createService = (result: Playlist) => {
   const config = mock<AppConfigService>();
-  const playlists = mock<PlaylistService>();
+  const playlists = mock<PlaylistReaderService>();
 
   config.get.mockReturnValue('https://triotmetki.ru');
   playlists.playlist.mockResolvedValue(result);

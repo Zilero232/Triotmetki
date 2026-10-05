@@ -7,19 +7,19 @@ import type { AnalyticsQueries } from '../providers/analytics-queries.provider.t
 
 import { percentOf } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { ExpectedValuesService, VehicleCatalogService } from '../../reference';
+import { ExpectedValuesReaderService, VehicleCatalogService } from '../../reference';
 import { ANALYTICS_QUERIES, ANALYTICS_SQL, ANALYTICS_WINDOW } from '../config';
 import { breakdown, periodStart, splitPlaytime, statLine, tilt, trendGranularity, trendPoints } from '../lib';
 import { toAggregateRow } from '../mappers';
-import { OwnAccountService } from './own-account.service';
+import { OwnAccountReaderService } from './own-account-reader.service';
 
 @Injectable()
 export class AnalyticsOverviewReaderService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService,
-    private readonly expected: ExpectedValuesService,
-    private readonly accounts: OwnAccountService,
+    private readonly expected: ExpectedValuesReaderService,
+    private readonly accounts: OwnAccountReaderService,
     @Inject(ANALYTICS_QUERIES) private readonly queries: AnalyticsQueries
   ) {}
 

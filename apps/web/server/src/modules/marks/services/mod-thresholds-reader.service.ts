@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 
 import type { ModMoeThresholds } from '../marks.types';
 
-import { ThresholdsService } from '../../reference';
+import { ThresholdsReaderService } from '../../reference';
 import { toModMoeThresholds } from '../mappers/mod-thresholds.mappers';
 import { MoeCurveReaderService } from './moe-curve-reader.service';
 
 @Injectable()
 export class ModThresholdsReaderService {
   constructor(
-    private readonly thresholds: ThresholdsService,
+    private readonly thresholds: ThresholdsReaderService,
     private readonly curves: MoeCurveReaderService
   ) {}
 

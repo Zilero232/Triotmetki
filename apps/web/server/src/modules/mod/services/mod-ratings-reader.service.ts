@@ -7,9 +7,9 @@ import { indexBy, unique } from 'remeda';
 import type { ModOverview, ModTankRatings, TankRatingsInput } from '../mod.types';
 import type { ModRatingsQueries } from '../queries/ratings.types';
 
-import { bonusTypesOfMode, toNumber } from '../../../common/lib';
+import { toNumber } from '../../../common/lib';
 import { PrismaService } from '../../../core';
-import { ExpectedValuesService } from '../../reference';
+import { bonusTypesOfMode, ExpectedValuesReaderService } from '../../reference';
 import { MOD_RATINGS_READ } from '../config/ratings.constants';
 import { MOD_TOKENS } from '../config/tokens.constants';
 import { toModOverview, toModTankRating } from '../mappers/ratings.mappers';
@@ -26,7 +26,7 @@ import {
 export class ModRatingsReaderService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly expectedValues: ExpectedValuesService,
+    private readonly expectedValues: ExpectedValuesReaderService,
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
     @Inject(MOD_TOKENS.ratingsQueries) private readonly queries: ModRatingsQueries
   ) {}

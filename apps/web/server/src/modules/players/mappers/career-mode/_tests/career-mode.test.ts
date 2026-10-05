@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { CAREER_MODE_FROM_DB } from '../../../../../common/lib';
+import { CAREER_MODE_FROM_DB } from '../../../../collector';
 import { careerTotalsFromStored, toCareerModeLine } from '../career-mode';
 
 const totals = careerTotalsFromStored({

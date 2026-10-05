@@ -5,7 +5,7 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
-import { ClanListService, ClanPageService, ClanResolverService } from '../clans';
+import { ClanListReaderService, ClanPageReaderService, ClanResolverService } from '../clans';
 import { PublicApi } from './decorators';
 import {
   V1ClanEventsPageDto,
@@ -23,8 +23,8 @@ import {
 export class V1ClansController {
   constructor(
     private readonly resolver: ClanResolverService,
-    private readonly pages: ClanPageService,
-    private readonly lists: ClanListService
+    private readonly pages: ClanPageReaderService,
+    private readonly lists: ClanListReaderService
   ) {}
 
   @Get()

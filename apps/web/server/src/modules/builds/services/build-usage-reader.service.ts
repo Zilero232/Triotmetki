@@ -7,14 +7,14 @@ import type { BuildHistoryInput, BuildUsageInput } from '../builds.types';
 import { PrismaService } from '../../../core';
 import { RECOMMENDED_BUILD } from '../config/recommended.constants';
 import { historyEntryOf, shellInfoOf, toBuildUsage } from '../mappers/build-usage-view.mappers';
-import { BuildDataService } from './build-data.service';
+import { BuildDataReaderService } from './build-data-reader.service';
 import { BuildOptionsReaderService } from './build-options-reader.service';
 
 @Injectable()
 export class BuildUsageReaderService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly data: BuildDataService,
+    private readonly data: BuildDataReaderService,
     private readonly buildOptions: BuildOptionsReaderService
   ) {}
 

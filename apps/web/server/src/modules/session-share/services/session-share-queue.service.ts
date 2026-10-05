@@ -2,7 +2,7 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
 import { Queue } from 'bullmq';
 
-import type { SessionEndedEvent, SessionEventsSink } from '../../../core';
+import type { SessionEndedEvent, SessionEventsSink } from '../../developer';
 import type { SessionSharePayload } from '../config/session-share-queue.types';
 import type { EnqueueShareInput } from '../session-share.types';
 

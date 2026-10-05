@@ -25,12 +25,12 @@ import {
   TopPlayersQueryDto
 } from './dto';
 import {
-  TankDetailService,
+  TankDetailReaderService,
   TankEconomyReaderService,
   TankPatchesReaderService,
-  TankStatsService,
+  TankStatsReaderService,
   TankTrendReaderService,
-  TierListService,
+  TierListReaderService,
   TopPlayersReaderService
 } from './services';
 
@@ -40,9 +40,9 @@ import {
 @Controller('tanks')
 export class TanksController {
   constructor(
-    private readonly stats: TankStatsService,
-    private readonly tierLists: TierListService,
-    private readonly details: TankDetailService,
+    private readonly stats: TankStatsReaderService,
+    private readonly tierLists: TierListReaderService,
+    private readonly details: TankDetailReaderService,
     private readonly topPlayers: TopPlayersReaderService,
     private readonly trends: TankTrendReaderService,
     private readonly patchNotes: TankPatchesReaderService,

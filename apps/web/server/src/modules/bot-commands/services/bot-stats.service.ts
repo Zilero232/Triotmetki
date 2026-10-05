@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import type { ClanCard, MarksCard, PlayerCard, SessionCard, TankCard, TopLine } from '../bot-commands.types';
 
 import { PrismaService } from '../../../core';
-import { PlayerResolverService, PlayerSummaryService } from '../../players';
-import { ThresholdsService, VehicleCatalogService } from '../../reference';
+import { PlayerResolverService, PlayerSummaryReaderService } from '../../players';
+import { ThresholdsReaderService, VehicleCatalogService } from '../../reference';
 import { BOT_REPLY_LIMITS } from '../config';
 import { findTanks } from '../lib';
 
@@ -13,9 +13,9 @@ export class BotStatsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly resolver: PlayerResolverService,
-    private readonly summaries: PlayerSummaryService,
+    private readonly summaries: PlayerSummaryReaderService,
     private readonly catalog: VehicleCatalogService,
-    private readonly thresholds: ThresholdsService
+    private readonly thresholds: ThresholdsReaderService
   ) {}
 
   resolve(nickname: string): Promise<bigint> {

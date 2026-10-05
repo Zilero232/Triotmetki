@@ -6,7 +6,7 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
-import { TankDetailService } from '../tanks';
+import { TankDetailReaderService } from '../tanks';
 import { TankMathDto, TankMathParamsDto } from './dto';
 import { TankMathService } from './services';
 
@@ -15,7 +15,7 @@ import { TankMathService } from './services';
 @Controller('tank-math')
 export class TankMathController {
   constructor(
-    private readonly tanks: TankDetailService,
+    private readonly tanks: TankDetailReaderService,
     private readonly math: TankMathService
   ) {}
 

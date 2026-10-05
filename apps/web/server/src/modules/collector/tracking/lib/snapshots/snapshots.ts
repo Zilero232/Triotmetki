@@ -11,7 +11,7 @@ import type {
   TankSnapshotRowInput
 } from './snapshots.types';
 
-import { careerSourceFromBlock } from '../../../../../common/lib';
+import { careerSourceFromBlock } from '../career-source/career-source';
 
 export const modeBlocks = (source: BlockSource): ModeBlock[] => {
   const blocks: ModeBlock[] = [{ mode: 'all', block: source.all }];

@@ -1,11 +1,15 @@
 import { Inject, Injectable, Optional } from '@nestjs/common';
 import { subMinutes } from 'date-fns';
 
-import type { SessionEventsSink, WebhookEmitter } from '../../../core';
+import type { WebhookEmitter } from '../../webhooks';
+import type { SessionEventsSink } from '../developer.types';
 
-import { isSessionEnded, percentOf, ratio, toNumber } from '../../../common/lib';
-import { PrismaService, SESSION_EVENTS, WEBHOOK_EMITTER } from '../../../core';
+import { percentOf, ratio, toNumber } from '../../../common/lib';
+import { PrismaService } from '../../../core';
+import { WEBHOOK_EMITTER } from '../../webhooks';
 import { SESSION_CLOSE } from '../config';
+import { SESSION_EVENTS } from '../config/session-events.constants';
+import { isSessionEnded } from '../lib/session-end/session-end';
 
 @Injectable()
 export class SessionCloseService {

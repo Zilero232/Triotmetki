@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 
-import { WEBHOOK_EMITTER } from '../../core';
+import { WEBHOOK_EMITTER } from '../webhooks';
 import { WebhookEmitterService } from './services';
 
 @Global()

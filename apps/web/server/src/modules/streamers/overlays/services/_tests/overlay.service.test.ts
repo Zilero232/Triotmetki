@@ -4,7 +4,7 @@ import { mock } from 'vitest-mock-extended';
 
 import type { AppConfigService } from '../../../../../config';
 import type { EntitlementsService } from '../../../../billing';
-import type { CosmeticsService } from '../../../../progression';
+import type { CosmeticsReaderService } from '../../../../progression';
 import type { OverlayDataService } from '../overlay-data.service';
 
 import { AppForbiddenException } from '../../../../../common/exceptions';
@@ -20,7 +20,12 @@ const createService = () => {
 
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
 
-  return { service: new OverlayService(prisma, mock<AppConfigService>(), entitlements, data, mock<CosmeticsService>()), prisma, data, entitlements };
+  return {
+    service: new OverlayService(prisma, mock<AppConfigService>(), entitlements, data, mock<CosmeticsReaderService>()),
+    prisma,
+    data,
+    entitlements
+  };
 };
 
 describe('OverlayService.preview', () => {

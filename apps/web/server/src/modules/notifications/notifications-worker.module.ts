@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { UserLestaAccountsModule } from '../../core';
+import { AccountsModule } from '../accounts';
 import { AnalyticsCoreModule } from '../analytics';
 import { HostLookupService } from '../developer';
 import { ReferenceCoreModule } from '../reference';
@@ -25,7 +25,7 @@ import { WebPushService } from './services/web-push.service';
 import { WeeklyDigestService } from './services/weekly-digest.service';
 
 @Module({
-  imports: [NotificationsProducerModule, TelegramCoreModule, ReferenceCoreModule, AnalyticsCoreModule, UserLestaAccountsModule],
+  imports: [NotificationsProducerModule, TelegramCoreModule, ReferenceCoreModule, AnalyticsCoreModule, AccountsModule],
   providers: [
     DeliveryService,
     EmailService,

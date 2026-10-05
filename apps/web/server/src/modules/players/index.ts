@@ -6,10 +6,10 @@ export { tankDeltaBuckets, tankDeltaTotals } from './queries/player-history.quer
 export { playtimeFromBattles, playtimeFromDeltas } from './queries/playtime.queries';
 export {
   PlayerCareerReaderService,
-  PlayerHistoryService,
-  PlayerMarksService,
+  PlayerHistoryReaderService,
+  PlayerMarksReaderService,
   PlayerResolverService,
-  PlayerSessionsService,
-  PlayerSummaryService,
-  PlayerTanksService
+  PlayerSessionsReaderService,
+  PlayerSummaryReaderService,
+  PlayerTanksReaderService
 } from './services';

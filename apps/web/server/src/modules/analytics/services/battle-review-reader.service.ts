@@ -14,14 +14,14 @@ import { UsageMeterService } from '../../usage';
 import { ANALYTICS_QUERIES, BATTLE_REVIEW } from '../config';
 import { readStoredShots, reviewBattle, shotRolls } from '../lib';
 import { toMyBattle, toTankReference } from '../mappers';
-import { OwnAccountService } from './own-account.service';
+import { OwnAccountReaderService } from './own-account-reader.service';
 
 @Injectable()
 export class BattleReviewReaderService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService,
-    private readonly accounts: OwnAccountService,
+    private readonly accounts: OwnAccountReaderService,
     private readonly usage: UsageMeterService,
     @Inject(ANALYTICS_QUERIES) private readonly queries: AnalyticsQueries
   ) {}

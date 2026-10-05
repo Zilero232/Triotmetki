@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { PlaySession } from '../../../../../generated';
-import type { PrismaService, SessionEventsSink, WebhookEmitter } from '../../../../core';
+import type { PrismaService } from '../../../../core';
+import type { WebhookEmitter } from '../../../webhooks';
+import type { SessionEventsSink } from '../../developer.types';
 
 import { SessionCloseService } from '../session-close.service';
 

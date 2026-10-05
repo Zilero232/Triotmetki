@@ -5,6 +5,7 @@ import type { AccountRating, Player, UserLestaAccount } from '../../../../../gen
 import type { PrismaService } from '../../../../core';
 
 import { AppForbiddenException } from '../../../../common/exceptions';
+import { UserAccountsReaderService } from '../../../accounts';
 import { CommunityAccountsService } from '../community-accounts.service';
 
 const link = (accountId: bigint) => mock<UserLestaAccount>({ accountId });
@@ -12,7 +13,7 @@ const link = (accountId: bigint) => mock<UserLestaAccount>({ accountId });
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
 
-  return { service: new CommunityAccountsService(prisma), prisma };
+  return { service: new CommunityAccountsService(prisma, new UserAccountsReaderService(prisma)), prisma };
 };
 
 describe('CommunityAccountsService.accountOf', () => {

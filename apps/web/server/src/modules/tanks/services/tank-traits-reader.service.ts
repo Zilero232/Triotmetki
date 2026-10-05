@@ -7,13 +7,13 @@ import type { FilterByTraitsInput, TraitsEntry } from '../tanks.types';
 
 import { VehicleCatalogService } from '../../reference';
 import { matchesTraits } from '../lib';
-import { TankDifficultyService } from './tank-difficulty.service';
+import { TankDifficultyReaderService } from './tank-difficulty-reader.service';
 
 @Injectable()
 export class TankTraitsReaderService {
   constructor(
     private readonly catalog: VehicleCatalogService,
-    private readonly difficulty: TankDifficultyService
+    private readonly difficulty: TankDifficultyReaderService
   ) {}
 
   async all(): Promise<Map<number, TraitsEntry>> {

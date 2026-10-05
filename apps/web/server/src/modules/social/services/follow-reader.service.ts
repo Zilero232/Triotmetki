@@ -3,14 +3,15 @@ import { unique } from 'remeda';
 
 import type { FollowCircle, FollowView } from '../social.types';
 
-import { PrismaService, UserLestaAccountsService } from '../../../core';
+import { PrismaService } from '../../../core';
+import { UserAccountsReaderService } from '../../accounts';
 import { toFollowView } from '../mappers/follow-view.mappers';
 
 @Injectable()
 export class FollowReaderService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly accounts: UserLestaAccountsService
+    private readonly accounts: UserAccountsReaderService
   ) {}
 
   async list(userId: string): Promise<FollowView[]> {

@@ -5,7 +5,7 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
-import { TankDetailService, TankStatsService, TierListService } from '../tanks';
+import { TankDetailReaderService, TankStatsReaderService, TierListReaderService } from '../tanks';
 import { PublicApi } from './decorators';
 import {
   V1TankDetailDto,
@@ -22,9 +22,9 @@ import {
 @Controller('v1/tanks')
 export class V1TanksController {
   constructor(
-    private readonly stats: TankStatsService,
-    private readonly tierLists: TierListService,
-    private readonly details: TankDetailService
+    private readonly stats: TankStatsReaderService,
+    private readonly tierLists: TierListReaderService,
+    private readonly details: TankDetailReaderService
   ) {}
 
   @Get()

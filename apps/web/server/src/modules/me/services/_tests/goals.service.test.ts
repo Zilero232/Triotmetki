@@ -7,8 +7,8 @@ import type { AccountRating, AccountTankRating, Goal, PlayerTank, UserLestaAccou
 import type { EntitlementsService } from '../../../billing';
 
 import { AppBadRequestException, AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../../common/exceptions';
-import { bonusTypesOfMode } from '../../../../common/lib';
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
+import { bonusTypesOfMode } from '../../../reference';
 import { GOALS, MOD_GOALS } from '../../config';
 import { GoalsService } from '../goals.service';
 

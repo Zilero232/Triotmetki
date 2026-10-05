@@ -3,7 +3,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { NotificationSettings, UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { FirstWinService } from '../../../analytics';
+import type { FirstWinReaderService } from '../../../analytics';
 import type { NotificationService } from '../notification.service';
 
 import { dailyWindow } from '../../../analytics';
@@ -18,7 +18,7 @@ const link = Object.assign(mock<UserLestaAccount>({ accountId: 42n }), { player:
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
-  const firstWin = mock<FirstWinService>();
+  const firstWin = mock<FirstWinReaderService>();
   const notifications = mock<NotificationService>();
 
   prisma.notificationSettings.findMany.mockResolvedValue([settings('a')]);

@@ -6,7 +6,7 @@ import { mock } from 'vitest-mock-extended';
 
 import type { AppConfigService, Env } from '../../../../config';
 
-import { SCHEDULES } from '../config';
+import { SCHEDULES } from '../config/schedules.constants';
 import { SchedulesService } from '../schedules.service';
 
 const createService = (env: Pick<Env, 'LESTA_APPLICATION_ID' | 'NODE_ENV'>) => {

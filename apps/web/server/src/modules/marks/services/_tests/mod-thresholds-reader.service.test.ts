@@ -5,7 +5,7 @@ import { mock } from 'vitest-mock-extended';
 
 import type { MasteryThresholdRecord, MoeThresholdRecord } from '../../../reference';
 
-import { ThresholdsService } from '../../../reference';
+import { ThresholdsReaderService } from '../../../reference';
 import { ModThresholdsReaderService } from '../mod-thresholds-reader.service';
 import { MoeCurveReaderService } from '../moe-curve-reader.service';
 
@@ -46,7 +46,7 @@ const createService = ({
   mastery: MasteryThresholdRecord | null;
   points: MoeCurve['points'];
 }) => {
-  const thresholds = mock<ThresholdsService>();
+  const thresholds = mock<ThresholdsReaderService>();
   const curves = mock<MoeCurveReaderService>();
 
   thresholds.moe.mockResolvedValue(known);

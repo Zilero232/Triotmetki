@@ -4,9 +4,9 @@ import { afterAll, beforeEach, expect, it } from 'vitest';
 
 import type { Prisma } from '../../../../../generated';
 
-import { bonusTypesOfMode } from '../../../../common/lib';
 import { battleRow, STAT_SEED } from '../../../../core/prisma/_tests/stat-seeds';
 import { createTestPrisma, describeWithDatabase, truncateTables } from '../../../../core/prisma/_tests/test-database';
+import { bonusTypesOfMode } from '../../../reference';
 import { myModeBattles } from '../my-mode-stats.queries';
 
 const WINDOW = {

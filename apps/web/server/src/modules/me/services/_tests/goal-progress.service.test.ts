@@ -5,7 +5,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { Goal, PlayerTank } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { NotificationService } from '../../../notifications';
-import type { ExpectedValuesService } from '../../../reference';
+import type { ExpectedValuesReaderService } from '../../../reference';
 
 import { GoalProgressService } from '../goal-progress.service';
 
@@ -36,7 +36,7 @@ const sums = { damageDealt: 3000, frags: 1, spotted: 1, capturePoints: 0, droppe
 
 const createService = (goals: Goal[]) => {
   const prisma = mockDeep<PrismaService>();
-  const expected = mock<ExpectedValuesService>();
+  const expected = mock<ExpectedValuesReaderService>();
   const notifications = mock<NotificationService>();
 
   vi.mocked(prisma.goal.groupBy).mockResolvedValue([mock<GoalGroup>({ accountId: 7n })]);

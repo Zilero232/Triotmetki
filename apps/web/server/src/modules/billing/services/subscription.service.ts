@@ -6,10 +6,12 @@ import { isPlusState, PLUS } from '@otmetki/schemas';
 import type { ActivateInput, ActivationInput, GrantDaysInput, SetAutoRenewInput } from '../billing.types';
 
 import { AppBadRequestException } from '../../../common/exceptions';
-import { isEntitled, PLUS_SUBSCRIPTION, toIso } from '../../../common/lib';
+import { toIso } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { PLUS_PLANS } from '../config/plans.constants';
+import { isEntitled } from '../lib/entitlement/entitlement';
+import { PLUS_SUBSCRIPTION } from '../lib/entitlement/entitlement.constants';
 import { cancelsAtPeriodEnd, extendPeriod } from '../lib/period';
 import { plusSubscriptionKey } from '../lib/subscription-key';
 import { toPaymentHistoryItem } from '../mappers/payment.mappers';

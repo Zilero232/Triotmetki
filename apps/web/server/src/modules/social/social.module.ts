@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { UserLestaAccountsModule } from '../../core';
+import { AccountsModule } from '../accounts';
 import { BillingCoreModule } from '../billing';
 import { NotificationsProducerModule } from '../notifications';
 import { snapshotEventsQueriesProvider } from './providers/snapshot-events-queries.provider';
@@ -17,7 +17,7 @@ import { WrappedReaderService } from './services/wrapped-reader.service';
 import { SocialController } from './social.controller';
 
 @Module({
-  imports: [UserLestaAccountsModule, BillingCoreModule, NotificationsProducerModule],
+  imports: [AccountsModule, BillingCoreModule, NotificationsProducerModule],
   controllers: [SocialController],
   providers: [
     snapshotEventsQueriesProvider,

@@ -6,7 +6,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { BuildUsageAggregate } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { BuildDataService } from '../build-data.service';
+import type { BuildDataReaderService } from '../build-data-reader.service';
 import type { BuildOptionsReaderService } from '../build-options-reader.service';
 
 import { loadIs } from '../../../gamedata/lib/_tests/fixtures';
@@ -58,7 +58,7 @@ const aggregate = (overrides: Partial<BuildUsageAggregate>): BuildUsageAggregate
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
-  const data = mock<BuildDataService>();
+  const data = mock<BuildDataReaderService>();
   const buildOptions = mock<BuildOptionsReaderService>();
 
   data.vehicle.mockResolvedValue(is);

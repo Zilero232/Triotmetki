@@ -1,12 +1,12 @@
 export { PlayerAchievementsReaderService } from './player-achievements-reader.service';
 export { PlayerCareerReaderService } from './player-career-reader.service';
-export { PlayerHistoryService } from './player-history.service';
+export { PlayerHistoryReaderService } from './player-history-reader.service';
 export { PlayerInsightsReaderService } from './player-insights-reader.service';
-export { PlayerMarksService } from './player-marks.service';
+export { PlayerMarksReaderService } from './player-marks-reader.service';
 export { PlayerOfficialRatingsReaderService } from './player-official-ratings-reader.service';
 export { PlayerPlaytimeReaderService } from './player-playtime-reader.service';
 export { PlayerResolverService } from './player-resolver.service';
-export { PlayerSessionsService } from './player-sessions.service';
-export { PlayerSummaryService } from './player-summary.service';
-export { PlayerTanksService } from './player-tanks.service';
+export { PlayerSessionsReaderService } from './player-sessions-reader.service';
+export { PlayerSummaryReaderService } from './player-summary-reader.service';
+export { PlayerTanksReaderService } from './player-tanks-reader.service';
 export { PlayerViewsService } from './player-views.service';

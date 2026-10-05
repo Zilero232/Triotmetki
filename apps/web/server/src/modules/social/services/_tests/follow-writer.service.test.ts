@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { Follow } from '../../../../../generated';
-import type { UserLestaAccountsService } from '../../../../core';
+import type { UserAccountsReaderService } from '../../../accounts';
 import type { EntitlementsService } from '../../../billing';
 
 import { AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../../common/exceptions';
@@ -35,7 +35,7 @@ const createService = () => {
   prisma.player.findMany.mockResolvedValue([]);
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
 
-  const reader = new FollowReaderService(prisma, mock<UserLestaAccountsService>());
+  const reader = new FollowReaderService(prisma, mock<UserAccountsReaderService>());
 
   return { service: new FollowWriterService(prisma, entitlements, reader), prisma, entitlements };
 };

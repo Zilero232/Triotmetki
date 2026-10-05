@@ -6,7 +6,7 @@ import type { PrismaService } from '../../../../core';
 
 import { ANALYTICS_WINDOW } from '../../config';
 import { HonestRngReaderService } from '../honest-rng-reader.service';
-import { OwnAccountService } from '../own-account.service';
+import { OwnAccountReaderService } from '../own-account-reader.service';
 
 const now = new Date('2026-09-26T10:00:00Z');
 
@@ -16,7 +16,7 @@ const battle = (fields: Pick<Battle, 'shots' | 'shotsFired' | 'shotsHit' | 'shot
 
 const setup = () => {
   const prisma = mockDeep<PrismaService>();
-  const accounts = mock<OwnAccountService>();
+  const accounts = mock<OwnAccountReaderService>();
 
   accounts.resolve.mockResolvedValue(7n);
   prisma.battle.findMany.mockResolvedValue([]);

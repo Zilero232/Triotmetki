@@ -7,15 +7,15 @@ import { playerQueriesProvider } from './providers/player-queries.provider';
 import {
   PlayerAchievementsReaderService,
   PlayerCareerReaderService,
-  PlayerHistoryService,
+  PlayerHistoryReaderService,
   PlayerInsightsReaderService,
-  PlayerMarksService,
+  PlayerMarksReaderService,
   PlayerOfficialRatingsReaderService,
   PlayerPlaytimeReaderService,
   PlayerResolverService,
-  PlayerSessionsService,
-  PlayerSummaryService,
-  PlayerTanksService,
+  PlayerSessionsReaderService,
+  PlayerSummaryReaderService,
+  PlayerTanksReaderService,
   PlayerViewsService
 } from './services';
 
@@ -26,11 +26,11 @@ import {
     playerQueriesProvider,
     PlayerAchievementsReaderService,
     PlayerResolverService,
-    PlayerSummaryService,
-    PlayerTanksService,
-    PlayerHistoryService,
-    PlayerSessionsService,
-    PlayerMarksService,
+    PlayerSummaryReaderService,
+    PlayerTanksReaderService,
+    PlayerHistoryReaderService,
+    PlayerSessionsReaderService,
+    PlayerMarksReaderService,
     PlayerInsightsReaderService,
     PlayerPlaytimeReaderService,
     PlayerViewsService,
@@ -39,11 +39,11 @@ import {
   ],
   exports: [
     PlayerResolverService,
-    PlayerSummaryService,
-    PlayerTanksService,
-    PlayerHistoryService,
-    PlayerSessionsService,
-    PlayerMarksService,
+    PlayerSummaryReaderService,
+    PlayerTanksReaderService,
+    PlayerHistoryReaderService,
+    PlayerSessionsReaderService,
+    PlayerMarksReaderService,
     PlayerCareerReaderService
   ]
 })

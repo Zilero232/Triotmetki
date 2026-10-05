@@ -26,11 +26,11 @@ import {
 import {
   AnalyticsOverviewReaderService,
   BattleReviewReaderService,
-  FirstWinService,
+  FirstWinReaderService,
   HonestRngReaderService,
   MapAdvisorReaderService,
   PlatoonChemistryReaderService,
-  PlaylistService,
+  PlaylistReaderService,
   TankAnalyticsReaderService
 } from './services';
 
@@ -44,8 +44,8 @@ export class AnalyticsController {
     private readonly platoonChemistry: PlatoonChemistryReaderService,
     private readonly honestRng: HonestRngReaderService,
     private readonly battles: BattleReviewReaderService,
-    private readonly playlists: PlaylistService,
-    private readonly firstWins: FirstWinService
+    private readonly playlists: PlaylistReaderService,
+    private readonly firstWins: FirstWinReaderService
   ) {}
 
   @Get('overview')

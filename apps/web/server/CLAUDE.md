@@ -26,7 +26,7 @@ src/
 ├── main.ts, app.module.ts        # the API
 ├── worker.ts, worker.module.ts   # the collector worker
 ├── config/      # env/ (secrets, addresses, ports only), app-config/, *.constants.ts (every tunable), cors/, proxy/
-├── core/        # infrastructure: prisma (+ $kysely, lockedTransaction, sql-expressions), redis, logger, queues, lesta, storage, http, scrape, webhooks, token-cipher
+├── core/        # infrastructure: prisma (+ $kysely, lockedTransaction, sql-expressions), redis, logger, queues, lesta, storage, http, scrape, token-cipher
 ├── common/      # exceptions, filters, guards, middleware, decorators, interceptors, cache, schedules, pure helpers in lib/
 ├── lib/         # external clients: lesta (Lesta API), replay (.mtreplay parser), http (ky), auth (better-auth), scrape
 └── modules/     # one Nest module per feature; *-worker.module.ts is the half WorkerModule loads

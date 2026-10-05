@@ -5,7 +5,7 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
-import { LeaderboardService } from '../leaderboards';
+import { LeaderboardReaderService } from '../leaderboards';
 import { PublicApi } from './decorators';
 import { V1LeaderboardDto, V1LeaderboardQueryDto } from './dto';
 
@@ -13,7 +13,7 @@ import { V1LeaderboardDto, V1LeaderboardQueryDto } from './dto';
 @PublicApi('leaderboards')
 @Controller('v1/leaderboards')
 export class V1LeaderboardsController {
-  constructor(private readonly leaderboards: LeaderboardService) {}
+  constructor(private readonly leaderboards: LeaderboardReaderService) {}
 
   @Get()
   @CacheTTL(CACHE_TTL.server)

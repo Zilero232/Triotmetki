@@ -5,8 +5,9 @@ import type { ApplyRolesInput, SyncGuildInput, SyncMemberInput } from '../discor
 import type { MemberStanding } from '../lib';
 
 import { errorMessage } from '../../../common/lib';
-import { PrismaService, USER_LESTA_ACCOUNT_ORDER } from '../../../core';
+import { PrismaService } from '../../../core';
 import { AUTH_PROVIDER } from '../../../lib/auth';
+import { USER_LESTA_ACCOUNT_ORDER } from '../../accounts';
 import { EntitlementsService } from '../../billing';
 import { DISCORD_LIMITS, DISCORD_TOKENS } from '../config';
 import { desiredRoles, isUnknownMember, readTierRoles, roleChanges } from '../lib';

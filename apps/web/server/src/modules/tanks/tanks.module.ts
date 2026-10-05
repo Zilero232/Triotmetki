@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { UserLestaAccountsModule } from '../../core';
+import { AccountsModule } from '../accounts';
 import { BillingCoreModule } from '../billing';
 import { MarksModule } from '../marks';
 import { UsageModule } from '../usage';
@@ -10,16 +10,16 @@ import { tanksQueriesProvider } from './providers/tanks-queries.provider';
 import {
   MyTankInsightsReaderService,
   TankArmorReaderService,
-  TankDetailService,
-  TankDifficultyService,
+  TankDetailReaderService,
+  TankDifficultyReaderService,
   TankEconomyReaderService,
   TankLearningReaderService,
   TankObtainReaderService,
   TankPatchesReaderService,
-  TankStatsService,
+  TankStatsReaderService,
   TankTraitsReaderService,
   TankTrendReaderService,
-  TierListService,
+  TierListReaderService,
   TopPlayersReaderService,
   VehicleSourcesService,
   VehiclesReaderService
@@ -30,16 +30,16 @@ import { VehicleSourcesController } from './vehicle-sources.controller';
 import { VehiclesController } from './vehicles.controller';
 
 @Module({
-  imports: [UserLestaAccountsModule, MarksModule, BillingCoreModule, UsageModule],
+  imports: [AccountsModule, MarksModule, BillingCoreModule, UsageModule],
   controllers: [TanksController, TankArmorController, MyTanksController, VehiclesController, VehicleSourcesController],
   providers: [
     armorStorageProvider,
     tanksQueriesProvider,
     TankArmorReaderService,
-    TankStatsService,
-    TierListService,
-    TankDetailService,
-    TankDifficultyService,
+    TankStatsReaderService,
+    TierListReaderService,
+    TankDetailReaderService,
+    TankDifficultyReaderService,
     TopPlayersReaderService,
     TankTrendReaderService,
     TankPatchesReaderService,
@@ -51,6 +51,6 @@ import { VehiclesController } from './vehicles.controller';
     MyTankInsightsReaderService,
     VehicleSourcesService
   ],
-  exports: [TankDetailService, TankDifficultyService, TankStatsService, TierListService]
+  exports: [TankDetailReaderService, TankDifficultyReaderService, TankStatsReaderService, TierListReaderService]
 })
 export class TanksModule {}

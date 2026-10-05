@@ -1,7 +1,7 @@
 import type { MyModeRow } from '../lib/my-mode-stats';
 import type { MyModeBattleRow } from './my-mode-stats.types';
 
-import { gameModeOfBonusType } from '../../../common/lib';
+import { gameModeOfBonusType } from '../../reference';
 
 export const toMyModeRows = (rows: readonly MyModeBattleRow[]): MyModeRow[] =>
   rows.flatMap((row): MyModeRow[] => {

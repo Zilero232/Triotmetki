@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 
-import { collectorQueues } from './providers';
+import { collectorQueues } from './providers/collector-queues.provider';
 import { QueueRegistryService } from './queue-registry.service';
 
 @Global()

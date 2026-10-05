@@ -9,19 +9,19 @@ import type { BuildsCatalogQueries } from '../queries/builds-catalog.types';
 
 import { PrismaService } from '../../../core';
 import { VehicleCatalogService } from '../../reference';
-import { TankDifficultyService } from '../../tanks';
+import { TankDifficultyReaderService } from '../../tanks';
 import { BUILDS_QUERY_TOKENS } from '../config/queries.constants';
 import { catalogPicksOf, resolvePicks } from '../mappers/build-usage-view.mappers';
 import { toProvisionOption } from '../mappers/provision-option.mappers';
-import { BuildDataService } from './build-data.service';
+import { BuildDataReaderService } from './build-data-reader.service';
 
 @Injectable()
 export class BuildsCatalogReaderService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly vehicles: VehicleCatalogService,
-    private readonly data: BuildDataService,
-    private readonly difficulty: TankDifficultyService,
+    private readonly data: BuildDataReaderService,
+    private readonly difficulty: TankDifficultyReaderService,
     @Inject(BUILDS_QUERY_TOKENS.catalog) private readonly queries: BuildsCatalogQueries
   ) {}
 

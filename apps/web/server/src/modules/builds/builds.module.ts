@@ -6,7 +6,7 @@ import { BuildsCatalogController } from './builds-catalog.controller';
 import { BuildsController } from './builds.controller';
 import { buildsCatalogQueriesProvider } from './providers/builds-catalog-queries.provider';
 import { BuildAdviceReaderService } from './services/build-advice-reader.service';
-import { BuildDataService } from './services/build-data.service';
+import { BuildDataReaderService } from './services/build-data-reader.service';
 import { BuildOptionsReaderService } from './services/build-options-reader.service';
 import { BuildUsageReaderService } from './services/build-usage-reader.service';
 import { BuildsCatalogReaderService } from './services/builds-catalog-reader.service';
@@ -20,7 +20,7 @@ import { RecommendedBuildReaderService } from './services/recommended-build-read
   providers: [
     buildsCatalogQueriesProvider,
     BuildAdviceReaderService,
-    BuildDataService,
+    BuildDataReaderService,
     BuildOptionsReaderService,
     LoadoutReaderService,
     PopularBuildsReaderService,
@@ -28,6 +28,6 @@ import { RecommendedBuildReaderService } from './services/recommended-build-read
     RecommendedBuildReaderService,
     BuildsCatalogReaderService
   ],
-  exports: [BuildDataService]
+  exports: [BuildDataReaderService]
 })
 export class BuildsModule {}

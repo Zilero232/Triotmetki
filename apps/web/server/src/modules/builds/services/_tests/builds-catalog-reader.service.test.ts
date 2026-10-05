@@ -6,9 +6,9 @@ import { mock } from 'vitest-mock-extended';
 
 import type { Provision } from '../../../../../generated';
 import type { CatalogEntry, VehicleCatalogService } from '../../../reference';
-import type { TankDifficultyService } from '../../../tanks';
+import type { TankDifficultyReaderService } from '../../../tanks';
 import type { BuildsCatalogQueries, CatalogUsageRow } from '../../queries/builds-catalog.types';
-import type { BuildDataService } from '../build-data.service';
+import type { BuildDataReaderService } from '../build-data-reader.service';
 
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { BuildsCatalogReaderService } from '../builds-catalog-reader.service';
@@ -68,8 +68,8 @@ const createService = () => {
   const prisma = mockPrismaService();
   const queries = mock<BuildsCatalogQueries>();
   const vehicles = mock<VehicleCatalogService>();
-  const data = mock<BuildDataService>();
-  const difficulty = mock<TankDifficultyService>();
+  const data = mock<BuildDataReaderService>();
+  const difficulty = mock<TankDifficultyReaderService>();
 
   vehicles.filter.mockResolvedValue([entry({ tankId: 1, name: 'A', tier: 8 })]);
   queries.latestCatalogUsage.mockResolvedValue([]);

@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { LeagueMembership, Player, PlaySession } from '../../../../../generated';
-import type { UserLestaAccountsService } from '../../../../core';
+import type { UserAccountsReaderService } from '../../../accounts';
 import type { FollowReaderService } from '../follow-reader.service';
 import type { SnapshotEventsReaderService } from '../snapshot-events-reader.service';
 
@@ -67,7 +67,7 @@ const createService = () => {
   const prisma = mockPrismaService();
   const follows = mock<FollowReaderService>();
   const events = mock<SnapshotEventsReaderService>();
-  const accounts = mock<UserLestaAccountsService>();
+  const accounts = mock<UserAccountsReaderService>();
 
   follows.circle.mockResolvedValue({ accountIds: [1n, 2n, 3n], own: new Set([1n]) });
   events.markCounts.mockResolvedValue(new Map());

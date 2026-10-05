@@ -2,14 +2,14 @@ import type { PlayerMarks } from '@otmetki/schemas';
 
 import { Injectable } from '@nestjs/common';
 
-import { UserLestaAccountsService } from '../../../core';
-import { PlayerMarksService } from '../../players';
+import { UserAccountsReaderService } from '../../accounts';
+import { PlayerMarksReaderService } from '../../players';
 
 @Injectable()
 export class MyMarksService {
   constructor(
-    private readonly lestaAccounts: UserLestaAccountsService,
-    private readonly playerMarks: PlayerMarksService
+    private readonly lestaAccounts: UserAccountsReaderService,
+    private readonly playerMarks: PlayerMarksReaderService
   ) {}
 
   async marks(userId: string): Promise<PlayerMarks> {

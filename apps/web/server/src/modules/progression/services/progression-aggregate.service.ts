@@ -16,8 +16,9 @@ import type {
   RewardChallengeInput
 } from '../progression.types';
 
-import { entitledSubscriptionWhere, errorMessage, toIsoDate, weekWindow } from '../../../common/lib';
+import { errorMessage, toIsoDate, weekWindow } from '../../../common/lib';
 import { PrismaService } from '../../../core';
+import { entitledSubscriptionWhere } from '../../billing';
 import { NotificationService } from '../../notifications';
 import { PROGRESSION_RUN } from '../config/queue.constants';
 import { battlesOf, pickSamplesByTank, sampleFromBattle, sampleFromDelta } from '../lib/battle-samples/battle-samples';

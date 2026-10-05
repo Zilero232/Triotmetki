@@ -17,7 +17,7 @@ import {
   OfficialTopDto,
   OfficialTopQueryDto
 } from './dto/leaderboards.dto';
-import { LeaderboardService } from './services/leaderboard.service';
+import { LeaderboardReaderService } from './services/leaderboard-reader.service';
 import { OfficialRatingsService } from './services/official-ratings.service';
 
 @ApiTags('leaderboards')
@@ -26,7 +26,7 @@ import { OfficialRatingsService } from './services/official-ratings.service';
 @Controller('leaderboards')
 export class LeaderboardsController {
   constructor(
-    private readonly leaderboards: LeaderboardService,
+    private readonly leaderboards: LeaderboardReaderService,
     private readonly official: OfficialRatingsService
   ) {}
 

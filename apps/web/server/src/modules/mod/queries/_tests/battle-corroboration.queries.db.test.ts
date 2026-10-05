@@ -2,8 +2,8 @@ import { afterAll, beforeEach, expect, it } from 'vitest';
 
 import type { Prisma } from '../../../../../generated';
 
-import { ARENA_BONUS_TYPE } from '../../../../common/lib';
 import { createTestPrisma, describeWithDatabase, truncateTables } from '../../../../core/prisma/_tests/test-database';
+import { ARENA_BONUS_TYPE } from '../../../reference';
 import { BATTLE_CORROBORATION } from '../../config/ingest.constants';
 import { corroboratedBattle, ownerTrustedBattle } from '../battle-corroboration.queries';
 

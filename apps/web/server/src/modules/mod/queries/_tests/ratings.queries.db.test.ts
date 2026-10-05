@@ -1,7 +1,7 @@
 import { afterAll, beforeEach, expect, it } from 'vitest';
 
-import { bonusTypesOfMode } from '../../../../common/lib';
 import { createTestPrisma, describeWithDatabase, truncateTables } from '../../../../core/prisma/_tests/test-database';
+import { bonusTypesOfMode } from '../../../reference';
 import { tankRecords } from '../ratings.queries';
 
 const SEED = {

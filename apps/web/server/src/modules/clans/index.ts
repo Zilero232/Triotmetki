@@ -1,4 +1,5 @@
 export { ClansModule } from './clans.module';
-export { ClanListService } from './services/clan-list.service';
-export { ClanPageService } from './services/clan-page.service';
+export { clanEmblem } from './lib/emblem/emblem';
+export { ClanListReaderService } from './services/clan-list-reader.service';
+export { ClanPageReaderService } from './services/clan-page-reader.service';
 export { ClanResolverService } from './services/clan-resolver.service';

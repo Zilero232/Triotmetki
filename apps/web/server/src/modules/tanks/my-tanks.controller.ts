@@ -5,14 +5,14 @@ import { ZodResponse } from 'nestjs-zod';
 import { CurrentUserId } from '../../common/decorators';
 import { RequiresPlus } from '../billing';
 import { AccountEconomyDto, AccountEconomyQueryDto, MyTankLearningDto, TankParamsDto } from './dto';
-import { MyTankInsightsReaderService, TankDetailService } from './services';
+import { MyTankInsightsReaderService, TankDetailReaderService } from './services';
 
 @ApiTags('tanks')
 @Controller('tanks')
 export class MyTanksController {
   constructor(
     private readonly insights: MyTankInsightsReaderService,
-    private readonly details: TankDetailService
+    private readonly details: TankDetailReaderService
   ) {}
 
   @Get('economy/me')

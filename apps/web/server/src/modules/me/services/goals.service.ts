@@ -14,9 +14,10 @@ import type {
 } from '../me.types';
 
 import { AppBadRequestException, AppConflictException, AppForbiddenException, AppNotFoundException } from '../../../common/exceptions';
-import { bonusTypesOfMode, toNumber } from '../../../common/lib';
+import { toNumber } from '../../../common/lib';
 import { LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService } from '../../../core';
 import { EntitlementsService } from '../../billing';
+import { bonusTypesOfMode } from '../../reference';
 import { GOALS, MOD_GOALS } from '../config';
 import { goalBattles, goalWindow, hangarGoalsSince, isGoalEndAllowed } from '../lib';
 import { toGoal, toModGoal } from '../mappers';

@@ -1,12 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import type { LestaClients, WebhookEmitter } from '../../../../core';
+import type { LestaClients } from '../../../../core';
+import type { WebhookEmitter } from '../../../webhooks';
 import type { ClanRefreshPayload } from '../../contracts';
 import type { AnnounceRosterInput, ClanFieldsInput, ClanRoster, RosterOfInput, SyncClanInput, WriteRosterInput } from '../clans.types';
 
-import { clanInfoFields } from '../../../../common/lib';
-import { LESTA_CLIENTS, PrismaService, WEBHOOK_EMITTER } from '../../../../core';
+import { LESTA_CLIENTS, PrismaService } from '../../../../core';
+import { WEBHOOK_EMITTER } from '../../../webhooks';
 import { PurgeGuardService } from '../../purge';
+import { clanInfoFields } from '../lib/clan-info/clan-info';
 import { clanMemberEvents, diffClanRoster, rosterChanges } from '../lib/clan-roster';
 import { toCurrentMember, toPopulationPlayer } from '../mappers/clan-member.mappers';
 import { ClanSnapshotSyncService } from './clan-snapshot-sync.service';

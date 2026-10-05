@@ -5,9 +5,9 @@ import type { Player } from '../../../../../generated';
 import type { AnalyticsQueries } from '../../providers/analytics-queries.provider.types';
 
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
-import { ExpectedValuesService } from '../../../reference';
+import { ExpectedValuesReaderService } from '../../../reference';
 import { PLATOON_CHEMISTRY } from '../../config';
-import { OwnAccountService } from '../own-account.service';
+import { OwnAccountReaderService } from '../own-account-reader.service';
 import { PlatoonChemistryReaderService } from '../platoon-chemistry-reader.service';
 import { rawRow } from './analytics.fixtures';
 
@@ -22,8 +22,8 @@ const mateRow = (mate: number, battles: number, wins: number): MateRow => ({ ...
 const setup = ({ sizedRows, mates }: { sizedRows: SizedRow[]; mates: MateRow[] }) => {
   const prisma = mockPrismaService();
   const queries = mock<AnalyticsQueries>();
-  const expected = mock<ExpectedValuesService>();
-  const accounts = mock<OwnAccountService>();
+  const expected = mock<ExpectedValuesReaderService>();
+  const accounts = mock<OwnAccountReaderService>();
 
   accounts.resolve.mockResolvedValue(7n);
   expected.all.mockResolvedValue(new Map());

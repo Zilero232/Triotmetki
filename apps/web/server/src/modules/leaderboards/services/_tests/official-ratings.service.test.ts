@@ -5,7 +5,7 @@ import type { Player } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 import type { LestaClient } from '../../../../lib/lesta';
 
-import { OFFICIAL_FIELD_TO_LESTA, OFFICIAL_PERIOD_TO_LESTA } from '../../../../common/lib';
+import { OFFICIAL_FIELD_TO_LESTA, OFFICIAL_PERIOD_TO_LESTA } from '../../lib/official-rating/official-rating.constants';
 import { OfficialRatingsService } from '../official-ratings.service';
 
 const DAY = 86_400;

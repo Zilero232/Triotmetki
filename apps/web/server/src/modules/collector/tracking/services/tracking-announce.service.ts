@@ -1,10 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import type { WebhookEmitter } from '../../../../core';
+import type { WebhookEmitter } from '../../../webhooks';
 import type { GainedMark } from '../lib/marks-gain';
 
-import { entitledSubscriptionWhere } from '../../../../common/lib';
-import { markGainedKey, PrismaService, WEBHOOK_EMITTER } from '../../../../core';
+import { PrismaService } from '../../../../core';
+import { entitledSubscriptionWhere } from '../../../billing';
+import { markGainedKey, WEBHOOK_EMITTER } from '../../../webhooks';
 
 @Injectable()
 export class TrackingAnnounceService {

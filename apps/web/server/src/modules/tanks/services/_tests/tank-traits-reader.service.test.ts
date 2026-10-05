@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 import type { VehicleCatalogService } from '../../../reference';
-import type { TankDifficultyService } from '../tank-difficulty.service';
+import type { TankDifficultyReaderService } from '../tank-difficulty-reader.service';
 
 import { TankTraitsReaderService } from '../tank-traits-reader.service';
 import { catalogEntry, catalogOf, vehicle } from './tanks.fixtures';
@@ -20,7 +20,7 @@ const entries = [researchable, collector, shopPremium, reward];
 
 const createService = () => {
   const catalog = mock<VehicleCatalogService>();
-  const difficulty = mock<TankDifficultyService>();
+  const difficulty = mock<TankDifficultyReaderService>();
 
   catalog.all.mockResolvedValue(catalogOf(...entries));
 

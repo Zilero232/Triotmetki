@@ -13,12 +13,16 @@ import {
   ProfileCosmeticsListDto,
   ProfileCosmeticsQueryDto
 } from './dto/progression.dto';
-import { CosmeticsService } from './services/cosmetics.service';
+import { CosmeticsReaderService } from './services/cosmetics-reader.service';
+import { CosmeticsWriterService } from './services/cosmetics-writer.service';
 
 @ApiTags('cosmetics')
 @Controller()
 export class CosmeticsController {
-  constructor(private readonly cosmetics: CosmeticsService) {}
+  constructor(
+    private readonly cosmetics: CosmeticsReaderService,
+    private readonly cosmeticsWriter: CosmeticsWriterService
+  ) {}
 
   @Get('me/cosmetics')
   @ZodResponse({ type: CosmeticsInventoryDto })
@@ -30,13 +34,13 @@ export class CosmeticsController {
   @HttpCode(HttpStatus.OK)
   @ZodResponse({ type: CosmeticsInventoryDto })
   purchase(@CurrentUserId() userId: string, @Param() { code }: CosmeticCodeParamsDto) {
-    return this.cosmetics.purchase({ userId, code });
+    return this.cosmeticsWriter.purchase({ userId, code });
   }
 
   @Put('me/cosmetics/equipped')
   @ZodResponse({ type: CosmeticsInventoryDto })
   equip(@CurrentUserId() userId: string, @Body() body: EquipCosmeticsDto) {
-    return this.cosmetics.equip({ ...body, userId });
+    return this.cosmeticsWriter.equip({ ...body, userId });
   }
 
   @AllowAnonymous()

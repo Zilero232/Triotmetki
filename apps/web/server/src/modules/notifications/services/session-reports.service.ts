@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { subHours, subMinutes } from 'date-fns';
 
-import { isSessionEnded, winRateShare } from '../../../common/lib';
+import { winRateShare } from '../../../common/lib';
 import { PrismaService } from '../../../core';
+import { isSessionEnded } from '../../developer';
 import { SESSION_REPORT } from '../config/watchers.constants';
 import { sessionReportKey } from '../lib/session-report-key';
 import { NotificationService } from './notification.service';

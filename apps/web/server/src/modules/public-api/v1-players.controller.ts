@@ -7,12 +7,12 @@ import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
 import {
   HISTORY_WINDOW,
-  PlayerHistoryService,
-  PlayerMarksService,
+  PlayerHistoryReaderService,
+  PlayerMarksReaderService,
   PlayerResolverService,
-  PlayerSessionsService,
-  PlayerSummaryService,
-  PlayerTanksService
+  PlayerSessionsReaderService,
+  PlayerSummaryReaderService,
+  PlayerTanksReaderService
 } from '../players';
 import { PublicApi } from './decorators';
 import {
@@ -37,11 +37,11 @@ import {
 export class V1PlayersController {
   constructor(
     private readonly resolver: PlayerResolverService,
-    private readonly summary: PlayerSummaryService,
-    private readonly tanks: PlayerTanksService,
-    private readonly history: PlayerHistoryService,
-    private readonly sessions: PlayerSessionsService,
-    private readonly marks: PlayerMarksService
+    private readonly summary: PlayerSummaryReaderService,
+    private readonly tanks: PlayerTanksReaderService,
+    private readonly history: PlayerHistoryReaderService,
+    private readonly sessions: PlayerSessionsReaderService,
+    private readonly marks: PlayerMarksReaderService
   ) {}
 
   @Get(':idOrNick')

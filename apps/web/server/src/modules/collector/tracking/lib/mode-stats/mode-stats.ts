@@ -2,7 +2,8 @@ import { entries } from 'remeda';
 
 import type { AccountModeRow, AccountModeRowsInput, TankModeRow, TankModeRowsInput } from './mode-stats.types';
 
-import { ACCOUNT_MODE_SOURCES, modeBlockOf, TANK_MODE_SOURCES } from '../../../../../common/lib';
+import { modeBlockOf } from '../mode-blocks/mode-blocks';
+import { ACCOUNT_MODE_SOURCES, TANK_MODE_SOURCES } from '../mode-blocks/mode-blocks.constants';
 
 export const accountModeRows = ({ accountId, statistics }: AccountModeRowsInput): AccountModeRow[] =>
   entries(ACCOUNT_MODE_SOURCES).flatMap(([mode, keys]) => {

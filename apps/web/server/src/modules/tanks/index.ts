@@ -1,2 +1,2 @@
-export { TankDetailService, TankDifficultyService, TankStatsService, TierListService } from './services';
+export { TankDetailReaderService, TankDifficultyReaderService, TankStatsReaderService, TierListReaderService } from './services';
 export { TanksModule } from './tanks.module';

@@ -1,8 +1,8 @@
 import { afterAll, beforeEach, expect, it } from 'vitest';
 
 import { createTestPrisma, describeWithDatabase, truncateTables } from '../../../../core/prisma/_tests/test-database';
-import { ExpectedValuesService } from '../../services/expected-values.service';
-import { ThresholdsService } from '../../services/thresholds.service';
+import { ExpectedValuesReaderService } from '../../services/expected-values-reader.service';
+import { ThresholdsReaderService } from '../../services/thresholds-reader.service';
 import { VehicleCatalogService } from '../../services/vehicle-catalog.service';
 import { EXPECTED_VALUES_QUERIES } from '../expected-values.queries';
 import { THRESHOLDS_QUERIES } from '../thresholds.queries';
@@ -75,7 +75,7 @@ describeWithDatabase('reference queries', () => {
       ]
     });
 
-    const table = await new ExpectedValuesService(prisma, EXPECTED_VALUES_QUERIES).all();
+    const table = await new ExpectedValuesReaderService(prisma, EXPECTED_VALUES_QUERIES).all();
 
     expect([...table.values()]).toEqual([
       { tankId: 1, expDamage: 1100, expSpot: 1.2, expFrag: 1.1, expDef: 0.8, expWinRate: 52.5 },
@@ -96,7 +96,7 @@ describeWithDatabase('reference queries', () => {
       ]
     });
 
-    const set = await new ThresholdsService(prisma, THRESHOLDS_QUERIES).asOf({ date: new Date('2026-09-20T00:00:00Z') });
+    const set = await new ThresholdsReaderService(prisma, THRESHOLDS_QUERIES).asOf({ date: new Date('2026-09-20T00:00:00Z') });
 
     expect(set.moe).toEqual(
       new Map([
@@ -133,7 +133,7 @@ describeWithDatabase('reference queries', () => {
       ]
     });
 
-    const set = await new ThresholdsService(prisma, THRESHOLDS_QUERIES).asOf({ date: null, source: 'poliroid' });
+    const set = await new ThresholdsReaderService(prisma, THRESHOLDS_QUERIES).asOf({ date: null, source: 'poliroid' });
 
     expect([...set.moe.values()].map((record) => record.source)).toEqual(['poliroid']);
   });

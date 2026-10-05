@@ -5,17 +5,17 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { UserLestaAccount } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { PlayerMarksService } from '../../../players';
+import type { PlayerMarksReaderService } from '../../../players';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
-import { UserLestaAccountsService } from '../../../../core';
+import { UserAccountsReaderService } from '../../../accounts';
 import { MyMarksService } from '../my-marks.service';
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
-  const playerMarks = mock<PlayerMarksService>();
+  const playerMarks = mock<PlayerMarksReaderService>();
 
-  return { service: new MyMarksService(new UserLestaAccountsService(prisma), playerMarks), prisma, playerMarks };
+  return { service: new MyMarksService(new UserAccountsReaderService(prisma), playerMarks), prisma, playerMarks };
 };
 
 describe('MyMarksService', () => {

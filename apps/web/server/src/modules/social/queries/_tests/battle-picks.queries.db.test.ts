@@ -1,7 +1,7 @@
 import { afterAll, beforeEach, expect, it } from 'vitest';
 
-import { ARENA_BONUS_TYPE } from '../../../../common/lib';
 import { createTestPrisma, describeWithDatabase, truncateTables } from '../../../../core/prisma/_tests/test-database';
+import { ARENA_BONUS_TYPE } from '../../../reference';
 import { challengeBattles } from '../weekly-challenge.queries';
 import { wrappedBestBattle } from '../wrapped.queries';
 

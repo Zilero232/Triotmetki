@@ -9,13 +9,13 @@ import { percentOf } from '../../../common/lib';
 import { PrismaService } from '../../../core';
 import { ANALYTICS_WINDOW } from '../config';
 import { periodStart, readStoredShots, summarizeRolls } from '../lib';
-import { OwnAccountService } from './own-account.service';
+import { OwnAccountReaderService } from './own-account-reader.service';
 
 @Injectable()
 export class HonestRngReaderService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly accounts: OwnAccountService
+    private readonly accounts: OwnAccountReaderService
   ) {}
 
   async rng({ userId, account, period }: AnalyticsInput): Promise<AnalyticsRng> {

@@ -8,10 +8,10 @@ import { unique } from 'remeda';
 import type { MyModeStatsInput } from '../modes.types';
 import type { ModesQueries } from '../providers/modes-queries.provider.types';
 
-import { bonusTypesOfMode } from '../../../common/lib';
-import { PrismaService, UserLestaAccountsService } from '../../../core';
+import { PrismaService } from '../../../core';
+import { UserAccountsReaderService } from '../../accounts';
 import { PlayerCareerReaderService } from '../../players';
-import { VehicleCatalogService } from '../../reference';
+import { bonusTypesOfMode, VehicleCatalogService } from '../../reference';
 import { MODES_QUERIES } from '../config';
 import { foldModeStats } from '../lib/my-mode-stats';
 import { toMyModeRows } from '../mappers/my-mode-stats.mappers';
@@ -22,7 +22,7 @@ export class MyModeStatsReaderService {
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService,
     private readonly career: PlayerCareerReaderService,
-    private readonly lestaAccounts: UserLestaAccountsService,
+    private readonly lestaAccounts: UserAccountsReaderService,
     @Inject(MODES_QUERIES) private readonly queries: ModesQueries
   ) {}
 

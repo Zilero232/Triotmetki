@@ -1,4 +1,4 @@
-import { PLUS_SUBSCRIPTION } from '../../../common/lib';
+import { PLUS_SUBSCRIPTION } from '../lib/entitlement/entitlement.constants';
 import { BILLING_QUEUE } from './queue.constants';
 
 export const RENEWAL = {

@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Clan, ClanMember } from '../../../../../../generated';
-import type { LestaClients, WebhookEmitter } from '../../../../../core';
+import type { LestaClients } from '../../../../../core';
 import type { ClanInfo } from '../../../../../lib/lesta';
+import type { WebhookEmitter } from '../../../../webhooks';
 import type { ClansQueries } from '../../providers/clans-queries.types';
 import type { ClanActivityRow } from '../../queries/clan-activity.types';
 

@@ -1,4 +1,4 @@
-import type { WebhookSubject } from '../../../../core';
+import type { WebhookSubject } from '../../../webhooks';
 
 export type MatchesSubjectInput = {
   filter: unknown;

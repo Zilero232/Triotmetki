@@ -3,7 +3,8 @@ import { Injectable } from '@nestjs/common';
 import type { LeagueInput, LeagueScopeInput, LeagueView } from '../social.types';
 
 import { toIsoDate, weekWindow } from '../../../common/lib';
-import { PrismaService, UserLestaAccountsService } from '../../../core';
+import { PrismaService } from '../../../core';
+import { UserAccountsReaderService } from '../../accounts';
 import { LEAGUE, LEAGUE_DIVISION } from '../config/leagues.constants';
 import { divisionStandings, tierMoves } from '../lib/league-division/league-division';
 import { needsMarks, rankLeague } from '../lib/league/league';
@@ -17,7 +18,7 @@ export class LeagueReaderService {
     private readonly prisma: PrismaService,
     private readonly follows: FollowReaderService,
     private readonly stats: LeagueStatsReaderService,
-    private readonly accounts: UserLestaAccountsService
+    private readonly accounts: UserAccountsReaderService
   ) {}
 
   async league({ userId, scope, metric, week }: LeagueInput): Promise<LeagueView> {

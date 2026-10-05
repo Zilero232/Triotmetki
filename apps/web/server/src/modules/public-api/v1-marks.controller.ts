@@ -5,7 +5,7 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { CACHE_TTL } from '../../common/cache';
 import { ViewerCacheInterceptor } from '../../common/interceptors';
-import { MoeTableService } from '../marks';
+import { MoeTableReaderService } from '../marks';
 import { PublicApi } from './decorators';
 import {
   V1MoeHistoryBatchDto,
@@ -21,7 +21,7 @@ import {
 @PublicApi('marks')
 @Controller('v1/marks')
 export class V1MarksController {
-  constructor(private readonly table: MoeTableService) {}
+  constructor(private readonly table: MoeTableReaderService) {}
 
   @Get()
   @CacheTTL(CACHE_TTL.server)

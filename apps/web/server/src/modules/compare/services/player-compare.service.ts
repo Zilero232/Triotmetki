@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import type { ComparePlayersInput } from '../compare.types';
 
 import { PrismaService } from '../../../core';
-import { PlayerResolverService, PlayerSummaryService } from '../../players';
+import { PlayerResolverService, PlayerSummaryReaderService } from '../../players';
 import { commonTankIds } from '../lib';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class PlayerCompareService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly resolver: PlayerResolverService,
-    private readonly summaries: PlayerSummaryService
+    private readonly summaries: PlayerSummaryReaderService
   ) {}
 
   async compare({ accountIds }: ComparePlayersInput): Promise<PlayerComparison> {

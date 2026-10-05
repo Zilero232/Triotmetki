@@ -5,8 +5,9 @@ import { differenceInDays } from 'date-fns';
 import type { ClanListRow } from '../queries/clan-list.types';
 import type { ClanSummaryRow, ToClanEventInput, ToClanMemberInput } from './clans.types';
 
-import { clampPercent, CLAN_ROLE_FROM_DB, clanEmblem, emptyRating, ratingValue, toIso, toNumber } from '../../../common/lib';
+import { clampPercent, CLAN_ROLE_FROM_DB, emptyRating, ratingValue, toIso, toNumber } from '../../../common/lib';
 import { CLAN_PAGE } from '../config/clan-page.constants';
+import { clanEmblem } from '../lib/emblem/emblem';
 
 export const toClanSummary = (clan: ClanSummaryRow): ClanSummary => ({
   clanId: toNumber(clan.clanId),

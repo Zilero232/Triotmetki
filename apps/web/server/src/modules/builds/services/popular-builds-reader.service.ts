@@ -15,13 +15,13 @@ import { readStoredLoadout } from '../../mod';
 import { POPULAR_SOURCE } from '../config/popular.constants';
 import { hasItems, rankLoadouts } from '../lib/popular-builds/popular-builds';
 import { toProvisionOption } from '../mappers/provision-option.mappers';
-import { BuildDataService } from './build-data.service';
+import { BuildDataReaderService } from './build-data-reader.service';
 
 @Injectable()
 export class PopularBuildsReaderService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly data: BuildDataService
+    private readonly data: BuildDataReaderService
   ) {}
 
   async popular({ tankId, query }: PopularBuildsInput): Promise<PopularBuilds> {

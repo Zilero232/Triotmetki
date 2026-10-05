@@ -1,7 +1,7 @@
 import { afterAll, beforeEach, expect, it } from 'vitest';
 
-import { ARENA_BONUS_TYPE } from '../../../../common/lib';
 import { createTestPrisma, describeWithDatabase, truncateTables } from '../../../../core/prisma/_tests/test-database';
+import { ARENA_BONUS_TYPE } from '../../../reference';
 import { competitionBattles as competitionBattlesQuery } from '../competition-battles.queries';
 
 const SEED = {

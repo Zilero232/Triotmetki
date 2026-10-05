@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { CareerSource } from '../../../../../common/lib';
+import type { CareerSource } from '../../../../collector';
 
 import { careerRecordRefs, toPlayerAssist } from '../player-career';
 

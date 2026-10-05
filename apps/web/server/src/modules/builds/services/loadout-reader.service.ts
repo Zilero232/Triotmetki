@@ -10,11 +10,11 @@ import type { CalculateLoadoutInput } from '../builds.types';
 import { AppBadRequestException } from '../../../common/exceptions';
 import { toVehicleStats } from '../../reference';
 import { assembleLoadout } from '../lib/assemble-loadout/assemble-loadout';
-import { BuildDataService } from './build-data.service';
+import { BuildDataReaderService } from './build-data-reader.service';
 
 @Injectable()
 export class LoadoutReaderService {
-  constructor(private readonly data: BuildDataService) {}
+  constructor(private readonly data: BuildDataReaderService) {}
 
   async calculate({ tankId, request }: CalculateLoadoutInput): Promise<LoadoutResult> {
     const { loadout } = request;

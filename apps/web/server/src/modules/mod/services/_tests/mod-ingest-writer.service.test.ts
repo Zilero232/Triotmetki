@@ -4,10 +4,11 @@ import { describe, expect, it } from 'vitest';
 import { matches, mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Battle, Player, PlayerTank } from '../../../../../generated';
-import type { BattleEventsSink, PrismaService, WebhookEmitter } from '../../../../core';
-import type { ExpectedValuesService } from '../../../reference';
+import type { PrismaService } from '../../../../core';
+import type { ExpectedValuesReaderService } from '../../../reference';
+import type { WebhookEmitter } from '../../../webhooks';
 import type { IngestEvent } from '../../lib/contract';
-import type { AuthenticatedDevice } from '../../mod.types';
+import type { AuthenticatedDevice, BattleEventsSink } from '../../mod.types';
 
 import { Prisma } from '../../../../../generated';
 import { MOD_INGEST } from '../../config/ingest.constants';
@@ -66,7 +67,7 @@ const duplicate = () => uniqueViolation(MOD_INGEST.battleUniqueConstraint);
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
-  const expected = mock<ExpectedValuesService>();
+  const expected = mock<ExpectedValuesReaderService>();
   const webhooks = mock<WebhookEmitter>();
 
   const created = new Set<bigint>();
@@ -301,7 +302,7 @@ describe('ModIngestWriterService side channels', () => {
     const service = new ModIngestWriterService(
       prisma,
       new EventLedgerService(new RedisMock()),
-      mock<ExpectedValuesService>(),
+      mock<ExpectedValuesReaderService>(),
       mock<WebhookEmitter>(),
       sink
     );

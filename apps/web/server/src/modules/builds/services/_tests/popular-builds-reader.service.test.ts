@@ -3,7 +3,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Battle, Build, Provision } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
-import type { BuildDataService } from '../build-data.service';
+import type { BuildDataReaderService } from '../build-data-reader.service';
 
 import { PopularBuildsReaderService } from '../popular-builds-reader.service';
 
@@ -26,7 +26,7 @@ const build = ({ loadout, ...fields }: Pick<Build, 'likesCount' | 'loadout'>) =>
 
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
-  const data = mock<BuildDataService>();
+  const data = mock<BuildDataReaderService>();
 
   prisma.battle.findMany.mockResolvedValue([]);
   prisma.build.findMany.mockResolvedValue([]);

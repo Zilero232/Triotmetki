@@ -3,8 +3,8 @@ import { readFileSync } from 'node:fs';
 import { afterAll, beforeEach, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
-import type { WebhookEmitter } from '../../../../core';
-import type { ExpectedValuesService } from '../../../reference';
+import type { ExpectedValuesReaderService } from '../../../reference';
+import type { WebhookEmitter } from '../../../webhooks';
 import type { BattleResultEvent } from '../../lib/contract';
 import type { AuthenticatedDevice } from '../../mod.types';
 
@@ -29,7 +29,7 @@ describeWithDatabase('ModIngestWriterService on a real database', () => {
   const prisma = createTestPrisma();
 
   const createService = () => {
-    const expected = mock<ExpectedValuesService>();
+    const expected = mock<ExpectedValuesReaderService>();
 
     expected.all.mockResolvedValue(new Map());
 

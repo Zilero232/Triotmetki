@@ -1,6 +1,6 @@
 import type { PlayerAssist } from '@otmetki/schemas';
 
-import type { CareerSource } from '../../../../common/lib';
+import type { CareerSource } from '../../../collector';
 import type { CareerRecordRef } from './player-career.types';
 
 export const toPlayerAssist = (source: CareerSource): PlayerAssist | null => {

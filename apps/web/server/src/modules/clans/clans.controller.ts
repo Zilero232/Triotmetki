@@ -17,8 +17,8 @@ import {
   ClanParamsDto,
   ClanStrongholdDto
 } from './dto/clans.dto';
-import { ClanListService } from './services/clan-list.service';
-import { ClanPageService } from './services/clan-page.service';
+import { ClanListReaderService } from './services/clan-list-reader.service';
+import { ClanPageReaderService } from './services/clan-page-reader.service';
 import { ClanResolverService } from './services/clan-resolver.service';
 import { ClanStrongholdReaderService } from './services/clan-stronghold-reader.service';
 
@@ -29,8 +29,8 @@ import { ClanStrongholdReaderService } from './services/clan-stronghold-reader.s
 export class ClansController {
   constructor(
     private readonly resolver: ClanResolverService,
-    private readonly pages: ClanPageService,
-    private readonly lists: ClanListService,
+    private readonly pages: ClanPageReaderService,
+    private readonly lists: ClanListReaderService,
     private readonly strongholds: ClanStrongholdReaderService
   ) {}
 

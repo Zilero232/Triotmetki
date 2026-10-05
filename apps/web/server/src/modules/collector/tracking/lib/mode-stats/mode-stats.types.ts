@@ -1,6 +1,6 @@
 import type { Prisma } from '../../../../../../generated';
-import type { ModeStatsMode } from '../../../../../common/lib';
 import type { AccountStatistics, TankStats } from '../../../../../lib/lesta';
+import type { ModeStatsMode } from '../mode-blocks/mode-blocks.types';
 
 export type AccountModeRowsInput = {
   accountId: bigint;

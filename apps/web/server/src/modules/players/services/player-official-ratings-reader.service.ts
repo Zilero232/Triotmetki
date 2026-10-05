@@ -7,16 +7,17 @@ import { isNonNullish } from 'remeda';
 import type { LestaClient } from '../../../lib/lesta';
 import type { OfficialPeriodInput } from '../players.types';
 
-import { availablePeriods, errorMessage, OFFICIAL_PERIOD_TO_LESTA, toNumber, toOfficialFields } from '../../../common/lib';
+import { errorMessage, toNumber } from '../../../common/lib';
 import { LESTA_CLIENT } from '../../../core';
-import { OfficialRatingTypesService } from '../../reference';
+import { availablePeriods, OFFICIAL_PERIOD_TO_LESTA, toOfficialFields } from '../../leaderboards';
+import { OfficialRatingTypesReaderService } from '../../reference';
 
 @Injectable()
 export class PlayerOfficialRatingsReaderService {
   private readonly logger = new Logger(PlayerOfficialRatingsReaderService.name);
 
   constructor(
-    private readonly types: OfficialRatingTypesService,
+    private readonly types: OfficialRatingTypesReaderService,
     @Inject(LESTA_CLIENT) private readonly lesta: LestaClient
   ) {}
 

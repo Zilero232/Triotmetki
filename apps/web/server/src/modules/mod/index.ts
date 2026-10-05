@@ -1,3 +1,4 @@
+export { BATTLE_EVENTS } from './config/battle-events.constants';
 export { MOD_DEVICE, MOD_DEVICE_LIMITS } from './config/device.constants';
 export { BATTLE_CORROBORATION } from './config/ingest.constants';
 export { sessionUuid } from './lib/battle';
@@ -9,5 +10,6 @@ export type { StoredLoadout } from './lib/loadout';
 export { signedMessage } from './lib/request-signature';
 export { ModModule } from './mod.module';
 export type { AuthenticatedDevice, SignedModRequest } from './mod.types';
+export type { BattleEventsSink, BattleStartedEvent } from './mod.types';
 export { corroboratedBattle, ownerTrustedBattle } from './queries/battle-corroboration.queries';
 export { ModDeviceService } from './services/mod-device.service';

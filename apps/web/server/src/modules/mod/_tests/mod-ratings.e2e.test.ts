@@ -18,7 +18,7 @@ import type { ModRatingsQueries } from '../queries/ratings.types';
 import { AllExceptionsFilter } from '../../../common/filters';
 import { AppConfigService } from '../../../config';
 import { PrismaService, REDIS } from '../../../core';
-import { ExpectedValuesService } from '../../reference';
+import { ExpectedValuesReaderService } from '../../reference';
 import { MOD_DEVICE } from '../config/device.constants';
 import { MOD_TOKENS } from '../config/tokens.constants';
 import { deviceSecret, hashSecret } from '../lib/device-secret';
@@ -58,7 +58,7 @@ type SignedPostInput = {
 const prisma = mockDeep<PrismaService>();
 const queries = { tankRecords: vi.fn<ModRatingsQueries['tankRecords']>() };
 const config = mock<AppConfigService>();
-const expectedValues = mock<ExpectedValuesService>();
+const expectedValues = mock<ExpectedValuesReaderService>();
 
 let app: INestApplication;
 
@@ -90,7 +90,7 @@ beforeAll(async () => {
       { provide: PrismaService, useValue: prisma },
       { provide: MOD_TOKENS.ratingsQueries, useValue: queries },
       { provide: AppConfigService, useValue: config },
-      { provide: ExpectedValuesService, useValue: expectedValues },
+      { provide: ExpectedValuesReaderService, useValue: expectedValues },
       { provide: REDIS, useValue: new RedisMock() },
       { provide: APP_PIPE, useClass: ZodValidationPipe },
       { provide: APP_FILTER, useClass: AllExceptionsFilter },

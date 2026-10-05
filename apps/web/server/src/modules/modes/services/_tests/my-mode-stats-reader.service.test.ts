@@ -11,8 +11,8 @@ import type { MyModeBattleRow } from '../../mappers/my-mode-stats.types';
 import type { ModesQueries } from '../../providers/modes-queries.provider.types';
 
 import { AppNotFoundException } from '../../../../common/exceptions';
-import { bonusTypesOfMode } from '../../../../common/lib';
-import { UserLestaAccountsService } from '../../../../core';
+import { UserAccountsReaderService } from '../../../accounts';
+import { bonusTypesOfMode } from '../../../reference';
 import { MyModeStatsReaderService } from '../my-mode-stats-reader.service';
 
 const summary = (tankId: number): VehicleSummary => ({
@@ -58,7 +58,7 @@ const createService = () => {
   career.modes.mockResolvedValue({ accountId: 42, source: 'none', modes: [] });
 
   return {
-    service: new MyModeStatsReaderService(prisma, catalog, career, new UserLestaAccountsService(prisma), queries),
+    service: new MyModeStatsReaderService(prisma, catalog, career, new UserAccountsReaderService(prisma), queries),
     prisma,
     queries,
     catalog,

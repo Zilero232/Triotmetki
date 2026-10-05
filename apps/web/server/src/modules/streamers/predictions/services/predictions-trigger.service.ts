@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { differenceInSeconds } from 'date-fns';
 
-import type { BattleEventsSink, BattleStartedEvent } from '../../../../core';
+import type { BattleEventsSink, BattleStartedEvent } from '../../../mod';
 import type { PredictionJob } from '../lib/prediction';
 
 import { errorMessage } from '../../../../common/lib';

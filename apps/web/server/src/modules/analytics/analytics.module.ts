@@ -13,7 +13,7 @@ import {
   HonestRngReaderService,
   MapAdvisorReaderService,
   PlatoonChemistryReaderService,
-  PlaylistService,
+  PlaylistReaderService,
   TankAnalyticsReaderService
 } from './services';
 
@@ -28,8 +28,8 @@ import {
     PlatoonChemistryReaderService,
     HonestRngReaderService,
     BattleReviewReaderService,
-    PlaylistService
+    PlaylistReaderService
   ],
-  exports: [PlaylistService, AnalyticsCoreModule]
+  exports: [PlaylistReaderService, AnalyticsCoreModule]
 })
 export class AnalyticsModule {}

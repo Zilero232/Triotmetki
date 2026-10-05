@@ -10,7 +10,7 @@ import type { VehicleCatalogService } from '../../../reference';
 import type { LestaPlayerInfo } from '../../players.types';
 import type { PlayerResolverService } from '../player-resolver.service';
 
-import { CAREER_MODE_FROM_DB } from '../../../../common/lib';
+import { CAREER_MODE_FROM_DB } from '../../../collector';
 import { PlayerCareerReaderService } from '../player-career-reader.service';
 
 const UPDATED = new Date('2026-09-28T10:00:00Z');

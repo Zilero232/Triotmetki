@@ -7,7 +7,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { AccountRating, Overlay, PlaySession, StreamerProfile } from '../../../../../../generated';
 import type { PrismaService } from '../../../../../core';
 import type { EntitlementsService } from '../../../../billing';
-import type { CosmeticsService } from '../../../../progression';
+import type { CosmeticsReaderService } from '../../../../progression';
 import type { VehicleCatalogService } from '../../../../reference';
 
 import { OverlayDataService } from '../overlay-data.service';
@@ -20,7 +20,7 @@ const createService = () => {
   const catalog = mock<VehicleCatalogService>();
   const cache = mock<Cache>();
   const entitlements = mock<EntitlementsService>();
-  const cosmetics = mock<CosmeticsService>();
+  const cosmetics = mock<CosmeticsReaderService>();
 
   cosmetics.effectiveOverlayTheme.mockImplementation(async ({ theme }) => theme);
   prisma.challenge.findFirst.mockResolvedValue(null);

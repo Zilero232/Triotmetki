@@ -1,1 +1,0 @@
-export { clanEmblem } from './emblem';

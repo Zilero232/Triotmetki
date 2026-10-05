@@ -1,6 +1,6 @@
 import type { BuildMode } from '@otmetki/schemas';
 
-import { GAME_MODE_BONUS_TYPES } from '../../../../../../common/lib';
+import { GAME_MODE_BONUS_TYPES } from '../../../../../reference';
 
 export const BUILD_MODE_BONUS_TYPES = {
   random: GAME_MODE_BONUS_TYPES.random,

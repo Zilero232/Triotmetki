@@ -6,7 +6,8 @@ import { format, subDays } from 'date-fns';
 import type { Digest, DigestPayload } from '../config/notifications-queue.types';
 import type { DigestOfInput } from '../notifications.types';
 
-import { PrismaService, UserLestaAccountsService } from '../../../core';
+import { PrismaService } from '../../../core';
+import { UserAccountsReaderService } from '../../accounts';
 import { NOTIFICATIONS_JOB, NOTIFICATIONS_QUEUE } from '../config/notifications-queue.constants';
 import { WEEKLY_DIGEST } from '../config/watchers.constants';
 
@@ -15,7 +16,7 @@ export class WeeklyDigestService {
   constructor(
     private readonly prisma: PrismaService,
     @InjectQueue(NOTIFICATIONS_QUEUE.deliver) private readonly queue: Queue<DigestPayload>,
-    private readonly accounts: UserLestaAccountsService
+    private readonly accounts: UserAccountsReaderService
   ) {}
 
   async run(now = new Date()): Promise<number> {

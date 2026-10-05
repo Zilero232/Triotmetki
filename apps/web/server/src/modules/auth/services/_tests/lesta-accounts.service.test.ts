@@ -8,6 +8,7 @@ import type { CollectorProducerService, PurgeGuardService } from '../../../colle
 
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { createTokenCipher } from '../../../../core/token-cipher/_tests/token-cipher.fixtures';
+import { UserAccountsReaderService } from '../../../accounts';
 import { LestaAccountsService } from '../lesta-accounts.service';
 
 const identity = { userId: 'user', accountId: 7, nickname: 'Tanker', accessToken: 'token', expiresAt: new Date() };
@@ -33,7 +34,7 @@ const createService = ({ others, isKnown, isCleared = true }: { others: number; 
   const cipher = createTokenCipher();
 
   return {
-    service: new LestaAccountsService(prisma, collector, entitlements, lesta, cipher, purgeGuard),
+    service: new LestaAccountsService(prisma, collector, entitlements, lesta, cipher, purgeGuard, new UserAccountsReaderService(prisma)),
     prisma,
     collector,
     lesta,

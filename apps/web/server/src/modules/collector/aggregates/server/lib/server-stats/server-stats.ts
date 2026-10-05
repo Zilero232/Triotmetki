@@ -1,9 +1,10 @@
-import { safeDivide, winRateDiffFromAggregate } from '@otmetki/ratings';
+import { winRateDiffFromAggregate } from '@otmetki/ratings';
 import { groupBy, sortBy } from 'remeda';
 
 import type { BuildServerStatsInput, DailyStatsRow, PeriodPlayersAtInput, PlayerCountRow, ServerStatsRow } from './server-stats.types';
 
 import { CohortFilter } from '../../../../../../../generated';
+import { ratio } from '../../../../../../common/lib';
 import { tierListRanks } from '../tier-list';
 import { SERVER_STATS } from './server-stats.constants';
 
@@ -66,7 +67,7 @@ export const buildServerStats = ({ rows, players, tiers, mode, period }: BuildSe
         return [];
       }
 
-      const perBattle = (value: number) => safeDivide({ value, by: row.battles });
+      const perBattle = (value: number) => ratio({ value, by: row.battles }) ?? 0;
 
       return [
         {
@@ -86,7 +87,7 @@ export const buildServerStats = ({ rows, players, tiers, mode, period }: BuildSe
           avgXp: perBattle(row.xp),
           avgBlocked: perBattle(row.blocked),
           survivalRate: perBattle(row.survived) * 100,
-          accuracy: safeDivide({ value: row.hits * 100, by: row.shots }),
+          accuracy: ratio({ value: row.hits * 100, by: row.shots }) ?? 0,
           popularityRank: null,
           tierListRank: null
         }

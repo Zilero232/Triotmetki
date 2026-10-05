@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
-import type { MoeThresholdRecord, ThresholdsService } from '../../../reference';
+import type { MoeThresholdRecord, ThresholdsReaderService } from '../../../reference';
 
 import { ProjectionReaderService } from '../projection-reader.service';
 
@@ -20,7 +20,7 @@ const threshold: MoeThresholdRecord = {
 const input = { tankId: 1, currentPercent: 60, targetMarks: 3, avgDamage: 3_500 };
 
 const createService = (moe: MoeThresholdRecord | null) => {
-  const thresholds = mock<ThresholdsService>();
+  const thresholds = mock<ThresholdsReaderService>();
 
   thresholds.moe.mockResolvedValue(moe);
 

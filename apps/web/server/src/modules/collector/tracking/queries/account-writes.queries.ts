@@ -8,9 +8,9 @@ import type {
   UpsertTankModeStatsInput
 } from './account-writes.types';
 
-import { MODE_STATS_SQL } from '../../../../common/lib';
 import { valuesTable } from '../../../../core';
 import { SNAPSHOT_COLUMNS } from '../config/snapshot-columns.constants';
+import { MODE_STATS_SQL } from '../lib/mode-blocks/mode-blocks.constants';
 
 export const refreshLatestTankSnapshots = async ({ db, accountId, capturedAt }: AccountCaptureInput): Promise<void> => {
   await db

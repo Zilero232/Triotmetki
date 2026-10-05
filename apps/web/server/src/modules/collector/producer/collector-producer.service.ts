@@ -9,7 +9,7 @@ import type { EnrolInput, EnrolManyInput, PollInput } from './producer.types';
 import { errorMessage } from '../../../common/lib';
 import { chunkIds } from '../../../lib/lesta';
 import { ENROL_PRIORITY, JOB, QUEUE } from '../contracts';
-import { PRODUCER } from './config';
+import { PRODUCER } from './config/producer.constants';
 
 @Injectable()
 export class CollectorProducerService {

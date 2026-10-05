@@ -1,7 +1,7 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Global, Module } from '@nestjs/common';
 
-import { BATTLE_EVENTS } from '../../../core';
+import { BATTLE_EVENTS } from '../../mod';
 import { STREAMERS_QUEUE } from '../config/queue.constants';
 import { PredictionsTriggerService } from './services/predictions-trigger.service';
 

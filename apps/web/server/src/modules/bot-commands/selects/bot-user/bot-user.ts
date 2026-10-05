@@ -1,6 +1,6 @@
 import type { Prisma } from '../../../../../generated';
 
-import { USER_LESTA_ACCOUNT_ORDER } from '../../../../core';
+import { USER_LESTA_ACCOUNT_ORDER } from '../../../accounts';
 
 export const BOT_USER_SELECT = {
   locale: true,

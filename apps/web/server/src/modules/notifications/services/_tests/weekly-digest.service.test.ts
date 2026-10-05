@@ -8,7 +8,7 @@ import type { Notification, NotificationSettings, UserLestaAccount } from '../..
 import type { PrismaService } from '../../../../core';
 import type { DigestPayload } from '../../config/notifications-queue.types';
 
-import { UserLestaAccountsService } from '../../../../core';
+import { UserAccountsReaderService } from '../../../accounts';
 import { WEEKLY_DIGEST } from '../../config/watchers.constants';
 import { WeeklyDigestService } from '../weekly-digest.service';
 
@@ -32,7 +32,7 @@ const createService = () => {
 
   prisma.notification.findMany.mockResolvedValue([]);
 
-  return { service: new WeeklyDigestService(prisma, queue, new UserLestaAccountsService(prisma)), prisma, queue };
+  return { service: new WeeklyDigestService(prisma, queue, new UserAccountsReaderService(prisma)), prisma, queue };
 };
 
 describe('WeeklyDigestService.run', () => {

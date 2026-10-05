@@ -1,7 +1,7 @@
 import type { CareerModeTank, VehicleSummary } from '@otmetki/schemas';
 
 import type { AccountModeStats, TankModeStats } from '../../../../../generated';
-import type { ModeStatsMode } from '../../../../common/lib';
+import type { ModeStatsMode } from '../../../collector';
 
 export type CareerTotals = {
   battles: number;

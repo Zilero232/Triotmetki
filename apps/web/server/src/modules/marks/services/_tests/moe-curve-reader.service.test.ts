@@ -4,13 +4,13 @@ import { MOE_CURVE } from '@otmetki/schemas';
 import { describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
-import type { ThresholdsService } from '../../../reference';
+import type { ThresholdsReaderService } from '../../../reference';
 
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
 import { MoeCurveReaderService } from '../moe-curve-reader.service';
 
 const createService = (rows: MoeCurvePoint[]) => {
-  const thresholds = mock<ThresholdsService>();
+  const thresholds = mock<ThresholdsReaderService>();
   const queries = { moeCurve: vi.fn().mockResolvedValue(rows) };
 
   thresholds.moe.mockResolvedValue(null);

@@ -4,14 +4,14 @@ import { Injectable } from '@nestjs/common';
 
 import type { AccountEconomyRequest, MyLearningInput } from '../tanks.types';
 
-import { UserLestaAccountsService } from '../../../core';
+import { UserAccountsReaderService } from '../../accounts';
 import { TankEconomyReaderService } from './tank-economy-reader.service';
 import { TankLearningReaderService } from './tank-learning-reader.service';
 
 @Injectable()
 export class MyTankInsightsReaderService {
   constructor(
-    private readonly lestaAccounts: UserLestaAccountsService,
+    private readonly lestaAccounts: UserAccountsReaderService,
     private readonly economy: TankEconomyReaderService,
     private readonly learning: TankLearningReaderService
   ) {}

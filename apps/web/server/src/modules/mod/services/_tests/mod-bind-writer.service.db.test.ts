@@ -5,8 +5,8 @@ import { mock } from 'vitest-mock-extended';
 
 import type { AppConfigService } from '../../../../config';
 
-import { UserLestaAccountsService } from '../../../../core';
 import { createTestPrisma, describeWithDatabase, truncateTables } from '../../../../core/prisma/_tests/test-database';
+import { UserAccountsReaderService } from '../../../accounts';
 import { BIND_CODE } from '../../config/bind-code.constants';
 import { MOD_DEVICE_LIMITS } from '../../config/device.constants';
 import { ModBindWriterService } from '../mod-bind-writer.service';
@@ -25,7 +25,7 @@ describeWithDatabase('ModBindWriterService on a real database', () => {
 
     config.get.mockReturnValue('server-secret-for-tests');
 
-    return new ModBindWriterService(prisma, config, new RedisMock(), new UserLestaAccountsService(prisma));
+    return new ModBindWriterService(prisma, config, new RedisMock(), new UserAccountsReaderService(prisma));
   };
 
   const bindOnce = async (service: ModBindWriterService) => {

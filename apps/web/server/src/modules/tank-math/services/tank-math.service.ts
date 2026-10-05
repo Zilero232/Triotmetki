@@ -3,12 +3,12 @@ import { Injectable } from '@nestjs/common';
 import type { TankMath } from '../tank-math.types';
 
 import { AppBadRequestException } from '../../../common/exceptions';
-import { BuildDataService, isCrewSkill } from '../../builds';
+import { BuildDataReaderService, isCrewSkill } from '../../builds';
 import { camoSkillRate, toTankMathConfig } from '../lib';
 
 @Injectable()
 export class TankMathService {
-  constructor(private readonly data: BuildDataService) {}
+  constructor(private readonly data: BuildDataReaderService) {}
 
   async inputs(tankId: number): Promise<TankMath> {
     const [vehicle, skills] = await Promise.all([this.data.vehicle(tankId), this.data.crewSkills()]);

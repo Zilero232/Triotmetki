@@ -3,13 +3,13 @@ import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
 import type { LestaClient } from '../../../../lib/lesta';
-import type { OfficialRatingTypesService } from '../../../reference';
+import type { OfficialRatingTypesReaderService } from '../../../reference';
 
-import { OFFICIAL_PERIOD_TO_LESTA } from '../../../../common/lib';
+import { OFFICIAL_PERIOD_TO_LESTA } from '../../../leaderboards';
 import { PlayerOfficialRatingsReaderService } from '../player-official-ratings-reader.service';
 
 const createService = (lestaTypes: string[]) => {
-  const types = mock<OfficialRatingTypesService>();
+  const types = mock<OfficialRatingTypesReaderService>();
   const lesta = mockDeep<LestaClient>();
 
   types.lestaTypes.mockResolvedValue(lestaTypes);

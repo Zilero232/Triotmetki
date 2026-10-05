@@ -7,10 +7,10 @@ import type { CheckoutInput, PromoCodeInput, RecordPendingInput, ReleasePromoInp
 import type { YooKassaPayment } from '../lib/yookassa';
 
 import { AppBadRequestException, AppForbiddenException } from '../../../common/exceptions';
-import { PLUS_SUBSCRIPTION } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { PrismaService } from '../../../core';
 import { BILLING_LINKS } from '../config/plans.constants';
+import { PLUS_SUBSCRIPTION } from '../lib/entitlement/entitlement.constants';
 import { describePlan, planPrice } from '../lib/pricing';
 import { checkoutIdempotenceKey, YooKassaClient } from '../lib/yookassa';
 import { PromoService } from './promo.service';

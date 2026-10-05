@@ -15,7 +15,7 @@ import { MODEL_SOURCES } from '../../gamedata';
 import { VehicleCatalogService } from '../../reference';
 import { UsageMeterService } from '../../usage';
 import { ARMOR_STORAGE } from '../config';
-import { TankDetailService } from './tank-detail.service';
+import { TankDetailReaderService } from './tank-detail-reader.service';
 
 @Injectable()
 export class TankArmorReaderService {
@@ -30,7 +30,7 @@ export class TankArmorReaderService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly catalog: VehicleCatalogService,
-    private readonly details: TankDetailService,
+    private readonly details: TankDetailReaderService,
     private readonly usage: UsageMeterService,
     @Inject(ARMOR_STORAGE) private readonly storage: ArmorStorage
   ) {}
