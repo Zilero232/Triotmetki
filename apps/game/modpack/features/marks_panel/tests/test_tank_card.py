@@ -11,7 +11,8 @@ from otmetki.features.marks_panel.i18n import STRINGS
 from otmetki.features.marks_panel.model import hangar_state
 from otmetki.features.marks_panel.model.card import TankCard, percent_history, tank_card
 from otmetki.features.marks_panel.model.card_text import card_text
-from otmetki.features.marks_panel.model.constants import TANK_CARD_KIND, TIER_COLORS
+from otmetki.core.format import TIER_COLORS
+from otmetki.features.marks_panel.model.constants import TANK_CARD_KIND
 from otmetki.features.marks_panel.model.preview import card_preview_text, card_preview_widget
 from otmetki.features.marks_panel.settings import CARD_PANEL_ID, CARD_SCHEMA, SCHEMA
 

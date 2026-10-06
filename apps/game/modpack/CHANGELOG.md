@@ -845,6 +845,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - New component «Hangar switcher» (off): puts any of the game's hangars in place of the standard one; «As in the game» brings it back.
 - Event hangars and other modes' hangars stay unchanged.
 
+## update_notice 0.2.2
+
+### ru
+
+- Номер версии от сервера проверяется целиком, прежде чем попасть в уведомление.
+
+### en
+
+- The version number from the server is checked in full before it reaches the notification.
+
 ## update_notice 0.2.1
 
 ### ru
@@ -1024,6 +1034,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### en
 
 - «Platoon points»: tournament-style points for damage, assist, frags and survival by your rules, with platoon HP bars.
+
+## gun_arc 0.4.2
+
+### ru
+
+- Отметки УГН не перерисовываются, пока танк и камера стоят, и не мигают у края экрана.
+
+### en
+
+- The traverse limit marks are not redrawn while the tank and the camera stand still, and no longer flicker at the screen edge.
 
 ## gun_arc 0.4.1
 
@@ -1599,11 +1619,25 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - Настройки мини-карты: последние места и названия техники включаются один раз, дальше выбор игрока не меняется.
 - Панели в ангаре снова перетаскиваются с зажатым Alt: режим правки держится, пока Alt зажат.
+- Связь с сайтом только по проверенному HTTPS, без перенаправлений; слишком большой ответ сервера отбрасывается.
+- Секрет привязки больше не лежит открытым текстом: в папке игры его нет, в %APPDATA% он зашифрован для вашей учётной записи Windows.
+- Текст игроков и сервера в подписях панелей больше не может менять их разметку.
+- Испорченный заголовок реплея больше не роняет чтение реплеев.
+- Панели HUD обновляются с меньшей нагрузкой на игру: пересчитывается только изменившаяся панель.
+- Окно HUD больше не перезагружается, когда на экране на миг не остаётся панелей (лампа, уведомление).
+- Настройки и раскладка HUD пишутся на диск не чаще раза в секунду и в конце боя, а не на каждый шаг перетаскивания или колеса.
 
 ### en
 
 - Minimap settings: last-seen spots and vehicle names are switched on once, after that the player's choice stays.
 - Hangar panels can be dragged with Alt held again: edit mode lasts as long as Alt is held.
+- The site is reached only over verified HTTPS, without redirects; an oversized server answer is dropped.
+- The binding secret is no longer stored in plain text: none in the game folder, encrypted for your Windows account in %APPDATA%.
+- Player and server text in panel labels can no longer change their markup.
+- A broken replay header no longer breaks reading replays.
+- HUD panels update with less load on the game: only the panel that changed is rebuilt.
+- The HUD window no longer reloads when no panel is on screen for a moment (the lamp, a notice).
+- Settings and the HUD layout are written to disk at most once a second and at the end of a battle, not on every drag or wheel step.
 
 ## core 0.9.3
 
@@ -1876,12 +1910,20 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - При обновлении: последние места и названия техники на мини-карте включаются, если вы их не настраивали; ХП команд по умолчанию — полоска на каждый танк, если вы не меняли вид.
 - При обновлении: если круг сведения был уменьшен, новый компонент «Уменьшенный круг сведения» включается с тем же размером.
 - Новый переключатель «Показывать мой значок «Три отметки» другим игрокам» в «Данные и сайт», включён.
+- При обновлении: открытый секрет привязки переписывается в зашифрованный, привязка сохраняется.
+- Мод всегда работает с основным сервером; другой адрес в config.json действует только в сборке для разработки.
+- Ошибка привязки показывается понятной фразой, а не текстом сервера.
+- Сбой одной части мода больше не оставляет боевые компоненты работать в ангаре.
 
 ### en
 
 - On update: the minimap's last-seen spots and vehicle names turn on unless you set them; Team HP defaults to a bar per tank unless you changed the style.
 - On update: a smaller aim circle you had set turns on the new «Smaller aim circle» component with the same size.
 - New switch «Show my Three Marks badge to other players» in «Data and site», on.
+- On update: a plain-text binding secret is rewritten encrypted, the binding stays.
+- The mod always talks to the main server; another address in config.json works only in a development build.
+- A binding error shows a clear message, never the server text.
+- A failure in one part of the mod no longer leaves battle components running in the hangar.
 
 ## companion 0.8.3
 
@@ -2076,6 +2118,9 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - В «Данные и сайт» появился переключатель своего значка «Три отметки»; он не попадает в профили настроек.
 - Страница компонента: кнопки в один ряд под превью, история — отдельный раздел, без «висящих» подписей.
 - Прицел: таймер перезарядки и снаряды магазина крупнее и читаются на любом фоне.
+- Коды профилей больше не включают и не переносят компоненты, которые сами делают запросы в клиенте или скрывают его элементы.
+- В окне настроек видно, если мод работает не с основным сервером.
+- Одна сломанная панель HUD больше не гасит остальные.
 
 ### en
 
@@ -2084,6 +2129,9 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - «Data and site» has the switch of your own Three Marks badge; it stays out of settings profiles.
 - Component page: the buttons in one row under the preview, the history its own section, no stray captions.
 - Crosshair: the reload timer and the magazine's shells are larger and readable on any background.
+- Profile codes no longer switch on or carry components that send client requests or hide client elements.
+- The settings window shows when the mod is not using the main server.
+- One broken HUD panel no longer blanks the others.
 
 ## ui 0.9.3
 
@@ -2388,12 +2436,14 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - «Карточка танка» переделана: класс, уровень и отметки на стволе, крупный процент, тренд и шкала 65/85/95/100 %.
 - Под шкалой — урон за бой и боёв до следующей отметки; «Подробный» вид и Alt добавляют сетку в две колонки.
 - История отметки в окне мода — отдельный раздел с заголовком, отметки подписаны словами.
+- Имена техники и подписи больше не могут менять разметку панели; ваш собственный шаблон работает как раньше.
 
 ### en
 
 - The «Tank card» is redesigned: class, tier and marks on the gun, the big percent, the trend and the 65/85/95/100% scale.
 - Under the scale: the damage per battle and battles to the next mark; the «Extended» style and Alt add a two-column grid.
 - The marks history in the mod window is its own titled section, the marks spelled out.
+- Vehicle names and labels can no longer change the panel markup; your own template works as before.
 
 ## marks_panel 0.8.2
 
@@ -2649,6 +2699,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - In the hangar: battles, win rate, average damage and WN8 of the current session; a new session starts after idle time.
 
+## replay_upload 0.2.2
+
+### ru
+
+- Слишком большой ответ сервера на загрузку реплея отбрасывается.
+
+### en
+
+- An oversized server answer to a replay upload is dropped.
+
 ## replay_upload 0.2.1
 
 ### ru
@@ -2698,10 +2758,12 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### ru
 
 - «Журнал боя» в новом виде: подложка, итоги плашками, ровные столбцы, снаряды по цветам, полоска ХП цели и криты.
+- Имена техники и подписи больше не могут менять разметку панели; ваш собственный шаблон работает как раньше.
 
 ### en
 
 - «Battle log» redesigned: a plate, totals as chips, aligned columns, colour-coded shells, the target's HP bar and crits.
+- Vehicle names and labels can no longer change the panel markup; your own template works as before.
 
 ## damage_log 0.5.2
 
@@ -2818,10 +2880,12 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### ru
 
 - По умолчанию ХП команд показывается полоской на каждый танк; если вы не меняли вид, он переключится сам.
+- Имена техники и подписи больше не могут менять разметку панели; ваш собственный шаблон работает как раньше.
 
 ### en
 
 - Team HP now defaults to a bar per tank; an unchanged style switches by itself.
+- Vehicle names and labels can no longer change the panel markup; your own template works as before.
 
 ## team_hp 0.6.2
 

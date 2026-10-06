@@ -1,71 +1,68 @@
 import { useLayoutEffect, useRef, useState } from 'react';
-import { isDeepEqual } from 'remeda';
 
 import type { Measured } from '@/entities/hud/panel-layout';
 
-import { screenScale, stickySize } from '@/entities/hud/panel-layout';
+import { screenScale } from '@/entities/hud/panel-layout';
 import { widgetLines } from '@/features/hud/widget-registry';
+import { useMeasureFrames } from '@/shared/lib/use-measure-frames';
 
-import type { MeasureRef, SettleInput, Sizes, UsePanelSizesInput } from './use-panel-sizes.types';
+import type { PanelContent, Sizes } from '../../../lib/panel-sizes';
+import type { MeasureRef, UsePanelSizesInput } from './use-panel-sizes.types';
 
 import { HUD_OVERLAY } from '../../../config';
+import { changedPanels, emptyContent, readSize, settleSizes } from '../../../lib/panel-sizes';
 
-const settle = ({ current, readings }: SettleInput): Sizes => {
-  const measured: Sizes = { ...current };
-  let changed = false;
-
-  readings.forEach((next, id) => {
-    const size = stickySize({ previous: current[id], next });
-
-    measured[id] = size;
-    changed = changed || !isDeepEqual(current[id], size);
-  });
-
-  return changed ? measured : current;
-};
-
-export const usePanelSizes = ({ lines, widgets }: UsePanelSizesInput) => {
+export const usePanelSizes = ({ panels, lines, widgets }: UsePanelSizesInput) => {
   const [sizes, setSizes] = useState<Sizes>({});
   const elementsRef = useRef(new Map<string, HTMLElement>());
   const measureRefsRef = useRef(new Map<string, MeasureRef>());
+  const framesLeftRef = useRef(new Map<string, number>());
+  const contentRef = useRef<PanelContent>(emptyContent());
+
+  const lineCount = (id: string): number => {
+    const widget = widgets.get(id);
+
+    return widget ? widgetLines(widget) : (lines.get(id)?.length ?? 0);
+  };
+
+  const readChanged = (): Map<string, Measured> => {
+    const scale = screenScale();
+    const readings = new Map<string, Measured>();
+
+    framesLeftRef.current.forEach((left, id) => {
+      const size = readSize({ element: elementsRef.current.get(id), lines: lineCount(id), scale });
+
+      if (size) {
+        readings.set(id, size);
+      }
+
+      if (left > 1) {
+        framesLeftRef.current.set(id, left - 1);
+      } else {
+        framesLeftRef.current.delete(id);
+      }
+    });
+
+    return readings;
+  };
+
+  const measure = (): void => {
+    const readings = readChanged();
+
+    if (readings.size > 0) {
+      setSizes((current) => settleSizes({ current, readings }));
+    }
+  };
 
   useLayoutEffect(() => {
-    const measure = (): void => {
-      const scale = screenScale();
-      const readings = new Map<string, Measured>();
+    const next = { lines, widgets };
+    const changed = changedPanels({ previous: contentRef.current, next });
 
-      elementsRef.current.forEach((element, id) => {
-        if (element.offsetWidth <= 0 || element.offsetHeight <= 0) {
-          return;
-        }
+    changed.forEach((id) => framesLeftRef.current.set(id, HUD_OVERLAY.measureFrames + 1));
+    contentRef.current = next;
+  }, [lines, widgets]);
 
-        const resolved = widgets.get(id);
-        const count = resolved ? widgetLines(resolved) : (lines.get(id)?.length ?? 0);
-
-        readings.set(id, { lines: count, width: element.offsetWidth / scale, height: element.offsetHeight / scale });
-      });
-
-      // eslint-disable-next-line react/set-state-in-effect -- the labels' sizes are only known after layout, and Gameface lays out a few frames later; it settles once nothing grows
-      setSizes((current) => settle({ current, readings }));
-    };
-
-    let left = HUD_OVERLAY.measureFrames;
-    let frame = 0;
-
-    const onFrame = (): void => {
-      left -= 1;
-      measure();
-
-      if (left > 0) {
-        frame = requestAnimationFrame(onFrame);
-      }
-    };
-
-    measure();
-    frame = requestAnimationFrame(onFrame);
-
-    return () => cancelAnimationFrame(frame);
-  }, [lines, widgets, sizes]);
+  useMeasureFrames({ measure, frames: HUD_OVERLAY.measureFrames, restartKey: panels });
 
   const measureRef = (id: string): MeasureRef => {
     const known = measureRefsRef.current.get(id);

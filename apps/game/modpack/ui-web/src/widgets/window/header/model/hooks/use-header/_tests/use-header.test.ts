@@ -23,6 +23,20 @@ describe(useHeader, () => {
     expect(hook.result.current.account).toMatchObject({ bound: false, title: 'accountUnbound' });
   });
 
+  it('shows no server warning on the production API', () => {
+    const hook = renderHook(useHeader);
+
+    expect(hook.result.current.server).toBeNull();
+  });
+
+  it('names a non-default server', () => {
+    receiveState(sample.replace('"server": null', '"server": "http://127.0.0.1:4000"').replace('"revision": 1', '"revision": 2'));
+
+    const hook = renderHook(useHeader);
+
+    expect(hook.result.current.server).toBe('http://127.0.0.1:4000');
+  });
+
   it('opens the data page from the binding state', () => {
     const hook = renderHook(useHeader);
 

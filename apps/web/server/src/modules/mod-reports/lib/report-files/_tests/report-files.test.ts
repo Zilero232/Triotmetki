@@ -1,6 +1,8 @@
 import { MOD_REPORTS } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
+import { hmacSha256Hex } from '../../../../../common/lib';
+import { MOD_REPORTS_API } from '../../../config/mod-reports.constants';
 import { fitsReportLimits, hashReporter } from '../report-files';
 
 const SECRET = 'secret-for-tests';
@@ -29,6 +31,12 @@ describe('hashReporter', () => {
 
   it('depends on the server secret', () => {
     expect(hashReporter({ ip: '203.0.113.7', secret: SECRET })).not.toBe(hashReporter({ ip: '203.0.113.7', secret: `${SECRET}!` }));
+  });
+
+  it('keys the hash with a key derived from the server secret, never the secret itself', () => {
+    const withRawSecret = hmacSha256Hex({ key: SECRET, data: `${MOD_REPORTS_API.ipContext}203.0.113.7` });
+
+    expect(hashReporter({ ip: '203.0.113.7', secret: SECRET })).not.toBe(withRawSecret);
   });
 
   it('puts the addresses of one IPv6 subnet under one hash', () => {

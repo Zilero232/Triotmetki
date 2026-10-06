@@ -4,10 +4,10 @@ import functools
 import itertools
 
 from ....core.compat import is_number, to_text
+from ....core.hud.icons import CLASS_GLYPHS
 from ....core.vendor import attr
 from .constants import (
     BLOCKED_OUTCOMES,
-    CLASS_GLYPHS,
     COMPACT_STYLES,
     DETAIL_EXTENDED,
     DETAIL_FULL,

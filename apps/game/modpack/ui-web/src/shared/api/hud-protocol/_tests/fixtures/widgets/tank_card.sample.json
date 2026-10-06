@@ -1,130 +1,130 @@
 {
   "data": {
-    "class_icon": "img://gui/maps/icons/vehicleTypes/white/mediumTank.png|otmetki:class_medium", 
-    "delta": 0.18, 
+    "class_icon": "img://gui/maps/icons/vehicleTypes/white/mediumTank.png|otmetki:class_medium",
+    "delta": 0.18,
     "goal": {
-      "battles": "~45 боёв", 
-      "label": "До 95 %", 
-      "note": "за бой", 
+      "battles": "~45 боёв",
+      "label": "До 95 %",
+      "note": "за бой",
       "value": "28 295"
-    }, 
-    "hint": null, 
-    "marks": 2, 
-    "note": null, 
-    "percent": 86.12, 
+    },
+    "hint": null,
+    "marks": 2,
+    "note": null,
+    "percent": 86.12,
     "points": [
-      86.24, 
-      86.64, 
-      86.34, 
-      86.44, 
-      85.94, 
+      86.24,
+      86.64,
+      86.34,
+      86.44,
+      85.94,
       86.12
-    ], 
+    ],
     "sections": [
       {
         "cells": [
           {
-            "color": null, 
-            "label": "Средний урон", 
-            "note": "нужно 3 050", 
-            "tone": "text", 
+            "color": null,
+            "label": "Средний урон",
+            "note": "нужно 3 050",
+            "tone": "text",
             "value": "2 540"
-          }, 
+          },
           {
-            "color": null, 
-            "label": "Темп", 
-            "note": null, 
-            "tone": "text", 
+            "color": null,
+            "label": "Темп",
+            "note": null,
+            "tone": "text",
             "value": "3 400"
-          }, 
+          },
           {
-            "color": null, 
-            "label": "До 87 %", 
-            "note": "за бой", 
-            "tone": "text", 
+            "color": null,
+            "label": "До 87 %",
+            "note": "за бой",
+            "tone": "text",
             "value": "5 207"
-          }, 
+          },
           {
-            "color": null, 
-            "label": "За 5 боёв", 
-            "note": null, 
-            "tone": "bad", 
+            "color": null,
+            "label": "За 5 боёв",
+            "note": null,
+            "tone": "bad",
             "value": "-0,12 %"
           }
-        ], 
+        ],
         "title": "Отметка"
-      }, 
+      },
       {
         "cells": [
           {
-            "color": "#4FC3B0", 
-            "label": "WN8 на танке", 
-            "note": null, 
-            "tone": "text", 
+            "color": "#4FC3B0",
+            "label": "WN8 на танке",
+            "note": null,
+            "tone": "text",
             "value": "2 310"
-          }, 
+          },
           {
-            "color": null, 
-            "label": "Победы", 
-            "note": "213 боёв", 
-            "tone": "text", 
+            "color": null,
+            "label": "Победы",
+            "note": "213 боёв",
+            "tone": "text",
             "value": "56,20 %"
-          }, 
+          },
           {
-            "color": null, 
-            "label": "Знак 1 ст.", 
-            "note": "за бой", 
-            "tone": "text", 
+            "color": null,
+            "label": "Знак 1 ст.",
+            "note": "за бой",
+            "tone": "text",
             "value": "960"
           }
-        ], 
+        ],
         "title": "Танк"
-      }, 
+      },
       {
         "cells": [
           {
-            "color": null, 
-            "label": "До элиты", 
-            "note": "~98 боёв", 
-            "tone": "text", 
+            "color": null,
+            "label": "До элиты",
+            "note": "~98 боёв",
+            "tone": "text",
             "value": "76 100"
-          }, 
+          },
           {
-            "color": null, 
-            "label": "Изучить Т-54", 
-            "note": "~85 боёв", 
-            "tone": "text", 
+            "color": null,
+            "label": "Изучить Т-54",
+            "note": "~85 боёв",
+            "tone": "text",
             "value": "66 300"
           }
-        ], 
+        ],
         "title": "Исследование"
       }
-    ], 
+    ],
     "thresholds": [
       {
-        "average": "1 900", 
-        "level": 65, 
+        "average": "1 900",
+        "level": 65,
         "reached": true
-      }, 
+      },
       {
-        "average": "2 450", 
-        "level": 85, 
+        "average": "2 450",
+        "level": 85,
         "reached": true
-      }, 
+      },
       {
-        "average": "3 050", 
-        "level": 95, 
+        "average": "3 050",
+        "level": 95,
         "reached": false
-      }, 
+      },
       {
-        "average": "3 900", 
-        "level": 100, 
+        "average": "3 900",
+        "level": 100,
         "reached": false
       }
-    ], 
-    "tier": 7, 
+    ],
+    "tier": 7,
     "vehicle": "Т-34-85"
-  }, 
-  "kind": "tank_card", 
+  },
+  "kind": "tank_card",
   "v": 1
 }

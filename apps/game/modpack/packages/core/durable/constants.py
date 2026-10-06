@@ -20,3 +20,8 @@ STAMP_TOLERANCE_S = 0.01
 # Python 2 decodes a lossy ANSI environment value into '?' where the code page has no character.
 LOSSY_CHAR = '?'
 ENV_BUFFER_CHARS = 32768
+
+# The device secret leaves the game folder (often zipped and shared) and is kept only in %APPDATA%, sealed with DPAPI
+# for the current Windows user. The manager seals and opens it with the same entropy and flags.
+DPAPI_ENTROPY = b'triotmetki-device-v1'
+CRYPTPROTECT_UI_FORBIDDEN = 0x01

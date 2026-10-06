@@ -1,6 +1,9 @@
 import clsx from 'clsx';
 import { clamp } from 'remeda';
 
+import { fillScaleStyle, slideStyle } from '@/shared/lib/bar-fill';
+import { rem } from '@/shared/lib/css-unit';
+
 import type { ThresholdScaleProps } from './ThresholdScale.types';
 
 import s from './ThresholdScale.module.scss';
@@ -11,13 +14,17 @@ export const ThresholdScale = ({ value, cursor = null, levels, labels = false, w
   const isReached = (level: number): boolean => value !== null && value >= level;
 
   return (
-    <div className={clsx(s.scale, labels && s.labelled, className)} style={{ width: `${String(width)}rem` }}>
+    <div className={clsx(s.scale, labels && s.labelled, className)} style={{ width: rem(width) }}>
       <div className={s.track}>
-        <div className={s.fill} style={{ width: at(value ?? 0) }} />
+        <div className={s.fill} style={fillScaleStyle((value ?? 0) / 100)} />
         {levels.map((level) => (
           <span key={level} className={clsx(s.tick, isReached(level) && s.reached)} style={{ left: at(level) }} />
         ))}
-        {cursor !== null && <span className={s.cursor} style={{ left: at(cursor) }} />}
+        {cursor !== null && (
+          <span className={s.slide} style={slideStyle(cursor)}>
+            <span className={s.cursor} />
+          </span>
+        )}
       </div>
       {labels &&
         levels.map((level) => (

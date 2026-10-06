@@ -1,3 +1,5 @@
+import { remRect } from '@/shared/lib/css-unit';
+
 import type { GunArcMarkerProps } from './GunArcMarker.types';
 
 import { GUN_ARC } from '../../../config';
@@ -13,15 +15,7 @@ export const GunArcMarker = ({ mark, point }: GunArcMarkerProps) => {
   const place = markerPlace(point);
 
   return (
-    <span
-      style={{
-        left: `${String(place.left)}rem`,
-        top: `${String(place.top)}rem`,
-        width: `${String(box.width)}rem`,
-        height: `${String(box.height)}rem`
-      }}
-      className={s.marker}
-    >
+    <span className={s.marker} style={remRect({ ...place, ...box })}>
       <svg
         aria-hidden='true'
         height='100%'

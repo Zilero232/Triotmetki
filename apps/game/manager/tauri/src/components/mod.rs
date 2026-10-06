@@ -6,9 +6,9 @@ use serde::Serialize;
 use crate::catalog::{Catalog, CatalogComponent};
 use crate::detect::{GameClient, GameVersion};
 use crate::error::{AppError, AppResult, ErrorCode};
-use crate::fsx::{list_files, move_file};
+use crate::fsx::{ensure_within, list_files, move_file};
 use crate::paths::same_path;
-use crate::state::{component_id, disabled_dir, inno_name, Manifest};
+use crate::state::{component_id, disabled_dir, inno_name, mod_roots, Manifest, ModRootsInput, MODS_DIR};
 
 pub const MANAGER_VERSION: &str = env!("MANAGER_VERSION");
 
@@ -253,11 +253,16 @@ pub fn in_mod_folders(context: ClientContext, path: &Path) -> bool {
     let Some(parent) = path.parent() else {
         return false;
     };
-    let mods_root = context.client.path.join("mods");
-
-    same_path(parent, &context.client.mods_dir)
+    let mods_root = context.client.path.join(MODS_DIR);
+    let listed = same_path(parent, &context.client.mods_dir)
         || same_path(parent, &disabled_dir(context.client_dir))
-        || parent.parent().is_some_and(|grandparent| same_path(grandparent, &mods_root))
+        || parent.parent().is_some_and(|grandparent| same_path(grandparent, &mods_root));
+
+    listed && ensure_within(path, &client_mod_roots(context)).is_ok()
+}
+
+pub fn client_mod_roots(context: ClientContext) -> Vec<PathBuf> {
+    mod_roots(ModRootsInput { client_path: &context.client.path, client_dir: context.client_dir, mods_dir: &context.client.mods_dir })
 }
 
 pub fn now_text() -> String {

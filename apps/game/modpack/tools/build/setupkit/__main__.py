@@ -4,8 +4,9 @@ Usage:
     python apps/game/modpack/tools/build/setupkit [--packages DIR] [--out DIR] [--strict] [--skip-artwork]
 
 Writes <out>/components.json (default apps/game/modpack/dist/catalog) and <out>/previews/<id>.png, the files
-the modpack manager downloads as a release's `catalog`. --packages is the folder
-with the split .mtmod packages from tools/build/build.py (adds sha256/size to the manifest).
+the modpack manager downloads as a release's `catalog`; components.json lists each preview's sha256 in
+`previewSha256`. --packages is the folder with the split .mtmod packages from tools/build/build.py
+(adds sha256/size to the manifest).
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -22,7 +23,7 @@ from fileio import write_json  # noqa: E402
 from setupkit import ASSETS_DIR, CATALOG_PATH, MODPACK_DIR  # noqa: E402
 from setupkit.audio import copy_audio  # noqa: E402
 from setupkit.manifest import catalog as catalog_module  # noqa: E402
-from setupkit.manifest.generate import ManifestError, build_manifest  # noqa: E402
+from setupkit.manifest.generate import ManifestError, build_manifest, preview_hashes  # noqa: E402
 
 DEFAULT_OUT = os.path.join(MODPACK_DIR, 'dist', 'catalog')
 
@@ -54,14 +55,17 @@ def generate(args):
     for warning in warnings:
         print('WARNING: %s' % warning)
 
-    manifest_path = write_json(os.path.join(args.out, 'components.json'), manifest.to_json())
-    component_count = len(manifest.components)
-    dependency_count = len(manifest.dependencies)
-    print('Wrote %s (%d components, %d dependencies)' % (manifest_path, component_count, dependency_count))
     print('Copied %d audio previews' % len(copy_audio(manifest, catalog, MODPACK_DIR, args.out)))
     if not args.skip_artwork:
         from setupkit.artwork.render import render_previews
         print('Rendered %d previews' % len(render_previews(manifest, catalog, ASSETS_DIR, args.out)))
+
+    data = manifest.to_json()
+    data['previewSha256'] = preview_hashes(manifest, args.out)
+    manifest_path = write_json(os.path.join(args.out, 'components.json'), data)
+    component_count = len(manifest.components)
+    dependency_count = len(manifest.dependencies)
+    print('Wrote %s (%d components, %d dependencies)' % (manifest_path, component_count, dependency_count))
     return manifest
 
 

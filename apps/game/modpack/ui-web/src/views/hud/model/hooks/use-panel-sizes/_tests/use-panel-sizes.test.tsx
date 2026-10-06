@@ -3,10 +3,11 @@ import { act, cleanup, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { ResolvedWidget } from '@/features/hud/widget-registry';
+import type { HudPanel } from '@/shared/api/hud-protocol';
 
 import { parseRichText } from '@/shared/lib/rich-text';
 
-import type { Sizes } from '../use-panel-sizes.types';
+import type { Sizes } from '../../../../lib/panel-sizes';
 
 import { HUD_OVERLAY } from '../../../../config';
 import { usePanelSizes } from '../use-panel-sizes';
@@ -14,6 +15,8 @@ import { usePanelSizes } from '../use-panel-sizes';
 const ID = 'otmetki.hud.last_battle';
 
 const LINES = new Map([[ID, parseRichText('урон 1 200')]]);
+
+const PANELS: HudPanel[] = [];
 
 const WIDGETS = new Map<string, ResolvedWidget | null>([[ID, null]]);
 
@@ -24,7 +27,7 @@ const engine = { width: 0, height: 0 };
 const seen: { sizes: Sizes } = { sizes: {} };
 
 const Harness = () => {
-  const { sizes, measureRef } = usePanelSizes({ lines: LINES, widgets: WIDGETS });
+  const { sizes, measureRef } = usePanelSizes({ panels: PANELS, lines: LINES, widgets: WIDGETS });
 
   seen.sizes = sizes;
 

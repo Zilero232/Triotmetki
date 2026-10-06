@@ -1,6 +1,6 @@
 export { REPLAY_FILTER, REPLAYS } from './config';
 export { activeFilterCount, clearFilters, DEFAULT_REPLAY_FILTERS, filterReplays } from './lib/filter-replays';
-export { formatCount, formatDuration, formatMoment, formatSize, romanTier } from './lib/format-replay';
+export { formatCount, formatDuration, formatMoment, formatSize } from './lib/format-replay';
 export { parseReplaysPage } from './lib/parse-replays-page';
 export { replayFacets } from './lib/replay-facets';
 export type { ReplayFacets } from './lib/replay-facets';

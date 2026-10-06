@@ -7,6 +7,7 @@ import { mock } from 'vitest-mock-extended';
 
 import type { ModDevice, OneTimeCode, Player, UserLestaAccount } from '../../../../../generated';
 import type { AppConfigService } from '../../../../config';
+import type { PurgeGuardService } from '../../../collector/purge';
 
 import { AppForbiddenException } from '../../../../common/exceptions';
 import { mockPrismaService } from '../../../../core/prisma/_tests/prisma-mock';
@@ -54,10 +55,17 @@ const createService = () => {
   const prisma = mockPrismaService();
   const config = mock<AppConfigService>();
 
+  const purgeGuard = mock<PurgeGuardService>();
+
   config.get.mockReturnValue(SERVER_SECRET);
+  purgeGuard.blocked.mockResolvedValue(new Set());
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
 
-  return { service: new ModBindWriterService(prisma, config, new RedisMock(), new UserAccountsReaderService(prisma)), prisma };
+  return {
+    service: new ModBindWriterService(prisma, config, new RedisMock(), new UserAccountsReaderService(prisma), purgeGuard),
+    prisma,
+    purgeGuard
+  };
 };
 
 const readyToBind = (code: OneTimeCode = storedCode()) => {
@@ -310,6 +318,34 @@ describe('ModBindWriterService.bind', () => {
 
     expect(prisma.modDevice.updateMany).not.toHaveBeenCalled();
     expect(response.revoked_device_ids).toBeUndefined();
+  });
+
+  it('refuses to bind an account with a data deletion request and creates no device', async () => {
+    const { service, prisma, purgeGuard } = readyToBind();
+
+    purgeGuard.blocked.mockResolvedValue(new Set([ACCOUNT_ID]));
+
+    await expect(service.bind({ body: bindBody(), requester: REQUESTER })).rejects.toMatchObject({
+      status: HttpStatus.FORBIDDEN,
+      response: { error: 'account_mismatch' }
+    });
+
+    expect(prisma.modDevice.create).not.toHaveBeenCalled();
+  });
+
+  it('counts the failures of every address in one IPv6 /64 together', async () => {
+    const { service, prisma } = createService();
+
+    prisma.oneTimeCode.findUnique.mockResolvedValue(null);
+
+    for (let attempt = 0; attempt < BIND_CODE.maxFailuresPerRequester; attempt += 1) {
+      await service.bind({ body: bindBody(), requester: `2001:db8:1:2::${attempt + 1}` }).catch(() => undefined);
+    }
+
+    await expect(service.bind({ body: bindBody(), requester: '2001:db8:1:2:ffff::1' })).rejects.toMatchObject({
+      status: HttpStatus.TOO_MANY_REQUESTS,
+      response: { error: 'rate_limited' }
+    });
   });
 
   it('records which device consumed the code', async () => {

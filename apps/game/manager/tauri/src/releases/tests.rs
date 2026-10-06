@@ -1,5 +1,8 @@
+use std::collections::BTreeMap;
+
 use super::fixtures::{release, TestSigner};
-use super::signature::{signed_payload, verify_release_with, RELEASE_PUBLIC_KEY};
+use super::sequence::{check_sequence, SequenceInput};
+use super::signature::{signed_payload, verify_release_with, PayloadFormat, RELEASE_PUBLIC_KEY};
 use super::*;
 
 #[test]
@@ -70,14 +73,88 @@ fn the_payload_ignores_package_order_and_urls() {
     reordered.packages.reverse();
     reordered.packages[0].url = "https://mirror.triotmetki.ru/x.mtmod".into();
 
-    assert_eq!(signed_payload(&reordered), signed_payload(&release("0.2.0")));
-    assert!(signed_payload(&release("0.2.0")).starts_with(
+    assert_eq!(signed_payload(&reordered, PayloadFormat::Current), signed_payload(&release("0.2.0"), PayloadFormat::Current));
+    assert!(signed_payload(&release("0.2.0"), PayloadFormat::Current).starts_with(
+        "otmetki-modpack-release/2
+version 0.2.0
+games 1.46.*
+catalog -
+notes -
+package companion "
+    ));
+    assert!(signed_payload(&release("0.2.0"), PayloadFormat::Legacy).starts_with(
         "otmetki-modpack-release/1
 version 0.2.0
 games 1.46.*
 catalog -
 package companion "
     ));
+}
+
+fn with_notes(version: &str) -> Release {
+    let mut release = release(version);
+
+    release.notes = Some(crate::catalog::Localized { ru: "Исправления".into(), en: "Fixes".into() });
+    release
+}
+
+#[test]
+fn the_payload_hashes_each_language_of_the_notes() {
+    let payload = signed_payload(&with_notes("0.2.0"), PayloadFormat::Current);
+
+    assert!(payload.contains(
+        "notes bb81ae64d8eb1df65dc2457b00e11100de8223f9de01d6237eea5059edc8bacd 59e5965495d92feeab9a57f4fad73dd3169ca0e0752d6d1983c6b2fc006fc13e\n"
+    ));
+}
+
+#[test]
+fn changed_notes_break_the_signature() {
+    let signer = TestSigner::new(4);
+    let mut signed = signer.signed(with_notes("0.2.0"));
+
+    signed.notes = Some(crate::catalog::Localized { ru: "Обновите вручную: evil.example".into(), en: "Fixes".into() });
+
+    assert_eq!(verify_release_with(&signed, &signer.public_key()).unwrap_err().code(), ErrorCode::SignatureInvalid);
+}
+
+#[test]
+fn accepts_a_release_signed_in_the_legacy_payload() {
+    let signer = TestSigner::new(5);
+    let legacy = signer.signed_as(with_notes("0.2.0"), PayloadFormat::Legacy, 1_791_295_184);
+
+    assert_eq!(verify_release_with(&legacy, &signer.public_key()).unwrap(), 1_791_295_184);
+}
+
+#[test]
+fn returns_the_signed_timestamp_as_the_sequence() {
+    let signer = TestSigner::new(6);
+    let signed = signer.signed_as(release("0.3.0"), PayloadFormat::Current, 1_800_000_000);
+
+    assert_eq!(verify_release_with(&signed, &signer.public_key()).unwrap(), 1_800_000_000);
+}
+
+#[test]
+fn refuses_a_release_signed_before_one_already_seen_for_the_game() {
+    let seen = BTreeMap::from([("1.46.0.0".to_owned(), 200)]);
+    let check = |game: &str, sequence| check_sequence(SequenceInput { seen: &seen, game, version: "0.2.0", sequence });
+
+    assert!(!check("1.46.0.0", 200).unwrap());
+    assert!(check("1.46.0.0", 201).unwrap());
+    assert!(check("1.47.0.0", 1).unwrap());
+    assert_eq!(check("1.46.0.0", 199).unwrap_err().code(), ErrorCode::SignatureInvalid);
+}
+
+#[test]
+fn remembers_the_highest_sequence_per_game() {
+    let dir = tempfile::tempdir().unwrap();
+    let store = SequenceStore::new(dir.path().join("Игрок").join(SEQUENCES_FILE));
+    let remember = |sequence| store.remember(RememberInput { game: "1.46.0.0", version: "0.2.0", sequence });
+
+    remember(300).unwrap();
+    remember(300).unwrap();
+    remember(400).unwrap();
+
+    assert_eq!(remember(350).unwrap_err().code(), ErrorCode::SignatureInvalid);
 }
 
 #[test]
@@ -100,6 +177,8 @@ fn downloads_only_from_our_https_hosts() {
     assert!(!is_trusted_url("https://eviltriotmetki.ru/a.mtmod", api));
     assert!(is_trusted_url("http://localhost:3000/modpack/a.mtmod", "http://localhost:3000"));
     assert!(!is_trusted_url("http://localhost:30001/a.mtmod", "http://localhost:3000"));
+    assert!(!is_trusted_url("http://mirror.example.com/modpack/a.mtmod", "http://mirror.example.com"));
+    assert!(is_trusted_url("https://mirror.example.com/modpack/a.mtmod", "https://mirror.example.com"));
 }
 
 #[test]

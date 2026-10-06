@@ -20,6 +20,7 @@ const eventTime = unixTime.refine((seconds) => seconds <= Date.now() / 1000 + MO
 
 const count = z.number().int().min(0);
 const capped = (field: keyof typeof MOD_BATTLE_LIMITS.stats) => count.max(MOD_BATTLE_LIMITS.stats[field]);
+const arenaField = (field: keyof typeof MOD_BATTLE_LIMITS.arena) => count.max(MOD_BATTLE_LIMITS.arena[field]);
 const credits = z.number().int().min(-MOD_BATTLE_LIMITS.credits).max(MOD_BATTLE_LIMITS.credits);
 const movingAvgDamage = count.max(MOD_BATTLE_LIMITS.stats.damage_dealt);
 const damageRating = z.number().int().min(0).max(10_000);
@@ -71,13 +72,13 @@ export const battleResultEventSchema = z.strictObject({
   event_id: z.string().regex(/^battle:\d+$/),
   occurred_at: eventTime,
   arena_unique_id: z.string().regex(/^\d+$/),
-  arena_type_id: count,
+  arena_type_id: arenaField('arena_type_id'),
   map_name: z.string().max(64).nullable(),
-  bonus_type: count,
-  gui_type: count,
+  bonus_type: arenaField('bonus_type'),
+  gui_type: arenaField('gui_type'),
   arena_created_at: eventTime,
   duration_s: count.max(MOD_BATTLE_LIMITS.durationSeconds),
-  finish_reason: count,
+  finish_reason: arenaField('finish_reason'),
   winner_team: z.number().int().min(0).max(2),
   team: z.number().int().min(0).max(2),
   result: z.enum(['win', 'loss', 'draw']),
@@ -116,7 +117,7 @@ export const battleResultEventSchema = z.strictObject({
     consumables_cost: capped('consumables_cost').optional()
   }),
   moe: moeValuesSchema.nullable(),
-  queue_time_s: z.number().min(0).nullable(),
+  queue_time_s: z.number().min(0).max(MOD_BATTLE_LIMITS.queueSeconds).nullable(),
   session_id: z.string().max(64).nullable(),
   loadout: modBattleLoadoutSchema.nullable().optional(),
   platoon: platoonSchema.nullable().optional(),

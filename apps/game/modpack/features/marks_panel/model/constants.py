@@ -68,19 +68,6 @@ CARD_PREVIEW_RESEARCH = {
 }
 PERCENT_SUFFIX = u'%'
 
-# One colour per tier of the site's rating scale (RATING_TIERS in @otmetki/ratings), worst to best, as the site shows
-# them; the Tank card paints the tank's WN8 with it.
-TIER_COLORS = {
-    'very_bad': '#E3564A',
-    'bad': '#F08A3E',
-    'below_avg': '#F2C94C',
-    'avg': '#D9D9B8',
-    'good': '#7CD35B',
-    'very_good': '#4FC3B0',
-    'great': '#5B9BF2',
-    'unicum': '#A06CF0',
-    'super_unicum': '#D75BD9',
-}
 METRIC_SEPARATOR = u' · '
 
 # The marks history: one file per account, its format version, the vehicles and the entries it keeps.

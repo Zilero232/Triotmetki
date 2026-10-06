@@ -4,7 +4,8 @@ export const DAMAGE_LOG = {
   totalIconSize: 14,
   critIconSize: 12,
   hitsPrefix: '×',
-  bar: { width: 36, height: 4 },
+  bar: { width: 36, height: 4, minTook: 1 },
   shellKinds: ['ap', 'apcr', 'heat', 'he'],
-  otherShell: 'other'
+  otherShell: 'other',
+  sections: ['dealt', 'received']
 } as const;

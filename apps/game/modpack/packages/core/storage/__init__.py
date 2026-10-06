@@ -6,26 +6,29 @@ import os
 
 from ..codec import canonical_json
 from ..compat import to_bytes, to_text
-from .constants import MOVE_REPLACE_FLAGS, PRETTY
+from .constants import MOVE_REPLACE_FLAGS, MOVE_WRITE_THROUGH, PRETTY
+from .deferred import DeferredFile, flush_pending  # noqa: F401
 
 
 # Windows' MoveFileExW replaces in one step, which Python 2.7's os lacks (os.replace is 3.3+); False where it fails.
-def _move_over(src, dst):
+def _move_over(src, dst, write_through):
+    flags = MOVE_REPLACE_FLAGS | (MOVE_WRITE_THROUGH if write_through else 0)
     try:
         import ctypes
-        return bool(ctypes.windll.kernel32.MoveFileExW(to_text(src), to_text(dst), MOVE_REPLACE_FLAGS))
+        return bool(ctypes.windll.kernel32.MoveFileExW(to_text(src), to_text(dst), flags))
     except Exception:
         return False
 
 
-def replace_file(src, dst):
+def replace_file(src, dst, write_through=False):
     """Move `src` over `dst`, replacing it in one step (os.replace, or MoveFileExW on Python 2.7 for Windows), so a
-    crash in between never leaves `dst` missing; elsewhere a remove and a rename."""
+    crash in between never leaves `dst` missing; elsewhere a remove and a rename. `write_through` returns only once
+    the move is on the disk (Windows)."""
     replace = getattr(os, 'replace', None)
     if replace is not None:
         replace(src, dst)
         return
-    if _move_over(src, dst):
+    if _move_over(src, dst, write_through):
         return
     if os.path.exists(dst):
         os.remove(dst)
@@ -33,6 +36,8 @@ def replace_file(src, dst):
 
 
 class JsonFile(object):
+
+    write_through = False
 
     def __init__(self, path, pretty=False):
         self.path = path
@@ -54,7 +59,7 @@ class JsonFile(object):
         temp_path = self.path + '.tmp'
         with io.open(temp_path, 'wb') as handle:
             handle.write(to_bytes(text))
-        replace_file(temp_path, self.path)
+        replace_file(temp_path, self.path, self.write_through)
 
     def delete(self):
         if os.path.exists(self.path):

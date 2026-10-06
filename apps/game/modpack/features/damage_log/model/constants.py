@@ -34,15 +34,6 @@ SOURCES = ('shot', 'fire', 'ram', 'world', 'other')
 # received hit marks that hit as the one that reached the ammo rack.
 AMMO_RACK_WINDOW_S = 1.5
 
-# Vehicle class tags of the arena data (arena_vos, RU 1.45) -> our glyph names.
-CLASS_GLYPHS = {
-    'lightTank': 'class_light',
-    'mediumTank': 'class_medium',
-    'heavyTank': 'class_heavy',
-    'AT-SPG': 'class_td',
-    'SPG': 'class_spg',
-}
-
 # How much a row tells: the notes (outcome words, crits, ammo rack, HP left) always (`alt_mode` off), or with
 # `alt_mode` on only while Alt, the stock client's extended-info key, is held (damage_log_panel _RECORD_STYLE and
 # _handleShowExtendedInfo, RU 1.45 client source).

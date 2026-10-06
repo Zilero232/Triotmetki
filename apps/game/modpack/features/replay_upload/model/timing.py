@@ -13,7 +13,7 @@ def battle_started_at(seen_at, results, to_local):
     if not isinstance(common, dict):
         return None
     created = common.get('arenaCreateTime')
-    if isinstance(created, bool) or not is_number(created) or created <= 0:
+    if not is_number(created) or created <= 0:
         return None
 
     local = to_local(created)

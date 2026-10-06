@@ -24,6 +24,20 @@ class PanelSpec(object):
     preview_text = attr.ib(default=None)
     preview_widget = attr.ib(default=None)
 
+    @classmethod
+    def of(cls, settings, strings, preview, preview_size):
+        """The spec of a feature's own panel by convention: its `settings` package gives `PANEL_ID`, `SCHEMA` and
+        `SWITCH`, its `preview` module `preview_text` and `preview_widget`."""
+        return cls(
+            panel_id=settings.PANEL_ID,
+            schema=settings.SCHEMA,
+            switch=settings.SWITCH,
+            strings=strings,
+            preview_size=preview_size,
+            preview_text=preview.preview_text,
+            preview_widget=preview.preview_widget,
+        )
+
 
 class BattlePanel(FeatureComponent):
     """A battle HUD panel of the shared HUD layer. `start(*args)` runs on `start_event` (the player's own battle, never

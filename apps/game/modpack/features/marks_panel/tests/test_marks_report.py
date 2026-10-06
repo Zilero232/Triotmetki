@@ -118,8 +118,7 @@ class PageReportTest(unittest.TestCase):
         page = build_page(filled(), _support.translator(STRINGS, 'ru'), 5, 10)
         payload = page['rows'][0]['report']
         if os.environ.get('OTMETKI_UPDATE_FIXTURES') == '1':
-            with io.open(REPORT_FIXTURE, 'w', encoding='utf-8', newline='\n') as handle:
-                handle.write(json.dumps(payload, sort_keys=True, indent=2, ensure_ascii=False) + '\n')
+            _support.write_fixture(REPORT_FIXTURE, payload)
 
         with io.open(REPORT_FIXTURE, encoding='utf-8') as handle:
             fixture = json.load(handle)

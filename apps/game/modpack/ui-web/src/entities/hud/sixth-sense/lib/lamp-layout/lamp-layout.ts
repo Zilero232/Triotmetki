@@ -1,5 +1,7 @@
 import type { CSSProperties } from 'react';
 
+import { remRect } from '@/shared/lib/css-unit';
+
 import type { LampLayout, LampLayoutInput, LampRect } from './lamp-layout.types';
 
 import { SIXTH_SENSE } from '../../config';
@@ -19,9 +21,4 @@ export const lampLayout = ({ ring, text, timer }: LampLayoutInput): LampLayout =
   };
 };
 
-export const rectStyle = ({ left, top, width, height }: LampRect): CSSProperties => ({
-  left: `${String(left)}rem`,
-  top: `${String(top)}rem`,
-  width: `${String(width)}rem`,
-  height: `${String(height)}rem`
-});
+export const rectStyle = (rect: LampRect): CSSProperties => remRect(rect);

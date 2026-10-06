@@ -1,3 +1,4 @@
+import { HttpStatus } from '@nestjs/common';
 import RedisMock from 'ioredis-mock';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
@@ -5,6 +6,7 @@ import { matches, mock, mockDeep } from 'vitest-mock-extended';
 
 import type { Battle, Player, PlayerTank } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
+import type { PurgeGuardService } from '../../../collector/purge';
 import type { ExpectedValuesReaderService } from '../../../reference';
 import type { WebhookEmitter } from '../../../webhooks';
 import type { IngestEvent } from '../../lib/contract/contract.types';
@@ -66,8 +68,17 @@ const uniqueViolation = (index: string) =>
 
 const duplicate = () => uniqueViolation(MOD_INGEST.battleUniqueConstraint);
 
+const allowedGuard = () => {
+  const purgeGuard = mock<PurgeGuardService>();
+
+  purgeGuard.blocked.mockResolvedValue(new Set());
+
+  return purgeGuard;
+};
+
 const createService = () => {
   const prisma = mockDeep<PrismaService>();
+  const purgeGuard = allowedGuard();
   const expected = mock<ExpectedValuesReaderService>();
   const webhooks = mock<WebhookEmitter>();
 
@@ -91,15 +102,24 @@ const createService = () => {
   prisma.battle.findMany.mockResolvedValue(battleEvents.map((event) => mock<Battle>({ tankId: event.vehicle.tank_id, result: 'win' })));
   expected.all.mockResolvedValue(new Map());
 
-  const service = new ModIngestWriterService(prisma, new EventLedgerService(new RedisMock()), expected, webhooks);
+  const service = new ModIngestWriterService(prisma, new EventLedgerService(new RedisMock()), expected, purgeGuard, webhooks);
 
-  return { service, prisma, webhooks };
+  return { service, prisma, webhooks, purgeGuard };
 };
 
 const incrementedSessions = (prisma: ReturnType<typeof createService>['prisma']) =>
   prisma.playSession.update.mock.calls.filter(([{ data }]) => 'battles' in data).length;
 
 describe('ModIngestWriterService', () => {
+  it('refuses a batch from an account with a data deletion request before writing anything', async () => {
+    const { service, prisma, purgeGuard } = createService();
+
+    purgeGuard.blocked.mockResolvedValue(new Set([example.account_id]));
+
+    await expect(service.ingest({ device, batch: example })).rejects.toMatchObject({ status: HttpStatus.FORBIDDEN });
+    expect(prisma.battle.create).not.toHaveBeenCalled();
+  });
+
   it('accepts every event of a fresh batch', async () => {
     const { service, prisma } = createService();
 
@@ -304,6 +324,7 @@ describe('ModIngestWriterService side channels', () => {
       prisma,
       new EventLedgerService(new RedisMock()),
       mock<ExpectedValuesReaderService>(),
+      allowedGuard(),
       mock<WebhookEmitter>(),
       sink
     );

@@ -126,7 +126,7 @@ def main(argv):
         raise SystemExit(__doc__)
     index = build_index(argv[0])
     path = hangars.client_index_path(index['client'])
-    fileio.write_text(path, hangars.json_text(index))
+    fileio.write_json(path, index, True)
     print('Wrote %s (%d textures)' % (path, len(index['textures'])))
     return 0
 

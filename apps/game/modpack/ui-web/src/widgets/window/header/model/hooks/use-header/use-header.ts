@@ -25,6 +25,7 @@ export const useHeader = () => {
     setQuery,
     clearQuery: () => setQuery(''),
     account: status ? accountOf(status) : null,
+    server: status?.server ?? null,
     openAccount: () => openSection(SECTION.data)
   };
 };

@@ -19,6 +19,8 @@
 				request>headers>X-Otmetki-Internal-Token delete
 				request>headers>X-Api-Key delete
 				request>headers>X-Telegram-Bot-Api-Secret-Token delete
+				request>headers>X-Otmetki-Device delete
+				request>headers>X-Otmetki-Signature delete
 				request>headers>Referer delete
 				resp_headers>Set-Auth-Token delete
 				request>uri query {
@@ -81,6 +83,11 @@
 
 	# bull-board only over an ssh tunnel; the rest of /admin is the role-guarded API.
 	respond /admin/queues* 404
+
+	# REPLAY_UPLOAD.maxBytes (50 MiB) plus the multipart envelope; the server checks again.
+	request_body /replays* {
+		max_size 51MiB
+	}
 
 	reverse_proxy server:4000 {
 		# Keep WebSocket and SSE streams open across a config reload.

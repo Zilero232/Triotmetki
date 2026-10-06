@@ -7,7 +7,7 @@ import struct
 import unittest
 
 import _support
-from otmetki.core.replay_file import MAGIC, own_outcome, own_stats, read_header_from
+from otmetki.core.replay_file import MAGIC, MAX_HEADER_BLOCK_BYTES, own_outcome, own_stats, read_header_from
 
 RESULTS_FIXTURE = 'battle_results_random.json'
 ENEMY = {'name': 'enemy', 'team': 2, 'vehicleType': 'germany:G04_PzVI_Tiger_I'}
@@ -27,14 +27,26 @@ ARENA = {
     'vehicles': {'9': ENEMY},
 }
 NO_OWN_ENTRY = {'personal': {'avatar': {'team': 1}}}
+NESTING_DEPTH = 100000
 
 
 def replay(*blocks):
-    data = struct.pack(str('<II'), MAGIC, len(blocks))
-    for block in blocks:
-        raw = json.dumps(block).encode('utf-8')
+    return raw_replay(*[json.dumps(block).encode('utf-8') for block in blocks])
+
+
+def raw_replay(*raw_blocks):
+    data = struct.pack(str('<II'), MAGIC, len(raw_blocks))
+    for raw in raw_blocks:
         data += struct.pack(str('<I'), len(raw)) + raw
     return io.BytesIO(data + b'\x00' * 16)
+
+
+def deeply_nested():
+    return b'[' * NESTING_DEPTH + b']' * NESTING_DEPTH
+
+
+def declared_size_only(size):
+    return io.BytesIO(struct.pack(str('<III'), MAGIC, 1, size))
 
 
 def battle_results():
@@ -172,6 +184,24 @@ class NotAReplayTest(unittest.TestCase):
 
     def test_a_replay_whose_first_block_is_not_an_object_is_not_read(self):
         assert read_header_from(replay('text')) is None
+
+    def test_a_deeply_nested_arena_block_is_not_read(self):
+        assert read_header_from(raw_replay(deeply_nested())) is None
+
+    def test_a_deeply_nested_results_block_leaves_the_arena_header_without_results(self):
+        header = read_header_from(raw_replay(json.dumps(ARENA).encode('utf-8'), deeply_nested()))
+
+        assert header['stats'] is None
+
+    def test_an_arena_block_over_its_cap_is_refused(self):
+        assert read_header_from(declared_size_only(MAX_HEADER_BLOCK_BYTES[0] + 1)) is None
+
+    def test_a_results_block_over_its_cap_is_refused(self):
+        arena = json.dumps(ARENA).encode('utf-8')
+        head = struct.pack(str('<II'), MAGIC, 2) + struct.pack(str('<I'), len(arena)) + arena
+        handle = io.BytesIO(head + struct.pack(str('<I'), MAX_HEADER_BLOCK_BYTES[1] + 1))
+
+        assert read_header_from(handle) is None
 
     def test_an_arena_id_of_the_wrong_type_is_left_out(self):
         header = read_header_from(replay(dict(ARENA, arenaUniqueID=True)))

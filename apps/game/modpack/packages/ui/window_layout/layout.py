@@ -13,7 +13,7 @@ def layout_values(message):
     values = {}
     for key in NUMBERS:
         value = message.get(key)
-        if is_number(value) and not isinstance(value, bool):
+        if is_number(value):
             values[key] = int(round(value))
     placed = message.get('placed', True)
     if isinstance(placed, bool):

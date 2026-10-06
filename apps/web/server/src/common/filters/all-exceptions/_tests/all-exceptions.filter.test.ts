@@ -123,7 +123,13 @@ describe('AllExceptionsFilter on the API', () => {
     const { status, body } = reply(Object.assign(new Error('request entity too large'), { status: HttpStatus.PAYLOAD_TOO_LARGE }));
 
     expect(status).toBe(HttpStatus.PAYLOAD_TOO_LARGE);
-    expect(body).toEqual({ error: 'request entity too large', code: 'VALIDATION_FAILED' });
+    expect(body).toMatchObject({ code: 'VALIDATION_FAILED' });
+  });
+
+  it('never echoes the internal message of a middleware client error', () => {
+    const { body } = reply(Object.assign(new Error('Unexpected token } in JSON at position 7 of /srv/app'), { status: HttpStatus.BAD_REQUEST }));
+
+    expect(JSON.stringify(body)).not.toContain('/srv/app');
   });
 
   it('never leaks the message of an unknown error', () => {

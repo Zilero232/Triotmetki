@@ -1,3 +1,4 @@
+import { rem } from '@/shared/lib/css-unit';
 import { ScrollArea } from '@/ui-kit';
 
 import type { ReplayListProps } from './ReplayList.types';
@@ -13,7 +14,7 @@ export const ReplayList = ({ items, selectedId, label, resetKey, onSelect }: Rep
 
   return (
     <ScrollArea contain key={resetKey} className={s.list} label={label} onMetrics={list.onMetrics}>
-      <div ref={list.canvasRef} className={s.canvas} style={{ height: `${list.total}rem` }}>
+      <div ref={list.canvasRef} className={s.canvas} style={{ height: rem(list.total) }}>
         {items.slice(list.start, list.end).map((item, offset) => (
           <ReplayRow
             key={item.id}

@@ -1,9 +1,9 @@
 {
   "data": {
-    "option": "Серверный прицел", 
-    "state": "включён", 
+    "option": "Серверный прицел",
+    "state": "включён",
     "tone": "good"
-  }, 
-  "kind": "option_notice", 
+  },
+  "kind": "option_notice",
   "v": 1
 }

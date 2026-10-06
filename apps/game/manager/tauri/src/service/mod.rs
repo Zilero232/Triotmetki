@@ -27,12 +27,13 @@ use crate::error::{AppError, AppResult, ErrorCode};
 use crate::gameface::{self, GamefaceStatus, ResMapOutcome};
 use crate::hangars::{self, HangarLooksStatus};
 use crate::install::owned_patterns_catalog;
-use crate::patch::{commit_journal, recover_commit, PatchReport, PatchStatus};
+use crate::patch::{commit_journal, recover_commit, PatchReport, PatchStatus, RecoverInput};
 use crate::paths::{normalized, same_path, Layout};
 use crate::releases::ReleasesClient;
 use crate::report::ReportPreview;
 use crate::settings::{ManagerSettings, ManagerState};
 use crate::site::SiteClient;
+use crate::state::{disabled_dir, mod_roots, Manifest, ModRootsInput};
 
 pub const BUSY_WAIT: Duration = Duration::from_secs(3);
 
@@ -154,13 +155,19 @@ impl Manager {
     }
 
     pub fn recover_commits(&self) -> Vec<PathBuf> {
+        let recorded_mod_roots = |client_dir: &Path| match Manifest::read(client_dir) {
+            Ok(Some(manifest)) if manifest.client.is_absolute() => {
+                mod_roots(ModRootsInput { client_path: &manifest.client, client_dir, mods_dir: &manifest.mods_dir })
+            }
+            _ => vec![disabled_dir(client_dir)],
+        };
         let client_dirs = std::fs::read_dir(self.layout.clients_dir())
             .map(|entries| entries.filter_map(Result::ok).map(|entry| entry.path()).filter(|path| path.is_dir()).collect())
             .unwrap_or_else(|_| Vec::new());
 
         client_dirs
             .into_iter()
-            .filter(|dir| match recover_commit(&commit_journal(dir)) {
+            .filter(|dir| match recover_commit(RecoverInput { journal: &commit_journal(dir), roots: &recorded_mod_roots(dir) }) {
                 Ok(replayed) => replayed,
                 Err(error) => {
                     log::warn!("replay the commit journal in {}: {error}", dir.display());

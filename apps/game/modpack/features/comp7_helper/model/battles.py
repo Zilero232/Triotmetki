@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.compat import is_int
-from ....core.format import count_phrase, format_number
+from ....core.compat import int_or_none
+from ....core.format import count_phrase, format_signed
 from ....core.hud.modes import MODE_COMP7, battle_mode
+from ....core.own_result import own_result
 from .constants import KEPT_BATTLES, MIN_STREAK, RESULT_TONES, SHOWN_BATTLES
 
 # Fair play: only the player's own Onslaught battles, from the own battle results the client already shows (the
@@ -11,44 +12,22 @@ from .constants import KEPT_BATTLES, MIN_STREAK, RESULT_TONES, SHOWN_BATTLES
 # players is read or kept.
 
 
-def _int(value):
-    return value if is_int(value) and not isinstance(value, bool) else None
-
-
-def _own_vehicle(personal):
-    for key, value in personal.items():
-        if key == 'avatar':
-            continue
-        entry = value[0] if isinstance(value, list) and value else value
-        if isinstance(entry, dict) and 'typeCompDescr' in entry:
-            return entry
-    return {}
-
-
-def _outcome(winner_team, team):
-    if winner_team == 0:
-        return 'draw'
-    return 'win' if winner_team == team else 'loss'
-
-
 def own_battle(arena_id, results):
     """The own Onslaught battle of `results` ({arena, result, delta, t}), or None for another battle type."""
-    if not isinstance(results, dict) or _int(arena_id) is None:
+    if not isinstance(results, dict) or int_or_none(arena_id) is None:
         return None
     common = results.get('common') or {}
     if battle_mode(common.get('guiType'), common.get('bonusType')) != MODE_COMP7:
         return None
-    personal = results.get('personal') or {}
-    avatar = personal.get('avatar') or {}
-    team = _int(_own_vehicle(personal).get('team')) or _int(avatar.get('team'))
-    winner = _int(common.get('winnerTeam'))
-    if team is None or winner is None:
+    result = own_result(results)
+    if result is None:
         return None
+    avatar = (results.get('personal') or {}).get('avatar') or {}
     return {
         'arena': arena_id,
-        'result': _outcome(winner, team),
-        'delta': _int(avatar.get('comp7RatingDelta')),
-        't': _int(common.get('arenaCreateTime')) or 0,
+        'result': result,
+        'delta': int_or_none(avatar.get('comp7RatingDelta')),
+        't': int_or_none(common.get('arenaCreateTime')) or 0,
     }
 
 
@@ -87,10 +66,6 @@ def recent_delta(history):
     return sum(deltas) if deltas else None
 
 
-def signed(value):
-    return (u'+' if value > 0 else u'') + format_number(value)
-
-
 def streak_text(history, translate):
     result, length = streak(history)
     if length < MIN_STREAK:
@@ -107,7 +82,7 @@ def recent_text(history, translate):
     delta = recent_delta(history)
     if delta is None:
         return translate('comp7_helper_recent', marks=marks)
-    return translate('comp7_helper_recent_delta', marks=marks, delta=signed(delta))
+    return translate('comp7_helper_recent_delta', marks=marks, delta=format_signed(delta))
 
 
 def battle_lines(history, translate):

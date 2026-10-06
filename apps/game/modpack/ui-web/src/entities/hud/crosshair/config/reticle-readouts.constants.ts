@@ -3,7 +3,7 @@ export const RETICLE_READOUTS = {
   canvas: { width: 304, height: 128 },
   box: { width: 68, height: 28, padding: 8, offset: 48 },
   leader: 24,
-  arcs: { radius: 30, span: 60, stroke: 2 },
+  arcs: { radius: 30, span: 60, stroke: 2, sideDegrees: { left: 180, right: 0 } },
   clipCell: { width: 7, height: 4 },
   drum: {
     styles: ['shells', 'bars'],

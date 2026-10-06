@@ -8,25 +8,17 @@ from ....core.client.game import player_tank_id, values_by_name
 from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.moe import moe_service
 from ....core.log import safe
+from .. import settings
 from ..i18n import STRINGS
-from ..model import BattleTotals, format_panel, panel_state
+from ..model import BattleTotals, format_panel, panel_state, preview
 from ..model.constants import PREVIEW_SIZE
-from ..model.preview import preview_text, preview_widget
 from ..model.widget import marks_widget
-from ..settings import CARD_PANEL_ID, PANEL_ID, SCHEMA, SWITCH
+from ..settings import CARD_PANEL_ID
 from .card import TankCardPanel
 from .constants import KIND_BY_EVENT, NO_SNAPSHOT
 
 
-PANEL_SPEC = PanelSpec(
-    panel_id=PANEL_ID,
-    schema=SCHEMA,
-    switch=SWITCH,
-    strings=STRINGS,
-    preview_size=PREVIEW_SIZE,
-    preview_text=preview_text,
-    preview_widget=preview_widget,
-)
+PANEL_SPEC = PanelSpec.of(settings, STRINGS, preview, PREVIEW_SIZE)
 
 
 # The «Отметки» feature: this battle panel and the hangar Tank card (`card`, a component of its own with the marks

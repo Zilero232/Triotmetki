@@ -19,6 +19,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'build'))
 
 import asset_sets  # noqa: E402
+import fileio  # noqa: E402
 import rasterize  # noqa: E402
 
 SOURCE_EXTENSIONS = ('.svg', '.png')
@@ -89,20 +90,13 @@ def planned(asset_set):
     return items
 
 
-def write(output, data):
-    if not os.path.isdir(os.path.dirname(output)):
-        os.makedirs(os.path.dirname(output))
-    with open(output, 'wb') as handle:
-        handle.write(data)
-
-
 def main(argv):
     is_check = '--check' in argv
     items = [item for asset_set in asset_sets.load() for item in planned(asset_set)]
     stale = []
     for output, data in sorted(render_all(items).items()):
         if not is_check:
-            write(output, data)
+            fileio.write_bytes(output, data)
         elif not os.path.isfile(output):
             stale.append(output)
     if stale:

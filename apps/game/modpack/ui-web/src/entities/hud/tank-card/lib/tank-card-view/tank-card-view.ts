@@ -1,6 +1,6 @@
 import { clamp } from 'remeda';
 
-import { formatPercent, NUMBER_FORMAT } from '@/shared/lib/format-number';
+import { formatPercent, trendOf } from '@/shared/lib/format-number';
 
 import type { DeltaView, ScaleMark, ScaleMarksInput } from './tank-card-view.types';
 
@@ -34,21 +34,12 @@ export const scaleMarks = ({ thresholds, percent }: ScaleMarksInput): ScaleMark[
     };
   });
 
-export const tierText = (tier: number | null): string | null => (tier === null ? null : (TANK_CARD.tiers[tier - 1] ?? null));
-
-export const percentText = (percent: number | null): string =>
-  percent === null ? TANK_CARD.unknownPercent : formatPercent({ value: percent, digits: 2 });
-
 export const deltaView = (delta: number | null): DeltaView | null => {
   if (delta === null) {
     return null;
   }
 
-  const text = formatPercent({ value: delta, digits: 2, signed: true }).replace(`${NUMBER_FORMAT.thinSpace}%`, '');
+  const text = formatPercent({ value: delta, digits: 2, signed: true, unit: false });
 
-  if (delta > 0) {
-    return { text, direction: 'up' };
-  }
-
-  return { text, direction: delta < 0 ? 'down' : 'flat' };
+  return { text, direction: TANK_CARD.directions[trendOf(delta)] };
 };

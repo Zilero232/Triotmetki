@@ -2,42 +2,14 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.classes import CLASS_KEYS, class_key
 from ....core.compat import is_int, is_number, string_types, to_text
+from ....core.hit_book import OUTCOMES, PART_NAMES, BattleBook, is_battle_id, text_or_none
 from ....core.shells import SHELL_CODES
-from .constants import (
-    AIM_LIMIT,
-    ANALYSIS_KEYS,
-    BOOK_VERSION,
-    DAMAGE_WINDOW_S,
-    DAMAGING,
-    MAX_BATTLES,
-    MAX_HITS,
-    MODULE_KEYS,
-    MAP_NAME,
-    MAX_TIER,
-    OUTCOMES,
-    PART_NAMES,
-    RESULTS,
-    SIDES,
-)
+from .constants import AIM_LIMIT, ANALYSIS_KEYS, MAP_NAME, MAX_HITS, MAX_TIER, MODULE_KEYS, RESULTS, SIDES
 from .hits import clean_segments, impact
-
-
-def _text(value):
-    return to_text(value) if isinstance(value, string_types) and value else None
 
 
 def _int_or_none(value):
     return int(value) if is_number(value) and value > 0 else None
-
-
-def _keep_count(keep):
-    return max(1, min(int(keep), MAX_BATTLES))
-
-
-def _near(first, second):
-    if first is None or second is None:
-        return True
-    return abs(first - second) <= DAMAGE_WINDOW_S
 
 
 def _class_of(value):
@@ -47,7 +19,7 @@ def _class_of(value):
 def clean_target(info):
     if not isinstance(info, dict) or not is_int(info.get('cd')) or info['cd'] <= 0:
         return None
-    target = {'cd': int(info['cd']), 'name': _text(info.get('name')), 'class': _class_of(info.get('class'))}
+    target = {'cd': int(info['cd']), 'name': text_or_none(info.get('name')), 'class': _class_of(info.get('class'))}
     for key in MODULE_KEYS:
         target[key] = int(info[key]) if is_int(info.get(key)) and info[key] > 0 else None
     return target
@@ -94,7 +66,7 @@ def clean_hit(entry, targets):
     hit = {
         'side': entry['side'],
         'target': entry['target'],
-        'vehicle': _text(entry.get('vehicle')),
+        'vehicle': text_or_none(entry.get('vehicle')),
         'class': _class_of(entry.get('class')),
         'segments': segments,
         'part': entry['part'],
@@ -119,14 +91,10 @@ def _clean_targets(raw):
     return targets
 
 
-def _is_battle_id(value):
-    return is_number(value) or (isinstance(value, string_types) and bool(value))
-
-
 def clean_battle(battle):
     if not isinstance(battle, dict) or not isinstance(battle.get('hits'), list):
         return None
-    if not _is_battle_id(battle.get('id')):
+    if not is_battle_id(battle.get('id')):
         return None
     targets = _clean_targets(battle.get('targets'))
     cleaned = (clean_hit(entry, targets) for entry in battle['hits'][:MAX_HITS])
@@ -137,8 +105,8 @@ def clean_battle(battle):
     return {
         'id': to_text(battle['id']),
         't': started if is_number(started) else None,
-        'map': _text(battle.get('map')),
-        'vehicle': _text(battle.get('vehicle')),
+        'map': text_or_none(battle.get('map')),
+        'vehicle': text_or_none(battle.get('vehicle')),
         'geometry': _geometry_of(battle.get('geometry')),
         'tier': _tier_of(battle.get('tier')),
         'result': battle.get('result') if battle.get('result') in RESULTS else None,
@@ -147,38 +115,29 @@ def clean_battle(battle):
     }
 
 
-def _stored_battles(store):
-    data = store.read({}) if store is not None else {}
-    battles = data.get('battles') if isinstance(data, dict) else None
-    if not isinstance(battles, list):
-        return []
-    cleaned = (clean_battle(battle) for battle in battles)
-    return [battle for battle in cleaned if battle is not None]
+class HitBook(BattleBook):
 
+    max_hits = MAX_HITS
 
-class HitBook(object):
+    def clean_stored(self, battle):
+        return clean_battle(battle)
 
-    def __init__(self, store, keep):
-        self.store = store
-        self.keep = _keep_count(keep)
-        self.battles = _stored_battles(store)[-self.keep:]
-        self.current = None
-        self.pending = []
+    def damage_key(self, entry):
+        return entry['side'], entry['other']
 
     def start(self, battle_id, at, map_label=None, vehicle=None, arena=None):
         arena = arena or {}
-        self.current = {
+        self.open({
             'id': to_text(battle_id),
             't': at,
-            'map': _text(map_label),
-            'vehicle': _text(vehicle),
+            'map': text_or_none(map_label),
+            'vehicle': text_or_none(vehicle),
             'geometry': _geometry_of(arena.get('geometry')),
             'tier': _tier_of(arena.get('tier')),
             'result': None,
             'targets': {},
             'hits': [],
-        }
-        self.pending = []
+        })
 
     def target(self, key, info):
         if self.current is None:
@@ -193,7 +152,7 @@ class HitBook(object):
         return True
 
     def hit(self, shot, at=None):
-        if self.current is None or len(self.current['hits']) >= MAX_HITS:
+        if not self.has_room():
             return False
         target = to_text(shot.get('target'))
         segments = clean_segments(shot.get('segments'))
@@ -206,7 +165,7 @@ class HitBook(object):
             'side': shot['side'],
             'target': target,
             'other': shot.get('other'),
-            'vehicle': _text(shot.get('vehicle')),
+            'vehicle': text_or_none(shot.get('vehicle')),
             'class': class_key(shot.get('class')),
             'segments': segments,
             'part': part,
@@ -218,50 +177,16 @@ class HitBook(object):
             'at': at,
         }
         entry.update(dict((key, None) for key in ANALYSIS_KEYS))
-        if outcome in DAMAGING:
-            entry['damage'] = self._take_pending(entry['side'], entry['other'], at)
-        self.current['hits'].append(entry)
+        self.add_hit(entry)
         return True
 
-    def _take_pending(self, side, other, at):
-        for index, (pending_side, who, amount, when) in enumerate(self.pending):
-            if pending_side == side and who == other and _near(at, when):
-                del self.pending[index]
-                return amount
-        return 0
-
-    def _waiting_hit(self, side, other, at):
-        for entry in reversed(self.current['hits']):
-            if not _near(at, entry['at']):
-                return None
-            waiting = entry['outcome'] in DAMAGING and not entry['damage']
-            if waiting and entry['side'] == side and entry['other'] == other:
-                return entry
-        return None
-
     def damage(self, side, other, amount, at=None):
-        if self.current is None or not is_number(amount) or amount <= 0:
-            return False
-        entry = self._waiting_hit(side, other, at)
-        if entry is not None:
-            entry['damage'] = int(amount)
-            return True
-        still = [item for item in self.pending if _near(at, item[3])]
-        self.pending = still + [(side, other, int(amount), at)]
-        return False
+        return self.add_damage((side, other), amount, at)
 
-    def finish(self):
-        current, self.current = self.current, None
-        self.pending = []
-        if current is None or not current['hits']:
-            return None
+    def finished(self, current):
         for entry in current['hits']:
-            entry.pop('at', None)
             entry.pop('other', None)
-        current = self._joined(current)
-        self.battles.append(current)
-        del self.battles[:-self.keep]
-        return current
+        return self._joined(current)
 
     # A battle rejoined after a disconnect starts again under the same arenaUniqueID: its hits join the part already
     # kept, so one id stays one battle for the page and the viewer.
@@ -295,14 +220,3 @@ class HitBook(object):
             return False
         battle['result'] = result
         return True
-
-    def resize(self, keep):
-        self.keep = _keep_count(keep)
-        del self.battles[:-self.keep]
-
-    def clear(self):
-        self.battles = []
-
-    def save(self):
-        if self.store is not None:
-            self.store.write({'version': BOOK_VERSION, 'battles': self.battles})

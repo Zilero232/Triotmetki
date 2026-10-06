@@ -2,17 +2,19 @@ pub mod faults;
 
 use std::fs;
 use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 
 use sha2::{Digest, Sha256};
 use walkdir::WalkDir;
 
 use crate::error::{AppError, AppResult, ErrorCode};
+use crate::paths::normalized;
 
 pub const RETIRED_SUFFIX: &str = ".otm-old";
 pub const PART_SUFFIX: &str = ".part";
 pub const TEMP_SUFFIX: &str = ".otm-tmp";
 pub const MIN_SAFE_PATH_LENGTH: usize = 4;
+pub const PATH_SEPARATOR: char = '\\';
 
 pub fn write_file(path: &Path, bytes: &[u8]) -> AppResult<()> {
     faults::check(path)?;
@@ -123,8 +125,46 @@ pub fn copy_expected(from: &Path, to: &Path, sha256: Option<&str>) -> AppResult<
     copied
 }
 
+fn has_relative_parts(path: &Path) -> bool {
+    path.components().any(|component| matches!(component, Component::ParentDir | Component::CurDir))
+}
+
+fn is_strictly_inside(path: &Path, root: &Path) -> bool {
+    let root = normalized(root);
+    let prefix = if root.ends_with(PATH_SEPARATOR) { root } else { format!("{root}{PATH_SEPARATOR}") };
+
+    normalized(path).starts_with(&prefix)
+}
+
+fn resolved(path: &Path) -> Option<PathBuf> {
+    fs::canonicalize(path)
+        .ok()
+        .or_else(|| path.parent().and_then(|parent| fs::canonicalize(parent).ok()).zip(path.file_name()).map(|(parent, name)| parent.join(name)))
+}
+
+fn is_within(path: &Path, root: &Path) -> bool {
+    if !root.is_absolute() || !is_strictly_inside(path, root) {
+        return false;
+    }
+
+    match (resolved(path), fs::canonicalize(root).ok()) {
+        (Some(path), Some(root)) => is_strictly_inside(&path, &root),
+        _ => true,
+    }
+}
+
+pub fn ensure_within(path: &Path, roots: &[PathBuf]) -> AppResult<()> {
+    let inside = path.is_absolute() && !has_relative_parts(path) && roots.iter().any(|root| is_within(path, root));
+
+    if !inside {
+        return Err(AppError::coded(ErrorCode::InvalidPath, format!("{} is outside the folders the manager writes", path.display())));
+    }
+
+    Ok(())
+}
+
 pub fn ensure_removable(path: &Path) -> AppResult<()> {
-    if !path.is_absolute() || path.to_string_lossy().trim_end_matches(['\\', '/']).len() < MIN_SAFE_PATH_LENGTH {
+    if !path.is_absolute() || has_relative_parts(path) || path.to_string_lossy().trim_end_matches(['\\', '/']).len() < MIN_SAFE_PATH_LENGTH {
         return Err(AppError::coded(ErrorCode::InvalidPath, format!("refusing to delete {}", path.display())));
     }
 

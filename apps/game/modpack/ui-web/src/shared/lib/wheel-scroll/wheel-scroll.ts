@@ -1,35 +1,32 @@
 import { clamp } from 'remeda';
 
-import type { ScrollMetrics } from '@/shared/lib/scroll-metrics';
-
 import { gameface } from '@/shared/api/gameface';
 import { SCROLL_AREA } from '@/shared/config';
 import { rootScale } from '@/shared/lib/design-screen';
 import { reportOnce } from '@/shared/lib/page-diag';
-import { scrollMaxOf, scrollMetricsOf } from '@/shared/lib/scroll-metrics';
+import { scrollMax, scrollMaxOf, scrollMetricsOf } from '@/shared/lib/scroll-metrics';
 import { createSmoothScroll } from '@/shared/lib/smooth-scroll';
 
 import type { BindWheelScrollInput, Thumb, ThumbInput, TopFromThumbInput, WheelDelta, WheelRoot, WheelScrollInput } from './wheel-scroll.types';
-
-const maxTop = ({ content, viewport }: Pick<ScrollMetrics, 'content' | 'viewport'>): number => Math.max(content - viewport, 0);
 
 export const wheelScroll = ({ top, deltaY, max, step }: WheelScrollInput): number =>
   clamp(top + Math.sign(deltaY) * step, { min: 0, max: Math.max(max, 0) });
 
 export const thumbOf = ({ top, content, viewport, minThumb }: ThumbInput): Thumb => {
-  const max = maxTop({ content, viewport });
+  const max = scrollMax({ content, viewport });
 
   if (max <= 0 || viewport <= 0) {
     return { visible: false, size: 0, offset: 0 };
   }
 
-  const size = Math.min(Math.max((viewport / content) * viewport, minThumb), viewport);
+  const natural = (viewport / content) * viewport;
+  const size = Math.min(Math.max(natural, minThumb), viewport);
 
   return { visible: true, size, offset: (clamp(top, { min: 0, max }) / max) * (viewport - size) };
 };
 
 export const topFromThumb = ({ offset, size, content, viewport }: TopFromThumbInput): number => {
-  const max = maxTop({ content, viewport });
+  const max = scrollMax({ content, viewport });
   const track = viewport - size;
 
   return track > 0 ? clamp((offset / track) * max, { min: 0, max }) : 0;

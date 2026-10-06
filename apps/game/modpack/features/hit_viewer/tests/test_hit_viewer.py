@@ -14,7 +14,6 @@ from otmetki.features.hit_viewer.model import (
     SIDE_DEALT,
     SIDE_RECEIVED,
     HitBook,
-    battle_result,
     clean_aim,
     clean_battle,
     decode_message,
@@ -474,24 +473,7 @@ class PageTest(unittest.TestCase):
         assert page['rows'][0]['actions'][0]['id'] == 'open'
 
 
-def results(winner, team=1):
-    personal = {'avatar': {'team': team}, 123: {'typeCompDescr': 1, 'team': team}}
-    return {'common': {'winnerTeam': winner}, 'personal': personal}
-
-
 class ResultTest(unittest.TestCase):
-
-    def test_the_own_team_winning_is_a_win(self):
-        assert battle_result(results(1)) == 'win'
-
-    def test_the_other_team_winning_is_a_loss(self):
-        assert battle_result(results(2)) == 'loss'
-
-    def test_no_winner_is_a_draw(self):
-        assert battle_result(results(0)) == 'draw'
-
-    def test_results_without_a_team_say_nothing(self):
-        assert battle_result({'common': {'winnerTeam': 1}}) is None
 
     def test_the_result_reaches_its_recorded_battle(self):
         battle, book = finished_battle()

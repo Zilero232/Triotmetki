@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import os
+import shutil
+import tempfile
 import unittest
 
 import _support  # noqa: F401
@@ -11,6 +14,7 @@ from otmetki.companion.config import (
     OPT_IN_FEATURES,
     RETIRED_DEFAULTS,
     Config,
+    is_dev_install,
     is_valid_server_url,
 )
 from otmetki.companion.i18n import STRINGS, Translator, resolve_language
@@ -121,7 +125,7 @@ class ConfigTest(unittest.TestCase):
         self.assertFalse(config.is_enabled('send_battle_results'))
 
     def test_endpoint_joins_the_server_url_and_the_path(self):
-        config = Config({'server_url': 'http://127.0.0.1:4000/'})
+        config = Config({'server_url': 'http://127.0.0.1:4000/'}, allow_custom_server=True)
 
         self.assertEqual(config.endpoint('/mod/ingest'), 'http://127.0.0.1:4000/mod/ingest')
 
@@ -133,12 +137,81 @@ class ServerUrlTest(unittest.TestCase):
 
     def test_accepts_localhost_with_a_port(self):
         self.assertTrue(is_valid_server_url('http://localhost:4000'))
+        self.assertTrue(is_valid_server_url('http://127.0.0.1:4000/'))
 
     def test_rejects_a_host_that_only_starts_like_localhost(self):
         self.assertFalse(is_valid_server_url('http://localhost.evil.com'))
+        self.assertFalse(is_valid_server_url('http://127.0.0.1.evil.com'))
+
+    def test_rejects_plain_http_elsewhere(self):
+        self.assertFalse(is_valid_server_url('http://api.triotmetki.ru'))
+
+    def test_rejects_user_info(self):
+        self.assertFalse(is_valid_server_url('https://user:secret@api.example'))
+        self.assertFalse(is_valid_server_url('https://api.triotmetki.ru@evil.example'))
+        self.assertFalse(is_valid_server_url('http://localhost@evil.example'))
+
+    def test_rejects_a_query_a_fragment_or_a_bad_port(self):
+        self.assertFalse(is_valid_server_url('https://api.example/?x=1'))
+        self.assertFalse(is_valid_server_url('https://api.example/#x'))
+        self.assertFalse(is_valid_server_url('https://api.example:http'))
 
     def test_rejects_other_schemes(self):
         self.assertFalse(is_valid_server_url('ftp://x'))
+        self.assertFalse(is_valid_server_url('https://'))
+
+
+class PinnedServerTest(unittest.TestCase):
+
+    def test_a_release_install_always_uses_the_production_api(self):
+        config = Config({'server_url': 'https://evil.example'})
+
+        self.assertEqual(config.server_url, DEFAULT_SERVER_URL)
+        self.assertEqual(config.endpoint('/mod/bind'), DEFAULT_SERVER_URL + '/mod/bind')
+        self.assertIsNone(config.custom_server())
+
+    def test_a_dev_install_uses_its_server_and_names_it(self):
+        config = Config({'server_url': 'http://localhost:4000'}, allow_custom_server=True)
+
+        self.assertEqual(config.server_url, 'http://localhost:4000')
+        self.assertEqual(config.custom_server(), 'http://localhost:4000')
+
+    def test_a_dev_install_on_the_production_api_has_no_warning(self):
+        self.assertIsNone(Config(allow_custom_server=True).custom_server())
+
+    def test_an_invalid_server_never_becomes_the_dev_server(self):
+        config = Config({'server_url': 'https://user:x@evil.example'}, allow_custom_server=True)
+
+        self.assertEqual(config.server_url, DEFAULT_SERVER_URL)
+
+
+class DevInstallTest(unittest.TestCase):
+
+    def setUp(self):
+        self.mods = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.mods, ignore_errors=True)
+
+    def test_a_plain_install_is_no_dev_install(self):
+        os.makedirs(os.path.join(self.mods, '1.45.0.0'))
+
+        self.assertFalse(is_dev_install(environ={}, mods_dir=self.mods))
+
+    def test_the_dev_loop_manifest_marks_a_dev_install(self):
+        folder = os.path.join(self.mods, '1.45.0.0', 'otmetki-dev')
+        os.makedirs(folder)
+        with open(os.path.join(folder, 'otmetki-dev.json'), 'w') as handle:
+            handle.write('{}')
+
+        self.assertTrue(is_dev_install(environ={}, mods_dir=self.mods))
+
+    def test_the_environment_flag_marks_a_dev_install(self):
+        self.assertTrue(is_dev_install(environ={'OTMETKI_DEV': '1'}, mods_dir=self.mods))
+        self.assertFalse(is_dev_install(environ={'OTMETKI_DEV': 'yes'}, mods_dir=self.mods))
+
+    def test_a_missing_mods_folder_is_no_dev_install(self):
+        self.assertFalse(is_dev_install(environ={}, mods_dir=os.path.join(self.mods, 'missing')))
 
 
 class SettingsTemplateTest(unittest.TestCase):
@@ -190,9 +263,9 @@ class I18nTest(unittest.TestCase):
         self.assertEqual(resolve_language('auto', 'de'), 'ru')
 
     def test_translator_formats_arguments(self):
-        text = Translator('ru')('bind_failed', reason='x')
+        text = Translator('ru')('settings_apply_title', slug='x')
 
-        self.assertEqual(text, u'Три отметки: не удалось привязать (x)')
+        self.assertEqual(text, u'Настройки x')
 
     def test_translator_falls_back_to_russian(self):
         self.assertEqual(Translator('de').language, 'ru')

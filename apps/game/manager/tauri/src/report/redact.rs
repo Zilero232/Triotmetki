@@ -6,6 +6,7 @@ pub const EMAIL: &str = "<email>";
 pub const DEVICE: &str = "<device>";
 pub const HIDDEN: &str = "<redacted>";
 pub const MIN_NAME_LENGTH: usize = 3;
+pub const MIN_SECRET_LENGTH: usize = 8;
 pub const PROFILE_PATH: &str = r#"(?i)\b([a-z]:[\\/]+(?:users|documents and settings)[\\/]+)[^\\/\r\n"'<>|:*?]+"#;
 pub const EMAIL_PATTERN: &str = r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+";
 pub const DEVICE_PATTERN: &str = r"\bdev_[\w-]{6,}";
@@ -17,6 +18,7 @@ pub const SIGNATURE_PATTERN: &str = r"(?i)\bsha256=[0-9a-f]{64}";
 pub struct RedactContext {
     pub user_name: Option<String>,
     pub account_ids: Vec<u64>,
+    pub secrets: Vec<String>,
 }
 
 enum Replacement {
@@ -35,7 +37,14 @@ fn rule(pattern: &str, replacement: Replacement) -> Option<(Regex, Replacement)>
 
 impl Redactor {
     pub fn new(context: &RedactContext) -> Self {
-        let mut rules: Vec<Option<(Regex, Replacement)>> = vec![rule(PROFILE_PATH, Replacement::KeepFirst(USER))];
+        let mut rules: Vec<Option<(Regex, Replacement)>> = context
+            .secrets
+            .iter()
+            .filter(|secret| secret.chars().count() >= MIN_SECRET_LENGTH)
+            .map(|secret| rule(&regex::escape(secret), Replacement::Fixed(HIDDEN)))
+            .collect();
+
+        rules.push(rule(PROFILE_PATH, Replacement::KeepFirst(USER)));
 
         if let Some(name) = context.user_name.as_deref().map(str::trim).filter(|name| name.chars().count() >= MIN_NAME_LENGTH) {
             rules.push(rule(&format!(r"(?i)\b{}\b", regex::escape(name)), Replacement::Fixed(USER)));

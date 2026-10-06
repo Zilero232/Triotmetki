@@ -1,5 +1,4 @@
 export const HUD_OVERLAY = {
-  unit: 'rem',
   hoverPollMs: 50,
   measureFrames: 4,
   buttonSize: 36,

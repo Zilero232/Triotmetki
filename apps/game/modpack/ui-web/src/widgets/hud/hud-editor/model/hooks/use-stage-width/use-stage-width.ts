@@ -1,9 +1,11 @@
 import { useWindowEvent } from '@siberiacancode/reactuse';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
+import { isDeepEqual } from 'remeda';
 
 import type { Size } from '@/entities/hud/panel-layout';
 
 import { rootScale } from '@/shared/lib/design-screen';
+import { useMeasureFrames } from '@/shared/lib/use-measure-frames';
 
 import type { RoomInput, UseStageWidthInput } from './use-stage-width.types';
 
@@ -32,35 +34,20 @@ const roomOf = ({ box, stage }: RoomInput): Size => {
 export const useStageWidth = ({ stageRef, screen }: UseStageWidthInput) => {
   const boxRef = useRef<HTMLDivElement>(null);
   const [room, setRoom] = useState<Size>({ width: HUD_EDITOR.stage.width, height: Number.POSITIVE_INFINITY });
-  const measureRef = useRef(() => {});
-
-  measureRef.current = () => {
+  const measure = (): void => {
     const box = boxRef.current;
 
-    if (box && box.offsetWidth > 0) {
-      const next = roomOf({ box, stage: stageRef.current });
-
-      setRoom((current) => (current.width === next.width && current.height === next.height ? current : next));
+    if (!box || box.offsetWidth <= 0) {
+      return;
     }
+
+    const next = roomOf({ box, stage: stageRef.current });
+
+    setRoom((current) => (isDeepEqual(current, next) ? current : next));
   };
 
-  useLayoutEffect(() => {
-    let left = HUD_EDITOR.stage.measureFrames;
-    let frame = 0;
-
-    const step = () => {
-      measureRef.current();
-      left -= 1;
-      frame = left > 0 ? requestAnimationFrame(step) : 0;
-    };
-
-    measureRef.current();
-    frame = requestAnimationFrame(step);
-
-    return () => cancelAnimationFrame(frame);
-  });
-
-  useWindowEvent('resize', () => measureRef.current());
+  useMeasureFrames({ measure, frames: HUD_EDITOR.stage.measureFrames, restartKey: `${String(screen.width)}x${String(screen.height)}` });
+  useWindowEvent('resize', measure);
 
   return { boxRef, width: stageWidthFor({ room, screen }) };
 };

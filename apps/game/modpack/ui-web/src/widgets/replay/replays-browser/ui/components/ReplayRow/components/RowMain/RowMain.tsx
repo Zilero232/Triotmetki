@@ -1,4 +1,5 @@
-import { formatMoment, romanTier } from '@/entities/replay/replay';
+import { formatMoment } from '@/entities/replay/replay';
+import { romanTier } from '@/shared/lib/format-number';
 import { ClientIcon } from '@/ui-kit';
 
 import type { RowPartProps } from '../../ReplayRow.types';

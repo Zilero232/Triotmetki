@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import io
 import json
 import os
 import shutil
@@ -539,21 +538,12 @@ class PageTest(unittest.TestCase):
         page = self.page()
 
         if os.environ.get('OTMETKI_UPDATE_FIXTURES') == '1':
-            write_page_fixture(page)
+            _support.write_fixture(PAGE_FIXTURE, page)
 
         self.assertEqual(_support.load_json(PAGE_FIXTURE), json.loads(json.dumps(page)))
 
     def test_cached_page_is_the_same_page(self):
         self.assertEqual(self.page(ItemCache()), self.page())
-
-
-def write_page_fixture(page):
-    text = json.dumps(page, sort_keys=True, indent=2, ensure_ascii=False) + '\n'
-    directory = os.path.dirname(PAGE_FIXTURE)
-    if not os.path.isdir(directory):
-        os.makedirs(directory)
-    with io.open(PAGE_FIXTURE, 'w', encoding='utf-8', newline='\n') as handle:
-        handle.write(text if isinstance(text, type(u'')) else text.decode('utf-8'))
 
 
 class ItemCacheTest(unittest.TestCase):

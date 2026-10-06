@@ -58,6 +58,22 @@ fn a_clean_client_is_not_installed() {
 }
 
 #[test]
+fn only_files_directly_in_the_mod_folders_count_as_ours_to_remove() {
+    let root = tempfile::tempdir().unwrap();
+    let client = lesta_client(root.path(), "1.45.0.0");
+    let catalog = catalog();
+    let client_dir = root.path().join("state");
+    let context = ClientContext { client_dir: &client_dir, client: &client, catalog: &catalog };
+    let mods_root = client.path.join("mods");
+
+    assert!(in_mod_folders(context, &client.mods_dir.join("net.triotmetki.core_0.1.0.mtmod")));
+    assert!(in_mod_folders(context, &mods_root.join("1.44.0.0").join("net.triotmetki.core_0.1.0.mtmod")));
+    assert!(in_mod_folders(context, &disabled_dir(&client_dir).join("otmetki.companion_0.1.0.mtmod")));
+    assert!(!in_mod_folders(context, &mods_root.join("..").join("net.triotmetki.core_0.1.0.mtmod")));
+    assert!(!in_mod_folders(context, &client.mods_dir.join("..").join("..").join("..").join("net.triotmetki.core_0.1.0.mtmod")));
+}
+
+#[test]
 fn disabling_parks_the_component_and_what_needs_it() {
     let root = tempfile::tempdir().unwrap();
     let client = lesta_client(root.path(), "1.45.0.0");

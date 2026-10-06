@@ -81,6 +81,8 @@ The top level also has `schemaVersion`, `modpackVersion`, `platform`, `extension
 - `ownedPaths`: the in-game path prefixes only our packages write, without `res/` (`scripts/client/gui/mods/otmetki/`, `scripts/client/gui/mods/mod_otmetki`, `gui/gameface/mods/triotmetki/`, …). A third-party package or a `res_mods` file under one of them overwrites our files.
 - `conflicts`: third-party mods that duplicate our components, `{id, title {ru, en}, patterns, components, note {ru, en}}`. `patterns` are lowercase masks matched against a package's file name and its `meta.xml` id (XVM, PMOD, Battle Observer, marks calculators, lamps, damage logs, session stats, replay managers); `components` are our ids it duplicates. The manager reports a match only while one of those components is on, and never touches the file. setupkit checks the ids and that a mask has fixed text and does not name our own packages, and keeps in `components` only the ids a build ships.
 
+`previewSha256` (`{"previews/<id>.png": "<sha256>"}`) lists every preview image and sound written next to `components.json`; the manager downloads only the previews listed there and checks each before writing it.
+
 Preset ids (`recommended`, `minimal`, `streamer`, `custom`) are also what `triotmetki://install?preset=<id>` links from the site pass to the manager.
 
 **A new package** gets a catalog entry (and a preview in `previews/`). `tools/build/setupkit/manifest/tests/test_manifest.py` fails until it has one, and `tools/build/tests/test_changelog.py` until [CHANGELOG.md](../CHANGELOG.md) has its entry.

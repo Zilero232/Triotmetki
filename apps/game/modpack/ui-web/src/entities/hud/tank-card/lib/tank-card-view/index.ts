@@ -1,1 +1,1 @@
-export { deltaView, percentText, scaleMarks, scalePosition, tierText } from './tank-card-view';
+export { deltaView, scaleMarks, scalePosition } from './tank-card-view';

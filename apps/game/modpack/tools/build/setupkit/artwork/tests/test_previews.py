@@ -147,9 +147,10 @@ class SvgArtworkTest(unittest.TestCase):
         directory = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, directory, True)
         narrow = []
+        names = preview_files('.svg')
+        pairs = [(os.path.join(PREVIEWS_DIR, name), os.path.join(directory, name + '.png')) for name in names]
 
-        for name in preview_files('.svg'):
-            out = render.render_preview(os.path.join(PREVIEWS_DIR, name), os.path.join(directory, name + '.png'))
+        for name, out in zip(names, render.render_all(pairs)):
             span = artwork_span(out)
             if span[0] < MIN_SPAN[0] or span[1] < MIN_SPAN[1]:
                 narrow.append((name, round(span[0], 2), round(span[1], 2)))

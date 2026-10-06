@@ -12,6 +12,7 @@ totals mid-battle for us.
 Fair play: the spotted status the controller also pushes is left unread."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ....events import Listeners
 from ....hooks import override
 from ....log import log, safe
 from .constants import FEED_ALIAS
@@ -26,7 +27,7 @@ except ImportError:
 class BattleFieldFeed(object):
 
     def __init__(self):
-        self.listeners = []
+        self.listeners = Listeners('team HP listener')
         self.reset()
 
     def reset(self):
@@ -35,12 +36,10 @@ class BattleFieldFeed(object):
         self.team_health = None
 
     def listen(self, callback):
-        if callback not in self.listeners:
-            self.listeners.append(callback)
+        self.listeners.add(callback)
 
     def forget(self, callback):
-        if callback in self.listeners:
-            self.listeners.remove(callback)
+        self.listeners.remove(callback)
 
     @safe
     def updateVehicleHealth(self, vehicleID, newHealth, maxHealth):
@@ -61,8 +60,7 @@ class BattleFieldFeed(object):
         pass
 
     def _notify(self):
-        for callback in list(self.listeners):
-            safe(callback)()
+        self.listeners.notify()
 
 
 _state = {'feed': None}

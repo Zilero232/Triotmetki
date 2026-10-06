@@ -1,4 +1,5 @@
 import { HUD_FIGURE, HUD_TONE_COLORS } from '@/shared/config';
+import { remRect } from '@/shared/lib/css-unit';
 
 import type { ReticleArcsProps } from './ReticleArcs.types';
 
@@ -9,12 +10,7 @@ import s from './ReticleArcs.module.scss';
 
 const { canvas, arcs: geometry } = RETICLE_READOUTS;
 const centre = canvas.height / 2;
-const place = {
-  top: '0rem',
-  left: `${String((canvas.width - canvas.height) / 2)}rem`,
-  width: `${String(canvas.height)}rem`,
-  height: `${String(canvas.height)}rem`
-};
+const place = remRect({ left: (canvas.width - canvas.height) / 2, top: 0, width: canvas.height, height: canvas.height });
 
 export const ReticleArcs = ({ arcs }: ReticleArcsProps) => {
   const track = { left: arcPath({ side: 'left', progress: 1, centre }), right: arcPath({ side: 'right', progress: 1, centre }) };

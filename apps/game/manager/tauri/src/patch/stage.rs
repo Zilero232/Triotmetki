@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 
 use crate::error::{AppError, AppResult, ErrorCode};
-use crate::fsx::{file_sha256, remove_path, rename_file, sibling, write_atomic, write_file, PART_SUFFIX, RETIRED_SUFFIX};
+use crate::fsx::{ensure_within, file_sha256, remove_path, rename_file, sibling, write_atomic, write_file, PART_SUFFIX, RETIRED_SUFFIX};
 use crate::releases::safe_file_name;
 
 pub const COMMIT_JOURNAL: &str = "commit-journal.json";
@@ -130,6 +130,20 @@ fn rollback(journal: &Journal) -> bool {
     clean
 }
 
+fn touched_dirs(plan: &Journal) -> Vec<PathBuf> {
+    let mut dirs: Vec<PathBuf> = Vec::new();
+
+    for path in plan.retired.iter().map(|(path, _)| path).chain(plan.placed.iter().map(|(_, target)| target)) {
+        for dir in path.ancestors().skip(1).take(2).filter(|dir| !dir.as_os_str().is_empty()) {
+            if !dirs.iter().any(|known| known == dir) {
+                dirs.push(dir.to_path_buf());
+            }
+        }
+    }
+
+    dirs
+}
+
 pub fn commit_journal(client_dir: &Path) -> PathBuf {
     client_dir.join(COMMIT_JOURNAL)
 }
@@ -162,7 +176,23 @@ fn undo_retired(original: &Path, old: &Path) -> AppResult<()> {
     Ok(())
 }
 
-pub fn recover_commit(journal_path: &Path) -> AppResult<bool> {
+pub struct RecoverInput<'a> {
+    pub journal: &'a Path,
+    pub roots: &'a [PathBuf],
+}
+
+fn inside(roots: &[PathBuf], paths: [&Path; 2]) -> bool {
+    let inside = paths.iter().all(|path| ensure_within(path, roots).is_ok());
+
+    if !inside {
+        log::warn!("the commit journal names {} outside the client's mod folders", paths[1].display());
+    }
+
+    inside
+}
+
+pub fn recover_commit(input: RecoverInput) -> AppResult<bool> {
+    let RecoverInput { journal: journal_path, roots } = input;
     let bytes = match fs::read(journal_path) {
         Ok(bytes) => bytes,
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(false),
@@ -170,11 +200,11 @@ pub fn recover_commit(journal_path: &Path) -> AppResult<bool> {
     };
 
     if let Ok(journal) = serde_json::from_slice::<Journal>(&bytes) {
-        for (part, target) in journal.placed.iter().rev() {
+        for (part, target) in journal.placed.iter().rev().filter(|(part, target)| inside(roots, [part, target])) {
             undo_placed(part, target)?;
         }
 
-        for (original, old) in journal.retired.iter().rev() {
+        for (original, old) in journal.retired.iter().rev().filter(|(original, old)| inside(roots, [old, original])) {
             undo_retired(original, old)?;
         }
     } else {
@@ -199,8 +229,11 @@ impl Staging {
 
     pub fn commit(self, journal_path: &Path, retire: &[PathBuf]) -> AppResult<Vec<PathBuf>> {
         let plan = plan(&self.parts, retire);
+        let roots = touched_dirs(&plan);
 
-        if let Err(error) = recover_commit(journal_path).and_then(|_| write_atomic(journal_path, &serde_json::to_vec(&plan)?)) {
+        if let Err(error) = recover_commit(RecoverInput { journal: journal_path, roots: &roots })
+            .and_then(|_| write_atomic(journal_path, &serde_json::to_vec(&plan)?))
+        {
             self.discard();
 
             return Err(error);

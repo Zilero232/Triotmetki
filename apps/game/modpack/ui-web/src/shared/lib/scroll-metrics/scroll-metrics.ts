@@ -1,4 +1,4 @@
-import type { ScrollBox, ScrollMetrics } from './scroll-metrics.types';
+import type { ScrollBox, ScrollMetrics, ScrollSpan } from './scroll-metrics.types';
 
 const measured = (value: number | undefined): value is number => typeof value === 'number' && Number.isFinite(value);
 
@@ -26,8 +26,6 @@ export const scrollMetricsOf = (box: ScrollBox): ScrollMetrics => ({
   viewport: viewportOf(box)
 });
 
-export const scrollMaxOf = (box: ScrollBox): number => {
-  const { content, viewport } = scrollMetricsOf(box);
+export const scrollMax = ({ content, viewport }: ScrollSpan): number => Math.max(content - viewport, 0);
 
-  return Math.max(content - viewport, 0);
-};
+export const scrollMaxOf = (box: ScrollBox): number => scrollMax(scrollMetricsOf(box));

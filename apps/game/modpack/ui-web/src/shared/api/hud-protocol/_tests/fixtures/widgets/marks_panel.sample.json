@@ -1,34 +1,34 @@
 {
   "data": {
-    "average": null, 
+    "average": null,
     "bar": {
-      "end": 5207, 
-      "hold": 2540, 
+      "end": 5207,
+      "hold": 2540,
       "value": 3100
-    }, 
+    },
     "damage": {
-      "label": "урон", 
-      "target": 2540, 
+      "label": "урон",
+      "target": 2540,
       "value": 3100
-    }, 
-    "delta": 0.18, 
-    "estimated": false, 
+    },
+    "delta": 0.18,
+    "estimated": false,
     "goal": {
-      "level": 87, 
+      "level": 87,
       "need": 2107
-    }, 
-    "has_curve": true, 
-    "mark": "img://gui/maps/icons/library/marksOnGun/mark_2.png|otmetki:target", 
-    "note": null, 
-    "percent": 86.3, 
-    "stars": 2, 
-    "step": null, 
-    "style": "compact", 
-    "text": null, 
-    "thresholds": [], 
-    "to": "до", 
+    },
+    "has_curve": true,
+    "mark": "img://gui/maps/icons/library/marksOnGun/mark_2.png|otmetki:target",
+    "note": null,
+    "percent": 86.3,
+    "stars": 2,
+    "step": null,
+    "style": "compact",
+    "text": null,
+    "thresholds": [],
+    "to": "до",
     "tone": "text"
-  }, 
-  "kind": "marks_panel", 
+  },
+  "kind": "marks_panel",
   "v": 1
 }

@@ -124,8 +124,8 @@ def _style(settings):
     return style
 
 
-def _stars(state):
-    marks = state['marks']
+def stars_of(state):
+    marks = state['marks'] if state is not None else None
     return int(max(0, min(MAX_STARS, marks))) if is_number(marks) else 0
 
 
@@ -140,7 +140,7 @@ def marks_widget(state, settings, translate):
     style = _style(settings)
     goal = _goal(state, settings)
     data = {
-        'stars': _stars(state),
+        'stars': stars_of(state),
         'damage': _damage(state, translate),
         'style': style,
         'has_curve': bool(state['has_curve']),

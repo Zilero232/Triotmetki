@@ -10,12 +10,12 @@ from ....core.compat import is_int
 from ....core.hooks import override
 from ....core.log import log, safe
 from ....core.shells import shell_code
+from .. import settings
 from ..i18n import STRINGS
-from ..model import mark_offset, mark_text, shows_in, to_native
+from ..model import mark_offset, mark_text, preview, shows_in, to_native
 from ..model.circle import circle_percent, is_scaled, scaled_size
 from ..model.constants import PREVIEW_SIZE, READOUT_TICK_S
 from ..model.editor import editor
-from ..model.preview import preview_text, preview_widget
 from ..model.readouts import (
     Readouts,
     readouts_data,
@@ -47,15 +47,7 @@ except Exception:  # the controller moved: the aim circle stays the client's siz
     _DefaultGunMarkerController = None
 
 
-PANEL_SPEC = PanelSpec(
-    panel_id=PANEL_ID,
-    schema=SCHEMA,
-    switch=SWITCH,
-    strings=STRINGS,
-    preview_size=PREVIEW_SIZE,
-    preview_text=preview_text,
-    preview_widget=preview_widget,
-)
+PANEL_SPEC = PanelSpec.of(settings, STRINGS, preview, PREVIEW_SIZE)
 
 
 def own_max_health():

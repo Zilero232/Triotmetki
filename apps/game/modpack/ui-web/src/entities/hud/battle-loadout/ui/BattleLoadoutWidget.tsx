@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 
+import { rem, remSquare } from '@/shared/lib/css-unit';
 import { ClientIcon, Glyph, HudTip } from '@/ui-kit';
 
 import type { BattleLoadoutData, EquipmentItem } from '../model/schemas';
@@ -14,11 +15,7 @@ import s from './BattleLoadoutWidget.module.scss';
 const cellClassName = (item: EquipmentItem): string =>
   clsx(s.cell, item.empty && s.empty, item.bonus && s.bonus, item.boosted && s.boosted, item.active && s.active, item.used && s.used);
 
-const cellStyle = ({ cell, gap }: BattleLoadoutData) => ({
-  width: `${String(cell)}rem`,
-  height: `${String(cell)}rem`,
-  margin: `0 ${String(gap / 2)}rem`
-});
+const cellStyle = ({ cell, gap }: BattleLoadoutData) => ({ ...remSquare(cell), margin: `0 ${rem(gap / 2)}` });
 
 export const BattleLoadoutWidget = ({ data }: BattleLoadoutWidgetProps) => {
   const { tip, handlers } = useItemTooltip(data.items);
@@ -36,7 +33,7 @@ export const BattleLoadoutWidget = ({ data }: BattleLoadoutWidgetProps) => {
       <div className={s.row}>
         {loadoutEntries(data.items).map((entry) =>
           entry.kind === 'divider' ? (
-            <span key={entry.key} className={s.divider} style={{ height: `${String(data.cell)}rem` }} />
+            <span key={entry.key} className={s.divider} style={{ height: rem(data.cell) }} />
           ) : (
             <div key={entry.key} className={cellClassName(entry.item)} style={cellStyle(data)} {...(entry.item.empty ? {} : handlers(entry.index))}>
               {!entry.item.empty && <ClientIcon icon={entry.item.icon} size={data.size} tone='muted' />}

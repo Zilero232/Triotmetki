@@ -36,12 +36,13 @@ from ....core.client.game import client_language, client_version, on_vehicle_cha
 from ....core.client.native import repair_detection_sound
 from ....core.client.packaging import warn_mixed_install
 from ....core.client.session_log import open_session_log
+from ....core.client.storage import deferred, flush_writes
 from ....core.client.timer import Ticker
 from ....core.client.transport import create_transport
 from ....core.client.ui import Ui
 from ....core.events import EventBus
 from ....core.hooks import Subscriptions
-from ....core.durable import open_config
+from ....core.durable import open_config, open_secret_pair, secret_box
 from ....core.log import log, safe
 from ....core.registry import registry
 from ....core.storage import JsonFile
@@ -51,7 +52,7 @@ from ...badge.client import BadgePreference
 from ...battles.client import BattleCapture
 from ...binding import CredentialStore
 from ...binding.client import Binder
-from ...config import Config
+from ...config import Config, is_dev_install
 from ...config.client import migrate_stored
 from ...i18n import Translator, resolve_language
 from ...marks.client import MarksCapture
@@ -60,11 +61,23 @@ from ...sender import INGEST_PATH, IngestEndpoint, IngestSender
 from ...settings_share.client import SettingsShare
 from ...settings_ui.client import create_settings_ui
 from ...version import MOD_ID, VERSION
-from ..constants import CONFIG_DIR, TICK_S
+from ..constants import CONFIG_DIR, CREDENTIALS_FILE, TICK_S
 
 
 def _path(name):
     return os.path.join(CONFIG_DIR, name)
+
+
+def _credential_store():
+    store = CredentialStore(open_secret_pair(CONFIG_DIR, CREDENTIALS_FILE), secret_box())
+    store.migrate()
+    return store
+
+
+# A capture step of the host runs before the bus event features hear: its failure is logged and the event still goes
+# out, so a feature never misses `battle_leave`, `hangar` or `tick` (and keeps a battle ticker running in the hangar).
+def _step(action, *args):
+    safe(action)(*args)
 
 
 def _stored_object(storage):
@@ -79,13 +92,13 @@ class OtmetkiApp(object):
         self.config_dir = CONFIG_DIR
         self.bus = EventBus()
         self.hooks = Subscriptions()
-        self.config_file = open_config(CONFIG_DIR, 'config.json', pretty=True)
+        self.config_file = deferred(open_config(CONFIG_DIR, 'config.json', pretty=True))
         stored_config = self.config_file.read({})
-        self.config = Config(migrate_stored(CONFIG_DIR, stored_config))
+        self.config = Config(migrate_stored(CONFIG_DIR, stored_config), allow_custom_server=is_dev_install())
         self.save_config()
         self.translate = Translator(resolve_language(self.config.get('language'), client_language()))
-        self.credentials = CredentialStore(open_config(CONFIG_DIR, 'credentials.json'))
-        self.state_file = open_config(CONFIG_DIR, 'state.json')
+        self.credentials = _credential_store()
+        self.state_file = deferred(open_config(CONFIG_DIR, 'state.json'))
         self.state = _stored_object(self.state_file)
         self.state_parts = []
         self.account_state = AccountState()
@@ -115,12 +128,18 @@ class OtmetkiApp(object):
         hooks.add(g_playerEvents, 'onAvatarReady', self._on_avatar_ready)
         hooks.add(g_playerEvents, 'onAvatarBecomeNonPlayer', self._on_avatar_leave)
         hooks.add(g_playerEvents, 'onBattleResultsReceived', self._on_battle_results)
+        if hasattr(g_playerEvents, 'onDisconnected'):
+            hooks.add(g_playerEvents, 'onDisconnected', flush_writes)
         on_vehicle_changed(self._on_vehicle_changed, 'companion')
         self.settings_ui.register()
         self.ticker.start()
         log('started %s' % VERSION)
         warn_mixed_install()
         registry().bind(self)
+
+    def stop(self):
+        """The client is closing: write the settings saves still held back (`core.client.storage`)."""
+        flush_writes()
 
     def user_agent(self):
         return '%s/%s' % (MOD_ID, VERSION)
@@ -197,22 +216,22 @@ class OtmetkiApp(object):
     def _switch_account(self, account_id):
         self.state = self.account_state.switch(self.state, account_id)
         self.account_id = account_id
-        self.save_state()
+        _step(self.save_state)
         self.outbox = Outbox(JsonFile(_path('outbox_%d.json' % account_id)))
         self.bus.emit('account', account_id)
         self.rebuild_sender()
 
     def _tick(self):
-        self.transport.poll()
+        _step(self.transport.poll)
         if self.in_battle:
             return
         now = time.time()
-        self.battles.poll_pending_results(now)
+        _step(self.battles.poll_pending_results, now)
         if self._is_flush_due(now):
             self.flush_requested = False
             self.last_flush = now
-            self.sender.tick(now)
-        self.settings_share.tick(now)
+            _step(self.sender.tick, now)
+        _step(self.settings_share.tick, now)
         self.bus.emit('tick', now)
 
     def _is_flush_due(self, now):
@@ -225,14 +244,15 @@ class OtmetkiApp(object):
         log('hangar shown')
         account_id = getattr(BigWorld.player(), 'databaseID', None)
         if account_id and account_id != self.account_id:
-            self._switch_account(account_id)
-        self.binder.bind_from_config()
+            _step(self._switch_account, account_id)
+        _step(self.binder.bind_from_config)
         self._on_vehicle_changed()
-        self.battles.on_hangar()
+        _step(self.battles.on_hangar)
         self.bus.emit('hangar')
         self.settings_ui.refresh()
         self.settings_share.on_hangar()
         safe(repair_detection_sound)()
+        flush_writes()
 
     @safe
     def _on_ingest_response(self, data):
@@ -244,11 +264,11 @@ class OtmetkiApp(object):
             self.marks.on_vehicle_changed()
 
     def _on_enqueued(self, queue_type, *args):
-        self.battles.on_enqueued(queue_type)
+        _step(self.battles.on_enqueued, queue_type)
         self.bus.emit('enqueued')
 
     def _on_dequeued(self, queue_type, *args):
-        self.battles.on_dequeued()
+        _step(self.battles.on_dequeued)
         self.bus.emit('dequeued')
 
     def _on_arena_created(self, *args):
@@ -258,18 +278,20 @@ class OtmetkiApp(object):
         self.in_battle = True
         replay = BattleReplay.isPlaying()
         log('battle entered%s' % (' (replay)' if replay else ''))
+        flush_writes()
         self.bus.emit('battle_enter')
         if replay:
             return
         player = BigWorld.player()
-        self.battles.on_battle_ready(player)
+        _step(self.battles.on_battle_ready, player)
         self.bus.emit('battle_ready', player)
 
     def _on_avatar_leave(self, *args):
         self.in_battle = False
         log('battle left')
-        self.battles.on_battle_leave()
+        _step(self.battles.on_battle_leave)
         self.bus.emit('battle_leave')
+        flush_writes()
 
     def _on_battle_results(self, is_player_vehicle, results):
         self.battles.on_battle_results(is_player_vehicle, results)
@@ -284,3 +306,8 @@ def start():
         g_app = OtmetkiApp()
         g_app.start()
     return g_app
+
+
+def stop():
+    if g_app is not None:
+        g_app.stop()

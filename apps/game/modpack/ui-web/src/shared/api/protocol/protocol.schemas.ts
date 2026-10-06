@@ -156,7 +156,13 @@ export const noticeSchema = z.object({
   code: z.nullable(z.string())
 });
 
-export const statusSchema = z.object({ bound: z.boolean(), auth_failed: z.boolean(), account_id: z.nullable(z.number()), text });
+export const statusSchema = z.object({
+  bound: z.boolean(),
+  auth_failed: z.boolean(),
+  account_id: z.nullable(z.number()),
+  text,
+  server: z.optional(z.nullable(text))
+});
 
 export const windowSchema = z.object({
   placed: z.boolean(),

@@ -7,6 +7,7 @@ use crate::detect::GameClient;
 use crate::error::AppResult;
 use crate::ini_file;
 
+pub const MODS_DIR: &str = "mods";
 pub const MANIFEST_INI: &str = "manifest.ini";
 pub const CLIENT_INI: &str = "client.ini";
 pub const DISABLED_DIR: &str = "disabled";
@@ -194,6 +195,16 @@ pub fn save_client_state(client_dir: &Path, client: &GameClient) -> AppResult<()
 
 pub fn disabled_dir(client_dir: &Path) -> PathBuf {
     client_dir.join(DISABLED_DIR)
+}
+
+pub struct ModRootsInput<'a> {
+    pub client_path: &'a Path,
+    pub client_dir: &'a Path,
+    pub mods_dir: &'a Path,
+}
+
+pub fn mod_roots(input: ModRootsInput) -> Vec<PathBuf> {
+    vec![input.client_path.join(MODS_DIR), input.mods_dir.to_path_buf(), disabled_dir(input.client_dir)]
 }
 
 #[cfg(test)]

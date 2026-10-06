@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatNumber, formatPercent, formatReload, formatSeconds, formatSigned } from '../format-number';
+import {
+  formatClock,
+  formatNumber,
+  formatPercent,
+  formatPercentOrDash,
+  formatSeconds,
+  formatSigned,
+  groupDigits,
+  romanTier,
+  trendOf
+} from '../format-number';
 
 describe(formatNumber, () => {
   it.each([
@@ -44,6 +54,57 @@ describe(formatPercent, () => {
   ])('signs %s when asked', (value, text) => {
     expect(formatPercent({ value, digits: 2, signed: true })).toBe(text);
   });
+
+  it('leaves the unit out when asked', () => {
+    expect(formatPercent({ value: 0.42, digits: 2, signed: true, unit: false })).toBe('+0,42');
+  });
+});
+
+describe(formatPercentOrDash, () => {
+  it('writes a dash for an unknown percent', () => {
+    expect(formatPercentOrDash({ value: null, digits: 2 })).toBe('—');
+  });
+
+  it('writes a known percent', () => {
+    expect(formatPercentOrDash({ value: 87.344, digits: 2 })).toBe('87,34 %');
+  });
+});
+
+describe(groupDigits, () => {
+  it('rounds and groups the thousands without shortening', () => {
+    expect(groupDigits(1234567.4)).toBe('1 234 567');
+  });
+});
+
+describe(formatClock, () => {
+  it('always writes minutes and seconds', () => {
+    expect(formatClock(42.4)).toBe('0:42');
+  });
+
+  it('rounds to the nearest second', () => {
+    expect(formatClock(125.6)).toBe('2:06');
+  });
+});
+
+describe(romanTier, () => {
+  it('writes a tier in Roman numerals', () => {
+    expect(romanTier(8)).toBe('VIII');
+  });
+
+  it('writes nothing for a tier out of range', () => {
+    expect(romanTier(12)).toBeNull();
+  });
+});
+
+describe(trendOf, () => {
+  it.each([
+    [0.3, 'rising'],
+    [-0.3, 'falling'],
+    [0, 'flat'],
+    [null, 'flat']
+  ])('reads %s as %s', (delta, trend) => {
+    expect(trendOf(delta)).toBe(trend);
+  });
 });
 
 describe(formatSeconds, () => {
@@ -53,11 +114,5 @@ describe(formatSeconds, () => {
 
   it('writes a minute and more as minutes and seconds', () => {
     expect(formatSeconds(65)).toBe('1:05');
-  });
-});
-
-describe(formatReload, () => {
-  it('writes a reload with one decimal', () => {
-    expect(formatReload(3.24)).toBe('3.2');
   });
 });

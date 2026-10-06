@@ -130,7 +130,9 @@
           "description": "64-bit arena id as a decimal string (exceeds JS safe integer range)."
         },
         "arena_type_id": {
-          "$ref": "#/definitions/count",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647,
           "description": "Low 16 bits = map geometry id, high bits = gameplay type."
         },
         "map_name": {
@@ -139,11 +141,15 @@
           "description": "Client geometry name, e.g. 05_prohorovka."
         },
         "bonus_type": {
-          "$ref": "#/definitions/count",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1023,
           "description": "constants.ARENA_BONUS_TYPE: 1 = random (REGULAR), 22 = ranked, ..."
         },
         "gui_type": {
-          "$ref": "#/definitions/count"
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1023
         },
         "arena_created_at": {
           "$ref": "#/definitions/unixTime"
@@ -154,7 +160,9 @@
           "maximum": 3600
         },
         "finish_reason": {
-          "$ref": "#/definitions/count"
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
         },
         "winner_team": {
           "type": "integer",
@@ -366,7 +374,8 @@
         },
         "queue_time_s": {
           "type": ["number", "null"],
-          "minimum": 0
+          "minimum": 0,
+          "maximum": 86400
         },
         "session_id": {
           "type": ["string", "null"],

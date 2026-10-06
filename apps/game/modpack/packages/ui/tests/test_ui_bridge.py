@@ -11,7 +11,7 @@ import types
 import unittest
 import zlib
 
-import _support  # noqa: F401
+import _support
 from otmetki.companion.config import DEFAULTS, FEATURES, Config
 from otmetki.companion.i18n import STRINGS as COMPANION_STRINGS
 from otmetki.core.events import EventBus
@@ -30,7 +30,8 @@ from otmetki.ui.components.sources import SectionSource
 from otmetki.ui.fields import Labels
 from otmetki.ui.hud_edit import HudEditor
 from otmetki.ui.i18n import STRINGS
-from otmetki.ui.profiles import ProfileStore
+from otmetki.ui.profiles import ProfileStore, decode_profile
+from otmetki.ui.profiles.constants import CODE_EXCLUDED_CONFIG_KEYS
 from otmetki.ui.protocol import COMMANDS, PROTOCOL_VERSION, encode_state
 
 UI_WEB = os.path.join(_support.MODPACK_DIR, 'ui-web', 'src', 'shared', 'api', 'protocol')
@@ -253,7 +254,7 @@ class FakeContext(object):
         return fake_features(self.page)
 
     def status(self):
-        return {'bound': False, 'auth_failed': False, 'account_id': None, 'text': 'not bound'}
+        return {'bound': False, 'auth_failed': False, 'account_id': None, 'text': 'not bound', 'server': None}
 
     def set_language(self, language):
         self.config.update({'language': language})
@@ -474,6 +475,16 @@ class BridgeStateTest(BridgeTestCase):
         described = component.describe(Labels(Catalog(), 'en'))
 
         assert described['editor'] == {'zoom': 'native', 'title': 'nope'}
+
+    def test_editor_groups_without_an_editor_module_draw_a_groups_page(self):
+        feature = FeatureInfo('minimap', settings_module(SETTINGS=()), editor_groups=(('view', ('zoom',)),))
+
+        spec = feature.editor()(None, lambda key, **params: key)
+
+        assert spec['groups'] == [{'id': 'view', 'label': 'minimap_group_view', 'keys': ['zoom']}]
+
+    def test_a_feature_without_an_editor_or_groups_has_no_editor(self):
+        assert FeatureInfo('minimap', settings_module(SETTINGS=())).editor() is None
 
     def test_a_hangar_label_hides_its_place(self):
         self.context.component_config.section('label', Schema({'x': 0, 'scale': 100, 'show': True}))
@@ -1264,6 +1275,73 @@ class ProfileCodeTest(BridgeTestCase):
 
         assert self.notice_kind() == 'error'
 
+    def imported_data(self, data):
+        raw = json.dumps({'name': 'x', 'data': data}).encode('utf-8')
+        send(self.bridge, type='profile_import', code=packed_code(raw))
+        return self.context.profiles.get('p1')['data']
+
+    def test_a_local_profile_keeps_request_switches(self):
+        send(self.bridge, type='profile_save', name='A')
+
+        data = self.context.profiles.get('p1')['data']
+
+        assert 'battle_chat_filter' in data['config']
+
+    def test_export_omits_request_switches_and_view_overrides(self):
+        send(self.bridge, type='profile_save', name='A')
+        data = self.context.profiles.get('p1')['data']
+        data['config'].update(battle_chat_filter=True, hangar_auto_reserves=True, hangar_cleaner=True)
+        data['components'].update(auto_reserves={'reserve_xp': True}, chat_filter={'block_words': 'x'})
+
+        send(self.bridge, type='profile_export', id='p1')
+        snapshot = decode_profile(self.bridge.notice['code'])[1]
+
+        carried = [key for key in CODE_EXCLUDED_CONFIG_KEYS if key in snapshot['config']]
+        assert carried == []
+        assert 'auto_reserves' not in snapshot['components']
+        assert 'chat_filter' not in snapshot['components']
+
+    def test_export_omits_the_quick_actions_but_keeps_the_hangar_tweaks(self):
+        send(self.bridge, type='profile_save', name='A')
+        data = self.context.profiles.get('p1')['data']
+        data['components']['hangar_tweaks'] = {'quick_actions': True, 'carousel_rows': '2'}
+
+        send(self.bridge, type='profile_export', id='p1')
+        snapshot = decode_profile(self.bridge.notice['code'])[1]
+
+        assert snapshot['components']['hangar_tweaks'] == {'carousel_rows': '2'}
+
+    def test_import_drops_request_switches_even_when_present(self):
+        send(self.bridge, type='set', component=COMPANION_ID, key='battle_chat_filter', value=False)
+        code_data = {
+            'config': {'battle_chat_filter': True, 'hangar_auto_reserves': True, 'hud_modifier': 'ctrl'},
+            'components': {'chat_filter': {'block_words': 'x'}, 'auto_reserves': {'reserve_xp': True}},
+        }
+
+        data = self.imported_data(code_data)
+
+        assert data['config'] == {'hud_modifier': 'ctrl'}
+        assert data['components'] == {}
+
+    def test_import_drops_unknown_config_keys(self):
+        data = self.imported_data({'config': {'no_such_key': 1, 'hud_modifier': 'ctrl'}, 'components': {}})
+
+        assert data['config'] == {'hud_modifier': 'ctrl'}
+
+    def test_import_drops_unknown_sections_and_section_keys(self):
+        components = {'uninstalled': {'enabled': True}, 'minimap': {'zoom': 'x2', 'junk': 1}}
+
+        data = self.imported_data({'config': {}, 'components': components})
+
+        assert data['components'] == {'minimap': {'zoom': 'x2'}}
+
+    def test_import_keeps_the_hud_places_per_battle_type(self):
+        places = {'comp7': {'damage_log': {'x': 10, 'y': 20}}}
+
+        data = self.imported_data({'config': {}, 'components': {'hud_layout_places': places}})
+
+        assert data['components']['hud_layout_places'] == places
+
     def test_a_code_that_unpacks_too_large_is_refused(self):
         send(self.bridge, type='profile_import', code=packed_code(b'{"name":"x","data":{}}' + b' ' * (8 * 1024 * 1024)))
 
@@ -1338,8 +1416,7 @@ class PageContractTest(unittest.TestCase):
     def test_state_fixture_is_current(self):
         state = self.sample_state()
         if os.environ.get('OTMETKI_UPDATE_FIXTURES') == '1':
-            with io.open(STATE_FIXTURE, 'w', encoding='utf-8', newline='\n') as handle:
-                handle.write(json.dumps(state, sort_keys=True, indent=2, ensure_ascii=False) + '\n')
+            _support.write_fixture(STATE_FIXTURE, state)
 
         with io.open(STATE_FIXTURE, 'r', encoding='utf-8') as handle:
             fixture = json.load(handle)

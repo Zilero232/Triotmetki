@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.compat import is_int, is_number, string_types, to_text
+from ....core.compat import as_int, clean_text, is_int, to_text
 from .constants import (
     BEST_BATTLES,
     CARDINALITY_RANGE,
@@ -18,12 +18,6 @@ from .constants import (
 # the competition group, whose places only the game's own event page shows.
 
 
-def _int(value):
-    if isinstance(value, bool) or not is_number(value):
-        return None
-    return int(value)
-
-
 def _in_range(value, bounds, default):
     low, high = bounds
     if value is not None and low <= value <= high:
@@ -31,21 +25,15 @@ def _in_range(value, bounds, default):
     return default
 
 
-def _name(value):
-    if not isinstance(value, string_types):
-        return None
-    return to_text(value).strip()[:MAX_NAME] or None
-
-
 def clean_event(raw):
     if not isinstance(raw, dict):
         return None
     return {
-        'name': _name(raw.get('name')),
-        'cardinality': _in_range(_int(raw.get('cardinality')), CARDINALITY_RANGE, BEST_BATTLES),
-        'start': _int(raw.get('start')),
-        'end': _int(raw.get('end')),
-        'min_tier': _in_range(_int(raw.get('min_tier')), TIER_RANGE, MIN_TIER),
+        'name': clean_text(raw.get('name'), MAX_NAME),
+        'cardinality': _in_range(as_int(raw.get('cardinality'), None), CARDINALITY_RANGE, BEST_BATTLES),
+        'start': as_int(raw.get('start'), None),
+        'end': as_int(raw.get('end'), None),
+        'min_tier': _in_range(as_int(raw.get('min_tier'), None), TIER_RANGE, MIN_TIER),
     }
 
 
@@ -59,20 +47,21 @@ def counts(event, min_tier=MIN_TIER):
 def _battle(item):
     if not isinstance(item, dict):
         return None
-    at = _int(item.get('at'))
-    xp = _int(item.get('xp'))
+    at = as_int(item.get('at'), None)
+    xp = as_int(item.get('xp'), None)
     if at is None or xp is None or xp < 0:
         return None
-    return {'arena': to_text(item.get('arena') or u''), 'at': at, 'xp': xp, 'tank': _name(item.get('tank'))}
+    tank = clean_text(item.get('tank'), MAX_NAME)
+    return {'arena': to_text(item.get('arena') or u''), 'at': at, 'xp': xp, 'tank': tank}
 
 
 def _round(item):
-    if not isinstance(item, dict) or _int(item.get('start')) is None:
+    if not isinstance(item, dict) or as_int(item.get('start'), None) is None:
         return None
     battles = [battle for battle in map(_battle, item.get('battles') or ()) if battle]
     if not battles:
         return None
-    return {'start': _int(item['start']), 'battles': battles[-MAX_ROUND_BATTLES:]}
+    return {'start': as_int(item['start'], None), 'battles': battles[-MAX_ROUND_BATTLES:]}
 
 
 def _starts_a_round(last, at):
@@ -93,8 +82,8 @@ class TriathlonRounds(object):
     def add(self, event, min_tier=MIN_TIER, tank=None):
         if not counts(event, min_tier):
             return False
-        at = _int(event.get('arena_created_at')) or _int(event.get('occurred_at'))
-        xp = _int((event.get('stats') or {}).get('original_xp'))
+        at = as_int(event.get('arena_created_at'), None) or as_int(event.get('occurred_at'), None)
+        xp = as_int((event.get('stats') or {}).get('original_xp'), None)
         arena = to_text(event.get('arena_unique_id') or u'')
         if at is None or xp is None:
             return False

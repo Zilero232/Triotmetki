@@ -1,43 +1,43 @@
 {
   "data": {
-    "extended": true, 
+    "extended": true,
     "rows": [
       {
-        "alive": true, 
-        "assist": 610, 
-        "cls": "img://gui/maps/icons/vehicleTypes/green/heavyTank.png|otmetki:class_heavy", 
-        "damage": 2450, 
-        "frags": 2, 
-        "frags_text": "фр. 2", 
-        "hp": 1340, 
-        "max": 2000, 
-        "name": "Вы", 
-        "own": true, 
+        "alive": true,
+        "assist": 610,
+        "cls": "img://gui/maps/icons/vehicleTypes/green/heavyTank.png|otmetki:class_heavy",
+        "damage": 2450,
+        "frags": 2,
+        "frags_text": "фр. 2",
+        "hp": 1340,
+        "max": 2000,
+        "name": "Вы",
+        "own": true,
         "points": 32
-      }, 
+      },
       {
-        "alive": false, 
-        "assist": null, 
-        "cls": "img://gui/maps/icons/vehicleTypes/green/mediumTank.png|otmetki:class_medium", 
-        "damage": null, 
-        "frags": 1, 
-        "frags_text": "фр. 1", 
-        "hp": 0, 
-        "max": 1600, 
-        "name": "Союзник", 
-        "own": false, 
+        "alive": false,
+        "assist": null,
+        "cls": "img://gui/maps/icons/vehicleTypes/green/mediumTank.png|otmetki:class_medium",
+        "damage": null,
+        "frags": 1,
+        "frags_text": "фр. 1",
+        "hp": 0,
+        "max": 1600,
+        "name": "Союзник",
+        "own": false,
         "points": 2
       }
-    ], 
+    ],
     "rules": {
-      "alive": 1, 
-      "assist": 200, 
-      "damage": 100, 
+      "alive": 1,
+      "assist": 200,
+      "damage": 100,
       "frag": 2
-    }, 
-    "title": "Очки взвода", 
+    },
+    "title": "Очки взвода",
     "total": 34
-  }, 
-  "kind": "platoon_points", 
+  },
+  "kind": "platoon_points",
   "v": 1
 }

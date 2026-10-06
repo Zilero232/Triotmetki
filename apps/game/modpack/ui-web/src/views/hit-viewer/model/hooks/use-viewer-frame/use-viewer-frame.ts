@@ -4,10 +4,11 @@ import { isDeepEqual } from 'remeda';
 
 import { readScreen } from '@/entities/hud/panel-layout';
 import { gameface } from '@/shared/api/gameface';
+import { rem } from '@/shared/lib/css-unit';
 
 import type { ViewerFrame } from '../../../lib/viewer-frame';
 
-import { rem, viewerFrame } from '../../../lib/viewer-frame';
+import { viewerFrame } from '../../../lib/viewer-frame';
 import { sendViewer } from '../../../lib/viewer-protocol';
 
 const readFrame = (): ViewerFrame => viewerFrame({ screen: readScreen(), view: gameface.viewRect() });

@@ -1,7 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ...core.compat import is_int, string_types
+from ...core.compat import is_int, string_types, to_text
 from ...core.settings import Schema, Settings, fix
+from ...core.vendor import six
 from .constants import (  # noqa: F401
     CHOICES,
     DEFAULT_SERVER_URL,
@@ -13,27 +14,39 @@ from .constants import (  # noqa: F401
     LOCAL_HOSTS,
     ONE_TIME_SWITCHES,
     OPT_IN_FEATURES,
+    PLAIN_SCHEME,
     RETIRED_DEFAULTS,
+    SECURE_SCHEME,
     USER_SET_KEY,
 )
+from .dev import is_dev_install  # noqa: F401
 from .user_set import normalize_user_set, user_set_tokens, with_user_set  # noqa: F401
 
 
+_urlparse = six.moves.urllib.parse.urlparse
+
+
 def is_valid_server_url(url):
+    """An API base: https without user info, or plain http to the exact local hosts; no query or fragment."""
     if not isinstance(url, string_types):
         return False
-    url = url.strip()
-    if url.startswith('https://') and len(url) > len('https://'):
+    try:
+        parts = _urlparse(to_text(url).strip())
+        host = parts.hostname
+        port = parts.port
+    except (TypeError, ValueError):
+        return False
+    if port is not None and not 0 < port < 65536:
+        return False
+    if not host or parts.username is not None or parts.password is not None or parts.query or parts.fragment:
+        return False
+    if parts.scheme == SECURE_SCHEME:
         return True
-    return any(_is_on_host(url, host) for host in LOCAL_HOSTS)
-
-
-def _is_on_host(url, host):
-    return url == host or url.startswith(host + ':') or url.startswith(host + '/')
+    return parts.scheme == PLAIN_SCHEME and host in LOCAL_HOSTS
 
 
 def normalize_server_url(url):
-    return url.rstrip('/') if is_valid_server_url(url) else None
+    return to_text(url).strip().rstrip('/') if is_valid_server_url(url) else None
 
 
 SCHEMA = fix(
@@ -70,15 +83,22 @@ def upgraded(values):
 
 
 class Config(Settings):
+    """config.json. `server_url` is the production API unless `allow_custom_server` (a development install)."""
 
     schema = SCHEMA
 
-    def __init__(self, values=None):
+    def __init__(self, values=None, allow_custom_server=False):
         Settings.__init__(self, upgraded(values))
+        self.allow_custom_server = allow_custom_server
 
     @property
     def server_url(self):
-        return self.values['server_url']
+        return self.values['server_url'] if self.allow_custom_server else DEFAULT_SERVER_URL
+
+    def custom_server(self):
+        """The API base in use when it is not the production one, else None (the settings window warns about it)."""
+        url = self.server_url
+        return None if url == DEFAULT_SERVER_URL else url
 
     def endpoint(self, path):
         return self.server_url + '/' + path.lstrip('/')

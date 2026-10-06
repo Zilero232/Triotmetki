@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { easeOutCubic } from '@/shared/lib/easing';
+
 import type { TweenAtInput, UseTweenInput } from './use-tween.types';
 
 import { TWEEN } from './use-tween.constants';
-
-const easeOut = (progress: number): number => 1 - (1 - progress) ** 3;
 
 export const tweenAt = ({ from, to, progress, step }: TweenAtInput): number => {
   if (progress >= 1) {
     return to;
   }
 
-  return Math.round((from + (to - from) * easeOut(Math.max(progress, 0))) / step) * step;
+  return Math.round((from + (to - from) * easeOutCubic(Math.max(progress, 0))) / step) * step;
 };
 
 export const useTween = ({ value, step, durationMs = TWEEN.durationMs }: UseTweenInput): number | null => {

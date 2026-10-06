@@ -1,27 +1,24 @@
-import type { ShellSpriteCell, ShellSpriteCellInput, ShellSpriteStyle, ShellSpriteStyleInput } from './shell-sprite.types';
+import type { SpriteCell, SpriteCellStyle } from '../../../../../shared/lib/sprite-cell';
+import type { ShellSpriteCellInput, ShellSpriteStyleInput } from './shell-sprite.types';
 
+import { spriteCellStyle } from '../../../../../shared/lib/sprite-cell';
 import { RETICLE_SHELLS } from '../../config';
 
 const { sprite, viewBox } = RETICLE_SHELLS;
 
-const rem = (value: number): string => `${String(value)}rem`;
-
-export const shellSpriteCell = ({ kind, paint }: ShellSpriteCellInput): ShellSpriteCell => ({
+export const shellSpriteCell = ({ kind, paint }: ShellSpriteCellInput): SpriteCell => ({
   column: sprite.kinds.indexOf(kind ?? 'ap'),
   row: sprite.paints.indexOf(paint)
 });
 
-export const shellSpriteStyle = ({ kind, paint, width, height }: ShellSpriteStyleInput): ShellSpriteStyle => {
-  const { column, row } = shellSpriteCell({ kind, paint });
-
-  return {
-    width: rem(width),
-    height: rem(height),
-    backgroundImage: `url(${sprite.file})`,
-    backgroundSize: `${rem(sprite.kinds.length * width)} ${rem(sprite.paints.length * height)}`,
-    backgroundPosition: `${rem(-column * width)} ${rem(-row * height)}`
-  };
-};
+export const shellSpriteStyle = ({ kind, paint, width, height }: ShellSpriteStyleInput): SpriteCellStyle =>
+  spriteCellStyle({
+    file: sprite.file,
+    cell: shellSpriteCell({ kind, paint }),
+    grid: { columns: sprite.kinds.length, rows: sprite.paints.length },
+    width,
+    height
+  });
 
 const shellGroup = ({ kind, paint }: ShellSpriteCellInput): string => {
   const { column, row } = shellSpriteCell({ kind, paint });

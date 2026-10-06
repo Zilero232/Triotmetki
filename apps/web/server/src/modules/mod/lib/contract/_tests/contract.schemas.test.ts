@@ -61,6 +61,18 @@ describe('battle stat bounds', () => {
     expect(ingestBatchSchema.safeParse(batch).success).toBe(false);
   });
 
+  it.each(Object.entries(MOD_BATTLE_LIMITS.arena))('refuses %s above its bound', (field, cap) => {
+    const batch = withEvent((event) => (event.type === 'battle_result' ? { ...event, [field]: cap + 1 } : event));
+
+    expect(ingestBatchSchema.safeParse(batch).success).toBe(false);
+  });
+
+  it('refuses a queue time longer than any queue lasts, which would overflow the stored milliseconds', () => {
+    const batch = withEvent((event) => (event.type === 'battle_result' ? { ...event, queue_time_s: MOD_BATTLE_LIMITS.queueSeconds + 1 } : event));
+
+    expect(ingestBatchSchema.safeParse(batch).success).toBe(false);
+  });
+
   it('refuses a moving average damage above the per-battle damage cap', () => {
     const batch = withEvent((event) =>
       event.type === 'moe_snapshot' ? { ...event, moving_avg_damage: MOD_BATTLE_LIMITS.stats.damage_dealt + 1 } : event

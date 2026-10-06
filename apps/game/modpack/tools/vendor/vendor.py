@@ -13,8 +13,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import argparse
 import collections
 import contextlib
-import hashlib
-import io
 import json
 import os
 import re
@@ -25,6 +23,12 @@ import urllib2
 import zipfile
 
 MODPACK_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BUILD_DIR = os.path.join(MODPACK_DIR, 'tools', 'build')
+if BUILD_DIR not in sys.path:
+    sys.path.insert(0, BUILD_DIR)
+
+import fileio  # noqa: E402
+
 VENDOR_DIR = os.path.join(MODPACK_DIR, 'packages', 'core', 'vendor')
 PYPI_JSON = 'https://pypi.org/pypi/%s/%s/json'
 
@@ -113,8 +117,7 @@ def download(pin, cache):
             data = response.read()
         with open(path, 'wb') as handle:
             handle.write(data)
-    with open(path, 'rb') as handle:
-        digest = hashlib.sha256(handle.read()).hexdigest()
+    digest = fileio.sha256(path)
     if digest != pin.sha256:
         raise SystemExit('%s: sha256 %s does not match the pin %s' % (pin.wheel, digest, pin.sha256))
     return path
@@ -127,16 +130,6 @@ def patch(text, patches, member):
             raise SystemExit('%s: patch %r did not apply' % (member, pattern))
         text = updated
     return text
-
-
-def make_dirs(path):
-    if not os.path.isdir(path):
-        os.makedirs(path)
-
-
-def write_text(path, text):
-    with io.open(path, 'w', encoding='utf-8', newline='\n') as handle:
-        handle.write(text)
 
 
 def vendor_paths(member, members):
@@ -156,8 +149,7 @@ def vendor_member(wheel, member, pin, target):
         applicable = [item for item in pin.patches if re.search(item[0], text)]
         applied.update(item[0] for item in applicable)
         path = os.path.join(target, *relative.split('/'))
-        make_dirs(os.path.dirname(path))
-        write_text(path, patch(text, applicable, member))
+        fileio.write_text(path, patch(text, applicable, member))
     return applied
 
 
@@ -169,7 +161,7 @@ def vendor_pin(pin, target, cache):
                 applied.update(vendor_member(wheel, member, pin, target))
         if len(applied) != len(pin.patches):
             raise SystemExit('%s: a patch matched no file' % pin.name)
-        write_text(os.path.join(target, 'licenses', pin.name + '.txt'), wheel.read(pin.licence).decode('utf-8'))
+        fileio.write_text(os.path.join(target, 'licenses', pin.name + '.txt'), wheel.read(pin.licence).decode('utf-8'))
 
 
 def vendor_into(target, cache):
@@ -177,7 +169,7 @@ def vendor_into(target, cache):
     for pin in PINS:
         vendor_pin(pin, target, cache)
     versions = ["    '%s': '%s',\n" % (pin.name, pin.version) for pin in PINS]
-    write_text(os.path.join(target, '__init__.py'), INIT % ''.join(versions))
+    fileio.write_text(os.path.join(target, '__init__.py'), INIT % ''.join(versions))
 
 
 def snapshot(root):
@@ -222,7 +214,7 @@ def main(argv=None):
     work = tempfile.mkdtemp(prefix='otmetki-vendor-')
     try:
         cache = args.cache or os.path.join(work, 'wheels')
-        make_dirs(cache)
+        fileio.make_dirs(cache)
         fresh = os.path.join(work, 'vendor')
         vendor_into(fresh, cache)
         if args.check:

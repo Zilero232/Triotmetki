@@ -2,9 +2,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import math
 
+from ....core.hit_book import OUTCOME_BY_CODE, PART_NAMES
 from ....core.shot_points import drawn_points
 from ....core.vendor import attr
-from .constants import OUTCOME_BY_CODE, PART_NAMES, SEGMENT_MARGIN
+from .constants import SEGMENT_MARGIN
 
 # Where a recorded hit sits on the hit vehicle, in the hit part's own coordinates. The packed point of a shot names the
 # part and its segment as fractions of the part's bounding box (core.shot_points); the box is the part's collision box

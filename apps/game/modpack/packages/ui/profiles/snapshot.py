@@ -2,7 +2,15 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import copy
 
-from .constants import EXCLUDED_CONFIG_KEYS, EXCLUDED_CONFIG_PREFIXES, EXCLUDED_SECTIONS
+from .constants import (
+    CODE_EXCLUDED_CONFIG_KEYS,
+    CODE_EXCLUDED_SECTION_KEYS,
+    CODE_EXCLUDED_SECTIONS,
+    CODE_RAW_SECTIONS,
+    EXCLUDED_CONFIG_KEYS,
+    EXCLUDED_CONFIG_PREFIXES,
+    EXCLUDED_SECTIONS,
+)
 
 
 def is_excluded(key):
@@ -24,6 +32,42 @@ def take_snapshot(config, component_config=None):
 def _part(snapshot, key):
     part = snapshot.get(key) if isinstance(snapshot, dict) else None
     return part if isinstance(part, dict) else {}
+
+
+def shared_snapshot(snapshot):
+    values = _part(snapshot, 'config')
+    shared_values = dict(
+        (key, value) for key, value in values.items() if key not in CODE_EXCLUDED_CONFIG_KEYS and not is_excluded(key)
+    )
+    sections = {}
+    for key, section in _part(snapshot, 'components').items():
+        if not isinstance(section, dict) or key in CODE_EXCLUDED_SECTIONS or key in EXCLUDED_SECTIONS:
+            continue
+        dropped = CODE_EXCLUDED_SECTION_KEYS.get(key, ())
+        sections[key] = dict((name, value) for name, value in section.items() if name not in dropped)
+    return {'config': shared_values, 'components': sections}
+
+
+def imported_snapshot(snapshot, config, component_config=None):
+    shared = shared_snapshot(snapshot)
+    known_keys = config.schema.defaults
+    values = dict((key, value) for key, value in shared['config'].items() if key in known_keys)
+    sections = {}
+    for key, section in shared['components'].items():
+        known = _known_section(key, section, component_config)
+        if known is not None:
+            sections[key] = known
+    return {'config': values, 'components': sections}
+
+
+def _known_section(key, section, component_config):
+    if key in CODE_RAW_SECTIONS:
+        return copy.deepcopy(section)
+    settings = component_config.get(key) if component_config is not None else None
+    if settings is None:
+        return None
+    known_keys = settings.schema.defaults
+    return dict((name, copy.deepcopy(value)) for name, value in section.items() if name in known_keys)
 
 
 def apply_snapshot(snapshot, config, save_config, component_config=None, layer=None):

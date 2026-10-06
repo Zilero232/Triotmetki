@@ -44,6 +44,27 @@ def as_int(value, default=0):
     return int(value) if is_number(value) else default
 
 
+def _within(value, low, high):
+    return (low is None or value >= low) and (high is None or value <= high)
+
+
+def number_or_none(value, low=None, high=None):
+    """`value` unchanged when it is a number (never a bool) within [low, high], else None."""
+    return value if is_number(value) and _within(value, low, high) else None
+
+
+def int_or_none(value, low=None, high=None):
+    """`value` unchanged when it is an int (never a bool) within [low, high], else None."""
+    return value if is_int(value) and _within(value, low, high) else None
+
+
+def clean_text(value, limit, default=None):
+    """A string `value` as stripped text cut to `limit` characters; `default` for a non-string or a blank one."""
+    if not isinstance(value, six.string_types):
+        return default
+    return to_text(value).strip()[:limit] or default
+
+
 # `defaults` updated with the `**options` a function got: the keyword-only arguments Python 2 has no syntax for. An
 # unknown name raises TypeError, as a misspelt keyword argument would.
 def keyword_options(given, defaults):

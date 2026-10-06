@@ -1,5 +1,6 @@
 import { useWindowEvent } from '@siberiacancode/reactuse';
 import { useEffect, useRef, useState } from 'react';
+import { match } from 'ts-pattern';
 
 import type { LiveRect } from '@/entities/hud/panel-layout';
 
@@ -14,12 +15,14 @@ import { beyondSlop, dragOutcome, liveAt, pressDrag } from '../../../lib/drag-mo
 const settleDrag = ({ drag, press, onMoved }: SettleDragInput): void => {
   const outcome = dragOutcome({ drag, press, screen: readScreen() });
 
-  if (outcome.kind === 'pressed') {
-    sendHud({ type: 'pressed', id: drag.id });
-  } else if (outcome.kind === 'moved') {
-    onMoved({ id: drag.id, placement: outcome.placement });
-    sendHud({ type: 'moved', id: drag.id, ...outcome.placement });
-  }
+  match(outcome)
+    .with({ kind: 'pressed' }, () => sendHud({ type: 'pressed', id: drag.id }))
+    .with({ kind: 'moved' }, ({ placement }) => {
+      onMoved({ id: drag.id, placement });
+      sendHud({ type: 'moved', id: drag.id, ...placement });
+    })
+    .with({ kind: 'still' }, () => undefined)
+    .exhaustive();
 };
 
 export const usePanelDrag = ({ edit, targets, onMoved, report }: UsePanelDragInput) => {

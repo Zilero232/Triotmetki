@@ -2,7 +2,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import copy
 import io
-import json
 import os
 import re
 import sys
@@ -12,6 +11,7 @@ BUILD_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.p
 if BUILD_DIR not in sys.path:
     sys.path.insert(0, BUILD_DIR)
 
+import fileio  # noqa: E402
 import layout  # noqa: E402
 from setupkit import ASSETS_DIR, CATALOG_PATH  # noqa: E402
 from setupkit.manifest import catalog as catalog_module  # noqa: E402
@@ -49,11 +49,6 @@ REVIEWED_PINS = {
         'MIT',
     ),
 }
-
-
-def load_raw():
-    with io.open(CATALOG_PATH, encoding='utf-8') as handle:
-        return json.load(handle)
 
 
 def load_catalog():
@@ -195,7 +190,7 @@ class RequiredByFollowsTheCodeTest(unittest.TestCase):
 class DependencyCatalogTest(unittest.TestCase):
 
     def problems(self, mutate, dependency_id=GUIFLASH):
-        raw = copy.deepcopy(load_raw())
+        raw = copy.deepcopy(fileio.read_json(CATALOG_PATH))
         mutate(next(entry for entry in raw['components'] if entry['id'] == dependency_id))
         with self.assertRaises(catalog_module.CatalogError) as context:
             catalog_module.parse(raw, ASSETS_DIR)
@@ -225,7 +220,7 @@ class DependencyManifestTest(unittest.TestCase):
 
     def setUp(self):
         self.catalog = load_catalog()
-        raw_components = load_raw()['components']
+        raw_components = fileio.read_json(CATALOG_PATH)['components']
         self.raw = dict((entry['id'], entry) for entry in raw_components if entry.get('kind') == 'dependency')
 
     def test_passes_the_entries_through_as_the_catalog_pins_them(self):

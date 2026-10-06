@@ -2,7 +2,7 @@ use super::*;
 use crate::report::RedactContext;
 
 fn redactor() -> Redactor {
-    Redactor::new(&RedactContext { user_name: Some("Игрок".into()), account_ids: Vec::new() })
+    Redactor::new(&RedactContext { user_name: Some("Игрок".into()), account_ids: Vec::new(), secrets: Vec::new() })
 }
 
 const PYTHON_LOG: &str = r#"2026-09-30 21:47:05.120: INFO: [OTMETKI] core 0.5.0 loaded

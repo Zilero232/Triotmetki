@@ -15,3 +15,11 @@ def format_percent(value):
     if not is_number(value):
         return MISSING
     return u'%.2f%%' % value
+
+
+def format_signed(value, percent=False, missing=MISSING):
+    """`format_number` (or `format_percent`) with a plus before a positive value; `missing` when not a number."""
+    if not is_number(value):
+        return missing
+    text = format_percent(value) if percent else format_number(value)
+    return u'+' + text if value > 0 else text

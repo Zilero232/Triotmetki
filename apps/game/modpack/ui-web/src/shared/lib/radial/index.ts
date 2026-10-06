@@ -1,1 +1,1 @@
-export { radialArc } from './radial';
+export { circlePath, pathNumber, polarPoint, radialArc } from './radial';

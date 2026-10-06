@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { accountWn8 } from '@otmetki/ratings';
 import { fromUnixTime } from 'date-fns';
 import { mapValues, sortBy } from 'remeda';
@@ -7,8 +7,10 @@ import type { WebhookEmitter } from '../../webhooks';
 import type { IngestResponse } from '../lib/contract/contract.types';
 import type { BattleEventInput, BattleEventsSink, IngestInput, LedgeredEventInput, MarkGainedInput, SessionRef, SessionSummary } from '../mod.types';
 
+import { ModException } from '../../../common/exceptions';
 import { errorMessage } from '../../../common/lib';
 import { isUniqueViolationOn, PrismaService } from '../../../core';
+import { PurgeGuardService } from '../../collector/purge';
 import { ExpectedValuesReaderService } from '../../reference';
 import { markGainedKey, WEBHOOK_EMITTER } from '../../webhooks';
 import { BATTLE_EVENTS } from '../config/battle-events.constants';
@@ -26,11 +28,14 @@ export class ModIngestWriterService {
     private readonly prisma: PrismaService,
     private readonly ledger: EventLedgerService,
     private readonly expected: ExpectedValuesReaderService,
+    private readonly purgeGuard: PurgeGuardService,
     @Inject(WEBHOOK_EMITTER) private readonly webhooks: WebhookEmitter,
     @Optional() @Inject(BATTLE_EVENTS) private readonly battleEvents: BattleEventsSink | null = null
   ) {}
 
   async ingest({ device, batch }: IngestInput): Promise<IngestResponse> {
+    await this.assertCollectable(device.accountId);
+
     let accepted = 0;
     let duplicates = 0;
     let lastSession: SessionRef | null = null;
@@ -57,6 +62,14 @@ export class ModIngestWriterService {
     const session = lastSession ? await this.summarize(lastSession) : null;
 
     return { accepted, duplicates, ...(session ? { session } : {}) };
+  }
+
+  private async assertCollectable(accountId: bigint): Promise<void> {
+    const blocked = await this.purgeGuard.blocked([Number(accountId)]);
+
+    if (blocked.size > 0) {
+      throw new ModException({ status: HttpStatus.FORBIDDEN, error: 'device_revoked', message: 'The account has a data deletion request' });
+    }
   }
 
   private async battle({ device, event }: BattleEventInput): Promise<boolean> {
@@ -177,7 +190,7 @@ export class ModIngestWriterService {
     try {
       await this.webhooks.emit({
         event: 'mark.gained',
-        dedupeKey: markGainedKey({ accountId, tankId, marks }),
+        dedupeKey: markGainedKey({ source: 'mod', accountId, tankId, marks }),
         subject: { accountIds: [Number(accountId)], clanIds: player?.clanId ? [Number(player.clanId)] : [] },
         data: { accountId: Number(accountId), nickname: player?.nickname ?? null, tankId, marks, previousMarks: previous, percent, source: 'mod' }
       });

@@ -29,6 +29,7 @@ export const RETENTION = {
     { table: 'collector_job_metric', column: 'bucket_start', days: 14 },
     { table: 'webhook_delivery', column: 'created_at', days: 30, where: webhookDelivery('status', '<>', 'pending') },
     { table: 'api_error_log', column: 'occurred_at', days: 30 },
+    { table: 'mod_device', column: 'revoked_at', days: 30 },
     { table: 'mod_problem_report', column: 'created_at', days: MOD_REPORTS.retentionDays },
     { table: 'settings_apply_request', column: 'created_at', days: 90 },
     { table: 'api_usage_daily', column: 'day', days: 120 },

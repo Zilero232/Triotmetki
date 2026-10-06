@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.compat import is_number
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, counted, font
 from ....core.moe import combined_damage, estimated_curve, moe_color, moe_macros, moe_state, rating_to_percent
-from ....core.templates import render
+from ....core.templates import render, render_markup
 from .constants import (
     APPROX,
     CARD_STEP,
@@ -170,7 +170,7 @@ def format_panel(state, settings, translate):
     size = settings.get('font_size')
     style = settings.get('style')
     if style == 'custom' and settings.get('template'):
-        return font(render(settings.get('template'), values), color, size)
+        return font(render_markup(settings.get('template'), values), color, size)
     if not state['has_curve']:
         return font(render(translate('marks_panel_line_no_curve'), values), COLOR_MUTED, size)
     if style == 'minimal':

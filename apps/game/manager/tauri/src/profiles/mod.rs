@@ -20,7 +20,10 @@ pub const MAX_PROFILES: usize = 12;
 pub const NAME_MAX_LENGTH: usize = 40;
 pub const ID_BYTES: usize = 6;
 pub const CODE_FILE_EXTENSION: &str = "txt";
-pub const EXCLUDED_CONFIG_KEYS: [&str; 8] = [
+pub const EXCLUDED_CONFIG_KEYS: [&str; 13] = [
+    "enabled",
+    "user_set",
+    "defaults_revision",
     "server_url",
     "bind_code",
     "settings_action",
@@ -29,11 +32,68 @@ pub const EXCLUDED_CONFIG_KEYS: [&str; 8] = [
     "share_settings",
     "upload_replays",
     "publish_replays",
+    "share_session_report",
+    "show_pack_badge",
 ];
 pub const EXCLUDED_CONFIG_PREFIXES: [&str; 2] = ["send_", "settings_include_"];
+pub const EXCLUDED_SECTIONS: [&str; 1] = ["settings_window"];
+pub const CODE_EXCLUDED_CONFIG_KEYS: [&str; 6] =
+    ["hangar_auto_reserves", "hangar_auto_resupply", "hangar_depot_seller", "hangar_cleaner", "hangar_notification_filter", "battle_chat_filter"];
+pub const CODE_EXCLUDED_SECTIONS: [&str; 6] =
+    ["auto_reserves", "auto_resupply", "depot_seller", "hangar_cleaner", "notification_filter", "chat_filter"];
+pub const CODE_EXCLUDED_SECTION_KEYS: [(&str, &[&str]); 1] = [("hangar_tweaks", &["quick_actions"])];
+pub const CODE_RAW_SECTIONS: [&str; 1] = ["hud_layout_places"];
 
 pub fn is_excluded(key: &str) -> bool {
     EXCLUDED_CONFIG_KEYS.contains(&key) || EXCLUDED_CONFIG_PREFIXES.iter().any(|prefix| key.starts_with(prefix))
+}
+
+fn code_excluded_section_keys(section: &str) -> &'static [&'static str] {
+    CODE_EXCLUDED_SECTION_KEYS.iter().find(|(name, _)| *name == section).map_or(&[], |(_, keys)| keys)
+}
+
+pub struct ImportedInput<'a> {
+    pub data: ProfileData,
+    pub config: &'a Map<String, Value>,
+    pub components: &'a Map<String, Value>,
+}
+
+pub fn imported_data(input: ImportedInput) -> ProfileData {
+    let config = input
+        .data
+        .config
+        .into_iter()
+        .filter(|(key, _)| !is_excluded(key) && !CODE_EXCLUDED_CONFIG_KEYS.contains(&key.as_str()))
+        .filter(|(key, value)| input.config.get(key).is_some_and(|current| same_kind(current, value)))
+        .collect();
+    let components = input
+        .data
+        .components
+        .into_iter()
+        .filter(|(key, _)| !EXCLUDED_SECTIONS.contains(&key.as_str()) && !CODE_EXCLUDED_SECTIONS.contains(&key.as_str()))
+        .filter_map(|(key, section)| {
+            let Value::Object(section) = section else {
+                return None;
+            };
+
+            if CODE_RAW_SECTIONS.contains(&key.as_str()) {
+                return Some((key, Value::Object(section)));
+            }
+
+            let Some(Value::Object(known)) = input.components.get(&key) else {
+                return None;
+            };
+            let dropped = code_excluded_section_keys(&key);
+            let kept: Map<String, Value> = section
+                .into_iter()
+                .filter(|(name, value)| !dropped.contains(&name.as_str()) && known.get(name).is_some_and(|current| same_kind(current, value)))
+                .collect();
+
+            Some((key, Value::Object(kept)))
+        })
+        .collect();
+
+    ProfileData { config, components }
 }
 
 fn same_kind(left: &Value, right: &Value) -> bool {
@@ -235,10 +295,12 @@ impl ProfileStore {
 
     pub fn take_snapshot(&self) -> ProfileData {
         let mut config = as_object(self.file(CONFIG_JSON).read());
+        let mut components = as_object(self.file(COMPONENTS_JSON).read());
 
         config.retain(|key, _| !is_excluded(key));
+        components.retain(|key, _| !EXCLUDED_SECTIONS.contains(&key.as_str()));
 
-        ProfileData { config, components: as_object(self.file(COMPONENTS_JSON).read()) }
+        ProfileData { config, components }
     }
 
     fn add(file: &mut ProfilesFile, draft: Draft) -> AppResult<Profile> {
@@ -320,14 +382,14 @@ impl ProfileStore {
         let mut components = as_object(self.file(COMPONENTS_JSON).read());
 
         for (key, value) in &data.config {
-            let fits = config.get(key).is_none_or(|current| same_kind(current, value));
+            let fits = config.get(key).is_some_and(|current| same_kind(current, value));
 
             if !is_excluded(key) && fits {
                 config.insert(key.clone(), value.clone());
             }
         }
 
-        for (key, section) in &data.components {
+        for (key, section) in data.components.iter().filter(|(key, _)| !EXCLUDED_SECTIONS.contains(&key.as_str())) {
             let Value::Object(section) = section else {
                 continue;
             };
@@ -357,7 +419,10 @@ impl ProfileStore {
 
     fn import_decoded(&self, decoded: Decoded, name: Option<&str>) -> AppResult<Profile> {
         let name = name.filter(|name| !name.trim().is_empty()).map_or(decoded.name, str::to_owned);
-        let draft = Draft { id: None, name, data: decoded.data, installed: decoded.installed, activate: false };
+        let config = as_object(self.file(CONFIG_JSON).read());
+        let components = as_object(self.file(COMPONENTS_JSON).read());
+        let data = imported_data(ImportedInput { data: decoded.data, config: &config, components: &components });
+        let draft = Draft { id: None, name, data, installed: decoded.installed, activate: false };
 
         self.update(|file| Self::add(file, draft))
     }

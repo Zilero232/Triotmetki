@@ -98,7 +98,9 @@ does not answer.
 
 ## 4. Privacy and retention
 
-- Nothing is sent before the mod is bound; the request carries only the arena's account ids and the device fields.
+- Nothing is sent before the mod is bound; the request carries only the arena's numeric account ids and the device
+  fields, never player names (`features/pack_badge/model.badges_request`, pinned by its test; checked in the
+  2026-10-06 security review). The badge stays on by default (owner's decision).
 - The server stores nothing from the read: no table, no cache of the roster, no log line with ids (request logs
   carry method and path only, `core/logger/lib/request-log`); the rate limiter keys on the device id.
 - Stored: one nullable boolean per device (`mod_device.badge_visible`). It is deleted with the device (account

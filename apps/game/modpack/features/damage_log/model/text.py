@@ -1,10 +1,10 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font, format_number
-from ....core.templates import render
+from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, Markup, font, format_number
+from ....core.hud.icons import CLASS_GLYPHS
+from ....core.templates import render_markup
 from . import detail_mode, section_rows, shown_totals
 from .constants import (
-    CLASS_GLYPHS,
     COLOR_MACROS,
     COMPACT_TOTALS_SEPARATOR,
     ENTRY_TEMPLATE_KEYS,
@@ -32,7 +32,7 @@ def kind_color(kind, settings):
 
 def kind_icon(kind, size):
     path = '%s/%s_%d.png' % (ICON_ROOT, kind, ICON_RENDITION)
-    return '<img src="img://%s" width="%d" height="%d"/>' % (path, size, size)
+    return Markup('<img src="img://%s" width="%d" height="%d"/>' % (path, size, size))
 
 
 def class_icon(vehicle_class, size):
@@ -74,7 +74,7 @@ def entry_color(row, settings):
 def _custom_totals(log, settings):
     values = log.values()
     values.update(palette_values(settings))
-    return render(settings.get('template'), values)
+    return render_markup(settings.get('template'), values)
 
 
 def _built_in_totals(log, settings, translate):
@@ -87,7 +87,7 @@ def _built_in_totals(log, settings, translate):
         font('%s %s' % (translate('dlog_total_' + key), format_number(value)), colors[TOTAL_COLORS[key]])
         for key, value in totals
     ]
-    return TOTALS_SEPARATOR.join(words)
+    return Markup(TOTALS_SEPARATOR.join(words))
 
 
 def totals_line(log, settings, translate):
@@ -111,7 +111,7 @@ def entry_lines(log, settings, translate, detail):
     lines = []
     for index, row in enumerate(rows['dealt'] + rows['received']):
         item = entry_values(row, translate, index + 1, looks)
-        text = render(template, item).strip()
+        text = Markup(render_markup(template, item).strip())
         lines.append(font(text, entry_color(row, settings), entry_size))
     return lines
 

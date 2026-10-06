@@ -7,7 +7,7 @@ from .constants import EXACT_SCALE_RANGE, PERCENT, SCALE_TOLERANCE
 def exact_scale(percent):
     """The interface scale for the setting `interface_scale_exact` (130 -> 1.3), or None when it is off (0 or under the
     lowest step)."""
-    if not is_number(percent) or isinstance(percent, bool):
+    if not is_number(percent):
         return None
     low, high = EXACT_SCALE_RANGE
     if percent < low:

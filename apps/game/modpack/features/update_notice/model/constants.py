@@ -15,6 +15,8 @@ SINGLE_FILE = re.compile(r'^otmetki\.(\d[\w.-]*)\.(?:mtmod|wotmod)$')
 SINGLE_ID = 'otmetki'
 GAME_FOLDER = re.compile(r'^\d+(?:\.\d+){1,3}$')
 VERSION_NUMBERS = re.compile(r'^\d+(?:\.\d+)*')
+# The whole version the index names, shown in the update notification: anything else (markup included) is no release.
+RELEASE_VERSION = re.compile(r'^\d+(?:\.\d+){0,3}(?:-[0-9A-Za-z.]+)?$')
 
 MAX_VERSION = 32
 STATE_KEY = 'update_notice'

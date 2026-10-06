@@ -62,7 +62,7 @@ __all__ = (
 
 def bar_slots(mask):
     """The slots the stock consumables panel shows from its `_mask` (one bit per added slot); None when unreadable."""
-    if not is_number(mask) or isinstance(mask, bool) or mask <= 0:
+    if not is_number(mask) or mask <= 0:
         return None
     return bin(int(mask)).count('1')
 
@@ -70,12 +70,12 @@ def bar_slots(mask):
 def stock_metrics(minimap_index=None, slots=None):
     """`{bar, minimap}`: the stock consumables panel's width and the minimap's side in design px, the fallbacks for
     what could not be read."""
-    readable = is_number(minimap_index) and not isinstance(minimap_index, bool)
+    readable = is_number(minimap_index)
     if readable and 0 <= int(minimap_index) < len(MINIMAP_SIZES):
         minimap = MINIMAP_SIZES[int(minimap_index)]
     else:
         minimap = MINIMAP_FALLBACK
-    count = slots if is_number(slots) and not isinstance(slots, bool) and slots > 0 else BAR_FALLBACK_SLOTS
+    count = slots if is_number(slots) and slots > 0 else BAR_FALLBACK_SLOTS
     return {'bar': int(count) * BAR_PITCH, 'minimap': minimap}
 
 

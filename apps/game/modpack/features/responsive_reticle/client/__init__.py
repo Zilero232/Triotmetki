@@ -70,11 +70,8 @@ def _lock_mode():
     return getattr(client_attr('constants', 'AIMING_MODE'), TARGET_LOCK, None)
 
 
-def _target_locked(lock):
-    handler = getattr(player(), 'inputHandler', None)
-    if handler is None or lock is None:
-        return False
-    return bool(handler.getAimingMode(lock))
+def _aiming_mode():
+    return getattr(getattr(player(), 'inputHandler', None), 'getAimingMode', None)
 
 
 # Math.Vector3 hands its coordinates out through tuple().
@@ -112,6 +109,9 @@ class ResponsiveReticle(FeatureComponent):
         self.realm = realm_of(client_attr('constants', 'CURRENT_REALM'))
         self.rotator = None
         self.lock = None
+        self.aiming_mode = None
+        self.follow = None
+        self.revisions = None
         self.active = False
         self.in_frame = False
         self.dispersion = TickBlend()
@@ -154,6 +154,7 @@ class ResponsiveReticle(FeatureComponent):
         if self.rotator is None:
             return
         self.lock = _lock_mode()
+        self.revisions = None
         self.active = True
         self.ticker.start()
 
@@ -161,6 +162,7 @@ class ResponsiveReticle(FeatureComponent):
         self.active = False
         self.ticker.stop()
         self.rotator = None
+        self.aiming_mode = None
         self.dispersion.clear()
         self.shot_results.clear()
         self.still.clear()
@@ -172,10 +174,27 @@ class ResponsiveReticle(FeatureComponent):
     def _drives(self, rotator):
         if not getattr(rotator, STARTED_ATTR, False) or not getattr(rotator, CLIENT_MODE_ATTR, False):
             return False
-        return controls_own_vehicle() and not _target_locked(self.lock)
+        return controls_own_vehicle() and not self._target_locked()
+
+    def _target_locked(self):
+        if self.lock is None:
+            return False
+        if self.aiming_mode is None:
+            self.aiming_mode = _aiming_mode()
+        return self.aiming_mode is not None and bool(self.aiming_mode(self.lock))
+
+    # The switch and the follow mode are read again only after a change of config.json or of the component's section,
+    # not on every frame.
+    def _settings_current(self):
+        revisions = (self.app.config.revision, self.settings.revision)
+        if revisions != self.revisions:
+            self.revisions = revisions
+            self.follow = self.settings.get('follow')
+            return self.enabled()
+        return True
 
     def _on_frame(self):
-        if not self.active or not self.enabled():
+        if not self.active or not self.app.in_battle or not self._settings_current():
             self.stop()
             return False
         rotator = self.rotator
@@ -201,7 +220,7 @@ class ResponsiveReticle(FeatureComponent):
         return None
 
     def _turn(self, rotator, shot_point, time_diff):
-        follow = self.settings.get('follow')
+        follow = self.follow
         before = _gun_angles(rotator)
         self.in_frame = True
         setattr(rotator, ROTATION_TICK_ATTR, turn_time(follow, time_diff))

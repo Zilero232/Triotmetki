@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.format import format_number, format_percent
+from ....core.format import format_percent, format_signed
 from .constants import UNKNOWN_RESULT
 
 
@@ -15,11 +15,4 @@ def percent_text(value):
 
 
 def signed(value, percent=False):
-    if value is None:
-        return ''
-
-    text = format_percent(value) if percent else format_number(value)
-
-    if value > 0:
-        return '+' + text
-    return text
+    return format_signed(value, percent, '')

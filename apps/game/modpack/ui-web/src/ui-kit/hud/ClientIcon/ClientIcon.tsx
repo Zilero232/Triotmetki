@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 
 import { parseIcon } from '@/shared/lib/client-icon';
+import { remBox } from '@/shared/lib/css-unit';
 
 import type { ClientIconProps } from './ClientIcon.types';
 
@@ -19,7 +20,7 @@ export const ClientIcon = ({ icon, size, width, tone, className }: ClientIconPro
         draggable={false}
         height={size}
         src={image}
-        style={{ width: `${width ?? size}rem`, height: `${size}rem` }}
+        style={remBox({ width: width ?? size, height: size })}
         width={width ?? size}
       />
     );

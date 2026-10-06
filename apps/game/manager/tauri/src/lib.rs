@@ -44,7 +44,7 @@ use tauri_plugin_log::{Target, TargetKind};
 use crate::background::{BACKGROUND_ARG, MAIN_WINDOW};
 use crate::deep_link::DeepLink;
 use crate::paths::Layout;
-use crate::releases::{api_url, ReleasesClient};
+use crate::releases::{api_url, ReleasesClient, SequenceStore, SEQUENCES_FILE};
 use crate::service::Manager;
 
 pub const UNINSTALL_ARG: &str = "--uninstall-mods";
@@ -99,7 +99,8 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(move |app| {
-            let manager = Manager::new(layout, ReleasesClient::new(api_url())?)?;
+            let sequences = SequenceStore::new(layout.manager_dir().join(SEQUENCES_FILE));
+            let manager = Manager::new(layout, ReleasesClient::new(api_url())?.with_sequences(sequences))?;
             let settings = manager.settings();
 
             for client_dir in manager.recover_commits() {

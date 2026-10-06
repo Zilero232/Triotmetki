@@ -1,6 +1,7 @@
 use std::path::{Path, PathBuf};
 
 use crate::error::{AppError, AppResult, ErrorCode};
+use crate::releases::debug_env;
 use crate::state::client_key;
 
 pub const APP_FOLDER: &str = "TriOtmetki";
@@ -19,11 +20,11 @@ impl Layout {
     }
 
     pub fn from_env() -> AppResult<Self> {
-        let state_root = std::env::var_os(STATE_ROOT_ENV)
+        let state_root = debug_env(STATE_ROOT_ENV)
             .map(PathBuf::from)
             .or_else(|| dirs::data_local_dir().map(|dir| dir.join(APP_FOLDER)))
             .ok_or_else(|| AppError::coded(ErrorCode::InvalidPath, "no local app data folder"))?;
-        let roaming_root = std::env::var_os(ROAMING_ROOT_ENV)
+        let roaming_root = debug_env(ROAMING_ROOT_ENV)
             .map(PathBuf::from)
             .or_else(|| dirs::data_dir().map(|dir| dir.join(APP_FOLDER)))
             .ok_or_else(|| AppError::coded(ErrorCode::InvalidPath, "no roaming app data folder"))?;

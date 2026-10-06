@@ -14,6 +14,15 @@ describe('modDeviceTracker', () => {
     expect(first).not.toBe(second);
   });
 
+  it('keeps a stranger who names a victim device from draining that device bucket', () => {
+    const device = newDeviceId();
+
+    const owner = modDeviceTracker({ ip, headers: { [MOD_DEVICE.header]: device } });
+    const stranger = modDeviceTracker({ ip: '203.0.113.9', headers: { [MOD_DEVICE.header]: device } });
+
+    expect(stranger).not.toBe(owner);
+  });
+
   it('falls back to the address when the device header is missing or malformed', () => {
     const bare = modDeviceTracker({ ip, headers: {} });
 

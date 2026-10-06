@@ -3,16 +3,17 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 import _support  # noqa: F401
+from otmetki.core.editor import groups_editor
 from otmetki.core.settings import Settings
 from otmetki.features.team_hp.i18n import STRINGS
-from otmetki.features.team_hp.model.editor import editor
+from otmetki.features.team_hp.model.constants import EDITOR_GROUPS
 from otmetki.features.team_hp.settings import ADVANCED, SCHEMA
 
 PANEL_KEYS = ('x', 'y', 'align_x', 'align_y', 'drag', 'scale', 'alpha', 'font_size', 'border')
 
 
 def spec():
-    return editor(Settings(None, SCHEMA), lambda key, **params: key)
+    return groups_editor('team_hp', EDITOR_GROUPS)(Settings(None, SCHEMA), lambda key, **params: key)
 
 
 def grouped_keys():

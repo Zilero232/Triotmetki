@@ -14,6 +14,7 @@ the stock overlay closes.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ....events import Listeners
 from ....hud import HudBackend
 from ....hud.cover import flash_visible
 from ....hud.panel import GAMEFACE_PROPS
@@ -52,7 +53,7 @@ class GuiFlashBackend(HudBackend):
     name = 'guiflash'
 
     def __init__(self):
-        self.listeners = []
+        self.listeners = Listeners('HUD move listener')
         self.listening = False
         self.covers = {}
         self.spaces = accepts_spaces(getattr(g_guiFlash, 'createComponent', None))
@@ -98,8 +99,7 @@ class GuiFlashBackend(HudBackend):
 
     @safe
     def listen(self, on_moved):
-        if on_moved not in self.listeners:
-            self.listeners.append(on_moved)
+        self.listeners.add(on_moved)
         updated = getattr(COMPONENT_EVENT, 'UPDATED', None)
         if updated is None or self.listening:
             return
@@ -109,5 +109,4 @@ class GuiFlashBackend(HudBackend):
 
     @safe
     def _on_updated(self, alias, props):
-        for listener in list(self.listeners):
-            listener(alias, props if isinstance(props, dict) else {})
+        self.listeners.notify(alias, props if isinstance(props, dict) else {})

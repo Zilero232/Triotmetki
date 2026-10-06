@@ -2,24 +2,12 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import math
 
-from ....core.compat import is_number, string_types, to_text
+from ....core.compat import clean_text, number_or_none
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, counted, font, format_number
 from .constants import MAX_CREW, MAX_LEVEL, MAX_TEXT, TITLE_SIZE_STEP
 
 # Only the own crew and the own vehicle's average XP, the same figures the client's crew screens and battle results
 # use (TankmanDossier: next skill cost over the average XP); nothing about other players.
-
-
-def _number(value, low=0):
-    if not is_number(value) or isinstance(value, bool) or value < low:
-        return None
-    return value
-
-
-def _text(value):
-    if not isinstance(value, string_types):
-        return u''
-    return to_text(value).strip()[:MAX_TEXT]
 
 
 def battles_left(xp_left, avg_xp, factor=1.0):
@@ -35,17 +23,17 @@ def battles_left(xp_left, avg_xp, factor=1.0):
 def clean_member(raw):
     if not isinstance(raw, dict):
         return None
-    xp_left = _number(raw.get('xp_left'))
+    xp_left = number_or_none(raw.get('xp_left'), 0)
     if xp_left is None:
         return None
-    level = _number(raw.get('level'))
-    avg_xp = _number(raw.get('avg_xp'))
+    level = number_or_none(raw.get('level'), 0)
+    avg_xp = number_or_none(raw.get('avg_xp'), 0)
     return {
-        'role': _text(raw.get('role')),
-        'name': _text(raw.get('name')),
+        'role': clean_text(raw.get('role'), MAX_TEXT, u''),
+        'name': clean_text(raw.get('name'), MAX_TEXT, u''),
         'xp_left': int(xp_left),
         'level': min(MAX_LEVEL, level) if level is not None else None,
-        'battles': battles_left(int(xp_left), avg_xp, _number(raw.get('factor')) or 1.0),
+        'battles': battles_left(int(xp_left), avg_xp, number_or_none(raw.get('factor'), 0) or 1.0),
     }
 
 

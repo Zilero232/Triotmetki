@@ -10,7 +10,7 @@ from .constants import BODY_CLOSE, BODY_OPEN, EXTRA_LINES, FULL_LINES, LINE_BREA
 
 
 def _number(value):
-    return value if is_number(value) and not isinstance(value, bool) and value > 0 else None
+    return value if is_number(value) and value > 0 else None
 
 
 def shell_stats(damage, piercing, speed, speed_factor):

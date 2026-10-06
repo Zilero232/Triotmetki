@@ -225,8 +225,14 @@ pub async fn migrate_modpack(app: AppHandle, manager: State<'_, Manager>, client
 #[tauri::command]
 pub async fn collect_logs(manager: State<'_, Manager>) -> AppResult<PathBuf> {
     let output_dir = dirs::desktop_dir().or_else(dirs::home_dir).ok_or_else(|| AppError::coded(ErrorCode::InvalidPath, "no desktop folder"))?;
-    let path =
-        logs::collect(CollectInput { layout: &manager.layout, clients: &manager.detect(), output_dir: &output_dir, now: chrono::Local::now() })?;
+    let redactor = manager.redactor();
+    let path = logs::collect(CollectInput {
+        layout: &manager.layout,
+        clients: &manager.detect(),
+        output_dir: &output_dir,
+        now: chrono::Local::now(),
+        redactor: &redactor,
+    })?;
 
     manager.allow_reveal(&path);
 

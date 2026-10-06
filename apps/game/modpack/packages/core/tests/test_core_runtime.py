@@ -17,7 +17,7 @@ from otmetki.core.client.game import values_by_name
 from otmetki.core.errors import ReasonError
 from otmetki.core.events import EVENT_HIT_VIEWER_BATTLES, EventBus, hit_viewer_battles
 from otmetki.core.i18n import Catalog, Translator, resolve_language
-from otmetki.core.format import format_number, format_percent, single_spaces, strip_tags
+from otmetki.core.format import format_number, format_percent, format_signed, single_spaces, strip_tags
 from otmetki.core.settings import Schema, Settings, fix
 from otmetki.core.storage import JsonFile, account_file
 
@@ -765,6 +765,15 @@ class NumberFormatTest(unittest.TestCase):
 
     def test_a_percent_has_two_decimals(self):
         self.assertEqual(format_percent(60), u'60.00%')
+
+    def test_a_positive_signed_number_gets_a_plus(self):
+        self.assertEqual(format_signed(1500), u'+1 500')
+
+    def test_zero_and_negative_signed_numbers_keep_their_own_sign(self):
+        self.assertEqual([format_signed(0), format_signed(-2.5, True)], [u'0', u'-2.50%'])
+
+    def test_a_missing_signed_number_reads_as_the_given_text(self):
+        self.assertEqual([format_signed(None), format_signed(None, True, u'')], [u'-', u''])
 
 
 if __name__ == '__main__':

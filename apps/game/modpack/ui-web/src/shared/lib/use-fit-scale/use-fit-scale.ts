@@ -1,9 +1,10 @@
-import { useWindowEvent } from '@siberiacancode/reactuse';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEventListener, useWindowEvent } from '@siberiacancode/reactuse';
+import { useRef, useState } from 'react';
 
 import type { FitPlacement } from '@/shared/lib/fit-scale';
 
 import { fitPlacement } from '@/shared/lib/fit-scale';
+import { useMeasureFrames } from '@/shared/lib/use-measure-frames';
 
 import type { UseFitScaleInput } from './use-fit-scale.types';
 
@@ -14,44 +15,20 @@ const sizeOf = (element: HTMLElement | null) => ({ width: element?.offsetWidth ?
 const isSame = (left: FitPlacement, right: FitPlacement): boolean =>
   left.scale === right.scale && left.x === right.x && left.y === right.y && left.measured === right.measured;
 
-export const useFitScale = ({ max = 1, frames = FIT_SCALE.measureFrames }: UseFitScaleInput = {}) => {
+export const useFitScale = ({ content, max = 1, frames = FIT_SCALE.measureFrames }: UseFitScaleInput) => {
   const frameRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [placement, setPlacement] = useState<FitPlacement>(FIT_SCALE.unmeasured);
-  const measureRef = useRef(() => {});
 
-  measureRef.current = () => {
+  const measure = (): void => {
     const next = fitPlacement({ frame: sizeOf(frameRef.current), content: sizeOf(contentRef.current), max });
 
     setPlacement((current) => (isSame(current, next) ? current : next));
   };
 
-  useLayoutEffect(() => {
-    let left = frames;
-    let frame = 0;
-
-    const step = () => {
-      measureRef.current();
-      left -= 1;
-      frame = left > 0 ? requestAnimationFrame(step) : 0;
-    };
-
-    measureRef.current();
-    frame = requestAnimationFrame(step);
-
-    return () => cancelAnimationFrame(frame);
-  });
-
-  useEffect(() => {
-    const content = contentRef.current;
-    const onLoad = () => measureRef.current();
-
-    content?.addEventListener('load', onLoad, true);
-
-    return () => content?.removeEventListener('load', onLoad, true);
-  }, []);
-
-  useWindowEvent('resize', () => measureRef.current());
+  useMeasureFrames({ measure, frames, restartKey: content });
+  useEventListener(contentRef, 'load', measure, { capture: true });
+  useWindowEvent('resize', measure);
 
   return { frameRef, contentRef, ...placement };
 };

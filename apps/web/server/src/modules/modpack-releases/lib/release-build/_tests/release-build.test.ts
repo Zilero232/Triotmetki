@@ -46,14 +46,21 @@ describe('releasePayload', () => {
   it('writes the text the manager verifies: packages sorted by id, lowercase digests, LF line ends', () => {
     expect(releasePayload(buildRelease({ ...BUILD, packages: PACKAGES }))).toBe(
       [
-        'otmetki-modpack-release/1',
+        'otmetki-modpack-release/2',
         'version 0.2.0',
         'games 1.46.*',
         `catalog ${'c'.repeat(64)}`,
+        'notes -',
         `package companion otmetki.companion_0.2.0.mtmod 20 ${'b'.repeat(64)}`,
         `package core net.triotmetki.core_0.2.0.mtmod 10 ${'a'.repeat(64)}`,
         ''
       ].join('\n')
+    );
+  });
+
+  it('hashes each language of the notes, the same way the manager does', () => {
+    expect(releasePayload({ ...release({ version: '0.1.0', games: ['1.46.*'] }), notes: { ru: 'Исправления', en: 'Fixes' } })).toContain(
+      'notes bb81ae64d8eb1df65dc2457b00e11100de8223f9de01d6237eea5059edc8bacd 59e5965495d92feeab9a57f4fad73dd3169ca0e0752d6d1983c6b2fc006fc13e\n'
     );
   });
 

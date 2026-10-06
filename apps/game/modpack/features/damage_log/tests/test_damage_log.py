@@ -13,7 +13,8 @@ from otmetki.core.client.game import values_by_name
 from otmetki.core.settings import Settings
 from otmetki.features.damage_log.i18n import STRINGS
 from otmetki.features.damage_log.model import DamageLog, Hit, dealt_rows, received_rows, section_rows, shown_totals
-from otmetki.features.damage_log.model.constants import CLASS_GLYPHS, DETAIL_SHORT, KINDS, PALETTES
+from otmetki.core.hud.icons import CLASS_GLYPHS
+from otmetki.features.damage_log.model.constants import DETAIL_SHORT, KINDS, PALETTES
 from otmetki.features.damage_log.model.preview import preview_log, preview_text
 from otmetki.features.damage_log.model.text import class_icon, format_damage_log, kind_color, kind_icon
 from otmetki.features.damage_log.settings import SCHEMA, SETTINGS, SWITCH
@@ -317,6 +318,19 @@ class FormatTest(unittest.TestCase):
 
         icon = '<img src="img://gui/maps/icons/otmetki/damage_log/icons/blocked_32.png" width="14" height="14"/>'
         assert icon in lines[-1]
+
+    def test_a_vehicle_name_with_markup_is_shown_as_text(self):
+        log = DamageLog()
+        log.add('damage', 390, target(TIGER, '<font color="#000000">Tiger</font>', 1.0, shell='ap'))
+
+        lines = format_damage_log(log, settings(), translator()).split('\n')
+
+        assert '&lt;font color="#000000"&gt;Tiger&lt;/font&gt;' in lines[-1]
+
+    def test_a_custom_totals_template_keeps_its_own_markup(self):
+        text = format_damage_log(filled_log(), settings(style='custom', template='<b>{dealt}</b>'), translator())
+
+        assert text.split('\n')[0].endswith('><b>800</b></font>')
 
     def test_the_kind_icons_and_colours_are_fixed_on(self):
         values = settings(kind_icons=False, kind_colors=False)

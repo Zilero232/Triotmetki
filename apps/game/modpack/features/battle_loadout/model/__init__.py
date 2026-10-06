@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.compat import is_int, string_types, to_text
+from ....core.compat import clean_text, is_int
 from ....core.format import COLOR_WARN, font
 from ....core.hud.icons import artefact_icon, glyph, image, split
 from .constants import (ATTENTION_MARK, BONUS_MARK, BOOSTER_OVERLAY_PATH, BOOSTER_OVERLAYS, FLAGS, ICON_FALLBACK,
@@ -12,12 +12,6 @@ from .constants import (ATTENTION_MARK, BONUS_MARK, BOOSTER_OVERLAY_PATH, BOOSTE
 # tooltips and ammunition panels read) and the device states the client reports for the own vehicle. The client tells
 # nothing about other vehicles' equipment and nothing is inferred. The shells and consumables are left to the stock
 # panel under the row, which already shows them.
-
-
-def _text(value, limit):
-    if not isinstance(value, string_types) or not value.strip():
-        return None
-    return to_text(value).strip()[:limit]
 
 
 def _device_overlay(raw):
@@ -48,13 +42,13 @@ def clean_device(raw):
     if not isinstance(raw, dict):
         return None
 
-    name = _text(raw.get('name'), MAX_NAME)
+    name = clean_text(raw.get('name'), MAX_NAME)
     if name is None:
         return None
 
     device = {
         'name': name,
-        'effect': _text(raw.get('effect'), MAX_EFFECT) or u'',
+        'effect': clean_text(raw.get('effect'), MAX_EFFECT) or u'',
         'icon': artefact_icon(raw.get('icon'), ICON_FALLBACK) or glyph(ICON_FALLBACK),
         'overlay': overlay_of(raw),
         'kind': _kind(raw),

@@ -1,3 +1,5 @@
+import { remSquare } from '@/shared/lib/css-unit';
+
 import type { ReticleMarkProps } from './ReticleMark.types';
 
 import { RETICLE_MARKS } from '../../../config';
@@ -11,7 +13,7 @@ export const ReticleMark = ({ shape, size, color, outline }: ReticleMarkProps) =
   const opacities = { mark: 1, outline: paint.outlineOpacity, shade: paint.shadeOpacity };
 
   return (
-    <span className={s.mark} style={{ width: `${String(size)}rem`, height: `${String(size)}rem` }}>
+    <span className={s.mark} style={remSquare(size)}>
       <svg aria-hidden='true' height='100%' viewBox={`0 0 ${String(size)} ${String(size)}`} width='100%' xmlns='http://www.w3.org/2000/svg'>
         {reticleMarkPrimitives({ shape, size, outline }).map((primitive, index) =>
           primitive.stroke === null ? (

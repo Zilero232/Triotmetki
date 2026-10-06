@@ -1,7 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import is_int
-from .constants import MAX_SEGMENTS, OUTCOME_BY_CODE, PART_NAMES
+from ....core.hit_book import OUTCOME_BY_CODE, part_of
+from .constants import MAX_SEGMENTS
 from .geometry import impact_point
 
 # Fair play: these are the packed points of a shot the client itself receives to draw its hit effects on a vehicle
@@ -13,10 +14,6 @@ def clean_segments(segments):
     if not isinstance(segments, (list, tuple)):
         return []
     return [int(segment) for segment in segments[:MAX_SEGMENTS] if is_int(segment) and segment >= 0]
-
-
-def part_of(index):
-    return PART_NAMES[index] if 0 <= index < len(PART_NAMES) else PART_NAMES[0]
 
 
 def impact(segments):

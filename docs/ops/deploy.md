@@ -199,6 +199,15 @@ One minisign key signs the manager's self-update and each modpack release (the m
 
   Installed managers trust only the key they were built with: after a key change they neither update themselves nor accept a new release.
 
+#### Release payload format 2
+
+`modpack-release.ts prepare` writes the payload in format 2 (`otmetki-modpack-release/2`): format 1 plus a `notes <sha256(ru)> <sha256(en)>` line (`notes -` without notes), so the changelog text the manager shows is signed too. The anti-replay sequence is the `timestamp:` that `tauri signer sign` puts in the signature's trusted comment (minisign signs it): a manager remembers the highest one per client version and refuses an older release, and refuses to replace an installed modpack with an older version. Managers from 0.4.3 verify format 2 and still accept format 1 (`ACCEPT_LEGACY_PAYLOAD` in `tauri/src/releases/signature.rs`), so the releases already in `releases.json` keep working. Managers up to 0.4.2 verify only format 1: release the manager 0.4.3 before (or together with) the first modpack release signed in format 2, and give players time to self-update; a modpack release in format 2 is refused by an older manager until it updates. Once every published release is in format 2 and no manager older than 0.4.3 is expected, set `ACCEPT_LEGACY_PAYLOAD = false`.
+
+#### Recommendations (not done yet)
+
+- **Separate keys.** One minisign key signs both the manager's self-update and the modpack releases, so a leak of `TAURI_SIGNING_PRIVATE_KEY` gives both. A second key for releases (its own secret, its own `RELEASE_PUBLIC_KEY`) limits that; it needs a manager release that trusts the new key before any release is signed with it.
+- **SSH key instead of a password.** `release.yml` (and deploy) upload over SSH with `DEPLOY_SSH_PASSWORD` and the VPS has `PasswordAuthentication yes`. Use a dedicated deploy key (`appleboy/scp-action` / `ssh-action` take `key:`), restrict it in `authorized_keys` to the deploy user, pin the host key (`fingerprint:`), and turn password logins off.
+
 ### The first release
 
 - [ ] The API accepts only **v2** request signatures (`MOD_REQUEST.version = 'v2'`: HMAC over `v2\n<METHOD>\n<path>\n<timestamp>\n<nonce>\n<body>`, a 5-minute skew window and a one-time nonce), so a package built before v2 signing is rejected. Check that `DEFAULT_SERVER_URL` in `apps/game/modpack/packages/companion/config/constants.py` is `https://api.triotmetki.ru`.

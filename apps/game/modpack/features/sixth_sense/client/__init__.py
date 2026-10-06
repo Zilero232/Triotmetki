@@ -8,8 +8,9 @@ from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.timer import Ticker
 from ....core.hud.stock import SIXTH_SENSE
 from ....core.log import log, safe
+from .. import settings
 from ..i18n import STRINGS
-from ..model import SixthSense, format_sixth_sense, icon_gallery, lamp_duration
+from ..model import SixthSense, format_sixth_sense, icon_gallery, lamp_duration, preview
 from ..model.constants import (
     ENDING_PERIODS,
     OBSERVED,
@@ -17,9 +18,8 @@ from ..model.constants import (
     PREVIEW_SIZE,
     VEHICLE_STATES,
 )
-from ..model.preview import preview_text, preview_widget
 from ..model.widget import sixth_sense_widget
-from ..settings import ICON_SETS, PANEL_ID, SCHEMA, SWITCH
+from ..settings import ICON_SETS
 from .constants import FIRST_LIGHT, NO_STATES, NOT_SPOTTED, TICK_S
 
 try:
@@ -38,15 +38,7 @@ def own_spotting_decrease():
     return attributes.get(OWN_SPOTTING_ATTR, 0.0)
 
 
-PANEL_SPEC = PanelSpec(
-    panel_id=PANEL_ID,
-    schema=SCHEMA,
-    switch=SWITCH,
-    strings=STRINGS,
-    preview_size=PREVIEW_SIZE,
-    preview_text=preview_text,
-    preview_widget=preview_widget,
-)
+PANEL_SPEC = PanelSpec.of(settings, STRINGS, preview, PREVIEW_SIZE)
 
 
 # The lamp lights and goes out with the stock one (the same OBSERVED_BY_ENEMY state), so it replaces the stock lamp

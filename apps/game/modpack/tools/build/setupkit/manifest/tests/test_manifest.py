@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import collections
 import copy
 import hashlib
 import importlib
@@ -20,21 +21,21 @@ if BUILD_DIR not in sys.path:
     sys.path.insert(0, BUILD_DIR)
 
 import archive  # noqa: E402
+import fileio  # noqa: E402
 import layout  # noqa: E402
 from setupkit import ASSETS_DIR, CATALOG_PATH  # noqa: E402
 from setupkit.manifest import catalog as catalog_module  # noqa: E402
-from setupkit.manifest.generate import ManifestError, build_manifest  # noqa: E402
+from setupkit.manifest.generate import ManifestError, build_manifest, preview_hashes  # noqa: E402
+from setupkit.manifest.model import Preview  # noqa: E402
 from setupkit.manifest.model import camel  # noqa: E402
+
+Component = collections.namedtuple('Component', 'preview')
+Manifest = collections.namedtuple('Manifest', 'components')
 
 COMPONENT_KEYS = [
     'id', 'packageId', 'version', 'file', 'category', 'title', 'description', 'fairPlay', 'required', 'default',
     'presets', 'preview', 'dependencies', 'catalogued', 'sha256', 'size', 'perf', 'context', 'generator',
 ]
-
-
-def load_raw():
-    with io.open(CATALOG_PATH, encoding='utf-8') as handle:
-        return json.load(handle)
 
 
 def load_catalog():
@@ -113,7 +114,7 @@ CHECK_PROBLEMS = (
 class CatalogTest(unittest.TestCase):
 
     def problems(self, mutate):
-        raw = copy.deepcopy(load_raw())
+        raw = copy.deepcopy(fileio.read_json(CATALOG_PATH))
         mutate(raw)
         with self.assertRaises(catalog_module.CatalogError) as context:
             catalog_module.parse(raw, ASSETS_DIR)
@@ -335,6 +336,24 @@ class ManifestTest(unittest.TestCase):
                 self.assertIn(dependency, ids)
 
 
+class PreviewHashesTest(unittest.TestCase):
+
+    def test_hashes_each_preview_on_disk_and_skips_the_missing(self):
+        folder = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, folder)
+        os.makedirs(os.path.join(folder, 'previews'))
+        with open(os.path.join(folder, 'previews', 'core.png'), 'wb') as handle:
+            handle.write(b'png')
+        components = [
+            Component(preview=Preview('previews/core.png', None, 'previews/core.ogg')),
+            Component(preview=Preview(None, None, None)),
+        ]
+
+        hashes = preview_hashes(Manifest(components=components), folder)
+
+        self.assertEqual(hashes, {'previews/core.png': hashlib.sha256(b'png').hexdigest()})
+
+
 class CliTest(unittest.TestCase):
 
     def setUp(self):
@@ -359,6 +378,9 @@ class CliTest(unittest.TestCase):
         dependencies = [component['id'] for component in components if component.get('kind') == 'dependency']
 
         self.assertEqual(dependencies, ['openwg_gameface', 'guiflash', 'modslist'])
+
+    def test_components_json_lists_the_preview_hashes(self):
+        self.assertEqual(self.data['previewSha256'], {})
 
     def test_the_default_output_is_dist_catalog(self):
         self.assertTrue(self.cli.DEFAULT_OUT.endswith(os.path.join('dist', 'catalog')))

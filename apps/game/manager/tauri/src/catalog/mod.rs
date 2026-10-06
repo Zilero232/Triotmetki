@@ -1,4 +1,4 @@
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -176,6 +176,8 @@ struct RawCatalog {
     conflicts: Vec<ConflictRule>,
     #[serde(default)]
     disabled_looks: Vec<String>,
+    #[serde(default)]
+    preview_sha256: BTreeMap<String, String>,
 }
 
 impl TryFrom<RawCatalog> for Catalog {
@@ -206,6 +208,7 @@ impl TryFrom<RawCatalog> for Catalog {
             owned_paths: raw.owned_paths,
             conflicts: raw.conflicts,
             disabled_looks: raw.disabled_looks,
+            preview_sha256: raw.preview_sha256,
         })
     }
 }
@@ -235,6 +238,8 @@ pub struct Catalog {
     pub conflicts: Vec<ConflictRule>,
     #[serde(default)]
     pub disabled_looks: Vec<String>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub preview_sha256: BTreeMap<String, String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]

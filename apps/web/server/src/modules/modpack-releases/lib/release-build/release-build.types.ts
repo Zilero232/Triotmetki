@@ -7,7 +7,7 @@ export type ModpackCatalog = z.infer<typeof modpackCatalogSchema>;
 
 export type UnsignedModpackRelease = Omit<ModpackRelease, 'signature'>;
 
-export type ReleasePayloadInput = Pick<ModpackRelease, 'catalog' | 'games' | 'packages' | 'version'>;
+export type ReleasePayloadInput = Pick<ModpackRelease, 'catalog' | 'games' | 'notes' | 'packages' | 'version'>;
 
 type ReleasePackageFile = Omit<ModpackReleasePackage, 'url'>;
 

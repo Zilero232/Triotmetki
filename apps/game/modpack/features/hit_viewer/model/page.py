@@ -3,7 +3,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.compat import is_number
 from ....core.format import format_epoch, format_number
-from .constants import ACTION_OPEN, DAMAGING, DASH, MAP_ICON, PAGE_LABELS, SEPARATOR, SIDE_DEALT, SIDE_RECEIVED, SIDES
+from ....core.hit_book import DAMAGING
+from .constants import ACTION_OPEN, DASH, MAP_ICON, PAGE_LABELS, SEPARATOR, SIDE_DEALT, SIDE_RECEIVED, SIDES
 
 
 def side_hits(battle, side):

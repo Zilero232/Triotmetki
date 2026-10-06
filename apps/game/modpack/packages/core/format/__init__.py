@@ -11,9 +11,10 @@ from .constants import (
     DATE_TIME_FORMAT,
     FORMS,
     MARK_COLORS,
+    TIER_COLORS,
 )
-from .markup import font, single_spaces, strip_tags
-from .number import format_number, format_percent
+from .markup import Markup, escape, font, font_color, single_spaces, strip_tags
+from .number import format_number, format_percent, format_signed
 from .plural import count_phrase, counted, forms_of, plural, plural_index
 
 __all__ = (
@@ -25,13 +26,18 @@ __all__ = (
     'DATE_TIME_FORMAT',
     'FORMS',
     'MARK_COLORS',
+    'TIER_COLORS',
+    'Markup',
     'count_phrase',
     'counted',
+    'escape',
     'font',
+    'font_color',
     'format_epoch',
     'format_moment',
     'format_number',
     'format_percent',
+    'format_signed',
     'format_timer',
     'forms_of',
     'plural',

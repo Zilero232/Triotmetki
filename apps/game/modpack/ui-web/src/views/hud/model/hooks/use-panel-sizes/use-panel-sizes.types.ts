@@ -1,14 +1,7 @@
-import type { Measured } from '@/entities/hud/panel-layout';
-import type { ResolvedWidget } from '@/features/hud/widget-registry';
-import type { RichLine } from '@/shared/lib/rich-text';
+import type { HudPanel } from '@/shared/api/hud-protocol';
 
-export type Sizes = Partial<Record<string, Measured>>;
+import type { PanelContent } from '../../../lib/panel-sizes';
 
 export type MeasureRef = (element: HTMLElement | null) => void;
 
-export type UsePanelSizesInput = {
-  lines: Map<string, RichLine[]>;
-  widgets: Map<string, ResolvedWidget | null>;
-};
-
-export type SettleInput = { current: Sizes; readings: Map<string, Measured> };
+export type UsePanelSizesInput = PanelContent & { panels: HudPanel[] };

@@ -5,24 +5,16 @@ from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.native import read_settings, settings_core
 from ....core.hud.stock import FRAG_CORRELATION_BAR
 from ....core.log import safe
+from .. import settings
 from ..i18n import STRINGS
-from ..model import format_panel, pinned_place, replaces_stock
+from ..model import format_panel, pinned_place, preview, replaces_stock
 from ..model.constants import PREVIEW_SIZE, STOCK_STRIP_SETTINGS
-from ..model.preview import preview_text, preview_widget
 from ..model.strip import strip_options
 from ..model.widget import team_hp_widget
-from ..settings import PANEL_ID, SCHEMA, SWITCH
+from ..settings import PANEL_ID
 
 
-PANEL_SPEC = PanelSpec(
-    panel_id=PANEL_ID,
-    schema=SCHEMA,
-    switch=SWITCH,
-    strings=STRINGS,
-    preview_size=PREVIEW_SIZE,
-    preview_text=preview_text,
-    preview_widget=preview_widget,
-)
+PANEL_SPEC = PanelSpec.of(settings, STRINGS, preview, PREVIEW_SIZE)
 
 
 # Replaces the stock score strip (fragCorrelationBar) while the Gameface page draws it, except in an overlay style.

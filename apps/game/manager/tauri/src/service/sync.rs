@@ -54,7 +54,7 @@ fn base_after_reset(base: SyncBase, revision: u64) -> SyncBase {
 }
 
 impl Manager {
-    fn credential_store(&self) -> CredentialStore {
+    pub(super) fn credential_store(&self) -> CredentialStore {
         let configs = self.client(None).map_or_else(|_| self.layout.durable_dir(), |client| configs_dir(&client.path));
 
         CredentialStore::new(configs, self.layout.durable_dir())

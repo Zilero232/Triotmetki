@@ -10,15 +10,14 @@ from ....core.client.me import tank_ratings
 from ....core.client.timer import Ticker
 from ....core.compat import is_number
 from ....core.log import safe
+from .. import settings
 from ..i18n import STRINGS
-from ..model import BattleCounts, progress_state
+from ..model import BattleCounts, preview, progress_state
 from ..model.constants import ANY_TARGET_KEYS, KIND_BY_EVENT, PREVIEW_SIZE, REACHED
 from ..model.main_gun import main_gun_applies, main_gun_state
-from ..model.preview import preview_text, preview_widget
 from ..model.rows import progress_rows
 from ..model.text import format_panel
 from ..model.widget import panel_widget
-from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .constants import ALLY_HIT_MESSAGE, REACHED_BAR_S
 
 
@@ -35,15 +34,7 @@ def defence_points(event):
     return call(event, 'getCount', 0)
 
 
-PANEL_SPEC = PanelSpec(
-    panel_id=PANEL_ID,
-    schema=SCHEMA,
-    switch=SWITCH,
-    strings=STRINGS,
-    preview_size=PREVIEW_SIZE,
-    preview_text=preview_text,
-    preview_widget=preview_widget,
-)
+PANEL_SPEC = PanelSpec.of(settings, STRINGS, preview, PREVIEW_SIZE)
 
 
 # One plate for this battle's targets. The tank's site row (WN8, expected values) is read in the hangar when the vehicle

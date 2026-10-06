@@ -63,6 +63,9 @@ fn compares_modpack_versions_semantically() {
     assert!(is_newer("0.10.0", Some("0.9.0")));
     assert!(!is_newer("0.1.0", Some("0.1.0")));
     assert!(is_newer("0.1.0", None));
+    assert!(is_downgrade("0.9.0", Some("0.10.0")));
+    assert!(!is_downgrade("0.10.0", Some("0.10.0")));
+    assert!(!is_downgrade("0.1.0", None));
 }
 
 #[test]
@@ -479,7 +482,7 @@ fn replays_a_commit_the_process_did_not_finish() {
     let journal =
         write_journal(&client_dir, &serde_json::json!({ "retired": [[core, core_old]], "placed": [[companion_part, companion], [core_part, core]] }));
 
-    assert!(recover_commit(&journal).unwrap());
+    assert!(recover_commit(RecoverInput { journal: &journal, roots: &[root.path().to_path_buf()] }).unwrap());
 
     assert_eq!(fs::read_to_string(&core).unwrap(), "old core");
     assert_eq!(crate::fsx::list_files(&mods_dir), vec![core.clone()]);
@@ -498,7 +501,7 @@ fn a_retired_file_the_journal_does_not_name_stays_retired() {
 
     let journal = write_journal(&root.path().join("clients"), &serde_json::json!({ "retired": [], "placed": [] }));
 
-    assert!(recover_commit(&journal).unwrap());
+    assert!(recover_commit(RecoverInput { journal: &journal, roots: &[root.path().to_path_buf()] }).unwrap());
 
     assert!(!stale.exists());
     assert!(stale_old.exists());
@@ -517,16 +520,38 @@ fn a_journal_entry_that_is_not_a_staged_pair_is_ignored() {
         &serde_json::json!({ "retired": [[root.path().join("x"), victim]], "placed": [[root.path().join("other.part"), victim]] }),
     );
 
-    assert!(recover_commit(&journal).unwrap());
+    assert!(recover_commit(RecoverInput { journal: &journal, roots: &[root.path().to_path_buf()] }).unwrap());
 
     assert_eq!(fs::read_to_string(&victim).unwrap(), "keep");
+}
+
+#[test]
+fn a_journal_entry_outside_the_mod_folders_is_ignored() {
+    let root = tempfile::tempdir().unwrap();
+    let mods_dir = root.path().join("Мир танков").join("mods").join("1.45.0.0");
+    let victim = root.path().join("Документы").join("важное.txt");
+    let escape = mods_dir.join("..").join("..").join("..").join("Документы").join("важное.txt");
+
+    fs::create_dir_all(&mods_dir).unwrap();
+    fs::create_dir_all(victim.parent().unwrap()).unwrap();
+    fs::write(&victim, "keep").unwrap();
+
+    let journal = write_journal(
+        &root.path().join("clients"),
+        &serde_json::json!({ "placed": [[crate::fsx::sibling(&victim, crate::fsx::PART_SUFFIX), victim], [crate::fsx::sibling(&escape, crate::fsx::PART_SUFFIX), escape]], "retired": [] }),
+    );
+
+    assert!(recover_commit(RecoverInput { journal: &journal, roots: &[mods_dir] }).unwrap());
+
+    assert_eq!(fs::read_to_string(&victim).unwrap(), "keep");
+    assert!(!journal.exists());
 }
 
 #[test]
 fn no_journal_means_nothing_to_replay() {
     let root = tempfile::tempdir().unwrap();
 
-    assert!(!recover_commit(&commit_journal(root.path())).unwrap());
+    assert!(!recover_commit(RecoverInput { journal: &commit_journal(root.path()), roots: &[] }).unwrap());
 }
 
 #[test]

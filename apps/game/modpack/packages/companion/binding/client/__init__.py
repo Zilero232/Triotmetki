@@ -6,6 +6,7 @@ from ....core.log import safe
 from ...payload import REALM
 from ...version import VERSION
 from .. import BIND_PATH, BindError, build_bind_request, parse_bind_response
+from ..messages import failure_key
 
 
 class Binder(object):
@@ -47,13 +48,13 @@ class Binder(object):
     def _on_response(self, account_id, status, data):
         app = self.app
         if status != 200:
-            reason = (data or {}).get('error') or ('http_%d' % status)
-            app.ui.notify(app.translate('bind_failed', reason=reason))
+            reason = data.get('error') if isinstance(data, dict) else None
+            app.ui.notify(app.translate(failure_key(reason)))
             return
         try:
             credentials = parse_bind_response(data, account_id)
         except BindError as error:
-            app.ui.notify(app.translate('bind_failed', reason=error.reason))
+            app.ui.notify(app.translate(failure_key(error.reason)))
             return
 
         app.credentials.save(credentials)

@@ -11,6 +11,7 @@ from otmetki.companion.binding import (
     normalize_code,
     parse_bind_response,
 )
+from otmetki.core.durable import SecretPair
 from otmetki.core.storage import MemoryFile
 
 SECRET = 'q' * 43
@@ -31,11 +32,34 @@ def bind_error_reason(call, *args):
     return None
 
 
-def store_with_two_accounts(storage):
-    store = CredentialStore(storage)
+class FakeBox(object):
+
+    def __init__(self, available=True):
+        self.is_available = available
+
+    def available(self):
+        return self.is_available
+
+    def seal(self, secret):
+        return 'sealed:' + secret[::-1] if self.is_available else None
+
+    def open(self, sealed):
+        if not self.is_available or not isinstance(sealed, type('')) or not sealed.startswith('sealed:'):
+            return None
+        return sealed[len('sealed:'):][::-1]
+
+
+def split_store(public=None, private=None, box=None):
+    pair = SecretPair(MemoryFile(public), MemoryFile(private))
+    return CredentialStore(pair, box or FakeBox()), pair
+
+
+def store_with_two_accounts():
+    pair = SecretPair(MemoryFile(), MemoryFile())
+    store = CredentialStore(pair, FakeBox())
     store.save(Credentials('dev_a', SECRET, 7, 1))
     store.save(Credentials('dev_b', SECRET, 8, 2))
-    return store
+    return store, pair
 
 
 class NormalizeCodeTest(unittest.TestCase):
@@ -106,32 +130,104 @@ class BindResponseTest(unittest.TestCase):
 class CredentialStoreTest(unittest.TestCase):
 
     def test_empty_store_has_no_credentials(self):
-        self.assertIsNone(CredentialStore(MemoryFile()).get(7))
+        self.assertIsNone(split_store()[0].get(7))
 
     def test_keeps_credentials_per_account(self):
-        storage = MemoryFile()
-        store_with_two_accounts(storage)
+        _, pair = store_with_two_accounts()
 
-        reloaded = CredentialStore(storage)
+        reloaded = CredentialStore(pair, FakeBox())
 
         self.assertEqual(reloaded.get(7).device_id, 'dev_a')
-        self.assertEqual(reloaded.get(8).device_id, 'dev_b')
+        self.assertEqual(reloaded.get(8).secret, SECRET)
+
+    def test_the_game_folder_copy_has_no_secret(self):
+        _, pair = store_with_two_accounts()
+
+        self.assertEqual(pair.public.read(), {'accounts': {
+            '7': {'device_id': 'dev_a', 'account_id': 7},
+            '8': {'device_id': 'dev_b', 'account_id': 8},
+        }})
+
+    def test_the_durable_copy_holds_the_sealed_secret_only(self):
+        _, pair = store_with_two_accounts()
+
+        entry = pair.private.read()['accounts']['7']
+
+        self.assertEqual(entry, {'device_id': 'dev_a', 'account_id': 7, 'secret_dpapi': 'sealed:' + SECRET[::-1]})
+
+    def test_a_plaintext_secret_is_taken_once_and_rewritten_sealed(self):
+        legacy = {'accounts': {'7': {'device_id': 'dev_a', 'secret': SECRET, 'account_id': 7, 'bound_at': 1}}}
+        store, pair = split_store(public=legacy, private=legacy)
+
+        store.migrate()
+
+        self.assertEqual(pair.public.read(), {'accounts': {'7': {'device_id': 'dev_a', 'account_id': 7}}})
+        self.assertNotIn('secret', pair.private.read()['accounts']['7'])
+        self.assertEqual(CredentialStore(pair, FakeBox()).get(7).secret, SECRET)
+
+    def test_a_plaintext_secret_only_in_the_game_folder_moves_to_the_durable_copy(self):
+        legacy = {'accounts': {'7': {'device_id': 'dev_a', 'secret': SECRET, 'account_id': 7}}}
+        store, pair = split_store(public=legacy)
+
+        self.assertEqual(store.get(7).secret, SECRET)
+        self.assertEqual(pair.private.read()['accounts']['7']['secret_dpapi'], 'sealed:' + SECRET[::-1])
+        self.assertNotIn('secret', pair.public.read()['accounts']['7'])
+
+    def test_without_dpapi_a_plaintext_secret_is_read_but_never_written(self):
+        legacy = {'accounts': {'7': {'device_id': 'dev_a', 'secret': SECRET, 'account_id': 7}}}
+        store, pair = split_store(public=legacy, box=FakeBox(available=False))
+
+        self.assertEqual(store.get(7).secret, SECRET)
+        self.assertEqual(pair.public.read(), legacy)
+        self.assertIsNone(pair.private.read())
+
+    def test_without_dpapi_a_new_binding_lasts_for_the_session(self):
+        store, pair = split_store(box=FakeBox(available=False))
+
+        store.save(Credentials('dev_a', SECRET, 7, 1))
+
+        self.assertEqual(store.get(7).device_id, 'dev_a')
+        self.assertIsNone(pair.public.read())
+        self.assertIsNone(pair.private.read())
+
+    def test_without_a_durable_folder_nothing_is_written(self):
+        pair = SecretPair(MemoryFile(), None)
+        store = CredentialStore(pair, FakeBox())
+
+        store.save(Credentials('dev_a', SECRET, 7, 1))
+
+        self.assertEqual(store.get(7).device_id, 'dev_a')
+        self.assertIsNone(pair.public.read())
+
+    def test_a_secret_sealed_elsewhere_is_no_binding(self):
+        private = {'accounts': {'7': {'device_id': 'dev_a', 'account_id': 7, 'secret_dpapi': 'not ours'}}}
+        store, _ = split_store(public={'accounts': {'7': {'device_id': 'dev_a', 'account_id': 7}}}, private=private)
+
+        self.assertIsNone(store.get(7))
+
+    def test_a_missing_game_folder_copy_is_written_again(self):
+        _, pair = store_with_two_accounts()
+        pair.public.delete()
+
+        CredentialStore(pair, FakeBox()).get(7)
+
+        self.assertEqual(sorted(pair.public.read()['accounts']), ['7', '8'])
 
     def test_remove_forgets_the_account(self):
-        store = store_with_two_accounts(MemoryFile())
+        store, pair = store_with_two_accounts()
 
         removed = store.remove(7)
 
         self.assertTrue(removed)
         self.assertIsNone(store.get(7))
+        self.assertEqual(sorted(pair.public.read()['accounts']), ['8'])
+        self.assertEqual(sorted(pair.private.read()['accounts']), ['8'])
 
     def test_remove_of_an_unknown_account_reports_nothing_removed(self):
-        store = CredentialStore(MemoryFile())
-
-        self.assertFalse(store.remove(7))
+        self.assertFalse(split_store()[0].remove(7))
 
     def test_invalid_stored_credentials_are_ignored(self):
-        store = CredentialStore(MemoryFile({'accounts': {'9': {'secret': 'x'}}}))
+        store, _ = split_store(private={'accounts': {'9': {'secret': 'x'}}})
 
         self.assertIsNone(store.get(9))
 

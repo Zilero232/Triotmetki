@@ -1,6 +1,5 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import re
 
 # The payload version of a widget; the page drops a widget whose kind or version it does not know and draws `text`.
 WIDGET_VERSION = 1
@@ -38,7 +37,6 @@ CARD_LIMITS = {
     'strip': 12,
     'width': (120, 420),
 }
-HEX_COLOR = re.compile(r'^#[0-9A-Fa-f]{6}$')
 
 # The optional keywords of `card_row` and `card` with their defaults.
 ROW_OPTIONS = {

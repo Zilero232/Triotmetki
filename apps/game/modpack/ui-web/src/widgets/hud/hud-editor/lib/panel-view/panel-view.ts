@@ -1,5 +1,7 @@
 import { clamp, sortBy } from 'remeda';
 
+import { remBox } from '@/shared/lib/css-unit';
+
 import type {
   FitsInInput,
   PanelFit,
@@ -60,5 +62,5 @@ export const stageFrame = ({ screen, width }: StageFrameInput): StageFrame => {
   const scale = width / Math.max(screen.width, 1);
   const height = Math.round(screen.height * scale * 100) / 100;
 
-  return { scale, style: { width: `${width}rem`, height: `${height}rem` } };
+  return { scale, style: remBox({ width, height }) };
 };

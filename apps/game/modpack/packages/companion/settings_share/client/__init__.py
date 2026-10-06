@@ -172,7 +172,8 @@ class SettingsShare(object):
     def _confirm(self, request, changes):
         translate = self.app.translate
         groups = ', '.join(sorted(set(change[0] for change in changes)))
-        title = translate('settings_apply_title', slug=request['profile_slug'])
+        slug = request['profile_slug']
+        title = translate('settings_apply_title', slug=slug) if slug else translate('settings_apply_title_site')
         message = translate('settings_apply_body', count=len(changes), groups=groups)
 
         @safe

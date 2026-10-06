@@ -1,1 +1,1 @@
-export { formatCount, formatDuration, formatMoment, formatSize, romanTier } from './format-replay';
+export { formatCount, formatDuration, formatMoment, formatSize } from './format-replay';

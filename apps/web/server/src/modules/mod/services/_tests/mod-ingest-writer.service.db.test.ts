@@ -9,6 +9,7 @@ import type { BattleResultEvent } from '../../lib/contract/contract.types';
 import type { AuthenticatedDevice } from '../../mod.types';
 
 import { createTestPrisma, describeWithDatabase, truncateTables } from '../../../../core/prisma/_tests/test-database';
+import { PurgeGuardService } from '../../../collector/purge';
 import { sessionUuid } from '../../lib/battle/battle';
 import { ingestBatchSchema } from '../../lib/contract/contract.schemas';
 import { EventLedgerService } from '../event-ledger.service';
@@ -33,7 +34,13 @@ describeWithDatabase('ModIngestWriterService on a real database', () => {
 
     expected.all.mockResolvedValue(new Map());
 
-    return new ModIngestWriterService(prisma, new EventLedgerService(new RedisMock()), expected, mock<WebhookEmitter>());
+    return new ModIngestWriterService(
+      prisma,
+      new EventLedgerService(new RedisMock()),
+      expected,
+      new PurgeGuardService(prisma),
+      mock<WebhookEmitter>()
+    );
   };
 
   const device = async (): Promise<AuthenticatedDevice> => {
@@ -45,7 +52,7 @@ describeWithDatabase('ModIngestWriterService on a real database', () => {
   };
 
   beforeEach(async () => {
-    await truncateTables({ prisma, tables: ['battle', 'play_session', 'player_tank', 'mod_device', 'player', 'user'] });
+    await truncateTables({ prisma, tables: ['battle', 'play_session', 'player_tank', 'mod_device', 'data_deletion_request', 'player', 'user'] });
     await prisma.user.create({ data: { id: SEED.userId, name: 'Ingest', email: 'ingest@example.test' } });
     await prisma.player.create({ data: { accountId: SEED.accountId, nickname: 'Ingester' } });
   });
@@ -76,6 +83,17 @@ describeWithDatabase('ModIngestWriterService on a real database', () => {
       damageDealt: battle.stats.damage_dealt,
       credits: battle.stats.factual_credits
     });
+  });
+
+  it('stores nothing for an account whose data deletion request is open', async () => {
+    if (!battle) {
+      throw new Error('the ingest example has no session battle');
+    }
+
+    await prisma.dataDeletionRequest.create({ data: { accountId: SEED.accountId, source: 'user', reason: 'account deleted' } });
+
+    await expect(createService().ingest({ device: await device(), batch: { ...example, events: [battle] } })).rejects.toThrow();
+    expect(await prisma.battle.count()).toBe(0);
   });
 
   it('adds a second battle of the same session to the session opened by the first', async () => {

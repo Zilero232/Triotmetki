@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { AccountsModule } from '../accounts';
+import { PurgeGuardModule } from '../collector/purge';
 import { ModRatingsController } from './mod-ratings.controller';
 import { ModController } from './mod.controller';
 import { modRatingsQueriesProvider } from './providers/mod-ratings-queries.provider';
@@ -11,7 +12,7 @@ import { ModIngestWriterService } from './services/mod-ingest-writer.service';
 import { ModRatingsReaderService } from './services/mod-ratings-reader.service';
 
 @Module({
-  imports: [AccountsModule],
+  imports: [AccountsModule, PurgeGuardModule],
   controllers: [ModController, ModRatingsController],
   providers: [EventLedgerService, ModBindWriterService, ModDeviceService, ModIngestWriterService, ModRatingsReaderService, modRatingsQueriesProvider],
   exports: [ModDeviceService]

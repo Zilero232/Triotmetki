@@ -1,1 +1,1 @@
-export { invoke, invokeIfPresent, readGlobal, whenReady } from './scope';
+export { invoke, invokeIfPresent, readGlobal, scopeModels, whenReady } from './scope';

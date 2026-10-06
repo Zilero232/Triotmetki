@@ -5,6 +5,7 @@ import { getQueueToken } from '@nestjs/bullmq';
 import { CacheModule } from '@nestjs/cache-manager';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
+import RedisMock from 'ioredis-mock';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -18,7 +19,7 @@ import type { AuthenticatedDevice } from '../../mod';
 
 import { AppForbiddenException, ModException } from '../../../common/exceptions';
 import { AllExceptionsFilter } from '../../../common/filters';
-import { LocalDiskStorage, ObjectStorage, PrismaService } from '../../../core';
+import { LocalDiskStorage, ObjectStorage, PrismaService, REDIS } from '../../../core';
 import { mockPrismaService } from '../../../core/prisma/_tests/prisma-mock';
 import { parseReplaySummary } from '../../../lib/replay';
 import { FIXTURE, readFixture } from '../../../lib/replay/_tests/fixtures';
@@ -125,6 +126,7 @@ beforeAll(async () => {
     providers: [
       ReplayUploadWriterService,
       { provide: PrismaService, useValue: prisma },
+      { provide: REDIS, useValue: new RedisMock() },
       { provide: ObjectStorage, useValue: storage },
       { provide: ModDeviceService, useValue: devices },
       { provide: EntitlementsService, useValue: entitlements },

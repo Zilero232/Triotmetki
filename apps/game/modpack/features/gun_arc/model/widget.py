@@ -10,6 +10,16 @@ def _mark(offset):
     return {'x': offset[0], 'y': offset[1]}
 
 
+def empty_widget(settings):
+    return widget(KIND, {
+        'marker': settings.get('marker'),
+        'centre_marker': settings.get('centre_marker'),
+        'left': None,
+        'right': None,
+        'centre': None,
+    })
+
+
 def panel_widget(marks, settings):
     if not marks or not any(marks.get(name) for name in MARK_NAMES):
         return None

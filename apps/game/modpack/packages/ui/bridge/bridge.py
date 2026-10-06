@@ -8,7 +8,15 @@ from ..components import COMPANION_ACTIONS, COMPANION_ID, SECTIONS, build_catalo
 from ..feeds import Feed
 from ..fields import Labels
 from ..hud_edit import HudEditor, move_values
-from ..profiles import ProfileError, apply_snapshot, decode_profile, encode_profile, take_snapshot
+from ..profiles import (
+    ProfileError,
+    apply_snapshot,
+    decode_profile,
+    encode_profile,
+    imported_snapshot,
+    shared_snapshot,
+    take_snapshot,
+)
 from ..protocol import MAX_DIAG_CHARS, QUIET_COMMANDS, ProtocolError, decode_message, encode_feed
 from ..window_layout import WindowLayout
 from .companion import CompanionActions
@@ -58,7 +66,7 @@ class SettingsBridge(object):
             'language_setting': context.config.get('language'),
             'languages': list(LANGUAGES),
             'status': context.status(),
-            'site': site_url(context.config.get('server_url')),
+            'site': site_url(context.config.server_url),
             'components': [component.describe(labels) for component in self.components()],
             'profiles': {'active': profiles.active, 'items': profiles.items()},
             'hud': {'editing': self.editor.editing, 'panels': self.editor.panels(labels)},
@@ -188,7 +196,7 @@ class SettingsBridge(object):
         self.context.bind(to_text(code).strip())
 
     def _on_open(self, message):
-        url = site_link(self.context.config.get('server_url'), message['path'])
+        url = site_link(self.context.config.server_url, message['path'])
         if url is None:
             raise ProtocolError('unsafe_link')
         self.context.open_url(url)
@@ -228,11 +236,12 @@ class SettingsBridge(object):
         item = self.context.profiles.get(message['id'])
         if item is None:
             raise ProfileError('missing')
-        code = encode_profile(item['name'], item['data'])
+        code = encode_profile(item['name'], shared_snapshot(item['data']))
         self._notice(NOTICE_CODE, 'notice_profile_code', code=code)
 
     def _on_profile_import(self, message):
-        name, snapshot = decode_profile(message['code'])
+        name, decoded = decode_profile(message['code'])
+        snapshot = imported_snapshot(decoded, self.context.config, self.context.component_config)
         wanted = message.get('name') or name or self.labels().text('profile_imported_name')
         item = self.context.profiles.save(wanted, snapshot)
         self._notice(NOTICE_INFO, 'notice_profile_imported', name=item['name'])

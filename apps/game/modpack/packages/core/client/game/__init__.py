@@ -24,12 +24,17 @@ def client_language():
         return None
 
 
-def client_attr(module_name, name):
-    """`module_name.name` of the client, or None when the module or the name is missing."""
+def client_module(module_name):
+    """The client module `module_name`, or None when it is missing."""
     try:
-        return getattr(importlib.import_module(module_name), name, None)
+        return importlib.import_module(module_name)
     except Exception:
         return None
+
+
+def client_attr(module_name, name):
+    """`module_name.name` of the client, or None when the module or the name is missing."""
+    return getattr(client_module(module_name), name, None)
 
 
 def service(skeleton):

@@ -37,3 +37,24 @@ export const readGlobal = (scope: object, name: string): Record<string, unknown>
 
   return isRecord(value) ? value : null;
 };
+
+const subViewModels = (subViews: Record<string, unknown> | null): unknown[] => {
+  const ids = invoke({ target: subViews, method: GAMEFACE.subViews.ids, args: [] });
+
+  if (!Array.isArray(ids)) {
+    return [];
+  }
+
+  return ids.map((id: unknown) => {
+    const view = invoke({ target: subViews, method: GAMEFACE.subViews.get, args: [id] });
+
+    return isRecord(view) ? view[GAMEFACE.model.nested] : null;
+  });
+};
+
+export const scopeModels = (scope: object): unknown[] => {
+  const model = readGlobal(scope, GAMEFACE.globals.model);
+  const subViews = readGlobal(scope, GAMEFACE.globals.subViews);
+
+  return [model, ...subViewModels(subViews)];
+};

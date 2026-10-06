@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 
 import { HUD_GLYPHS, HUD_TONE_COLORS } from '@/shared/config';
+import { remSquare } from '@/shared/lib/css-unit';
 import { glyphPaths } from '@/shared/lib/glyph-paths';
 
 import type { GlyphProps } from './Glyph.types';
@@ -12,7 +13,7 @@ export const Glyph = ({ name, size, tone, className }: GlyphProps) => {
   const fill = HUD_TONE_COLORS[tone ?? 'text'].hex;
 
   return (
-    <span className={clsx(s.glyph, className)} style={{ width: `${size}rem`, height: `${size}rem` }}>
+    <span className={clsx(s.glyph, className)} style={remSquare(size)}>
       <svg
         aria-hidden='true'
         height='100%'

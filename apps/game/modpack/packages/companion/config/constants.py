@@ -387,7 +387,17 @@ CHOICES = {
 LIMITS = {
     'session_idle_minutes': (10, 24 * 60),
 }
-LOCAL_HOSTS = ('http://localhost', 'http://127.0.0.1')
+# server_url other than DEFAULT_SERVER_URL is honoured only in a development install (the dev loop's manifest
+# mods/<version>/otmetki-dev/otmetki-dev.json, or OTMETKI_DEV=1 in the client's environment); plain http only to these
+# exact hosts. A release build always talks to the production API, whatever config.json says.
+LOCAL_HOSTS = ('localhost', '127.0.0.1')
+SECURE_SCHEME = 'https'
+PLAIN_SCHEME = 'http'
+DEV_ENV = 'OTMETKI_DEV'
+DEV_ENV_ON = '1'
+DEV_FOLDER = 'otmetki-dev'
+DEV_MANIFEST = 'otmetki-dev.json'
+MODS_DIR = 'mods'
 # Settings that are no longer choices (docs/specs/2026-09-30-hud-consolidation-and-design.md section 12): the
 # outbox sends every 15 s.
 FIXED = {'flush_interval_seconds': 15}

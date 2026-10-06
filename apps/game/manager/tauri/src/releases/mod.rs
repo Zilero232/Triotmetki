@@ -1,3 +1,4 @@
+mod sequence;
 mod signature;
 mod sources;
 
@@ -6,6 +7,7 @@ use std::time::Duration;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
+pub use sequence::{RememberInput, SequenceStore, SEQUENCES_FILE};
 pub use signature::verify_release;
 pub use sources::{is_dependency_redirect, is_dependency_source};
 
@@ -20,6 +22,7 @@ pub const REQUEST_TIMEOUT: Duration = Duration::from_secs(30);
 pub const DOWNLOAD_TIMEOUT: Duration = Duration::from_secs(300);
 pub const TRUSTED_DOMAIN: &str = "triotmetki.ru";
 pub const HTTPS: &str = "https";
+pub const LOOPBACK_HOSTS: [&str; 3] = ["localhost", "127.0.0.1", "[::1]"];
 pub const MAX_REDIRECTS: usize = 5;
 pub const MAX_PACKAGE_BYTES: u64 = 256 * 1024 * 1024;
 pub const MAX_CATALOG_BYTES: u64 = 16 * 1024 * 1024;
@@ -114,13 +117,16 @@ impl Release {
     }
 }
 
+pub fn debug_env(name: &str) -> Option<String> {
+    if cfg!(debug_assertions) {
+        std::env::var(name).ok()
+    } else {
+        None
+    }
+}
+
 pub fn api_url() -> String {
-    std::env::var(API_URL_ENV)
-        .ok()
-        .filter(|url| !url.trim().is_empty())
-        .unwrap_or_else(|| DEFAULT_API_URL.to_owned())
-        .trim_end_matches('/')
-        .to_owned()
+    debug_env(API_URL_ENV).filter(|url| !url.trim().is_empty()).unwrap_or_else(|| DEFAULT_API_URL.to_owned()).trim_end_matches('/').to_owned()
 }
 
 pub fn sha256_hex(bytes: &[u8]) -> String {
@@ -157,6 +163,7 @@ pub struct ReleasesClient {
     base_url: String,
     http: reqwest::Client,
     dependency_http: reqwest::Client,
+    sequences: Option<SequenceStore>,
 }
 
 pub fn is_trusted_host(host: &str) -> bool {
@@ -165,11 +172,19 @@ pub fn is_trusted_host(host: &str) -> bool {
     host == TRUSTED_DOMAIN || host.ends_with(&format!(".{TRUSTED_DOMAIN}"))
 }
 
-pub fn is_trusted_url(url: &str, base_url: &str) -> bool {
-    let from_api = url.strip_prefix(base_url).is_some_and(|rest| rest.starts_with('/'));
-    let trusted = reqwest::Url::parse(url).is_ok_and(|parsed| parsed.scheme() == HTTPS && parsed.host_str().is_some_and(is_trusted_host));
+fn is_dev_loopback(parsed: &reqwest::Url) -> bool {
+    cfg!(debug_assertions) && parsed.host_str().is_some_and(|host| LOOPBACK_HOSTS.contains(&host))
+}
 
-    trusted || from_api
+pub fn is_trusted_url(url: &str, base_url: &str) -> bool {
+    let Ok(parsed) = reqwest::Url::parse(url) else {
+        return false;
+    };
+    let secure = parsed.scheme() == HTTPS || is_dev_loopback(&parsed);
+    let from_api = url.strip_prefix(base_url).is_some_and(|rest| rest.starts_with('/'));
+    let trusted = parsed.scheme() == HTTPS && parsed.host_str().is_some_and(is_trusted_host);
+
+    trusted || (secure && from_api)
 }
 
 fn untrusted(url: &str) -> AppError {
@@ -215,7 +230,12 @@ impl ReleasesClient {
         let http = builder().redirect(redirects).build()?;
         let dependency_http = builder().redirect(dependency_redirects).build()?;
 
-        Ok(Self { base_url, http, dependency_http })
+        Ok(Self { base_url, http, dependency_http, sequences: None })
+    }
+
+    pub fn with_sequences(mut self, store: SequenceStore) -> Self {
+        self.sequences = Some(store);
+        self
     }
 
     pub fn base_url(&self) -> &str {
@@ -234,7 +254,11 @@ impl ReleasesClient {
         let latest: LatestRelease = response.json().await?;
 
         if let Some(release) = &latest.release {
-            verify_release(release)?;
+            let sequence = verify_release(release)?;
+
+            if let (Some(store), Some(sequence)) = (&self.sequences, sequence) {
+                store.remember(RememberInput { game, version: &release.version, sequence })?;
+            }
         }
 
         Ok(for_game(latest, game))

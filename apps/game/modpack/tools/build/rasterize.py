@@ -42,14 +42,9 @@ def svg_pngs(jobs):
         outputs = [os.path.join(work, '%d.png' % index) for index in range(len(jobs))]
         planned = [dict(entry, out=out) for entry, out in zip(jobs, outputs)]
         _run([NODE, RENDERER, fileio.write_json(os.path.join(work, 'jobs.json'), planned)])
-        return [_read(out) for out in outputs]
+        return [fileio.read_bytes(out) for out in outputs]
     finally:
         shutil.rmtree(work, ignore_errors=True)
-
-
-def _read(path):
-    with open(path, 'rb') as handle:
-        return handle.read()
 
 
 def _run(command):

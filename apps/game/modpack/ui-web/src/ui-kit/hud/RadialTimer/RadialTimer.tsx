@@ -1,4 +1,5 @@
 import { HUD_FIGURE, HUD_TONE_COLORS } from '@/shared/config';
+import { remRect, remSquare } from '@/shared/lib/css-unit';
 import { radialArc } from '@/shared/lib/radial';
 
 import type { RadialTimerProps } from './RadialTimer.types';
@@ -10,9 +11,9 @@ export const RadialTimer = ({ progress, size, stroke, inner, tone = 'accent', ch
   const radius = centre - stroke;
   const track = radialArc({ progress: 1, radius, centre });
   const arc = radialArc({ progress, radius, centre });
-  const box = { width: `${String(size)}rem`, height: `${String(size)}rem` };
-  const offset = `${String((size - inner) / 2)}rem`;
-  const innerBox = { top: offset, left: offset, width: `${String(inner)}rem`, height: `${String(inner)}rem` };
+  const box = remSquare(size);
+  const offset = (size - inner) / 2;
+  const innerBox = remRect({ left: offset, top: offset, width: inner, height: inner });
 
   return (
     <div className={s.radial} style={box}>

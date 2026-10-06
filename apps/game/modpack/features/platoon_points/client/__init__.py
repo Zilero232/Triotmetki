@@ -6,13 +6,12 @@ from ....core.client.battle import arena, arena_dp, call, feedback, is_enemy, su
 from ....core.client.game import values_by_name
 from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.log import safe
+from .. import settings
 from ..i18n import STRINGS
-from ..model import Platoon
+from ..model import Platoon, preview
 from ..model.constants import PREVIEW_SIZE
-from ..model.preview import preview_text, preview_widget
 from ..model.text import points_text
 from ..model.widget import points_widget
-from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .constants import KIND_BY_EVENT, NOT_IN_PLATOON
 
 try:
@@ -33,15 +32,7 @@ def _member(info, is_own):
     }
 
 
-PANEL_SPEC = PanelSpec(
-    panel_id=PANEL_ID,
-    schema=SCHEMA,
-    switch=SWITCH,
-    strings=STRINGS,
-    preview_size=PREVIEW_SIZE,
-    preview_text=preview_text,
-    preview_widget=preview_widget,
-)
+PANEL_SPEC = PanelSpec.of(settings, STRINGS, preview, PREVIEW_SIZE)
 
 
 # Tournament-style points. The own damage and assist from the own feedback (raised to the client's summary); the

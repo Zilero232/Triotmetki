@@ -1,5 +1,7 @@
 import { clamp } from 'remeda';
 
+import { rem } from '@/shared/lib/css-unit';
+
 import type { ViewerFrame, ViewerFrameInput } from './viewer-frame.types';
 
 import { HIT_VIEWER } from '../../config';
@@ -23,8 +25,6 @@ export const viewerFrame = ({ screen, view }: ViewerFrameInput): ViewerFrame => 
 
   return { left, top, width: width / scale, height: height / scale, scale };
 };
-
-export const rem = (value: number): string => `${String(value)}rem`;
 
 export const tableBodyHeight = (rows: number): string => rem(rows * HIT_VIEWER.table.rowHeight);
 

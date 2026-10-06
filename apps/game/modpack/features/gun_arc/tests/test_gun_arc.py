@@ -17,7 +17,7 @@ from otmetki.features.gun_arc.model import (
 )
 from otmetki.features.gun_arc.model.constants import CANVAS, CENTRE_MARKERS, MARKERS, MIN_DISTANCE_M
 from otmetki.features.gun_arc.model.preview import preview_text, preview_widget
-from otmetki.features.gun_arc.model.widget import panel_widget
+from otmetki.features.gun_arc.model.widget import empty_widget, panel_widget
 from otmetki.features.gun_arc.settings import ADVANCED, SCHEMA, SETTINGS
 
 LIMITS = (math.radians(-10), math.radians(30))
@@ -159,6 +159,16 @@ class WidgetTest(unittest.TestCase):
 
     def test_no_marker_on_the_screen_has_no_widget(self):
         assert panel_widget({'left': None, 'right': None, 'centre': None}, settings()) is None
+
+    def test_the_empty_panel_draws_no_marker(self):
+        data = empty_widget(settings(centre_marker='dot'))['data']
+
+        assert (data['left'], data['right'], data['centre']) == (None, None, None)
+
+    def test_the_empty_panel_keeps_the_marker_style(self):
+        data = empty_widget(settings(marker='octagon'))['data']
+
+        assert data['marker'] == 'octagon'
 
     def test_the_preview_is_a_fixture_for_the_page(self):
         assert _support.widget_fixture('gun_arc', preview_widget(settings(), translator()))

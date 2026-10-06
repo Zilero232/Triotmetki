@@ -52,6 +52,17 @@ describe('PurgeGuardService.open', () => {
     expect(prisma.player.updateMany).toHaveBeenCalledWith({ where: { accountId: { in: [1n, 2n] } }, data: { isHidden: true } });
   });
 
+  it('revokes the active mod devices of the accounts so the mod stops sending their data', async () => {
+    const { prisma, guard } = createGuard();
+
+    await guard.open({ db: prisma, accountIds: [1n, 2n], source: 'lesta', reason: 'request' });
+
+    expect(prisma.modDevice.updateMany).toHaveBeenCalledWith({
+      where: { accountId: { in: [1n, 2n] }, revokedAt: null },
+      data: { revokedAt: expect.any(Date) }
+    });
+  });
+
   it('writes nothing for an empty account list', async () => {
     const { prisma, guard } = createGuard();
 
@@ -59,6 +70,7 @@ describe('PurgeGuardService.open', () => {
 
     expect(prisma.dataDeletionRequest.createMany).not.toHaveBeenCalled();
     expect(prisma.player.updateMany).not.toHaveBeenCalled();
+    expect(prisma.modDevice.updateMany).not.toHaveBeenCalled();
   });
 });
 

@@ -7,7 +7,6 @@ export const MARKS_PANEL = {
   separator: ' / ',
   deltaTones: { rising: 'good', falling: 'bad', flat: 'muted' },
   directions: { rising: 'up', falling: 'down', flat: 'flat' },
-  unknownPercent: '—',
   levels: [65, 85, 95],
   box: { width: 230, scale: 214 },
   steps: { percent: 0.01, damage: 1 }

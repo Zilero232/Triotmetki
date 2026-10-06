@@ -1,16 +1,18 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { DEFAULT_IPV6_SUBNET_PREFIX, normalizeIp } from '@nestjs/throttler';
 import { addMinutes } from 'date-fns';
 import { Redis } from 'ioredis';
 import { isObjectType, isString } from 'remeda';
 
 import type { BindResponse } from '../lib/contract/contract.types';
-import type { BindCode, BindCodeInput, BindInput, BindLinkInput, BindRequest, ClaimCodeInput, ClaimedCode, RegisterDeviceInput } from '../mod.types';
+import type { BindCode, BindCodeInput, BindInput, BindLinkInput, BindRequest, ClaimedCode, RegisterDeviceInput } from '../mod.types';
 
 import { AppForbiddenException, ModException } from '../../../common/exceptions';
 import { randomCode } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService, REDIS } from '../../../core';
 import { UserAccountsReaderService } from '../../accounts';
+import { PurgeGuardService } from '../../collector/purge';
 import { BIND_CODE } from '../config/bind-code.constants';
 import { MOD_DEVICE_LIMITS } from '../config/device.constants';
 import { bindCodePattern, bindRequestSchema } from '../lib/contract/contract.schemas';
@@ -22,7 +24,8 @@ export class ModBindWriterService {
     private readonly prisma: PrismaService,
     private readonly config: AppConfigService,
     @Inject(REDIS) private readonly redis: Redis,
-    private readonly accounts: UserAccountsReaderService
+    private readonly accounts: UserAccountsReaderService,
+    private readonly purgeGuard: PurgeGuardService
   ) {}
 
   async issueCode({ userId, accountId }: BindCodeInput): Promise<BindCode> {
@@ -51,13 +54,14 @@ export class ModBindWriterService {
 
   async bind({ body, requester }: BindInput): Promise<BindResponse> {
     const request = this.parseRequest(body);
-    const failureKey = `${BIND_CODE.failurePrefix}${requester}`;
+    const failureKey = `${BIND_CODE.failurePrefix}${normalizeIp(requester, DEFAULT_IPV6_SUBNET_PREFIX)}`;
 
-    await this.assertUnderFailureLimit(failureKey);
+    await this.countAttempt(failureKey);
 
-    const { userId, link } = await this.claimCode({ request, failureKey });
+    const { userId, link } = await this.claimCode(request);
 
     await this.redis.del(failureKey);
+    await this.assertBindable(link.accountId);
 
     const deviceId = newDeviceId();
     const secret = deviceSecret({ deviceId, serverSecret: this.config.get('MOD_INGEST_SECRET') });
@@ -88,15 +92,24 @@ export class ModBindWriterService {
     return parsed.data;
   }
 
-  private async assertUnderFailureLimit(failureKey: string): Promise<void> {
-    const failures = Number((await this.redis.get(failureKey)) ?? 0);
+  private async countAttempt(failureKey: string): Promise<void> {
+    const results = await this.redis.multi().incr(failureKey).expire(failureKey, BIND_CODE.failureWindowSeconds).exec();
+    const attempts = Number(results?.[0]?.[1] ?? 0);
 
-    if (failures >= BIND_CODE.maxFailuresPerRequester) {
+    if (attempts > BIND_CODE.maxFailuresPerRequester) {
       throw new ModException({ status: HttpStatus.TOO_MANY_REQUESTS, error: 'rate_limited' });
     }
   }
 
-  private async claimCode({ request, failureKey }: ClaimCodeInput): Promise<ClaimedCode> {
+  private async assertBindable(accountId: bigint): Promise<void> {
+    const blocked = await this.purgeGuard.blocked([Number(accountId)]);
+
+    if (blocked.size > 0) {
+      throw new ModException({ status: HttpStatus.FORBIDDEN, error: 'account_mismatch', message: 'The account has a data deletion request' });
+    }
+  }
+
+  private async claimCode(request: BindRequest): Promise<ClaimedCode> {
     const stored = await this.prisma.oneTimeCode.findUnique({ where: { code: request.code, purpose: 'modBind' } });
     const requested = request.account_id === undefined ? null : BigInt(request.account_id);
     const link = stored ? await this.bindLink({ userId: stored.userId, accountId: requested ?? stored.accountId }) : null;
@@ -108,7 +121,7 @@ export class ModBindWriterService {
       (stored.accountId === null || stored.accountId === link?.accountId);
 
     if (!stored || !usable || !link) {
-      return this.refuse(failureKey);
+      return this.refuse();
     }
 
     const claimed = await this.prisma.oneTimeCode.updateMany({
@@ -117,7 +130,7 @@ export class ModBindWriterService {
     });
 
     if (claimed.count === 0) {
-      return this.refuse(failureKey);
+      return this.refuse();
     }
 
     return { userId: stored.userId, link };
@@ -164,9 +177,7 @@ export class ModBindWriterService {
     return this.prisma.userLestaAccount.findFirst({ where: { userId, accountId: linked }, include: { player: true } });
   }
 
-  private async refuse(failureKey: string): Promise<never> {
-    await this.redis.multi().incr(failureKey).expire(failureKey, BIND_CODE.failureWindowSeconds).exec();
-
+  private refuse(): never {
     throw new ModException({ status: HttpStatus.BAD_REQUEST, error: 'invalid_code' });
   }
 }

@@ -1,39 +1,31 @@
 import clsx from 'clsx';
-
-import { PointerScopeContext } from '@/shared/lib/pointer-scope';
-import { HudLines } from '@/ui-kit';
+import { memo } from 'react';
 
 import type { HudLabelProps } from './HudLabel.types';
 
-import { HUD_OVERLAY } from '../../../config';
+import { pressPanel } from '../../../lib/press-panel';
+import { LabelContent } from './components';
 
 import s from './HudLabel.module.scss';
 
-export const HudLabel = ({ label }: HudLabelProps) => (
+export const HudLabel = memo(({ id, panel, lines, widget, style, button, interactive, pressable, framed, dragging, measureRef }: HudLabelProps) => (
   <button
-    ref={label.measureRef}
-    className={clsx(
-      s.label,
-      label.panel.border && s.border,
-      label.widget && s.widget,
-      label.button && s.button,
-      label.interactive && s.interactive,
-      label.framed && s.framed,
-      label.dragging && s.dragging
-    )}
-    aria-label={label.panel.id}
-    disabled={!label.interactive}
-    style={label.style}
+    ref={measureRef}
+    className={clsx(s.label, {
+      [s.border]: panel.border,
+      [s.widget]: widget !== null,
+      [s.button]: button,
+      [s.interactive]: interactive,
+      [s.framed]: framed,
+      [s.dragging]: dragging
+    })}
+    aria-label={id}
+    disabled={!interactive}
+    style={style}
     tabIndex={-1}
     type='button'
-    onClick={label.onClick}
+    onClick={pressable ? () => pressPanel(id) : undefined}
   >
-    {label.button ? (
-      <img alt='' className={s.buttonIcon} draggable={false} src={HUD_OVERLAY.buttonIcon} />
-    ) : label.widget ? (
-      <PointerScopeContext value={label.interactive}>{label.widget.node}</PointerScopeContext>
-    ) : (
-      <HudLines lines={label.lines} />
-    )}
+    <LabelContent button={button} interactive={interactive} lines={lines} widget={widget} />
   </button>
-);
+));

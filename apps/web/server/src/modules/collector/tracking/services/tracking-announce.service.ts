@@ -31,7 +31,7 @@ export class TrackingAnnounceService {
 
       await this.webhooks.emit({
         event: 'mark.gained',
-        dedupeKey: markGainedKey(mark),
+        dedupeKey: markGainedKey({ source: 'api', ...mark }),
         subject: { accountIds: [Number(mark.accountId)], clanIds: player?.clanId ? [Number(player.clanId)] : [] },
         data: {
           accountId: Number(mark.accountId),

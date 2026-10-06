@@ -10,14 +10,14 @@ use walkdir::WalkDir;
 pub use profile_ini::{read_component_profile, PROFILE_EXTENSION};
 
 use crate::catalog::Catalog;
-use crate::components::{in_mod_folders, is_owned, ClientContext};
+use crate::components::{client_mod_roots, in_mod_folders, is_owned, ClientContext};
 use crate::dependencies::remove_owned;
 use crate::detect::GameClient;
 use crate::durable::remove_durable_copies;
 use crate::error::{AppError, AppResult, ErrorCode};
 use crate::fsx::{list_files, remove_path};
 use crate::gameface::RES_MAP_FILE;
-use crate::patch::{apply_packages, commit_journal, recover_commit, ApplyInput, FetchedPackage};
+use crate::patch::{apply_packages, commit_journal, recover_commit, ApplyInput, FetchedPackage, RecoverInput};
 use crate::paths::{configs_dir, same_path};
 use crate::state::{disabled_dir, Manifest, CLIENT_INI, MANIFEST_INI};
 
@@ -158,7 +158,7 @@ pub fn restore_after_failure(context: ClientContext, error: AppError) -> AppErro
         return error;
     }
 
-    match recover_commit(&commit_journal(context.client_dir)) {
+    match recover_commit(RecoverInput { journal: &commit_journal(context.client_dir), roots: &client_mod_roots(context) }) {
         Ok(_) => log::warn!("the rollback failed, replayed the commit journal: {error}"),
         Err(recovery) => log::warn!("the rollback failed and the commit journal could not be replayed yet: {recovery}"),
     }
@@ -273,6 +273,7 @@ pub fn owned_patterns_catalog(catalog: Option<Catalog>) -> Catalog {
         owned_paths: Vec::new(),
         conflicts: Vec::new(),
         disabled_looks: Vec::new(),
+        preview_sha256: Default::default(),
     });
 
     if catalog.owned_patterns.is_empty() {

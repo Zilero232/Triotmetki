@@ -37,10 +37,15 @@ def _read_exact(handle, size):
     return data if data is not None and len(data) == size else None
 
 
+def _block_cap(index):
+    return MAX_HEADER_BLOCK_BYTES[min(index, len(MAX_HEADER_BLOCK_BYTES) - 1)]
+
+
+# RuntimeError: Python 2's json raises it ("maximum recursion depth exceeded") on deeply nested arrays or objects.
 def _json_block(raw):
     try:
         return json.loads(to_text(raw, 'utf-8'))
-    except (ValueError, UnicodeDecodeError):
+    except (ValueError, UnicodeDecodeError, RuntimeError):
         return None
 
 
@@ -52,12 +57,12 @@ def read_json_blocks(handle, limit=2):
     if magic != MAGIC or count < 1 or count > MAX_BLOCKS:
         return None
     blocks = []
-    for _ in range(min(count, limit)):
+    for index in range(min(count, limit)):
         size_raw = _read_exact(handle, 4)
         if size_raw is None:
             return None
         size = struct.unpack(SIZE_FORMAT, size_raw)[0]
-        if size > MAX_HEADER_BLOCK_BYTES:
+        if size > _block_cap(index):
             return None
         raw = _read_exact(handle, size)
         if raw is None:
@@ -97,11 +102,7 @@ def _dict_of(value, key):
 
 
 def _ints(source, names):
-    return dict((ours, source[theirs]) for theirs, ours in names if _is_plain_int(source.get(theirs)))
-
-
-def _is_plain_int(value):
-    return is_int(value) and not isinstance(value, bool)
+    return dict((ours, source[theirs]) for theirs, ours in names if is_int(source.get(theirs)))
 
 
 # (result, damage) of the recorder from the results block: its own `personal` entry and the winner team only (fair play:
@@ -135,7 +136,7 @@ def own_stats(results):
 def _arena_id(arena, first):
     for source in (arena, first):
         value = source.get('arenaUniqueID') if isinstance(source, dict) else None
-        if _is_plain_int(value) and value > 0:
+        if is_int(value) and value > 0:
             return to_text(value)
     return None
 

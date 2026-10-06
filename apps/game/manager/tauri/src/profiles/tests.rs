@@ -34,7 +34,7 @@ fn saves_the_current_settings_without_secrets_in_the_game_format() {
     assert_eq!(profile.name, "Мой профиль");
     assert_eq!(written["version"], 1);
     assert_eq!(written["active"], profile.id.as_str());
-    assert_eq!(written["profiles"][0]["data"]["config"], json!({ "enabled": true, "battle_damage_log": false }));
+    assert_eq!(written["profiles"][0]["data"]["config"], json!({ "battle_damage_log": false }));
     assert_eq!(written["profiles"][0]["data"]["components"]["damage_log"]["x"], 10);
     assert!(written["profiles"][0]["created"].is_f64());
 }
@@ -70,16 +70,64 @@ fn applies_a_profile_by_merging_config_and_component_sections() {
     let store = store(root.path());
     let profile = store.save_current("A", None).unwrap();
 
-    fs::write(store.configs_dir.join(CONFIG_JSON), json!({ "enabled": false, "server_url": "http://localhost:4000" }).to_string()).unwrap();
+    fs::write(
+        store.configs_dir.join(CONFIG_JSON),
+        json!({ "enabled": false, "server_url": "http://localhost:4000", "battle_damage_log": true }).to_string(),
+    )
+    .unwrap();
     fs::write(store.configs_dir.join(COMPONENTS_JSON), json!({ "damage_log": { "x": 99, "font": 14 } }).to_string()).unwrap();
     store.activate(&profile.id).unwrap();
 
     let config = read(&store.configs_dir.join(CONFIG_JSON));
     let components = read(&store.configs_dir.join(COMPONENTS_JSON));
 
-    assert_eq!(config["enabled"], true);
+    assert_eq!(config["battle_damage_log"], false);
+    assert_eq!(config["enabled"], false);
     assert_eq!(config["server_url"], "http://localhost:4000");
     assert_eq!(components["damage_log"], json!({ "x": 10, "y": 20, "font": 14 }));
+}
+
+#[test]
+fn an_imported_code_keeps_only_known_settings_and_never_hangar_actions() {
+    let root = tempfile::tempdir().unwrap();
+    let store = store(root.path());
+    let configs = &store.configs_dir;
+
+    fs::write(
+        configs.join(CONFIG_JSON),
+        json!({ "battle_damage_log": false, "hangar_auto_reserves": false, "battle_chat_filter": false, "upload_replays": false }).to_string(),
+    )
+    .unwrap();
+    fs::write(
+        configs.join(COMPONENTS_JSON),
+        json!({ "damage_log": { "x": 10 }, "auto_reserves": { "slots": [] }, "hangar_tweaks": { "quick_actions": false, "zoom": 1 } }).to_string(),
+    )
+    .unwrap();
+
+    let foreign = ProfileData {
+        config: json!({ "battle_damage_log": true, "hangar_auto_reserves": true, "battle_chat_filter": true, "upload_replays": true, "unknown": 1, "server_url": "https://evil.example" })
+            .as_object()
+            .cloned()
+            .unwrap(),
+        components: json!({
+            "damage_log": { "x": 50, "script": "x", "y": "wrong" },
+            "auto_reserves": { "slots": [1] },
+            "hangar_tweaks": { "quick_actions": true, "zoom": 2 },
+            "hud_layout_places": { "random": {} },
+            "settings_window": { "x": 1 },
+            "mystery": { "a": 1 }
+        })
+        .as_object()
+        .cloned()
+        .unwrap(),
+    };
+    let imported = store.import(&encode("Чужой", &foreign, None).unwrap(), None).unwrap();
+
+    assert_eq!(Value::Object(imported.data.config), json!({ "battle_damage_log": true }));
+    assert_eq!(
+        Value::Object(imported.data.components),
+        json!({ "damage_log": { "x": 50 }, "hangar_tweaks": { "zoom": 2 }, "hud_layout_places": { "random": {} } })
+    );
 }
 
 #[test]

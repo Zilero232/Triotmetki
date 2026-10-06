@@ -139,7 +139,7 @@ describe(useHudOverlay, () => {
   it('turns the label text into styled runs', async () => {
     const { hook } = await mount(SAMPLE);
 
-    expect(hook.result.current.labels[0]?.lines[0]?.runs[0]).toMatchObject({ kind: 'text', style: { color: '#F2EAD3' } });
+    expect(hook.result.current.labels[0]?.lines?.[0]?.runs[0]).toMatchObject({ kind: 'text', style: { color: '#F2EAD3' } });
   });
 
   it('sizes the overlay to the client screen', async () => {
@@ -260,28 +260,31 @@ describe(useHudOverlay, () => {
     expect(hook.result.current.labels[0]).toMatchObject({ button: true, interactive: true, framed: false });
   });
 
-  it('reports a press on the settings button to the game', async () => {
-    const { mock, hook } = await mount(withState({ patch: { edit: false }, panel: { kind: 'button' } }));
+  it('lets the settings button be pressed', async () => {
+    const { hook } = await mount(withState({ patch: { edit: false }, panel: { kind: 'button' } }));
 
-    act(() => hook.result.current.labels[0]?.onClick());
-
-    expect(sentAfterReady(mock)).toEqual([{ type: 'pressed', id: LABEL_ID }]);
+    expect(hook.result.current.labels[0]?.pressable).toBe(true);
   });
 
-  it('reports a press on a fixed button while the battle cursor is out', async () => {
-    const { mock, hook } = await mount(withState({ patch: { edit: true }, panel: { kind: 'button', drag: false } }));
+  it('lets a fixed button be pressed while the battle cursor is out', async () => {
+    const { hook } = await mount(withState({ patch: { edit: true }, panel: { kind: 'button', drag: false } }));
 
-    act(() => hook.result.current.labels[0]?.onClick());
-
-    expect(sentAfterReady(mock)).toEqual([{ type: 'pressed', id: LABEL_ID }]);
+    expect(hook.result.current.labels[0]?.pressable).toBe(true);
   });
 
   it('never presses a button that is being moved in an edit', async () => {
-    const { mock, hook } = await mount(withState({ patch: { edit: true }, panel: { kind: 'button', drag: true } }));
+    const { hook } = await mount(withState({ patch: { edit: true }, panel: { kind: 'button', drag: true } }));
 
-    act(() => hook.result.current.labels[0]?.onClick());
+    expect(hook.result.current.labels[0]?.pressable).toBe(false);
+  });
 
-    expect(sentAfterReady(mock)).toEqual([]);
+  it('keeps the same style object for a label whose place did not change', async () => {
+    const { mock, hook } = await mount(SAMPLE);
+    const before = hook.result.current.labels[0]?.style;
+
+    act(() => mock.push({ state: withState({ panel: { text: 'урон 1 300' } }) }));
+
+    expect(hook.result.current.labels[0]?.style).toBe(before);
   });
 
   it('lets every click through outside an edit when no panel is clickable', async () => {

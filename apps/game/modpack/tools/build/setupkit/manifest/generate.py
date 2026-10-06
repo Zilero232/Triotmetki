@@ -120,6 +120,17 @@ def audio_path(key, source):
     return '%s/%s%s' % (PREVIEWS_DIR, key, os.path.splitext(source)[1].lower())
 
 
+def preview_hashes(manifest, out_dir):
+    """{file: sha256} of every preview image and sound written under out_dir; the manager verifies each download."""
+    hashes = {}
+    for component in manifest.components:
+        for preview in (component.preview.image, component.preview.audio):
+            path = os.path.join(out_dir, *preview.split('/')) if preview else None
+            if path and os.path.isfile(path):
+                hashes[preview] = fileio.sha256(path)
+    return hashes
+
+
 def build_manifest(packages, catalog, platform='lesta', packages_dir=None, strict=False):
     """packages: layout.split_packages(); returns (Manifest, warnings). strict turns warnings into errors."""
     warnings = []

@@ -6,6 +6,7 @@ import { ThrottlerException } from '@nestjs/throttler';
 import { modErrorCodeSchema } from '@otmetki/schemas';
 import { getUnixTime } from 'date-fns';
 import { ZodSerializationException, ZodValidationException } from 'nestjs-zod';
+import { STATUS_CODES } from 'node:http';
 import { isIncludedIn } from 'remeda';
 
 import type { ReplyInput } from './all-exceptions.types';
@@ -109,7 +110,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const status = middlewareStatus(exception);
 
     if (status) {
-      response.status(status).json({ error: exception instanceof Error ? exception.message : 'Bad request', code: codeForStatus(status) });
+      response.status(status).json({ error: STATUS_CODES[status] ?? 'Bad request', code: codeForStatus(status) });
 
       return;
     }

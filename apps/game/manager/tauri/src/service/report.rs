@@ -29,10 +29,12 @@ fn modified(path: &Path) -> Option<DateTime<Local>> {
 }
 
 impl Manager {
-    fn redactor(&self) -> Redactor {
-        let account_ids = self.account_link().accounts.iter().map(|binding| binding.account_id).collect();
+    pub fn redactor(&self) -> Redactor {
+        let accounts = self.credential_store().load();
+        let account_ids = accounts.iter().map(|credentials| credentials.account_id).collect();
+        let secrets = accounts.into_iter().map(|credentials| credentials.secret).collect();
 
-        Redactor::new(&RedactContext { user_name: user_name(), account_ids })
+        Redactor::new(&RedactContext { user_name: user_name(), account_ids, secrets })
     }
 
     fn catalog_ids(&self) -> Option<Vec<String>> {

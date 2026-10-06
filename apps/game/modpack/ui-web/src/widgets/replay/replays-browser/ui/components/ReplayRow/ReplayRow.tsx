@@ -1,5 +1,7 @@
 import clsx from 'clsx';
 
+import { rem } from '@/shared/lib/css-unit';
+
 import type { ReplayRowProps } from './ReplayRow.types';
 
 import { RowMain, RowMarks, RowMedia, RowNumbers } from './components';
@@ -10,7 +12,7 @@ export const ReplayRow = ({ item, top, height, selected, onSelect }: ReplayRowPr
   <button
     aria-pressed={selected}
     className={clsx(s.row, selected && s.rowOn)}
-    style={{ top: `${top}rem`, height: `${height}rem` }}
+    style={{ top: rem(top), height: rem(height) }}
     type='button'
     onClick={() => onSelect(item.id)}
   >

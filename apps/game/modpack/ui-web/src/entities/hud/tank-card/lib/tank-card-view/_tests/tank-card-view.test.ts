@@ -1,11 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatPercent } from '@/shared/lib/format-number';
 import { readWidgetFixture } from '@/shared/lib/testing/widget-fixture';
 
 import { TANK_CARD } from '../../../config';
 import { tankCardSchema } from '../../../model/schemas';
-import { deltaView, percentText, scaleMarks, scalePosition, tierText } from '../tank-card-view';
+import { deltaView, scaleMarks, scalePosition } from '../tank-card-view';
 
 const data = tankCardSchema.parse(readWidgetFixture('tank_card'));
 
@@ -42,26 +41,6 @@ describe(scaleMarks, () => {
     const marks = scaleMarks({ thresholds: [], percent: null });
 
     expect(marks.filter((mark) => mark.isEnd).map((mark) => mark.level)).toEqual([100]);
-  });
-});
-
-describe(tierText, () => {
-  it('writes the tier as a roman numeral', () => {
-    expect(tierText(7)).toBe('VII');
-  });
-
-  it('leaves an unknown tier out', () => {
-    expect(tierText(null)).toBeNull();
-  });
-});
-
-describe(percentText, () => {
-  it('writes the percent as the battle panel does, with two decimals', () => {
-    expect(percentText(86.1)).toBe(formatPercent({ value: 86.1, digits: 2 }));
-  });
-
-  it('shows a dash for an unknown percent', () => {
-    expect(percentText(null)).toBe(TANK_CARD.unknownPercent);
   });
 });
 

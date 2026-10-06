@@ -218,15 +218,34 @@ fn replays_the_unfinished_commits_at_startup() {
     let root = tempfile::tempdir().unwrap();
     let manager = manager(root.path());
     let client_dir = manager.layout.clients_dir().join("клиент");
-    let mods_dir = root.path().join("Мир танков").join("mods");
+    let game = root.path().join("Мир танков");
+    let mods_dir = game.join("mods").join("1.45.0.0");
     let core = mods_dir.join("net.triotmetki.core_0.1.0.mtmod");
     let core_old = crate::fsx::sibling(&core, crate::fsx::RETIRED_SUFFIX);
 
     fs::create_dir_all(&mods_dir).unwrap();
     fs::create_dir_all(&client_dir).unwrap();
     fs::write(&core_old, "old core").unwrap();
+    crate::state::Manifest { client: game.clone(), mods_dir: mods_dir.clone(), ..Default::default() }.write(&client_dir).unwrap();
     fs::write(crate::patch::commit_journal(&client_dir), serde_json::json!({ "retired": [[core, core_old]], "placed": [] }).to_string()).unwrap();
 
     assert_eq!(manager.recover_commits(), vec![client_dir]);
     assert_eq!(fs::read_to_string(&core).unwrap(), "old core");
+}
+
+#[test]
+fn a_startup_replay_leaves_files_outside_the_recorded_client_alone() {
+    let root = tempfile::tempdir().unwrap();
+    let manager = manager(root.path());
+    let client_dir = manager.layout.clients_dir().join("клиент");
+    let victim = root.path().join("Документы").join("важное.txt");
+    let part = crate::fsx::sibling(&victim, crate::fsx::PART_SUFFIX);
+
+    fs::create_dir_all(victim.parent().unwrap()).unwrap();
+    fs::create_dir_all(&client_dir).unwrap();
+    fs::write(&victim, "keep").unwrap();
+    fs::write(crate::patch::commit_journal(&client_dir), serde_json::json!({ "retired": [], "placed": [[part, victim]] }).to_string()).unwrap();
+
+    assert_eq!(manager.recover_commits(), vec![client_dir]);
+    assert_eq!(fs::read_to_string(&victim).unwrap(), "keep");
 }

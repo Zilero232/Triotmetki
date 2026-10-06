@@ -56,6 +56,7 @@ class Schema(object):
         return value
 
 
+# `revision` counts the changes, so a reader on the game thread can keep what it read until it moves.
 class Settings(object):
 
     schema = None
@@ -64,6 +65,7 @@ class Settings(object):
         if schema is not None:
             self.schema = schema
         self.values = dict(self.schema.defaults)
+        self.revision = 0
         if values:
             self.update(values)
 
@@ -80,6 +82,8 @@ class Settings(object):
             if coerced is not None and self.values.get(key) != coerced:
                 self.values[key] = coerced
                 changed.append(key)
+        if changed:
+            self.revision += 1
         return sorted(changed)
 
     def get(self, key):

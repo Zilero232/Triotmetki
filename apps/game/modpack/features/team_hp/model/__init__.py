@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, font, format_number
-from ....core.templates import render
+from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, Markup, font, format_number, format_signed
+from ....core.templates import render_markup
 from ....core.teams import TeamHp  # noqa: F401
 from ..settings.constants import BESIDE_STOCK_PLACE, OVERLAY_STYLES
 from .constants import (
@@ -37,10 +37,6 @@ def bar(value, maximum, width, color):
     return font(BAR_CHAR * filled, color) + font(BAR_CHAR * (width - filled), COLOR_MUTED)
 
 
-def signed(value):
-    return ('+' if value > 0 else '') + format_number(value)
-
-
 def score_pair(values, settings):
     allies_key, enemies_key = SCORE_KEYS[bool(settings.get('show_alive'))]
     return values[allies_key], values[enemies_key]
@@ -70,7 +66,7 @@ def format_icons(teams, settings, options):
     if settings.get('show_score'):
         parts.append(score_text(teams.values(), settings))
     parts.append(enemies)
-    return font(u'   '.join(parts), COLOR_NEUTRAL, settings.get('font_size'))
+    return font(Markup(u'   '.join(parts)), COLOR_NEUTRAL, settings.get('font_size'))
 
 
 def format_panel(teams, settings, translate, options):
@@ -117,16 +113,16 @@ def diff_line(values, settings, translate):
     diff = values['diff']
     color_key = 'ally_color' if diff >= 0 else 'enemy_color'
     size = max(MIN_DIFF_FONT_SIZE, settings.get('font_size') - DIFF_FONT_DECREASE)
-    return font(translate('team_hp_diff', diff=signed(diff)), settings.get(color_key), size)
+    return font(translate('team_hp_diff', diff=format_signed(diff)), settings.get(color_key), size)
 
 
 def format_team_hp(values, settings, translate):
     size = settings.get('font_size')
     if settings.get('template'):
-        return font(render(settings.get('template'), values), COLOR_NEUTRAL, size)
+        return font(render_markup(settings.get('template'), values), COLOR_NEUTRAL, size)
 
     style = pair_style(settings)
-    lines = [font('  '.join(number_parts(values, settings, style)), COLOR_NEUTRAL, size)]
+    lines = [font(Markup('  '.join(number_parts(values, settings, style))), COLOR_NEUTRAL, size)]
     if settings.get('show_diff') and style != 'compact':
         lines.append(diff_line(values, settings, translate))
     return '\n'.join(lines)

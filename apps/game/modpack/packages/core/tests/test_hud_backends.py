@@ -607,8 +607,7 @@ class HudPageContractTest(unittest.TestCase):
         state = surface.state(SPACE_BATTLE, True, True)
 
         if os.environ.get('OTMETKI_UPDATE_FIXTURES') == '1':
-            with io.open(HUD_STATE_FIXTURE, 'w', encoding='utf-8', newline='\n') as handle:
-                handle.write(json.dumps(state, sort_keys=True, indent=2, ensure_ascii=False) + '\n')
+            _support.write_fixture(HUD_STATE_FIXTURE, state)
         with io.open(HUD_STATE_FIXTURE, 'r', encoding='utf-8') as handle:
             assert json.load(handle) == state
 

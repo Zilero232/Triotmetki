@@ -4,7 +4,15 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ...core.codec import encode_json
 from ...core.compat import string_types, to_text
 from ...core.net.signing import SignedRequest, signed_request
-from .constants import POLL_PATH, RESULT_PATH, RESULT_STATUSES, SETTINGS_PATH, TARGETS, UUID_RE  # noqa: F401
+from .constants import (  # noqa: F401
+    POLL_PATH,
+    PROFILE_SLUG_RE,
+    RESULT_PATH,
+    RESULT_STATUSES,
+    SETTINGS_PATH,
+    TARGETS,
+    UUID_RE,
+)
 from .errors import SettingsShareError
 from .values import (  # noqa: F401
     applicable_groups,
@@ -61,16 +69,21 @@ def _is_request_id(value):
     return isinstance(value, string_types) and bool(UUID_RE.match(value))
 
 
+def profile_slug(value):
+    if not isinstance(value, string_types) or not PROFILE_SLUG_RE.match(value):
+        return u''
+    return to_text(value)
+
+
 def _parse_request(item):
     if not isinstance(item, dict) or not _is_request_id(item.get('id')):
         return None
     groups = applicable_groups(item.get('groups'))
     if not groups:
         return None
-    slug = item.get('profile_slug')
     return {
         'id': to_text(item['id']),
-        'profile_slug': to_text(slug) if isinstance(slug, string_types) else u'',
+        'profile_slug': profile_slug(item.get('profile_slug')),
         'groups': groups,
         'settings': build_export(flatten_settings(item.get('settings'))),
     }

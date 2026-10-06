@@ -152,8 +152,10 @@ def matching(pattern, limit):
 
 
 def hex_color(value):
-    """A normalizer for `#RRGGBB` colours (upper-cased)."""
-    return value.upper() if HEX_COLOR.match(value) else None
+    """`value` as an upper-cased `#RRGGBB` colour, or None (also the schema normalizer for colour keys)."""
+    if isinstance(value, string_types) and HEX_COLOR.match(value):
+        return to_text(value).upper()
+    return None
 
 
 def alias_of(panel_id):
@@ -201,13 +203,13 @@ def moved_values(props):
     values = {}
     for key in ('x', 'y'):
         value = props.get(key)
-        if is_number(value) and not isinstance(value, bool):
+        if is_number(value):
             values[key] = int(round(value))
     for prop, key in MOVED_ALIGNS:
         if isinstance(props.get(prop), string_types):
             values[key] = to_text(props[prop])
     scale = props.get('scale')
-    if is_number(scale) and not isinstance(scale, bool):
+    if is_number(scale):
         values['scale'] = int(round(scale * 100))
     return values
 

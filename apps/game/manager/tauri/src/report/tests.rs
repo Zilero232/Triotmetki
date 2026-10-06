@@ -3,7 +3,7 @@ use std::fs;
 use super::*;
 
 fn redactor() -> Redactor {
-    Redactor::new(&RedactContext { user_name: Some("Игрок".into()), account_ids: vec![12_345_678] })
+    Redactor::new(&RedactContext { user_name: Some("Игрок".into()), account_ids: vec![12_345_678], secrets: Vec::new() })
 }
 
 #[test]
@@ -31,8 +31,20 @@ fn hides_personal_data_and_counts_it() {
 }
 
 #[test]
+fn hides_a_known_secret_wherever_it_appears() {
+    let secret = "Zx9".repeat(16);
+    let redactor = Redactor::new(&RedactContext { user_name: None, account_ids: Vec::new(), secrets: vec![secret.clone(), "short".into()] });
+
+    let (redacted, count) = redactor.redact(&format!("hmac key {secret} (len 48) and short"));
+
+    assert_eq!(redacted, "hmac key <redacted> (len 48) and short");
+    assert_eq!(count, 1);
+}
+
+#[test]
 fn skips_names_too_short_to_redact_safely() {
-    let (redacted, count) = Redactor::new(&RedactContext { user_name: Some("Al".into()), account_ids: vec![0] }).redact("Alpha 0 Al");
+    let (redacted, count) =
+        Redactor::new(&RedactContext { user_name: Some("Al".into()), account_ids: vec![0], secrets: Vec::new() }).redact("Alpha 0 Al");
 
     assert_eq!((redacted.as_str(), count), ("Alpha 0 Al", 0));
 }

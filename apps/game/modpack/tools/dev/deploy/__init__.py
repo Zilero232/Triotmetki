@@ -12,6 +12,7 @@ import datetime
 import errno
 import json
 import os
+import shutil
 
 import attr
 import fileio
@@ -124,8 +125,7 @@ def plan_uninstall(folder, recorded):
 def _write_copy(source, target):
     partial = target + PARTIAL_SUFFIX
     try:
-        with open(source, 'rb') as reader, open(partial, 'wb') as writer:
-            writer.write(reader.read())
+        shutil.copyfile(source, partial)
         fileio.replace_file(partial, target)
     except (IOError, OSError) as error:
         if error.errno not in ACCESS_ERRORS:

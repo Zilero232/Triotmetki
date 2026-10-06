@@ -3,415 +3,416 @@
     {
       "actions": [
         {
-          "confirm": null, 
-          "id": "settings_export", 
+          "confirm": null,
+          "id": "settings_export",
           "label": "Отправить настройки игры на сайт"
         }
-      ], 
-      "context": "any", 
+      ],
+      "context": "any",
       "fields": [
         {
-          "default": true, 
-          "hint": "Итоги каждого вашего боя (урон, опыт, исход, танк, карта): из них сайт считает вашу статистику, сессии и цели.", 
-          "key": "send_battle_results", 
-          "label": "Отправлять итоги своих боёв", 
-          "type": "bool", 
+          "default": true,
+          "hint": "Итоги каждого вашего боя (урон, опыт, исход, танк, карта): из них сайт считает вашу статистику, сессии и цели.",
+          "key": "send_battle_results",
+          "label": "Отправлять итоги своих боёв",
+          "type": "bool",
           "value": true
-        }, 
+        },
         {
-          "advanced": true, 
-          "default": true, 
-          "hint": "Точный процент отметки танка после боя: сайт строит график отметок и прогноз.", 
-          "key": "send_moe_snapshots", 
-          "label": "Отправлять проценты отметок", 
-          "type": "bool", 
+          "advanced": true,
+          "default": true,
+          "hint": "Точный процент отметки танка после боя: сайт строит график отметок и прогноз.",
+          "key": "send_moe_snapshots",
+          "label": "Отправлять проценты отметок",
+          "type": "bool",
           "value": true
-        }, 
+        },
         {
-          "advanced": true, 
-          "default": true, 
-          "hint": "Сколько вы ждали в очереди и на каком уровне: для общей статистики очередей на сайте.", 
-          "key": "send_queue_times", 
-          "label": "Отправлять время в очереди", 
-          "type": "bool", 
+          "advanced": true,
+          "default": true,
+          "hint": "Сколько вы ждали в очереди и на каком уровне: для общей статистики очередей на сайте.",
+          "key": "send_queue_times",
+          "label": "Отправлять время в очереди",
+          "type": "bool",
           "value": true
-        }, 
+        },
         {
-          "advanced": true, 
-          "default": true, 
-          "hint": "Оборудование, снаряжение и навыки экипажа танка, на котором вы сыграли: для популярных сборок на сайте.", 
-          "key": "send_loadouts", 
-          "label": "Отправлять оборудование, снаряжение и навыки своего танка", 
-          "type": "bool", 
+          "advanced": true,
+          "default": true,
+          "hint": "Оборудование, снаряжение и навыки экипажа танка, на котором вы сыграли: для популярных сборок на сайте.",
+          "key": "send_loadouts",
+          "label": "Отправлять оборудование, снаряжение и навыки своего танка",
+          "type": "bool",
           "value": true
-        }, 
+        },
         {
-          "advanced": true, 
-          "default": true, 
-          "hint": "Урон и пробития только ваших выстрелов: для проверки разброса урона («Честный рандом»).", 
-          "key": "send_shots", 
-          "label": "Отправлять урон своих выстрелов (для «Честного рандома»)", 
-          "type": "bool", 
+          "advanced": true,
+          "default": true,
+          "hint": "Урон и пробития только ваших выстрелов: для проверки разброса урона («Честный рандом»).",
+          "key": "send_shots",
+          "label": "Отправлять урон своих выстрелов (для «Честного рандома»)",
+          "type": "bool",
           "value": true
-        }, 
+        },
         {
-          "default": true, 
-          "hint": "Игроки с модом «Три отметки» видят значок у вашего ника в ушах и по Tab. Выключите, и сайт перестанет отмечать ваш аккаунт.", 
-          "key": "show_pack_badge", 
-          "label": "Показывать мой значок «Три отметки» другим игрокам", 
-          "type": "bool", 
+          "default": true,
+          "hint": "Игроки с модом «Три отметки» видят значок у вашего ника в ушах и по Tab. Выключите, и сайт перестанет отмечать ваш аккаунт.",
+          "key": "show_pack_badge",
+          "label": "Показывать мой значок «Три отметки» другим игрокам",
+          "type": "bool",
           "value": true
-        }, 
+        },
         {
-          "default": true, 
-          "hint": "Сохранение настроек игры на сайт и применение сохранённых настроек через мод.", 
-          "key": "share_settings", 
-          "label": "Настройки игры: экспорт и «Применить через мод»", 
-          "type": "bool", 
+          "default": true,
+          "hint": "Сохранение настроек игры на сайт и применение сохранённых настроек через мод.",
+          "key": "share_settings",
+          "label": "Настройки игры: экспорт и «Применить через мод»",
+          "type": "bool",
           "value": true
-        }, 
+        },
         {
-          "advanced": true, 
+          "advanced": true,
           "choices": [
             {
-              "label": "В профиль на сайте", 
+              "label": "В профиль на сайте",
               "value": "profile"
-            }, 
+            },
             {
-              "label": "Только себе", 
+              "label": "Только себе",
               "value": "private"
             }
-          ], 
-          "default": "private", 
-          "hint": "«В профиль на сайте» — настройки видны в вашем профиле, «Только себе» — их видите только вы.", 
-          "key": "settings_target", 
-          "label": "Куда отправлять настройки игры", 
-          "type": "choice", 
+          ],
+          "default": "private",
+          "hint": "«В профиль на сайте» — настройки видны в вашем профиле, «Только себе» — их видите только вы.",
+          "key": "settings_target",
+          "label": "Куда отправлять настройки игры",
+          "type": "choice",
           "value": "private"
-        }, 
+        },
         {
-          "advanced": true, 
-          "default": false, 
-          "hint": "Ваши настройки без имени попадают в общую статистику популярных настроек.", 
-          "key": "settings_anonymous_stats", 
-          "label": "Учитывать мои настройки в анонимной статистике", 
-          "type": "bool", 
+          "advanced": true,
+          "default": false,
+          "hint": "Ваши настройки без имени попадают в общую статистику популярных настроек.",
+          "key": "settings_anonymous_stats",
+          "label": "Учитывать мои настройки в анонимной статистике",
+          "type": "bool",
           "value": false
-        }, 
+        },
         {
-          "advanced": true, 
-          "default": false, 
-          "hint": null, 
-          "key": "settings_include_resolution", 
-          "label": "Применять разрешение и частоту экрана", 
-          "type": "bool", 
+          "advanced": true,
+          "default": false,
+          "hint": null,
+          "key": "settings_include_resolution",
+          "label": "Применять разрешение и частоту экрана",
+          "type": "bool",
           "value": false
-        }, 
+        },
         {
-          "advanced": true, 
-          "default": false, 
-          "hint": null, 
-          "key": "settings_include_sensitivity", 
-          "label": "Применять чувствительность мыши", 
-          "type": "bool", 
+          "advanced": true,
+          "default": false,
+          "hint": null,
+          "key": "settings_include_sensitivity",
+          "label": "Применять чувствительность мыши",
+          "type": "bool",
           "value": false
-        }, 
+        },
         {
-          "advanced": true, 
+          "advanced": true,
           "choices": [
             {
-              "label": "Alt", 
+              "label": "Alt",
               "value": "alt"
-            }, 
+            },
             {
-              "label": "Ctrl+Alt", 
+              "label": "Ctrl+Alt",
               "value": "ctrl_alt"
-            }, 
+            },
             {
-              "label": "Ctrl", 
+              "label": "Ctrl",
               "value": "ctrl"
-            }, 
+            },
             {
-              "label": "Shift", 
+              "label": "Shift",
               "value": "shift"
             }
-          ], 
-          "default": "alt", 
-          "hint": "В ангаре удерживайте её и тяните панель мышью, колесо меняет размер. В бою ничего нажимать не нужно: зажмите Ctrl, чтобы появился курсор, и тяните панель прямо им.", 
-          "key": "hud_modifier", 
-          "label": "Клавиша перемещения панелей в ангаре", 
-          "type": "choice", 
+          ],
+          "default": "alt",
+          "hint": "В ангаре удерживайте её и тяните панель мышью, колесо меняет размер. В бою ничего нажимать не нужно: зажмите Ctrl, чтобы появился курсор, и тяните панель прямо им.",
+          "key": "hud_modifier",
+          "label": "Клавиша перемещения панелей в ангаре",
+          "type": "choice",
           "value": "alt"
-        }, 
+        },
         {
-          "advanced": true, 
-          "default": true, 
-          "hint": "Пока открыты статистика по Tab, задачи ЛБЗ, личные резервы, экран возрождения, обзорная карта или полноэкранное окно игры, панели модпака скрываются вместе со стандартным интерфейсом и возвращаются, когда окно закрыто. Скрытие по V, на экране загрузки и на камере убийцы работает всегда.", 
-          "key": "hud_hide_under_windows", 
-          "label": "Убирать панели под окнами игры", 
-          "type": "bool", 
+          "advanced": true,
+          "default": true,
+          "hint": "Пока открыты статистика по Tab, задачи ЛБЗ, личные резервы, экран возрождения, обзорная карта или полноэкранное окно игры, панели модпака скрываются вместе со стандартным интерфейсом и возвращаются, когда окно закрыто. Скрытие по V, на экране загрузки и на камере убийцы работает всегда.",
+          "key": "hud_hide_under_windows",
+          "label": "Убирать панели под окнами игры",
+          "type": "bool",
           "value": true
         }
-      ], 
-      "group": "data", 
-      "hint": "Что мод отправляет на triotmetki.ru. Ничего не уходит, пока мод не привязан.", 
-      "id": "companion", 
-      "page": null, 
-      "panel": false, 
-      "section": "data", 
+      ],
+      "group": "data",
+      "hint": "Что мод отправляет на triotmetki.ru. Ничего не уходит, пока мод не привязан.",
+      "id": "companion",
+      "page": null,
+      "panel": false,
+      "section": "data",
       "switch": {
-        "key": "enabled", 
+        "key": "enabled",
         "value": true
-      }, 
+      },
       "title": "Данные и сайт"
-    }, 
+    },
     {
-      "actions": [], 
-      "context": "battle", 
-      "fields": [], 
-      "group": "battle", 
-      "hint": "Панель отметки в бою справа от расходников: процент и прогноз после боя, полоса урона за бой и урон до следующей цели.", 
-      "id": "marks_panel", 
-      "page": null, 
-      "panel": false, 
-      "section": "battle", 
+      "actions": [],
+      "context": "battle",
+      "fields": [],
+      "group": "battle",
+      "hint": "Панель отметки в бою справа от расходников: процент и прогноз после боя, полоса урона за бой и урон до следующей цели.",
+      "id": "marks_panel",
+      "page": null,
+      "panel": false,
+      "section": "battle",
       "switch": {
-        "key": "battle_moe_panel", 
+        "key": "battle_moe_panel",
         "value": true
-      }, 
+      },
       "title": "Отметки в бою"
-    }, 
+    },
     {
-      "actions": [], 
-      "context": "hangar", 
+      "actions": [],
+      "context": "hangar",
       "fields": [
         {
-          "default": 60, 
-          "hint": null, 
-          "key": "session_idle_minutes", 
-          "label": "Новая сессия после простоя, мин", 
-          "max": 1440, 
-          "min": 10, 
-          "type": "int", 
+          "default": 60,
+          "hint": null,
+          "key": "session_idle_minutes",
+          "label": "Новая сессия после простоя, мин",
+          "max": 1440,
+          "min": 10,
+          "type": "int",
           "value": 60
         }
-      ], 
-      "group": "hangar", 
-      "hint": "Бои, победы, средний урон и WN8 за сессию, полоска последних боёв, цели из «Моего кабинета» и строка аккаунта. Цели и аккаунт появляются после привязки мода.", 
-      "id": "session_stats", 
-      "page": null, 
-      "panel": false, 
-      "section": "hangar", 
+      ],
+      "group": "hangar",
+      "hint": "Бои, победы, средний урон и WN8 за сессию, полоска последних боёв, цели из «Моего кабинета» и строка аккаунта. Цели и аккаунт появляются после привязки мода.",
+      "id": "session_stats",
+      "page": null,
+      "panel": false,
+      "section": "hangar",
       "switch": {
-        "key": "hangar_session_panel", 
+        "key": "hangar_session_panel",
         "value": true
-      }, 
+      },
       "title": "Сессия"
-    }, 
+    },
     {
-      "actions": [], 
-      "context": "battle", 
+      "actions": [],
+      "context": "battle",
       "fields": [
         {
           "choices": [
             {
-              "label": "Как в игре", 
+              "label": "Как в игре",
               "value": "native"
-            }, 
+            },
             {
-              "label": "x2", 
+              "label": "x2",
               "value": "x2"
             }
-          ], 
-          "default": "native", 
-          "hint": null, 
-          "key": "zoom", 
-          "label": "zoom", 
-          "type": "choice", 
+          ],
+          "default": "native",
+          "hint": null,
+          "key": "zoom",
+          "label": "zoom",
+          "type": "choice",
           "value": "native"
         }
-      ], 
-      "group": "battle", 
-      "hint": null, 
-      "id": "minimap", 
-      "page": null, 
-      "panel": false, 
-      "section": "battle", 
+      ],
+      "group": "battle",
+      "hint": null,
+      "id": "minimap",
+      "page": null,
+      "panel": false,
+      "section": "battle",
       "switch": {
-        "key": "enabled", 
+        "key": "enabled",
         "value": true
-      }, 
+      },
       "title": "minimap"
-    }, 
+    },
     {
       "actions": [
         {
-          "confirm": null, 
-          "id": "refresh", 
+          "confirm": null,
+          "id": "refresh",
           "label": "Refresh"
         }
-      ], 
-      "context": "hangar", 
-      "fields": [], 
-      "group": "hangar", 
-      "hint": null, 
-      "id": "replay_manager", 
+      ],
+      "context": "hangar",
+      "fields": [],
+      "group": "hangar",
+      "hint": null,
+      "id": "replay_manager",
       "page": {
-        "empty": "none", 
-        "kind": "list", 
+        "empty": "none",
+        "kind": "list",
         "rows": [
           {
-            "actions": [], 
+            "actions": [],
             "details": [
               {
-                "label": "Map", 
+                "label": "Map",
                 "value": "Prokhorovka"
               }
-            ], 
-            "id": "a.mtreplay", 
+            ],
+            "id": "a.mtreplay",
             "title": "A"
           }
         ]
-      }, 
-      "panel": false, 
-      "section": "replays", 
-      "switch": null, 
+      },
+      "panel": false,
+      "section": "replays",
+      "switch": null,
       "title": "replay_manager"
-    }, 
+    },
     {
-      "actions": [], 
-      "context": "battle", 
+      "actions": [],
+      "context": "battle",
       "fields": [
         {
-          "advanced": true, 
-          "default": 100, 
-          "hint": null, 
-          "key": "alpha", 
-          "label": "Непрозрачность, %", 
-          "max": 100, 
-          "min": 0, 
-          "type": "int", 
+          "advanced": true,
+          "default": 100,
+          "hint": null,
+          "key": "alpha",
+          "label": "Непрозрачность, %",
+          "max": 100,
+          "min": 0,
+          "type": "int",
           "value": 100
-        }, 
+        },
         {
-          "default": 5, 
-          "hint": null, 
-          "key": "lines", 
-          "label": "lines", 
-          "max": 20, 
-          "min": 1, 
-          "type": "int", 
+          "default": 5,
+          "hint": null,
+          "key": "lines",
+          "label": "lines",
+          "max": 20,
+          "min": 1,
+          "type": "int",
           "value": 5
         }
-      ], 
-      "group": "battle", 
-      "hint": "Итоги боя и два раздела вместо стандартного лога урона. Нанесённый: ваши выстрелы с исходом по маркерам попаданий, уроном, снарядом, целью и остатком её прочности, и помощь. Полученный: попадания по вам с уроном, снарядом и стрелявшим, пожар, таран и боеукладка, и попадания, которые выдержала броня.", 
-      "id": "damage_log", 
-      "page": null, 
-      "panel": true, 
-      "section": "battle", 
+      ],
+      "group": "battle",
+      "hint": "Итоги боя и два раздела вместо стандартного лога урона. Нанесённый: ваши выстрелы с исходом по маркерам попаданий, уроном, снарядом, целью и остатком её прочности, и помощь. Полученный: попадания по вам с уроном, снарядом и стрелявшим, пожар, таран и боеукладка, и попадания, которые выдержала броня.",
+      "id": "damage_log",
+      "page": null,
+      "panel": true,
+      "section": "battle",
       "switch": {
-        "key": "upload_replays", 
+        "key": "upload_replays",
         "value": false
-      }, 
+      },
       "title": "Журнал боя"
-    }, 
+    },
     {
-      "actions": [], 
-      "context": "battle", 
+      "actions": [],
+      "context": "battle",
       "fields": [
         {
           "choices": [
             {
-              "label": "full", 
+              "label": "full",
               "value": "full"
-            }, 
+            },
             {
-              "label": "compact", 
+              "label": "compact",
               "value": "compact"
-            }, 
+            },
             {
-              "label": "Выключено", 
+              "label": "Выключено",
               "value": "off"
             }
-          ], 
-          "default": "compact", 
-          "hint": null, 
-          "key": "event", 
-          "label": "event", 
-          "type": "choice", 
+          ],
+          "default": "compact",
+          "hint": null,
+          "key": "event",
+          "label": "event",
+          "type": "choice",
           "value": "compact"
         }
-      ], 
-      "group": "battle", 
-      "hint": null, 
-      "id": "hud_layouts", 
-      "page": null, 
-      "panel": false, 
-      "section": "hud", 
+      ],
+      "group": "battle",
+      "hint": null,
+      "id": "hud_layouts",
+      "page": null,
+      "panel": false,
+      "section": "hud",
       "switch": {
-        "key": "battle_hud_layouts", 
+        "key": "battle_hud_layouts",
         "value": true
-      }, 
+      },
       "title": "hud_layouts"
     }
-  ], 
+  ],
   "hud": {
-    "editing": false, 
+    "editing": false,
     "panels": [
       {
-        "align_x": "center", 
-        "align_y": "top", 
-        "enabled": false, 
-        "height": 40, 
-        "id": "damage_log", 
-        "preview": "1 200", 
-        "text": "<font color=\"#fff\">1 200</font>", 
-        "title": "Журнал боя", 
-        "widget": null, 
-        "width": 300, 
-        "x": 10, 
+        "align_x": "center",
+        "align_y": "top",
+        "enabled": false,
+        "height": 40,
+        "id": "damage_log",
+        "preview": "1 200",
+        "text": "<font color=\"#fff\">1 200</font>",
+        "title": "Журнал боя",
+        "widget": null,
+        "width": 300,
+        "x": 10,
         "y": 0
       }
     ]
-  }, 
-  "language": "ru", 
-  "language_setting": "auto", 
+  },
+  "language": "ru",
+  "language_setting": "auto",
   "languages": [
-    "ru", 
+    "ru",
     "en"
-  ], 
+  ],
   "notice": {
-    "code": null, 
-    "kind": "info", 
+    "code": null,
+    "kind": "info",
     "text": "Профиль «Стример» сохранён"
-  }, 
+  },
   "profiles": {
-    "active": "p1", 
+    "active": "p1",
     "items": [
       {
-        "id": "p1", 
-        "name": "Стример", 
+        "id": "p1",
+        "name": "Стример",
         "updated": 1000.0
       }
     ]
-  }, 
-  "revision": 1, 
-  "scroll": {}, 
-  "site": "https://triotmetki.ru", 
+  },
+  "revision": 1,
+  "scroll": {},
+  "site": "https://triotmetki.ru",
   "status": {
-    "account_id": null, 
-    "auth_failed": false, 
-    "bound": false, 
+    "account_id": null,
+    "auth_failed": false,
+    "bound": false,
+    "server": null,
     "text": "not bound"
-  }, 
-  "v": 2, 
+  },
+  "v": 2,
   "window": {
-    "height": 0, 
-    "placed": false, 
-    "width": 0, 
-    "x": 0, 
-    "y": 0, 
+    "height": 0,
+    "placed": false,
+    "width": 0,
+    "x": 0,
+    "y": 0,
     "zoom": 100
   }
 }

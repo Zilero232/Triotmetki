@@ -10,6 +10,7 @@ from otmetki.core.events import EventBus
 from otmetki.core.hud import ComponentConfig
 from otmetki.core.storage import MemoryFile
 from otmetki.features.responsive_reticle.i18n import STRINGS
+from otmetki.features.responsive_reticle.model.constants import FOLLOW_SMOOTH, INSTANT_RELAX_S, SMOOTH_RELAX_S
 
 CLIENT_PREFIXES = ('otmetki.core.client', 'otmetki.features.responsive_reticle.client')
 PLUGINS = 'gui.Scaleform.daapi.view.battle.shared.crosshair.plugins'
@@ -177,10 +178,20 @@ def descriptor(tags, static_yaw=None):
 class Config(object):
 
     def __init__(self):
-        self.on = True
+        self.switch = True
+        self.revision = 0
+
+    @property
+    def on(self):
+        return self.switch
+
+    @on.setter
+    def on(self, value):
+        self.switch = value
+        self.revision += 1
 
     def is_enabled(self, switch):
-        return self.on
+        return self.switch
 
 
 class App(object):
@@ -190,6 +201,8 @@ class App(object):
         self.translate = _support.translator(STRINGS)
         self.config = Config()
         self.in_battle = False
+        self.bus.on('battle_ready', lambda player: setattr(self, 'in_battle', True))
+        self.bus.on('battle_leave', lambda: setattr(self, 'in_battle', False))
 
 
 class ResponsiveReticleClientTest(unittest.TestCase):
@@ -420,6 +433,32 @@ class ResponsiveReticleClientTest(unittest.TestCase):
         self.client.frame(0.016)
 
         assert self.rotator.turns == []
+
+    def test_the_frames_stop_once_the_battle_is_over_without_a_leave_event(self):
+        self.battle()
+        self.app.in_battle = False
+        self.client.frame(0.016)
+
+        assert self.rotator.turns == []
+        assert self.client.callbacks == []
+
+    def test_a_follow_mode_changed_in_battle_reaches_the_next_turn(self):
+        self.battle()
+        self.client.frame(0.016)
+        importlib.import_module('otmetki.core.client.hud')._state['config'].update(
+            'responsive_reticle', {'follow': FOLLOW_SMOOTH})
+        self.client.aim(20.0)
+        self.client.frame(0.016)
+
+        assert self.rotator.markers == [INSTANT_RELAX_S, SMOOTH_RELAX_S]
+
+    def test_an_input_handler_without_the_aiming_mode_still_turns(self):
+        self.start()
+        self.client.player.inputHandler = Namespace()
+        self.app.bus.emit('battle_ready', self.client.player)
+        self.client.frame(0.016)
+
+        assert self.rotator.turns == [(SHOT_POINT, 0.016)]
 
     def test_the_last_shot_point_is_kept_when_the_camera_has_none(self):
         self.battle()

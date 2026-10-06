@@ -9,16 +9,22 @@ export type DamageLogShellView = { label: string; gold: boolean; kind: DamageLog
 
 export type DamageLogBarView = { kept: number; took: number };
 
-export type DamageLogRowView = Pick<DamageLogRow, 'cls' | 'icon' | 'id' | 'name' | 'note' | 'tone'> & {
+export type TookWidthInput = { lost: number; max: number; kept: number };
+
+export type DamageLogRowTexts = {
   amountText: string;
-  muted: boolean;
   hitsText: string;
   critsText: string;
-  shell: DamageLogShellView | null;
-  bar: DamageLogBarView | null;
-  ammoRack: DamageLogRow['ammo_rack'];
 };
 
-export type DamageLogSectionView = { key: 'dealt' | 'received'; rows: DamageLogRowView[] };
+export type DamageLogRowView = Pick<DamageLogRow, 'cls' | 'icon' | 'id' | 'name' | 'note' | 'tone'> &
+  DamageLogRowTexts & {
+    muted: boolean;
+    shell: DamageLogShellView | null;
+    bar: DamageLogBarView | null;
+    ammoRack: DamageLogRow['ammo_rack'];
+  };
+
+export type DamageLogSectionView = { key: (typeof DAMAGE_LOG.sections)[number]; rows: DamageLogRowView[] };
 
 export type DamageLogView = { wide: boolean; totals: DamageLogTotalView[]; sections: DamageLogSectionView[] };

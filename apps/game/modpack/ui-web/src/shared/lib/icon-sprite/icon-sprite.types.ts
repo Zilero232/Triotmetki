@@ -4,11 +4,6 @@ export type UiIconName = (typeof UI_ICON_NAMES)[number];
 
 export type UiIconTone = (typeof UI_ICON_TONES)[number];
 
-export type SpriteCell = {
-  column: number;
-  row: number;
-};
-
 export type SpriteCellInput = {
   name: UiIconName;
   tone: UiIconTone;
@@ -16,12 +11,4 @@ export type SpriteCellInput = {
 
 export type SpriteStyleInput = SpriteCellInput & {
   size: number;
-};
-
-export type SpriteStyle = {
-  width: string;
-  height: string;
-  backgroundImage: string;
-  backgroundSize: string;
-  backgroundPosition: string;
 };

@@ -26,7 +26,7 @@ def clean_booster(raw):
     if not isinstance(raw, dict) or raw.get('kind') not in KINDS:
         return None
     booster_id = raw.get('id')
-    if not is_int(booster_id) or isinstance(booster_id, bool):
+    if not is_int(booster_id):
         return None
     value = raw.get('value')
     expires = raw.get('expires')
@@ -35,7 +35,7 @@ def clean_booster(raw):
         'kind': raw['kind'],
         'active': bool(raw.get('active')),
         'ready': bool(raw.get('ready')),
-        'value': value if is_number(value) and not isinstance(value, bool) else 0,
+        'value': value if is_number(value) else 0,
         'expires': expires if is_int(expires) and expires > 0 else NO_EXPIRY,
     }
 

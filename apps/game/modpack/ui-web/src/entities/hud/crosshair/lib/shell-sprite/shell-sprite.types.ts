@@ -9,20 +9,7 @@ export type ShellSpriteCellInput = {
   paint: ShellSpritePaint;
 };
 
-export type ShellSpriteCell = {
-  column: number;
-  row: number;
-};
-
 export type ShellSpriteStyleInput = ShellSpriteCellInput & {
   width: number;
   height: number;
-};
-
-export type ShellSpriteStyle = {
-  width: string;
-  height: string;
-  backgroundImage: string;
-  backgroundSize: string;
-  backgroundPosition: string;
 };

@@ -34,6 +34,7 @@ export class PurgeGuardService {
 
     await db.dataDeletionRequest.createMany({ data: accountIds.map((accountId) => ({ accountId, source, reason })) });
     await db.player.updateMany({ where: { accountId: { in: [...accountIds] } }, data: { isHidden: true } });
+    await db.modDevice.updateMany({ where: { accountId: { in: [...accountIds] }, revokedAt: null }, data: { revokedAt: new Date() } });
   }
 
   async liftUserRequests({ db, accountId }: LiftUserRequestsInput): Promise<boolean> {

@@ -16,16 +16,24 @@ const ENTITIES = new Map<string, string>(Object.entries(RICH_TEXT.entities));
 const STYLE_TAGS = new Map<string, RichStyle>(Object.entries(RICH_TEXT.styleTags));
 const LINE_BREAK_TAGS = new Set<string>(RICH_TEXT.lineBreakTags);
 
+const isScalarValue = (code: number): boolean =>
+  Number.isSafeInteger(code) &&
+  code >= 0 &&
+  code <= RICH_TEXT.maxCodePoint &&
+  (code < RICH_TEXT.surrogates.first || code > RICH_TEXT.surrogates.last);
+
+const fromCodePoint = (code: number): string => String.fromCodePoint(isScalarValue(code) ? code : RICH_TEXT.replacementCodePoint);
+
 const decodeEntities = (text: string): string =>
   text.replace(RICH_TEXT.entity, (whole, name: string) => {
     const lower = name.toLowerCase();
 
     if (lower.startsWith('#x')) {
-      return String.fromCodePoint(Number.parseInt(lower.slice(2), 16));
+      return fromCodePoint(Number.parseInt(lower.slice(2), 16));
     }
 
     if (lower.startsWith('#')) {
-      return String.fromCodePoint(Number.parseInt(lower.slice(1), 10));
+      return fromCodePoint(Number.parseInt(lower.slice(1), 10));
     }
 
     return ENTITIES.get(lower) ?? whole;

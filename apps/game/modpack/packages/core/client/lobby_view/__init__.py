@@ -8,6 +8,7 @@ Without the windows manager the labels stay visible (the rule fails open).
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ...events import Listeners
 from ...log import log, safe
 from ...lobby_view import BLOCKING_LAYERS, GONE_STATUSES, HANGAR_ALIAS, plain_hangar
 
@@ -30,7 +31,7 @@ def _alias(window):
 class LobbyViewWatch(object):
 
     def __init__(self):
-        self.listeners = []
+        self.listeners = Listeners('lobby view listener')
         self.visible = True
         self.manager = None
         self.logged = False
@@ -65,8 +66,7 @@ class LobbyViewWatch(object):
         return True
 
     def listen(self, callback):
-        if callback not in self.listeners:
-            self.listeners.append(callback)
+        self.listeners.add(callback)
         self.install()
         callback(self.visible)
 
@@ -97,8 +97,7 @@ class LobbyViewWatch(object):
         if visible == self.visible:
             return
         self.visible = visible
-        for listener in list(self.listeners):
-            listener(visible)
+        self.listeners.notify(visible)
 
 
 _state = {'watch': None}

@@ -39,6 +39,13 @@ export const MOD_BATTLE_LIMITS = {
     ammo_cost: 500_000,
     consumables_cost: 200_000
   },
+  arena: {
+    arena_type_id: 2_147_483_647,
+    bonus_type: 1_023,
+    gui_type: 1_023,
+    finish_reason: 255
+  },
   credits: 2_000_000,
-  durationSeconds: 3_600
+  durationSeconds: 3_600,
+  queueSeconds: 86_400
 } as const;

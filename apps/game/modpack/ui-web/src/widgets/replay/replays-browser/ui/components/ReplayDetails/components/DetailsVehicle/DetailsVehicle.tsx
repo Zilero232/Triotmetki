@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 
-import { romanTier } from '@/entities/replay/replay';
+import { romanTier } from '@/shared/lib/format-number';
 import { ClientIcon } from '@/ui-kit';
 
 import type { DetailsPartProps } from '../../ReplayDetails.types';

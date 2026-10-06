@@ -12,15 +12,27 @@ import unittest
 
 import _support  # noqa: F401
 from otmetki.companion.binding import Credentials, CredentialStore
-from otmetki.core.durable import MirroredFile, open_config
+from otmetki.core.durable import MirroredFile, PrivateFile, open_config, open_secret_pair
 from otmetki.core.durable.constants import STAMPS_NAME
 from otmetki.core.durable.paths import durable_dir, to_path_text
 from otmetki.core.hud import ComponentConfig
 from otmetki.core.settings import Schema
 from otmetki.core.storage import JsonFile
 
-SECRET = 's' * 40
-DURABLE_NAMES = ('credentials.json', 'config.json', 'components.json', 'profiles.json', 'state.json')
+SECRET = 's' * 20 + 't' * 20
+MIRRORED_NAMES = ('config.json', 'components.json', 'profiles.json', 'state.json')
+
+
+class ReverseBox(object):
+
+    def available(self):
+        return True
+
+    def seal(self, secret):
+        return secret[::-1]
+
+    def open(self, sealed):
+        return sealed[::-1] if sealed else None
 
 
 class Clock(object):
@@ -83,9 +95,8 @@ class DurableTestCase(unittest.TestCase):
         storage = open_config(self.game, 'components.json', pretty=True, mirror_dir=self.appdata)
         return ComponentConfig(storage)
 
-    def open_credentials(self, clock=None):
-        storage = open_config(self.game, 'credentials.json', mirror_dir=self.appdata, clock=clock)
-        return CredentialStore(storage)
+    def open_credentials(self):
+        return CredentialStore(open_secret_pair(self.game, 'credentials.json', private_dir=self.appdata), ReverseBox())
 
 
 class MirroredFileTest(DurableTestCase):
@@ -205,14 +216,6 @@ class MirroredFileTest(DurableTestCase):
 
         self.assertEqual(self.open().read('gone'), 'gone')
 
-    @unittest.skipIf(sys.platform == 'win32', 'Windows has no owner-only mode bits; the per-user %APPDATA% ACL applies')
-    def test_credentials_are_owner_only(self):
-        self.open('credentials.json').write({'accounts': {}})
-
-        for directory in (self.game, self.appdata):
-            mode = stat.S_IMODE(os.stat(os.path.join(directory, 'credentials.json')).st_mode)
-            self.assertEqual(mode, 0o600)
-
     def test_cyrillic_folders(self):
         self.game = os.path.join(self.root, 'Игры', 'Мир танков', 'mods', 'configs', 'otmetki')
         self.appdata = os.path.join(self.root, 'Пользователь', 'AppData', 'Roaming', 'TriOtmetki')
@@ -228,7 +231,7 @@ class WipeAndRestoreTest(DurableTestCase):
 
     def test_binding_and_layout_survive_a_wiped_configs_folder(self):
         schema = Schema({'x': 10, 'visible': True})
-        self.open_credentials(self.clock).save(Credentials('device-1', SECRET, 42, 1700000000))
+        self.open_credentials().save(Credentials('device-1', SECRET, 42, 1700000000))
         self.open_components().section('damage_log', schema)
         config = self.open_components()
         config.section('damage_log', schema)
@@ -240,7 +243,42 @@ class WipeAndRestoreTest(DurableTestCase):
         layout = self.open_components()
         self.assertEqual(restored.get(42).device_id, 'device-1')
         self.assertEqual(layout.section('damage_log', schema).get('x'), 250)
-        self.assertTrue(os.path.exists(self.game_file('credentials.json')))
+        self.assertEqual(_read(self.game_file('credentials.json')), {
+            'accounts': {'42': {'device_id': 'device-1', 'account_id': 42}},
+        })
+
+
+class SecretPairTest(DurableTestCase):
+
+    def test_credentials_are_not_mirrored(self):
+        with self.assertRaises(ValueError):
+            open_config(self.game, 'credentials.json', mirror_dir=self.appdata)
+
+    def test_the_halves_live_in_the_two_folders(self):
+        pair = open_secret_pair(self.game, 'credentials.json', private_dir=self.appdata)
+
+        self.assertEqual(pair.public.path, self.game_file('credentials.json'))
+        self.assertIsInstance(pair.private, PrivateFile)
+        self.assertEqual(pair.private.path, self.durable_file('credentials.json'))
+
+    def test_no_durable_folder_means_no_private_half(self):
+        self.assertIsNone(open_secret_pair(self.game, 'credentials.json', private_dir=None).private)
+        self.assertIsNone(open_secret_pair(self.game, 'credentials.json', private_dir=self.game).private)
+
+    def test_the_secret_never_reaches_either_file_in_plain_text(self):
+        self.open_credentials().save(Credentials('device-1', SECRET, 42, 1700000000))
+
+        for path in (self.game_file('credentials.json'), self.durable_file('credentials.json')):
+            with io.open(path, 'r', encoding='utf-8') as handle:
+                self.assertNotIn(SECRET, handle.read())
+
+    @unittest.skipIf(sys.platform == 'win32', 'Windows has no owner-only mode bits; the per-user %APPDATA% ACL applies')
+    def test_the_private_half_is_owner_only(self):
+        pair = open_secret_pair(self.game, 'credentials.json', private_dir=self.appdata)
+        pair.private.write({'accounts': {}})
+
+        mode = stat.S_IMODE(os.stat(self.durable_file('credentials.json')).st_mode)
+        self.assertEqual(mode, 0o600)
 
 
 class OpenConfigTest(DurableTestCase):
@@ -256,7 +294,7 @@ class OpenConfigTest(DurableTestCase):
         self.assertIsInstance(storage, JsonFile)
 
     def test_durable_files_are_mirrored(self):
-        for name in DURABLE_NAMES:
+        for name in MIRRORED_NAMES:
             storage = open_config(self.game, name, mirror_dir=self.appdata)
 
             self.assertIsInstance(storage, MirroredFile)

@@ -6,10 +6,12 @@ client's wulf `WindowImpl` + `ViewImpl`, the same classes the settings window us
 windows in battle too (RU 1.45 client source: `PopOverWindow(..., WindowLayer.TOP_WINDOW)` in the prebattle
 ammunition panel, the Gameface tooltips of the battle full stats). UNVERIFIED on Lesta 1.45: that a
 non-modal WINDOW over the battle page takes no keyboard focus and passes the mouse through where the page
-has `pointer-events: none`. The window lives only in the hangar and the battle GUI spaces: it is closed when a
-space is left and opened again when the lobby or the battle is entered (a window opened on the login screen,
-before the lobby app, never showed in the 1.45.0.0 live test), and one the client destroyed is replaced on the
-next sync. Any failure to open marks the backend broken, and the chain moves on to GUIFlash.
+has `pointer-events: none`. The window lives only in the hangar and the battle GUI spaces: it opens with the first
+label of a space and stays open for the rest of it, also while no label is up (a lamp that blinks, a notice that
+comes and goes would reload the page every time), is closed when a space is left and opened again when the lobby or
+the battle is entered (a window opened on the login screen, before the lobby app, never showed in the 1.45.0.0 live
+test), and one the client destroyed is replaced on the next sync. Any failure to open marks the backend broken, and
+the chain moves on to GUIFlash.
 
 The window is opened a frame after the space was entered, never from inside the app loader's own space switch
 (onGUISpaceEntered fires while the lobby app is still being shown). On Lesta, OpenWG Gameface restarts the client
@@ -21,6 +23,7 @@ import os
 
 import BigWorld
 
+from ....events import Listeners
 from ....hud import HudBackend
 from ....hud.focus import FOCUS_GIVE_UP, FOCUS_HAND_ON, FocusReturn, WindowInfo, focus_target
 from ....hud.icons import resolve
@@ -186,9 +189,9 @@ class GamefaceBackend(HudBackend):
         self.window = None
         self.view = None
         self.broken = False
-        self.listeners = []
-        self.press_listeners = []
-        self.drawn_listeners = []
+        self.listeners = Listeners('HUD move listener')
+        self.press_listeners = Listeners('HUD press listener')
+        self.drawn_listeners = Listeners('HUD drawn listener')
         self.drawn = None
         self.cursor = False
         self.seen_edit = False
@@ -245,8 +248,7 @@ class GamefaceBackend(HudBackend):
         return self.drawn if self.view is not None else None
 
     def listen_drawn(self, on_drawn):
-        if on_drawn not in self.drawn_listeners:
-            self.drawn_listeners.append(on_drawn)
+        self.drawn_listeners.add(on_drawn)
 
     def _set_drawn(self, drawn):
         if drawn == self.drawn:
@@ -254,22 +256,19 @@ class GamefaceBackend(HudBackend):
         self.drawn = drawn
         if drawn is not None:
             log('HUD: the page draws %s' % (', '.join(sorted(drawn)) or 'nothing'))
-        for listener in list(self.drawn_listeners):
-            listener()
+        self.drawn_listeners.notify()
 
     def delete(self, alias):
         return self.surface.delete(alias) and self.sync()
 
     def listen(self, on_moved):
-        if on_moved not in self.listeners:
-            self.listeners.append(on_moved)
+        self.listeners.add(on_moved)
 
     def draws_buttons(self):
         return True
 
     def listen_press(self, on_press):
-        if on_press not in self.press_listeners:
-            self.press_listeners.append(on_press)
+        self.press_listeners.add(on_press)
 
     def set_modifier(self, mode):
         self.modifier.set_mode(mode)
@@ -297,7 +296,7 @@ class GamefaceBackend(HudBackend):
     @safe
     def sync(self):
         if not self.surface.aliases(current_space()):
-            self.close()
+            self.push_state()
             return True
         if not self.gui_ready():
             if not self.waiting:
@@ -340,6 +339,7 @@ class GamefaceBackend(HudBackend):
             self.window = None
             return False
         self.waiting = False
+        self.answered = False
         self.seen_edit = False
         self.seen_mouse = set()
         self.whole_area = None
@@ -351,6 +351,7 @@ class GamefaceBackend(HudBackend):
     @safe
     def close(self):
         window, self.window, self.view = self.window, None, None
+        self.answered = False
         self._set_drawn(None)
         if window is not None:
             log('HUD: Gameface window %s closed' % window.uniqueID)
@@ -417,6 +418,7 @@ class GamefaceBackend(HudBackend):
         if self.view is view or self.view is None:
             self.view = None
             self.window = None
+            self.answered = False
             self._set_drawn(None)
 
     @safe
@@ -458,13 +460,11 @@ class GamefaceBackend(HudBackend):
         self._set_drawn(frozenset(fields['ids']))
 
     def _on_page_press(self, fields):
-        for listener in list(self.press_listeners):
-            listener(fields['id'])
+        self.press_listeners.notify(fields['id'])
 
     def _on_page_move(self, fields):
         props = dict((key, value) for key, value in fields.items() if key != 'id')
-        for listener in list(self.listeners):
-            listener(fields['id'], props)
+        self.listeners.notify(fields['id'], props)
 
     def _listen_spaces(self):
         loader, ids = gui_spaces()

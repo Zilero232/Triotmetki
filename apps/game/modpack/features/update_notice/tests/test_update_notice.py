@@ -100,6 +100,15 @@ class UpdateTest(unittest.TestCase):
         assert clean_release({'status': 'compatible', 'release': None}) is None
         assert clean_release(None) is None
 
+    def test_a_version_with_markup_is_no_release(self):
+        assert clean_release(answer(version='0.2.0<font size="40">x</font>')) is None
+
+    def test_a_version_with_text_after_the_numbers_is_no_release(self):
+        assert clean_release(answer(version='0.2.0 download here')) is None
+
+    def test_a_prerelease_version_is_kept(self):
+        assert clean_release(answer(version='0.2.0-beta.1'))['version'] == '0.2.0-beta.1'
+
     def test_versions_compare_as_numbers(self):
         assert version_key('0.10.0') > version_key('0.9.9')
         assert version_key('1.2.3-beta') == (1, 2, 3)

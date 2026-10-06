@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.editor import editor_spec, sample
 from ....core.hud.icons import image
-from ..settings import CIRCLE_PANEL_ID
+from ..settings import CIRCLE_PANEL_ID, PANEL_ID
 from . import mark_image
 from .constants import (
     CIRCLE_CHOSEN,
@@ -24,14 +24,9 @@ def _thumbs(settings):
 
 
 def editor(settings, translate):
-    return {
-        'groups': [
-            {'id': group, 'label': translate('crosshair_group_%s' % group), 'keys': list(keys)}
-            for group, keys in EDITOR_GROUPS
-        ],
-        'icons': {EDITOR_GALLERY_KEY: _thumbs(settings)},
-        'swatches': {EDITOR_SWATCH_KEY: dict(MARK_SWATCHES)},
-    }
+    icons = {EDITOR_GALLERY_KEY: _thumbs(settings)}
+    swatches = {EDITOR_SWATCH_KEY: dict(MARK_SWATCHES)}
+    return editor_spec(PANEL_ID, EDITOR_GROUPS, translate, icons=icons, swatches=swatches)
 
 
 # The smaller aim circle's page: the game's circle beside the chosen size, so the player sees how much smaller it gets.

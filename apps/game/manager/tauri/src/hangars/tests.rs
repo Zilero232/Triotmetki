@@ -7,7 +7,7 @@ use zip::write::SimpleFileOptions;
 
 use super::client_files::{read_sources, ClientFiles, SourceKind};
 use super::generate::{self, BuildInput, PlanInput};
-use super::packed_xml::{decode, encode, is_packed, Document, Node, PackedXmlError, Value};
+use super::packed_xml::{decode, encode, is_packed, Document, Node, PackedXmlError, Value, MAGIC, MAX_DEPTH, MAX_NODES};
 use super::recipe::{self, convert, look_guid, parse, GateInput};
 use super::*;
 use crate::catalog::fixtures::catalog_json;
@@ -364,6 +364,85 @@ fn refuses_what_is_not_a_plain_packed_xml() {
     assert_eq!(decode(b"<root/>"), Err(PackedXmlError::NotPacked));
     assert_eq!(decode(&encrypted), Err(PackedXmlError::Encrypted));
     assert_eq!(decode(&packed(root(vec![Node::leaf("v", text("x"))]))[..12]), Err(PackedXmlError::Truncated));
+}
+
+fn chain(depth: usize) -> Node {
+    (0..depth).fold(Node::leaf("leaf", text("x")), |inner, _| Node::element("n", Value::Int(0), vec![inner]))
+}
+
+fn aliasing_bomb(levels: usize, fan: u16) -> Vec<u8> {
+    let mut bytes = MAGIC.to_le_bytes().to_vec();
+
+    bytes.push(0);
+    bytes.extend(b"n\0\0");
+
+    for level in 0..levels {
+        let last = level + 1 == levels;
+
+        bytes.extend((if last { 0 } else { fan }).to_le_bytes());
+        bytes.extend((1u32 << 28).to_le_bytes());
+
+        if !last {
+            for _ in 0..fan {
+                bytes.extend(0u16.to_le_bytes());
+                bytes.extend(0u32.to_le_bytes());
+            }
+        }
+    }
+
+    bytes
+}
+
+#[test]
+fn refuses_nesting_deeper_than_the_cap() {
+    assert!(decode(&packed(chain(MAX_DEPTH + 1))).is_ok());
+    assert_eq!(decode(&packed(chain(MAX_DEPTH + 2))), Err(PackedXmlError::TooDeep));
+}
+
+#[test]
+fn refuses_children_that_alias_one_offset() {
+    assert_eq!(decode(&aliasing_bomb(8, 64)), Err(PackedXmlError::Offsets));
+}
+
+#[test]
+fn refuses_more_nodes_than_the_budget() {
+    let wide = |count: usize| Node::element("e", Value::Int(0), (0..count).map(|_| Node::leaf("v", Value::Int(0))).collect());
+    let per_element = usize::from(u16::MAX);
+    let elements = MAX_NODES / per_element + 1;
+    let tree = root((0..elements).map(|_| wide(per_element)).collect());
+
+    assert_eq!(decode(&packed(tree)), Err(PackedXmlError::TooManyNodes));
+}
+
+#[test]
+fn survives_every_single_byte_corruption_of_a_nested_document() {
+    let bytes = packed(root(vec![
+        Node::element("a", text("own"), vec![Node::element("b", Value::Int(7), vec![Node::leaf("c", floats(&[1.0, 2.0]))])]),
+        Node::leaf("d", Value::Bool(true)),
+    ]));
+
+    for at in 0..bytes.len() {
+        for value in [0x00, 0x01, 0x7F, 0xFF] {
+            let mut corrupted = bytes.clone();
+
+            corrupted[at] = value;
+            let _ = decode(&corrupted);
+        }
+    }
+}
+
+#[test]
+fn caps_the_bytes_copied_from_a_client_file() {
+    let game = Game::new(&[]);
+    let path = format!("spaces/{SPACE}/big.bin");
+
+    write_zip(&game.client.mods_dir.join("other.mod_1.0.mtmod"), &[(&format!("res/{path}"), vec![7; 64])]);
+
+    let files = ClientFiles::open(&game.client);
+    let located = files.list(&format!("spaces/{SPACE}/")).into_iter().find(|located| located.path.ends_with("big.bin")).unwrap();
+
+    assert_eq!(files.copy(&located, &mut Vec::new(), 64).unwrap(), 64);
+    assert!(files.copy(&located, &mut Vec::new(), 63).is_err());
 }
 
 #[test]

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.compat import is_int, string_types, to_text
+from ....core.compat import clean_text, int_or_none
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, font, format_number
 from .battles import battle_lines
 from .constants import DIVISION_LETTERS, LEGEND_RANK, MAX_SKILL, RANK_IDS, THRESHOLD_RANKS, TITLE_SIZE_STEP
@@ -12,33 +12,20 @@ from .constants import DIVISION_LETTERS, LEGEND_RANK, MAX_SKILL, RANK_IDS, THRES
 # 2026-10-05-stock-replacement.md).
 
 
-def _int(value, low=None):
-    if not is_int(value) or isinstance(value, bool):
-        return None
-    if low is not None and value < low:
-        return None
-    return value
-
-
 def clean_division(item):
     if not isinstance(item, dict):
         return None
-    rank = _int(item.get('rank'))
-    index = _int(item.get('index'))
-    begin = _int(item.get('begin'), 0)
+    rank = int_or_none(item.get('rank'))
+    index = int_or_none(item.get('index'))
+    begin = int_or_none(item.get('begin'), 0)
     if rank not in RANK_IDS or index not in DIVISION_LETTERS or begin is None:
         return None
-    return {'rank': rank, 'index': index, 'begin': begin, 'elite_percent': _int(item.get('elite_percent'), 0) or 0}
+    elite_percent = int_or_none(item.get('elite_percent'), 0) or 0
+    return {'rank': rank, 'index': index, 'begin': begin, 'elite_percent': elite_percent}
 
 
 def division_key(step):
     return step['rank'], -step['index']
-
-
-def _skill(value):
-    if not isinstance(value, string_types):
-        return None
-    return to_text(value).strip()[:MAX_SKILL] or None
 
 
 def clean_state(raw):
@@ -49,7 +36,7 @@ def clean_state(raw):
         'division': clean_division(raw.get('division')),
         'divisions': sorted((step for step in divisions if step), key=division_key),
         'qualification': bool(raw.get('qualification')),
-        'skill': _skill(raw.get('skill')),
+        'skill': clean_text(raw.get('skill'), MAX_SKILL),
     }
 
 

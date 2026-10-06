@@ -8,7 +8,7 @@ use serde::Serialize;
 
 pub use install::{apply_packages, fetch_packages, install_targets, ApplyInput, FetchedPackage};
 pub use migrate::{migrate, MigrateInput};
-pub use stage::{commit_journal, recover_commit, stage, StagedFile};
+pub use stage::{commit_journal, recover_commit, stage, RecoverInput, StagedFile};
 
 use crate::catalog::Localized;
 use crate::detect::GameVersion;
@@ -97,12 +97,23 @@ pub fn is_newer(candidate: &str, installed: Option<&str>) -> bool {
     }
 }
 
+pub fn is_downgrade(candidate: &str, installed: Option<&str>) -> bool {
+    installed.is_some_and(|installed| match (semver::Version::parse(candidate), semver::Version::parse(installed)) {
+        (Ok(candidate), Ok(installed)) => candidate < installed,
+        _ => false,
+    })
+}
+
 pub fn plan(input: PlanInput) -> PatchAction {
     let patched = input.recorded_game.is_some_and(|recorded| recorded != input.current_game);
     let Some(latest) = input.latest else {
         return if patched { PatchAction::Offline } else { PatchAction::Nothing };
     };
     let compatible = latest.release.as_ref().filter(|_| latest.status == ReleaseStatus::Compatible);
+
+    if let Some(release) = compatible.filter(|release| is_downgrade(&release.version, input.installed_modpack)) {
+        log::warn!("the offered release {} is older than the installed {}", release.version, input.installed_modpack.unwrap_or_default());
+    }
 
     match (compatible, patched) {
         (Some(release), true) if is_newer(&release.version, input.installed_modpack) => PatchAction::Install(release.clone()),

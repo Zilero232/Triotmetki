@@ -1,3 +1,4 @@
+import { remBox } from '@/shared/lib/css-unit';
 import { ClientIcon } from '@/ui-kit';
 
 import type { CrosshairWidgetProps } from './CrosshairWidget.types';
@@ -11,10 +12,7 @@ export const CrosshairWidget = ({ data }: CrosshairWidgetProps) => {
   const readouts = data.readouts;
 
   return (
-    <div
-      className={s.canvas}
-      style={{ width: `${String(RETICLE_READOUTS.canvas.width)}rem`, height: `${String(RETICLE_READOUTS.canvas.height)}rem` }}
-    >
+    <div className={s.canvas} style={remBox(RETICLE_READOUTS.canvas)}>
       {data.sketch && <ReticleSketch circle={data.circle} hidesCentre={data.hides_centre} />}
       {readouts?.arcs && <ReticleArcs arcs={readouts.arcs} />}
       <div className={s.centre}>

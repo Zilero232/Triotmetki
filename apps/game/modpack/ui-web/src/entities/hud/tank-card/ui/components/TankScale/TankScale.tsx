@@ -1,5 +1,7 @@
 import clsx from 'clsx';
 
+import { fillScaleStyle, slideStyle } from '@/shared/lib/bar-fill';
+
 import type { TankScaleProps } from './TankScale.types';
 
 import { scaleMarks, scalePosition } from '../../../lib/tank-card-view';
@@ -15,13 +17,17 @@ export const TankScale = ({ data }: TankScaleProps) => {
   return (
     <div className={clsx(s.scale, data.thresholds.length === 0 && s.bare)}>
       <div className={s.track}>
-        {position !== null && <div className={s.fill} style={{ width: `${String(position)}%` }} />}
+        {position !== null && <div className={s.fill} style={fillScaleStyle(position / 100)} />}
         {marks
           .filter((mark) => !mark.isEnd)
           .map((mark) => (
             <span key={mark.level} className={s.gap} style={at(mark.at)} />
           ))}
-        {position !== null && <span className={s.cursor} style={at(position)} />}
+        {position !== null && (
+          <span className={s.slide} style={slideStyle(position)}>
+            <span className={s.cursor} />
+          </span>
+        )}
       </div>
       {marks.map((mark) => (
         <span key={mark.level} className={clsx(s.mark, mark.isEnd && s.end)} style={mark.isEnd ? undefined : at(mark.at)}>

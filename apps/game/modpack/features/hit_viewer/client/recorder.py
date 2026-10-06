@@ -18,7 +18,8 @@ from ....core.client.battle import (
 )
 from ....core.client.game import values_by_name
 from ....core.log import log, safe
-from ..model import BOOK_FILE, MODULE_KEYS, OWN_TARGET, SIDE_DEALT, SIDE_RECEIVED, HitBook, battle_result, gun_shell
+from ....core.own_result import own_result
+from ..model import BOOK_FILE, MODULE_KEYS, OWN_TARGET, SIDE_DEALT, SIDE_RECEIVED, HitBook, gun_shell
 from .constants import SIDE_BY_EVENT
 
 
@@ -126,7 +127,7 @@ class HitRecorder(object):
             self.book.save()
 
     def _on_battle_results(self, arena_id, results):
-        if self.book is not None and self.book.resolved(arena_id, battle_result(results)):
+        if self.book is not None and self.book.resolved(arena_id, own_result(results)):
             self.book.save()
             self.component.screen.battles_changed()
 

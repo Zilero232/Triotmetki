@@ -4,7 +4,9 @@ import re
 
 MAGIC = 0x11343212
 MAX_BLOCKS = 16
-MAX_HEADER_BLOCK_BYTES = 16 * 1024 * 1024
+# Byte caps of the header blocks by index (the last one covers any later block): the arena block, then the battle
+# results. 169 RU 1.45 replays peak at 47 KB and 163 KB (15 vs 15); 1 and 4 MiB leave room for 30 vs 30 modes.
+MAX_HEADER_BLOCK_BYTES = (1024 * 1024, 4 * 1024 * 1024)
 EXTENSIONS = ('.mtreplay', '.wotreplay')
 # The recording in progress (BattleReplay.record, RU 1.45 :339-342): temp.mtreplay, or temp1..temp99 when that one is
 # taken.

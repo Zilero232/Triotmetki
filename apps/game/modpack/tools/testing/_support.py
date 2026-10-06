@@ -24,6 +24,7 @@ CONTRACT_DIR = os.path.join(MODPACK_DIR, 'contract')
 FIXTURES_DIR = os.path.join(PACKAGES_DIR, 'companion', 'tests', 'fixtures')
 ROOT_PACKAGE = 'otmetki'
 VENDOR_DIR = os.path.join(PACKAGES_DIR, 'core', 'vendor')
+BUILD_DIR = os.path.join(MODPACK_DIR, 'tools', 'build')
 
 
 # The client's own site module (res/scripts/common/bw_site.py) switches the default encoding to UTF-8 at start-up, so
@@ -75,6 +76,16 @@ def drop_modules(names):
         module = sys.modules.pop(name, None)
         if module is not None:
             _DROPPED_MODULES.append(module)
+
+
+GAME_VENDOR_PACKAGE = 'gui.mods.otmetki.core.vendor'
+
+
+def drop_game_modules(roots):
+    """Drops the stubbed client modules under `roots` and the modpack loaded among them (`gui.mods.otmetki`), except
+    the vendored libraries: six, attrs, blinker and enum34 hold no state of the mod, so one import serves every game."""
+    loaded = [name for name in sys.modules if name.split('.')[0] in roots]
+    drop_modules([name for name in loaded if not name.startswith(GAME_VENDOR_PACKAGE)])
 
 
 def forget_modules(prefixes):
@@ -201,19 +212,43 @@ class FakeTransport(object):
         return 0
 
 
+class _RecordingTransport(object):
+
+    def __init__(self, on_request):
+        self.on_request = on_request
+
+    def request(self, method, url, headers, body, callback):
+        self.on_request(method, url, headers, body, callback)
+
+    def poll(self):
+        return 0
+
+
+TRANSPORT_MODULE = 'gui.mods.otmetki.core.client.transport'
+
+
+def install_transport(on_request):
+    """Replaces the app's transport factory (core.client.transport, urllib on a worker thread) for the client smoke
+    tests: every request goes to `on_request(method, url, headers, body, callback)` and nothing reaches the network.
+    Install it before the app is imported; dropping the `gui` modules removes it."""
+    stub = types.ModuleType(str(TRANSPORT_MODULE))
+    stub.create_transport = lambda: _RecordingTransport(on_request)
+    sys.modules[TRANSPORT_MODULE] = stub
+    link_to_parent(TRANSPORT_MODULE)
+    return stub
+
+
 WIDGET_FIXTURES_DIR = os.path.join(
     MODPACK_DIR, 'ui-web', 'src', 'shared', 'api', 'hud-protocol', '_tests', 'fixtures', 'widgets',
 )
 
 
-def _write_widget_fixture(path, payload):
-    text = json.dumps(payload, sort_keys=True, indent=2, ensure_ascii=False) + '\n'
-    if not isinstance(text, type(u'')):
-        text = text.decode('utf-8')
-    if not os.path.isdir(WIDGET_FIXTURES_DIR):
-        os.makedirs(WIDGET_FIXTURES_DIR)
-    with io.open(path, 'w', encoding='utf-8', newline='\n') as handle:
-        handle.write(text)
+def write_fixture(path, payload):
+    """Writes a JSON fixture the ui-web tests read, as the build writes its JSON (tools/build/fileio.json_text)."""
+    if BUILD_DIR not in sys.path:
+        sys.path.append(BUILD_DIR)
+    import fileio
+    fileio.write_json(path, payload, sort_keys=True)
 
 
 def widget_fixture(kind, payload):
@@ -221,7 +256,7 @@ def widget_fixture(kind, payload):
     tests render; OTMETKI_UPDATE_FIXTURES=1 rewrites it. Returns whether they match."""
     path = os.path.join(WIDGET_FIXTURES_DIR, '%s.sample.json' % kind)
     if os.environ.get('OTMETKI_UPDATE_FIXTURES') == '1':
-        _write_widget_fixture(path, payload)
+        write_fixture(path, payload)
     if not os.path.isfile(path):
         return False
     return load_json(path) == json.loads(json.dumps(payload))

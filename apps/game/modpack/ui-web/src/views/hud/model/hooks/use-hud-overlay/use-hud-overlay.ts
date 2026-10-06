@@ -1,14 +1,10 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 import type { DragTarget } from '@/entities/hud/panel-layout';
 
 import { usePanelDrag, useWheelResize } from '@/features/hud/edit-panels';
-import { sendHud } from '@/shared/api/hud-protocol';
+import { remBox } from '@/shared/lib/css-unit';
 
-import type { LabelLayout } from '../../../lib/label-layout';
-import type { HudLabelModel } from './use-hud-overlay.types';
-
-import { HUD_OVERLAY } from '../../../config';
 import { layoutLabels } from '../../../lib/label-layout';
 import { createMouseReport } from '../../../lib/mouse-report';
 import { panelHint } from '../../../lib/panel-hint';
@@ -17,6 +13,7 @@ import { useHoveredPanel } from '../use-hovered-panel';
 import { useHudScreen } from '../use-hud-screen';
 import { useHudState } from '../use-hud-state';
 import { useInputArea } from '../use-input-area';
+import { useLabelModels } from '../use-label-models';
 import { usePanelContent } from '../use-panel-content';
 import { usePanelSizes } from '../use-panel-sizes';
 
@@ -33,27 +30,15 @@ export const useHudOverlay = () => {
   useWheelResize(pointerInput);
 
   const { panels, lines, widgets } = usePanelContent(state);
-  const { sizes, measureRef } = usePanelSizes({ lines, widgets });
-  const layouts = layoutLabels({ panels, sizes, scales, overrides, screen, live, edit, widgets });
+  const { sizes, measureRef } = usePanelSizes({ panels, lines, widgets });
+  const layouts = useMemo(
+    () => layoutLabels({ panels, sizes, scales, overrides, screen, live, edit, widgets }),
+    [panels, sizes, scales, overrides, screen, live, edit, widgets]
+  );
+
+  const labels = useLabelModels({ layouts, lines, widgets, liveId: live?.id ?? null, measureRef });
 
   useDrawnReport(layouts);
-
-  const labelOf = ({ panel, id, style, button, movable, pointer }: LabelLayout): HudLabelModel => ({
-    panel,
-    lines: lines.get(id) ?? [],
-    widget: widgets.get(id) ?? null,
-    style,
-    button,
-    interactive: button || movable || pointer,
-    framed: movable,
-    dragging: live?.id === id,
-    measureRef: measureRef(id),
-    onClick: () => {
-      if (button && !movable) {
-        sendHud({ type: 'pressed', id });
-      }
-    }
-  });
 
   targetsRef.current = layouts.map(({ id, rect, button, movable, pointer, scale }) => ({ id, rect, button, movable, pointer, scale }));
 
@@ -65,10 +50,10 @@ export const useHudOverlay = () => {
   const hint = panelHint(live === null ? layouts.find(({ id, panel }) => id === hovered && panel.visible) : undefined);
 
   return {
-    labels: layouts.map(labelOf),
+    labels,
     hint,
     edit,
     screen,
-    style: { width: `${screen.width}${HUD_OVERLAY.unit}`, height: `${screen.height}${HUD_OVERLAY.unit}` }
+    style: remBox(screen)
   };
 };

@@ -8,6 +8,9 @@ pub const HEADER_LENGTH: usize = 5;
 pub const DESCRIPTOR_LENGTH: usize = 4;
 pub const CHILD_DESCRIPTOR_LENGTH: usize = 6;
 pub const FLOAT_LENGTH: usize = 4;
+pub const ELEMENT_HEADER_LENGTH: usize = 2 + DESCRIPTOR_LENGTH;
+pub const MAX_DEPTH: usize = 64;
+pub const MAX_NODES: usize = 1 << 20;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DataType {
@@ -63,6 +66,10 @@ pub enum PackedXmlError {
     Name(String),
     #[error("the packed XML is too large to encode")]
     TooLarge,
+    #[error("the packed XML nests deeper than {MAX_DEPTH} elements")]
+    TooDeep,
+    #[error("the packed XML has more than {MAX_NODES} nodes")]
+    TooManyNodes,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -168,44 +175,60 @@ pub fn is_packed(bytes: &[u8]) -> bool {
 }
 
 struct Reader<'a> {
-    data: &'a [u8],
     names: &'a [String],
+    nodes: usize,
+}
+
+fn slice(data: &[u8], start: usize, end: usize) -> Result<&[u8], PackedXmlError> {
+    data.get(start..end).ok_or(PackedXmlError::Truncated)
+}
+
+fn u16_at(data: &[u8], at: usize) -> Result<u16, PackedXmlError> {
+    let bytes = slice(data, at, at + 2)?;
+
+    Ok(u16::from_le_bytes([bytes[0], bytes[1]]))
+}
+
+fn u32_at(data: &[u8], at: usize) -> Result<u32, PackedXmlError> {
+    let bytes = slice(data, at, at + DESCRIPTOR_LENGTH)?;
+
+    Ok(u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]))
 }
 
 impl Reader<'_> {
-    fn slice(&self, start: usize, end: usize) -> Result<&[u8], PackedXmlError> {
-        self.data.get(start..end).ok_or(PackedXmlError::Truncated)
+    fn count_node(&mut self) -> Result<(), PackedXmlError> {
+        self.nodes += 1;
+
+        if self.nodes > MAX_NODES {
+            return Err(PackedXmlError::TooManyNodes);
+        }
+
+        Ok(())
     }
 
-    fn u16_at(&self, at: usize) -> Result<u16, PackedXmlError> {
-        let bytes = self.slice(at, at + 2)?;
+    fn element(&mut self, data: &[u8], name: String, depth: usize) -> Result<Node, PackedXmlError> {
+        if depth > MAX_DEPTH {
+            return Err(PackedXmlError::TooDeep);
+        }
 
-        Ok(u16::from_le_bytes([bytes[0], bytes[1]]))
-    }
+        self.count_node()?;
 
-    fn u32_at(&self, at: usize) -> Result<u32, PackedXmlError> {
-        let bytes = self.slice(at, at + DESCRIPTOR_LENGTH)?;
-
-        Ok(u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]))
-    }
-
-    fn element(&self, at: usize, name: String) -> Result<Node, PackedXmlError> {
-        let count = usize::from(self.u16_at(at)?);
-        let own = self.u32_at(at + 2)?;
-        let descriptors_at = at + 2 + DESCRIPTOR_LENGTH;
-        let base = descriptors_at + count * CHILD_DESCRIPTOR_LENGTH;
+        let count = usize::from(u16_at(data, 0)?);
+        let own = u32_at(data, 2)?;
+        let base = ELEMENT_HEADER_LENGTH + count * CHILD_DESCRIPTOR_LENGTH;
+        let body = slice(data, base, data.len())?;
         let own_end = (own & OFFSET_MASK) as usize;
         let value = match DataType::from_bits(own >> TYPE_SHIFT)? {
             DataType::Element => return Err(PackedXmlError::ElementValue),
-            kind => decode_value(kind, self.slice(base, base + own_end)?)?,
+            kind => decode_value(kind, slice(body, 0, own_end)?)?,
         };
         let mut children = Vec::with_capacity(count);
         let mut previous = own_end;
 
         for index in 0..count {
-            let descriptor_at = descriptors_at + index * CHILD_DESCRIPTOR_LENGTH;
-            let name_index = self.u16_at(descriptor_at)?;
-            let descriptor = self.u32_at(descriptor_at + 2)?;
+            let descriptor_at = ELEMENT_HEADER_LENGTH + index * CHILD_DESCRIPTOR_LENGTH;
+            let name_index = u16_at(data, descriptor_at)?;
+            let descriptor = u32_at(data, descriptor_at + 2)?;
             let end = (descriptor & OFFSET_MASK) as usize;
             let child_name = self.names.get(usize::from(name_index)).cloned().ok_or(PackedXmlError::UnknownName(name_index))?;
 
@@ -213,12 +236,14 @@ impl Reader<'_> {
                 return Err(PackedXmlError::Offsets);
             }
 
+            let raw = slice(body, previous, end)?;
             let child = match DataType::from_bits(descriptor >> TYPE_SHIFT)? {
-                DataType::Element => {
-                    self.slice(base + previous, base + end)?;
-                    self.element(base + previous, child_name)?
+                DataType::Element if raw.len() < ELEMENT_HEADER_LENGTH => return Err(PackedXmlError::Offsets),
+                DataType::Element => self.element(raw, child_name, depth + 1)?,
+                kind => {
+                    self.count_node()?;
+                    Node::leaf(&child_name, decode_value(kind, raw)?)
                 }
-                kind => Node::leaf(&child_name, decode_value(kind, self.slice(base + previous, base + end)?)?),
             };
 
             children.push(child);
@@ -285,7 +310,7 @@ pub fn decode(data: &[u8]) -> Result<Document, PackedXmlError> {
         at = end + 1;
     }
 
-    let root = Reader { data, names: &names }.element(at, String::new())?;
+    let root = Reader { names: &names, nodes: 0 }.element(slice(data, at, data.len())?, String::new(), 0)?;
 
     Ok(Document { names, root })
 }

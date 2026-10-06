@@ -3,10 +3,14 @@ import type { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import type { Request, Response } from 'express';
 
 import express from 'express';
-import { lastValueFrom, of } from 'rxjs';
+import RedisMock from 'ioredis-mock';
+import { existsSync } from 'node:fs';
+import { lastValueFrom, Observable, of } from 'rxjs';
 import request from 'supertest';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
+
+import type { UploadRequest } from '../replay-file.interceptor.types';
 
 import { REPLAY_UPLOAD } from '../../config/upload.constants';
 import { ReplayFileInterceptor } from '../replay-file.interceptor';
@@ -23,14 +27,14 @@ const contextOf = ({ req, res }: { req: Request; res: Response }) => {
   return context;
 };
 
-const appWithInterceptor = () => {
-  const interceptor = new ReplayFileInterceptor();
+const appWithInterceptor = (handle: (req: UploadRequest) => Observable<unknown> = () => of(null)) => {
+  const interceptor = new ReplayFileInterceptor(new RedisMock());
   const app = express();
 
   app.post('/replays', (req, res) => {
     const next = mock<CallHandler>();
 
-    next.handle.mockReturnValue(of(null));
+    next.handle.mockImplementation(() => handle(req));
 
     Promise.resolve(interceptor.intercept(contextOf({ req, res }), next))
       .then(lastValueFrom)
@@ -43,6 +47,8 @@ const appWithInterceptor = () => {
   return app;
 };
 
+const upload = (app: express.Express) => request(app).post('/replays').attach(REPLAY_UPLOAD.field, Buffer.from('replay'), 'battle.mtreplay');
+
 describe('ReplayFileInterceptor', () => {
   it('accepts a replay with the visibility field', async () => {
     const response = await request(appWithInterceptor())
@@ -54,13 +60,13 @@ describe('ReplayFileInterceptor', () => {
   });
 
   it('refuses a request stuffed with form fields instead of buffering them all in memory', async () => {
-    let upload = request(appWithInterceptor()).post('/replays');
+    let stuffed = request(appWithInterceptor()).post('/replays');
 
     for (let index = 0; index < 20; index += 1) {
-      upload = upload.field(`junk${index}`, 'x');
+      stuffed = stuffed.field(`junk${index}`, 'x');
     }
 
-    const response = await upload.attach(REPLAY_UPLOAD.field, Buffer.from('replay'), 'battle.mtreplay');
+    const response = await stuffed.attach(REPLAY_UPLOAD.field, Buffer.from('replay'), 'battle.mtreplay');
 
     expect(response.status).toBe(400);
   });
@@ -72,5 +78,61 @@ describe('ReplayFileInterceptor', () => {
       .attach(REPLAY_UPLOAD.field, Buffer.from('replay'), 'battle.mtreplay');
 
     expect(response.status).toBe(400);
+  });
+
+  it('spools the replay to a temporary file and removes it once the request is handled', async () => {
+    const paths: string[] = [];
+
+    await upload(
+      appWithInterceptor((req) => {
+        paths.push(req.file?.path ?? '');
+
+        return of(null);
+      })
+    );
+
+    expect(paths).toHaveLength(1);
+    await vi.waitFor(() => expect(existsSync(paths[0] ?? '')).toBe(false));
+  });
+
+  it('removes the temporary file when the handler fails', async () => {
+    const paths: string[] = [];
+
+    const response = await upload(
+      appWithInterceptor((req) => {
+        paths.push(req.file?.path ?? '');
+
+        return new Observable((subscriber) => subscriber.error(new Error('storage down')));
+      })
+    );
+
+    expect(response.status).toBe(500);
+    await vi.waitFor(() => expect(existsSync(paths[0] ?? '')).toBe(false));
+  });
+
+  it('refuses an upload past the concurrent uploads allowed to one owner', async () => {
+    const pending: (() => void)[] = [];
+    const app = appWithInterceptor(
+      () =>
+        new Observable((subscriber) => {
+          pending.push(() => {
+            subscriber.next(null);
+            subscriber.complete();
+          });
+        })
+    );
+
+    const running = Array.from({ length: REPLAY_UPLOAD.concurrency.perOwner }, () => upload(app).then((response) => response.status));
+
+    while (pending.length < REPLAY_UPLOAD.concurrency.perOwner) {
+      await new Promise((resolve) => setImmediate(resolve));
+    }
+
+    const refused = await upload(app);
+
+    pending.forEach((complete) => complete());
+
+    expect(refused.status).toBe(429);
+    await expect(Promise.all(running)).resolves.toEqual(Array.from({ length: REPLAY_UPLOAD.concurrency.perOwner }).fill(200));
   });
 });

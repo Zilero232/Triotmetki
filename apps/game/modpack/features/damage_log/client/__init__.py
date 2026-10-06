@@ -25,15 +25,14 @@ from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.hud.stock import BATTLE_DAMAGE_LOG_PANEL
 from ....core.log import log, safe
 from ....core.shells import shell_code
+from .. import settings
 from ..i18n import STRINGS
-from ..model import DamageLog, Hit
+from ..model import DamageLog, Hit, preview
 from ..model.constants import PREVIEW_SIZE
-from ..model.preview import preview_text, preview_widget
 from ..model.received import is_ricochet
 from ..model.shots import own_shot_health
 from ..model.text import format_damage_log
 from ..model.widget import damage_log_widget
-from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .constants import AMMO_RACK_DEVICE, AMMO_RACK_STATES, CRIT_KINDS, DEALT_KINDS, EVENT_KINDS
 
 try:
@@ -72,15 +71,7 @@ def event_hit(vehicle_id, extra, now):
     )
 
 
-PANEL_SPEC = PanelSpec(
-    panel_id=PANEL_ID,
-    schema=SCHEMA,
-    switch=SWITCH,
-    strings=STRINGS,
-    preview_size=PREVIEW_SIZE,
-    preview_text=preview_text,
-    preview_widget=preview_widget,
-)
+PANEL_SPEC = PanelSpec.of(settings, STRINGS, preview, PREVIEW_SIZE)
 
 
 class DamageLogPanel(BattlePanel):

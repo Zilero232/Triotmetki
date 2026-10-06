@@ -26,7 +26,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import json
 
-from ...codec import canonical_json
 from ...compat import is_number, string_types, to_text
 from ..panel.constants import ATTACH_KINDS
 from .constants import (
@@ -36,6 +35,7 @@ from .constants import (
     COVERS,
     DOCK_NUMBERS,
     HUD_COMMANDS,
+    HUD_JSON,
     HUD_MAX_DRAWN,
     HUD_MAX_MESSAGE_CHARS,
     HUD_MESSAGE_ARG,
@@ -220,28 +220,47 @@ def _summary_entry(panel):
     return entry if panel['visible'] else entry + SUMMARY_HIDDEN
 
 
+_MISSING = object()
+
+
+# A dict sent again as the same object may have changed inside, so it always counts as a change.
+def _changes(props, update):
+    for key, value in update.items():
+        old = props.get(key, _MISSING)
+        if old != value or (isinstance(value, dict) and value is old):
+            return True
+    return False
+
+
+# A push happens up to once a frame: each panel's JSON is kept until its props change and the state joins the kept ones.
 class HudSurface(object):
 
     def __init__(self):
         self.labels = {}
         self.order = []
+        self.fragments = {}
 
     def create(self, alias, props, space):
         if alias not in self.labels:
             self.order.append(alias)
         self.labels[alias] = {'props': dict(props or {}), 'space': space}
+        self.fragments.pop(alias, None)
 
     def update(self, alias, props):
         label = self.labels.get(alias)
         if label is None:
             return False
-        label['props'].update(props or {})
+        props = props or {}
+        if _changes(label['props'], props):
+            label['props'].update(props)
+            self.fragments.pop(alias, None)
         return True
 
     def delete(self, alias):
         if self.labels.pop(alias, None) is None:
             return False
         self.order.remove(alias)
+        self.fragments.pop(alias, None)
         return True
 
     def aliases(self, space):
@@ -271,18 +290,33 @@ class HudSurface(object):
             panel['cover'] = COVERS[0]
         return panel
 
-    def state(self, space, cursor, edit=False):
+    @staticmethod
+    def _head(space, cursor, edit):
         cursor = bool(cursor)
         return {
             'v': HUD_PROTOCOL_VERSION,
             'cursor': cursor,
             'edit': cursor and bool(edit),
             'hover': space == SPACE_BATTLE,
-            'panels': [self.panel(alias) for alias in self.aliases(space)],
         }
 
+    def state(self, space, cursor, edit=False):
+        state = self._head(space, cursor, edit)
+        state['panels'] = [self.panel(alias) for alias in self.aliases(space)]
+        return state
+
     def encode(self, space, cursor, edit=False):
-        return canonical_json(self.state(space, cursor, edit))
+        """`state(space, cursor, edit)` as JSON text, built from the panels' kept fragments."""
+        head = json.dumps(self._head(space, cursor, edit), **HUD_JSON)
+        panels = ','.join(self._fragment(alias) for alias in self.aliases(space))
+        return '%s,"panels":[%s]}' % (head[:-1], panels)
+
+    def _fragment(self, alias):
+        text = self.fragments.get(alias)
+        if text is None:
+            text = json.dumps(self.panel(alias), **HUD_JSON)
+            self.fragments[alias] = text
+        return text
 
     def handle(self, raw):
         decoded = decode_hud_message(raw)

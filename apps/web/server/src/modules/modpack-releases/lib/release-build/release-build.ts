@@ -1,5 +1,6 @@
 import type { ModpackRelease, ModpackReleaseIndex } from '@otmetki/schemas';
 
+import { createHash } from 'node:crypto';
 import { sortBy } from 'remeda';
 
 import type { BuildReleaseInput, MergeReleaseIndexInput, ModpackCatalog, ReleasePayloadInput, UnsignedModpackRelease } from './release-build.types';
@@ -9,15 +10,18 @@ import { RELEASE_BUILD } from './release-build.constants';
 
 const hex = (digest: string) => digest.trim().toLowerCase();
 
+const sha256 = (text: string) => createHash('sha256').update(text, 'utf8').digest('hex');
+
 export const catalogPackages = (catalog: ModpackCatalog): ModpackCatalog['components'] =>
   catalog.components.filter((component) => component.kind !== RELEASE_BUILD.dependencyKind);
 
-export const releasePayload = ({ version, games, catalog, packages }: ReleasePayloadInput): string => {
+export const releasePayload = ({ version, games, catalog, notes, packages }: ReleasePayloadInput): string => {
   const lines = [
     RELEASE_BUILD.payloadHeader,
     `version ${version}`,
     `games ${games.join(',')}`,
     `catalog ${catalog ? hex(catalog.sha256) : RELEASE_BUILD.noCatalog}`,
+    `notes ${notes ? `${sha256(notes.ru)} ${sha256(notes.en)}` : RELEASE_BUILD.noNotes}`,
     ...sortBy(packages, (item) => item.id).map((item) => `package ${item.id} ${item.file} ${item.size} ${hex(item.sha256)}`)
   ];
 

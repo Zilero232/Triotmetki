@@ -298,6 +298,13 @@ impl Manager {
             .release
             .filter(|_| latest.status == ReleaseStatus::Compatible)
             .ok_or_else(|| AppError::coded(ErrorCode::ReleaseUnavailable, "no release supports this client yet"))?;
+        let installed = Manifest::read(&self.layout.client_dir(&client.path))?.map(|manifest| manifest.modpack);
+
+        if patch::is_downgrade(&release.version, installed.as_deref()) {
+            log::warn!("refusing to replace the installed modpack {} with the older {}", installed.unwrap_or_default(), release.version);
+
+            return Err(AppError::coded(ErrorCode::ReleaseUnavailable, "the offered release is older than the installed one"));
+        }
 
         self.install_release(&client.path, &release).await
     }

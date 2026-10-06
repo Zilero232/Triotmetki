@@ -83,6 +83,8 @@ export const EN: Strings = {
   windowResetHint: 'Default size, zoom and place',
   searchKeyHint: 'Ctrl+F',
   accountChipId: 'ID',
+  serverCustom: 'Not the main server',
+  serverCustomHint: 'The mod sends data not to triotmetki.ru but to',
   navCountOn: 'on',
   dragHint: 'Drag the title to move the window; a double click puts it back in the centre',
   accountTitle: 'Account on triotmetki.ru',
@@ -90,7 +92,8 @@ export const EN: Strings = {
   accountUnbound: 'The mod is not bound',
   accountAuthFailed: 'The binding has expired',
   accountBoundHint: 'Your battle results and mark percentages go to your profile on the site.',
-  accountUnboundHint: 'Get a code on the site in the «Mod» section and paste it here. The mod sends nothing until it is bound.',
+  accountUnboundHint:
+    'Get a code on the site in the «Mod» section and paste it here. The mod sends nothing about you or your battles until it is bound.',
   accountAuthFailedHint: 'The site did not accept the mod signature. Get a new code on the site and bind the mod again.',
   accountId: 'Account',
   bound: 'Bound',

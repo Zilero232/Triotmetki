@@ -1,5 +1,3 @@
-import { round } from 'remeda';
-
 import { send } from '@/shared/api/protocol';
 
 import type { ReportOnceInput } from './page-diag.types';
@@ -19,5 +17,3 @@ export const reportOnce = ({ kind, text }: ReportOnceInput): boolean => {
 };
 
 export const forgetReports = (): void => reported.clear();
-
-export const round2 = (value: number): number => round(value, 2);

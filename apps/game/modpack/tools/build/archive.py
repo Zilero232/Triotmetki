@@ -8,6 +8,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import zipfile
 from xml.sax.saxutils import escape
 
+import fileio
+
 ZIP_DATE = (2020, 1, 1, 0, 0, 0)
 ZIP_EPOCH = 1577836800  # ZIP_DATE as a Unix timestamp, for reproducible .pyc headers
 EXTENSIONS = {'lesta': 'mtmod', 'wg': 'wotmod'}
@@ -71,14 +73,9 @@ def _members(entries):
         yield _file_info(archive_path), source
 
 
-def _read(source):
-    with open(source, 'rb') as handle:
-        return handle.read()
-
-
 def write_package(path, entries, meta):
     """entries: (source path, archive path). Written in archive-path order with every parent directory."""
     with zipfile.ZipFile(path, 'w', zipfile.ZIP_STORED) as package:
         package.writestr(_file_info('meta.xml'), meta.encode('utf-8'))
         for info, source in _members(entries):
-            package.writestr(info, b'' if source is None else _read(source))
+            package.writestr(info, b'' if source is None else fileio.read_bytes(source))

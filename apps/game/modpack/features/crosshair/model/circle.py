@@ -16,6 +16,6 @@ def is_scaled(choice):
 
 
 def scaled_size(size, percent):
-    if not is_number(size) or isinstance(size, bool):
+    if not is_number(size):
         return size
     return size * percent / PERCENT

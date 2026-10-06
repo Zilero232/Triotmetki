@@ -17,6 +17,7 @@ use crate::fsx::{rename_file, sibling, PART_SUFFIX};
 
 pub const GENERATOR_VERSION: &str = "1";
 pub const MAX_XML_BYTES: u64 = 8 * 1024 * 1024;
+pub const MAX_COPY_BYTES: u64 = 256 * 1024 * 1024;
 pub const ENVIRONMENTS_DIR: &str = "environments";
 pub const ENVIRONMENTS_XML: &str = "environments.xml";
 pub const ENVIRONMENT_XML: &str = "environment.xml";
@@ -438,7 +439,7 @@ fn write_entries(files: &ClientFiles, plan: &Plan, client_version: &str, out: Fi
         match content {
             Content::Bytes(bytes) => writer.write_all(bytes)?,
             Content::Copy(located) => {
-                files.copy(located, &mut writer)?;
+                files.copy(located, &mut writer, MAX_COPY_BYTES)?;
             }
         }
     }

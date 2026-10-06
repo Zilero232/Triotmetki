@@ -29,7 +29,7 @@ runs:
       run: |
         python -c 'import sys; assert sys.version_info[:2] == (2, 7), sys.version'
         python -m pip --version || python -m ensurepip
-        python -m pip install --disable-pip-version-check --no-warn-script-location -r apps/game/modpack/tools/requirements.txt
+        python -m pip install --disable-pip-version-check --no-warn-script-location --require-hashes -r apps/game/modpack/tools/requirements.txt
 
     - name: Cache bun packages
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6

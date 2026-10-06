@@ -169,7 +169,7 @@ def _move_aim_circle(components):
     if section is None or section.get(switch_key) is not True:
         return
     percent = section.get(scale_key, scale_default)
-    if not is_number(percent) or isinstance(percent, bool):
+    if not is_number(percent):
         percent = scale_default
     target_section, target_key = AIM_CIRCLE_TO
     _apply(components, {target_section: {target_key: _aim_circle_choice(percent)}})

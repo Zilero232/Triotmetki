@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 
+import { rem } from '@/shared/lib/css-unit';
 import { TabularText } from '@/ui-kit';
 
 import type { ReloadBoxProps } from './ReloadBox.types';
@@ -10,8 +11,6 @@ import { DrumReadout } from '../DrumReadout';
 import s from './ReloadBox.module.scss';
 
 const { box, leader, canvas } = RETICLE_READOUTS;
-
-const rem = (value: number): string => `${String(value)}rem`;
 
 const valueEdge = { marginRight: rem(leader + box.padding) };
 

@@ -1,11 +1,11 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import is_int, to_text
+from ....core.hud.icons import CLASS_GLYPHS
 from ....core.shells import SHELL_CODES
 from ....core.shot_points import drawn_points
 from .constants import (
     AMMO_RACK_WINDOW_S,
-    CLASS_GLYPHS,
     MAX_ENTRIES,
     RECEIVED_MERGE_WINDOW_S,
     RICOCHET_CODES,

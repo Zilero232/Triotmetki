@@ -1,19 +1,19 @@
 import { InjectQueue } from '@nestjs/bullmq';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { Queue } from 'bullmq';
+import { readFile } from 'node:fs/promises';
 
 import type {
   AcceptedReplay,
+  AcceptReplayInput,
   DiscardReplayInput,
   StoreReplayInput,
   UploadedReplay,
-  UploadedReplayFile,
   UploadFromModInput,
   UploadReplayInput
 } from '../replays.types';
 
 import { AppBadRequestException, AppConflictException, ModException } from '../../../common/exceptions';
-import { errorMessage } from '../../../common/lib';
 import { isUniqueViolation, LIMIT_LOCK_SCOPE, lockedTransaction, ObjectStorage, PrismaService } from '../../../core';
 import { parseReplaySummary } from '../../../lib/replay';
 import { EntitlementsService } from '../../billing';
@@ -33,19 +33,20 @@ export class ReplayUploadWriterService {
     @InjectQueue(REPLAYS_QUEUE.name) private readonly queue: Queue
   ) {}
 
-  upload({ file, ...owner }: UploadReplayInput): Promise<UploadedReplay> {
-    return this.store({ replay: this.accept(file), ...owner });
+  async upload({ file, ...owner }: UploadReplayInput): Promise<UploadedReplay> {
+    return this.store({ replay: await this.accept({ file }), ...owner });
   }
 
   async uploadFromMod({ file, request }: UploadFromModInput): Promise<UploadedReplay> {
-    const device = await this.devices.authenticate({ request, rawBody: file?.buffer, signedHeaders: [REPLAY_UPLOAD.visibilityHeader] });
+    const body = file ? await readFile(file.path) : undefined;
+    const device = await this.devices.authenticate({ request, rawBody: body, signedHeaders: [REPLAY_UPLOAD.visibilityHeader] });
     const visibility = modVisibility(request.header(REPLAY_UPLOAD.visibilityHeader));
 
     if (!visibility) {
       throw new AppBadRequestException('VALIDATION_FAILED', `Visibility must be one of ${REPLAY_UPLOAD.modVisibilities.join(', ')}`);
     }
 
-    const replay = this.accept(file);
+    const replay = await this.accept({ file, body });
 
     if (!isRecordedBy({ summary: replay.summary, accountId: device.accountId })) {
       throw new ModException({
@@ -58,7 +59,7 @@ export class ReplayUploadWriterService {
     return this.store({ replay, uploaderUserId: device.userId, deviceId: device.id, visibility });
   }
 
-  private accept(file: UploadedReplayFile | undefined): AcceptedReplay {
+  private async accept({ file, body }: AcceptReplayInput): Promise<AcceptedReplay> {
     if (!file || file.size === 0) {
       throw new AppBadRequestException('REPLAY_INVALID', `Attach the replay as the "${REPLAY_UPLOAD.field}" field`);
     }
@@ -73,12 +74,12 @@ export class ReplayUploadWriterService {
       throw new AppBadRequestException('REPLAY_INVALID', 'The replay is too large');
     }
 
-    const bytes = new Uint8Array(file.buffer);
+    const bytes = new Uint8Array(body ?? (await readFile(file.path)));
 
     try {
       return { file, bytes, extension, summary: parseReplaySummary(bytes) };
-    } catch (error) {
-      throw new AppBadRequestException('REPLAY_INVALID', `Not a readable replay: ${errorMessage(error)}`);
+    } catch {
+      throw new AppBadRequestException('REPLAY_INVALID', 'Not a readable replay');
     }
   }
 

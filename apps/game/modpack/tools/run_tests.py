@@ -3,6 +3,8 @@
 Runs on Python 2.7, the game client's own interpreter, which also runs all of the host tooling
 (the dependencies in tools/requirements.txt).
 Usage: python tools/run_tests.py [-v]   (Python 2.7)
+
+A test's output (the mod's own log lines included) is printed only when it fails; -v prints all of it.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -72,8 +74,8 @@ def main(argv):
     suite = unittest.TestSuite()
     for directory in directories:
         suite.addTests(unittest.TestLoader().discover(directory, pattern='test_*.py', top_level_dir=directory))
-    verbosity = 2 if '-v' in argv else 1
-    result = unittest.TextTestRunner(verbosity=verbosity).run(suite)
+    verbose = '-v' in argv
+    result = unittest.TextTestRunner(verbosity=2 if verbose else 1, buffer=not verbose).run(suite)
     return 0 if result.wasSuccessful() else 1
 
 

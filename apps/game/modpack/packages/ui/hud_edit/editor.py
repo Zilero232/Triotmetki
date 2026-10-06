@@ -31,7 +31,7 @@ def move_values(message):
     values = {}
     for key in POSITION_NUMBERS:
         value = message.get(key)
-        if is_number(value) and not isinstance(value, bool):
+        if is_number(value):
             values[key] = int(round(value))
     for key in POSITION_ALIGNS:
         value = message.get(key)

@@ -12,11 +12,11 @@ dimmed footer.
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ...compat import is_number, keyword_options, string_types, to_text
+from ..panel import hex_color
 from .constants import (
     CARD_KIND,
     CARD_LIMITS,
     CARD_OPTIONS,
-    HEX_COLOR,
     ROW_OPTIONS,
     STATUSES,
     TONES,
@@ -46,12 +46,8 @@ def tone(value, default='text'):
     return value if value in TONES else default
 
 
-def _is_plain_number(value):
-    return is_number(value) and not isinstance(value, bool)
-
-
 def _text(value, limit):
-    if _is_plain_number(value):
+    if is_number(value):
         value = to_text(value)
     if not isinstance(value, string_types):
         return None
@@ -66,28 +62,22 @@ def _icon(value):
 
 
 def _progress(value):
-    if not _is_plain_number(value):
+    if not is_number(value):
         return None
     return round(max(0.0, min(1.0, float(value))), 3)
-
-
-def _color(value):
-    if isinstance(value, string_types) and HEX_COLOR.match(value):
-        return to_text(value).upper()
-    return None
 
 
 def color_override(value, default):
     """`value` (`#RRGGBB`, upper-cased) when the player set a colour other than `default`, else None: the page then
     paints the tone the payload names."""
-    color = _color(value)
-    if color is None or color == _color(default):
+    color = hex_color(value)
+    if color is None or color == hex_color(default):
         return None
     return color
 
 
 def _width(value):
-    if not _is_plain_number(value):
+    if not is_number(value):
         return None
     low, high = CARD_LIMITS['width']
     return int(max(low, min(high, value)))
@@ -108,7 +98,7 @@ def card_row(text=None, value=None, **style):
         'text_tone': tone(style['text_tone']),
         'value': _text(value, CARD_LIMITS['value']),
         'tone': tone(style['tone_name']),
-        'color': _color(style['color']),
+        'color': hex_color(style['color']),
         'note': _text(style['note'], CARD_LIMITS['value']),
         'detail': _text(style['detail'], CARD_LIMITS['detail']),
         'progress': _progress(style['progress']),
@@ -123,7 +113,7 @@ def card_chip(value, icon=None, tone_name='text', label=None, color=None):
         'value': _text(value, CARD_LIMITS['value']) or u'',
         'tone': tone(tone_name),
         'label': _text(label, CARD_LIMITS['value']),
-        'color': _color(color),
+        'color': hex_color(color),
     }
 
 

@@ -7,7 +7,7 @@ import type { HeaderProps } from './Header.types';
 
 import { closeWindow } from '../model/actions';
 import { useHeader } from '../model/hooks';
-import { AccountChip, Brand } from './components';
+import { AccountChip, Brand, ServerChip } from './components';
 
 import s from './Header.module.scss';
 
@@ -20,6 +20,7 @@ export const Header = ({ language, compact, frame }: HeaderProps) => {
       <Brand compact={compact} dragRef={frame.handles.move} onRecentre={frame.onRecentre} />
       <SearchBox query={header.query} onChange={header.setQuery} onClear={header.clearQuery} />
       <div className={s.actions}>
+        {header.server && <ServerChip compact={compact} url={header.server} />}
         {header.account && <AccountChip account={header.account} compact={compact} onOpen={header.openAccount} />}
         <HeaderMenu frame={frame} language={language} />
         <IconButton className={s.close} icon='x' label={t('close')} variant='ghost' onClick={closeWindow} />

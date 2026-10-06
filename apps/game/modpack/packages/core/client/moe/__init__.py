@@ -7,6 +7,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import time
 
 from ...codec import parse_json_body
+from ...events import Listeners
 from ...log import log, safe
 from ...moe import PaceBook, ThresholdCache, ThresholdCurve, mastery_from_api, threshold_problem
 from ...net.signing import DEVICE_HEADER
@@ -22,13 +23,13 @@ class MoeService(object):
         self.cache = ThresholdCache()
         self.masteries = {}
         self.pace_book = PaceBook((app.state or {}).get(STATE_KEY))
-        self.listeners = []
+        self.listeners = Listeners('marks data listener')
         app.register_state(STATE_KEY, self.pace_book.to_dict)
         app.bus.on('vehicle_moe', self._on_vehicle_moe)
         app.bus.on('battle_event', self._on_battle_event)
 
     def listen(self, callback):
-        self.listeners.append(callback)
+        self.listeners.add(callback)
 
     def snapshot(self, tank_id):
         return self.app.marks.hangar_moe.get(tank_id)
@@ -68,8 +69,7 @@ class MoeService(object):
                 log(NO_THRESHOLDS % (tank_id, problem))
             if status == 200:
                 self.masteries[tank_id] = mastery_from_api(data)
-            for callback in list(self.listeners):
-                callback(tank_id)
+            self.listeners.notify(tank_id)
 
         app.transport.request('GET', app.config.endpoint(MOE_PATH % tank_id), headers, None, done)
         return True

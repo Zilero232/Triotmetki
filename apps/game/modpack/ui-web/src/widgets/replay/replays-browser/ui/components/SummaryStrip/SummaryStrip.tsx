@@ -1,4 +1,5 @@
 import { formatCount } from '@/entities/replay/replay';
+import { formatPercent } from '@/shared/lib/format-number';
 
 import type { SummaryStripProps } from './SummaryStrip.types';
 
@@ -13,7 +14,11 @@ export const SummaryStrip = ({ browser }: SummaryStripProps) => {
   const progress = page?.progress;
   const indexing = page?.status === 'indexing' && progress !== undefined && progress.total > 0;
   const facts = [
-    { key: 'winRate', label: t('winRate'), value: summary.winRate === null ? null : `${summary.winRate.toFixed(REPLAYS_BROWSER.winRateDigits)}%` },
+    {
+      key: 'winRate',
+      label: t('winRate'),
+      value: summary.winRate === null ? null : formatPercent({ value: summary.winRate, digits: REPLAYS_BROWSER.winRateDigits })
+    },
     { key: 'avgDamage', label: t('avgDamage'), value: summary.avgDamage === null ? null : formatCount(summary.avgDamage) },
     { key: 'avgAssist', label: t('avgAssist'), value: summary.avgAssist === null ? null : formatCount(summary.avgAssist) },
     { key: 'avgXp', label: t('avgXp'), value: summary.avgXp === null ? null : formatCount(summary.avgXp) }

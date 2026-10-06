@@ -1,82 +1,94 @@
-import type { Frame, ReticleMarkInput, ReticleMarkPart, ReticlePaint, ReticlePrimitive } from './reticle-mark.types';
+import { match, P } from 'ts-pattern';
+
+import { circlePath, pathNumber, polarPoint } from '@/shared/lib/radial';
+
+import type {
+  ArcPart,
+  DiscPart,
+  LinePart,
+  PathInput,
+  PrimitivesInput,
+  ReticleMarkInput,
+  ReticlePrimitive,
+  RingPart,
+  SnapInput,
+  StrokedPart,
+  StrokeWidthInput
+} from './reticle-mark.types';
 
 import { RETICLE_MARKS } from '../../config';
 
-const snap = (value: number, width: number): number => (width % 2 === 1 ? Math.floor(value) + 0.5 : Math.round(value));
+const snap = ({ value, width }: SnapInput): number => (width % 2 === 1 ? Math.floor(value) + 0.5 : Math.round(value));
 
-const num = (value: number): string => String(Math.round(value * 100) / 100);
+const strokeWidth = ({ weight, frame }: StrokeWidthInput): number => Math.max(1, Math.round(weight * frame.scale));
 
-const strokeWidth = (weight: number, frame: Frame): number => Math.max(1, Math.round(weight * frame.scale));
-
-const circlePath = (cx: number, cy: number, r: number): string =>
-  `M${num(cx - r)} ${num(cy)}a${num(r)} ${num(r)} 0 1 0 ${num(2 * r)} 0a${num(r)} ${num(r)} 0 1 0 ${num(-2 * r)} 0z`;
-
-const linePath = (part: Extract<ReticleMarkPart, { kind: 'line' }>, frame: Frame, width: number): string => {
-  const points = part.points.map(
-    ([x, y]) => `${num(snap(frame.centre + x * frame.scale, width))} ${num(snap(frame.centre + y * frame.scale, width))}`
-  );
-
+const linePath = ({ part, frame, width }: PathInput<LinePart>): string => {
+  const at = (offset: number): string => pathNumber(snap({ value: frame.centre + offset * frame.scale, width }));
+  const points = part.points.map(([x, y]) => `${at(x)} ${at(y)}`);
   const closed = 'closed' in part && part.closed ? 'z' : '';
 
   return `M${points.join('L')}${closed}`;
 };
 
-const arcPath = (part: Extract<ReticleMarkPart, { kind: 'arc' }>, frame: Frame, width: number): string => {
-  const centre = snap(frame.centre, width);
+const arcPath = ({ part, frame, width }: PathInput<ArcPart>): string => {
+  const centre = snap({ value: frame.centre, width });
   const radius = Math.round(part.r * frame.scale);
-  const point = (degrees: number) => {
-    const radians = (degrees * Math.PI) / 180;
+  const from = polarPoint({ centre, radius, degrees: part.from });
+  const to = polarPoint({ centre, radius, degrees: part.to });
 
-    return `${num(centre + radius * Math.cos(radians))} ${num(centre + radius * Math.sin(radians))}`;
-  };
-
-  return `M${point(part.from)}A${radius} ${radius} 0 0 1 ${point(part.to)}`;
+  return `M${from}A${radius} ${radius} 0 0 1 ${to}`;
 };
 
-const strokedPath = (part: Exclude<ReticleMarkPart, { kind: 'disc' }>, frame: Frame, width: number): string => {
-  if (part.kind === 'line') {
-    return linePath(part, frame, width);
-  }
+const ringPath = ({ part, frame, width }: PathInput<RingPart>): string =>
+  circlePath({ centre: snap({ value: frame.centre, width }), radius: Math.round(part.r * frame.scale) });
 
-  if (part.kind === 'arc') {
-    return arcPath(part, frame, width);
-  }
+const strokedPath = (input: PathInput<StrokedPart>): string =>
+  match(input)
+    .with({ part: { kind: 'line' } }, linePath)
+    .with({ part: { kind: 'arc' } }, arcPath)
+    .with({ part: { kind: 'ring' } }, ringPath)
+    .exhaustive();
 
-  const centre = snap(frame.centre, width);
-
-  return circlePath(centre, centre, Math.round(part.r * frame.scale));
-};
-
-const discPrimitives = (part: Extract<ReticleMarkPart, { kind: 'disc' }>, frame: Frame, outline: boolean): ReticlePrimitive[] => {
+const discPrimitives = ({ part, frame, outline }: PrimitivesInput<DiscPart>): ReticlePrimitive[] => {
   const diameter = Math.max(1, Math.round(2 * part.r * frame.scale));
-  const centre = snap(frame.centre, diameter);
-  const paint: ReticlePaint = part.paint;
-  const body = { d: circlePath(centre, centre, diameter / 2), paint, stroke: null };
+  const centre = snap({ value: frame.centre, width: diameter });
+  const radius = diameter / 2;
+  const body: ReticlePrimitive = { d: circlePath({ centre, radius }), paint: part.paint, stroke: null };
 
-  if (!outline || paint === 'shade') {
+  if (!outline || part.paint === 'shade') {
     return [body];
   }
 
-  return [{ d: circlePath(centre, centre, diameter / 2 + RETICLE_MARKS.outlineWidth), paint: 'outline', stroke: null }, body];
+  const halo: ReticlePrimitive = { d: circlePath({ centre, radius: radius + RETICLE_MARKS.outlineWidth }), paint: 'outline', stroke: null };
+
+  return [halo, body];
 };
 
-const partPrimitives = (part: ReticleMarkPart, frame: Frame, outline: boolean): ReticlePrimitive[] => {
-  if (part.kind === 'disc') {
-    return discPrimitives(part, frame, outline);
-  }
-
-  const width = strokeWidth(part.weight, frame);
-  const d = strokedPath(part, frame, width);
+const strokedPrimitives = ({ part, frame, outline }: PrimitivesInput<StrokedPart>): ReticlePrimitive[] => {
+  const width = strokeWidth({ weight: part.weight, frame });
+  const d = strokedPath({ part, frame, width });
   const body: ReticlePrimitive = { d, paint: 'mark', stroke: width };
 
-  return outline ? [{ d, paint: 'outline', stroke: width + 2 * RETICLE_MARKS.outlineWidth }, body] : [body];
+  if (!outline) {
+    return [body];
+  }
+
+  const halo: ReticlePrimitive = { d, paint: 'outline', stroke: width + 2 * RETICLE_MARKS.outlineWidth };
+
+  return [halo, body];
 };
+
+const partPrimitives = (input: PrimitivesInput): ReticlePrimitive[] =>
+  match(input)
+    .with({ part: { kind: 'disc' } }, discPrimitives)
+    .with({ part: { kind: P.union('line', 'arc', 'ring') } }, strokedPrimitives)
+    .exhaustive();
 
 export const reticleMarkPrimitives = ({ shape, size, outline }: ReticleMarkInput): ReticlePrimitive[] => {
   const frame = { centre: size / 2, scale: size / RETICLE_MARKS.grid };
-  const drawn = RETICLE_MARKS.shapes[shape].map((part) => partPrimitives(part, frame, outline));
-  const outlines = drawn.flatMap((primitives) => primitives.filter((primitive) => primitive.paint === 'outline'));
-  const bodies = drawn.flatMap((primitives) => primitives.filter((primitive) => primitive.paint !== 'outline'));
+  const drawn = RETICLE_MARKS.shapes[shape].flatMap((part) => partPrimitives({ part, frame, outline }));
+  const outlines = drawn.filter((primitive) => primitive.paint === 'outline');
+  const bodies = drawn.filter((primitive) => primitive.paint !== 'outline');
 
   return [...outlines, ...bodies];
 };

@@ -4,25 +4,16 @@ from ....core.client.battle import ammo, arena, optional_devices, player
 from ....core.client.hud.icons import client_file_exists
 from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.log import log, safe
+from .. import settings
 from ..i18n import STRINGS
-from ..model import format_panel, loadout_summary, slot_items
+from ..model import format_panel, loadout_summary, preview, slot_items
 from ..model.constants import PREVIEW_SIZE
-from ..model.preview import preview_text, preview_widget
 from ..model.widget import equipment_widget
-from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .constants import DEVICE_EVENTS, PERIOD_EVENT, SETUP_EVENT, VEHICLE_UPDATED_EVENT
 from .reads import own_loadout
 
 
-PANEL_SPEC = PanelSpec(
-    panel_id=PANEL_ID,
-    schema=SCHEMA,
-    switch=SWITCH,
-    strings=STRINGS,
-    preview_size=PREVIEW_SIZE,
-    preview_text=preview_text,
-    preview_widget=preview_widget,
-)
+PANEL_SPEC = PanelSpec.of(settings, STRINGS, preview, PREVIEW_SIZE)
 
 
 # Read again whenever the client reports the descriptor's devices or a device's battle state changed, a setup was

@@ -4,3 +4,4 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # sniper cameras project their aim points with it).
 PROJECTION_MODULE = 'AvatarInputHandler.cameras'
 PROJECTION_FUNCTION = 'getViewProjectionMatrix'
+MATH_MODULE = 'Math'

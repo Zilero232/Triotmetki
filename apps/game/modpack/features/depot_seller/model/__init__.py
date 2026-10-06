@@ -4,8 +4,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import hashlib
 import json
 
-from ....core.compat import is_int, string_types, to_text
-from ....core.format import format_number, plural
+from ....core.compat import clean_text, int_or_none, to_text
+from ....core.format import count_phrase, format_number
 from .constants import (  # noqa: F401
     ACTION_REFRESH,
     ACTION_SELL,
@@ -28,32 +28,20 @@ from .constants import (  # noqa: F401
 KINDS = dict(KIND_SWITCHES)
 
 
-def _count(value, low=0):
-    if not is_int(value) or isinstance(value, bool) or value < low:
-        return None
-    return value
-
-
-def _name(value):
-    if not isinstance(value, string_types):
-        return u''
-    return to_text(value).strip()[:MAX_NAME]
-
-
 def clean_item(raw):
     if not isinstance(raw, dict) or raw.get('kind') not in KINDS:
         return None
-    cd = _count(raw.get('cd'), 1)
-    count = _count(raw.get('count'), 1)
+    cd = int_or_none(raw.get('cd'), 1)
+    count = int_or_none(raw.get('count'), 1)
     if cd is None or count is None:
         return None
     return {
         'cd': cd,
-        'type_id': _count(raw.get('type_id')) or 0,
+        'type_id': int_or_none(raw.get('type_id'), 0) or 0,
         'kind': raw['kind'],
-        'name': _name(raw.get('name')) or to_text(cd),
+        'name': clean_text(raw.get('name'), MAX_NAME, u'') or to_text(cd),
         'count': count,
-        'price': _count(raw.get('price')) or 0,
+        'price': int_or_none(raw.get('price'), 0) or 0,
         'fits': bool(raw.get('fits')),
         'special': bool(raw.get('special')),
         'for_sale': raw.get('for_sale', True) is True,
@@ -63,14 +51,14 @@ def clean_item(raw):
 def clean_member(raw):
     if not isinstance(raw, dict):
         return None
-    inv_id = _count(raw.get('inv_id'))
+    inv_id = int_or_none(raw.get('inv_id'), 0)
     if inv_id is None:
         return None
     return {
         'inv_id': inv_id,
-        'name': _name(raw.get('name')) or to_text(inv_id),
-        'role': _name(raw.get('role')),
-        'skills': _count(raw.get('skills')) or 0,
+        'name': clean_text(raw.get('name'), MAX_NAME, u'') or to_text(inv_id),
+        'role': clean_text(raw.get('role'), MAX_NAME, u''),
+        'skills': int_or_none(raw.get('skills'), 0) or 0,
         'premium': bool(raw.get('premium')),
         'locked': bool(raw.get('locked')),
     }
@@ -131,17 +119,14 @@ def item_line(item):
     return u'%d× %s' % (item['count'], item['name'])
 
 
-def crew_phrase(count, translate):
-    return u'%s %s' % (format_number(count), plural(count, translate('depot_seller_crew_forms')))
-
-
 def confirm_text(sale, translate):
     parts = [item_line(item) for item in sale['items'][:CONFIRM_ITEMS]]
     hidden = len(sale['items']) - CONFIRM_ITEMS
     if hidden > 0:
         parts.append(translate('depot_seller_more', count=hidden))
     if sale['crew']:
-        parts.append(translate('depot_seller_dismiss', crew=crew_phrase(len(sale['crew']), translate)))
+        crew = count_phrase(len(sale['crew']), translate('depot_seller_crew_forms'))
+        parts.append(translate('depot_seller_dismiss', crew=crew))
     return translate('depot_seller_confirm', credits=format_number(sale['credits']), items=u', '.join(parts))
 
 

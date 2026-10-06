@@ -18,6 +18,7 @@ from otmetki.companion.settings_share import (
     flatten_settings,
     parse_poll_response,
     plan_apply,
+    profile_slug,
     result_path,
     signed_post,
 )
@@ -293,6 +294,27 @@ class ParsePollResponseTest(unittest.TestCase):
 
         self.assertNotIn('hardware', settings)
         self.assertNotIn('mods', settings)
+
+    def test_keeps_a_valid_profile_slug(self):
+        request = parse_poll_response({'requests': [apply_request(['camera'])]})[0]
+
+        self.assertEqual(request['profile_slug'], 'nidin')
+
+    def test_a_profile_slug_with_markup_is_absent(self):
+        item = dict(apply_request(['camera']), profile_slug='<font size="40">x</font>')
+
+        request = parse_poll_response({'requests': [item]})[0]
+
+        self.assertEqual(request['profile_slug'], '')
+
+    def test_a_profile_slug_too_long_is_absent(self):
+        self.assertEqual(profile_slug('a' * 65), '')
+
+    def test_a_profile_slug_in_capitals_is_absent(self):
+        self.assertEqual(profile_slug('Nidin'), '')
+
+    def test_a_profile_slug_of_the_wrong_type_is_absent(self):
+        self.assertEqual(profile_slug(5), '')
 
     def test_malformed_requests_are_no_requests(self):
         self.assertEqual(parse_poll_response({'requests': 'x'}), [])

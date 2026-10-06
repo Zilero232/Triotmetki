@@ -69,6 +69,7 @@ class UiContext(object):
             'auth_failed': bool(app.auth_failed),
             'account_id': app.account_id,
             'text': app.status_text(),
+            'server': app.config.custom_server(),
         }
 
     def set_language(self, language):

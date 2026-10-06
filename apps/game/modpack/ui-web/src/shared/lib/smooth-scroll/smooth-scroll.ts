@@ -1,13 +1,13 @@
+import { easeOutCubic } from '@/shared/lib/easing';
+
 import type { Glide, GlideStep, SmoothScroll, SmoothScrollInput, TopAtInput } from './smooth-scroll.types';
 
 import { SMOOTH_SCROLL } from './smooth-scroll.constants';
 
-const easeOut = (progress: number): number => 1 - (1 - progress) ** 3;
-
 const topAt = ({ glide, now }: TopAtInput): GlideStep => {
   const startedAt = glide.startedAt ?? now;
   const progress = Math.min((now - startedAt) / SMOOTH_SCROLL.durationMs, 1);
-  const top = Math.round(glide.from + (glide.to - glide.from) * easeOut(progress));
+  const top = Math.round(glide.from + (glide.to - glide.from) * easeOutCubic(progress));
 
   return { top, done: progress >= 1 };
 };

@@ -109,7 +109,7 @@ describe(marksPanelView, () => {
   it('writes a dash for an unknown percent', () => {
     const view = marksPanelView({ ...data, percent: null, mark: null });
 
-    expect(view.percent).toBe(MARKS_PANEL.unknownPercent);
+    expect(view.percent).toBe('—');
     expect(view.mark).toBe(MARKS_PANEL.fallbackMark);
   });
 

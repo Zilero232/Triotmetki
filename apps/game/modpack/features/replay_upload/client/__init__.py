@@ -20,7 +20,7 @@ from ..model.constants import (
     VISIBILITY_PUBLIC,
 )
 from ..settings import PUBLISH, SWITCH
-from .constants import QUEUE_FILE, REPLAY_SETTING, STARTED_KEEP, UPLOAD_TIMEOUT_S
+from .constants import QUEUE_FILE, REPLAY_SETTING, STARTED_KEEP, UPLOAD_RESPONSE_MAX_BYTES, UPLOAD_TIMEOUT_S
 
 
 def game_records_replays():
@@ -48,7 +48,7 @@ class ReplayAutoUpload(object):
         self.app = app
         self.config_dir = app.config_dir
         self.runner = BackgroundRunner('otmetki-replays')
-        self.transport = SyncTransport(timeout=UPLOAD_TIMEOUT_S)
+        self.transport = SyncTransport(timeout=UPLOAD_TIMEOUT_S, max_bytes=UPLOAD_RESPONSE_MAX_BYTES)
         self.queue = None
         self.uploader = None
         self.started = {}

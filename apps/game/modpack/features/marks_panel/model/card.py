@@ -2,7 +2,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import is_int, is_number
-from ....core.format import counted, format_number
+from ....core.format import TIER_COLORS, counted, format_number
 from ....core.hud.icons import class_icon
 from ....core.hud.widget import widget
 from ....core.moe import TARGET_LEVELS
@@ -10,13 +10,12 @@ from ....core.vendor import attr
 from .constants import (
     APPROX,
     DELTA_TONES,
-    MAX_STARS,
     TANK_CARD_KIND,
-    TIER_COLORS,
 )
 from .cells import cell, cell_percent
 from .page import delta_sign
 from .tank_progress import mastery_cell, research_cells
+from .widget import stars_of
 
 # Fair play: the player's own marks of the selected tank (own dossier, own average and pace, own battles kept on this
 # computer) and the bound account's own ratings of that tank from the site.
@@ -70,11 +69,6 @@ def _percent(state):
     if state is None or not is_number(state['percent']):
         return None
     return round(state['percent'], 2)
-
-
-def _marks(state):
-    marks = state['marks'] if state is not None else None
-    return int(max(0, min(MAX_STARS, marks))) if is_number(marks) else 0
 
 
 def _last_delta(summary):
@@ -229,7 +223,7 @@ def tank_card(data, settings, translate):
         'vehicle': data.vehicle,
         'tier': _tier(data.tier),
         'class_icon': class_icon(data.class_tag),
-        'marks': _marks(data.state),
+        'marks': stars_of(data.state),
         'percent': _percent(data.state),
         'delta': _last_delta(data.summary),
         'points': _points(data, settings),

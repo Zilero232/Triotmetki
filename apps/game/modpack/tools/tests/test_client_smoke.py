@@ -425,8 +425,6 @@ class BattleSession(object):
 
 
 class Response(object):
-    # RU 1.45 client source (gui/platform/base/request.py): the fetchURL response exposes its headers
-    # through a method, response.headers().
 
     def __init__(self, code, body, headers=None):
         self.responseCode = code
@@ -752,23 +750,26 @@ class Game(object):
         shutil.rmtree(self.game_dir, ignore_errors=True)
 
     def purge(self):
-        _support.drop_modules([name for name in sys.modules if name.split('.')[0] in STUBBED])
+        _support.drop_game_modules(STUBBED)
 
     def install_big_world(self):
         test = self
 
-        def fetch_url(url, callback, headers=None, timeout=None, method=None, postData=None):
-            test.fetches.append((method, url, headers, postData, callback))
+        def request(method, url, headers, body, callback):
+            def respond(response):
+                callback(response.responseCode, response.body, response.headers())
+
+            test.fetches.append((method, url, headers, body, respond))
 
         self.clock = [100.0]
         module(
             'BigWorld',
             callback=lambda delay, fn: test.callbacks.append(fn),
             player=lambda: test.player,
-            fetchURL=fetch_url,
             serverTime=lambda: SERVER_TIME,
             time=lambda: test.clock[0],
         )
+        _support.install_transport(request)
 
     def install_battle_results_stubs(self):
         self.results_cache = BattleResultsCache()
@@ -1264,6 +1265,8 @@ class Game(object):
         return self.hud_components()[panel]['text']
 
     def saved_components(self, app):
+        """components.json once the saves held back for a second (core.client.storage) are written."""
+        sys.modules['gui.mods.otmetki.core.client.storage'].flush_writes()
         return _support.load_json(os.path.join(app.config_dir, 'components.json'))
 
     def battle_events(self, app):
@@ -2273,7 +2276,7 @@ class SiteRecordsTest(StoryTest):
         def failing_listener(tank_id):
             raise RuntimeError('listener')
 
-        sys.modules['gui.mods.otmetki.core.client.me'].tank_ratings(app).listeners.insert(0, failing_listener)
+        sys.modules['gui.mods.otmetki.core.client.me'].tank_ratings(app).listeners.callbacks.insert(0, failing_listener)
         goals = contract_example('goals.example.json')
         game.answer('tanks', contract_example('ratings-tanks.example.json'))
         game.answer('goals', goals)
@@ -3357,6 +3360,110 @@ class AccountSwitchTest(StoryTest):
 
     def test_another_account_starts_without_the_first_ones_session(self):
         self.assertIsNone(self.session_after)
+
+
+def broken_capture(*args):
+    raise RuntimeError('capture')
+
+
+class CaptureFailureTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        app = game.open_hangar()
+        cls.heard = []
+        for name in ('battle_enter', 'battle_ready', 'battle_leave', 'hangar', 'tick'):
+            app.bus.on(name, lambda *args, **kwargs: None)
+            app.bus.on(name, cls.recorder(name))
+        for step in ('on_battle_ready', 'on_battle_leave', 'on_hangar', 'poll_pending_results'):
+            setattr(app.battles, step, broken_capture)
+        game.enter_battle(1)
+        game.back_to_hangar()
+        game.run_callbacks()
+
+    @classmethod
+    def recorder(cls, name):
+        return lambda *args: cls.heard.append(name)
+
+    def test_a_failing_battle_capture_still_tells_the_features_the_battle_began(self):
+        self.assertIn('battle_ready', self.heard)
+
+    def test_a_failing_battle_capture_still_tells_the_features_the_battle_ended(self):
+        self.assertIn('battle_leave', self.heard)
+
+    def test_a_failing_hangar_capture_still_tells_the_features_the_hangar_is_shown(self):
+        self.assertEqual(self.heard.count('hangar'), 1)
+
+    def test_a_failing_results_poll_still_ticks_the_hangar(self):
+        self.assertIn('tick', self.heard)
+
+
+class HeldSaveTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        app = game.open_hangar()
+        path = os.path.join(app.config_dir, 'components.json')
+        game.enter_battle(1)
+        config = game.hud_module().component_config(app)
+        held_before = cls.held_saves(game)
+        for x in range(70, 78):
+            config.update('damage_log', {'x': x})
+        cls.saves_asked = cls.held_saves(game) - held_before
+        cls.saved_in_battle = _support.load_json(path)['damage_log']['x']
+        game.events.onAvatarBecomeNonPlayer()
+        cls.saved_after_battle = _support.load_json(path)['damage_log']['x']
+
+    @staticmethod
+    def held_saves(game):
+        return len([callback for callback in game.callbacks if getattr(callback, '__name__', None) == '_on_due'])
+
+    def test_a_change_in_battle_is_not_written_at_once(self):
+        self.assertNotEqual(self.saved_in_battle, 77)
+
+    def test_changes_in_battle_ask_for_one_held_save_at_most(self):
+        self.assertLessEqual(self.saves_asked, 1)
+
+    def test_the_end_of_the_battle_writes_the_last_change(self):
+        self.assertEqual(self.saved_after_battle, 77)
+
+
+class GunArcRedrawTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        app, _ = open_shots_hangar(game)
+        session = game.enter_battle_with_gun((-0.26, 0.26))
+        GunAndWoundsTest.play_gun_arc(game, app, session)
+        layer = game.hud_module().hud_layer(app)
+        arc = game.instances()['gun_arc']
+        shows = []
+        show = arc.show
+        arc.show = lambda text, widget=None: shows.append(widget) or show(text, widget)
+        arc.render()
+        cls.shows_while_still = len(shows)
+        session.shared.crosshair.screen = dict(RETICLE_SCREEN, position=(1000, 540))
+        arc.render()
+        cls.shows_after_the_reticle_moved = len(shows)
+        arc._marks_on_screen = lambda screen: None
+        arc.render()
+        cls.arc_off_canvas = copy.deepcopy(layer.widgets.get('otmetki.hud.gun_arc'))
+        game.events.onAvatarBecomeNonPlayer()
+        cls.ticks_on_in_hangar = arc._on_tick()
+
+    def test_a_still_tank_and_camera_send_nothing_new(self):
+        self.assertEqual(self.shows_while_still, 0)
+
+    def test_a_moved_reticle_draws_the_markers_again(self):
+        self.assertEqual(self.shows_after_the_reticle_moved, 1)
+
+    def test_markers_off_the_canvas_keep_the_panel_with_no_marks(self):
+        data = self.arc_off_canvas['data']
+
+        self.assertEqual((data['left'], data['right'], data['centre']), (None, None, None))
+
+    def test_the_tick_stops_outside_a_battle(self):
+        self.assertFalse(self.ticks_on_in_hangar)
 
 
 if __name__ == '__main__':

@@ -40,6 +40,7 @@ __all__ = (
     'EVENT_REPLAY_UPLOADED',
     'EVENT_SETTINGS_CLOSE',
     'EventBus',
+    'Listeners',
     'battle_notice_lines',
     'hit_viewer_battles',
 )
@@ -89,6 +90,31 @@ class EventBus(object):
                 handler(*args, **kwargs)
             except Exception:
                 self._on_error('%s handler' % name)
+
+
+class Listeners(object):
+    """The callbacks one client watch hands its news to, called in the order they were added; adding one twice is a
+    no-op, and a failing one is logged (`context`) without stopping the ones after it."""
+
+    def __init__(self, context, on_error=None):
+        self.context = context
+        self.callbacks = []
+        self._on_error = on_error or log_exception
+
+    def add(self, callback):
+        if callback not in self.callbacks:
+            self.callbacks.append(callback)
+
+    def remove(self, callback):
+        if callback in self.callbacks:
+            self.callbacks.remove(callback)
+
+    def notify(self, *args):
+        for callback in list(self.callbacks):
+            try:
+                callback(*args)
+            except Exception:
+                self._on_error(self.context)
 
 
 def hit_viewer_battles(bus):

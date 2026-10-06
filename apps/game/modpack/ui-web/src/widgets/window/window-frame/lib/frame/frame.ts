@@ -1,5 +1,7 @@
 import { clamp, round } from 'remeda';
 
+import { rem } from '@/shared/lib/css-unit';
+
 import type {
   Bounds,
   BoundsInput,
@@ -107,4 +109,4 @@ export const layoutOf = ({ frame, zoom }: LayoutInput): FrameLayout => {
   };
 };
 
-export const toRem = (value: number): string => `${round(value, 2)}rem`;
+export const toRem = (value: number): string => rem(round(value, 2));

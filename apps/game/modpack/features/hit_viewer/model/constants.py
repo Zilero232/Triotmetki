@@ -4,12 +4,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import re
 
 BOOK_FILE = 'hit_viewer_%d.json'
-BOOK_VERSION = 1
-MAX_BATTLES = 30
 MAX_HITS = 160
 MAX_SEGMENTS = 8
-# The own feedback's damage and the hit's points arrive close together, in either order.
-DAMAGE_WINDOW_S = 1.0
 
 # The own team's result, set from the battle results that arrive after the battle.
 RESULT_WIN = 'win'
@@ -30,16 +26,8 @@ ANALYSIS_KEYS = ('angle', 'armor', 'nominal')
 # Vehicle.getAimParams() of the hit vehicle (turret yaw, gun pitch in radians), the pose the hangar model takes back.
 AIM_LIMIT = 7.0
 
-# RU 1.45 client source (vehicle_systems/tankStructure.TankPartIndexes): 0 chassis, 1 hull, 2 turret, 3 gun; higher
-# indices are the chassis' track pairs and wheels (VehicleEffects.DamageFromShotDecoder.convertComponentIndex).
-PART_NAMES = ('chassis', 'hull', 'turret', 'gun')
 # VehicleEffects.DamageFromShotDecoder.decodeSegment widens a decoded segment by this share of its length at both ends.
 SEGMENT_MARGIN = 0.01
-# RU 1.45 common/constants.VEHICLE_HIT_EFFECT: 0 pierced without damage, 1-2 ricochets, 3 not pierced, 4 pierced,
-# 5 critical hit, 6 pierced with a damaged device.
-OUTCOME_BY_CODE = {0: 'nodamage', 1: 'ricochet', 2: 'ricochet', 3: 'blocked', 4: 'pen', 5: 'crit', 6: 'crit'}
-OUTCOMES = ('pen', 'crit', 'blocked', 'ricochet', 'nodamage')
-DAMAGING = ('pen', 'crit')
 
 # A plate hit at a grazing angle: the cosine is kept above this so the effective armour stays finite.
 MIN_COS = 0.05

@@ -1,3 +1,3 @@
 import type { MarkGainedKeyInput } from './dedupe-keys.types';
 
-export const markGainedKey = ({ accountId, tankId, marks }: MarkGainedKeyInput): string => `mark:${accountId}:${tankId}:${marks}`;
+export const markGainedKey = ({ source, accountId, tankId, marks }: MarkGainedKeyInput): string => `mark:${source}:${accountId}:${tankId}:${marks}`;

@@ -14,12 +14,11 @@ index (client_index.py) says which parameters and textures a build has.
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import io
-import json
 import os
 import re
 import sys
 
-from fileio import write_text
+from fileio import json_text, read_json, write_text
 
 try:
     import jsonschema
@@ -42,11 +41,6 @@ BUNDLE_TARGET = 'res/mods/configs/otmetki/hangar_looks/recipes.json'
 OUR_TEXTURES = re.compile(r'^system/maps/post_processing/cube/otmetki/([a-z0-9_]+)\.dds$')
 ENVIRONMENT_PREFIX = 'otm_'
 SKY_PARTS = ('deferred', 'forward')
-
-
-def read_json(path):
-    with io.open(path, encoding='utf-8') as handle:
-        return json.load(handle)
 
 
 def recipe_ids():
@@ -157,15 +151,11 @@ def problems(recipes, index):
     return found
 
 
-def json_text(value):
-    return json.dumps(value, ensure_ascii=False, indent=2, separators=(',', ': '), sort_keys=True) + '\n'
-
-
 def is_stale():
     if not os.path.isfile(BUNDLE):
         return True
     with io.open(BUNDLE, encoding='utf-8') as handle:
-        return handle.read() != json_text(bundle())
+        return handle.read() != json_text(bundle(), True)
 
 
 def main(argv):
@@ -176,7 +166,7 @@ def main(argv):
         sys.stderr.write('\n'.join(found) + '\n')
         return 1
     if '--write' in argv:
-        write_text(BUNDLE, json_text(bundle(recipes)))
+        write_text(BUNDLE, json_text(bundle(recipes), True))
         return 0
     if is_stale():
         sys.stderr.write('hangars/recipes.json is stale: python tools/build/hangars.py --write\n')

@@ -2,9 +2,10 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
+import { formatPercentOrDash } from '@/shared/lib/format-number';
 import { readWidgetFixture } from '@/shared/lib/testing/widget-fixture';
 
-import { deltaView, percentText } from '../../lib/tank-card-view';
+import { deltaView } from '../../lib/tank-card-view';
 import { tankCardSchema } from '../../model/schemas';
 import { TankCardWidget } from '../TankCardWidget';
 
@@ -26,7 +27,7 @@ describe(TankCardWidget, () => {
   it('shows the percent with its last change', () => {
     const html = render(<TankCardWidget data={extended} />).container;
 
-    expect(text(html)).toContain(`${percentText(extended.percent)}${deltaView(extended.delta)?.text ?? ''}`);
+    expect(text(html)).toContain(`${formatPercentOrDash({ value: extended.percent, digits: 2 })}${deltaView(extended.delta)?.text ?? ''}`);
   });
 
   it('labels every mark level of the bar with its average', () => {

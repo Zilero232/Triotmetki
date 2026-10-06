@@ -1,43 +1,43 @@
 {
   "data": {
-    "card": "1", 
-    "result": "поражение", 
-    "result_tone": "bad", 
+    "card": "1",
+    "result": "поражение",
+    "result_tone": "bad",
     "rows": [
       {
-        "icon": "otmetki:wn8", 
-        "note": "-0.42%", 
-        "progress": null, 
-        "progress_tone": "gold", 
-        "text": "Отметка", 
-        "tone": "bad", 
+        "icon": "otmetki:wn8",
+        "note": "-0.42%",
+        "progress": null,
+        "progress_tone": "gold",
+        "text": "Отметка",
+        "tone": "bad",
         "value": "84.00%"
       }
-    ], 
-    "show_s": 8.0, 
-    "subtitle": "Т-34-85 · Малиновка", 
+    ],
+    "show_s": 8.0,
+    "subtitle": "Т-34-85 · Малиновка",
     "tiles": [
       {
-        "icon": "otmetki:damage", 
-        "label": "Урон", 
-        "tone": "text", 
+        "icon": "otmetki:damage",
+        "label": "Урон",
+        "tone": "text",
         "value": "1 960"
-      }, 
+      },
       {
-        "icon": "otmetki:points", 
-        "label": "Опыт", 
-        "tone": "gold", 
+        "icon": "otmetki:points",
+        "label": "Опыт",
+        "tone": "gold",
         "value": "812"
-      }, 
+      },
       {
-        "icon": null, 
-        "label": "Кредиты", 
-        "tone": "gold", 
+        "icon": null,
+        "label": "Кредиты",
+        "tone": "gold",
         "value": "23 450"
       }
-    ], 
+    ],
     "title": "Прошлый бой"
-  }, 
-  "kind": "battle_summary", 
+  },
+  "kind": "battle_summary",
   "v": 1
 }

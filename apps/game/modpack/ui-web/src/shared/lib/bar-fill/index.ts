@@ -1,1 +1,1 @@
-export { barFill } from './bar-fill';
+export { barFill, fillScaleStyle, slideStyle } from './bar-fill';

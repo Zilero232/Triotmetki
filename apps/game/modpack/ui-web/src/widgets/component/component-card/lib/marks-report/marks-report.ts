@@ -1,7 +1,7 @@
 import { fromUnixTime, isValid, lightFormat } from 'date-fns';
 import { clamp } from 'remeda';
 
-import { formatNumber, formatPercent, NUMBER_FORMAT } from '@/shared/lib/format-number';
+import { formatNumber, formatPercent, NUMBER_FORMAT, trendOf } from '@/shared/lib/format-number';
 
 import type { MarksReportView, RecordCardInput, ReportCard, ReportRow, ReportTone, UiMarksReport } from './marks-report.types';
 
@@ -10,15 +10,7 @@ import { MARKS_REPORT } from './marks-report.constants';
 const plain = (text: string): string =>
   text.replaceAll(NUMBER_FORMAT.minus, MARKS_REPORT.glyphs.minus).replaceAll(NUMBER_FORMAT.thinSpace, MARKS_REPORT.glyphs.space);
 
-const toneOf = (delta: number | null): ReportTone => {
-  const change = delta ?? 0;
-
-  if (change > 0) {
-    return 'good';
-  }
-
-  return change < 0 ? 'bad' : 'muted';
-};
+const toneOf = (delta: number | null): ReportTone => MARKS_REPORT.trendTones[trendOf(delta)];
 
 const deltaText = (delta: number | null): string =>
   delta === null ? MARKS_REPORT.dash : plain(formatPercent({ value: delta, digits: 2, signed: true }));

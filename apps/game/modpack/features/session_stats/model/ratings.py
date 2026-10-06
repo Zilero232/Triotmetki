@@ -3,8 +3,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import bisect
 
 from ....core.compat import is_number
-from ....core.format import format_number
-from .constants import EVEN_WIN_RATE, TIER_COLORS, WN8_BOUNDS, WN8_SCALE
+from ....core.format import TIER_COLORS, format_number
+from .constants import EVEN_WIN_RATE, WN8_BOUNDS, WN8_SCALE
 
 
 def wn8_tier(value):

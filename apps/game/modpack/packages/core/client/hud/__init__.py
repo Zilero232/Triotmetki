@@ -15,6 +15,7 @@ from ...hud import BackendChain, ComponentConfig, HudLayer
 from ...hud.cover import HIDE_UNDER_WINDOWS_KEY
 from ...hud.report import PanelReport
 from ...log import log, safe
+from ..storage import deferred
 from .constants import CONFIG_NAME, REPORT_DELAY_S
 from .cover import CoverWatch
 from .gameface import GamefaceBackend
@@ -48,7 +49,7 @@ def create_backend(backends=BACKENDS):
 def component_config(app):
     """components.json next to config.json, shared by every component (created on first use)."""
     if _state['config'] is None:
-        _state['config'] = ComponentConfig(open_config(app.config_dir, CONFIG_NAME, pretty=True))
+        _state['config'] = ComponentConfig(deferred(open_config(app.config_dir, CONFIG_NAME, pretty=True)))
     return _state['config']
 
 

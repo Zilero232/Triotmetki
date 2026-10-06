@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.compat import string_types, to_text
+from ....core.compat import clean_text, string_types, to_text
 from .constants import (  # noqa: F401
     ACTION_CHECK,
     ACTION_OPEN,
@@ -9,6 +9,7 @@ from .constants import (  # noqa: F401
     GAME_FOLDER,
     LATEST_PATH,
     MAX_VERSION,
+    RELEASE_VERSION,
     SINGLE_FILE,
     SINGLE_ID,
     SPLIT_FILE,
@@ -63,19 +64,18 @@ def game_folder(names):
     return max(folders, key=version_key) if folders else None
 
 
-def _text(value, limit):
-    return to_text(value).strip()[:limit] if isinstance(value, string_types) else u''
-
-
 def clean_release(data):
     if not isinstance(data, dict) or data.get('status') != STATUS_COMPATIBLE:
         return None
     release = data.get('release')
-    if not isinstance(release, dict) or version_key(release.get('version')) is None:
+    if not isinstance(release, dict):
+        return None
+    version = clean_text(release.get('version'), MAX_VERSION, u'')
+    if not RELEASE_VERSION.match(version):
         return None
     packages = [item for item in release.get('packages') or () if isinstance(item, dict)]
     return {
-        'version': _text(release['version'], MAX_VERSION),
+        'version': version,
         'files': [item.get('file') for item in packages],
     }
 

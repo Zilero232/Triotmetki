@@ -12,6 +12,24 @@ fn write(path: &Path, text: &str) {
 fn refuses_to_delete_roots_and_relative_paths() {
     assert!(ensure_removable(Path::new(r"C:\")).is_err());
     assert!(ensure_removable(Path::new("relative")).is_err());
+    assert!(ensure_removable(Path::new(r"C:\Games\Мир танков\mods\..\..\Users")).is_err());
+}
+
+#[test]
+fn keeps_deletions_inside_the_listed_roots() {
+    let dir = tempfile::tempdir().unwrap();
+    let mods = dir.path().join("Мир танков").join("mods");
+    let roots = [mods.clone()];
+
+    write(&mods.join("1.45.0.0").join("core.mtmod"), "core");
+    write(&dir.path().join("Документы").join("важное.txt"), "keep");
+
+    assert!(ensure_within(&mods.join("1.45.0.0").join("core.mtmod"), &roots).is_ok());
+    assert!(ensure_within(&mods.join("1.45.0.0").join("missing.mtmod"), &roots).is_ok());
+    assert!(ensure_within(&mods, &roots).is_err());
+    assert!(ensure_within(&mods.join("..").join("..").join("Документы").join("важное.txt"), &roots).is_err());
+    assert!(ensure_within(&dir.path().join("Мир танков").join("modsevil").join("a.mtmod"), &roots).is_err());
+    assert!(ensure_within(Path::new("mods").join("a.mtmod").as_path(), &[PathBuf::from("mods")]).is_err());
 }
 
 #[test]

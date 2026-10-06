@@ -32,15 +32,22 @@ def _image_module():
     return Image
 
 
-def svg_png(svg_path, width):
+def _svg_job(svg_path):
+    return rasterize.job(
+        rasterize.read_svg(svg_path),
+        PREVIEW_SIZE[0],
+        font_dirs=[FONTS_DIR],
+        font_family=PREVIEW_FONT,
+        resources_dir=os.path.dirname(os.path.abspath(svg_path)),
+    )
+
+
+def svg_pngs(svg_paths):
+    """The PNG bytes of every SVG at the preview width, drawn in one Node run."""
+    if not svg_paths:
+        return []
     try:
-        return rasterize.svg_png(
-            rasterize.read_svg(svg_path),
-            width,
-            font_dirs=[FONTS_DIR],
-            font_family=PREVIEW_FONT,
-            resources_dir=os.path.dirname(os.path.abspath(svg_path)),
-        )
+        return rasterize.svg_pngs([_svg_job(path) for path in svg_paths])
     except rasterize.RasterizeError as error:
         raise ArtworkError('%s' % error)
 
@@ -56,26 +63,34 @@ def cover(image, size, image_module):
     return image.crop((left, top, left + width, top + height))
 
 
-def render_preview(source, out_path):
-    """An SVG renders at 640 px wide; a PNG screenshot is scaled and centre-cropped to 640x360."""
+def _is_svg(source):
+    return source.lower().endswith('.svg')
+
+
+def render_all(pairs):
+    """Every (source, out path): an SVG renders at 640 px wide (all of them in one Node run), a PNG screenshot is scaled
+    and centre-cropped to 640x360. Returns the written paths."""
     Image = _image_module()
-    if source.lower().endswith('.svg'):
-        image = Image.open(io.BytesIO(svg_png(source, PREVIEW_SIZE[0])))
-    else:
-        image = Image.open(source)
-    image = cover(image.convert('RGB'), PREVIEW_SIZE, Image)
-    fileio.make_dirs(os.path.dirname(out_path))
-    image.save(out_path, format='PNG', optimize=True)
-    return out_path
+    svgs = [source for source, _ in pairs if _is_svg(source)]
+    drawn = dict(zip(svgs, svg_pngs(svgs)))
+    for source, out_path in pairs:
+        image = Image.open(io.BytesIO(drawn[source])) if _is_svg(source) else Image.open(source)
+        image = cover(image.convert('RGB'), PREVIEW_SIZE, Image)
+        fileio.make_dirs(os.path.dirname(out_path))
+        image.save(out_path, format='PNG', optimize=True)
+    return [out_path for _, out_path in pairs]
+
+
+def render_preview(source, out_path):
+    return render_all([(source, out_path)])[0]
 
 
 def render_previews(manifest, catalog, assets_dir, out_dir):
     """Every component preview at the manifest's path under out_dir; returns the written paths."""
-    written = []
+    pairs = []
     for component in manifest.components:
         if not component.preview.image:
             continue
         source = os.path.join(assets_dir, catalog.entry(component.id).preview.image)
-        target = os.path.join(out_dir, *component.preview.image.split('/'))
-        written.append(render_preview(source, target))
-    return written
+        pairs.append((source, os.path.join(out_dir, *component.preview.image.split('/'))))
+    return render_all(pairs)

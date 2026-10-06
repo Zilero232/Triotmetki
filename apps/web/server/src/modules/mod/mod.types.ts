@@ -50,11 +50,6 @@ export type BindLinkInput = {
 
 export type BindRequest = z.infer<typeof bindRequestSchema>;
 
-export type ClaimCodeInput = {
-  request: BindRequest;
-  failureKey: string;
-};
-
 export type ClaimedCode = {
   userId: string;
   link: UserLestaAccount & { player: Player };

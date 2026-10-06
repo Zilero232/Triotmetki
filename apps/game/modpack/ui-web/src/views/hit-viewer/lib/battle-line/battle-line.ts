@@ -1,4 +1,4 @@
-import { romanTier } from '@/entities/replay/replay';
+import { romanTier } from '@/shared/lib/format-number';
 
 import type { ViewerBattle } from '../viewer-protocol';
 import type { BattleResultInput } from './battle-line.types';

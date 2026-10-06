@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { createGamefaceMock, installGamefaceMock } from '@/shared/api/gameface/mock';
 
-import { forgetReports, PAGE_DIAG, reportOnce, round2 } from '..';
+import { forgetReports, PAGE_DIAG, reportOnce } from '..';
 
 const install = () => {
   const mock = createGamefaceMock({ state: '', clientSize: () => ({ width: 1920, height: 1080 }), onSend: () => null });
@@ -62,11 +62,5 @@ describe(reportOnce, () => {
     reportOnce({ kind: 'mouse', text: 'x'.repeat(PAGE_DIAG.maxChars * 2) });
 
     expect(sentDiags(mock)[0]?.text).toHaveLength(PAGE_DIAG.maxChars);
-  });
-});
-
-describe(round2, () => {
-  it('rounds the numbers it reports to two decimals', () => {
-    expect(round2(1.23456)).toBe(1.23);
   });
 });

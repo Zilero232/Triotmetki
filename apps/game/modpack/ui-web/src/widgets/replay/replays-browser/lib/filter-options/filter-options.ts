@@ -1,4 +1,5 @@
-import { REPLAY_FILTER, REPLAYS, romanTier } from '@/entities/replay/replay';
+import { REPLAY_FILTER, REPLAYS } from '@/entities/replay/replay';
+import { romanTier } from '@/shared/lib/format-number';
 
 import type { ReplaysText } from '../replays-text';
 import type { FacetOptions, FilterOptionsInput, ResultOption, SortOption } from './filter-options.types';

@@ -1,8 +1,8 @@
-import type { SpriteCell, SpriteCellInput, SpriteStyle, SpriteStyleInput } from './icon-sprite.types';
+import type { SpriteCell, SpriteCellStyle } from '../sprite-cell';
+import type { SpriteCellInput, SpriteStyleInput } from './icon-sprite.types';
 
 import { UI_ICONS } from '../../config';
-
-const rem = (value: number): string => `${value}rem`;
+import { spriteCellStyle } from '../sprite-cell';
 
 export const spriteRowsPerTone = (): number => Math.ceil(UI_ICONS.names.length / UI_ICONS.columns);
 
@@ -15,15 +15,5 @@ export const spriteCell = ({ name, tone }: SpriteCellInput): SpriteCell => {
   return { column: index % UI_ICONS.columns, row: toneIndex * spriteRowsPerTone() + Math.floor(index / UI_ICONS.columns) };
 };
 
-export const spriteStyle = ({ name, tone, size }: SpriteStyleInput): SpriteStyle => {
-  const { column, row } = spriteCell({ name, tone });
-  const { columns, rows } = spriteSize();
-
-  return {
-    width: rem(size),
-    height: rem(size),
-    backgroundImage: `url(${UI_ICONS.file})`,
-    backgroundSize: `${rem(columns * size)} ${rem(rows * size)}`,
-    backgroundPosition: `${rem(-column * size)} ${rem(-row * size)}`
-  };
-};
+export const spriteStyle = ({ name, tone, size }: SpriteStyleInput): SpriteCellStyle =>
+  spriteCellStyle({ file: UI_ICONS.file, cell: spriteCell({ name, tone }), grid: spriteSize(), width: size, height: size });

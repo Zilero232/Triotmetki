@@ -2,7 +2,7 @@ use base64::engine::general_purpose::STANDARD;
 use base64::Engine;
 use ring::signature::{Ed25519KeyPair, KeyPair};
 
-use super::signature::signed_payload;
+use super::signature::{signed_payload, PayloadFormat};
 use super::{LatestRelease, Release, ReleasePackage, ReleaseStatus};
 
 pub const KEY_ID: [u8; 8] = [7, 1, 2, 3, 4, 5, 6, 8];
@@ -32,7 +32,11 @@ impl TestSigner {
     }
 
     pub fn sign(&self, payload: &[u8]) -> String {
-        let trusted = "timestamp:0	file:release";
+        self.sign_at(payload, 0)
+    }
+
+    pub fn sign_at(&self, payload: &[u8], timestamp: u64) -> String {
+        let trusted = format!("timestamp:{timestamp}	file:release.txt");
         let signature = self.pair.sign(payload);
         let mut bin = LEGACY_ALGORITHM.to_vec();
 
@@ -54,7 +58,12 @@ trusted comment: {trusted}
     }
 
     pub fn signed(&self, mut release: Release) -> Release {
-        release.signature = Some(self.sign(signed_payload(&release).as_bytes()));
+        release.signature = Some(self.sign(signed_payload(&release, PayloadFormat::Current).as_bytes()));
+        release
+    }
+
+    pub fn signed_as(&self, mut release: Release, format: PayloadFormat, timestamp: u64) -> Release {
+        release.signature = Some(self.sign_at(signed_payload(&release, format).as_bytes(), timestamp));
         release
     }
 }

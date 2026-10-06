@@ -2,18 +2,27 @@ import type { ResolvedWidget } from '@/features/hud/widget-registry';
 import type { HudPanel } from '@/shared/api/hud-protocol';
 import type { RichLine } from '@/shared/lib/rich-text';
 
-import type { LabelStyle } from '../../../lib/label-layout';
+import type { LabelLayout, LabelStyle } from '../../../lib/label-layout';
 import type { MeasureRef } from '../use-panel-sizes';
 
 export type HudLabelModel = {
+  id: string;
   panel: HudPanel;
-  lines: RichLine[];
+  lines: RichLine[] | null;
   widget: ResolvedWidget | null;
   style: LabelStyle;
   button: boolean;
   interactive: boolean;
+  pressable: boolean;
   framed: boolean;
   dragging: boolean;
   measureRef: MeasureRef;
-  onClick: () => void;
+};
+
+export type UseLabelModelsInput = {
+  layouts: LabelLayout[];
+  lines: Map<string, RichLine[]>;
+  widgets: Map<string, ResolvedWidget | null>;
+  liveId: string | null;
+  measureRef: (id: string) => MeasureRef;
 };

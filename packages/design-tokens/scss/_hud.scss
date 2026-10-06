@@ -46,7 +46,7 @@ $surfaces: (
   'hud-slot-line': 'rgba(255, 255, 255, 0.14)',
   'hud-slot-bonus': 'rgba(232, 184, 74, 0.55)',
   'hud-slot-active': 'rgba(76, 195, 107, 0.18)',
-  'hud-text-shadow': '0 0 2px rgba(0, 0, 0, 0.9), 1px 1px 1px rgba(0, 0, 0, 0.9)',
+  'hud-text-shadow': '1px 1px 0 rgba(0, 0, 0, 0.9), -1px -1px 0 rgba(0, 0, 0, 0.7)',
   'hud-radius': 0,
   'hud-slot-radius': 2px
 );

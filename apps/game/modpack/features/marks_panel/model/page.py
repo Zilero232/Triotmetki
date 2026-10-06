@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.format import counted, format_epoch, format_number
+from ....core.format import counted, format_epoch, format_number, format_signed
 from .constants import (
     ACTION_CLEAR,
     ENTRY_MOMENT_FORMAT,
@@ -19,11 +19,7 @@ from .report import marks_report
 
 
 def signed_percent(value):
-    if value is None:
-        return u''
-    if value > 0:
-        return u'+' + PERCENT_FORMAT % value
-    return PERCENT_FORMAT % value
+    return format_signed(value, True, u'')
 
 
 def percent_text(value):

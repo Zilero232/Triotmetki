@@ -46,14 +46,12 @@ export class ModReportsWriterService {
 
   private async countReport(ipHash: string): Promise<void> {
     const key = `${MOD_REPORTS_API.dailyKeyPrefix}${ipHash}`;
-    const count = await this.redis.incr(key);
-
-    if (count === 1) {
-      await this.redis.expire(key, MOD_REPORTS_API.dailyWindowSeconds);
-    }
+    const results = await this.redis.multi().set(key, 0, 'EX', MOD_REPORTS_API.dailyWindowSeconds, 'NX').incr(key).ttl(key).exec();
+    const count = Number(results?.[1]?.[1] ?? 0);
+    const secondsLeft = Number(results?.[2]?.[1] ?? 0);
 
     if (count > MOD_REPORTS_API.dailyCap) {
-      throw new AppTooManyRequestsException('RATE_LIMITED', 'Too many problem reports from this address today', await this.redis.ttl(key));
+      throw new AppTooManyRequestsException('RATE_LIMITED', 'Too many problem reports from this address today', secondsLeft > 0 ? secondsLeft : null);
     }
   }
 }

@@ -260,13 +260,21 @@ impl ClientFiles {
             .ok_or_else(|| AppError::coded(ErrorCode::InvalidPath, format!("bad client path {}", located.path)))
     }
 
-    pub fn copy(&self, located: &Located, writer: &mut dyn Write) -> AppResult<u64> {
-        match located.entry {
-            None => Ok(std::io::copy(&mut File::open(self.loose_path(located)?)?, writer)?),
+    pub fn copy(&self, located: &Located, writer: &mut dyn Write, limit: u64) -> AppResult<u64> {
+        let copied = match located.entry {
+            None => std::io::copy(&mut File::open(self.loose_path(located)?)?.take(limit + 1), writer)?,
             Some(entry) => self
-                .with_archive(located.source, |archive| -> AppResult<u64> { Ok(std::io::copy(&mut archive.zip.by_index(entry)?, writer)?) })
-                .unwrap_or_else(|| Err(unreadable(&self.sources[located.source]))),
+                .with_archive(located.source, |archive| -> AppResult<u64> {
+                    Ok(std::io::copy(&mut archive.zip.by_index(entry)?.take(limit + 1), writer)?)
+                })
+                .unwrap_or_else(|| Err(unreadable(&self.sources[located.source])))?,
+        };
+
+        if copied > limit {
+            return Err(AppError::coded(ErrorCode::Io, format!("{} is larger than {limit} bytes", located.path)));
         }
+
+        Ok(copied)
     }
 
     pub fn read(&self, located: &Located, limit: u64) -> AppResult<Vec<u8>> {

@@ -22,14 +22,14 @@ LAYOUT = {'x': 1, 'y': 2, 'alignX': 'left', 'alignY': 'top'}
 REFRESH_EVERY_S = 5.0
 
 
-def load_component_module():
-    """core.client.component on a stubbed BigWorld, its components.json in memory."""
+def load_component_module(name='component'):
+    """core.client.<name> on a stubbed BigWorld, its components.json in memory."""
     saved = sys.modules.get('BigWorld')
     sys.modules['BigWorld'] = types.ModuleType(str('BigWorld'))
     try:
         hud = importlib.import_module('otmetki.core.client.hud')
         hud._state['config'] = ComponentConfig(MemoryFile())
-        return importlib.import_module('otmetki.core.client.component')
+        return importlib.import_module(CLIENT_PREFIX + '.' + name)
     finally:
         if saved is None:
             sys.modules.pop('BigWorld', None)
@@ -202,6 +202,20 @@ class PolledHangarCardTest(unittest.TestCase):
             ('hide', 'card_panel'),
             ('show', 'card_panel', u'card', {'kind': 'card'}),
         ]
+
+
+class PanelSpecTest(unittest.TestCase):
+
+    def test_of_reads_the_feature_conventions(self):
+        panel = load_component_module('hud.panel')
+        settings = types.ModuleType(str('settings'))
+        settings.PANEL_ID, settings.SCHEMA, settings.SWITCH = 'gauge', SCHEMA, 'gauge_on'
+        preview = types.ModuleType(str('preview'))
+        preview.preview_text, preview.preview_widget = len, repr
+
+        spec = panel.PanelSpec.of(settings, STRINGS, preview, (120, 40))
+
+        assert spec == panel.PanelSpec('gauge', SCHEMA, 'gauge_on', STRINGS, (120, 40), len, repr)
 
 
 if __name__ == '__main__':

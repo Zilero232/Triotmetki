@@ -1,8 +1,10 @@
-import type { FormatPercentInput, PercentSignInput } from './format-number.types';
+import type { FormatPercentInput, OptionalPercentInput, PercentSignInput, Trend } from './format-number.types';
 
 import { NUMBER_FORMAT } from './format-number.constants';
 
 const groups = (digits: string): string => digits.replace(/\B(?=(\d{3})+(?!\d))/g, NUMBER_FORMAT.thinSpace);
+
+export const groupDigits = (value: number): string => groups(String(Math.round(value)));
 
 export const formatNumber = (value: number): string => {
   const whole = Math.round(Math.abs(value));
@@ -29,25 +31,41 @@ const percentSign = ({ value, rounded, signed }: PercentSignInput): string => {
   return signed ? NUMBER_FORMAT.plus : '';
 };
 
-export const formatPercent = ({ value, digits, signed = false }: FormatPercentInput): string => {
+export const formatPercent = ({ value, digits, signed = false, unit = true }: FormatPercentInput): string => {
   const fixed = Math.abs(value).toFixed(digits).replace('.', NUMBER_FORMAT.decimalComma);
   const rounded = Number(Math.abs(value).toFixed(digits));
   const sign = percentSign({ value, rounded, signed });
+  const suffix = unit ? `${NUMBER_FORMAT.thinSpace}${NUMBER_FORMAT.percent}` : '';
 
-  return `${sign}${fixed}${NUMBER_FORMAT.thinSpace}%`;
+  return `${sign}${fixed}${suffix}`;
 };
 
-export const formatSeconds = (seconds: number): string => {
-  const whole = Math.max(0, Math.ceil(seconds));
+export const formatPercentOrDash = ({ value, digits }: OptionalPercentInput): string =>
+  value === null ? NUMBER_FORMAT.dash : formatPercent({ value, digits });
 
-  if (whole < NUMBER_FORMAT.secondsPerMinute) {
-    return String(whole);
-  }
-
+const clockText = (whole: number): string => {
   const minutes = Math.floor(whole / NUMBER_FORMAT.secondsPerMinute);
   const rest = whole % NUMBER_FORMAT.secondsPerMinute;
 
   return `${minutes}:${String(rest).padStart(2, '0')}`;
 };
 
-export const formatReload = (seconds: number): string => Math.max(0, seconds).toFixed(1);
+export const formatClock = (seconds: number): string => clockText(Math.max(0, Math.round(seconds)));
+
+export const formatSeconds = (seconds: number): string => {
+  const whole = Math.max(0, Math.ceil(seconds));
+
+  return whole < NUMBER_FORMAT.secondsPerMinute ? String(whole) : clockText(whole);
+};
+
+export const romanTier = (tier: number | null): string | null => (tier === null ? null : (NUMBER_FORMAT.romanTiers[tier - 1] ?? null));
+
+export const trendOf = (delta: number | null): Trend => {
+  const change = delta ?? 0;
+
+  if (change > 0) {
+    return 'rising';
+  }
+
+  return change < 0 ? 'falling' : 'flat';
+};

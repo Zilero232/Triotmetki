@@ -19,7 +19,7 @@ from otmetki.features.session_stats.model import (
     parse_overview,
     session_widget,
 )
-from otmetki.features.session_stats.model.constants import TIER_COLORS
+from otmetki.core.format import TIER_COLORS
 from otmetki.features.session_stats.model.ratings import wn8_tier
 from otmetki.features.session_stats.settings import SCHEMA, SETTINGS
 

@@ -19,7 +19,12 @@ import type { ReplayTrack } from './lib/replay-tracks/replay-tracks.types';
 export type UploadedReplayFile = {
   originalname: string;
   size: number;
-  buffer: Buffer;
+  path: string;
+};
+
+export type AcceptReplayInput = {
+  file: UploadedReplayFile | undefined;
+  body?: Buffer;
 };
 
 export type UploadReplayInput = {

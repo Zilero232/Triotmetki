@@ -2,7 +2,7 @@ import { clamp } from 'remeda';
 
 import type { DeltaDirection, HudTone } from '@/ui-kit';
 
-import { formatNumber, formatPercent, NUMBER_FORMAT } from '@/shared/lib/format-number';
+import { formatNumber, formatPercent, formatPercentOrDash, trendOf } from '@/shared/lib/format-number';
 
 import type { MarksPanelData } from '../../model/schemas';
 import type { LevelNeedView, MarksAverageView, MarksBarView, MarksDamageView, MarksGoalView, MarksPanelView } from './marks-panel-view.types';
@@ -18,21 +18,10 @@ const levelNeed = ({ level, need }: { level: number; need: number }): LevelNeedV
   reached: need <= 0
 });
 
-export const percentText = (percent: number | null): string =>
-  percent === null ? MARKS_PANEL.unknownPercent : formatPercent({ value: percent, digits: 2 });
+export const percentText = (percent: number | null): string => formatPercentOrDash({ value: percent, digits: 2 });
 
 export const deltaText = (delta: number | null): string | null =>
-  delta === null ? null : formatPercent({ value: delta, digits: 2, signed: true }).replace(`${NUMBER_FORMAT.thinSpace}%`, '');
-
-const trendOf = (delta: number | null): keyof typeof MARKS_PANEL.deltaTones => {
-  const change = delta ?? 0;
-
-  if (change > 0) {
-    return 'rising';
-  }
-
-  return change < 0 ? 'falling' : 'flat';
-};
+  delta === null ? null : formatPercent({ value: delta, digits: 2, signed: true, unit: false });
 
 const deltaTone = (delta: number | null): HudTone => MARKS_PANEL.deltaTones[trendOf(delta)];
 

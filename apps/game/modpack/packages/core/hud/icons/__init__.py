@@ -35,6 +35,7 @@ from .constants import (
 )
 
 __all__ = (
+    'CLASS_GLYPHS',
     'artefact_icon',
     'class_icon',
     'efficiency_icon',

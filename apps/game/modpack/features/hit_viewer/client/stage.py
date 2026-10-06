@@ -5,10 +5,10 @@ import BigWorld
 from ....core.client.game import client_attr, service
 from ....core.client.hud.icons import client_file_exists
 from ....core.hud.icons import image
+from ....core.hit_book import PART_NAMES
 from ....core.hooks import subscribe, unsubscribe
 from ....core.log import log, log_exception, safe
 from ..model import MODULE_KEYS, effect_model, first_plate, hit_geometry, shell_model, vehicle_vector
-from ..model.constants import PART_NAMES
 from .constants import (
     CAMERA_MANAGER_CLASS,
     CAMERA_MANAGER_MODULE,

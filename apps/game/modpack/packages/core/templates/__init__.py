@@ -4,14 +4,15 @@
 Built on the standard library's `string.Template` with a `{name}` pattern instead of `$name`:
 `render(u'{dealt} / {blocked}', values)`. `{{` is a literal brace. A macro the values do not know stays
 in the text as written (so a typo shows up instead of raising in battle). Values are formatted with
-`format_value` (numbers get the space thousands separator of the panels).
+`format_value` (numbers get the space thousands separator of the panels). `render_markup` is the same for a
+template written in the panels' HTML subset: the template stays markup, each value is escaped unless it is `Markup`.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from string import Template
 
 from ..compat import is_number, string_types, to_text
-from ..format import format_number
+from ..format import Markup, escape, format_number
 from .constants import MAX_TEMPLATE_LENGTH
 
 
@@ -50,3 +51,8 @@ def render(template, values):
     text = to_text(template)[:MAX_TEMPLATE_LENGTH]
     formatted = _Values((key, format_value(value)) for key, value in values.items())
     return MacroTemplate(text).safe_substitute(formatted)
+
+
+def render_markup(template, values):
+    escaped = dict((key, escape(format_value(value))) for key, value in values.items())
+    return Markup(render(template, escaped))

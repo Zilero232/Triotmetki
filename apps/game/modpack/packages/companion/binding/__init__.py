@@ -5,7 +5,14 @@ import time
 from ...core.compat import is_int, string_types, to_text
 from ...core.errors import ReasonError
 from ...core.vendor import attr
-from .constants import BIND_PATH, CODE_PATTERN, CODE_SEPARATORS, MIN_SECRET_LENGTH  # noqa: F401
+from .constants import (  # noqa: F401
+    BIND_PATH,
+    CODE_PATTERN,
+    CODE_SEPARATORS,
+    MIN_SECRET_LENGTH,
+    PUBLIC_FIELDS,
+    SEALED_FIELD,
+)
 
 
 class BindError(ReasonError):
@@ -76,30 +83,105 @@ def parse_bind_response(data, expected_account_id, now=None):
     return credentials
 
 
+def _accounts(storage):
+    data = storage.read({}) if storage is not None else {}
+    accounts = data.get('accounts') if isinstance(data, dict) else None
+    return accounts if isinstance(accounts, dict) else {}
+
+
+def _has_legacy_fields(entry):
+    return isinstance(entry, dict) and bool(set(entry) - set(PUBLIC_FIELDS))
+
+
 class CredentialStore(object):
+    """The bindings per account, split in two (README "Durable settings"): the game-folder `credentials.json` holds
+    only `{device_id, account_id}`, the %APPDATA% copy adds `secret_dpapi`, the secret sealed for this Windows user. A
+    plaintext `secret` of an older version is taken once and both halves are rewritten at once (so is a game-folder copy
+    that is missing or carries other fields); plaintext is never written. Without DPAPI or a durable folder a new
+    binding lasts for the session only."""
 
-    def __init__(self, storage):
-        self.storage = storage
+    def __init__(self, pair, box):
+        self.public = pair.public
+        self.private = pair.private
+        self.box = box
+        self.session = {}
 
-    def _read(self):
-        data = self.storage.read({})
-        if not isinstance(data, dict) or not isinstance(data.get('accounts'), dict):
-            return {'accounts': {}}
-        return data
+    def _load(self):
+        public = _accounts(self.public)
+        private = _accounts(self.private)
+        stored = {}
+        plaintext = False
+        for key in set(public) | set(private):
+            entry = private.get(key) if isinstance(private.get(key), dict) else {}
+            secret = self.box.open(entry.get(SEALED_FIELD))
+            if secret is None:
+                plain = [side.get(key) for side in (private, public) if isinstance(side.get(key), dict)]
+                secret = next((side.get('secret') for side in plain if side.get('secret')), None)
+                plaintext = plaintext or secret is not None
+            source = entry or public.get(key)
+            credentials = Credentials.from_dict(dict(source, secret=secret)) if isinstance(source, dict) else None
+            if credentials is not None:
+                stored[key] = credentials
+        stale = plaintext or set(public) != set(stored) or any(_has_legacy_fields(entry) for entry in public.values())
+        return stored, stale
+
+    def _all(self):
+        stored, stale = self._load()
+        if stale:
+            self._persist(stored)
+        accounts = dict(stored)
+        accounts.update(self.session)
+        return accounts
+
+    def _persist(self, stored):
+        if self.private is None or not self.box.available():
+            return False
+        public = {}
+        private = {}
+        for key, credentials in stored.items():
+            sealed = self.box.seal(credentials.secret)
+            if sealed is None:
+                return False
+            public[key] = {'device_id': credentials.device_id, 'account_id': credentials.account_id}
+            private[key] = dict(public[key])
+            private[key][SEALED_FIELD] = sealed
+        try:
+            self.private.write({'accounts': private})
+            self.public.write({'accounts': public})
+        except (IOError, OSError):
+            return False
+        return True
+
+    def migrate(self):
+        """Rewrites a plaintext secret of an older version into the split format right away."""
+        self._all()
 
     def get(self, account_id):
         if not is_int(account_id):
             return None
-        return Credentials.from_dict(self._read()['accounts'].get(str(account_id)))
+        return self._all().get(str(account_id))
 
     def save(self, credentials):
-        data = self._read()
-        data['accounts'][str(credentials.account_id)] = credentials.to_dict()
-        self.storage.write(data)
+        key = str(credentials.account_id)
+        stored, _ = self._load()
+        stored[key] = credentials
+        if self._persist(stored):
+            self.session.pop(key, None)
+        else:
+            self.session[key] = credentials
 
     def remove(self, account_id):
-        data = self._read()
-        if data['accounts'].pop(str(account_id), None) is not None:
-            self.storage.write(data)
-            return True
-        return False
+        key = str(account_id)
+        in_session = self.session.pop(key, None) is not None
+        stored, _ = self._load()
+        if stored.pop(key, None) is None:
+            return in_session
+        if not self._persist(stored):
+            self._forget(key)
+        return True
+
+    def _forget(self, key):
+        for storage in (self.public, self.private):
+            data = storage.read({}) if storage is not None else {}
+            if isinstance(data, dict) and isinstance(data.get('accounts'), dict) and data['accounts'].pop(key, None):
+                storage.write(data)

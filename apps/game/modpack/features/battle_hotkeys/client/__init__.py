@@ -5,22 +5,13 @@ from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.native import apply_settings, read_settings
 from ....core.client.timer import Ticker
 from ....core.log import log, safe
+from .. import settings
 from ..i18n import STRINGS
-from ..model import notice_text, toggled, wanted_toggles
+from ..model import notice_text, preview, toggled, wanted_toggles
 from ..model.constants import HOTKEYS, PREVIEW_SIZE
-from ..model.preview import preview_text, preview_widget
 from ..model.widget import notice_widget
-from ..settings import PANEL_ID, SCHEMA, SWITCH
 
-PANEL_SPEC = PanelSpec(
-    panel_id=PANEL_ID,
-    schema=SCHEMA,
-    switch=SWITCH,
-    strings=STRINGS,
-    preview_size=PREVIEW_SIZE,
-    preview_text=preview_text,
-    preview_widget=preview_widget,
-)
+PANEL_SPEC = PanelSpec.of(settings, STRINGS, preview, PREVIEW_SIZE)
 
 
 def _option_hotkey(option, on_toggle):

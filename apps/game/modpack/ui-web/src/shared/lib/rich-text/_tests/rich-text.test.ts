@@ -39,6 +39,18 @@ describe(parseRichText, () => {
     expect(lines).toMatchObject([{ runs: [{ kind: 'text', text: '<script> & → ✓ &bogus;', style: {} }] }]);
   });
 
+  it('replaces a code point outside Unicode or a surrogate instead of throwing', () => {
+    const lines = parseRichText('a&#x110000;b&#xD800;c&#99999999999999999999;d&#xDFFF;e&#x10FFFF;');
+
+    expect(lines).toMatchObject([{ runs: [{ kind: 'text', text: 'a�b�c�d�e\u{10FFFF}', style: {} }] }]);
+  });
+
+  it('keeps the nul code point and the last code point before the surrogates', () => {
+    const lines = parseRichText('&#0;&#xD7FF;&#xE000;');
+
+    expect(lines).toMatchObject([{ runs: [{ kind: 'text', text: '\u0000퟿', style: {} }] }]);
+  });
+
   it('keeps a game image with its valid attributes and drops the rest', () => {
     const lines = parseRichText('<img src="img://gui/maps/lamp.png" width="32" height="x"/><img src="https://evil"/>');
 

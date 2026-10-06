@@ -3,6 +3,7 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use chrono::{DateTime, Local};
+use encoding_rs::{Encoding, UTF_8};
 use zip::write::SimpleFileOptions;
 use zip::{CompressionMethod, ZipWriter};
 
@@ -10,6 +11,7 @@ use crate::detect::GameClient;
 use crate::error::AppResult;
 use crate::fsx::list_files;
 use crate::paths::{configs_dir, Layout};
+use crate::report::Redactor;
 use crate::state::{client_key, disabled_dir, CLIENT_INI, MANIFEST_INI};
 
 pub const ZIP_PREFIX: &str = "otmetki-logs-";
@@ -42,17 +44,30 @@ pub struct CollectInput<'a> {
     pub clients: &'a [GameClient],
     pub output_dir: &'a Path,
     pub now: DateTime<Local>,
+    pub redactor: &'a Redactor,
 }
 
-struct Bundle {
+pub fn decode_text(bytes: &[u8]) -> String {
+    let (text, _) = match Encoding::for_bom(bytes) {
+        Some((encoding, bom_length)) => encoding.decode_without_bom_handling(&bytes[bom_length..]),
+        None => UTF_8.decode_without_bom_handling(bytes),
+    };
+
+    text.into_owned()
+}
+
+struct Bundle<'a> {
     writer: ZipWriter<File>,
     options: SimpleFileOptions,
+    redactor: &'a Redactor,
 }
 
-impl Bundle {
+impl Bundle<'_> {
     fn add_bytes(&mut self, name: &str, bytes: &[u8]) -> AppResult<()> {
+        let (redacted, _) = self.redactor.redact(&decode_text(bytes));
+
         self.writer.start_file(name, self.options)?;
-        self.writer.write_all(bytes)?;
+        self.writer.write_all(redacted.as_bytes())?;
 
         Ok(())
     }
@@ -93,6 +108,7 @@ pub fn collect(input: CollectInput) -> AppResult<PathBuf> {
     let mut bundle = Bundle {
         writer: ZipWriter::new(File::create(&zip_path)?),
         options: SimpleFileOptions::default().compression_method(CompressionMethod::Deflated),
+        redactor: input.redactor,
     };
 
     for log in list_files(&input.layout.logs_dir()) {

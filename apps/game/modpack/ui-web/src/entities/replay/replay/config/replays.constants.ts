@@ -33,12 +33,7 @@ export const REPLAY_FILTER = {
 } as const;
 
 export const REPLAY_FORMAT = {
-  thinSpace: ' ',
-  groupPattern: /\B(?=(\d{3})+(?!\d))/g,
-  dash: '—',
-  romanTiers: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'],
   bytesPerMegabyte: 1024 * 1024,
-  secondsPerMinute: 60,
   millisecondsPerSecond: 1000,
   dateTime: 'dd.MM.yyyy HH:mm',
   day: 'dd.MM.yyyy'

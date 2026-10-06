@@ -4,7 +4,6 @@ a bilingual `## <id> <version>` entry for every catalogued package and a `## <ve
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import io
-import json
 import os
 import re
 import sys
@@ -16,6 +15,7 @@ BUILD_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if BUILD_DIR not in sys.path:
     sys.path.insert(0, BUILD_DIR)
 
+import fileio  # noqa: E402
 import layout  # noqa: E402
 
 MODPACK_DIR = os.path.dirname(os.path.dirname(BUILD_DIR))
@@ -26,11 +26,6 @@ LANGUAGES = ('en', 'ru')
 CYRILLIC = re.compile(u'[Ѐ-ӿ]')
 HEADING = re.compile(r'^##\s+(?:(?P<id>[a-z][a-z0-9_]*)\s+)?v?(?P<version>\d+\.\d+\.\d+)\s*$')
 LANGUAGE_HEADING = re.compile(r'^###\s+(?P<language>%s)\s*$' % '|'.join(LANGUAGES))
-
-
-def read_json(path):
-    with io.open(path, encoding='utf-8') as handle:
-        return json.load(handle)
 
 
 def entry_texts(lines):
@@ -84,7 +79,7 @@ class ChangelogTest(unittest.TestCase):
         with io.open(CHANGELOG, encoding='utf-8') as handle:
             self.changelog = parse_changelog(handle.read())
         self.versions = dict((package.key, package.version) for package in layout.split_packages('root_init.py'))
-        self.catalogued = [item['id'] for item in read_json(CATALOG)['components'] if 'kind' not in item]
+        self.catalogued = [item['id'] for item in fileio.read_json(CATALOG)['components'] if 'kind' not in item]
 
     def test_every_catalogued_component_has_an_entry_for_its_version(self):
         keys = [(component_id, self.versions.get(component_id)) for component_id in self.catalogued]
@@ -101,7 +96,7 @@ class ChangelogTest(unittest.TestCase):
         self.assertEqual(unknown, [])
 
     def test_release_entry_for_the_modpack_version(self):
-        version = read_json(PACKAGE_JSON)['version']
+        version = fileio.read_json(PACKAGE_JSON)['version']
 
         self.assertTrue(self.changelog.get((None, version)))
 

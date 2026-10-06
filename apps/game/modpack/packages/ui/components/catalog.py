@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ...core.editor import groups_editor
 from ...core.vendor import attr
 from .component import Component, section_switch, switch_of
 from .constants import (
@@ -23,6 +24,7 @@ class FeatureInfo(object):
     instance = attr.ib(default=None)
     title = attr.ib(default=None)
     editor_module = attr.ib(default=None)
+    editor_groups = attr.ib(default=None)
 
     def config_keys(self):
         return tuple(getattr(self.settings_module, 'SETTINGS', ()) or ())
@@ -31,7 +33,10 @@ class FeatureInfo(object):
         return tuple(getattr(self.settings_module, 'ADVANCED', ()) or ())
 
     def editor(self):
-        return getattr(self.editor_module, 'editor', None)
+        found = getattr(self.editor_module, 'editor', None)
+        if found is None and self.editor_groups is not None:
+            return groups_editor(self.id, self.editor_groups)
+        return found
 
     def parts(self):
         return tuple(getattr(self.settings_module, 'PARTS', ()) or ())

@@ -1,38 +1,32 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
+
+import { useMeasureFrames } from '@/shared/lib/use-measure-frames';
+
+import type { OffsetInput } from './use-focus-line.types';
 
 import { EDITOR } from '../../../config';
 
-const offsetIn = (line: HTMLElement, frame: HTMLElement): number => line.getBoundingClientRect().top - frame.getBoundingClientRect().top;
+const offsetIn = ({ line, frame }: OffsetInput): number => line.getBoundingClientRect().top - frame.getBoundingClientRect().top;
 
 export const useFocusLine = (focusKey: string | null) => {
   const frameRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
   const [top, setTop] = useState(0);
 
-  useEffect(() => {
-    if (focusKey === null) {
-      return undefined;
+  const measure = (): void => {
+    const line = lineRef.current;
+    const frame = frameRef.current;
+
+    if (!line || !frame) {
+      return;
     }
 
-    let left = EDITOR.focusFrames;
-    let frame = 0;
+    const offset = offsetIn({ line, frame }) - EDITOR.focusMargin;
 
-    const measure = () => {
-      const line = lineRef.current;
-      const box = frameRef.current;
+    setTop(Math.max(0, Math.round(offset)));
+  };
 
-      if (line && box) {
-        setTop(Math.max(0, Math.round(offsetIn(line, box) - EDITOR.focusMargin)));
-      }
-
-      left -= 1;
-      frame = left > 0 ? requestAnimationFrame(measure) : 0;
-    };
-
-    frame = requestAnimationFrame(measure);
-
-    return () => cancelAnimationFrame(frame);
-  }, [focusKey]);
+  useMeasureFrames({ measure, frames: EDITOR.focusFrames, restartKey: focusKey, isEnabled: focusKey !== null, skipsFirst: true });
 
   return { frameRef, lineRef, top };
 };

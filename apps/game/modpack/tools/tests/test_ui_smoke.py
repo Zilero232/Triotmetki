@@ -304,7 +304,7 @@ class UiSmokeTest(unittest.TestCase):
         shutil.rmtree(self.game_dir, ignore_errors=True)
 
     def purge(self):
-        _support.drop_modules([name for name in sys.modules if name.split('.')[0] in STUBBED])
+        _support.drop_game_modules(STUBBED)
 
     def install_client_stubs(self):
         test = self
@@ -312,10 +312,10 @@ class UiSmokeTest(unittest.TestCase):
             'BigWorld',
             callback=lambda delay, fn: None,
             player=lambda: test.player,
-            fetchURL=lambda *args, **kwargs: None,
             isKeyDown=lambda key: key in test.pressed,
             openWebBrowser=test.opened.append,
         )
+        _support.install_transport(lambda method, url, headers, body, callback: None)
         module('BattleReplay', isPlaying=lambda: False)
         vehicle = constants('CurrentVehicle', {'item': None, 'onChanged': Event()})()
         module('CurrentVehicle', g_currentVehicle=vehicle)

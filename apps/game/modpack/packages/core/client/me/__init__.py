@@ -8,7 +8,8 @@ import time
 
 from ...codec import encode_json, parse_json_body, parse_retry_after
 from ...errors import ReasonError
-from ...log import log, log_exception, safe
+from ...events import Listeners
+from ...log import log, safe
 from ...me import (
     OK_STATUS,
     REFRESH_AFTER_BATTLE_S,
@@ -116,7 +117,7 @@ class TankRatings(object):
         self.rows = {}
         self.reads = ReadState()
         self.watched = []
-        self.listeners = []
+        self.listeners = Listeners('tank ratings listener')
         bus = app.bus
         bus.on('account', self._on_account)
         bus.on('rebind', self._on_rebind)
@@ -124,7 +125,7 @@ class TankRatings(object):
         bus.on('tick', self._on_tick)
 
     def listen(self, callback):
-        self.listeners.append(callback)
+        self.listeners.add(callback)
 
     def row(self, tank_id):
         return self.rows.get(tank_id)
@@ -176,11 +177,7 @@ class TankRatings(object):
         del self.watched[:-MAX_WATCHED_TANKS]
 
     def _notify(self, tank_id):
-        for callback in list(self.listeners):
-            try:
-                callback(tank_id)
-            except Exception:
-                log_exception('tank ratings listener')
+        self.listeners.notify(tank_id)
 
 
 def tank_ratings(app):

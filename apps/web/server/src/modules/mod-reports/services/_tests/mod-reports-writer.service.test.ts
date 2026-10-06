@@ -84,4 +84,14 @@ describe('ModReportsWriterService.submit', () => {
 
     await expect(service.submit({ body, ip: '198.51.100.9' })).resolves.toBeDefined();
   });
+
+  it('tells a capped address how long until the daily window resets', async () => {
+    const { service } = createService();
+
+    for (let sent = 0; sent < MOD_REPORTS_API.dailyCap; sent += 1) {
+      await service.submit({ body, ip: IP });
+    }
+
+    await expect(service.submit({ body, ip: IP })).rejects.toMatchObject({ retryAfterSec: MOD_REPORTS_API.dailyWindowSeconds });
+  });
 });

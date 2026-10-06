@@ -1,6 +1,11 @@
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
 export const REPLAY_UPLOAD = {
   field: 'file',
   maxBytes: 50 * 1024 * 1024,
+  tempDir: join(tmpdir(), 'otmetki-replay-uploads'),
+  concurrency: { perOwner: 2, keyPrefix: 'otmetki:replays:uploading:', ttlSeconds: 600 },
   maxFileNameLength: 255,
   multipartOverheadBytes: 64 * 1024,
   maxFields: 4,
