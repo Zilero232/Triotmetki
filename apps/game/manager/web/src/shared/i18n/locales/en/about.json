@@ -1,5 +1,6 @@
 {
   "title": "About",
+  "description": "The manager’s own version and updates, logs for support and where the data is kept.",
   "version": "Version {version}",
   "updateTitle": "Manager updates",
   "updateCheck": "Check",

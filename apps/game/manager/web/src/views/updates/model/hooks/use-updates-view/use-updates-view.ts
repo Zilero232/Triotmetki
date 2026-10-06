@@ -5,7 +5,7 @@ import { useWhatsNew } from '@/entities/changelog';
 import { useSelectedClient } from '@/entities/client';
 import { pickLocalized, useDisplayFormat } from '@/shared/lib';
 
-export const useChangelogView = () => {
+export const useUpdatesView = () => {
   const locale = useLocale();
   const { stamp } = useDisplayFormat();
   const { clientPath } = useSelectedClient();

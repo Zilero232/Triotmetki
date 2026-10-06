@@ -4,22 +4,18 @@
     "home": "Home",
     "components": "Components",
     "profiles": "Profiles",
+    "updates": "Updates",
     "maintenance": "Maintenance",
     "account": "Account & site",
     "settings": "Settings",
-    "help": "Help"
-  },
-  "tabs": {
-    "label": "Section tabs",
-    "maintenance": "Maintenance",
-    "changelog": "What’s new",
-    "help": "Questions",
+    "help": "Help",
     "about": "About"
   },
   "groups": {
     "overview": "Overview",
     "modpack": "Modpack",
-    "app": "App"
+    "app": "App",
+    "support": "Support"
   },
   "marker": {
     "problem": "Needs attention",

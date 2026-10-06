@@ -8,12 +8,12 @@ import s from './StatusDock.module.scss';
 
 export const StatusDock = () => {
   const t = useTranslations('nav.dock');
-  const { isLoading, tone, primary, secondary, hint, action, onOpenHome } = useStatusDock();
+  const { isLoading, tone, primary, secondary, hint, action, onOpenStatus } = useStatusDock();
 
   return (
     <section aria-busy={isLoading || undefined} aria-label={t('label')} className={s.root} data-tone={tone}>
       <Tooltip content={hint} side='right'>
-        <button aria-live='polite' className={s.summary} type='button' onClick={onOpenHome}>
+        <button aria-live='polite' className={s.summary} type='button' onClick={onOpenStatus}>
           <span aria-hidden className={s.dot} />
           {isLoading ? (
             <span aria-hidden className={s.lines}>

@@ -64,6 +64,6 @@ export const useStatusDock = () => {
             onRun: runAction
           }
         : null,
-    onOpenHome: () => navigate({ page: 'home' })
+    onOpenStatus: () => navigate({ page: isInstalled ? 'updates' : 'home' })
   };
 };

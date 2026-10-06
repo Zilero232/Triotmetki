@@ -27,8 +27,8 @@ export const AppShell = ({ children }: AppShellProps) => {
         </div>
         <nav aria-label={t('nav.label')} className={s.nav}>
           {groups.map((group) => (
-            <div key={group.id} aria-label={group.label ?? undefined} className={s.group} role='group'>
-              {group.label && (
+            <div key={group.id} aria-label={group.label} className={s.group} data-pinned={group.isPinned || undefined} role='group'>
+              {group.isLabelShown && (
                 <span aria-hidden className={s.groupLabel}>
                   {group.label}
                 </span>

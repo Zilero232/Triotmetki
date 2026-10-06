@@ -1,6 +1,5 @@
 {
-  "title": "What’s new",
-  "description": "The modpack release history: what changed overall and in each component.",
+  "title": "Release history",
   "offline": "No connection to the server — showing the saved copy.",
   "release": "Version {version}",
   "releaseMeta": "{date} · clients {games}",

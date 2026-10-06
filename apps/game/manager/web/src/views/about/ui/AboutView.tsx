@@ -6,7 +6,6 @@ import { AppUpdatePanel } from '@/features/app/app-update';
 import { CollectLogsButton } from '@/features/app/collect-logs';
 import { LINKS } from '@/shared/config';
 import { Card, ExternalLink, PageHeader } from '@/ui-kit';
-import { SectionTabs } from '@/widgets/section-tabs';
 import { UsedLibraries } from '@/widgets/used-libraries';
 
 import s from './AboutView.module.scss';
@@ -17,8 +16,7 @@ export const AboutView = () => {
 
   return (
     <>
-      <SectionTabs section='help' />
-      <PageHeader title={t('about.title')} />
+      <PageHeader description={t('about.description')} title={t('about.title')} />
       <Card tone='accent'>
         <div className={s.brand}>
           <OtmetkiLogoIcon aria-hidden className={s.logo} size={40} />

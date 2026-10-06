@@ -4,7 +4,6 @@ import { CollectLogsButton } from '@/features/app/collect-logs';
 import { ReportProblemButton } from '@/features/report/report-problem';
 import { LINKS } from '@/shared/config';
 import { Accordion, Card, ExternalLink, PageHeader } from '@/ui-kit';
-import { SectionTabs } from '@/widgets/section-tabs';
 
 import { useHelpView } from '../model/hooks';
 
@@ -14,7 +13,6 @@ export const HelpView = () => {
 
   return (
     <>
-      <SectionTabs section='help' />
       <PageHeader description={t('description')} title={t('title')} />
       <Card title={t('faqTitle')}>
         <Accordion items={faq} />

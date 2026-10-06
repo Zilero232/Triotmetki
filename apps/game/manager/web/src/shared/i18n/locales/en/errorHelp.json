@@ -34,6 +34,6 @@
   "sync_unavailable": "Your profiles stay on this PC. Update the manager when a new version comes out.",
   "report_expired": "Close the report window and open it again — the logs will be collected anew.",
   "site_offline": "Check your connection and try again. Everything is saved on this PC — nothing is lost.",
-  "contract": "Update the manager under Help → About. If that does not help, collect the logs there too.",
+  "contract": "Update the manager under About. If that does not help, collect the logs there too.",
   "unknown": "Try again. If the error stays, collect the logs under Help and send them to us."
 }

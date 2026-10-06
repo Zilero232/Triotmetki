@@ -1,7 +1,7 @@
 export { fromUnixSeconds } from './local-date';
 export { localizedSchema, pickLocalized } from './localized';
 export { NavigationContext, useNavigation } from './navigation';
-export type { NavigationTarget, NavigationValue, PageId, SectionId, TabbedSectionId } from './navigation';
+export type { NavigationTarget, NavigationValue, PageId, SectionId } from './navigation';
 export { useDisplayFormat } from './use-display-format';
 export { useErrorText } from './use-error-text';
 export { useErrorToast } from './use-error-toast';

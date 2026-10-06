@@ -58,6 +58,7 @@
     "components": "The switch turns a component on or off without reinstalling. Changes apply on the next game launch.",
     "profiles": "A profile keeps the component list and their settings. “Apply…” first shows what will be installed and writes the settings after the install. Apply a profile while the game is closed.",
     "account": "The same binding to your triotmetki.ru account as the in-game mod uses. Once linked, your profiles are kept on the site and come back on another computer.",
-    "maintenance": "Everything about the modpack itself: which version is installed, whether a newer one is out, which client it lives in. Removal is at the bottom, in the danger zone."
+    "updates": "The manager checks for updates on its own, on the schedule from Settings, and moves the modpack to the new folder after a game patch. “Check now” runs the check by hand.",
+    "maintenance": "Everything that changes the install itself: the component selection, the game client and its cache. Removal is at the bottom, in the danger zone."
   }
 }

@@ -1,7 +1,6 @@
 import { useNavigation } from '@/shared/lib';
 import { AboutView } from '@/views/about';
 import { AccountView } from '@/views/account';
-import { ChangelogView } from '@/views/changelog';
 import { ComponentsView } from '@/views/components';
 import { HelpView } from '@/views/help';
 import { HomeView } from '@/views/home';
@@ -9,6 +8,7 @@ import { InstallView } from '@/views/install';
 import { MaintenanceView } from '@/views/maintenance';
 import { ProfilesView } from '@/views/profiles';
 import { SettingsView } from '@/views/settings';
+import { UpdatesView } from '@/views/updates';
 import { AppShell } from '@/widgets/app-shell';
 
 import { useAppSync } from '../../model/hooks';
@@ -18,8 +18,8 @@ const VIEWS = {
   install: InstallView,
   components: ComponentsView,
   profiles: ProfilesView,
+  updates: UpdatesView,
   maintenance: MaintenanceView,
-  changelog: ChangelogView,
   account: AccountView,
   settings: SettingsView,
   help: HelpView,

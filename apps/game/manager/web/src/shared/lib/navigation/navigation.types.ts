@@ -4,8 +4,6 @@ export type PageId = (typeof PAGE_IDS)[number];
 
 export type SectionId = keyof typeof PAGE_SECTIONS;
 
-export type TabbedSectionId = { [Section in SectionId]: (typeof PAGE_SECTIONS)[Section]['tabs'] extends true ? Section : never }[SectionId];
-
 export type NavigationParams = {
   preset?: string | null;
   profileCode?: string;

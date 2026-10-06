@@ -68,10 +68,17 @@
   @include stack(var(--space-5));
 
   width: 100%;
+  flex: 1 0 auto;
 }
 
 .group {
   @include stack(var(--space-1));
+
+  &[data-pinned] {
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+    margin-top: auto;
+  }
 }
 
 .groupLabel {

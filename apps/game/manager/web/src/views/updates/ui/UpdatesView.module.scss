@@ -1,5 +1,15 @@
 @use '@/shared/styles/mixins' as *;
 
+.history {
+  @include stack(var(--space-5));
+}
+
+.historyTitle {
+  @include label;
+
+  margin: 0;
+}
+
 .notes {
   margin: 0;
   white-space: pre-line;

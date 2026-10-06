@@ -37,9 +37,11 @@ export const useAppShell = () => {
     onNavKeyDown,
     groups: NAV_GROUPS.map((group) => ({
       id: group.id,
-      label: group.hasLabel ? t(`groups.${group.id}`) : null,
+      label: t(`groups.${group.id}`),
+      isLabelShown: group.isLabelShown,
+      isPinned: group.isPinned,
       items: group.sections.map((id: SectionId) => {
-        const pages: readonly PageId[] = PAGE_SECTIONS[id].pages;
+        const pages: readonly PageId[] = PAGE_SECTIONS[id];
         const marker = navMarker({ section: id, statusKind: report?.status.kind ?? null, failureCount });
         const label = t(`sections.${id}`);
         const markerLabel = marker ? t(`marker.${marker.kind}`, { count: marker.count ?? 0 }) : null;

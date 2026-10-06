@@ -1,19 +1,22 @@
-import { CircleHelp, Home, Layers, Settings, SlidersHorizontal, UserRound, Wrench } from 'lucide-react';
+import { CircleHelp, Home, Info, Layers, RefreshCw, Settings, SlidersHorizontal, UserRound, Wrench } from 'lucide-react';
 
 export const NAV_ICONS = {
   home: Home,
   components: Layers,
   profiles: SlidersHorizontal,
+  updates: RefreshCw,
   maintenance: Wrench,
   account: UserRound,
   settings: Settings,
-  help: CircleHelp
+  help: CircleHelp,
+  about: Info
 } as const;
 
 export const NAV_GROUPS = [
-  { id: 'overview', sections: ['home'], hasLabel: false },
-  { id: 'modpack', sections: ['components', 'profiles', 'maintenance'], hasLabel: true },
-  { id: 'app', sections: ['account', 'settings', 'help'], hasLabel: true }
+  { id: 'overview', sections: ['home'], isLabelShown: false, isPinned: false },
+  { id: 'modpack', sections: ['components', 'profiles', 'updates', 'maintenance'], isLabelShown: true, isPinned: false },
+  { id: 'app', sections: ['account', 'settings'], isLabelShown: true, isPinned: false },
+  { id: 'support', sections: ['help', 'about'], isLabelShown: false, isPinned: true }
 ] as const;
 
 export const NAV_MARKER = {

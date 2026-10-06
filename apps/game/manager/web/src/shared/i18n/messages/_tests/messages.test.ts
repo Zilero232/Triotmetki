@@ -24,15 +24,12 @@ describe('MESSAGES', () => {
     expect(texts.every((text) => typeof text === 'string' && text.trim().length > 0)).toBe(true);
   });
 
-  it('names every section of the navigation and every tab inside one', () => {
-    const sections = Object.entries(PAGE_SECTIONS);
-
-    expect(sections.every(([section]) => section in MESSAGES.ru.nav.sections)).toBe(true);
-    expect(sections.filter(([, { tabs }]) => tabs).every(([, { pages }]) => pages.every((page) => page in MESSAGES.ru.nav.tabs))).toBe(true);
+  it('names every section of the navigation', () => {
+    expect(Object.keys(PAGE_SECTIONS).every((section) => section in MESSAGES.ru.nav.sections)).toBe(true);
   });
 
   it('places every page in a section of the navigation', () => {
-    const placed = Object.values(PAGE_SECTIONS).flatMap(({ pages }) => pages);
+    const placed = Object.values(PAGE_SECTIONS).flat();
 
     expect(PAGE_IDS.every((page) => placed.includes(page))).toBe(true);
   });

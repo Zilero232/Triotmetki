@@ -6,8 +6,6 @@ import { ClientPicker } from '@/features/client/client-picker';
 import { ClearCache } from '@/features/settings/clear-cache';
 import { UninstallModpackCard } from '@/features/setup/uninstall-modpack';
 import { Button, Card, HelpTip, PageHeader } from '@/ui-kit';
-import { PatchStatus } from '@/widgets/patch-status';
-import { SectionTabs } from '@/widgets/section-tabs';
 
 import { useMaintenanceView } from '../model/hooks';
 
@@ -20,13 +18,11 @@ export const MaintenanceView = () => {
 
   return (
     <>
-      <SectionTabs section='maintenance' />
       <PageHeader
         description={t('maintenance.description')}
         help={<HelpTip label={t('help.tipLabel')}>{t('help.tips.maintenance')}</HelpTip>}
         title={t('maintenance.title')}
       />
-      <PatchStatus />
       <Card
         actions={
           <Button variant='secondary' onClick={onChangeSelection}>

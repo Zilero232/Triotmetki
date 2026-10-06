@@ -18,6 +18,7 @@ import report from './report.json';
 import settings from './settings.json';
 import sync from './sync.json';
 import uninstall from './uninstall.json';
+import updates from './updates.json';
 import whatsNew from './whatsNew.json';
 
 export const RU_MESSAGES = {
@@ -29,6 +30,7 @@ export const RU_MESSAGES = {
   components,
   conflicts,
   profiles,
+  updates,
   maintenance,
   settings,
   about,

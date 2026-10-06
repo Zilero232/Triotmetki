@@ -17,6 +17,6 @@ export const useWhatsNewCard = () => {
     version: version ?? '',
     notes: release?.notes ? pickLocalized({ text: release.notes, locale }) : null,
     changed: release?.changes.length ?? 0,
-    onOpen: () => navigate({ page: 'changelog' })
+    onOpen: () => navigate({ page: 'updates' })
   };
 };
