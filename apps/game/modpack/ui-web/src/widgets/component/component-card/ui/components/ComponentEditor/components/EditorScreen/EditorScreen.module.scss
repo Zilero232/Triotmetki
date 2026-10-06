@@ -7,6 +7,10 @@
   flex-direction: column;
 }
 
+.tall {
+  min-height: 260px;
+}
+
 .bar {
   display: flex;
   height: 34px;

@@ -1,7 +1,6 @@
 export { DOM } from './dom.constants';
 export { HUD_FIGURE } from './hud-figure.constants';
 export { HUD_GLYPHS } from './hud-glyphs.constants';
-export { HUD_SILHOUETTES } from './hud-silhouettes.constants';
 export { HUD_TONE_COLORS } from './hud-tones.constants';
 export { KEYS } from './keys.constants';
 export { SCROLL_AREA } from './scroll-area.constants';

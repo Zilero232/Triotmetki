@@ -5,14 +5,16 @@ STRINGS = {
     'ru': {
         'component_minimap': u'Мини-карта',
         'component_minimap_hint': u'Только то, что есть в настройках игры: размер, прозрачность, последние места и названия техники, свои круги обзора. '
-                                  u'Меняется в момент выбора, «Как в игре» ничего не трогает.',
+                                  u'Меняется в момент выбора, «Как в игре» ничего не трогает.'
+                                  u' Одно исключение — последние места и названия техники, см. их подсказку.',
         'minimap_size': u'Размер',
         'minimap_transparency': u'Прозрачность, %',
         'minimap_vehicle_names': u'Последние места и названия техники',
         'minimap_vehicle_names_hint': u'Настройка игры «Дополнительные возможности мини-карты»: пропавшая из виду '
                                       u'техника остаётся там, где её видели последний раз, и подписана моделью. '
-                                      u'«Никогда» в настройках игры убирает и то и другое — тогда здесь предложены '
-                                      u'«Рекомендуемые настройки».',
+                                      u'«Никогда» в настройках игры убирает и то и другое, поэтому если там стоит '
+                                      u'«Никогда», мод один раз включает «Постоянно»; дальнейший выбор здесь или в игре '
+                                      u'он не трогает.',
         'minimap_vehicle_names_alt': u'По Alt',
         'minimap_vehicle_names_always': u'Постоянно',
         'minimap_view_range': u'Круг обзора своей техники',
@@ -33,13 +35,15 @@ STRINGS = {
     'en': {
         'component_minimap': u'Minimap',
         'component_minimap_hint': u'Only what the game settings offer: size, opacity, last-seen spots and vehicle names, your own range circles. '
-                                  u'Applied when you pick a value; "As in the game" changes nothing.',
+                                  u'Applied when you pick a value; "As in the game" changes nothing.'
+                                  u' One exception: last-seen spots and vehicle names, see their hint.',
         'minimap_size': u'Size',
         'minimap_transparency': u'Transparency, %',
         'minimap_vehicle_names': u'Last-seen spots and vehicle names',
         'minimap_vehicle_names_hint': u'Game setting "Extended minimap features": a vehicle that left sight stays '
                                       u'where it was last seen, labelled with its model. "Never" in the game '
-                                      u'settings drops both; the card then offers "Recommended settings".',
+                                      u'settings drops both, so if the game is at "Never" the mod switches it to '
+                                      u'"Always" once; whatever you pick afterwards, here or in the game, stays.',
         'minimap_vehicle_names_alt': u'With Alt',
         'minimap_vehicle_names_always': u'Always',
         'minimap_view_range': u'Own view range circle',

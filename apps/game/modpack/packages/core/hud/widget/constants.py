@@ -37,7 +37,6 @@ CARD_LIMITS = {
     'chips': 6,
     'strip': 12,
     'width': (120, 420),
-    'points': 30,
 }
 HEX_COLOR = re.compile(r'^#[0-9A-Fa-f]{6}$')
 
@@ -54,12 +53,6 @@ ROW_OPTIONS = {
     'progress_tone': 'accent',
     'color': None,
 }
-HERO_OPTIONS = {
-    'tone_name': 'gold',
-    'shape': None,
-    'tick': None,
-    'points': (),
-}
 CARD_OPTIONS = {
     'subtitle': None,
     'value': None,
@@ -68,5 +61,4 @@ CARD_OPTIONS = {
     'strip': (),
     'footer': None,
     'width': None,
-    'hero': None,
 }

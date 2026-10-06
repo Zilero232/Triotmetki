@@ -1,7 +1,13 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.client.component import FeatureComponent
-from ....core.client.game import on_vehicle_changed, selected_tank_id, vehicle_class_tag, vehicle_short_name
+from ....core.client.game import (
+    on_vehicle_changed,
+    selected_tank_id,
+    vehicle_class_tag,
+    vehicle_info,
+    vehicle_short_name,
+)
 from ....core.client.hud import hud_layer
 from ....core.client.hud.modifier import ModifierWatch
 from ....core.client.lobby_view import lobby_view
@@ -11,7 +17,8 @@ from ....core.hud import EVENT_EDIT, HudPreview
 from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import hangar_state
-from ..model.card import TankCard, card_text, tank_card
+from ..model.card import TankCard, tank_card
+from ..model.card_text import card_text
 from ..model.constants import CARD_PREVIEW_SIZE
 from ..model.preview import card_preview_text, card_preview_widget
 from ..model.research import research_state
@@ -146,6 +153,7 @@ class TankCardPanel(FeatureComponent):
             own_mastery=(snapshot or {}).get('mastery'),
             research=research,
             class_tag=vehicle_class_tag(self.selected),
+            tier=vehicle_info(self.selected)[1],
         )
 
     def _state(self, snapshot):

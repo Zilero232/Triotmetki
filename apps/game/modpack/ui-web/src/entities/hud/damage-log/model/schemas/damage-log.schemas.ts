@@ -15,6 +15,7 @@ const row = z.object({
   cls: hudIconSchema,
   name: z.string(),
   hits: z.number(),
+  crits: z.number(),
   hp: z.nullable(z.number()),
   max: z.nullable(z.number()),
   ammo_rack: hudIconSchema,

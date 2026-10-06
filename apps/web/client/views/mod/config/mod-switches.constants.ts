@@ -4,6 +4,7 @@ export const MOD_SWITCHES = [
   { id: 'queueTimes', setting: 'send_queue_times', value: 'on' },
   { id: 'loadouts', setting: 'send_loadouts', value: 'on' },
   { id: 'shots', setting: 'send_shots', value: 'on' },
+  { id: 'badge', setting: 'show_pack_badge', value: 'on' },
   { id: 'shareSettings', setting: 'share_settings', value: 'manual' },
   { id: 'replays', setting: 'upload_replays', value: 'off' }
 ] as const;

@@ -3,7 +3,7 @@
 @keyframes count-tick {
   from {
     opacity: 0.5;
-    transform: translateY(-2px);
+    transform: translateY(-3px);
   }
 
   to {
@@ -19,10 +19,10 @@
 }
 
 .count {
-  margin-left: 4px;
+  margin-left: 5px;
   color: token(hud-text);
 
-  @include hud-type(body);
+  @include hud-type(value);
 }
 
 .tick {
@@ -30,7 +30,7 @@
 }
 
 .total {
-  color: token(hud-muted);
+  color: token(hud-text);
 
-  @include hud-type(caption);
+  @include hud-type(body);
 }

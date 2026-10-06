@@ -13,6 +13,8 @@ const ANONYMOUS_WRITE_ROUTES = [
   'PATCH /tactics/boards/:id',
   'POST /billing/webhook',
   'POST /marks/projection',
+  'POST /mod/badges',
+  'POST /mod/badges/preference',
   'POST /mod/bind',
   'POST /mod/ingest',
   'POST /mod/me/goals',

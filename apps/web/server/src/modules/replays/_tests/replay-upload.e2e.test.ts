@@ -94,6 +94,7 @@ const boundDevice = (accountId: bigint): AuthenticatedDevice => ({
   secretHash: 'hash',
   modVersion: '1.0.0',
   gameVersion: '1.30.0',
+  badgeVisible: null,
   lastSeenAt: null,
   revokedAt: null,
   createdAt: new Date()

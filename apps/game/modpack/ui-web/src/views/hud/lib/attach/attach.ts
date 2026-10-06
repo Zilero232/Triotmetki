@@ -13,7 +13,7 @@ const { postmortemTips } = HUD_OVERLAY;
 
 const bottomTop = ({ size, screen }: AttachRectInput): number => screen.height - edge - size.height;
 
-const barBox = ({ attach }: AttachRectInput): Size => (attach.bar > 0 ? { width: attach.bar, height: bar.height } : postmortemTips);
+const barBox = ({ attach }: AttachRectInput): Size => (attach.bar > 0 ? { width: attach.bar, height: bar.height + bar.keys } : postmortemTips);
 
 const besideBarTop = ({ size, screen }: AttachRectInput): number => screen.height - size.height;
 

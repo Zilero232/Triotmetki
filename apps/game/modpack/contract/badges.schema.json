@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://triotmetki.ru/contract/mod/badges.schema.json",
+  "title": "Three Marks mod user badge",
+  "description": "The badge next to the names of players who use the bound mod (docs/specs/2026-10-06-modpack-user-badge.md). POST /mod/badges/preference body #/definitions/preference -> 200 #/definitions/preferenceAnswer stores whether other players see the badge of this device's account (config show_pack_badge, on by default; the companion reports it once per account after binding and on every change, false while the whole mod is off); until a device reports it the account is never marked. POST /mod/badges body #/definitions/request -> 200 #/definitions/answer, once per own battle (never in a replay): account_ids are the arena players' account ids, without the own account, bots, event bots and anonymised players; the answer is the subset whose account has an active (not revoked) device seen in the last 30 days that reported true, no active device that reported false, and no deletion request. The server keeps nothing from the request (no table, cache or log of the ids). Both are signed exactly like /mod/ingest (v2: X-Otmetki-Device, X-Otmetki-Timestamp, X-Otmetki-Nonce, X-Otmetki-Signature over the raw body); a body naming another account than the device's is refused with 403 account_mismatch; 400 invalid_payload; 401 unknown device or bad signature (rebind); 403 device_revoked; 429 with Retry-After when rate-limited (30 reads, 10 preference writes per minute and device); every error reply carries X-Otmetki-Server-Time.",
+  "definitions": {
+    "deviceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "accountId": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "accountIds": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/accountId"
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["device_id", "account_id", "account_ids"],
+      "properties": {
+        "device_id": {
+          "$ref": "#/definitions/deviceId"
+        },
+        "account_id": {
+          "$ref": "#/definitions/accountId"
+        },
+        "account_ids": {
+          "allOf": [{ "$ref": "#/definitions/accountIds" }, { "minItems": 1 }]
+        }
+      }
+    },
+    "answer": {
+      "type": "object",
+      "required": ["account_ids"],
+      "properties": {
+        "account_ids": {
+          "$ref": "#/definitions/accountIds"
+        }
+      }
+    },
+    "preference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["device_id", "account_id", "visible"],
+      "properties": {
+        "device_id": {
+          "$ref": "#/definitions/deviceId"
+        },
+        "account_id": {
+          "$ref": "#/definitions/accountId"
+        },
+        "visible": {
+          "type": "boolean"
+        }
+      }
+    },
+    "preferenceAnswer": {
+      "type": "object",
+      "required": ["account_id", "visible"],
+      "properties": {
+        "account_id": {
+          "$ref": "#/definitions/accountId"
+        },
+        "visible": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

@@ -1484,11 +1484,9 @@ class BattleHudTest(StoryTest):
     def test_damage_log_names_the_target_of_the_own_shot(self):
         self.assertIn('Pz. IV', self.panels['damage_log']['text'])
 
-    def test_team_hp_shows_both_teams_and_the_score(self):
+    def test_team_hp_shows_the_score_between_the_teams(self):
         team_hp = self.panels['team_hp']['text']
 
-        self.assertIn('690', team_hp)
-        self.assertIn('510', team_hp)
         self.assertIn('0 : 1', team_hp)
 
     def test_the_mod_plays_no_sound_of_its_own_in_battle(self):

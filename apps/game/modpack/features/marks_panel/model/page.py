@@ -6,11 +6,11 @@ from .constants import (
     ACTION_CLEAR,
     ENTRY_MOMENT_FORMAT,
     MAX_DETAIL_LINES,
+    METRIC_SEPARATOR,
     NO_VALUE,
     PERCENT_FORMAT,
     SITE_PROGRESS_PATH,
     SOURCE_BATTLE,
-    STAR,
 )
 from .history import percent, rating_delta, start_of
 from .report import marks_report
@@ -40,10 +40,11 @@ def delta_sign(value):
     return 0
 
 
-def stars(marks):
+# The marks on the gun in words: the window's font has no star glyph.
+def marks_text(marks, translate):
     if not marks:
-        return NO_VALUE
-    return STAR * marks
+        return translate('marks_panel_history_no_marks')
+    return counted(marks, 'marks', translate)
 
 
 def _source_text(entry, translate):
@@ -85,10 +86,10 @@ def detail_rows(vehicle, translate):
 
 
 def _subtitle(summary, translate):
-    subtitle = u'%s  %s' % (percent_text(summary['percent']) or NO_VALUE, stars(summary['marks']))
+    parts = [percent_text(summary['percent']) or NO_VALUE, marks_text(summary['marks'], translate)]
     if summary.get('avg'):
-        subtitle += u'  ' + translate('marks_panel_history_avg', avg=format_number(summary['avg']))
-    return subtitle
+        parts.append(translate('marks_panel_history_avg', avg=format_number(summary['avg'])))
+    return METRIC_SEPARATOR.join(parts)
 
 
 def _meta(summary, translate):
@@ -125,7 +126,12 @@ def build_page(history, translate, trend_battles, max_rows):
         summary = history.summary(tank_id, trend_battles)
         if summary is not None:
             rows.append(row_of(tank_id, history.vehicle(tank_id), summary, translate))
-    return {'kind': 'list', 'empty': translate('marks_panel_history_empty'), 'rows': rows}
+    return {
+        'kind': 'list',
+        'title': translate('marks_panel_history_title'),
+        'empty': translate('marks_panel_history_empty'),
+        'rows': rows,
+    }
 
 
 def page_actions(translate):

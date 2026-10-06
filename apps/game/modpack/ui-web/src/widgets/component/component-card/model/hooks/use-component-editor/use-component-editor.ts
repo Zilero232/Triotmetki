@@ -55,7 +55,7 @@ export const useComponentEditor = ({ component, compact }: UseComponentEditorInp
     backdrop,
     backdropItems: EDITOR.backdrops.map((value) => ({ value, label: t(BACKDROP_LABELS[value]) })),
     setBackdrop: (value: string) => setBackdrop(value === 'snow' ? 'snow' : 'forest'),
-    showHint: setHint,
+    showHint: (next: EditorHint) => setHint(next.text ? next : null),
     clearHint: () => setHint(null),
     close: closeEditor
   };

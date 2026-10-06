@@ -4,7 +4,7 @@ export { BATTLE_CORROBORATION } from './config/ingest.constants';
 export { sessionUuid } from './lib/battle/battle';
 export type { BattleResultEvent } from './lib/contract/contract.types';
 export { deviceSecret, hashSecret } from './lib/device-secret/device-secret';
-export { isModDeviceRequest } from './lib/device-tracker/device-tracker';
+export { isModDeviceRequest, modDeviceTracker } from './lib/device-tracker/device-tracker';
 export { readStoredLoadout } from './lib/loadout/loadout';
 export type { StoredLoadout } from './lib/loadout/loadout.types';
 export { signedMessage } from './lib/request-signature/request-signature';

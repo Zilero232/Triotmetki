@@ -18,6 +18,17 @@ SIZE = 'minimapSize'
 
 # MinimapVehModelsSetting.VEHICLE_MODELS_TYPES indices (never 0, alt 1, always 2); 'never' is never written.
 VEHICLE_NAME_MODES = {'alt': 1, 'always': 2}
+VEHICLE_NAMES_NEVER = 0
+
+# The owner's one exception to "write only on the player's change" (README "Minimap"): with the game's extended minimap
+# features at 'never' the minimap shows no names and no last-seen spots, so a section the player never set starts at
+# 'always' and, once per install, a game still at 'never' is switched to it (core.client.native.ClientDefaults).
+ONCE = {
+    'key': 'vehicle_names',
+    'value': 'always',
+    'off': VEHICLE_NAMES_NEVER,
+    'log': 'minimap: the game hid last-seen spots and names (never); switched to always once',
+}
 
 # The settings window's editor (docs/specs/2026-09-30-hud-consolidation-and-design.md section 12.3): its field groups
 # around a schematic minimap the window draws from the field values.

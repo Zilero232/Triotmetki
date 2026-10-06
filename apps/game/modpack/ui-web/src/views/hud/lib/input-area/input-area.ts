@@ -3,20 +3,23 @@ import type { InputArea, InputAreaOfInput } from './input-area.types';
 import { HUD_OVERLAY } from '../../config';
 
 export const inputAreaOf = ({ whole, screen, rects }: InputAreaOfInput): InputArea => {
+  const width = Math.floor(screen.width);
+  const height = Math.floor(screen.height);
+
   if (whole) {
-    return { left: 0, top: 0, width: Math.round(screen.width), height: Math.round(screen.height) };
+    return { left: 0, top: 0, width, height };
   }
 
-  if (rects.length === 0) {
+  const left = Math.max(0, Math.floor(Math.min(...rects.map((rect) => rect.left))));
+  const top = Math.max(0, Math.floor(Math.min(...rects.map((rect) => rect.top))));
+  const right = Math.min(width, Math.ceil(Math.max(...rects.map((rect) => rect.left + rect.width))));
+  const bottom = Math.min(height, Math.ceil(Math.max(...rects.map((rect) => rect.top + rect.height))));
+
+  if (rects.length === 0 || right < left || bottom < top) {
     return HUD_OVERLAY.noInputRect;
   }
 
-  const left = Math.min(...rects.map((rect) => rect.left));
-  const top = Math.min(...rects.map((rect) => rect.top));
-  const right = Math.max(...rects.map((rect) => rect.left + rect.width));
-  const bottom = Math.max(...rects.map((rect) => rect.top + rect.height));
-
-  return { left: Math.floor(left), top: Math.floor(top), width: Math.ceil(right) - Math.floor(left), height: Math.ceil(bottom) - Math.floor(top) };
+  return { left, top, width: right - left, height: bottom - top };
 };
 
 export const inputAreaKey = ({ left, top, width, height }: InputArea): string => `${left},${top},${width},${height}`;

@@ -281,7 +281,7 @@ class LobbyViewTest(unittest.TestCase):
         assert not plain_hangar([own_settings_window()])
 
 
-MARKS_DEFAULTS = {'x': 330, 'y': -8, 'align_x': 'center', 'align_y': 'bottom'}
+MARKS_DEFAULTS = {'x': 330, 'y': 0, 'align_x': 'center', 'align_y': 'bottom'}
 
 
 def attached_layer():
@@ -346,6 +346,25 @@ class AttachTest(unittest.TestCase):
 
         assert layer.set_stock_metrics(stock_metrics()) is False
         assert len(backend.calls) == 1
+
+    def test_a_dragged_attached_panel_stops_following_and_keeps_where_it_was_dropped(self):
+        backend, layer = attached_layer()
+        layer.show('marks_panel', u'text')
+
+        layer.on_moved('otmetki.hud.marks_panel', {'x': -502, 'y': -80, 'alignX': 'right', 'alignY': 'bottom'})
+
+        settings = layer.settings('marks_panel')
+        assert (settings.get('x'), settings.get('y'), settings.get('align_x')) == (-502, -80, 'right')
+        assert backend.calls[-1] == ('update', 'otmetki.hud.marks_panel', {'dock': None, 'attach': None})
+
+    def test_a_panel_dropped_back_on_its_default_place_follows_again(self):
+        backend, layer = attached_layer()
+        layer.show('marks_panel', u'text')
+        layer.on_moved('otmetki.hud.marks_panel', {'x': 200, 'y': -40})
+
+        layer.on_moved('otmetki.hud.marks_panel', {'x': 330, 'y': 0})
+
+        assert backend.calls[-1][2]['attach'] == {'kind': 'bar_right', 'bar': 7 * 57, 'minimap': 310}
 
     def test_surface_keeps_a_valid_attach(self):
         surface = HudSurface()

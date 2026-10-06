@@ -258,7 +258,7 @@ class ScoreTest(unittest.TestCase):
         assert settings.get('show_alive') is False
 
     def test_bar_pair_line_carries_the_alive_score(self):
-        settings = settings_with(show_alive=True)
+        settings = settings_with(style='full', show_alive=True)
 
         text = format_team_hp(battle().values(), settings, translator())
 
@@ -268,22 +268,22 @@ class ScoreTest(unittest.TestCase):
 class FormatTest(unittest.TestCase):
 
     def test_full_shows_the_allies_hp(self):
-        text = format_team_hp(battle().values(), settings_with(), translator())
+        text = format_team_hp(battle().values(), settings_with(style='full'), translator())
 
         assert '2 500' in text
 
     def test_full_shows_the_enemies_hp(self):
-        text = format_team_hp(battle().values(), settings_with(), translator())
+        text = format_team_hp(battle().values(), settings_with(style='full'), translator())
 
         assert '1 200' in text
 
     def test_full_shows_the_score(self):
-        text = format_team_hp(battle().values(), settings_with(), translator())
+        text = format_team_hp(battle().values(), settings_with(style='full'), translator())
 
         assert '1 : 0' in text
 
     def test_full_shows_the_signed_difference(self):
-        text = format_team_hp(battle().values(), settings_with(), translator())
+        text = format_team_hp(battle().values(), settings_with(style='full'), translator())
 
         assert u'разница +1 300' in text
 
@@ -400,12 +400,12 @@ class SettingsTest(unittest.TestCase):
 class PreviewTest(unittest.TestCase):
 
     def test_preview_shows_the_allies_hp(self):
-        text = preview_text(settings_with(), translator('en'))
+        text = preview_text(settings_with(style='full'), translator('en'))
 
         assert '3 200' in text
 
     def test_preview_shows_the_enemies_hp(self):
-        text = preview_text(settings_with(), translator('en'))
+        text = preview_text(settings_with(style='full'), translator('en'))
 
         assert '900' in text
 

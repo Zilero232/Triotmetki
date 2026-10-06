@@ -1,0 +1,34 @@
+@use '@/shared/styles/gameface' as *;
+
+.header {
+  display: flex;
+  height: 20px;
+  flex-direction: row;
+  align-items: center;
+}
+
+.icon {
+  margin-right: 6px;
+}
+
+.tier {
+  flex-shrink: 0;
+  margin-right: 6px;
+  color: token(hud-muted);
+
+  @include hud-type(body);
+  @include caps(0.5px);
+}
+
+.name {
+  min-width: 0;
+  flex: 1 1 auto;
+  color: token(hud-text);
+
+  @include hud-type(value);
+  @include ellipsis;
+}
+
+.marks {
+  margin-left: 8px;
+}

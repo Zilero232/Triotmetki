@@ -18,7 +18,6 @@ class KeyState(object):
     def __init__(self):
         self.client = set()
         self.windows = set()
-        self.in_front = True
 
     def client_down(self, code):
         return code in self.client
@@ -26,8 +25,8 @@ class KeyState(object):
     def windows_down(self, name):
         return name in self.windows
 
-    def front(self):
-        return self.in_front
+    def lose_focus(self):
+        self.client.clear()
 
 
 def _module(name, **attrs):
@@ -47,7 +46,6 @@ class ModifierWatchTest(unittest.TestCase):
         sys.modules.pop(MODIFIER_MODULE, None)
         self.module = importlib.import_module(MODIFIER_MODULE)
         self.module.os_key_down = self.keys.windows_down
-        self.module.game_in_front = self.keys.front
         self.lines = []
         self.module.log = self.lines.append
         self.changes = []
@@ -87,9 +85,27 @@ class ModifierWatchTest(unittest.TestCase):
 
         self.assertEqual(self.changes, [True, False])
 
-    def test_alt_still_down_after_alt_tab_counts_only_while_the_game_is_in_front(self):
+    def test_a_long_alt_hold_keeps_editing_after_the_client_drops_its_keys_on_a_focus_loss(self):
         self.press_alt()
-        self.keys.in_front = False
+        self.keys.lose_focus()
+
+        for _ in range(20):
+            self.assertTrue(self.watch._on_poll())
+
+        self.assertEqual(self.changes, [True])
+
+    def test_alt_released_during_alt_tab_ends_editing_on_the_next_poll(self):
+        self.press_alt()
+        self.keys.lose_focus()
+        self.keys.windows.discard('KEY_LALT')
+
+        self.assertFalse(self.watch._on_poll())
+        self.assertEqual(self.changes, [True, False])
+
+    def test_a_key_the_client_kept_down_after_alt_tab_does_not_start_editing_on_return(self):
+        self.press_alt()
+        self.keys.windows.discard('KEY_LALT')
+        self.watch.check()
 
         self.watch.check()
 
@@ -112,12 +128,21 @@ class ModifierWatchTest(unittest.TestCase):
 
     def test_the_client_state_alone_decides_when_windows_cannot_tell(self):
         self.module.os_key_down = lambda name: None
-        self.module.game_in_front = lambda: None
         self.keys.client.add(KEY_LALT)
 
         self.watch.check()
 
         self.assertTrue(self.watch.held)
+
+    def test_the_client_release_ends_editing_when_windows_cannot_tell(self):
+        self.module.os_key_down = lambda name: None
+        self.keys.client.add(KEY_LALT)
+        self.watch.check()
+        self.keys.client.clear()
+
+        self.watch.check()
+
+        self.assertFalse(self.watch.held)
 
     def test_a_key_only_windows_reports_is_not_held(self):
         self.keys.windows.add('KEY_LALT')

@@ -35,6 +35,7 @@ const device = (overrides: Partial<ModDevice> = {}): ModDevice => ({
   secretHash: hashSecret(secret),
   modVersion: '1.0.0',
   gameVersion: '1.30.0',
+  badgeVisible: null,
   lastSeenAt: null,
   revokedAt: null,
   createdAt: new Date('2026-05-01T12:00:00.000Z'),

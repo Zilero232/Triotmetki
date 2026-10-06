@@ -6,6 +6,7 @@ import unittest
 import _support  # noqa: F401
 from otmetki.companion.config import Config, user_set_tokens
 from otmetki.companion.config.constants import (
+    AIM_CIRCLE_PART_REVISION,
     AIM_CIRCLE_REVISION,
     DEFAULTS_REVISION,
     DROPPED_SECTIONS,
@@ -159,6 +160,27 @@ class SectionsTest(unittest.TestCase):
 
         self.assertFalse(components['crew_xp']['show_card'])
 
+    def test_team_hp_left_at_the_bar_pair_becomes_a_bar_per_tank(self):
+        config = {'defaults_revision': 7}
+
+        _, components = migrate(config, {'team_hp': {'style': 'full'}})
+
+        self.assertEqual(components['team_hp']['style'], 'icons')
+
+    def test_minimap_names_left_to_the_game_start_at_always(self):
+        config = {'defaults_revision': 7}
+
+        _, components = migrate(config, {'minimap': {'vehicle_names': 'native'}})
+
+        self.assertEqual(components['minimap']['vehicle_names'], 'always')
+
+    def test_minimap_names_the_player_left_to_the_game_stay(self):
+        config = {'defaults_revision': 7, 'user_set': 'minimap.vehicle_names'}
+
+        _, components = migrate(config, {'minimap': {'vehicle_names': 'native'}})
+
+        self.assertEqual(components['minimap']['vehicle_names'], 'native')
+
     def test_a_zoom_readout_left_off_by_default_turns_on(self):
         config = {'defaults_revision': 4}
 
@@ -210,27 +232,35 @@ class SectionsTest(unittest.TestCase):
 
         self.assertEqual(components['aim_info'], {'target_distance': False, 'shell_tooltips': True})
 
-    def test_an_aim_circle_that_was_on_moves_to_the_crosshair(self):
+    def test_an_aim_circle_that_was_on_in_aim_info_turns_on_its_component(self):
+        config = {'defaults_revision': AIM_CIRCLE_REVISION - 1}
+        aim = {'aim_circle': True, 'aim_circle_scale': 70}
+
+        migrated_config, _ = migrate(config, {'aim_info': aim, 'crosshair': {'mark': 'dot'}})
+
+        self.assertIs(migrated_config['battle_aim_circle'], True)
+
+    def test_an_aim_circle_that_was_on_in_aim_info_keeps_its_size(self):
         config = {'defaults_revision': AIM_CIRCLE_REVISION - 1}
         aim = {'aim_circle': True, 'aim_circle_scale': 70}
 
         _, components = migrate(config, {'aim_info': aim, 'crosshair': {'mark': 'dot'}})
 
-        self.assertEqual(components['crosshair'], {'mark': 'dot', 'aim_circle': 'p70'})
+        self.assertEqual(components['aim_circle'], {'size': 'p70'})
 
     def test_the_aim_circle_takes_the_nearest_smaller_share(self):
         config = {'defaults_revision': AIM_CIRCLE_REVISION - 1}
 
         _, components = migrate(config, {'aim_info': {'aim_circle': True, 'aim_circle_scale': 50}})
 
-        self.assertEqual(components['crosshair'], {'aim_circle': 'p60'})
+        self.assertEqual(components['aim_circle'], {'size': 'p60'})
 
     def test_an_aim_circle_at_its_default_share_moves_as_seventy(self):
         config = {'defaults_revision': AIM_CIRCLE_REVISION - 1}
 
         _, components = migrate(config, {'aim_info': {'aim_circle': True}})
 
-        self.assertEqual(components['crosshair'], {'aim_circle': 'p70'})
+        self.assertEqual(components['aim_circle'], {'size': 'p70'})
 
     def test_an_aim_circle_that_was_off_leaves_the_crosshair_alone(self):
         config = {'defaults_revision': AIM_CIRCLE_REVISION - 1}
@@ -246,6 +276,41 @@ class SectionsTest(unittest.TestCase):
         _, components = migrate(config, {'aim_info': aim})
 
         self.assertEqual(components['aim_info'], {'target_distance': True})
+
+    def test_a_smaller_crosshair_circle_turns_on_its_component(self):
+        config = {'defaults_revision': AIM_CIRCLE_PART_REVISION - 1}
+
+        migrated_config, _ = migrate(config, {'crosshair': {'aim_circle': 'p80'}})
+
+        self.assertIs(migrated_config['battle_aim_circle'], True)
+
+    def test_a_smaller_crosshair_circle_keeps_its_size(self):
+        config = {'defaults_revision': AIM_CIRCLE_PART_REVISION - 1}
+
+        _, components = migrate(config, {'crosshair': {'aim_circle': 'p80'}})
+
+        self.assertEqual(components['aim_circle'], {'size': 'p80'})
+
+    def test_the_circle_key_leaves_the_crosshair(self):
+        config = {'defaults_revision': AIM_CIRCLE_PART_REVISION - 1}
+
+        _, components = migrate(config, {'crosshair': {'aim_circle': 'p60', 'mark': 'dot'}})
+
+        self.assertEqual(components['crosshair'], {'mark': 'dot'})
+
+    def test_a_crosshair_circle_at_the_game_size_leaves_the_switch_off(self):
+        config = {'defaults_revision': AIM_CIRCLE_PART_REVISION - 1}
+
+        migrated_config, _ = migrate(config, {'crosshair': {'aim_circle': 'stock'}})
+
+        self.assertNotIn('battle_aim_circle', migrated_config)
+
+    def test_a_crosshair_circle_at_the_game_size_adds_no_section(self):
+        config = {'defaults_revision': AIM_CIRCLE_PART_REVISION - 1}
+
+        _, components = migrate(config, {'crosshair': {'aim_circle': 'stock'}})
+
+        self.assertNotIn('aim_circle', components)
 
     def test_a_file_at_revision_three_loses_the_battle_type_places_of_the_aim_panel(self):
         config = {'defaults_revision': MIGRATION_REVISION}

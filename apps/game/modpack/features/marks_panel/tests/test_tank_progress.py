@@ -9,7 +9,8 @@ from otmetki.core.moe import ThresholdCurve
 from otmetki.core.settings import Settings
 from otmetki.features.marks_panel.i18n import STRINGS
 from otmetki.features.marks_panel.model import hangar_state
-from otmetki.features.marks_panel.model.card import TankCard, card_text, tank_card
+from otmetki.features.marks_panel.model.card import TankCard, tank_card
+from otmetki.features.marks_panel.model.card_text import card_text
 from otmetki.features.marks_panel.model.research import battles_left, next_vehicles, research_state, to_elite
 from otmetki.features.marks_panel.settings import CARD_SCHEMA
 
@@ -32,12 +33,20 @@ def tank(held=True, mastery=MASTERY, own_mastery=2, research=RESEARCH):
     return TankCard(state, u'T-44', None, None, held, mastery, own_mastery, research_state(research))
 
 
-def rows(data, **values):
-    return tank_card(data, Settings(values, CARD_SCHEMA), translator())['data']['rows']
+def card(data, **values):
+    return tank_card(data, Settings(values, CARD_SCHEMA), translator())['data']
 
 
-def texts(data, **values):
-    return [row['text'] for row in rows(data, **values)]
+def cells(data, **values):
+    return [item for section in card(data, **values)['sections'] for item in section['cells']]
+
+
+def labels(data, **values):
+    return [item['label'] for item in cells(data, **values)]
+
+
+def cell(data, label, **values):
+    return [item for item in cells(data, **values) if item['label'] == label][0]
 
 
 class ResearchTest(unittest.TestCase):
@@ -74,50 +83,44 @@ class ResearchTest(unittest.TestCase):
 
 class CardTest(unittest.TestCase):
 
-    def test_the_thresholds_list_the_100_percent_too(self):
-        labels = [row['label'] for row in rows(tank(held=False)) if row['label']]
+    def test_the_bar_lists_the_100_percent_too(self):
+        levels = [item['level'] for item in card(tank(held=False))['thresholds']]
 
-        assert labels == [u'65%', u'85%', u'95%', u'100%']
+        assert levels == [65, 85, 95, 100]
 
-    def test_the_next_mastery_badge_shows_its_xp_and_the_others_in_the_detail(self):
-        badge = [row for row in rows(tank()) if row['label'] == u'Badge'][0]
+    def test_the_next_mastery_badge_shows_its_xp_per_battle(self):
+        badge = cell(tank(), u'Badge 1st')
 
-        assert (badge['text'], badge['value'], badge['note']) == (u'1st', u'960', u'XP per battle')
-        assert badge['detail'] == u'3rd 540 · 2nd 710 · 1st 960 · Ace 1 320'
+        assert (badge['value'], badge['note']) == (u'960', u'per battle')
 
     def test_an_ace_holder_sees_it_done(self):
-        badge = [row for row in rows(tank(own_mastery=4)) if row['label'] == u'Badge'][0]
+        badge = cell(tank(own_mastery=4), u'Ace')
 
-        assert badge['status'] == 'done'
+        assert (badge['value'], badge['tone']) == (u'done', 'good')
 
-    def test_the_research_rows_show_the_xp_and_the_battles(self):
-        research = [row for row in rows(tank()) if row['text'] in (u'To elite', u'IS', u'T-54')]
+    def test_the_research_cells_show_the_xp_and_the_battles(self):
+        research = [item for item in cells(tank()) if item['label'] in (u'To elite', u'Research IS', u'Research T-54')]
 
-        assert [(row['text'], row['value'], row['note']) for row in research] == [
+        assert [(item['label'], item['value'], item['note']) for item in research] == [
             (u'To elite', u'110 000', u'~110 battles'),
-            (u'IS', u'25 000', u'~25 battles'),
-            (u'T-54', u'65 000', u'~65 battles'),
+            (u'Research IS', u'25 000', u'~25 battles'),
+            (u'Research T-54', u'65 000', u'~65 battles'),
         ]
 
-    def test_the_progress_rows_wait_for_alt(self):
-        shown = texts(tank(held=False))
+    def test_the_progress_cells_wait_for_alt(self):
+        assert card(tank(held=False))['sections'] == []
+
+    def test_the_alt_hint_shows_while_the_grid_is_hidden(self):
+        assert card(tank(held=False))['hint'] == u'Alt: more'
+
+    def test_the_switches_hide_the_progress_cells(self):
+        shown = labels(tank(), show_mastery=False, show_research=False)
 
         assert u'To elite' not in shown
-        assert u'1st' not in shown
-
-    def test_the_alt_hint_shows_while_progress_rows_are_hidden(self):
-        card = tank_card(tank(held=False), Settings({}, CARD_SCHEMA), translator())['data']
-
-        assert card['footer'] == u'Alt: more'
-
-    def test_the_switches_hide_the_progress_rows(self):
-        shown = texts(tank(), show_mastery=False, show_research=False)
-
-        assert u'To elite' not in shown
-        assert u'1st' not in shown
+        assert u'Badge 1st' not in shown
 
     def test_no_site_mastery_leaves_the_badge_out(self):
-        assert u'Badge' not in [row['label'] for row in rows(tank(mastery=None))]
+        assert u'Badge 1st' not in labels(tank(mastery=None))
 
     def test_the_text_card_carries_the_same_lines(self):
         text = strip_tags(card_text(tank(), Settings({}, CARD_SCHEMA), translator()))

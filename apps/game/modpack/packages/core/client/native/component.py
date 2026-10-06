@@ -11,7 +11,7 @@ class NativeSettingsComponent(FeatureComponent):
     """A component whose values become the player's client settings. They are written only when the
     player changes them (the settings window, a profile load: bus `component_settings`) and only in the
     hangar, so a later change in the game's own settings window is never overridden (a RecommendedSettingsComponent
-    also writes its defaults once on a fresh install). A change writes only the client settings it moves; one made in
+    may switch one client setting once: its `once`). A change writes only the client settings it moves; one made in
     battle (the window opened with the hotkey) is written on the next hangar. `to_account` maps the
     values kept in the client's AccountSettings instead of the settings core (the minimap size)."""
 
@@ -72,12 +72,19 @@ class NativeSettingsComponent(FeatureComponent):
 
 class RecommendedSettingsComponent(NativeSettingsComponent):
     """A NativeSettingsComponent whose schema defaults are the recommended client settings: offered on its card and
-    written with a backup only when the player asks (`ClientDefaults`)."""
+    written with a backup only when the player asks (`ClientDefaults`). A subclass may set `once`, the one-time switch
+    ClientDefaults describes."""
+
+    once = None
 
     def __init__(self, app, component_id, schema, switch, strings, to_native, to_account=None):
         is_new_section = section_is_new(app, component_id)
         NativeSettingsComponent.__init__(self, app, component_id, schema, switch, strings, to_native, to_account)
-        self.client_defaults = ClientDefaults(self, is_new_section)
+        self.client_defaults = ClientDefaults(self, is_new_section, self.once)
+
+    def _on_hangar_native(self):
+        NativeSettingsComponent._on_hangar_native(self)
+        self.client_defaults.apply_once()
 
     def ui_actions(self):
         return self.client_defaults.ui_actions()

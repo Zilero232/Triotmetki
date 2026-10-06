@@ -43,12 +43,14 @@ BATTLE_PANELS = (
 )
 # The page's places of the attached panels (ui-web views/hud/lib/attach, HUD_OVERLAY.attach), design px: the gap to
 # the stock element, the margin to the screen's edge (the marks beside the bar keep none: their bottom is the bar's),
-# the consumables panel's height, the gap over it, the marks' offset off the centre when they lift and the equipment
-# row's height they lift over, the gap over the minimap, and the place right of the score strip (under it below
-# 1700 px).
+# the consumables panel's height, the room its slot number labels take over its top (the tops of the digits 5 px over
+# it on a 3840x2160 screenshot at interface scale 1.75), the gap over them, the marks' offset off the centre when they
+# lift and the equipment row's height they lift over, the gap over the minimap, and the place right of the score
+# strip (under it below 1700 px).
 ATTACH_GAP = 12
 ATTACH_EDGE = 8
 BAR_HEIGHT = 58
+BAR_KEYS = 6
 BAR_ABOVE = 6
 BAR_SPLIT = 6
 BAR_ROW = 52
@@ -236,8 +238,12 @@ DOCKED = (
 # (panel, stock element) pairs a default place may share: the previous battle's card sits where the packs put their
 # results notice, over the stock player messages above the minimap (a few lines that show for a moment); battle
 # progress sits right of our team HP strip, which replaces the stock score strip (its vehicle icons reach 345 px off
-# the centre), as Battle Observer places its main gun beside its own strip.
-SHARED = (('last_battle', 'player messages'), ('battle_progress', 'score strip'))
+# the centre), as Battle Observer places its main gun beside its own strip; the equipment row, 6 px over the slot
+# number labels as kurzdor's battleequipment keeps clear of them, meets the lowest line of the stock vehicle messages
+# (a line or two for a moment), which grow up from 111 px over the bottom edge.
+SHARED = (
+    ('last_battle', 'player messages'), ('battle_progress', 'score strip'), ('battle_loadout', 'vehicle messages'),
+)
 # The same with the largest minimap: at 1080 px it ends 18 px under the right team list, so the card over it meets the
 # list's last rows for its few seconds; there is no other place above the minimap. The marks, lifted over the
 # equipment row there, meet the right end of the stock vehicle messages (a line or two for a moment), as nothing is
@@ -274,7 +280,7 @@ def sized(left, top, size):
 
 def beside_bar(kind, size, screen, minimap, bar):
     width, height = screen
-    above_top = height - BAR_HEIGHT - BAR_ABOVE - size[1]
+    above_top = height - BAR_HEIGHT - BAR_KEYS - BAR_ABOVE - size[1]
     if kind == 'bar_above':
         return sized((width - size[0]) / 2, above_top, size)
     left = width / 2 + bar / 2 + ATTACH_GAP
@@ -388,7 +394,7 @@ class DefaultPlacesTest(unittest.TestCase):
             consumables = dict(stock_rects(screen))['consumables']
 
             assert row[0] + row[2] == consumables[0] + consumables[2]
-            assert consumables[1] - row[3] == BAR_ABOVE
+            assert consumables[1] - row[3] == BAR_KEYS + BAR_ABOVE
 
     def test_the_lifted_marks_clear_the_equipment_row(self):
         screen = (1920, 1080)
@@ -418,7 +424,8 @@ class DefaultPlacesTest(unittest.TestCase):
         page = read_page_constants()
 
         expected = {
-            'gap': ATTACH_GAP, 'edge': ATTACH_EDGE, 'height': BAR_HEIGHT, 'above': BAR_ABOVE, 'split': BAR_SPLIT,
+            'gap': ATTACH_GAP, 'edge': ATTACH_EDGE, 'height': BAR_HEIGHT, 'keys': BAR_KEYS, 'above': BAR_ABOVE,
+            'split': BAR_SPLIT,
             'row': BAR_ROW,
             'offset': SCORE_OFFSET, 'top': SCORE_TOP, 'narrow': SCORE_NARROW, 'under': SCORE_UNDER,
         }

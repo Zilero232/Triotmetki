@@ -88,6 +88,10 @@
         "title": "Sixth sense lamp",
         "text": "A big icon when the skill fires. Replaces the stock lamp."
       },
+      "pack_badge": {
+        "title": "Three Marks badge by names",
+        "text": "The modpack's badge by the name in the player panels, the Tab stats and the loading screen: on you and on players who bound the mod and left their badge on."
+      },
       "battle_loadout": {
         "title": "Equipment in battle",
         "text": "The game's own equipment and directive icons to the left of the shell bar, no labels, with a tooltip on hover."
@@ -345,7 +349,7 @@
   },
   "switches": {
     "title": "What goes to the site",
-    "lead": "Only your own account's events, signed with the device key, and only after binding. Each item turns off in the mod window.",
+    "lead": "Your own account's events (plus the account numbers of a battle's players for the modpack badge), signed with the device key, and only after binding. Each item turns off in the mod window.",
     "values": {
       "on": "On",
       "manual": "On a button",
@@ -371,6 +375,10 @@
       "shots": {
         "title": "Your hits",
         "text": "Damage and result of your shots at enemies, without positions or distances — for “Honest RNG”."
+      },
+      "badge": {
+        "title": "Modpack badge",
+        "text": "At the start of a battle, the account numbers of its players: the site answers which of them have the badge and keeps nothing. Other players with the mod see your badge while it is on."
       },
       "shareSettings": {
         "title": "Game settings",

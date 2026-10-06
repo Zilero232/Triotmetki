@@ -1,18 +1,19 @@
 @use '@/shared/styles/gameface' as *;
 
+// A dark plate that fades out to the right, so the rows read on sky, sand and snow and the scene shows through.
 .plate {
-  width: 270px;
+  @include hud-text;
+
+  display: flex;
+  width: 344px;
+  flex-direction: column;
+  padding: 4px 40px 4px 0;
+  background-image: linear-gradient(90deg, rgb(10 10 12 / 74%) 0%, rgb(10 10 12 / 64%) 60%, rgb(10 10 12 / 40%) 84%, rgb(10 10 12 / 0%) 100%);
+  color: token(hud-text);
 }
 
 .wide {
-  width: 330px;
-}
-
-.totals {
-  display: flex;
-  height: 18px;
-  flex-direction: row;
-  align-items: center;
+  width: 464px;
 }
 
 .section {
@@ -21,7 +22,7 @@
 }
 
 .divided {
-  padding-top: 2px;
+  padding-top: 3px;
   border-top: 1px solid token(hud-divider);
-  margin-top: 2px;
+  margin-top: 3px;
 }

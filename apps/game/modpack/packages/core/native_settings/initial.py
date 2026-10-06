@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .constants import ACTION_RECOMMENDED, ACTION_RESTORE, NATIVE
+from ..compat import string_types
+from .constants import ACTION_RECOMMENDED, ACTION_RESTORE, NATIVE, ONCE_DONE, ONCE_NATIVE, ONCE_WAIT, ONCE_WRITE
 from .mapping import merge_value
 
 
@@ -13,8 +14,28 @@ def client_keys(schema):
     return tuple(sorted(key for key, choices in schema.choices.items() if NATIVE in choices))
 
 
-def native_choices(keys):
-    return dict((key, NATIVE) for key in keys)
+def native_choices(keys, once=None):
+    """Every key at 'native'; the key of a one-time switch (`once`) starts at its value instead."""
+    values = dict((key, NATIVE) for key in keys)
+    if once is not None:
+        values[once['key']] = once['value']
+    return values
+
+
+def once_step(once, section_value, is_chosen, game_value, wanted):
+    """What a component's one-time client switch does (ONCE_*). `once` is {'key', 'value', 'off'}: the section key, the
+    value it starts at and the game's value it replaces; `section_value` the section's value of that key, `is_chosen`
+    whether the player set it in the window, `game_value` the client's value as read (None when unknown) and `wanted`
+    the client value of `once['value']`."""
+    if is_chosen or section_value != once['value']:
+        return ONCE_DONE
+    if game_value is None:
+        return ONCE_WAIT
+    if game_value == once['off']:
+        return ONCE_WRITE
+    if game_value == wanted:
+        return ONCE_DONE
+    return ONCE_NATIVE
 
 
 def recommended(schema, keys):
@@ -43,10 +64,21 @@ def offered_action(has_backup, holds_recommended):
 
 class NativeState(object):
     """The client values each component replaced when the player asked for its recommended values, in state.json:
-    `backups` {component: {'settings', 'account'}}."""
+    `backups` {component: {'settings', 'account'}}; `once` the components whose one-time switch already ran."""
 
-    def __init__(self, backups=None):
+    def __init__(self, backups=None, once=None):
         self.backups = _dict_of(backups)
+        self.once = [name for name in once if isinstance(name, string_types)] if isinstance(once, list) else []
+
+    def once_done(self, component_id):
+        return component_id in self.once
+
+    def mark_once(self, component_id):
+        if component_id not in self.once:
+            self.once.append(component_id)
+
+    def dump_once(self):
+        return list(self.once)
 
     def backup(self, component_id):
         backup = self.backups.get(component_id)

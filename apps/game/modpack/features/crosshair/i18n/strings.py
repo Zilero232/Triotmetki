@@ -16,11 +16,6 @@ STRINGS = {
         'crosshair_modes_arcade': u'Аркадному',
         'crosshair_modes_sniper': u'Снайперскому',
         'crosshair_server_reticle': u'Серверный прицел',
-        'crosshair_aim_circle': u'Круг сведения',
-        'crosshair_aim_circle_stock': u'Как в игре',
-        'crosshair_aim_circle_p80': u'80 %',
-        'crosshair_aim_circle_p70': u'70 %',
-        'crosshair_aim_circle_p60': u'60 %',
         'crosshair_mark': u'Центральная метка',
         'crosshair_mark_none': u'Как в игре',
         'crosshair_mark_chevron_thin': u'Шеврон тонкий',
@@ -102,9 +97,18 @@ STRINGS = {
                                  u'Меняется только в ангаре.',
         'crosshair_modes_hint': u'К каким режимам прицела применить пресет и метку.',
         'crosshair_server_reticle_hint': u'Тот же переключатель, что в настройках игры.',
-        'crosshair_aim_circle_hint': u'Уменьшенный круг сведения, как в модпаках: круг игры рисуется меньше, ближе к '
-                                     u'тому, куда ложится большинство снарядов. Разброс и выстрел не меняются. Для '
-                                     u'аркадного и снайперского прицела, обычного и серверного; у арты — как в игре.',
+        'component_aim_circle': u'Уменьшенный круг сведения',
+        'component_aim_circle_hint': u'Круг сведения игры рисуется меньше, ближе к тому, куда ложится большинство снарядов, '
+                                     u'как в модпаках. Разброс, выстрел и реплей не меняются. Для аркадного и снайперского '
+                                     u'прицела, обычного и серверного; у арты — как в игре.',
+        'aim_circle_size': u'Размер круга',
+        'aim_circle_size_p80': u'80 %',
+        'aim_circle_size_p70': u'70 %',
+        'aim_circle_size_p60': u'60 %',
+        'aim_circle_size_hint': u'Доля от круга, который рисует игра: чем меньше, тем сильнее уменьшен круг.',
+        'aim_circle_group_size': u'Размер',
+        'aim_circle_sample_stock': u'Как в игре',
+        'aim_circle_sample_chosen': u'С модом',
     },
     'en': {
         'component_crosshair': u'Crosshairs',
@@ -120,11 +124,6 @@ STRINGS = {
         'crosshair_modes_arcade': u'Arcade',
         'crosshair_modes_sniper': u'Sniper',
         'crosshair_server_reticle': u'Server reticle',
-        'crosshair_aim_circle': u'Aim circle',
-        'crosshair_aim_circle_stock': u'Game default',
-        'crosshair_aim_circle_p80': u'80 %',
-        'crosshair_aim_circle_p70': u'70 %',
-        'crosshair_aim_circle_p60': u'60 %',
         'crosshair_mark': u'Centre mark',
         'crosshair_mark_none': u'Game\'s own',
         'crosshair_mark_chevron_thin': u'Thin chevron',
@@ -205,8 +204,17 @@ STRINGS = {
                                  u'Changed in the hangar only.',
         'crosshair_modes_hint': u'Which reticle views the preset and the mark apply to.',
         'crosshair_server_reticle_hint': u'The same switch as in the game settings.',
-        'crosshair_aim_circle_hint': u'A smaller aim circle, as in the modpacks: the game\'s circle is drawn smaller, '
-                                     u'closer to where most shells land. Dispersion and the shot do not change. For the '
-                                     u'arcade and sniper reticles, client and server; SPGs keep the game\'s.',
+        'component_aim_circle': u'Smaller aim circle',
+        'component_aim_circle_hint': u'The game\'s aim circle is drawn smaller, closer to where most shells land, as in the '
+                                     u'modpacks. Dispersion, the shot and the replay do not change. For the arcade and '
+                                     u'sniper reticles, client and server; SPGs keep the game\'s.',
+        'aim_circle_size': u'Circle size',
+        'aim_circle_size_p80': u'80 %',
+        'aim_circle_size_p70': u'70 %',
+        'aim_circle_size_p60': u'60 %',
+        'aim_circle_size_hint': u'The share of the circle the game draws: the lower, the smaller the circle.',
+        'aim_circle_group_size': u'Size',
+        'aim_circle_sample_stock': u'Game default',
+        'aim_circle_sample_chosen': u'With the mod',
     },
 }

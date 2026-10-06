@@ -80,6 +80,11 @@ class DealtRowsTest(unittest.TestCase):
         assert crit['icon'].startswith('img://gui/maps/icons/library/critical_damage/hit_critical.png')
         assert crit['shell']['gold']
 
+    def test_a_row_counts_the_crits_of_the_own_shots(self):
+        rows = preview_data()['dealt']
+
+        assert [row['crits'] for row in rows] == [0, 1, 0, 0]
+
     def test_grouped_ricochets_count_their_hits_without_an_amount(self):
         ricochets = preview_data()['dealt'][2]
 
@@ -116,6 +121,7 @@ class ReceivedRowsTest(unittest.TestCase):
         assert kv['tone'] == 'received'
         assert kv['icon'] == 'otmetki:received'
         assert kv['ammo_rack'] == 'otmetki:ammo_rack'
+        assert kv['crits'] == 0
 
     def test_a_blocked_hit_keeps_its_amount_in_the_blocked_tone(self):
         blocked = preview_data()['received'][1]

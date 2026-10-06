@@ -1,6 +1,7 @@
 import type { UserConfig } from 'vite';
 
 import react from '@vitejs/plugin-react';
+import colorFunctionalNotation from 'postcss-color-functional-notation';
 import pxtorem from 'postcss-pxtorem';
 
 import { scopedClassName } from '../class-name';
@@ -14,8 +15,15 @@ export const sharedConfig = (): UserConfig => ({
   css: {
     modules: { generateScopedName: scopedClassName, localsConvention: 'camelCaseOnly' },
     // Gameface scales the page through the root font size, so every length is written in px
-    // and shipped as rem (1rem = 1px of the design), tokens included.
-    postcss: { plugins: [pxtorem({ rootValue: UI_BUILD.style.pixelsPerRem, propList: ['*'], minPixelValue: 0, mediaQuery: false })] }
+    // and shipped as rem (1rem = 1px of the design), tokens included. Gameface parses only the
+    // legacy rgba(r, g, b, a) form, and esbuild lowers rgb(r g b / a) only in plain colour
+    // properties, not inside border, text-shadow or box-shadow values, so every colour is rewritten here.
+    postcss: {
+      plugins: [
+        colorFunctionalNotation({ preserve: false }),
+        pxtorem({ rootValue: UI_BUILD.style.pixelsPerRem, propList: ['*'], minPixelValue: 0, mediaQuery: false })
+      ]
+    }
   },
   build: {
     outDir: UI_BUILD.outDir,

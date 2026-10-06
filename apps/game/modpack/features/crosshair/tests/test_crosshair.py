@@ -29,7 +29,7 @@ from otmetki.features.crosshair.model.constants import (
     VECTOR_RENDITIONS,
 )
 from otmetki.features.crosshair.model.circle import circle_percent, is_scaled, scaled_size
-from otmetki.features.crosshair.model.editor import editor
+from otmetki.features.crosshair.model.editor import circle_editor, editor
 from otmetki.features.crosshair.model.preview import preview_text, preview_widget, sample_readouts
 from otmetki.core.hud.stock import (
     RETICLE_CASSETTE,
@@ -45,8 +45,8 @@ from otmetki.features.crosshair.model.readouts import (
     replaced_reticle_parts,
     wants_readouts,
 )
-from otmetki.features.crosshair.model.widget import crosshair_widget
-from otmetki.features.crosshair.settings import SCHEMA, SETTINGS
+from otmetki.features.crosshair.model.widget import circle_widget, crosshair_widget
+from otmetki.features.crosshair.settings import CIRCLE_SCHEMA, PARTS, SCHEMA, SETTINGS
 from otmetki.features.crosshair.settings.constants import MARKS
 
 ASSETS_DIR = os.path.join(_support.MODPACK_DIR, 'assets')
@@ -69,7 +69,6 @@ FIELD_KEYS = (
     'preset',
     'modes',
     'server_reticle',
-    'aim_circle',
     'mark',
     'mark_size',
     'mark_color',
@@ -672,8 +671,11 @@ class ReplacedReticlePartsTest(unittest.TestCase):
 
 class AimCircleTest(unittest.TestCase):
 
-    def test_the_circle_keeps_the_game_size_by_default(self):
-        assert Settings(None, SCHEMA).get('aim_circle') == 'stock'
+    def test_the_circle_starts_at_seventy_percent(self):
+        assert Settings(None, CIRCLE_SCHEMA).get('size') == 'p70'
+
+    def test_the_circle_offers_the_packs_sizes(self):
+        assert CIRCLE_SCHEMA.choices['size'] == ('p80', 'p70', 'p60')
 
     def test_the_game_size_is_not_scaled(self):
         assert is_scaled('stock') is False
@@ -690,16 +692,50 @@ class AimCircleTest(unittest.TestCase):
     def test_a_size_that_is_not_a_number_stays(self):
         assert scaled_size(None, 70) is None
 
-    def test_the_circle_is_no_client_setting(self):
-        assert 'aim_circle' not in client_keys(SCHEMA)
+    def test_the_circle_left_the_crosshair_settings(self):
+        assert 'aim_circle' not in SCHEMA.defaults
 
-    def test_the_circle_writes_nothing_to_the_client_settings(self):
-        assert native({'aim_circle': 'p60'}) == native({})
+    def test_the_crosshair_preview_draws_the_game_circle(self):
+        widget = crosshair_widget(Settings(None, SCHEMA), str)
 
-    def test_the_preview_draws_the_chosen_circle(self):
-        widget = crosshair_widget(Settings({'aim_circle': 'p60'}, SCHEMA), str)
+        assert widget['data']['circle'] == 100
 
-        assert widget['data']['circle'] == 60
+    def test_the_circle_preview_draws_the_chosen_share(self):
+        assert circle_widget('p60')['data']['circle'] == 60
+
+    def test_the_circle_preview_draws_the_reticle_sketch(self):
+        assert circle_widget('p60')['data']['sketch'] is True
+
+
+class AimCirclePartTest(unittest.TestCase):
+
+    def test_the_circle_is_a_component_of_its_own(self):
+        assert [part['id'] for part in PARTS] == ['aim_circle']
+
+    def test_the_circle_has_its_own_switch(self):
+        assert PARTS[0]['switch'] == 'battle_aim_circle'
+
+    def test_the_circle_shows_in_battle(self):
+        assert PARTS[0]['group'] == 'battle'
+
+    def test_the_page_offers_the_size(self):
+        spec = circle_editor(Settings(None, CIRCLE_SCHEMA), str)
+
+        assert spec['groups'][0]['keys'] == ['size']
+
+    def test_the_page_shows_the_game_circle_beside_the_chosen_one(self):
+        spec = circle_editor(Settings({'size': 'p60'}, CIRCLE_SCHEMA), str)
+
+        assert [sample['widget']['data']['circle'] for sample in spec['samples']] == [100, 60]
+
+    def test_every_label_of_the_page_is_translated(self):
+        keys = ['component_aim_circle', 'component_aim_circle_hint', 'aim_circle_size', 'aim_circle_size_hint',
+                'aim_circle_group_size', 'aim_circle_sample_stock', 'aim_circle_sample_chosen']
+        keys += ['aim_circle_size_%s' % size for size in CIRCLE_SCHEMA.choices['size']]
+
+        missing = [key for language in ('ru', 'en') for key in keys if key not in STRINGS[language]]
+
+        assert missing == []
 
 
 if __name__ == '__main__':

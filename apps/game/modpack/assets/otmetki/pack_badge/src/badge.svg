@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+<!-- (c) 2026 Три отметки. Original artwork: the modpack user badge, three marks on a shield. -->
+<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc56b"/><stop offset="1" stop-color="#ff7a1a"/></linearGradient></defs>
+<path d="M48 4L86 16V46C86 68 70 84 48 92C26 84 10 68 10 46V16Z" fill="#0e0e10" stroke="url(#g)" stroke-width="6" stroke-linejoin="round"/>
+<path d="M27 64L35 30M61 64L69 30" stroke="url(#g)" stroke-width="9" stroke-linecap="round"/>
+<path d="M44 58L50 36" stroke="#f2f2f3" stroke-width="8" stroke-linecap="round"/>
+</svg>

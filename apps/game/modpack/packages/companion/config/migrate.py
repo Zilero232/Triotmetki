@@ -4,6 +4,9 @@ from ...core.compat import is_int, is_number
 from .constants import (
     AIM_CIRCLE_CHOICES,
     AIM_CIRCLE_FROM,
+    AIM_CIRCLE_PART_REVISION,
+    AIM_CIRCLE_PART_STOCK,
+    AIM_CIRCLE_PART_TO,
     AIM_CIRCLE_REVISION,
     AIM_CIRCLE_TO,
     DEFAULTS_REVISION,
@@ -172,6 +175,20 @@ def _move_aim_circle(components):
     _apply(components, {target_section: {target_key: _aim_circle_choice(percent)}})
 
 
+# The crosshair's aim circle choice becomes the switch and size of its own component; the key itself is dropped later.
+def _aim_circle_part(config, components):
+    section_name, key = AIM_CIRCLE_TO
+    choice = (_section(components, section_name) or {}).get(key)
+    if choice in (None, AIM_CIRCLE_PART_STOCK):
+        return config
+
+    switch, part_section, part_key = AIM_CIRCLE_PART_TO
+    _apply(components, {part_section: {part_key: choice}})
+    config = dict(config)
+    config[switch] = True
+    return config
+
+
 # The marks split into the battle panel and the Tank card: each switch is on while the player had its part on, an off
 # one is recorded as the player's choice, and the card's options move to its own section.
 def _split(config, components):
@@ -199,10 +216,11 @@ def migrated(config, components, schema_defaults):
     """(config, components) of a stored install moved to the current revision. Below MIGRATION_REVISION merged switches
     turn on when any of theirs was on and the merged values move; below SPLIT_REVISION the marks part switches and
     the Tank card's options move to the card's own switch and section; below AIM_CIRCLE_REVISION an aim circle the
-    player had on in aim_info becomes the crosshair's choice; below DEFAULTS_REVISION a changed default moves
-    only when the player never changed it, and the sections of removed components go. `schema_defaults(section)` gives a
-    component's schema defaults, or None when it is not installed. A fresh install (no stored config) and a file already
-    at the revision come back unchanged."""
+    player had on in aim_info becomes the crosshair's choice; below AIM_CIRCLE_PART_REVISION a crosshair aim circle
+    smaller than the game's turns on its own component with the same size; below DEFAULTS_REVISION a changed default
+    moves only when the player never changed it, and the sections of removed components go. `schema_defaults(section)`
+    gives a component's schema defaults, or None when it is not installed. A fresh install (no stored config) and a file
+    already at the revision come back unchanged."""
     if not isinstance(config, dict) or not config:
         return config, components
     revision = _stored_revision(config)
@@ -216,6 +234,8 @@ def migrated(config, components, schema_defaults):
         config = _split(config, components)
     if revision < AIM_CIRCLE_REVISION:
         _move_aim_circle(components)
+    if revision < AIM_CIRCLE_PART_REVISION:
+        config = _aim_circle_part(config, components)
     _move_places(components, revision)
     chosen = user_set_tokens(config.get(USER_SET_KEY))
     _apply(components, _retired_values(components, chosen, revision))

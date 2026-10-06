@@ -12,12 +12,12 @@ import { MinimapSchematic } from '../MinimapSchematic';
 
 import s from './EditorScreen.module.scss';
 
-export const EditorScreen = ({ model }: EditorScreenProps) => {
+export const EditorScreen = ({ model, tall = false }: EditorScreenProps) => {
   const t = useT();
   const hasScreens = model.screens.length > 0;
 
   return (
-    <div className={s.block}>
+    <div className={clsx(s.block, tall && s.tall)}>
       <div className={s.bar}>
         <span className={s.caption}>{t(model.caption)}</span>
         {hasScreens && (

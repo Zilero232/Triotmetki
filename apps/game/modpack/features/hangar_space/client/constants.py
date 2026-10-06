@@ -35,3 +35,24 @@ ENVIRONMENT_SWITCHER = 'EnvironmentSwitcher'
 
 # The default hangar config keeps one slot of each kind per premium flag.
 PREMIUM_FLAGS = (True, False)
+
+# The preview shot. RU 1.45 client source: BigWorld.screenShot(extension, name) is the engine's screenshot (the
+# client's own key writes res/engine_config.xml screenShot: extension 'jpg', name 'screenshots/shot', a path under
+# the game folder to which the engine adds a number); the engine reports each saved file to the one callback set
+# with BigWorld.setScreenshotNotifyCallback(callback(path)), which gui.shared.personality.init sets to its
+# onScreenShotMade (the screenshot-saved system message). The shot takes it for one capture and gives
+# it back. UNVERIFIED on Lesta 1.45: the 'bmp' extension, a name in another folder, the callback for a scripted shot.
+SHOT_EXTENSION = 'bmp'
+SHOT_FOLDER = 'capture'
+SHOT_NAME = 'shot'
+PERSONALITY_MODULE = 'gui.shared.personality'
+PERSONALITY_CALLBACK = 'onScreenShotMade'
+# The interface is taken off the screen the way the client's overlay controller does it (gui/game_control/overlay.py
+# _LAYERS, hideContainers / showContainers on the lobby app's containerManager), with no animation; the windows of
+# ours that are not blocking (the HUD page: hangar labels, the settings button) are hidden through the wulf window's
+# hide() / show(focus=False). The shot waits HIDE_SETTLE_S for the next frames to draw without them and gives the
+# interface back when the engine reports the file, or after SHOT_TIMEOUT_S at the latest.
+HIDDEN_LAYERS = ('MARKER', 'VIEW', 'WINDOW', 'WAITING', 'SYSTEM_MESSAGE', 'FULLSCREEN_WINDOW')
+HIDE_SETTLE_S = 0.4
+SHOT_TIMEOUT_S = 3.0
+PREVIEW_CHECK_S = 0.5

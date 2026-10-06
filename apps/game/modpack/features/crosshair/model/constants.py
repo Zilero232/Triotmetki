@@ -134,6 +134,12 @@ CENTRE_PART = 'centralTag'
 # 0.6-0.8 of the stock one (DispersionReticle's measured 0.58, the old mod_sfgm curSize 0.6 or 0.7).
 AIM_CIRCLE_SCALES = {'stock': 100, 'p80': 80, 'p70': 70, 'p60': 60}
 PERCENT = 100.0
+# The smaller aim circle's page: the game's circle beside the chosen one, drawn on the reticle sketch with no mark (the
+# widget still carries a mark size).
+CIRCLE_STOCK = 'stock'
+CIRCLE_CHOSEN = 'chosen'
+CIRCLE_EDITOR_GROUPS = (('size', ('size',)),)
+CIRCLE_SAMPLE_MARK_SIZE = 32
 PREVIEW_SIZE = (128, 128)
 # The preview widget: a sketch of the game's own reticle with the chosen centre mark over it (ui-web crosshair).
 KIND = 'crosshair'
@@ -144,7 +150,7 @@ EDITOR_GROUPS = (
     ('colour', ('mark_color', 'mark_outline')),
     ('size', ('mark_size', 'mark_hides_centre')),
     ('readouts', ('reload_box', 'drum_style', 'reload_arcs', 'show_zoom')),
-    ('reticle', ('preset', 'modes', 'server_reticle', 'aim_circle')),
+    ('reticle', ('preset', 'modes', 'server_reticle')),
 )
 EDITOR_GALLERY_KEY = 'mark'
 EDITOR_SWATCH_KEY = 'mark_color'

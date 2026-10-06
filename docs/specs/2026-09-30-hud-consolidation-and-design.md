@@ -687,24 +687,32 @@ Mocks: `mock/h-tank.png`, `mock/h-session.png`, `mock/h-info.png`, `mock/hangar-
 
 ### 9.1 Tank card (marks_panel, panel `hangar_marks`)
 
+Its own widget (`tank_card`, `ui-web/src/entities/hud/tank-card`), laid out as the packs' hangar marks cards (Jove, Lebwa, Battle Observer, XVM).
+
 ```
 ┌──────────────────────────────────────────┐  264 wide, solid, padding 8/12
-│ [flag] EBR 105 X            ▮▮ 86,12 %   │  flag 22×15 · value 15 · tier caption · mark 20 · key 20 gold
+│ [cls] VII  T-34-85                  ///  │  class icon 16 · tier body caps · name value 15 · marks on the gun (index bars)
+│ 86,12 %  ▲ +0,18                 ╱╲╱╲•   │  percent hero 28 · last battle's change body · sparkline 72×26 of the last N battles
+│ ▬▬▬▬▬▬▬▬|▬▬▬▬▬▬▬▬|▬▬▬▌░░░░░|░░░░░░░░░   │  four equal mark steps 0-65-85-95-100, gold fill, orange cursor at the percent
+│         65 %     85 %     95 %    100 %  │  level captions, gold once reached
+│         1 900    2 450    3 050   3 900  │  the average each level needs (site thresholds), dim
 │ ──────────────────────────────────────── │
-│ прошлый бой +0,01  за 5 боёв −0,12  ╱╲╱╲• │  caption + body deltas · sparkline 60×16 of the last N battles
-│ 65 ✓  85 ✓  95 28 295 за бой   ~45 боёв  │  thresholds · battles to next (gold)
-│ среднее 2 540   темп 3 400               │
-│ Alt — подробнее                           │  dim hint (only when Alt has more)
-├ Alt ─────────────────────────────────────┤
-│ WN8 2 310   побед 56 %   боёв 213        │  show_tank_ratings (site; rating colours)
-│ бои 10–11 ур. · до навыка 3 297 546 · …  │  show_tank_facts (from hangar_info)
-│ прошлый бой: ⇩ −510 · 2 проб. · корма    │  battle_results hits summary
+│ До 95 %  28 295 за бой         ~45 боёв  │  next mark (gold) · damage one battle needs · battles at the pace
+│ Alt — подробнее                          │  compact only, when the grid has something
+├ «Подробный» or Alt ──────────────────────┤
+│ ОТМЕТКА ──────────────────────────────── │  section caption caps 11 + hairline
+│ Средний урон          Темп               │  2-column grid, 126 px cells: caption 11 over value 15 + note 11
+│ 2 540 нужно 3 050     3 400              │
+│ До 87 %               За 5 боёв          │
+│ 5 207 за бой          -0,12 %            │
+│ ТАНК ─────────────────────────────────── │  WN8 (rating colour), wins + battles, next mastery badge XP
+│ ИССЛЕДОВАНИЕ ─────────────────────────── │  XP to elite, to the next tanks, with battles
 └──────────────────────────────────────────┘
 ```
 
 - Replaces the four left cards (marks, history, wounds, ratings). One tank name, one percent.
-- Hover on the thresholds row: tooltip with the damage for each level and the pace forecast. Click opens the marks history page in the window.
-- Empty: no MoE yet → header only, with «нет данных об отметке» as a caption.
+- Percents as the battle panel writes them (`86,12 %`). No silhouette: the bar of the mark steps reads the position.
+- A tank without marks (below tier 5): the header and the grid only. No thresholds from the site: the bar without averages and «нет порогов для этого танка».
 
 ### 9.2 Session card (session_stats)
 

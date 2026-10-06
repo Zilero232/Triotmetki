@@ -21,7 +21,7 @@ def strip_data(options, style='icons'):
 
 
 def bar_pair_data():
-    return team_hp_widget(preview_teams(), Settings({}, SCHEMA), ALL_ON)['data']
+    return team_hp_widget(preview_teams(), Settings({'style': 'full'}, SCHEMA), ALL_ON)['data']
 
 
 def teams_with_stock_health():

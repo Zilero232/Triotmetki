@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.battle import ammo, call, controls_own_vehicle, crosshair, player, vehicle_info, vehicle_state
 from ....core.client.game import values_by_name
+from ....core.client.hud import component_config
 from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.native import ClientDefaults, NativeSettingsComponent, section_is_new
 from ....core.client.timer import Ticker
@@ -24,7 +25,7 @@ from ..model.readouts import (
     wants_readouts,
 )
 from ..model.widget import crosshair_widget
-from ..settings import PANEL_ID, SCHEMA, SWITCH
+from ..settings import CIRCLE_PANEL_ID, CIRCLE_SCHEMA, CIRCLE_SWITCH, PANEL_ID, SCHEMA, SWITCH
 from .constants import (
     CLIP_EVENTS,
     MARKER_METHOD,
@@ -99,14 +100,16 @@ class CrosshairComponent(BattlePanel):
         self.view = None
         self.native = NativeSettingsComponent(app, PANEL_ID, SCHEMA, SWITCH, STRINGS, to_native)
         self.client_defaults = ClientDefaults(self.native, is_new_section)
+        self.circle_settings = component_config(app).section(CIRCLE_PANEL_ID, CIRCLE_SCHEMA)
         self.circle_installed = False
         self.install_circle()
 
     def ui_actions(self):
         return self.client_defaults.ui_actions()
 
-    # The smaller aim circle: installed once, it reads the choice on every marker update, so a change applies at once.
-    # Fair play: the gun marker the client draws, smaller; nothing else is read or changed (README, crosshair).
+    # The smaller aim circle, a component of its own with its switch and section: installed once, it reads them on every
+    # marker update, so a change applies at once. Fair play: the gun marker the client draws, smaller; nothing else is
+    # read or changed (README, crosshair).
     @safe
     def install_circle(self):
         if self.circle_installed:
@@ -125,9 +128,9 @@ class CrosshairComponent(BattlePanel):
             return result
 
     def scale_circle(self, controller, relax_time):
-        choice = self.settings.get('aim_circle')
+        choice = self.circle_settings.get('size')
         provider = getattr(controller, '_dataProvider', None)
-        if not self.enabled() or not is_scaled(choice) or provider is None:
+        if not self.app.config.is_enabled(CIRCLE_SWITCH) or not is_scaled(choice) or provider is None:
             return
         provider.updateSize(scaled_size(controller.getSize(), circle_percent(choice)), relax_time)
 

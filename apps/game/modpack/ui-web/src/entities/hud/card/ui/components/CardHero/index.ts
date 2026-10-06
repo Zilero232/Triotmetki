@@ -1,1 +1,0 @@
-export { CardHero } from './CardHero';

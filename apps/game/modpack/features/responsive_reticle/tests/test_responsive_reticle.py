@@ -6,15 +6,20 @@ import _support  # noqa: F401
 from otmetki.core.settings import Settings
 from otmetki.features.responsive_reticle.i18n import STRINGS
 from otmetki.features.responsive_reticle.model import (
-    TickCache,
+    Stillness,
+    TickBlend,
     TickGate,
     argument_names,
+    blend,
     frame_time_diff,
+    nearly_same,
     realm_of,
     relax_time,
     server_tick,
     skip_reason,
     supports_rotate,
+    turn_time,
+    turned,
 )
 from otmetki.features.responsive_reticle.settings import SCHEMA, SETTINGS
 from otmetki.features.responsive_reticle.settings.constants import CHOICES
@@ -94,35 +99,136 @@ class FrameTest(unittest.TestCase):
     def test_a_rotator_that_never_turned_is_left_to_the_stock_tick(self):
         assert frame_time_diff(10.0, None) is None
 
-    def test_the_instant_marker_relaxes_within_the_frame(self):
-        assert relax_time('instant', 0.007) == 0.007
+    def test_the_instant_marker_lands_at_once_like_the_stock_replay_warp(self):
+        assert relax_time('instant', 0.007) == 0.001
 
     def test_the_smooth_marker_relaxes_over_half_a_tick(self):
         assert relax_time('smooth', 0.007) == 0.05
 
+    def test_a_long_frame_relaxes_the_smooth_marker_over_the_frame(self):
+        assert relax_time('smooth', 0.08) == 0.08
 
-class TickCacheTest(unittest.TestCase):
+    def test_the_instant_turn_glides_the_gun_over_the_frame(self):
+        assert turn_time('instant', 0.007) == 0.007
+
+    def test_the_smooth_turn_glides_the_gun_with_the_marker(self):
+        assert turn_time('smooth', 0.007) == 0.05
+
+
+class BlendTest(unittest.TestCase):
+
+    def test_halfway_is_the_middle(self):
+        assert blend([0.0, 2.0], [1.0, 4.0], 0.5) == [0.5, 3.0]
+
+    def test_past_the_end_is_the_target(self):
+        assert blend([0.0], [1.0], 3.0) == [1.0]
+
+    def test_without_a_start_it_is_the_target(self):
+        assert blend(None, [1.0], 0.5) == [1.0]
+
+    def test_a_value_of_another_shape_is_the_target(self):
+        assert blend([0.0], [1.0, 2.0], 0.5) == [1.0, 2.0]
+
+
+class TickBlendTest(unittest.TestCase):
 
     def test_the_value_is_computed_once_per_tick(self):
-        cache = TickCache()
+        cache = TickBlend()
         calls = []
 
-        values = [cache.get(5, lambda: calls.append(1) or len(calls)) for _ in range(3)]
+        for at in (10.0, 10.02, 10.05):
+            cache.get(at, lambda: calls.append(1) or [1.0])
 
-        assert values == [1, 1, 1]
+        assert len(calls) == 1
 
-    def test_a_new_tick_computes_again(self):
-        cache = TickCache()
-        cache.get(5, lambda: 'old')
+    def test_the_first_tick_hands_out_its_value(self):
+        assert TickBlend().get(10.0, lambda: [1.0]) == [1.0]
 
-        assert cache.get(6, lambda: 'new') == 'new'
+    def test_the_next_tick_glides_from_the_last_value(self):
+        cache = TickBlend()
+        cache.get(10.05, lambda: [1.0])
+
+        assert cache.get(10.15, lambda: [3.0]) == [1.0]
+
+    def test_halfway_through_the_tick_is_halfway_there(self):
+        cache = TickBlend()
+        cache.get(10.05, lambda: [1.0])
+        cache.get(10.15, lambda: [3.0])
+
+        assert abs(cache.get(10.2, lambda: [9.0])[0] - 2.0) < 1e-9
+
+    def test_a_tick_after_a_gap_starts_at_its_value(self):
+        cache = TickBlend()
+        cache.get(10.0, lambda: [1.0])
+
+        assert cache.get(10.5, lambda: [3.0]) == [3.0]
 
     def test_a_cleared_cache_computes_again(self):
-        cache = TickCache()
-        cache.get(5, lambda: 'old')
+        cache = TickBlend()
+        cache.get(10.0, lambda: [1.0])
         cache.clear()
 
-        assert cache.get(5, lambda: 'new') == 'new'
+        assert cache.get(10.01, lambda: [2.0]) == [2.0]
+
+    def test_without_a_clock_it_computes_every_time(self):
+        assert TickBlend().get(None, lambda: [2.0]) == [2.0]
+
+
+class StillnessTest(unittest.TestCase):
+
+    def test_the_first_frame_is_not_still(self):
+        assert not Stillness().still((1.0, 2.0))
+
+    def test_the_same_aim_after_a_turn_that_moved_nothing_is_still(self):
+        stillness = Stillness()
+        stillness.still((1.0, 2.0))
+        stillness.turned(False)
+
+        assert stillness.still((1.0, 2.0))
+
+    def test_the_same_aim_while_the_gun_still_turns_is_not_still(self):
+        stillness = Stillness()
+        stillness.still((1.0, 2.0))
+        stillness.turned(True)
+
+        assert not stillness.still((1.0, 2.0))
+
+    def test_a_moved_aim_is_not_still(self):
+        stillness = Stillness()
+        stillness.still((1.0, 2.0))
+        stillness.turned(False)
+
+        assert not stillness.still((1.0, 2.1))
+
+    def test_a_cleared_stillness_is_not_idle(self):
+        stillness = Stillness()
+        stillness.still((1.0,))
+        stillness.turned(False)
+        stillness.still((1.0,))
+        stillness.clear()
+
+        assert not stillness.idle
+
+
+class NearlySameTest(unittest.TestCase):
+
+    def test_a_difference_below_the_threshold_is_the_same(self):
+        assert nearly_same((1.0, 2.0), (1.000001, 2.0))
+
+    def test_a_difference_above_the_threshold_is_not(self):
+        assert not nearly_same((1.0,), (1.001,))
+
+    def test_another_length_is_not_the_same(self):
+        assert not nearly_same((1.0,), (1.0, 2.0))
+
+    def test_nothing_to_compare_is_not_the_same(self):
+        assert not nearly_same(None, (1.0,))
+
+    def test_a_gun_that_kept_its_angles_did_not_turn(self):
+        assert not turned((0.5, 0.1), (0.5, 0.1))
+
+    def test_a_gun_that_changed_its_yaw_turned(self):
+        assert turned((0.5, 0.1), (0.5001, 0.1))
 
 
 class TickGateTest(unittest.TestCase):

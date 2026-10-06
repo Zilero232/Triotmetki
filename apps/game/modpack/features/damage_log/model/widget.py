@@ -87,6 +87,7 @@ def row_widget(row, translate, looks):
         'cls': class_icon(row.get('class'), 'red'),
         'name': row.get('vehicle') or '',
         'hits': row.get('hits', 1),
+        'crits': row.get('crits') or 0,
         'hp': hp,
         'max': max_hp,
         'ammo_rack': glyph('ammo_rack') if row.get('ammo_rack') else None,

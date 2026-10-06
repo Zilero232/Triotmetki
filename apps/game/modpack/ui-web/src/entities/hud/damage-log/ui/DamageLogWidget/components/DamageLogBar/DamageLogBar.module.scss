@@ -1,0 +1,22 @@
+@use 'sass:color';
+@use '@/shared/styles/gameface' as *;
+
+// The target's HP after the own shots: what is left in the enemy red, what the own shots took in the dealt orange, the
+// rest (lost before) an empty track.
+.track {
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  border: 1px solid rgb(0 0 0 / 55%);
+  background-color: rgb(255 255 255 / 12%);
+}
+
+.kept {
+  height: 100%;
+  background-color: color.change(token(hud-enemy), $alpha: 0.85);
+}
+
+.took {
+  height: 100%;
+  background-color: token(hud-dealt);
+}

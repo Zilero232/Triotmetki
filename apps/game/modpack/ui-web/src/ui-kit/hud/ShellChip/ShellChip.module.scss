@@ -1,23 +1,49 @@
 @use 'sass:color';
 @use '@/shared/styles/gameface' as *;
 
+// Regular shells take their kind's colour as an outline (AP light, APCR steel blue, HEAT yellow, HE red, the rest muted);
+// a premium shell is a solid gold chip, the gold the crosshair's shell sprite and the stock ammo panel use.
 .chip {
   display: flex;
-  min-width: 20px;
+  width: 30px;
   height: 14px;
+  box-sizing: border-box;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  padding: 0 2px;
-  border: 1px solid color.change(token(hud-text), $alpha: 0.45);
+  border: 1px solid color.change(token(hud-muted), $alpha: 0.5);
   border-radius: token(hud-slot-radius);
-  color: token(hud-text);
+  background-color: rgb(0 0 0 / 35%);
+  color: token(hud-muted);
   font-size: 10px;
   font-weight: 700;
   line-height: 12px;
+  text-shadow: none;
+  white-space: nowrap;
+}
+
+.ap {
+  border-color: color.change(token(hud-text), $alpha: 0.55);
+  color: token(hud-text);
+}
+
+.apcr {
+  border-color: color.change(token(hud-radio), $alpha: 0.7);
+  color: token(hud-radio);
+}
+
+.heat {
+  border-color: color.change(token(hud-warn), $alpha: 0.7);
+  color: token(hud-warn);
+}
+
+.he {
+  border-color: color.change(token(hud-bad), $alpha: 0.7);
+  color: token(hud-bad);
 }
 
 .gold {
-  border-color: color.change(token(hud-gold), $alpha: 0.45);
-  color: token(hud-gold);
+  border-color: token(hud-gold);
+  background-color: token(hud-gold);
+  color: #17140c;
 }

@@ -22,6 +22,7 @@ EXCLUDED_CONFIG_KEYS = (
     'upload_replays',
     'publish_replays',
     'share_session_report',
+    'show_pack_badge',
 )
 EXCLUDED_CONFIG_PREFIXES = ('send_', 'settings_include_')
 # Where the settings window sits depends on the player's screen, so it never travels in a profile or its code.

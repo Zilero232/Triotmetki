@@ -139,7 +139,7 @@ describe(layoutLabels, () => {
       }).find((layout) => layout.id === 'otmetki.hud.damage_log')?.rect.top;
 
     it('lifts the damage log over the equipment row on a small screen', () => {
-      const equipmentTop = 768 - HUD_OVERLAY.attach.bar.height - HUD_OVERLAY.attach.bar.above - 55;
+      const equipmentTop = 768 - HUD_OVERLAY.attach.bar.height - HUD_OVERLAY.attach.bar.keys - HUD_OVERLAY.attach.bar.above - 55;
 
       expect(logTop([log, equipment()])).toBe(equipmentTop - HUD_OVERLAY.dock.gap - 145);
     });

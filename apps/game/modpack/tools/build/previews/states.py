@@ -25,12 +25,14 @@ HUD_PREVIEWS = {
     'battle_results': 'battle',
     'crosshair': 'battle',
     'damage_log': 'battle',
-    'marks_panel': 'battle',
+    'marks_panel': 'hangar',
     'personal_missions': 'hangar',
     'platoon_points': 'battle',
     'sixth_sense': 'battle',
     'team_hp': 'battle',
 }
+# The previews wider than the frame that keep their start edge (the first column) instead of their middle.
+PREVIEW_ANCHORS = {'damage_log': 'start'}
 # A fixed moment, so the clock preview does not change with every run.
 PREVIEW_MOMENT = time.gmtime(1790804820)
 PANEL_PLACE = {'x': 0, 'y': 0, 'alignX': 'center', 'alignY': 'center', 'visible': True, 'drag': False}
@@ -78,7 +80,9 @@ def _call(function, arguments):
 
 
 def preview_payload(component_id):
-    """(rich text, widget) of the component's preview with its default settings."""
+    """(rich text, widget) of the component's preview with its default settings; a feature whose catalog picture is
+    another of its panels (marks_panel: the hangar Tank card) gives it as `catalog_preview_text` and
+    `catalog_preview_widget`."""
     from otmetki.core.settings import Settings
 
     settings, preview, strings = _feature(component_id)
@@ -87,6 +91,8 @@ def preview_payload(component_id):
         'translate': _translator(strings),
         'moment': PREVIEW_MOMENT,
     }
+    if hasattr(preview, 'catalog_preview_widget'):
+        return _call(preview.catalog_preview_text, arguments), _call(preview.catalog_preview_widget, arguments)
     text = _call(preview.preview_text, arguments)
     widget = _call(preview.preview_widget, arguments) if hasattr(preview, 'preview_widget') else None
     return text, widget
@@ -108,7 +114,12 @@ def job(images=None):
     """What render.mjs draws: every component's state and backdrop, and the images the page may ask for."""
     images = own_images() if images is None else images
     previews = [
-        {'id': component_id, 'backdrop': backdrop, 'state': json.dumps(preview_state(component_id, images))}
+        {
+            'id': component_id,
+            'backdrop': backdrop,
+            'anchor': PREVIEW_ANCHORS.get(component_id, 'middle'),
+            'state': json.dumps(preview_state(component_id, images)),
+        }
         for component_id, backdrop in sorted(HUD_PREVIEWS.items())
     ]
     return {'previews': previews, 'images': images}

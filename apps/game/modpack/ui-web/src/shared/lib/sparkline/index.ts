@@ -1,1 +1,1 @@
-export { sparkline } from './sparkline';
+export { dotPath, sparkline } from './sparkline';

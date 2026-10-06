@@ -25,6 +25,7 @@ FEATURES = (
     'minimap_tweaks',
     'camera_tweaks',
     'crosshair_presets',
+    'battle_aim_circle',
     'hangar_info',
     'battle_chat_filter',
     'hangar_auto_resupply',
@@ -41,6 +42,7 @@ FEATURES = (
     'battle_hotkeys',
     'battle_hud_layouts',
     'battle_aim_info',
+    'battle_pack_badge',
     'hangar_comp7_helper',
     'hangar_event_trackers',
     'hangar_depot_seller',
@@ -69,6 +71,7 @@ OPT_IN_FEATURES = (
     'battle_platoon_points',
     'battle_hotkeys',
     'battle_bush_circle',
+    'battle_aim_circle',
     'battle_chat_filter',
     'streamer_mode',
     'hangar_tweaks',
@@ -87,7 +90,7 @@ SHARE_CHANNELS = ('telegram', 'discord', 'both')
 # one when it still holds the old default and the file predates the change (`defaults_revision`).
 # (revision, key, old default, new default). A switch of a removed component is left out of DEFAULTS: Settings ignores
 # a key its schema does not know, so the leftover drops out of the file on the next save.
-DEFAULTS_REVISION = 7
+DEFAULTS_REVISION = 8
 RETIRED_DEFAULTS = (
     (1, 'battle_loadout', False, True),
     (3, 'hangar_tweaks', True, False),
@@ -176,7 +179,9 @@ SWITCHED_OFF_PARTS = (
 )
 # (revision, section, key, old default, new default): moved in a file older than the revision, only while the key still
 # holds the old default and the player never set it in the window. Revision 4: the crosshair keeps the game's own
-# centre unless the player picks a mark (docs/research/competitors/2026-10-05-behavior-parity.md section 2).
+# centre unless the player picks a mark (docs/research/competitors/2026-10-05-behavior-parity.md section 2). Revision 8:
+# the minimap's last-seen spots and names start at 'always', so its one-time switch of a game at 'never' runs for an
+# install that predates it (features/minimap model.constants ONCE).
 RETIRED_VALUES = (
     (3, 'damage_log', 'alt_mode', False, True),
     (3, 'hangar_info', 'clock_format', '%H:%M:%S', '%H:%M'),
@@ -185,6 +190,8 @@ RETIRED_VALUES = (
     (4, 'crosshair', 'mark', 'chevron_thin', 'none'),
     (4, 'crew_xp', 'show_card', True, False),
     (5, 'crosshair', 'show_zoom', False, True),
+    (8, 'team_hp', 'style', 'full', 'icons'),
+    (8, 'minimap', 'vehicle_names', 'native', 'always'),
 )
 # (revision, section, old default place, new default place) as (x, y, align_x, align_y): a component that is not a HUD
 # panel (no RETIRED_PLACES of its own) moves in a file older than the revision only while it still sits at the old
@@ -223,6 +230,12 @@ AIM_CIRCLE_REVISION = 6
 AIM_CIRCLE_FROM = ('aim_info', 'aim_circle', 'aim_circle_scale', 70)
 AIM_CIRCLE_TO = ('crosshair', 'aim_circle')
 AIM_CIRCLE_CHOICES = ((95, 'stock'), (75, 'p80'), (65, 'p70'), (0, 'p60'))
+# Revision 8: the smaller aim circle became a component of its own (the crosshair's settings PARTS), as the packs list
+# it: a circle the player had smaller than the game's turns its switch on with the same size; one at the game's size
+# leaves the switch off. It runs after revision 6's move, and the crosshair's key leaves through DROPPED_KEYS.
+AIM_CIRCLE_PART_REVISION = 8
+AIM_CIRCLE_PART_STOCK = 'stock'
+AIM_CIRCLE_PART_TO = ('battle_aim_circle', 'aim_circle', 'size')
 # The sections of the removed components and panels (ComponentConfig keeps unknown sections, so they go here), dropped
 # from every file older than DEFAULTS_REVISION. Revision 4: battle_summary (the card of the battle being played) and
 # config_backup (the settings copy beside preferences.xml; core.durable keeps the files a wipe would lose). Revision 7:
@@ -256,9 +269,11 @@ DROPPED_SECTIONS = (
 # (fair play: Lesta forbids in-battle armour analysis). Revision 5: the Tank card's options moved out of the battle
 # marks panel (SPLIT_KEYS), with the part switches and the battles row the battle panel no longer has. Revision 6: the
 # battle panel's Alt view (alt_detail), so its box is the one the player places, and aim_info's aim circle keys
-# (AIM_CIRCLE_FROM). Revision 7: hangar_info's battle clock switch and its timer replacement.
+# (AIM_CIRCLE_FROM). Revision 7: hangar_info's battle clock switch and its timer replacement. Revision 8: the
+# crosshair's aim circle, now a component of its own (AIM_CIRCLE_PART_TO).
 DROPPED_KEYS = (
     ('crosshair', 'repair_timers'),
+    ('crosshair', 'aim_circle'),
     ('update_notice', 'show_card'),
     ('aim_info', 'armor_under_aim'),
     ('aim_info', 'show_nominal'),
@@ -318,6 +333,7 @@ DEFAULTS = {
     'minimap_tweaks': True,
     'camera_tweaks': True,
     'crosshair_presets': True,
+    'battle_aim_circle': False,
     'hangar_info': True,
     'battle_chat_filter': False,
     'hangar_auto_resupply': False,
@@ -334,6 +350,7 @@ DEFAULTS = {
     'battle_hotkeys': False,
     'battle_hud_layouts': True,
     'battle_aim_info': True,
+    'battle_pack_badge': True,
     'hangar_comp7_helper': True,
     'hangar_event_trackers': False,
     'hangar_depot_seller': False,
@@ -350,6 +367,7 @@ DEFAULTS = {
     'publish_replays': False,
     'share_session_report': False,
     'share_session_channel': 'telegram',
+    'show_pack_badge': True,
     'settings_action': '',
     'settings_target': 'private',
     'settings_anonymous_stats': False,

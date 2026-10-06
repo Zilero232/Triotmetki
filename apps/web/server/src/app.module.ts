@@ -43,6 +43,7 @@ import { MarksModule } from './modules/marks';
 import { MeModule } from './modules/me';
 import { MissionsModule } from './modules/missions';
 import { isModDeviceRequest, MOD_DEVICE_LIMITS, ModModule } from './modules/mod';
+import { ModBadgesModule } from './modules/mod-badges';
 import { ModReportsModule } from './modules/mod-reports';
 import { ModSyncModule } from './modules/mod-sync';
 import { ModerationModule } from './modules/moderation';
@@ -133,6 +134,7 @@ import { WatchlistModule } from './modules/watchlist';
     AnalyticsModule,
     MeModule,
     ModModule,
+    ModBadgesModule,
     ModSyncModule,
     ModReportsModule,
     SessionShareModule,

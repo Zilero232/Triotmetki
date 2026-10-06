@@ -46,3 +46,7 @@ export const MOD_HANGAR = {
 export const MOD_AGGREGATES = {
   minAccounts: 10
 } as const;
+
+export const MOD_BADGES = {
+  maxAccountIds: 100
+} as const;

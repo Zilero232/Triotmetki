@@ -13,6 +13,7 @@ under licences that allow redistribution in a paid product; each licence text sh
 | Crosshair vector centre marks in eight colours | Три отметки | LicenseRef-TriOtmetki-Artwork | crosshair | `res/gui/maps/icons/otmetki/crosshair/vector` |
 | Sixth-sense icons | Три отметки | LicenseRef-TriOtmetki-Artwork | sixth_sense | `res/gui/maps/icons/otmetki/sixth_sense/icons` |
 | Damage-log kind glyphs | Три отметки | LicenseRef-TriOtmetki-Artwork | damage_log | `res/gui/maps/icons/otmetki/damage_log/icons` |
+| Modpack user badge | Три отметки | LicenseRef-TriOtmetki-Artwork | pack_badge | `res/gui/maps/icons/otmetki/pack_badge` |
 | Hangar look colour grading tables | Три отметки | LicenseRef-TriOtmetki-Artwork | hangar_looks | `res/system/maps/post_processing/cube/otmetki` |
 
 ## Third-party assets
@@ -81,6 +82,16 @@ visual reference only (layout, sizes, readability, colour conventions); nothing 
 - Contents: 6 damage-kind glyphs (damage, radio, track, stun, blocked, received) and 5 vehicle-class glyphs (class_light, class_medium, class_heavy, class_td, class_spg): SVG sources, RGBA PNG 32 px
 - Ships in: `res/gui/maps/icons/otmetki/damage_log/icons` (component `damage_log`)
 - Fair play: Decorates the player's own damage-log lines; the class glyph shows the vehicle class the player panels already show.
+
+### Modpack user badge
+
+- Author: Три отметки
+- Copyright: Copyright (c) 2026 Три отметки
+- Licence: LicenseRef-TriOtmetki-Artwork (`assets/otmetki/LICENSE.md`)
+- Source: https://triotmetki.ru
+- Contents: 1 badge (three marks on a shield): SVG source, RGBA PNG 24 px for the stock badge slot of the player panels
+- Ships in: `res/gui/maps/icons/otmetki/pack_badge` (component `pack_badge`)
+- Fair play: Drawn next to the names of players who use the bound modpack and chose to show it; carries no battle information.
 
 ### Hangar look colour grading tables
 

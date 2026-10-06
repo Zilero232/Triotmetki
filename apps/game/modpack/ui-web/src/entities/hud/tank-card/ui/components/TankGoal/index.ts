@@ -1,0 +1,1 @@
+export { TankGoal } from './TankGoal';

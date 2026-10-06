@@ -47,6 +47,7 @@ from ....core.registry import registry
 from ....core.storage import JsonFile
 from ....core.version import VERSION as CORE_VERSION
 from ...account_state import AccountState
+from ...badge.client import BadgePreference
 from ...battles.client import BattleCapture
 from ...binding import CredentialStore
 from ...binding.client import Binder
@@ -102,6 +103,7 @@ class OtmetkiApp(object):
         self.battles = BattleCapture(self)
         self.settings_ui = create_settings_ui(self)
         self.settings_share = SettingsShare(self)
+        self.badge_preference = BadgePreference(self)
         self.ticker = Ticker(TICK_S, self._tick)
 
     def start(self):

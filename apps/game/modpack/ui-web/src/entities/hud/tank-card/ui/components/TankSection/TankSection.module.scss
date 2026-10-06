@@ -1,0 +1,35 @@
+@use '@/shared/styles/gameface' as *;
+
+.section {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.title {
+  display: flex;
+  height: 14px;
+  flex-direction: row;
+  align-items: center;
+}
+
+.titleText {
+  flex-shrink: 0;
+  color: token(hud-muted);
+
+  @include hud-type(caption);
+  @include caps(1px);
+}
+
+.rule {
+  height: 1px;
+  flex: 1 1 auto;
+  margin-left: 8px;
+  background-color: token(hud-hairline);
+}
+
+.grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}

@@ -11,7 +11,8 @@ TRANSPARENCIES = (NATIVE, '0', '20', '40', '60', '80')
 # MinimapVehModelsSetting: never / alt / always, default always). It is more than the names: ArenaVehiclesPlugin
 # ._hideVehicle (gui/Scaleform/daapi/view/battle/shared/minimap/plugins.py) keeps a vehicle that left sight on the map
 # at its last spotted point only while it is on, so 'never' empties the minimap of every vehicle out of sight. The
-# component never writes 'never'; the game's own settings window still offers it.
+# component never writes 'never'; the game's own settings window still offers it. A new section starts at 'always' and
+# switches a game at 'never' once (model.constants ONCE).
 VEHICLE_NAMES = (NATIVE, 'alt', 'always')
 # A 'never' stored by earlier builds reads as the game's own value: nothing is written over it.
 RETIRED_VEHICLE_NAMES = {'never': NATIVE}

@@ -7,6 +7,10 @@ from otmetki.core.native_settings import (
     ACTION_RECOMMENDED,
     ACTION_RESTORE,
     NATIVE,
+    ONCE_DONE,
+    ONCE_NATIVE,
+    ONCE_WAIT,
+    ONCE_WRITE,
     TRI_STATE,
     NativeState,
     client_holds,
@@ -14,10 +18,13 @@ from otmetki.core.native_settings import (
     is_recommended,
     native_choices,
     offered_action,
+    once_step,
     recommended,
 )
 from otmetki.core.settings import Schema
 
+ONCE = {'key': 'names', 'value': 'always', 'off': 0}
+ALWAYS = 2
 SCHEMA = Schema(
     {'preset': 'minimal', 'server_reticle': NATIVE, 'mark': 'none', 'size': 48},
     choices={
@@ -48,6 +55,30 @@ class ClientKeysTest(unittest.TestCase):
         values = {'preset': NATIVE, 'server_reticle': NATIVE}
 
         assert is_recommended(values, SCHEMA, ('preset', 'server_reticle')) is False
+
+
+class OnceStepTest(unittest.TestCase):
+
+    def test_a_game_at_the_off_value_is_written(self):
+        assert once_step(ONCE, 'always', False, 0, ALWAYS) == ONCE_WRITE
+
+    def test_a_value_the_player_chose_is_left(self):
+        assert once_step(ONCE, 'always', True, 0, ALWAYS) == ONCE_DONE
+
+    def test_a_section_off_the_once_value_is_left(self):
+        assert once_step(ONCE, NATIVE, False, 0, ALWAYS) == ONCE_DONE
+
+    def test_an_unreadable_client_waits(self):
+        assert once_step(ONCE, 'always', False, None, ALWAYS) == ONCE_WAIT
+
+    def test_a_game_already_at_the_value_is_done(self):
+        assert once_step(ONCE, 'always', False, ALWAYS, ALWAYS) == ONCE_DONE
+
+    def test_a_game_at_another_value_puts_the_section_back_to_native(self):
+        assert once_step(ONCE, 'always', False, 1, ALWAYS) == ONCE_NATIVE
+
+    def test_the_once_key_starts_at_its_value(self):
+        assert native_choices(('names', 'size'), ONCE) == {'names': 'always', 'size': NATIVE}
 
 
 class OfferedActionTest(unittest.TestCase):
@@ -105,6 +136,23 @@ class BackupTest(unittest.TestCase):
 
     def test_a_damaged_backup_reads_as_none(self):
         assert NativeState(backups={'camera': 'x'}).backup('camera') is None
+
+    def test_a_marked_once_reads_back(self):
+        state = NativeState()
+
+        state.mark_once('minimap')
+
+        assert state.once_done('minimap') is True
+
+    def test_a_once_is_stored_once(self):
+        state = NativeState(once=['minimap'])
+
+        state.mark_once('minimap')
+
+        assert state.dump_once() == ['minimap']
+
+    def test_a_damaged_once_starts_empty(self):
+        assert NativeState(once={'minimap': 1}).dump_once() == []
 
     def test_damaged_state_starts_empty(self):
         state = NativeState(backups=[1])

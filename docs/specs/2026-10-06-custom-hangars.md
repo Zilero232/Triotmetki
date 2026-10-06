@@ -494,7 +494,7 @@ Feature layout per [apps/game/modpack/CLAUDE.md](../../apps/game/modpack/CLAUDE.
 | `features/hangar_space/settings/constants.py` | `DEFAULTS = {'space': '', 'look': ''}`; `look` normalised to a known id (or empty); `ADVANCED` unchanged. |
 | `features/hangar_space/i18n/strings.py` | `hangar_space_look_<id>`, `_hint`, `hangar_space_section_looks`, «Вид меняется сразу» note (ru/en). |
 | `features/hangar_space/tests/test_looks.py` (new) | availability, plan, clamping, owned environment slot, generated-look discovery. |
-| `assets/otmetki/hangar_space/` + `assets.json` set `hangar_space_previews` | our own in-game screenshots of each look (taken with the dev loop, cropped 16:9), origin `original`; screenshots of the game are fan content of Lesta's scene — used only as previews, never sold. |
+| ~~`assets/otmetki/hangar_space/` + `assets.json` set `hangar_space_previews`~~ | Dropped 2026-10-06: a screenshot of a stock space is Lesta's graphical material (EULA 4.2.1 / 4.2.5) and Lesta publishes no fan-content rule that allows shipping it. Instead `hangar_space` 0.2.2 shoots a preview in the player's own client and keeps it on that PC (README «hangar_space», Previews); a shipped set waits for Lesta's written consent. |
 | `catalog/catalog.json` `hangar_space` | description updated (looks), preview → a look screenshot; version bump left to the user. |
 | `CHANGELOG.md` | `## hangar_space 0.2.0` ru/en: one line per change. |
 | `README.md` «hangar_space» | looks, environment slot, UNVERIFIED list. |

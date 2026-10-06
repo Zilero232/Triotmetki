@@ -1,7 +1,8 @@
 // Draws each HUD component's preview with the built HUD page in Chromium and saves it as a 16:9 catalog preview.
 // The panel is scaled to fit the frame, but never below minScale for its height or minWidthScale for its width, so its
 // body text stays legible in the manager's card: a taller panel shows its top rows, a wider one (team_hp's full-width
-// bars) its middle, faded out at the cut edges.
+// bars) its middle, faded out at the cut edges; a preview anchored at its start (states.py PREVIEW_ANCHORS) keeps its left
+// edge and fades out on the right only.
 // usage: node render.mjs <hud.html> <job.json> <out dir>   (job.json: tools/build/previews/states.py `job()`)
 import { chromium } from '@playwright/test';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -45,25 +46,28 @@ const backdrop = (name) => `<div style="position:fixed;inset:0;z-index:-1;backgr
 
 const fadeStyle = 'position:fixed;z-index:2147483647;pointer-events:none';
 
-const fades = ({ name, viewport }) => {
+const fades = ({ name, viewport, left }) => {
   const colour = BACKDROPS[name];
-  const left = (viewport.width - FRAME.width) / 2;
   const bottom =
     viewport.height > FRAME.height
       ? `<div style="${fadeStyle};left:0;right:0;top:${FRAME.height - FADE_PX}px;height:${FADE_PX}px;background:linear-gradient(180deg, transparent, ${colour})"></div>`
       : '';
 
+  const cutLeft = left > 0 && left * 2 + FRAME.width >= viewport.width;
+  const cutRight = left + FRAME.width < viewport.width;
   const sides =
-    left > 0
-      ? `<div style="${fadeStyle};top:0;bottom:0;left:${left}px;width:${FADE_PX}px;background:linear-gradient(270deg, transparent, ${colour})"></div>` +
-        `<div style="${fadeStyle};top:0;bottom:0;left:${left + FRAME.width - FADE_PX}px;width:${FADE_PX}px;background:linear-gradient(90deg, transparent, ${colour})"></div>`
-      : '';
+    (cutLeft
+      ? `<div style="${fadeStyle};top:0;bottom:0;left:${left}px;width:${FADE_PX}px;background:linear-gradient(270deg, transparent, ${colour})"></div>`
+      : '') +
+    (cutRight
+      ? `<div style="${fadeStyle};top:0;bottom:0;left:${left + FRAME.width - FADE_PX}px;width:${FADE_PX}px;background:linear-gradient(90deg, transparent, ${colour})"></div>`
+      : '');
 
   return bottom + sides;
 };
 
-const pageFile = ({ html, preview, scale, viewport, directory }) => {
-  const overlays = `${backdrop(preview.backdrop)}${fades({ name: preview.backdrop, viewport })}`;
+const pageFile = ({ html, preview, scale, viewport, left, directory }) => {
+  const overlays = `${backdrop(preview.backdrop)}${fades({ name: preview.backdrop, viewport, left })}`;
   const page = html.replace('<head>', `<head>${bridge({ state: preview.state, scale, viewport })}`).replace('<body>', `<body>${overlays}`);
   const file = path.join(directory, `${preview.id}.html`);
 
@@ -92,6 +96,16 @@ const viewportFor = ({ width, height }, scale) => ({
   height: Math.max(FRAME.height, Math.ceil(height * scale + FRAME.height * (1 - FIT.height)))
 });
 
+const frameLeft = ({ preview, size, scale, viewport }) => {
+  const centred = (viewport.width - FRAME.width) / 2;
+
+  if (preview.anchor !== 'start') {
+    return centred;
+  }
+
+  return Math.min(centred, Math.max(0, Math.floor((viewport.width - size.width * scale - FRAME.width * (1 - FIT.width)) / 2)));
+};
+
 const serveImages = async (tab, images) => {
   await tab.route(`${IMAGE_HOST}**`, (route) => {
     const file = images[decodeURIComponent(route.request().url().slice(IMAGE_HOST.length))];
@@ -102,18 +116,19 @@ const serveImages = async (tab, images) => {
 
 const render = async ({ tab, html, preview, out, directory }) => {
   await tab.setViewportSize({ width: FRAME.width, height: FRAME.height });
-  await tab.goto(pageFile({ html, preview, scale: 1, viewport: FRAME, directory }));
+  await tab.goto(pageFile({ html, preview, scale: 1, viewport: FRAME, left: 0, directory }));
   const size = await panelSize(tab);
   const scale = fitScale(size);
   const viewport = viewportFor(size, scale);
+  const left = frameLeft({ preview, size, scale, viewport });
 
   await tab.setViewportSize(viewport);
-  await tab.goto(pageFile({ html, preview, scale, viewport, directory }));
+  await tab.goto(pageFile({ html, preview, scale, viewport, left, directory }));
   await panelSize(tab);
 
   await tab.screenshot({
     path: path.join(out, `${preview.id}.png`),
-    clip: { x: (viewport.width - FRAME.width) / 2, y: 0, width: FRAME.width, height: FRAME.height }
+    clip: { x: left, y: 0, width: FRAME.width, height: FRAME.height }
   });
 };
 

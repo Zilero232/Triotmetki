@@ -9,6 +9,7 @@ import { marksPanelSchema, MarksPanelWidget } from '@/entities/hud/marks-panel';
 import { optionNoticeSchema, OptionNoticeWidget } from '@/entities/hud/option-notice';
 import { platoonPointsSchema, PlatoonPointsWidget } from '@/entities/hud/platoon-points';
 import { sixthSenseSchema, SixthSenseWidget } from '@/entities/hud/sixth-sense';
+import { tankCardSchema, TankCardWidget } from '@/entities/hud/tank-card';
 import { teamHpSchema, TeamHpWidget } from '@/entities/hud/team-hp';
 
 import { defineHudWidget } from '../define-widget';
@@ -25,5 +26,6 @@ export const WIDGET_ENTRIES = [
   defineHudWidget({ kind: 'clock_strip', schema: clockStripSchema, Component: ClockStripWidget }),
   defineHudWidget({ kind: 'platoon_points', schema: platoonPointsSchema, Component: PlatoonPointsWidget }),
   defineHudWidget({ kind: 'crosshair', schema: crosshairSchema, Component: CrosshairWidget }),
+  defineHudWidget({ kind: 'tank_card', schema: tankCardSchema, Component: TankCardWidget }),
   defineHudWidget({ kind: 'card', schema: cardSchema, Component: CardWidget })
 ];

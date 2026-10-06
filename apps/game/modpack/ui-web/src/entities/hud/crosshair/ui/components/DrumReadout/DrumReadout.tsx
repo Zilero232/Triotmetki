@@ -12,9 +12,11 @@ import { ShellSlot } from '../ShellSlot';
 
 import s from './DrumReadout.module.scss';
 
-const { drum } = RETICLE_READOUTS;
+const { drum, clipCell } = RETICLE_READOUTS;
 
-export const DrumReadout = ({ clip }: DrumReadoutProps) => {
+const cellSize = { width: `${String(clipCell.width)}rem`, height: `${String(clipCell.height)}rem` };
+
+export const DrumReadout = ({ clip, style }: DrumReadoutProps) => {
   const view = drumView(clip);
   const motion = useDrumMotion(clip.loaded);
   const shell = drum.shell[view.density];
@@ -23,7 +25,7 @@ export const DrumReadout = ({ clip }: DrumReadoutProps) => {
   const asBars = view.mode === 'row' && clip.style === 'bars';
 
   return (
-    <div className={s.drum}>
+    <div className={s.drum} style={style}>
       {clip.refill && <TabularText className={s.refill} text={clip.refill.value} />}
       {view.mode === 'count' && <DrumCount clip={clip} loadedPaint={loadedPaint} ticked={motion(clip.loaded) === 'eject'} />}
       {asShells &&
@@ -41,7 +43,11 @@ export const DrumReadout = ({ clip }: DrumReadoutProps) => {
         ))}
       {asBars &&
         view.cells.map((cell) => (
-          <span key={cell.index} className={clsx(s.cell, cell.state === 'loaded' && s.cellLoaded, cell.state === 'refill' && s.cellRefill)} />
+          <span
+            key={cell.index}
+            className={clsx(s.cell, cell.state === 'loaded' && s.cellLoaded, cell.state === 'refill' && s.cellRefill)}
+            style={cellSize}
+          />
         ))}
     </div>
   );

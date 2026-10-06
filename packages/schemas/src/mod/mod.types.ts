@@ -3,6 +3,8 @@ import type { z } from 'zod';
 import type {
   bindCodeInputSchema,
   bindCodeSchema,
+  modBadgePreferenceAnswerSchema,
+  modBadgesSchema,
   modBattleLoadoutSchema,
   modDeviceSchema,
   modErrorCodeSchema,
@@ -41,3 +43,5 @@ export type ModReplayStatus = z.infer<typeof modReplayStatusSchema>;
 export type ModReplayStatuses = z.infer<typeof modReplayStatusesSchema>;
 export type ModSessionSharePreferenceAnswer = z.infer<typeof modSessionSharePreferenceAnswerSchema>;
 export type ModSessionShareSent = z.infer<typeof modSessionShareSentSchema>;
+export type ModBadges = z.infer<typeof modBadgesSchema>;
+export type ModBadgePreferenceAnswer = z.infer<typeof modBadgePreferenceAnswerSchema>;

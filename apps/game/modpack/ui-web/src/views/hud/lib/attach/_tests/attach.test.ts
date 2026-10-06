@@ -33,18 +33,26 @@ describe(attachRect, () => {
   });
 
   it('lifts the marks panel over the equipment row when it would reach the minimap', () => {
-    const { row } = HUD_OVERLAY.attach.bar;
+    const { row, keys } = HUD_OVERLAY.attach.bar;
     const rect = attachRect({ attach: attach('bar_right', 570, 610), size: SIZE, screen: FULL_HD });
 
     expect(rect.left).toBe(960 + 6);
-    expect(rect.top + rect.height).toBe(1080 - 58 - 6 - row - 6);
+    expect(rect.top + rect.height).toBe(1080 - 58 - keys - 6 - row - 6);
   });
 
-  it('centres the equipment row right above the consumables panel', () => {
+  it('centres the equipment row above the consumables panel, 6 px clear of its slot number labels', () => {
     const rect = attachRect({ attach: attach('bar_above'), size: SIZE, screen: FULL_HD });
 
     expect(rect.left + rect.width / 2).toBe(1920 / 2);
-    expect(rect.top + rect.height).toBe(1080 - 64);
+    expect(rect.top + rect.height).toBe(1080 - 70);
+  });
+
+  it('keeps the equipment row above the slot number labels the stock panel draws over its slots', () => {
+    const { keys } = HUD_OVERLAY.attach.bar;
+    const row = attachRect({ attach: attach('bar_above'), size: SIZE, screen: FULL_HD });
+    const bar = stockBarRect({ attach: attach('bar_above'), screen: FULL_HD });
+
+    expect((bar?.top ?? 0) - keys - (row.top + row.height)).toBe(6);
   });
 
   it('keeps the equipment row above the bar however wide the bar is', () => {

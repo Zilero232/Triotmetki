@@ -15,6 +15,7 @@ const device: AuthenticatedDevice = {
   secretHash: 'hash',
   modVersion: null,
   gameVersion: null,
+  badgeVisible: null,
   lastSeenAt: null,
   revokedAt: null,
   createdAt: new Date('2026-09-01T00:00:00.000Z')

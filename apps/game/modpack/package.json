@@ -53,6 +53,7 @@
     "@types/react-dom": "catalog:",
     "esbuild": "catalog:",
     "lucide-react": "catalog:",
+    "postcss-color-functional-notation": "^8.0.15",
     "postcss-pxtorem": "^6.1.0",
     "sass-embedded": "catalog:",
     "typescript": "catalog:",

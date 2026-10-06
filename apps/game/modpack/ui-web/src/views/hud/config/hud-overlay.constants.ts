@@ -14,7 +14,7 @@ export const HUD_OVERLAY = {
   attach: {
     gap: 12,
     edge: 8,
-    bar: { height: 58, above: 6, split: 6, row: 52 },
+    bar: { height: 58, keys: 6, above: 6, split: 6, row: 52 },
     minimap: { gap: 12 },
     score: { offset: 308, top: 4, narrow: 1700, under: 52 }
   },

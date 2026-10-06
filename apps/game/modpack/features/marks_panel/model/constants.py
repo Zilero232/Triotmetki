@@ -27,8 +27,6 @@ KIND = 'marks_panel'
 BAR_DAMAGE = 'damage'
 # The mark levels the battle plate draws as stars.
 MAX_STARS = 3
-# The silhouette of a vehicle whose class is unknown on the Tank card's hero (core.classes keys).
-DEFAULT_SHAPE = 'medium'
 # The detail rows of a plate that shows none (any style but the extended one, or no thresholds for the tank).
 NO_ROWS = {'thresholds': [], 'step': None, 'average': None}
 
@@ -39,16 +37,21 @@ PREVIEW_COMBINED = 3100
 PREVIEW_PACE = 3400
 PREVIEW_CLASS = 'mediumTank'
 
-# The hangar Tank card (model/card.py): its width in design px, the step its average line reads, its preview.
-CARD_WIDTH = 264
+# The hangar Tank card (model/card.py): its widget, the step its average line reads, the mastery level of the Ace badge
+# (its label has no «badge» word), its preview.
+TANK_CARD_KIND = 'tank_card'
 CARD_STEP = 0.5
-# The fewest battles the card's strip of per-battle marks draws (model/card.py _strip).
-STRIP_MIN_BATTLES = 3
-CARD_PREVIEW_SIZE = (264, 170)
+ACE_LEVEL = 4
+CARD_PREVIEW_SIZE = (264, 150)
+CARD_PREVIEW_TIER = 7
+# The grid's percents as the HUD page writes its own: a decimal comma and a space before the sign.
+CELL_PERCENT_DIGITS = u'%.2f'
+CELL_DECIMAL = u','
+CELL_PERCENT = u' %'
 CARD_PREVIEW_VEHICLE = u'Т-34-85'
 CARD_PREVIEW_SUMMARY = {'last_delta': 0.18, 'trend': -0.12, 'trend_battles': 5, 'deltas': [0.4, -0.3, 0.1, -0.5, 0.18]}
 CARD_PREVIEW_TANK = {'wn8': {'value': 2310, 'tier': 'very_good'}, 'win_rate': 56.2, 'battles': 213}
-# The Tank card's Alt rows (model/tank_progress.py): the next tanks it lists, and its preview's mastery badges (dossier
+# The Tank card's grid (model/tank_progress.py): the next tanks it lists, and its preview's mastery badges (dossier
 # markOfMastery 2: the second class held) and research.
 RESEARCH_ROWS = 2
 CARD_PREVIEW_MASTERY = ((1, 540), (2, 710), (3, 960), (4, 1320))
@@ -59,6 +62,7 @@ CARD_PREVIEW_RESEARCH = {
     'avg_xp': 780,
     'nodes': (
         {'id': 1, 'cost': 23100, 'vehicle': False, 'name': u'Д-10Т', 'tier': 8, 'required': ()},
+        {'id': 3, 'cost': 9800, 'vehicle': False, 'name': u'В-2-44', 'tier': 7, 'required': ()},
         {'id': 2, 'cost': 51600, 'vehicle': True, 'name': u'Т-54', 'tier': 9, 'required': (1,)},
     ),
 }
@@ -131,13 +135,11 @@ ITEM_CODE = re.compile(r'^[A-Za-z]{1,3}\d+[A-Za-z]?_')
 
 PERCENT_FORMAT = u'%.2f%%'
 NO_VALUE = u'—'
-STAR = u'★'
 ENTRY_MOMENT_FORMAT = '%d.%m %H:%M'
 
-# By the sign of a change (-1, 0, 1): its colour in the text panel, its tone and glyph on the card.
+# By the sign of a change (-1, 0, 1): its colour in the text panel, its tone on the card.
 DELTA_COLORS = {1: COLOR_UP, 0: COLOR_NEUTRAL, -1: COLOR_DOWN}
 DELTA_TONES = {1: 'good', 0: 'muted', -1: 'bad'}
-DELTA_GLYPHS = {1: 'trend_up', 0: 'dot', -1: 'trend_down'}
 
 # The settings window's editors: the battle panel (its look, then its numbers) and the hangar Tank card (its look, then
 # its rows, then the carousel tiles).

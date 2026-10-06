@@ -303,8 +303,8 @@
         "en": "Marks of Excellence"
       },
       "description": {
-        "ru": "Два компонента со своими настройками. «Отметки в бою» — панель справа от расходников: процент и прогноз после боя, полоса урона за бой и урон до следующей цели; панель не раздвигается и стоит вровень с расходниками. «Карточка танка» в ангаре — процент на силуэте танка, тренд последних боёв, урон до отметок, включая 100 %, и боёв до следующей, а по Alt — WN8 танка с сайта, опыт за бой на знаки классности и опыт до элиты и следующих танков; в окне мода — история по каждому танку и расчёт отметок; по желанию — процент отметки в строке статистики под танками карусели, как в XVM.",
-        "en": "Two components with their own settings. «Marks in battle»: a panel right of the consumables with the percent and its projection after the battle and the battle damage bar and the damage to the next goal; the panel never grows and sits level with the consumables. The hangar «Tank card»: the percent on the tank’s silhouette, the trend of the last battles, the damage to each mark, 100% included, and battles to the next, and on Alt the tank’s WN8 from the site, the XP per battle for the mastery badges and the XP to elite and to the next tanks; in the mod window the history per tank and the marks report; optionally the MoE percent in the stats row under the carousel tanks, as in XVM."
+        "ru": "Два компонента со своими настройками. «Отметки в бою» — панель справа от расходников: процент и прогноз после боя, полоса урона за бой и урон до следующей цели; панель не раздвигается и стоит вровень с расходниками. «Карточка танка» в ангаре — уровень, класс и отметки на стволе, крупный процент с изменением за прошлый бой и тренд последних боёв, шкала 65/85/95/100 % со средним уроном для каждой отметки, урон за бой и боёв до следующей, а в «Подробном» виде или по Alt — сетка: средний урон и темп, WN8 танка с сайта и победы, опыт на знак классности, опыт до элиты и следующих танков; в окне мода — история по каждому танку и расчёт отметок; по желанию — процент отметки в строке статистики под танками карусели, как в XVM.",
+        "en": "Two components with their own settings. «Marks in battle»: a panel right of the consumables with the percent and its projection after the battle and the battle damage bar and the damage to the next goal; the panel never grows and sits level with the consumables. The hangar «Tank card»: the tier, class and marks on the gun, the big percent with the last battle’s change and the trend of the last battles, the 65/85/95/100% scale with the average each mark needs, the damage per battle and battles to the next, and in the «Extended» style or on Alt a grid: the average and the pace, the tank’s WN8 from the site and wins, the XP for the next mastery badge, the XP to elite and to the next tanks; in the mod window the history per tank and the marks report; optionally the MoE percent in the stats row under the carousel tanks, as in XVM."
       },
       "fairPlay": {
         "ru": "Считается по вашему урону и помощи, как в итогах боя.",
@@ -401,6 +401,28 @@
       "perf": "low",
       "preview": {
         "image": "previews/sixth_sense.png"
+      }
+    },
+    {
+      "id": "pack_badge",
+      "category": "battle",
+      "context": "battle",
+      "presets": ["recommended", "streamer"],
+      "title": {
+        "ru": "Значок «Три отметки» у ников",
+        "en": "Three Marks badge by names"
+      },
+      "description": {
+        "ru": "Значок модпака у ника в ушах, в статистике по Tab и на экране загрузки: у вас и у игроков, которые привязали мод и не выключили свой значок.",
+        "en": "The modpack's badge by the name in the player panels, the Tab stats and the loading screen: on you and on players who bound the mod and left their badge on."
+      },
+      "fairPlay": {
+        "ru": "Не боевая информация: сайт получает только номера аккаунтов игроков боя и ничего не хранит. Свой значок выключается в «Данные и сайт».",
+        "en": "Not combat information: the site gets only the account numbers of the battle's players and keeps nothing. Your own badge is switched off in «Data and site»."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/pack_badge.svg"
       }
     },
     {
@@ -501,8 +523,8 @@
         "en": "Responsive reticle"
       },
       "description": {
-        "ru": "Маркер орудия двигается за орудием каждый кадр, а не десять раз в секунду: прицел не «плывёт» за мышью. Сведение и цвет пробития по-прежнему считаются раз в серверный тик. Включён по умолчанию: это только плавность отрисовки; выключен сам для арты, в реплеях и у орудий без горизонтальной наводки.",
-        "en": "The gun marker follows the gun every frame instead of ten times a second, so the reticle no longer lags behind the mouse. The dispersion and the penetration colour are still worked out once per server tick. On by default: it only smooths the drawing; it turns itself off for SPGs, in replays and on guns without horizontal traverse."
+        "ru": "Маркер орудия двигается за орудием каждый кадр, а не десять раз в секунду: прицел не «плывёт» за мышью, а круг сведения сужается плавно. Сведение и цвет пробития по-прежнему считаются раз в серверный тик; пока прицел стоит, работает обычная отрисовка. Включён по умолчанию: это только плавность отрисовки; выключен сам для арты, в реплеях и у орудий без горизонтальной наводки.",
+        "en": "The gun marker follows the gun every frame instead of ten times a second, so the reticle no longer lags behind the mouse and the aiming circle shrinks smoothly. The dispersion and the penetration colour are still worked out once per server tick; while the aim stands still the stock drawing runs. On by default: it only smooths the drawing; it turns itself off for SPGs, in replays and on guns without horizontal traverse."
       },
       "fairPlay": {
         "ru": "Только отрисовка своего маркера по прогнозу своего орудия, который клиент и так считает. Наведение, отправляемое на сервер, выстрел и разброс не меняются; о других машинах ничего не читается.",
@@ -607,12 +629,12 @@
       "context": "battle",
       "presets": ["recommended", "streamer"],
       "title": {
-        "ru": "Прицелы",
-        "en": "Crosshairs"
+        "ru": "Прицелы и уменьшенный круг сведения",
+        "en": "Crosshairs and smaller aim circle"
       },
       "description": {
-        "ru": "Пресеты стандартного прицела игры (сетка, центральная метка, круг сведения, индикаторы) для аркадного и снайперского режимов, серверный прицел и 26 центральных меток на выбор: 19 своих одноцветных в восьми цветах (с тёмным контуром или без), 4 своих цветных (среди них зелёные дуги и уголки поправки) и 3 из CC0-набора Kenney; по умолчанию центр прицела — стандартный. Таймер перезарядки у прицела и барабан значками снарядов (заряженные светлые, отстрелянные тусклые, время всего барабана, дозарядка у автозаряжания), по желанию кратность снайперского прицела; пока они на экране, стандартные таймер, индикатор барабана и кратность скрыты. Ремонт модулей остаётся на стандартной панели повреждений. Уменьшенный круг сведения, как в модпаках (80, 70 или 60 % от игрового; по умолчанию — как в игре), для аркадного и снайперского прицела.",
-        "en": "Presets for the game's own reticle (net, central marker, aiming circle, indicators) in arcade and sniper modes, the server reticle and 26 centre marks to pick from: 19 one-colour marks of ours in eight colours (with or without a dark outline), 4 full-colour marks of ours (green arcs and stacked chevrons among them) and 3 from Kenney's CC0 pack; the game's own centre stays by default. A reload timer by the reticle and the magazine as shell icons (loaded bright, fired dim, the whole drum's reload, the auto-reloader's refill), the sniper zoom on request; while they are on screen the stock reload timer, magazine indicator and zoom hide. Module repairs stay on the stock damage panel. A smaller aim circle as in the packs (80, 70 or 60 % of the game's; the game's size by default) for the arcade and sniper reticles."
+        "ru": "Два компонента со своими настройками. «Прицелы»: пресеты стандартного прицела игры (сетка, центральная метка, круг сведения, индикаторы) для аркадного и снайперского режимов, серверный прицел и 26 центральных меток на выбор: 19 своих одноцветных в восьми цветах (с тёмным контуром или без), 4 своих цветных (среди них зелёные дуги и уголки поправки) и 3 из CC0-набора Kenney; по умолчанию центр прицела — стандартный. Таймер перезарядки у прицела и барабан значками снарядов (заряженные светлые, отстрелянные тусклые, время всего барабана, дозарядка у автозаряжания), по желанию кратность снайперского прицела; пока они на экране, стандартные таймер, индикатор барабана и кратность скрыты. Ремонт модулей остаётся на стандартной панели повреждений. «Уменьшенный круг сведения», как в модпаках: круг игры рисуется на 80, 70 или 60 % от своего размера, для аркадного и снайперского прицела; выключен по умолчанию, включается своим переключателем в окне мода.",
+        "en": "Two components with their own settings. «Crosshairs»: presets for the game's own reticle (net, central marker, aiming circle, indicators) in arcade and sniper modes, the server reticle and 26 centre marks to pick from: 19 one-colour marks of ours in eight colours (with or without a dark outline), 4 full-colour marks of ours (green arcs and stacked chevrons among them) and 3 from Kenney's CC0 pack; the game's own centre stays by default. A reload timer by the reticle and the magazine as shell icons (loaded bright, fired dim, the whole drum's reload, the auto-reloader's refill), the sniper zoom on request; while they are on screen the stock reload timer, magazine indicator and zoom hide. Module repairs stay on the stock damage panel. «Smaller aim circle» as in the packs: the game's circle drawn at 80, 70 or 60 % of its size for the arcade and sniper reticles; off by default, turned on by its own switch in the mod window."
       },
       "fairPlay": {
         "ru": "Только внешний вид: без автоприцела, калькулятора пробития и чужих данных. Уменьшенный круг сведения — это круг игры, нарисованный меньше; разброс, выстрел и реплей не меняются.",

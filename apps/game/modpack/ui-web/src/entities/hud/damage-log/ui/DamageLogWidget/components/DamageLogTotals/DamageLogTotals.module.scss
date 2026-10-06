@@ -1,0 +1,53 @@
+@use 'sass:color';
+@use '@/shared/styles/gameface' as *;
+
+.totals {
+  display: flex;
+  height: 22px;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+.chip {
+  display: flex;
+  height: 20px;
+  box-sizing: border-box;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 7px 0 5px;
+  border-left: 2px solid token(hud-muted);
+  margin-right: 4px;
+  background-color: rgb(8 8 10 / 55%);
+}
+
+.value {
+  @include hud-type(value);
+
+  margin-left: 5px;
+}
+
+.accent {
+  border-left-color: token(hud-dealt);
+  background-image: linear-gradient(90deg, color.change(token(hud-dealt), $alpha: 0.22), color.change(token(hud-dealt), $alpha: 0));
+}
+
+.radio {
+  border-left-color: token(hud-radio);
+  background-image: linear-gradient(90deg, color.change(token(hud-radio), $alpha: 0.22), color.change(token(hud-radio), $alpha: 0));
+}
+
+.stun {
+  border-left-color: token(hud-stun);
+  background-image: linear-gradient(90deg, color.change(token(hud-stun), $alpha: 0.22), color.change(token(hud-stun), $alpha: 0));
+}
+
+.blocked {
+  border-left-color: token(hud-blocked);
+  background-image: linear-gradient(90deg, color.change(token(hud-blocked), $alpha: 0.22), color.change(token(hud-blocked), $alpha: 0));
+}
+
+.received {
+  border-left-color: token(hud-received);
+  background-image: linear-gradient(90deg, color.change(token(hud-received), $alpha: 0.22), color.change(token(hud-received), $alpha: 0));
+}

@@ -299,6 +299,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Hangar components: battle summary, marks history, ratings, replay manager, quick actions and more.
 - A settings window with profiles and a HUD editor; settings survive a wiped mods folder.
 
+## pack_badge 0.1.0
+
+### ru
+
+- Новый компонент: значок «Три отметки» у ника в ушах, по Tab и на экране загрузки — у вас и у игроков, которые привязали мод и не выключили свой значок.
+
+### en
+
+- New component: the Three Marks badge by the name in the player panels, the Tab stats and the loading screen, on you and on players who bound the mod and left their badge on.
+
 ## hangar_looks 0.1.0
 
 ### ru
@@ -551,6 +561,22 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - The shell tooltip shows module damage, and with the game's technical info off also damage, penetration and speed.
 - An aim circle smaller than stock (40–100 %, 70 % by default), off by default.
 
+## responsive_reticle 0.1.2
+
+### ru
+
+- Круг сведения снова сужается плавно, а не рывками десять раз в секунду.
+- Маркер больше не подтормаживает на каждом серверном тике при низком FPS и не отстаёт на кадр.
+- Пока прицел и танк стоят, компонент не тратит ни кадра: работает обычная отрисовка.
+- Ствол на модели танка поспевает за маркером.
+
+### en
+
+- The aiming circle shrinks smoothly again instead of in ten steps a second.
+- The marker no longer hitches on every server tick at a low frame rate and no longer trails by a frame.
+- While the aim and the tank stand still the component costs nothing: the stock drawing runs.
+- The gun on the tank model keeps up with the marker.
+
 ## responsive_reticle 0.1.1
 
 ### ru
@@ -752,6 +778,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - New component «Crew XP»: the XP and roughly the battles each crew member needs to finish a skill, with a level bar.
 - The same line in the crew member tooltip.
+
+## hangar_space 0.2.2
+
+### ru
+
+- Плитки ангаров и видов показывают кадр вашего ангара: он снимается один раз после выбора, когда окно закрыто; кнопка «Обновить превью» снимает заново.
+
+### en
+
+- Hangar and look tiles show a shot of your own hangar, taken once after you pick it with the window closed; «Refresh preview» takes it again.
 
 ## hangar_space 0.2.1
 
@@ -1161,6 +1197,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - An «Armour on the site» button opens the selected tank's 3D armour on triotmetki.ru.
 
+## battle_loadout 0.7.4
+
+### ru
+
+- Ряд оборудования поднят над номерами слотов расходников.
+
+### en
+
+- The equipment row sits higher, clear of the consumables' slot numbers.
+
 ## battle_loadout 0.7.3
 
 ### ru
@@ -1415,6 +1461,18 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - A key (Ctrl+Shift+H by default) hides and restores all mod panels; they can stay hidden in the next battle too.
 - Private mode hides other players' chat and the hangar labels with your numbers. Your name and clan stay.
 
+## crosshair 0.6.4
+
+### ru
+
+- «Уменьшенный круг сведения» — отдельный компонент со своим переключателем и страницей: 80, 70 или 60 % с превью; из «Прицела» настройка убрана.
+- Таймер перезарядки и значки снарядов у прицела крупнее, цифры светлые и с контуром.
+
+### en
+
+- «Smaller aim circle» is a component of its own with its switch and page: 80, 70 or 60 % with a preview; the setting left «Crosshairs».
+- The reload timer and shell icons by the reticle are larger, the figures bright and outlined.
+
 ## crosshair 0.6.3
 
 ### ru
@@ -1534,6 +1592,18 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### en
 
 - Five new one-colour centre marks and a choice of six colours.
+
+## core 0.9.4
+
+### ru
+
+- Настройки мини-карты: последние места и названия техники включаются один раз, дальше выбор игрока не меняется.
+- Панели в ангаре снова перетаскиваются с зажатым Alt: режим правки держится, пока Alt зажат.
+
+### en
+
+- Minimap settings: last-seen spots and vehicle names are switched on once, after that the player's choice stays.
+- Hangar panels can be dragged with Alt held again: edit mode lasts as long as Alt is held.
 
 ## core 0.9.3
 
@@ -1799,6 +1869,20 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - The shared base of all mod components and the battle HUD with a layout editor.
 - Settings are mirrored to a backup copy and restored on load.
 
+## companion 0.8.4
+
+### ru
+
+- При обновлении: последние места и названия техники на мини-карте включаются, если вы их не настраивали; ХП команд по умолчанию — полоска на каждый танк, если вы не меняли вид.
+- При обновлении: если круг сведения был уменьшен, новый компонент «Уменьшенный круг сведения» включается с тем же размером.
+- Новый переключатель «Показывать мой значок «Три отметки» другим игрокам» в «Данные и сайт», включён.
+
+### en
+
+- On update: the minimap's last-seen spots and vehicle names turn on unless you set them; Team HP defaults to a bar per tank unless you changed the style.
+- On update: a smaller aim circle you had set turns on the new «Smaller aim circle» component with the same size.
+- New switch «Show my Three Marks badge to other players» in «Data and site», on.
+
 ## companion 0.8.3
 
 ### ru
@@ -1982,6 +2066,24 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Binding to triotmetki.ru with a one-time code from the site; nothing is collected or sent before it.
 - After each of your battles the results, MoE, queue time, loadout and shots go to the site.
 - Data sending can be switched off per component; settings sharing for streamers.
+
+## ui 0.9.4
+
+### ru
+
+- Тени текста и рамки панелей в бою снова видны.
+- «Отметки в бою» снова перетаскиваются; перетащенная панель остаётся там, куда её поставили.
+- В «Данные и сайт» появился переключатель своего значка «Три отметки»; он не попадает в профили настроек.
+- Страница компонента: кнопки в один ряд под превью, история — отдельный раздел, без «висящих» подписей.
+- Прицел: таймер перезарядки и снаряды магазина крупнее и читаются на любом фоне.
+
+### en
+
+- Text shadows and panel borders show in battle again.
+- «Marks in battle» can be dragged again and stays where it is dropped.
+- «Data and site» has the switch of your own Three Marks badge; it stays out of settings profiles.
+- Component page: the buttons in one row under the preview, the history its own section, no stray captions.
+- Crosshair: the reload timer and the magazine's shells are larger and readable on any background.
 
 ## ui 0.9.3
 
@@ -2278,6 +2380,20 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - The settings window: a card per component, profiles (save, load, share as a code) and the on-screen HUD editor.
 - Opens from the «///» hangar button, ModsList or Ctrl+Shift+T.
+
+## marks_panel 0.8.3
+
+### ru
+
+- «Карточка танка» переделана: класс, уровень и отметки на стволе, крупный процент, тренд и шкала 65/85/95/100 %.
+- Под шкалой — урон за бой и боёв до следующей отметки; «Подробный» вид и Alt добавляют сетку в две колонки.
+- История отметки в окне мода — отдельный раздел с заголовком, отметки подписаны словами.
+
+### en
+
+- The «Tank card» is redesigned: class, tier and marks on the gun, the big percent, the trend and the 65/85/95/100% scale.
+- Under the scale: the damage per battle and battles to the next mark; the «Extended» style and Alt add a two-column grid.
+- The marks history in the mod window is its own titled section, the marks spelled out.
 
 ## marks_panel 0.8.2
 
@@ -2577,6 +2693,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - Opt-in (off): uploads the replays the game recorded of your battles; they stay private until you publish them. Files above 50 MiB are refused.
 
+## damage_log 0.5.3
+
+### ru
+
+- «Журнал боя» в новом виде: подложка, итоги плашками, ровные столбцы, снаряды по цветам, полоска ХП цели и криты.
+
+### en
+
+- «Battle log» redesigned: a plate, totals as chips, aligned columns, colour-coded shells, the target's HP bar and crits.
+
 ## damage_log 0.5.2
 
 ### ru
@@ -2686,6 +2812,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - In battle: damage dealt, blocked, assisted and received with the latest entries; several styles and palettes.
 - Assist after your death still counts.
+
+## team_hp 0.6.3
+
+### ru
+
+- По умолчанию ХП команд показывается полоской на каждый танк; если вы не меняли вид, он переключится сам.
+
+### en
+
+- Team HP now defaults to a bar per tank; an unchanged style switches by itself.
 
 ## team_hp 0.6.2
 
@@ -3126,6 +3262,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### en
 
 - Carousel options and quick actions: demount equipment, crew to the barracks, return the previous crew.
+
+## minimap 0.2.4
+
+### ru
+
+- Мини-карта снова показывает названия техники и места, где её видели последний раз: если в игре стояло «Никогда», мод один раз включает «Постоянно».
+
+### en
+
+- The minimap shows vehicle names and last-seen spots again: if the game was set to «Never», the mod switches it to «Always» once.
 
 ## minimap 0.2.3
 

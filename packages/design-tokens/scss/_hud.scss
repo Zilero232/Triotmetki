@@ -2,6 +2,8 @@
 @use 'sass:map';
 
 // The in-game HUD (the modpack's Gameface page): dark only, battle design px (1 rem = 1 px there, so no rem here).
+// Colours are legacy rgba(r, g, b, a): Gameface ignores rgb(r g b / a), and these land inside text-shadow and border
+// values the build's colour lowering may not reach.
 // docs/specs/2026-09-30-hud-consolidation-and-design.md section 6.
 $tones: (
   'hud-text': #f4f1ea,
@@ -25,26 +27,26 @@ $tones: (
   'hud-index': #ff8a2a
 );
 $surfaces: (
-  'hud-plate-solid': 'linear-gradient(180deg, rgb(14 14 16 / 70%), rgb(14 14 16 / 58%))',
-  'hud-plate-contrast': 'linear-gradient(180deg, rgb(10 10 12 / 84%), rgb(10 10 12 / 76%))',
-  'hud-plate-line': 'rgb(255 255 255 / 10%)',
-  'hud-hairline': 'rgb(255 255 255 / 10%)',
-  'hud-rule': 'rgb(255 255 255 / 22%)',
-  'hud-tick': 'rgb(255 255 255 / 55%)',
-  'hud-plate-edge': 'linear-gradient(90deg, rgb(10 10 12 / 62%) 0%, rgb(10 10 12 / 40%) 60%, rgb(10 10 12 / 0%) 100%)',
-  'hud-plate-edge-end': 'linear-gradient(270deg, rgb(10 10 12 / 62%) 0%, rgb(10 10 12 / 40%) 60%, rgb(10 10 12 / 0%) 100%)',
+  'hud-plate-solid': 'linear-gradient(180deg, rgba(14, 14, 16, 0.7), rgba(14, 14, 16, 0.58))',
+  'hud-plate-contrast': 'linear-gradient(180deg, rgba(10, 10, 12, 0.84), rgba(10, 10, 12, 0.76))',
+  'hud-plate-line': 'rgba(255, 255, 255, 0.1)',
+  'hud-hairline': 'rgba(255, 255, 255, 0.1)',
+  'hud-rule': 'rgba(255, 255, 255, 0.22)',
+  'hud-tick': 'rgba(255, 255, 255, 0.55)',
+  'hud-plate-edge': 'linear-gradient(90deg, rgba(10, 10, 12, 0.62) 0%, rgba(10, 10, 12, 0.4) 60%, rgba(10, 10, 12, 0) 100%)',
+  'hud-plate-edge-end': 'linear-gradient(270deg, rgba(10, 10, 12, 0.62) 0%, rgba(10, 10, 12, 0.4) 60%, rgba(10, 10, 12, 0) 100%)',
   'hud-plate-centre':
-    'linear-gradient(90deg, rgb(10 10 12 / 0%) 0%, rgb(10 10 12 / 50%) 18%, rgb(10 10 12 / 62%) 50%, rgb(10 10 12 / 50%) 82%, rgb(10 10 12 / 0%) 100%)',
-  'hud-divider': 'rgb(255 255 255 / 8%)',
-  'hud-bar-track': 'rgb(255 255 255 / 14%)',
-  'hud-bar-line': 'rgb(0 0 0 / 50%)',
-  'hud-ring-track': 'rgb(10 10 12 / 35%)',
-  'hud-tip': 'rgb(14 14 16 / 92%)',
-  'hud-slot': 'rgb(8 8 10 / 45%)',
-  'hud-slot-line': 'rgb(255 255 255 / 14%)',
-  'hud-slot-bonus': 'rgb(232 184 74 / 55%)',
-  'hud-slot-active': 'rgb(76 195 107 / 18%)',
-  'hud-text-shadow': '0 0 2px rgb(0 0 0 / 90%), 1px 1px 1px rgb(0 0 0 / 90%)',
+    'linear-gradient(90deg, rgba(10, 10, 12, 0) 0%, rgba(10, 10, 12, 0.5) 18%, rgba(10, 10, 12, 0.62) 50%, rgba(10, 10, 12, 0.5) 82%, rgba(10, 10, 12, 0) 100%)',
+  'hud-divider': 'rgba(255, 255, 255, 0.08)',
+  'hud-bar-track': 'rgba(255, 255, 255, 0.14)',
+  'hud-bar-line': 'rgba(0, 0, 0, 0.5)',
+  'hud-ring-track': 'rgba(10, 10, 12, 0.35)',
+  'hud-tip': 'rgba(14, 14, 16, 0.92)',
+  'hud-slot': 'rgba(8, 8, 10, 0.45)',
+  'hud-slot-line': 'rgba(255, 255, 255, 0.14)',
+  'hud-slot-bonus': 'rgba(232, 184, 74, 0.55)',
+  'hud-slot-active': 'rgba(76, 195, 107, 0.18)',
+  'hud-text-shadow': '0 0 2px rgba(0, 0, 0, 0.9), 1px 1px 1px rgba(0, 0, 0, 0.9)',
   'hud-radius': 0,
   'hud-slot-radius': 2px
 );
@@ -89,8 +91,8 @@ $type: (
 // the 1 px dark outline that keeps a mark visible on the sky, the dark fill of a filled ring and the sky-over-field
 // backdrop the mark gallery is judged on.
 $reticle: (
-  'hud-reticle-outline': 'rgb(11 12 14 / 90%)',
-  'hud-reticle-shade': 'rgb(11 12 14 / 55%)',
+  'hud-reticle-outline': 'rgba(11, 12, 14, 0.9)',
+  'hud-reticle-shade': 'rgba(11, 12, 14, 0.55)',
   'hud-reticle-backdrop': 'linear-gradient(180deg, #8fb4d4 0%, #b9cdd9 50%, #5d6b3a 50%, #46512b 100%)'
 );
 $root: map.merge(map.merge(map.merge($tones, $surfaces), $type), $reticle);

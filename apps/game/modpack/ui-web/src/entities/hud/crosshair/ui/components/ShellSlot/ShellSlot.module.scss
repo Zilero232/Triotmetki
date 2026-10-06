@@ -8,14 +8,14 @@
 
   to {
     opacity: 0;
-    transform: translateY(-4px);
+    transform: translateY(-5px);
   }
 }
 
 @keyframes shell-load {
   from {
     opacity: 0.4;
-    transform: translateY(2px);
+    transform: translateY(3px);
   }
 
   to {
@@ -28,7 +28,7 @@
   position: relative;
   display: flex;
   flex-shrink: 0;
-  margin-left: 2px;
+  margin-left: 3px;
 }
 
 .slot:first-child {

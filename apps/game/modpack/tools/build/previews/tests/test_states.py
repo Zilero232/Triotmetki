@@ -80,6 +80,12 @@ class PreviewStateTest(unittest.TestCase):
 
         self.assertEqual(ids, sorted(HUD_PREVIEWS))
 
+    def test_the_damage_log_keeps_its_first_column_and_the_rest_their_middle(self):
+        anchors = dict((preview['id'], preview['anchor']) for preview in job(self.images)['previews'])
+
+        self.assertEqual(anchors['damage_log'], 'start')
+        self.assertEqual(anchors['team_hp'], 'middle')
+
 
 if __name__ == '__main__':
     unittest.main()

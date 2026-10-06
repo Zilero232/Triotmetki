@@ -5,6 +5,11 @@ from .constants import (  # noqa: F401
     ACTION_CHOOSE,
     ACTION_LOOK,
     ACTION_NATIVE,
+    ACTION_REFRESH_PREVIEW,
+    CHECK_CAPTURE,
+    CHECK_EXPIRED,
+    CHECK_IDLE,
+    CHECK_WAIT,
     GENERATED_PREFIX,
     HANGAR_NUMBER,
     HIDDEN_MARKERS,
@@ -19,6 +24,8 @@ from .constants import (  # noqa: F401
     PLAN_LOADED,
     PLAN_RELOAD,
     PLAN_WAIT,
+    PREVIEW_FOLDER,
+    PREVIEW_SIZE,
     PREVIEWS,
     ROW_NATIVE,
     SPACE_NAME,
@@ -36,6 +43,17 @@ from .looks import (  # noqa: F401
     look_title,
     normalize_look,
 )
+from .previews import (  # noqa: F401
+    CaptureBook,
+    GalleryPictures,
+    data_uri,
+    is_clean_hangar,
+    preview_file,
+    preview_key,
+    preview_key_of_file,
+    tile_image,
+)
+from .thumbnail import ThumbnailError, bitmap_thumbnail  # noqa: F401
 
 # Only the look of the own hangar, from the spaces the client already has. A server event hangar (the client's
 # cmd_change_hangar notifications) and the hangars of other modes win over the choice.
@@ -190,7 +208,7 @@ def reload_plan(default_scene, ready, target, loaded):
     return PLAN_LOADED if same_path(target, loaded) else PLAN_RELOAD
 
 
-def space_row(name, chosen, current, translate):
+def space_row(name, chosen, current, translate, previews=None):
     badge = None
     if name == chosen:
         badge = translate('hangar_space_badge_chosen')
@@ -200,7 +218,7 @@ def space_row(name, chosen, current, translate):
         'id': name,
         'title': space_title(name, translate),
         'subtitle': name,
-        'image': space_preview(name),
+        'image': tile_image(preview_key(name), previews or {}, space_preview(name)),
         'badge': badge,
         'actions': [] if name == chosen else [{'id': ACTION_CHOOSE, 'label': translate('hangar_space_choose')}],
     }
@@ -209,13 +227,13 @@ def space_row(name, chosen, current, translate):
     return row
 
 
-def look_row(look, chosen, translate):
+def look_row(look, chosen, translate, previews=None):
     section = translate('hangar_space_section_looks')
     return {
         'id': LOOK_ROW_PREFIX + look.id,
         'title': look_title(look, translate),
         'subtitle': section + SUBTITLE_SEPARATOR + space_title(look.space, translate),
-        'image': look_preview(look.id),
+        'image': tile_image(preview_key(look.space, look.id), previews or {}, look_preview(look.id)),
         'badge': translate('hangar_space_badge_chosen') if look.id == chosen else None,
         'actions': [] if look.id == chosen else [{'id': ACTION_LOOK, 'label': translate('hangar_space_choose')}],
     }
@@ -227,25 +245,30 @@ def row_look(row):
     return normalize_look(row[len(LOOK_ROW_PREFIX):]) or None
 
 
-def native_row(is_chosen, translate):
+def native_row(is_chosen, translate, image=None):
     return {
         'id': ROW_NATIVE,
         'title': translate('hangar_space_native'),
         'subtitle': translate('hangar_space_native_hint'),
-        'image': None,
+        'image': image,
         'badge': translate('hangar_space_badge_chosen') if is_chosen else None,
         'actions': [] if is_chosen else [{'id': ACTION_NATIVE, 'label': translate('hangar_space_choose')}],
     }
 
 
 # The looks come first, as the rows of the page's look section (each subtitled with the section and its space), then
-# the spaces.
-def build_page(names, chosen, current, translate, looks=(), look=u''):
+# the spaces. A tile shows the player's own preview of its space or look when one was taken (`pictures.previews`: key
+# to data URI), else the client art of its event, else the window's drawn fallback; the game's own row shows the default
+# hangar's preview.
+def build_page(names, chosen, current, translate, looks=(), look=u'', pictures=None):
+    pictures = pictures or GalleryPictures()
+    previews = pictures.previews
     active = find_look(looks, look)
     space = u'' if active is not None else chosen
-    rows = [native_row(not space and active is None, translate)]
-    rows.extend(look_row(item, active.id if active else None, translate) for item in looks)
-    rows.extend(space_row(name, space, current, translate) for name in listed_spaces(names))
+    native_image = tile_image(preview_key(pictures.default), previews) if pictures.default else None
+    rows = [native_row(not space and active is None, translate, native_image)]
+    rows.extend(look_row(item, active.id if active else None, translate, previews) for item in looks)
+    rows.extend(space_row(name, space, current, translate, previews) for name in listed_spaces(names))
     return {
         'kind': 'list',
         'layout': LAYOUT_GALLERY,

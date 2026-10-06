@@ -204,7 +204,7 @@ class SettingsTest(unittest.TestCase):
 
         place = (defaults['x'], defaults['y'], defaults['align_x'], defaults['align_y'])
 
-        assert place == (0, -64, 'center', 'bottom')
+        assert place == (0, -70, 'center', 'bottom')
         assert ATTACHED['otmetki.hud.battle_loadout'] == 'bar_above'
 
     def test_a_row_left_beside_the_consumables_moves_above_them(self):
@@ -218,6 +218,9 @@ class SettingsTest(unittest.TestCase):
 
     def test_a_row_above_the_left_half_of_the_consumables_moves_to_the_centre(self):
         assert (-120, -64, 'center', 'bottom') in SCHEMA.retired
+
+    def test_a_row_on_the_slot_number_labels_moves_over_them(self):
+        assert (0, -64, 'center', 'bottom') in SCHEMA.retired
 
     def test_cells_are_always_as_large_as_the_stock_slots(self):
         assert Settings({'stock_size': False}, SCHEMA).get('stock_size') is True

@@ -1,16 +1,25 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ...compat import string_types
+from ...log import log
 from ...native_settings import (
     ACTION_RECOMMENDED,
     ACTION_RESTORE,
     BACKUP_STATE_KEY,
+    NATIVE,
+    ONCE_NATIVE,
+    ONCE_STATE_KEY,
+    ONCE_WAIT,
+    ONCE_WRITE,
     RETIRED_STAMP_STATE_KEY,
+    USER_SET_KEY,
     NativeState,
     client_holds,
     client_keys,
     is_recommended,
     native_choices,
     offered_action,
+    once_step,
     recommended,
 )
 from ..hud import component_config
@@ -25,9 +34,10 @@ def native_state(app):
     if state is not None:
         return state
     stored = app.state or {}
-    state = NativeState(stored.get(BACKUP_STATE_KEY))
+    state = NativeState(stored.get(BACKUP_STATE_KEY), stored.get(ONCE_STATE_KEY))
     setattr(app, STATE_ATTR, state)
     app.register_state(BACKUP_STATE_KEY, state.dump_backups)
+    app.register_state(ONCE_STATE_KEY, state.dump_once)
     if isinstance(app.state, dict):
         app.state.pop(RETIRED_STAMP_STATE_KEY, None)
     return state
@@ -42,23 +52,55 @@ class ClientDefaults(object):
     """The schema defaults of a client-settings component as recommended client settings, written only when the
     player asks for them on the card (the recommended button), after the client values they replace are kept in
     state.json; the card then offers those back (the restore button). A section the component creates starts at
-    'native' on every install, so nothing is written unasked.
+    'native' on every install, so nothing is written unasked, except the one key of `once`.
+
+    `once` ({'key', 'value', 'off', 'log'}, or None) is the one product exception (README "Minimap"): its key starts at
+    `value` and, on the first hangar, a client still at the game's `off` value is switched to it once, unless the
+    player set the key in the window; state.json records that it ran, so a later choice in either window stays.
 
     `component` is a FeatureComponent with `client_values(values)` ((settings core values, AccountSettings values) of
     its section `values`) and `apply()` (writes the current section); `is_new_section` from `section_is_new`."""
 
-    def __init__(self, component, is_new_section):
+    def __init__(self, component, is_new_section, once=None):
         self.component = component
         self.app = component.app
         self.component_id = component.component_id
         self.schema = component.settings.schema
         self.keys = client_keys(self.schema)
         self.state = native_state(self.app)
+        self.once = once
         if is_new_section:
-            self._update(native_choices(self.keys))
+            self._update(native_choices(self.keys, once))
 
     def _update(self, values):
         component_config(self.app).update(self.component_id, values)
+
+    def _is_chosen(self, key):
+        chosen = self.app.config.get(USER_SET_KEY)
+        return isinstance(chosen, string_types) and '%s.%s' % (self.component_id, key) in chosen.split()
+
+    def apply_once(self):
+        """Runs the one-time switch of `once` in the hangar; True when it wrote the client setting."""
+        once = self.once
+        if once is None or self.state.once_done(self.component_id) or not self.component.enabled_in_hangar():
+            return False
+        key = once['key']
+        settings, _ = self.component.client_values({key: once['value']})
+        name, wanted = list(settings.items())[0]
+        current = read_settings([name])
+        game_value = current.get(name) if current is not None else None
+        step = once_step(once, self.component.settings.to_dict().get(key), self._is_chosen(key), game_value, wanted)
+        if step == ONCE_WAIT:
+            return False
+        if step == ONCE_WRITE:
+            if not apply_settings({name: wanted}):
+                return False
+            log(once['log'])
+        elif step == ONCE_NATIVE:
+            self._update({key: NATIVE})
+        self.state.mark_once(self.component_id)
+        self.app.save_state()
+        return step == ONCE_WRITE
 
     def _keep_backup(self, values):
         settings, account = self.component.client_values(values)

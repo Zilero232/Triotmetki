@@ -11,15 +11,22 @@ import s from './ReloadBox.module.scss';
 
 const { box, leader, canvas } = RETICLE_READOUTS;
 
+const rem = (value: number): string => `${String(value)}rem`;
+
+const valueEdge = { marginRight: rem(leader + box.padding) };
+
 export const ReloadBox = ({ reload }: ReloadBoxProps) => (
-  <div className={s.anchor} style={{ right: `${String(canvas.width / 2 + box.offset - leader)}rem` }}>
-    {reload.clip && <DrumReadout clip={reload.clip} />}
+  <div className={s.anchor} style={{ right: rem(canvas.width / 2 + box.offset - leader) }}>
+    {reload.clip && <DrumReadout clip={reload.clip} style={valueEdge} />}
     <div className={s.row}>
-      <div className={clsx(s.box, s[reload.state])} style={{ width: `${String(box.width)}rem`, height: `${String(box.height)}rem` }}>
+      <div
+        className={clsx(s.box, s[reload.state])}
+        style={{ minWidth: rem(box.width), height: rem(box.height), paddingRight: rem(box.padding), paddingLeft: rem(box.padding) }}
+      >
         <TabularText className={s.value} text={reload.value} />
       </div>
-      <span className={s.leader} style={{ width: `${String(leader)}rem` }} />
+      <span className={s.leader} style={{ width: rem(leader) }} />
     </div>
-    {reload.full && <TabularText className={s.full} text={reload.full} />}
+    {reload.full && <TabularText className={s.full} style={valueEdge} text={reload.full} />}
   </div>
 );

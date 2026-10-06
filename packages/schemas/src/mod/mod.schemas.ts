@@ -5,7 +5,7 @@ import { ratingValueSchema } from '../common/rating/rating.schemas';
 import { goalSchema } from '../me/me.schemas';
 import { replayStatusSchema } from '../replays/replays.schemas';
 import { sessionKindSchema, sessionSourceSchema } from '../sessions/sessions.schemas';
-import { MOD_ERROR_CODES, MOD_HANGAR, MOD_LOADOUT, MOD_RATINGS } from './mod.constants';
+import { MOD_BADGES, MOD_ERROR_CODES, MOD_HANGAR, MOD_LOADOUT, MOD_RATINGS } from './mod.constants';
 
 export const bindCodeInputSchema = z.object({
   accountId: accountIdSchema.optional()
@@ -242,3 +242,37 @@ export const modSessionShareSentSchema = z
     queued: modShareChannelsSchema
   })
   .describe('The channels the session card was queued to');
+
+const modBadgeAccountIdsSchema = z
+  .array(modAccountIdSchema)
+  .max(MOD_BADGES.maxAccountIds)
+  .refine((ids) => new Set(ids).size === ids.length, { message: 'Account ids must be unique' });
+
+export const modBadgesRequestSchema = z
+  .strictObject({
+    device_id: modDeviceIdSchema,
+    account_id: modAccountIdSchema,
+    account_ids: modBadgeAccountIdsSchema.min(1)
+  })
+  .describe('Signed body of POST /mod/badges: the account ids of the players in the arena, nothing else');
+
+export const modBadgesSchema = z
+  .object({
+    account_ids: modBadgeAccountIdsSchema
+  })
+  .describe('The asked accounts that use the bound mod and chose to show its badge');
+
+export const modBadgePreferenceSchema = z
+  .strictObject({
+    device_id: modDeviceIdSchema,
+    account_id: modAccountIdSchema,
+    visible: z.boolean()
+  })
+  .describe('Signed body of POST /mod/badges/preference: whether other players see the badge of this device account');
+
+export const modBadgePreferenceAnswerSchema = z
+  .object({
+    account_id: modAccountIdSchema,
+    visible: z.boolean()
+  })
+  .describe('The stored badge preference of the device');

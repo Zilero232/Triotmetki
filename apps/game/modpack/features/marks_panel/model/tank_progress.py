@@ -2,11 +2,11 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.format import counted, format_number
-from ....core.hud.widget import card_row
 from ....core.moe import mastery_state
-from .constants import APPROX, METRIC_SEPARATOR, RESEARCH_ROWS
+from .cells import cell
+from .constants import ACE_LEVEL, APPROX, METRIC_SEPARATOR, RESEARCH_ROWS
 
-# The Tank card's Alt rows about the tank's own progress besides the marks: the base XP one battle needs for each
+# The Tank card's grid cells about the tank's own progress besides the marks: the base XP one battle needs for the next
 # mastery badge (the site's thresholds, the protanki idea) and the XP still to research (izeberg «vehicle_exp»).
 
 
@@ -26,20 +26,20 @@ def _badges_line(badges, translate):
     return METRIC_SEPARATOR.join(parts)
 
 
-def mastery_row(levels, own_level, translate):
+def _badge_label(level, translate):
+    badge = _badge(level, translate)
+    return badge if level == ACE_LEVEL else translate('marks_panel_card_badge', badge=badge)
+
+
+def mastery_cell(levels, own_level, translate):
     badges = mastery_state(levels, own_level)
     if not badges:
         return None
-    detail = _badges_line(badges, translate)
     badge = _next_badge(badges)
-    label = translate('marks_panel_card_mastery')
     if badge is None:
-        text = _badge(badges[-1]['level'], translate)
-        reached = translate('marks_panel_card_reached')
-        return card_row(text, reached, label=label, status='done', tone_name='good', detail=detail)
-    note = translate('marks_panel_card_xp_per_battle')
-    text = _badge(badge['level'], translate)
-    return card_row(text, format_number(badge['xp']), label=label, note=note, detail=detail)
+        return cell(_badge_label(badges[-1]['level'], translate), translate('marks_panel_card_reached'), tone='good')
+    note = translate('marks_panel_card_per_battle')
+    return cell(_badge_label(badge['level'], translate), format_number(badge['xp']), note)
 
 
 def mastery_line(levels, own_level, translate):
@@ -57,20 +57,17 @@ def _need(need, translate):
     return format_number(need) if need else translate('marks_panel_card_research_ready')
 
 
-def research_rows(research, translate):
+def research_cells(research, translate):
     if research is None:
         return []
-    rows = []
+    cells = []
     if research['elite'] is not None:
-        need = _need(research['elite'], translate)
         note = _battles(research['elite_battles'], translate)
-        rows.append(card_row(translate('marks_panel_card_to_elite'), need, note=note, text_tone='muted'))
-    label = translate('marks_panel_card_to_research')
+        cells.append(cell(translate('marks_panel_card_to_elite'), _need(research['elite'], translate), note))
     for vehicle in research['vehicles'][:RESEARCH_ROWS]:
-        need = _need(vehicle['need'], translate)
-        note = _battles(vehicle['battles'], translate)
-        rows.append(card_row(vehicle['name'], need, label=label, note=note, text_tone='muted'))
-    return rows
+        label = translate('marks_panel_card_research_vehicle', vehicle=vehicle['name'])
+        cells.append(cell(label, _need(vehicle['need'], translate), _battles(vehicle['battles'], translate)))
+    return cells
 
 
 def _research_part(label, need, battles, translate):

@@ -70,6 +70,7 @@ beforeAll(async () => {
     secretHash: hashSecret(SECRET),
     modVersion: 'manager 0.3.0',
     gameVersion: '1.45.0',
+    badgeVisible: null,
     lastSeenAt: null,
     revokedAt: null,
     createdAt: new Date('2026-09-01T12:00:00.000Z')

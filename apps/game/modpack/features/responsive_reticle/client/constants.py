@@ -4,6 +4,11 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 ROTATOR_MODULE = 'VehicleGunRotator'
 ROTATOR_CLASS = 'VehicleGunRotator'
 ROTATE_METHOD = '_VehicleGunRotator__rotate'
+# The stock tick's turn: __onTick stamps __time, then calls it for __rotate and __updateGunMarker(relax of a tick).
+STOCK_TURN_METHOD = 'updateRotationAndGunMarker'
+# Read by __rotate as the time the turret and gun models glide over; set on the instance for a frame's turn only.
+ROTATION_TICK_ATTR = '_VehicleGunRotator__ROTATION_TICK_LENGTH'
+STABILISED_MATRIX_METHOD = 'getAvatarOwnVehicleStabilisedMatrix'
 MARKER_METHOD = '_VehicleGunRotator__updateGunMarker'
 TIME_ATTR = '_VehicleGunRotator__time'
 STARTED_ATTR = '_VehicleGunRotator__isStarted'

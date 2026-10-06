@@ -1,12 +1,21 @@
+import type { DAMAGE_LOG } from '../../config';
 import type { DamageLogRow, DamageLogTotal } from '../../model/schemas';
 
 export type DamageLogTotalView = DamageLogTotal & { text: string };
 
-export type DamageLogRowView = Pick<DamageLogRow, 'cls' | 'icon' | 'id' | 'name' | 'note' | 'shell' | 'tone'> & {
+export type DamageLogShellKind = (typeof DAMAGE_LOG.shellKinds)[number] | typeof DAMAGE_LOG.otherShell;
+
+export type DamageLogShellView = { label: string; gold: boolean; kind: DamageLogShellKind };
+
+export type DamageLogBarView = { kept: number; took: number };
+
+export type DamageLogRowView = Pick<DamageLogRow, 'cls' | 'icon' | 'id' | 'name' | 'note' | 'tone'> & {
   amountText: string;
   muted: boolean;
   hitsText: string;
-  bar: { value: number; max: number } | null;
+  critsText: string;
+  shell: DamageLogShellView | null;
+  bar: DamageLogBarView | null;
   ammoRack: DamageLogRow['ammo_rack'];
 };
 

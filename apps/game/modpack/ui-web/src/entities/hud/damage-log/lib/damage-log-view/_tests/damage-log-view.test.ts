@@ -36,12 +36,49 @@ describe(damageLogView, () => {
   it('counts the grouped hits on a target', () => {
     const ricochets = damageLogView(fixture).sections[0]?.rows.find((row) => row.hitsText !== '');
 
-    expect(ricochets?.hitsText).toBe('x2');
+    expect(ricochets?.hitsText).toBe('×2');
   });
 
-  it('draws the HP bar only when the HP left and the max are known', () => {
+  it('splits the HP bar into what is left and what the own shots took, when the HP left and the max are known', () => {
     const rows = damageLogView(fixture).sections[0]?.rows ?? [];
 
-    expect(rows.map((row) => row.bar)).toEqual([null, { value: 1180, max: 1500 }, null, { value: 510, max: 900 }]);
+    expect(rows.map((row) => row.bar)).toEqual([null, { kept: 28, took: 8 }, null, { kept: 20, took: 16 }]);
+  });
+
+  it('keeps the HP bar inside its width when the damage is more than the HP lost', () => {
+    const row = { ...fixture.dealt[3]!, amount: 5000, hp: 0, max: 900 };
+
+    expect(damageLogView({ ...fixture, dealt: [row] }).sections[0]?.rows[0]?.bar).toEqual({ kept: 0, took: 36 });
+  });
+
+  it('draws no HP bar on the hits on the player', () => {
+    const rows = damageLogView(fixture).sections[1]?.rows ?? [];
+
+    expect(rows.map((row) => row.bar)).toEqual([null, null]);
+  });
+
+  it('tells the shell kind for its colour and keeps a premium shell gold', () => {
+    const shells = damageLogView(fixture).sections.flatMap((section) => section.rows.map((row) => row.shell));
+
+    expect(shells).toEqual([
+      null,
+      { label: 'БП', gold: true, kind: 'apcr' },
+      null,
+      { label: 'ББ', gold: false, kind: 'ap' },
+      { label: 'ОФ', gold: false, kind: 'he' },
+      { label: 'КС', gold: false, kind: 'heat' }
+    ]);
+  });
+
+  it('files an unknown shell code under the other kind', () => {
+    const row = { ...fixture.dealt[3]!, shell: { code: 'smoke', label: 'Дым', gold: false } };
+
+    expect(damageLogView({ ...fixture, dealt: [row] }).sections[0]?.rows[0]?.shell?.kind).toBe('other');
+  });
+
+  it('counts the crits of a row', () => {
+    const rows = damageLogView(fixture).sections[0]?.rows ?? [];
+
+    expect(rows.map((row) => row.critsText)).toEqual(['', '1', '', '']);
   });
 });

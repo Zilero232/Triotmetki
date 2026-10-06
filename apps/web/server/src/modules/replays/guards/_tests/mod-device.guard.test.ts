@@ -30,6 +30,7 @@ const boundDevice: ModDevice = {
   secretHash: hashSecret(secret),
   modVersion: null,
   gameVersion: null,
+  badgeVisible: null,
   lastSeenAt: null,
   revokedAt: null,
   createdAt: new Date('2026-05-01T12:00:00.000Z')

@@ -25,6 +25,7 @@ FORMS = {
     'days': {'ru': u'день|дня|дней', 'en': u'day|days'},
     'hours': {'ru': u'час|часа|часов', 'en': u'hour|hours'},
     'tokens': {'ru': u'жетон|жетона|жетонов', 'en': u'token|tokens'},
+    'marks': {'ru': u'отметка|отметки|отметок', 'en': u'mark|marks'},
 }
 DATE_TIME_FORMAT = '%d.%m.%Y %H:%M'
 

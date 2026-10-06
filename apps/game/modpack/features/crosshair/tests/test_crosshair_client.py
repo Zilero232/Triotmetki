@@ -11,7 +11,7 @@ from otmetki.core.hud.stock import RETICLE_CASSETTE, RETICLE_RELOAD_TIMER, RETIC
 from otmetki.core.hud import ComponentConfig
 from otmetki.core.storage import MemoryFile
 from otmetki.features.crosshair.model.readouts import Readouts
-from otmetki.features.crosshair.settings import PANEL_ID
+from otmetki.features.crosshair.settings import CIRCLE_PANEL_ID, CIRCLE_SWITCH, PANEL_ID
 
 CLIENT_PREFIXES = ('otmetki.core.client', 'otmetki.features.crosshair.client')
 WRITERS = ('otmetki.core.client.native.component', 'otmetki.features.crosshair.client')
@@ -491,24 +491,29 @@ class CrosshairAimCircleTest(unittest.TestCase):
         self.controller.update(0, None, None, (80.0, 40.0), 0.1, None)
         return self.controller._dataProvider.sizes
 
-    def test_the_game_circle_is_drawn_at_its_own_size_by_default(self):
-        assert self.update() == [(80.0, 0.1)]
+    def switch_circle(self, is_on):
+        self.app.config.is_enabled = lambda switch: is_on if switch == CIRCLE_SWITCH else True
 
     def test_a_smaller_circle_is_drawn_at_the_chosen_share(self):
-        self.config.update(PANEL_ID, {'aim_circle': 'p70'})
+        self.config.update(CIRCLE_PANEL_ID, {'size': 'p60'})
 
+        assert self.update()[-1] == (48.0, 0.1)
+
+    def test_the_circle_starts_at_seventy_percent(self):
         assert self.update()[-1] == (56.0, 0.1)
 
     def test_the_client_size_goes_out_first(self):
-        self.config.update(PANEL_ID, {'aim_circle': 'p60'})
-
         assert self.update()[0] == (80.0, 0.1)
 
-    def test_the_component_switched_off_keeps_the_game_circle(self):
-        self.config.update(PANEL_ID, {'aim_circle': 'p60'})
-        self.app.config.is_enabled = lambda switch: False
+    def test_the_circle_switched_off_keeps_the_game_circle(self):
+        self.switch_circle(False)
 
         assert self.update() == [(80.0, 0.1)]
+
+    def test_the_circle_does_not_follow_the_crosshair_switch(self):
+        self.app.config.is_enabled = lambda switch: switch == CIRCLE_SWITCH
+
+        assert self.update()[-1] == (56.0, 0.1)
 
 
 if __name__ == '__main__':

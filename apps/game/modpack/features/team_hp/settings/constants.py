@@ -5,7 +5,8 @@ from ....core.format import COLOR_DOWN, COLOR_UP
 SWITCH = 'battle_team_hp'
 PANEL_ID = 'team_hp'
 # full: bar pair with the score between; segments: a segment per tank; icons: class icons with a bar each; compact and
-# minimal: numbers and score in one line; numbers and bars: the older one-part styles.
+# minimal: numbers and score in one line; numbers and bars: the older one-part styles. A bar per tank (icons) is the
+# default, the owner's call.
 STYLES = ('full', 'segments', 'icons', 'compact', 'minimal', 'numbers', 'bars')
 # Styles drawn beside the stock score strip instead of in its place.
 OVERLAY_STYLES = ('numbers',)
@@ -22,7 +23,7 @@ DEFAULTS = {
     'y': 0,
     'align_x': 'center',
     'align_y': 'top',
-    'style': 'full',
+    'style': 'icons',
     'show_score': True,
     'show_alive': False,
     'show_diff': True,

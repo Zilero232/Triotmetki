@@ -2,6 +2,10 @@ export { MOD_AGGREGATES, MOD_HANGAR, MOD_RATINGS } from './mod.constants';
 export {
   bindCodeInputSchema,
   bindCodeSchema,
+  modBadgePreferenceAnswerSchema,
+  modBadgePreferenceSchema,
+  modBadgesRequestSchema,
+  modBadgesSchema,
   modBattleLoadoutSchema,
   modDevicesSchema,
   modErrorCodeSchema,
@@ -24,6 +28,8 @@ export {
 export type {
   BindCode,
   BindCodeInput,
+  ModBadgePreferenceAnswer,
+  ModBadges,
   ModBattleLoadout,
   ModDevice,
   ModErrorCode,

@@ -99,6 +99,7 @@ export const rowSchema = z.object({
 export const pageSchema = z.object({
   kind: z.literal('list'),
   layout: z.optional(z.enum(PROTOCOL.pageLayouts)),
+  title: optionalText,
   note: optionalText,
   empty: text,
   rows: z.array(rowSchema)

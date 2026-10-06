@@ -1,9 +1,11 @@
 """The client side of the panel edit modifier: watches the game's own InputHandler key events (hangar and
 battle), calls `on_change(held)` when the configured modifier goes down or up and `on_key()` after every key event.
 
-The modifier counts as held only while the client, Windows (the physical key) and the foreground window (the game's)
-all agree: BigWorld keeps a key down whose key-up went to another window (Alt+Tab), and a stuck modifier kept the HUD
-page over the whole hangar, taking every click and the keyboard focus."""
+A hold starts when the client reports the modifier down and Windows agrees the key is physically down; from then on
+Windows alone says when it ends. BigWorld drops every key whenever its window loses the keyboard focus (on Lesta 1.45
+the window loses it within a frame of the HUD page taking the whole hangar, so the hold ended 50 ms after it began),
+and keeps a key down whose key-up went to another window (Alt+Tab), which kept the HUD page over the whole hangar.
+Without Windows the client's own key state is all there is."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....hooks import subscribe
@@ -11,7 +13,7 @@ from ....hud.modifier import DEFAULT_MODIFIER, is_held
 from ....log import log, safe
 from ...timer import Ticker
 from .constants import RELEASE_POLL_S
-from .os_input import game_in_front, os_key_down
+from .os_input import os_key_down
 
 
 def _is_down(name):
@@ -21,8 +23,15 @@ def _is_down(name):
     return code is not None and bool(BigWorld.isKeyDown(code))
 
 
-def _os_down(name):
-    return os_key_down(name) is not False
+def _os_held(mode):
+    states = {}
+
+    def down(name):
+        states[name] = os_key_down(name)
+        return states[name] is True
+
+    held = is_held(mode, down)
+    return None if None in states.values() else held
 
 
 class ModifierWatch(object):
@@ -60,14 +69,18 @@ class ModifierWatch(object):
         return self.held
 
     def _held(self):
+        os_held = _os_held(self.mode)
+        if os_held is None:
+            return is_held(self.mode, _is_down)
+        if self.held:
+            return os_held
         client_held = is_held(self.mode, _is_down)
-        held = client_held and is_held(self.mode, _os_down) and game_in_front() is not False
-        stale = client_held and not held
+        stale = client_held and not os_held
         if stale and not self.stale:
-            log('HUD: the client still reports the edit modifier held, but it is released or the game is in the '
-                'background: panels stop taking the mouse')
+            log('HUD: the client still reports the edit modifier held, but Windows reports it released: panels do '
+                'not take the mouse')
         self.stale = stale
-        return held
+        return client_held and os_held
 
     @safe
     def check(self):
