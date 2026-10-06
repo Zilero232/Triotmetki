@@ -6,6 +6,7 @@ import unittest
 import _support  # noqa: F401
 from otmetki.companion.config import Config, user_set_tokens
 from otmetki.companion.config.constants import (
+    AIM_CIRCLE_REVISION,
     DEFAULTS_REVISION,
     DROPPED_SECTIONS,
     LAYOUT_PLACES_SECTION,
@@ -202,12 +203,49 @@ class SectionsTest(unittest.TestCase):
         aim = {
             'x': 0, 'y': 132, 'align_x': 'center', 'align_y': 'center', 'alpha': 100, 'drag': True, 'scale': 100,
             'armor_under_aim': True, 'show_nominal': True, 'show_piercing': True, 'show_angle': False,
-            'placement': 'reticle', 'target_distance': False, 'aim_circle': True,
+            'placement': 'reticle', 'target_distance': False, 'shell_tooltips': True,
         }
 
         _, components = migrate(config, {'aim_info': aim})
 
-        self.assertEqual(components['aim_info'], {'target_distance': False, 'aim_circle': True})
+        self.assertEqual(components['aim_info'], {'target_distance': False, 'shell_tooltips': True})
+
+    def test_an_aim_circle_that_was_on_moves_to_the_crosshair(self):
+        config = {'defaults_revision': AIM_CIRCLE_REVISION - 1}
+        aim = {'aim_circle': True, 'aim_circle_scale': 70}
+
+        _, components = migrate(config, {'aim_info': aim, 'crosshair': {'mark': 'dot'}})
+
+        self.assertEqual(components['crosshair'], {'mark': 'dot', 'aim_circle': 'p70'})
+
+    def test_the_aim_circle_takes_the_nearest_smaller_share(self):
+        config = {'defaults_revision': AIM_CIRCLE_REVISION - 1}
+
+        _, components = migrate(config, {'aim_info': {'aim_circle': True, 'aim_circle_scale': 50}})
+
+        self.assertEqual(components['crosshair'], {'aim_circle': 'p60'})
+
+    def test_an_aim_circle_at_its_default_share_moves_as_seventy(self):
+        config = {'defaults_revision': AIM_CIRCLE_REVISION - 1}
+
+        _, components = migrate(config, {'aim_info': {'aim_circle': True}})
+
+        self.assertEqual(components['crosshair'], {'aim_circle': 'p70'})
+
+    def test_an_aim_circle_that_was_off_leaves_the_crosshair_alone(self):
+        config = {'defaults_revision': AIM_CIRCLE_REVISION - 1}
+
+        _, components = migrate(config, {'aim_info': {'aim_circle': False, 'aim_circle_scale': 60}})
+
+        self.assertNotIn('crosshair', components)
+
+    def test_the_aim_circle_keys_leave_aim_info(self):
+        config = {'defaults_revision': AIM_CIRCLE_REVISION - 1}
+        aim = {'target_distance': True, 'aim_circle': True, 'aim_circle_scale': 80}
+
+        _, components = migrate(config, {'aim_info': aim})
+
+        self.assertEqual(components['aim_info'], {'target_distance': True})
 
     def test_a_file_at_revision_three_loses_the_battle_type_places_of_the_aim_panel(self):
         config = {'defaults_revision': MIGRATION_REVISION}
@@ -341,11 +379,19 @@ class MarksSplitTest(unittest.TestCase):
             'carousel_percent': True,
         })
 
-    def test_the_alt_detail_stays_with_the_battle_panel_and_joins_the_card(self):
-        _, components = migrate(before_split(), {'marks_panel': {'alt_detail': False}})
+    def test_the_alt_detail_joins_the_card_and_leaves_the_battle_panel(self):
+        _, components = migrate(before_split(), {'marks_panel': {'alt_detail': False, 'style': 'minimal'}})
 
-        alt_details = (components['marks_panel']['alt_detail'], components['hangar_marks']['alt_detail'])
-        self.assertEqual(alt_details, (False, False))
+        self.assertEqual(components['marks_panel'], {'style': 'minimal'})
+        self.assertFalse(components['hangar_marks']['alt_detail'])
+
+    def test_a_split_file_loses_the_battle_alt_detail_and_keeps_the_cards(self):
+        components = {'marks_panel': {'alt_detail': False, 'bar': 'percent'}, 'hangar_marks': {'alt_detail': False}}
+
+        _, migrated_components = migrate({'defaults_revision': SPLIT_REVISION}, components)
+
+        expected = {'marks_panel': {'bar': 'percent'}, 'hangar_marks': {'alt_detail': False}}
+        self.assertEqual(migrated_components, expected)
 
     def test_the_battle_panel_keeps_only_its_own_options(self):
         stored_marks = {

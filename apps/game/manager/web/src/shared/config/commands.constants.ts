@@ -27,6 +27,7 @@ export const COMMANDS = {
   uninstallModpack: 'uninstall_modpack',
   readInstallerProfile: 'read_installer_profile',
   getGamefaceStatus: 'get_gameface_status',
+  getHangarLooksStatus: 'get_hangar_looks_status',
   takeDeepLink: 'take_deep_link',
   getConflicts: 'get_conflicts',
   restoreMissing: 'restore_missing',

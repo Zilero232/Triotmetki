@@ -15,6 +15,8 @@ const bottomTop = ({ size, screen }: AttachRectInput): number => screen.height -
 
 const barBox = ({ attach }: AttachRectInput): Size => (attach.bar > 0 ? { width: attach.bar, height: bar.height } : postmortemTips);
 
+const besideBarTop = ({ size, screen }: AttachRectInput): number => screen.height - size.height;
+
 const aboveBarTop = (input: AttachRectInput): number => input.screen.height - barBox(input).height - bar.above - input.size.height;
 
 const rowLift = ({ attach }: AttachRectInput): number => (attach.bar > 0 ? bar.row + bar.above : 0);
@@ -27,7 +29,7 @@ const barRight = (input: AttachRectInput): Pick<Rect, 'left' | 'top'> => {
     return { left: screen.width / 2 + bar.split, top: aboveBarTop(input) - rowLift(input) };
   }
 
-  return { left, top: bottomTop(input) };
+  return { left, top: besideBarTop(input) };
 };
 
 const barCentre = (input: AttachRectInput): Pick<Rect, 'left' | 'top'> => ({

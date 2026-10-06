@@ -10,7 +10,7 @@ from ....core.hud.stock import (
     RETICLE_RELOAD_TIMER,
     RETICLE_ZOOM,
 )
-from .constants import FINAL_S, MAX_CLIP_SIZE, NO_SHELLS, READY_HOLD_S, SHELL_ICONS
+from .constants import AUTOLOADER_DRUM_STYLE, FINAL_S, MAX_CLIP_SIZE, NO_SHELLS, READY_HOLD_S, SHELL_ICONS
 
 # Fair play: the own vehicle only. The reload and the magazine are the own gun's (the stock reticle's reload indicator
 # reads the same ammo controller), the HP is the own damage panel's (VEHICLE_VIEW_STATE.HEALTH); nothing here reads
@@ -56,6 +56,7 @@ class Readouts(object):
         self.clip = None
         self.shell = None
         self.gold = False
+        self.autoloader = False
         self.drum_base = None
         self.auto_left = None
         self.auto_base = None
@@ -73,17 +74,33 @@ class Readouts(object):
         self.ready_left = READY_HOLD_S if was_reloading and self.reload_left == 0 else 0.0
         return True
 
+    # A magazine read the client cannot answer yet (no current shell after a setup change or a shell switch: loaded
+    # None or ammo_ctrl's SHELL_QUANTITY_UNKNOWN -1) keeps the magazine last drawn while the gun's clip is the same
+    # size; only a gun without a magazine clears it.
     def set_clip(self, size, loaded, shell=None, gold=False):
-        if not size or size < 2 or loaded is None or loaded < 0:
+        if not size or size < 2:
             changed = self.clip is not None
             self.clip = None
             return changed
         size = min(size, MAX_CLIP_SIZE)
+        if loaded is None or loaded < 0:
+            return self._keep_clip(size)
         clip = (size, min(loaded, size))
         shell = shell if shell in SHELL_ICONS else None
         changed = (clip, shell, bool(gold)) != (self.clip, self.shell, self.gold)
         self.clip, self.shell, self.gold = clip, shell, bool(gold)
         return changed
+
+    def _keep_clip(self, size):
+        if self.clip is None or self.clip[0] == size:
+            return False
+        self.clip = None
+        return True
+
+    # RU 1.45 ammo_ctrl GunSettings.hasAutoReload: an auto-reloader's stock magazine indicator
+    # (CrosshairBase.autoloaderComponent) carries its own reload timer.
+    def set_autoloader(self, is_autoloader):
+        self.autoloader = bool(is_autoloader)
 
     # ammo_ctrl.getShellChangeTime: the whole magazine's reload (the gun reload before the client cuts it to the
     # interval between shells), the first shell's auto-reload on an auto-reloader.
@@ -170,7 +187,11 @@ def _refill(readouts):
     return {'value': _tenths(readouts.auto_left), 'progress': None if left is None else round(1.0 - left, 3)}
 
 
+# On an auto-reloader the stock magazine indicator is also its reload timer, so the box draws the magazine itself
+# whatever the style, and the stock one goes with the stock timer.
 def _clip(readouts, style):
+    if style == 'off' and readouts.autoloader:
+        style = AUTOLOADER_DRUM_STYLE
     if readouts.clip is None or style == 'off':
         return None
     size, loaded = readouts.clip

@@ -76,14 +76,12 @@ PLACEMENT = {
     'damage_log': (SECTION_BATTLE, CONTEXT_BATTLE),
     'team_hp': (SECTION_BATTLE, CONTEXT_BATTLE),
     'sixth_sense': (SECTION_BATTLE, CONTEXT_BATTLE),
-    'battle_clock': (SECTION_BATTLE, CONTEXT_ANY),
     'gun_arc': (SECTION_BATTLE, CONTEXT_BATTLE),
     'bush_circle': (SECTION_BATTLE, CONTEXT_BATTLE),
     'aim_info': (SECTION_BATTLE, CONTEXT_BATTLE),
     'platoon_points': (SECTION_BATTLE, CONTEXT_BATTLE),
     'responsive_reticle': (SECTION_BATTLE, CONTEXT_BATTLE),
     'battle_hotkeys': (SECTION_BATTLE, CONTEXT_BATTLE),
-    'battle_menu': (SECTION_BATTLE, CONTEXT_BATTLE),
     'battle_loadout': (SECTION_BATTLE, CONTEXT_BATTLE),
     'minimap': (SECTION_BATTLE, CONTEXT_BATTLE),
     'crosshair': (SECTION_BATTLE, CONTEXT_BATTLE),
@@ -96,7 +94,7 @@ PLACEMENT = {
     'last_battle': (SECTION_BATTLE, CONTEXT_BATTLE),
     'hangar_marks': (SECTION_HANGAR, CONTEXT_HANGAR),
     'hangar_tweaks': (SECTION_HANGAR, CONTEXT_HANGAR),
-    'hangar_info': (SECTION_HANGAR, CONTEXT_ANY),
+    'hangar_info': (SECTION_HANGAR, CONTEXT_HANGAR),
     'personal_missions': (SECTION_HANGAR, CONTEXT_HANGAR),
     'auto_resupply': (SECTION_HANGAR, CONTEXT_HANGAR),
     'notification_filter': (SECTION_HANGAR, CONTEXT_HANGAR),
@@ -119,6 +117,5 @@ PLACEMENT = {
 # HUD panels a feature draws besides its own card, with no switch of their own: the owner's card switches them, and
 # their row points there.
 PANEL_OWNERS = {
-    'battle_clock': 'hangar_info',
     'last_battle': 'battle_results',
 }

@@ -12,6 +12,18 @@ const data = marksPanelSchema.parse(readWidgetFixture('marks_panel'));
 
 const compact = { ...data, style: 'compact' as const, thresholds: [], step: null, average: null };
 
+const extended = {
+  ...data,
+  style: 'extended' as const,
+  thresholds: [
+    { level: 65, need: 0, reached: true },
+    { level: 85, need: 0, reached: true },
+    { level: 95, need: 25195, reached: false }
+  ],
+  step: { step: 0.5, need: 955 },
+  average: { label: 'среднее', ema: 2540, ema_projected: 2551 }
+};
+
 const rows = (html: HTMLElement) => html.firstElementChild?.children ?? [];
 
 const text = (html: Element | null | undefined): string => (html?.textContent ?? '').replaceAll(' ', ' ');
@@ -25,8 +37,8 @@ describe(MarksPanelWidget, () => {
     expect(text(rows(html)[0])).toContain('до 87 %2 107');
   });
 
-  it('grows the detail rows under the box while Alt is held', () => {
-    const html = render(<MarksPanelWidget data={data} />).container;
+  it('draws the detail rows under the box in the extended style', () => {
+    const html = render(<MarksPanelWidget data={extended} />).container;
 
     expect(text(rows(html)[1])).toContain('25 195');
     expect(text(rows(html)[2])).toContain('среднее2 540');

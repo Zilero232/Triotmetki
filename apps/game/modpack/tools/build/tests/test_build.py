@@ -24,6 +24,7 @@ import layout  # noqa: E402
 MODS = layout.MODS_ROOT + '/'
 FEATURES = layout.feature_ids()
 EXTENSIONS = layout.extension_ids()
+DATA = [package.key for package in layout.data_packages()]
 UI_ASSETS = layout.GAMEFACE_ROOT + '/ui/'
 NO_COMPILER = (None, None)
 
@@ -53,7 +54,7 @@ class LayoutTest(unittest.TestCase):
     def test_there_is_a_package_per_core_companion_extension_and_feature(self):
         keys = sorted(self.by_key)
 
-        self.assertEqual(keys, sorted(['companion', 'core'] + EXTENSIONS + FEATURES))
+        self.assertEqual(keys, sorted(['companion', 'core'] + EXTENSIONS + FEATURES + DATA))
 
     def test_package_ids_follow_the_net_triotmetki_prefix(self):
         self.assertEqual(self.by_key['ui'].package_id, 'net.triotmetki.ui')
@@ -119,6 +120,16 @@ class LayoutTest(unittest.TestCase):
 
         expected = [MODS + 'mod_otmetki.py'] + [MODS + 'mod_otmetki_%s.py' % key for key in EXTENSIONS + FEATURES]
         self.assertEqual(sorted(entries), sorted(expected))
+
+    def test_the_hangar_looks_package_ships_the_recipes_and_colour_tables_and_no_code(self):
+        paths = self.paths('hangar_looks')
+
+        self.assertIn('res/mods/configs/otmetki/hangar_looks/recipes.json', paths)
+        self.assertIn('res/system/maps/post_processing/cube/otmetki/night.dds', paths)
+        self.assertEqual([path for path in paths if path.endswith('.py')], [])
+
+    def test_the_hangar_looks_package_depends_on_no_package(self):
+        self.assertEqual(self.by_key['hangar_looks'].depends, ())
 
     def test_ui_ships_its_gameface_page_and_res_map(self):
         ui = self.paths('ui')
@@ -192,7 +203,7 @@ class BuildTest(unittest.TestCase):
     def test_split_build_writes_one_mtmod_per_package(self):
         outputs = self.run_build()
 
-        self.assertEqual(len(outputs), 2 + len(EXTENSIONS) + len(FEATURES))
+        self.assertEqual(len(outputs), 2 + len(EXTENSIONS) + len(FEATURES) + len(DATA))
         self.assertEqual([path for path in outputs if not path.endswith('.mtmod')], [])
 
     def test_a_package_starts_with_meta_xml_and_lists_its_directories(self):

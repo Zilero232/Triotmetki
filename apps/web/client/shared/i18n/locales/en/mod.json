@@ -116,10 +116,6 @@
         "title": "Option hotkeys in battle",
         "text": "The server reticle and the extended zoom on hotkeys right in battle, with a notice over the reticle."
       },
-      "battle_menu": {
-        "title": "Settings from the Esc menu",
-        "text": "A button under the Esc menu opens the mod settings without leaving the battle."
-      },
       "crosshair": {
         "title": "Crosshairs",
         "text": "Presets of the stock reticle, the server reticle and 26 centre markers to pick from, plus a reload timer and the drum next to the reticle."
@@ -146,7 +142,7 @@
       },
       "hangar_info": {
         "title": "Clock and server",
-        "text": "Time, server, ping and online in the hangar and a clock in battle."
+        "text": "Time, server, ping and online in the hangar."
       },
       "hangar_cleaner": {
         "title": "Clean hangar",
@@ -191,6 +187,10 @@
       "hangar_space": {
         "title": "Hangar switcher",
         "text": "Any hangar the game already has; event hangars stay as in the game."
+      },
+      "hangar_looks": {
+        "title": "Hangar looks",
+        "text": "Our own «Three Marks» looks for the game's hangar: night, sunset, steel and studio, with our colour grading."
       },
       "hit_viewer": {
         "title": "Hit viewer",

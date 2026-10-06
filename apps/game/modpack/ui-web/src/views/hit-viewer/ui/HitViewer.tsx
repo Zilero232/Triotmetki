@@ -1,6 +1,4 @@
-import { IconButton, Segmented } from '@/ui-kit';
-
-import type { ViewerSide } from '../lib/viewer-protocol';
+import { IconButton } from '@/ui-kit';
 
 import { useCameraDrag } from '../model/hooks/use-camera-drag';
 import { useHitViewer } from '../model/hooks/use-hit-viewer';
@@ -9,6 +7,7 @@ import { useViewerKeys } from '../model/hooks/use-viewer-keys';
 import { BattlePicker } from './components/BattlePicker';
 import { HitDetails } from './components/HitDetails';
 import { HitTable } from './components/HitTable';
+import { SideTabs } from './components/SideTabs';
 import { ViewerEmpty } from './components/ViewerEmpty';
 
 import s from './HitViewer.module.scss';
@@ -20,14 +19,13 @@ export const HitViewer = () => {
 
   useViewerKeys({ onStep: viewer.stepHit, onSwitchTab: viewer.switchTab });
 
-  const { state, selectedRow } = viewer;
+  const { state, selectedRow, sideLabels } = viewer;
 
   if (!state) {
     return null;
   }
 
   const { labels, battle } = state;
-  const tabs = state.tabs.map((tab) => ({ value: tab.id, label: `${tab.label} ${tab.count}` }));
 
   return (
     <div className={s.viewer}>
@@ -40,12 +38,19 @@ export const HitViewer = () => {
           </div>
           {state.tab && (
             <div className={s.tabs}>
-              <Segmented<ViewerSide> items={tabs} label={labels.title ?? ''} value={state.tab} onSelect={viewer.pickTab} />
+              <SideTabs label={labels.title ?? ''} tabs={state.tabs} value={state.tab} onSelect={viewer.pickTab} />
             </div>
           )}
           {battle && (
             <div className={s.battle}>
-              <BattlePicker battles={state.battles} current={battle} label={labels.battles ?? ''} onPick={viewer.pickBattle} />
+              <BattlePicker
+                battles={state.battles}
+                current={battle}
+                label={labels.pick_battle ?? labels.battles ?? ''}
+                labels={labels}
+                sideLabels={sideLabels}
+                onPick={viewer.pickBattle}
+              />
             </div>
           )}
         </div>
@@ -61,7 +66,9 @@ export const HitViewer = () => {
                 </div>
               )}
             </div>
-            <div className={s.footer}>{viewer.footer}</div>
+            <div className={s.footer}>
+              <span className={s.hint}>{viewer.footer}</span>
+            </div>
           </>
         ) : (
           <ViewerEmpty labels={labels} onClose={viewer.close} />

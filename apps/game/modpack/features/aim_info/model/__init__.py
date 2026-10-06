@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.compat import is_number
 from ....core.format import format_number
-from .constants import BODY_CLOSE, BODY_OPEN, EXTRA_LINES, FULL_LINES, LINE_BREAK, PERCENT
+from .constants import BODY_CLOSE, BODY_OPEN, EXTRA_LINES, FULL_LINES, LINE_BREAK
 
 # Fair play: only the player's own shells (their descriptor and the own gun's settings) and the reticle the client
 # already draws for the player; nothing about other vehicles beyond the distance the client measures to the vehicle
@@ -46,10 +46,3 @@ def with_lines(tooltip, lines):
 
 def has_body(tooltip):
     return BODY_CLOSE in tooltip
-
-
-def scaled_size(size, percent):
-    """The aim circle size drawn at `percent` of the size the client computed."""
-    if not is_number(size) or not is_number(percent):
-        return size
-    return size * percent / PERCENT

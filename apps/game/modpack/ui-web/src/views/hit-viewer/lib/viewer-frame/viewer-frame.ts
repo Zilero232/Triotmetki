@@ -4,12 +4,28 @@ import type { ViewerFrame, ViewerFrameInput } from './viewer-frame.types';
 
 import { HIT_VIEWER } from '../../config';
 
-export const viewerFrame = ({ screen }: ViewerFrameInput): ViewerFrame => {
+const fitScale = (width: number, height: number): number => {
   const { design, minScale, maxScale } = HIT_VIEWER.frame;
-  const fit = Math.min(screen.width / design.width, screen.height / design.height);
-  const scale = Number.isFinite(fit) && fit > 0 ? clamp(fit, { min: minScale, max: maxScale }) : minScale;
+  const fit = Math.min(width / design.width, height / design.height);
 
-  return { scale, width: screen.width / scale, height: screen.height / scale };
+  return Number.isFinite(fit) && fit > 0 ? clamp(fit, { min: minScale, max: maxScale }) : minScale;
 };
 
-export const tableBodyHeight = (rows: number): string => `${String(rows * HIT_VIEWER.table.rowHeight)}rem`;
+export const viewerFrame = ({ screen, view }: ViewerFrameInput): ViewerFrame => {
+  const place = view ?? { x: 0, y: 0, ...screen };
+  const left = Math.max(0, -place.x);
+  const top = Math.max(0, -place.y);
+  const right = Math.min(place.width, screen.width - place.x);
+  const bottom = Math.min(place.height, screen.height - place.y) - HIT_VIEWER.frame.lobbyBar;
+  const width = Math.max(right - left, 0);
+  const height = Math.max(bottom - top, 0);
+  const scale = fitScale(width, height);
+
+  return { left, top, width: width / scale, height: height / scale, scale };
+};
+
+export const rem = (value: number): string => `${String(value)}rem`;
+
+export const tableBodyHeight = (rows: number): string => rem(rows * HIT_VIEWER.table.rowHeight);
+
+export const pickerListHeight = (rows: number): string => rem(Math.min(rows, HIT_VIEWER.picker.maxRows) * HIT_VIEWER.picker.rowHeight);

@@ -1,6 +1,7 @@
+import type { ShellSpritePaint } from '../../../lib/shell-sprite';
 import type { ShellKind } from '../../../model/schemas';
 
-export type ShellPaint = 'gold' | 'loaded' | 'refill' | 'spent';
+export type ShellPaint = ShellSpritePaint;
 
 export type ShellIconProps = {
   kind: ShellKind | null;

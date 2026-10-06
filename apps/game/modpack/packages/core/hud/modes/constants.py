@@ -90,9 +90,9 @@ LAYOUT_FULL = 'full'
 LAYOUT_COMPACT = 'compact'
 LAYOUT_OFF = 'off'
 LAYOUTS = (LAYOUT_FULL, LAYOUT_COMPACT, LAYOUT_OFF)
-# The essentials of an event page (docs/research/competitors/2026-09-30-round4.md section 4.3): marks, clock, damage
+# The essentials of an event page (docs/research/competitors/2026-09-30-round4.md section 4.3): marks and the damage
 # log.
-COMPACT_PANELS = ('marks_panel', 'battle_clock', 'damage_log')
+COMPACT_PANELS = ('marks_panel', 'damage_log')
 
 # components.json keeps the places the player gave the panels in each battle type (other than random) under this key.
 PLACES_SECTION = 'hud_layout_places'

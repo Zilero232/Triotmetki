@@ -29,7 +29,7 @@ export const DrumReadout = ({ clip }: DrumReadoutProps) => {
       {asShells &&
         view.cells.map((cell) => (
           <ShellSlot
-            key={`${String(cell.index)}-${cell.state}`}
+            key={cell.index}
             height={shell.height}
             kind={clip.shell}
             loadedPaint={loadedPaint}
@@ -41,10 +41,7 @@ export const DrumReadout = ({ clip }: DrumReadoutProps) => {
         ))}
       {asBars &&
         view.cells.map((cell) => (
-          <span
-            key={`${String(cell.index)}-${cell.state}`}
-            className={clsx(s.cell, cell.state === 'loaded' && s.cellLoaded, cell.state === 'refill' && s.cellRefill)}
-          />
+          <span key={cell.index} className={clsx(s.cell, cell.state === 'loaded' && s.cellLoaded, cell.state === 'refill' && s.cellRefill)} />
         ))}
     </div>
   );

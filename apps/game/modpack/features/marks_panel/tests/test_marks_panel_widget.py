@@ -7,7 +7,7 @@ import _support
 from otmetki.core.moe import ThresholdCurve
 from otmetki.core.settings import Settings
 from otmetki.features.marks_panel.i18n import STRINGS
-from otmetki.features.marks_panel.model import PanelView, panel_state
+from otmetki.features.marks_panel.model import panel_state
 from otmetki.features.marks_panel.model.constants import MARK_TONES, PREVIEW_THRESHOLDS
 from otmetki.features.marks_panel.model.preview import preview_state, preview_widget
 from otmetki.features.marks_panel.model.widget import marks_widget
@@ -22,9 +22,9 @@ def preview_curve():
     return ThresholdCurve.from_api(PREVIEW_THRESHOLDS)
 
 
-def widget_data(values, held=False):
-    view = PanelView(Settings(values, SCHEMA), held)
-    return marks_widget(preview_state(view), view, translator())['data']
+def widget_data(values):
+    settings = Settings(values, SCHEMA)
+    return marks_widget(preview_state(settings), settings, translator())['data']
 
 
 def curveless_widget():
@@ -38,13 +38,13 @@ def estimated_widget(combined=100, values=None):
     settings = Settings(values or {}, SCHEMA)
     snapshot = {'moving_avg_damage': 2000, 'damage_rating': 5000}
     state = panel_state(snapshot, combined, None, None, settings)
-    return marks_widget(state, PanelView(settings), translator())['data']
+    return marks_widget(state, settings, translator())['data']
 
 
 def unrated_widget(curve):
     settings = Settings({}, SCHEMA)
     state = panel_state({'moving_avg_damage': 2540, 'damage_rating': 0}, 100, curve, None, settings)
-    return marks_widget(state, PanelView(settings), translator())['data']
+    return marks_widget(state, settings, translator())['data']
 
 
 class MainRowTest(unittest.TestCase):
@@ -90,21 +90,15 @@ class CompactTest(unittest.TestCase):
         assert data['step'] is None
         assert data['average'] is None
 
-    def test_alt_adds_the_detail_rows(self):
-        data = widget_data({'style': 'compact'}, held=True)
+    def test_minimal_has_no_detail_rows(self):
+        data = widget_data({'style': 'minimal'})
 
-        assert data['style'] == 'extended'
-        assert [item['level'] for item in data['thresholds']] == [65, 85, 95]
+        assert (data['thresholds'], data['step'], data['average']) == ([], None, None)
 
-    def test_alt_changes_nothing_with_alt_details_off(self):
-        data = widget_data({'style': 'compact', 'alt_detail': False}, held=True)
+    def test_the_preview_is_the_compact_panel_the_player_places(self):
+        data = preview_widget(Settings({}, SCHEMA), translator())['data']
 
-        assert data['thresholds'] == []
-
-    def test_minimal_grows_on_alt_too(self):
-        data = widget_data({'style': 'minimal'}, held=True)
-
-        assert data['average'] is not None
+        assert (data['style'], data['thresholds'], data['step'], data['average']) == ('compact', [], None, None)
 
 
 class ExtendedTest(unittest.TestCase):
@@ -127,7 +121,7 @@ class ExtendedTest(unittest.TestCase):
         assert average == {'label': u'среднее', 'ema': 2540, 'ema_projected': 2551}
 
     def test_leaves_the_battles_to_the_next_mark_to_the_tank_card(self):
-        assert 'battles' not in widget_data({'style': 'extended'}, held=True)
+        assert 'battles' not in widget_data({'style': 'extended'})
 
     def test_switches_hide_the_rows(self):
         data = widget_data({'style': 'extended', 'show_targets': False, 'show_step': False})

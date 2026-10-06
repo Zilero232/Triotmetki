@@ -6,6 +6,7 @@ use crate::components::{is_owned, sync_manifest, ClientContext};
 use crate::dependencies::{carry, CarryInput};
 use crate::error::{AppError, AppResult, ErrorCode};
 use crate::fsx::{list_files, same_content};
+use crate::hangars::is_generated_file;
 use crate::releases::sha256_hex;
 use crate::state::save_client_state;
 
@@ -26,7 +27,7 @@ fn packages_to_carry(input: &MigrateInput) -> AppResult<Vec<Carried>> {
     list_files(input.from_mods_dir)
         .into_iter()
         .filter_map(|file| file.file_name().map(|name| (name.to_string_lossy().into_owned(), file.clone())))
-        .filter(|(name, file)| is_owned(input.context.catalog, name) && !same_content(file, &target.join(name)))
+        .filter(|(name, file)| is_owned(input.context.catalog, name) && !is_generated_file(name) && !same_content(file, &target.join(name)))
         .map(|(name, file)| {
             let bytes = fs::read(&file)?;
             let sha256 = sha256_hex(&bytes);

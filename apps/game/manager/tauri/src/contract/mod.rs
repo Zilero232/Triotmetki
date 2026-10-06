@@ -17,6 +17,7 @@ use crate::detect::client::{Branch, ClientProblem};
 use crate::detect::{ClientSource, GameClient, GameVersion};
 use crate::error::{AppError, ErrorCode};
 use crate::gameface::GamefaceStatus;
+use crate::hangars::{HangarLooksState, HangarLooksStatus, SkipReason, SkippedLookView};
 use crate::health::{FailureKind, HealthReport, LoadFailure, LogSource};
 use crate::install::{ForeignEntry, ForeignLocation};
 use crate::patch::{PatchReport, PatchStatus};
@@ -163,6 +164,18 @@ fn samples() -> Vec<(&'static str, Value)> {
         ),
         ("patch-reports", value(&reports)),
         ("gameface-status", value(&GamefaceStatus { restart_expected: true })),
+        (
+            "hangar-looks-status",
+            value(&HangarLooksStatus {
+                state: HangarLooksState::Generated,
+                client_version: Some("1.45.0.0".into()),
+                looks: vec!["night".into(), "studio".into()],
+                skipped: vec![
+                    SkippedLookView { id: "sunset".into(), reason: SkipReason::UntestedClient },
+                    SkippedLookView { id: "steel".into(), reason: SkipReason::MissingTexture },
+                ],
+            }),
+        ),
         ("error", value(&AppError::coded(ErrorCode::Busy, "another operation is running"))),
         (
             "install-plan",

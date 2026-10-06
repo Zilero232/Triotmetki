@@ -18,13 +18,14 @@ BARS = ('damage', 'percent')
 MAX_TEMPLATE = 400
 
 # The battle panel, lean as the gunmarks panels of PROTanki, Near_You and Lebwa and XVM's marks macros keep it: the
-# percent and its projection after the battle, the damage to the next goal, the Alt detail, colour and style. Right of
-# the stock consumables panel, 8 px over the bottom edge, as Lebwa and PROTanki place the marks: the page puts its left
-# edge 12 px right of the panel's live width (core/hud/panel ATTACHED bar_right); this place (centred 330 px right of
-# the middle) is the one for the fallback width and the GUIFlash renderer.
+# percent and its projection after the battle, the damage to the next goal, colour and style; no Alt view, so the panel
+# never outgrows the place the player gives it. Right of the stock consumables panel, its bottom on the panel's bottom,
+# as Lebwa and PROTanki place the marks: the page puts its left edge 12 px right of the panel's live width
+# (core/hud/panel ATTACHED bar_right); this place (centred 330 px right of the middle) is the one for the fallback width
+# and the GUIFlash renderer.
 DEFAULTS = {
     'x': 330,
-    'y': -8,
+    'y': 0,
     'align_x': 'center',
     'align_y': 'bottom',
     'style': 'compact',
@@ -33,7 +34,6 @@ DEFAULTS = {
     'show_battle': True,
     'show_step': True,
     'show_up': True,
-    'alt_detail': True,
     'color_mode': 'delta',
     'bar': 'damage',
 }
@@ -48,6 +48,7 @@ RETIRED_PLACES = (
     (208, 8, 'left', 'top'),
     (490, -6, 'left', 'bottom'),
     (372, 60, 'left', 'top'),
+    (330, -8, 'center', 'bottom'),
 )
 
 # The hangar Tank card: the detailed view of the selected tank (trend, thresholds, battles to the mark, the history,

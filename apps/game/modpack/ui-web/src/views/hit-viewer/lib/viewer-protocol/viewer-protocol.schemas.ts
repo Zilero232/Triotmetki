@@ -5,7 +5,17 @@ import { HIT_VIEWER } from '../../config';
 const side = z.enum(HIT_VIEWER.sides);
 const tone = z.enum(HIT_VIEWER.tones);
 
-const battleSchema = z.object({ id: z.string(), map: z.string(), vehicle: z.string(), date: z.string() });
+const battleSchema = z.object({
+  id: z.string(),
+  map: z.string(),
+  vehicle: z.string(),
+  date: z.string(),
+  tier: z.optional(z.nullable(z.number())),
+  result: z.optional(z.nullable(z.enum(HIT_VIEWER.results))),
+  image: z.optional(z.nullable(z.string())),
+  received: z.optional(z.number()),
+  dealt: z.optional(z.number())
+});
 
 const rowSchema = z.object({
   n: z.number(),

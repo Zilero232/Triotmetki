@@ -33,5 +33,22 @@
   "presetsTitle": "Ready-made sets:",
   "presetsHint": "Opens the install wizard with this set — you see the changes before installing",
   "notInstalledHint": "The modpack is not installed yet — the switches work after the install.",
-  "installCta": "Install the modpack"
+  "installCta": "Install the modpack",
+  "hangarLooks": {
+    "built": "Built for client {version}",
+    "failed": "The hangar looks could not be built — see the manager logs",
+    "failedToast": "The hangar looks were not built. The modpack is installed; see the manager logs",
+    "skipped": "Not built: {list}",
+    "skippedItem": "{title} — {reason}",
+    "reason": {
+      "unsupported_schema": "needs a newer manager",
+      "invalid_recipe": "recipe error",
+      "disabled": "temporarily switched off",
+      "untested_client": "not for this game version yet",
+      "base_missing": "the base hangar is missing in the game",
+      "missing_texture": "a texture is missing in the game",
+      "shadowed": "another mod replaces this hangar",
+      "guid_collision": "environment name conflict"
+    }
+  }
 }

@@ -104,6 +104,7 @@ class _Reader(object):
             dependencies=tuple(raw.get('dependencies', ())),
             perf=raw['perf'],
             context=raw['context'],
+            generator=raw.get('generator'),
         )
 
 
@@ -171,6 +172,7 @@ def parse(raw, assets_dir):
         dependencies=tuple(_dependency(item) for item in components if 'kind' in item),
         owned_paths=tuple(raw.get('ownedPaths', ())),
         conflicts=tuple(_conflict(item) for item in raw.get('conflicts', ())),
+        disabled_looks=tuple(raw.get('disabledLooks', ())),
     )
     _check(reader, catalog)
     if reader.problems:

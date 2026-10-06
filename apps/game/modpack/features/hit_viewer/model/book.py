@@ -12,8 +12,11 @@ from .constants import (
     MAX_BATTLES,
     MAX_HITS,
     MODULE_KEYS,
+    MAP_NAME,
+    MAX_TIER,
     OUTCOMES,
     PART_NAMES,
+    RESULTS,
     SIDES,
 )
 from .hits import clean_segments, impact
@@ -57,6 +60,14 @@ def _clean_analysis(entry):
         'armor': _int_or_none(entry.get('armor')),
         'nominal': _int_or_none(entry.get('nominal')),
     }
+
+
+def _geometry_of(value):
+    return to_text(value) if isinstance(value, string_types) and MAP_NAME.match(value) else None
+
+
+def _tier_of(value):
+    return int(value) if is_int(value) and 1 <= value <= MAX_TIER else None
 
 
 def _shell_of(value):
@@ -128,6 +139,9 @@ def clean_battle(battle):
         't': started if is_number(started) else None,
         'map': _text(battle.get('map')),
         'vehicle': _text(battle.get('vehicle')),
+        'geometry': _geometry_of(battle.get('geometry')),
+        'tier': _tier_of(battle.get('tier')),
+        'result': battle.get('result') if battle.get('result') in RESULTS else None,
         'targets': targets,
         'hits': hits,
     }
@@ -151,12 +165,16 @@ class HitBook(object):
         self.current = None
         self.pending = []
 
-    def start(self, battle_id, at, map_label=None, vehicle=None):
+    def start(self, battle_id, at, map_label=None, vehicle=None, arena=None):
+        arena = arena or {}
         self.current = {
             'id': to_text(battle_id),
             't': at,
             'map': _text(map_label),
             'vehicle': _text(vehicle),
+            'geometry': _geometry_of(arena.get('geometry')),
+            'tier': _tier_of(arena.get('tier')),
+            'result': None,
             'targets': {},
             'hits': [],
         }
@@ -269,6 +287,13 @@ class HitBook(object):
         if battle is None or not 0 <= index < len(battle['hits']) or not isinstance(analysis, dict):
             return False
         battle['hits'][index].update(_clean_analysis(analysis))
+        return True
+
+    def resolved(self, battle_id, result):
+        battle = self.battle(to_text(battle_id))
+        if battle is None or battle['id'] != to_text(battle_id) or result not in RESULTS or battle['result'] == result:
+            return False
+        battle['result'] = result
         return True
 
     def resize(self, keep):

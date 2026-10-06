@@ -28,6 +28,7 @@ from ..model import (
     same_path,
     space_names,
     space_preview,
+    taken_slots,
     wanted_environments,
 )
 from ..settings import ADVANCED, SCHEMA, SWITCH
@@ -43,6 +44,7 @@ from .space import (
     available_paths,
     controller,
     current_name,
+    default_path,
     hangar_space,
     is_default_scene,
     once_space_created,
@@ -67,6 +69,8 @@ class HangarSpace(FeatureComponent):
         FeatureComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS)
         self.owned = None
         self.owned_environment = u''
+        self.kept_spaces = {}
+        self.kept_environments = {}
         self.waiting = False
         self.environment_pending = False
         self.missing_looks = set()
@@ -96,36 +100,70 @@ class HangarSpace(FeatureComponent):
     def apply(self, force=False):
         switcher = controller()
         if switcher is None or self.app.in_battle:
+            if force:
+                log('hangar space: no hangar switch controller here (battle or not in the lobby), later')
             return PLAN_LATER
         path, environment = self.wanted()
-        changes = override_changes(overrides(switcher), self.owned, path)
-        self.owned = path
-        if changes:
-            write_overrides(switcher, changes)
-            log('hangar space: %s' % (path or 'the game default'))
+        space_changes = self._write_space(switcher, path)
         hangar = hangar_space()
         environment_changed = self._write_environment(switcher, hangar, path, environment)
+        if path is None:
+            self.kept_spaces, self.kept_environments = {}, {}
         ready = space_ready(hangar) and bool(available_paths())
         target = target_path(switcher, hangar) if ready else None
         loaded = getattr(hangar, 'spacePath', None)
         plan = reload_plan(is_default_scene(switcher), ready, target, loaded)
-        if changes or force:
+        if space_changes or force:
             self._follow(switcher, hangar, plan)
-        live = environment if same_path(loaded, path) else u''
+        live = environment if same_path(loaded, path) else self._slot_environment(switcher, hangar)
         self._follow_environment(plan, loaded, live, environment_changed)
+        if space_changes or environment_changed or force:
+            log('hangar space: wanted %s / %s; slots %s; loaded %s, target %s: %s' % (
+                path or 'the game default', environment or 'its own look', self._slots_text(switcher), loaded,
+                target, plan))
         return plan
+
+    def _write_space(self, switcher, path):
+        current = overrides(switcher)
+        default = default_path()
+        taken = taken_slots(current, self.owned, path, default)
+        for is_premium, value in taken.items():
+            self.kept_spaces.setdefault(is_premium, value)
+        changes = override_changes(current, self.owned, path, default, self.kept_spaces)
+        self.owned = path
+        if changes:
+            write_overrides(switcher, changes)
+        return changes
+
+    def _slots_text(self, switcher):
+        current = overrides(switcher)
+        environments = environment_slots(switcher) or {}
+        return ', '.join('%s %s/%s' % ('premium' if is_premium else 'basic', current.get(is_premium),
+                                        environments.get(is_premium) or '-') for is_premium in (True, False))
+
+    @staticmethod
+    def _slot_environment(switcher, hangar):
+        slots = environment_slots(switcher) or {}
+        return slots.get(bool(getattr(hangar, 'isPremium', False))) or u''
+
+    def is_held(self, switcher, hangar):
+        path = self.owned
+        return bool(path) and not same_path(target_path(switcher, hangar), path)
 
     def _write_environment(self, switcher, hangar, path, environment):
         current = environment_slots(switcher)
         if current is None:
             return False
+        taken = set(self.kept_spaces) if path else set()
+        for is_premium in taken:
+            self.kept_environments.setdefault(is_premium, current.get(is_premium) or u'')
         targets = slot_targets(switcher) if environment else {}
-        changes = environment_changes(current, self.owned_environment, wanted_environments(targets, path, environment))
+        wanted = wanted_environments(targets, path, environment)
+        changes = environment_changes(current, self.owned_environment, wanted, taken, self.kept_environments)
         self.owned_environment = environment
         if not changes:
             return False
         write_environments(switcher, changes)
-        log('hangar space: environment %s' % (environment or 'of the game'))
         return bool(getattr(hangar, 'isPremium', False)) in changes
 
     def _follow(self, switcher, hangar, plan):
@@ -183,4 +221,7 @@ class HangarSpace(FeatureComponent):
         component_config(self.app).update(self.component_id, values)
         if self.apply(force=True) == PLAN_LATER:
             return self.notice_info('hangar_space_later')
+        switcher = controller()
+        if switcher is not None and self.is_held(switcher, hangar_space()):
+            return self.notice_info('hangar_space_held')
         return self.notice_info(applied)

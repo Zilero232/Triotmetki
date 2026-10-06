@@ -1,52 +1,79 @@
-﻿@use '@/shared/styles/gameface' as *;
+@use '@/shared/styles/gameface' as *;
+@use '../../styles/tones' as *;
 
 .picker {
   display: flex;
+  width: 380px;
   flex: 0 0 auto;
   flex-direction: column;
-  margin-bottom: 8px;
 }
 
-.battle {
+.trigger {
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 30px 0 0;
+  cursor: pointer;
+  font-family: $font-family;
+  text-align: left;
+
+  @include panel;
+  @include ease(border-color, background-color);
+
+  &:hover {
+    border-color: token(color-border-control);
+  }
+}
+
+.triggerOpen {
+  border-color: token(color-accent);
+}
+
+.chevron {
+  position: absolute;
+  top: 23px;
+  right: 10px;
+  display: flex;
+  width: 14px;
+  height: 14px;
+}
+
+.list {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  padding: 6px 10px;
-  border: 1px solid token(color-border);
+  padding: 4px;
+  margin-top: 6px;
+
+  @include panel;
+}
+
+.entry {
+  display: flex;
+  height: 68px;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  border: 1px solid transparent;
   border-radius: token(radius-sm);
-  background-color: token(color-surface-sunken);
-  color: token(color-text);
+  background-color: transparent;
   cursor: pointer;
   font-family: $font-family;
   text-align: left;
 
   &:hover {
-    border-color: token(color-border-strong);
+    background-color: token(color-surface-hover);
   }
 }
 
-.list {
-  display: flex;
-  overflow: hidden;
-  max-height: 280px;
-  flex-direction: column;
-  margin-top: 4px;
-}
-
-.entry {
-  margin-bottom: 2px;
-}
-
 .entryOn {
-  border-color: token(color-accent);
-}
+  border-color: rgb(255 122 26 / 45%);
+  background-color: rgb(255 122 26 / 10%);
 
-.map {
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.meta {
-  color: token(color-text-muted);
-  font-size: 12px;
+  &:hover {
+    background-color: rgb(255 122 26 / 14%);
+  }
 }

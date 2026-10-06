@@ -5,6 +5,7 @@ use super::stage::{commit_journal, stage, StagedFile};
 use crate::components::{in_mod_folders, is_owned, sync_manifest, ClientContext};
 use crate::error::AppResult;
 use crate::fsx::list_files;
+use crate::hangars::is_generated_file;
 use crate::releases::{FetchLimits, Release, ReleasePackage, ReleasesClient, MAX_PACKAGE_BYTES};
 use crate::state::{component_id, disabled_dir, save_client_state, Manifest};
 
@@ -85,7 +86,7 @@ pub fn retired_files(context: ClientContext) -> Vec<PathBuf> {
         .filter(|path| {
             let name = path.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
 
-            catalog.is_owned_file(&name) && catalog.component_for_file(&name).is_none()
+            catalog.is_owned_file(&name) && catalog.component_for_file(&name).is_none() && !is_generated_file(&name)
         })
         .collect()
 }
@@ -99,7 +100,7 @@ pub fn our_files(context: ClientContext) -> AppResult<Vec<PathBuf>> {
     for path in candidates {
         let name = path.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
 
-        if path.is_file() && is_owned(catalog, &name) && in_mod_folders(context, &path) && !found.contains(&path) {
+        if path.is_file() && is_owned(catalog, &name) && !is_generated_file(&name) && in_mod_folders(context, &path) && !found.contains(&path) {
             found.push(path);
         }
     }

@@ -126,16 +126,16 @@ class SurfaceSummaryTest(unittest.TestCase):
     def test_a_text_label_is_text(self):
         surface = HudSurface()
 
-        surface.create('otmetki.hud.battle_clock', {'text': u'12:00'}, 'battle')
+        surface.create('otmetki.hud.team_hp', {'text': u'12:00'}, 'battle')
 
-        assert surface.summary('battle') == ['battle_clock[text]']
+        assert surface.summary('battle') == ['team_hp[text]']
 
     def test_an_invisible_label_is_marked_hidden(self):
         surface = HudSurface()
 
-        surface.create('otmetki.hud.battle_clock', {'text': u'12:00', 'visible': False}, 'battle')
+        surface.create('otmetki.hud.team_hp', {'text': u'12:00', 'visible': False}, 'battle')
 
-        assert surface.summary('battle') == ['battle_clock[text] hidden']
+        assert surface.summary('battle') == ['team_hp[text] hidden']
 
     def test_labels_of_the_other_space_are_left_out(self):
         surface = HudSurface()

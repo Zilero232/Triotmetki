@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'use-intl';
 import { previewSrc } from '@/entities/catalog';
 import { useSelectedClient } from '@/entities/client';
 import { useGamefaceNotice } from '@/entities/gameface';
+import { useHangarLooksNotice } from '@/entities/hangar-looks';
 import { activateProfile } from '@/entities/profile';
 import { QUERY_KEYS } from '@/shared/config';
 import { pickLocalized, useErrorText, useErrorToast, useNavigation } from '@/shared/lib';
@@ -26,6 +27,7 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
   const showError = useErrorToast();
   const errorText = useErrorText();
   const notifyGameface = useGamefaceNotice();
+  const notifyHangarLooks = useHangarLooksNotice();
   const { clientPath } = useSelectedClient();
   const planQuery = useInstallPlan(clientPath);
   const [stepIndex, setStepIndex] = useState(startAtReview ? INSTALL_WIZARD.steps.length - 1 : 0);
@@ -111,6 +113,7 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
 
       navigate({ page: 'home' });
       await notifyGameface(clientPath);
+      await notifyHangarLooks(clientPath);
     },
     onError: showError
   });

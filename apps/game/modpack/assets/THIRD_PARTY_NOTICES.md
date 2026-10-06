@@ -13,6 +13,7 @@ under licences that allow redistribution in a paid product; each licence text sh
 | Crosshair vector centre marks in eight colours | Три отметки | LicenseRef-TriOtmetki-Artwork | crosshair | `res/gui/maps/icons/otmetki/crosshair/vector` |
 | Sixth-sense icons | Три отметки | LicenseRef-TriOtmetki-Artwork | sixth_sense | `res/gui/maps/icons/otmetki/sixth_sense/icons` |
 | Damage-log kind glyphs | Три отметки | LicenseRef-TriOtmetki-Artwork | damage_log | `res/gui/maps/icons/otmetki/damage_log/icons` |
+| Hangar look colour grading tables | Три отметки | LicenseRef-TriOtmetki-Artwork | hangar_looks | `res/system/maps/post_processing/cube/otmetki` |
 
 ## Third-party assets
 
@@ -80,6 +81,16 @@ visual reference only (layout, sizes, readability, colour conventions); nothing 
 - Contents: 6 damage-kind glyphs (damage, radio, track, stun, blocked, received) and 5 vehicle-class glyphs (class_light, class_medium, class_heavy, class_td, class_spg): SVG sources, RGBA PNG 32 px
 - Ships in: `res/gui/maps/icons/otmetki/damage_log/icons` (component `damage_log`)
 - Fair play: Decorates the player's own damage-log lines; the class glyph shows the vehicle class the player panels already show.
+
+### Hangar look colour grading tables
+
+- Author: Три отметки
+- Copyright: Copyright (c) 2026 Три отметки
+- Licence: LicenseRef-TriOtmetki-Artwork (`assets/otmetki/LICENSE.md`)
+- Source: https://triotmetki.ru
+- Contents: 4 colour grading tables of our own (night, sunset, steel, studio): the grades in src/grades.json, written by tools/assets/lut.py as 256x16 BGRA8 DDS in the client's colour-table layout
+- Ships in: `res/system/maps/post_processing/cube/otmetki` (component `hangar_looks`)
+- Fair play: Colour grading of the player's own hangar view, named by the hangar look environments the manager builds; never loaded in battle.
 
 ## Python libraries
 

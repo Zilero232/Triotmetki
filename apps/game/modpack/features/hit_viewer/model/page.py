@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.compat import is_number
 from ....core.format import format_epoch, format_number
-from .constants import ACTION_OPEN, DAMAGING, DASH, PAGE_LABELS, SEPARATOR, SIDE_DEALT, SIDE_RECEIVED, SIDES
+from .constants import ACTION_OPEN, DAMAGING, DASH, MAP_ICON, PAGE_LABELS, SEPARATOR, SIDE_DEALT, SIDE_RECEIVED, SIDES
 
 
 def side_hits(battle, side):
@@ -58,12 +58,22 @@ def battle_title(battle, translate):
     return battle.get('map') or translate('hv_unknown_map')
 
 
-def battle_item(battle, translate):
+def _no_image(path):
+    return None
+
+
+def battle_item(battle, translate, image=_no_image):
+    geometry = battle.get('geometry')
     return {
         'id': battle['id'],
         'map': battle_title(battle, translate),
         'vehicle': battle.get('vehicle') or u'?',
         'date': format_epoch(battle.get('t')) or u'',
+        'tier': battle.get('tier'),
+        'result': battle.get('result'),
+        'image': image(MAP_ICON % geometry) if geometry else None,
+        'received': len(side_hits(battle, SIDE_RECEIVED)),
+        'dealt': len(side_hits(battle, SIDE_DEALT)),
     }
 
 
@@ -78,9 +88,11 @@ def labels(translate):
     return dict((key, translate(name)) for key, name in PAGE_LABELS)
 
 
-def viewer_state(battles, selection, translate, stage=None):
+def viewer_state(battles, selection, translate, stage=None, image=_no_image):
+    """The page's state; `image(path)` turns a client picture path into an image string, None when it is missing."""
     stage = stage or {}
-    state = {'labels': labels(translate), 'battles': [battle_item(item, translate) for item in reversed(battles)]}
+    items = [battle_item(item, translate, image) for item in reversed(battles)]
+    state = {'labels': labels(translate), 'battles': items}
     battle = _selected_battle(battles, selection.get('battle'))
     if battle is None:
         state.update({'battle': None, 'tabs': [], 'tab': None, 'rows': [], 'selected': None})
@@ -89,7 +101,7 @@ def viewer_state(battles, selection, translate, stage=None):
     hits = side_hits(battle, tab)
     rows = [hit_row(number, index, hit, translate) for number, (index, hit) in enumerate(hits, 1)]
     state.update({
-        'battle': battle_item(battle, translate),
+        'battle': battle_item(battle, translate, image),
         'tabs': tab_items(battle, translate),
         'tab': tab,
         'rows': rows,

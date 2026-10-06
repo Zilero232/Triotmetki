@@ -1,0 +1,45 @@
+{
+  "$comment": "Our colour grading of the «Три отметки» hangar looks (original art, (c) Три отметки). tools/assets/lut.py turns each grade into a 256x16 BGRA8 DDS colour-grading table in ../dds/<id>.dds. Steps per colour: white balance, gain (slope) and lift (offset), gamma (power), saturation around Rec.709 luma, split toning (shadow and highlight tints weighted by luma), contrast around mid grey.",
+  "grades": {
+    "night": {
+      "white_balance": [0.92, 0.97, 1.1],
+      "gain": [0.92, 0.95, 1.0],
+      "lift": [0.0, 0.005, 0.02],
+      "gamma": [1.08, 1.04, 0.98],
+      "saturation": 0.72,
+      "shadows": [-0.01, 0.0, 0.03],
+      "highlights": [0.0, 0.01, 0.02],
+      "contrast": 1.08
+    },
+    "sunset": {
+      "white_balance": [1.08, 1.0, 0.88],
+      "gain": [1.04, 0.98, 0.9],
+      "lift": [0.01, 0.0, 0.015],
+      "gamma": [0.96, 1.0, 1.06],
+      "saturation": 1.12,
+      "shadows": [-0.01, 0.005, 0.02],
+      "highlights": [0.04, 0.015, -0.02],
+      "contrast": 1.06
+    },
+    "steel": {
+      "white_balance": [0.95, 0.99, 1.06],
+      "gain": [0.96, 0.98, 1.02],
+      "lift": [0.005, 0.008, 0.015],
+      "gamma": [1.04, 1.02, 1.0],
+      "saturation": 0.62,
+      "shadows": [0.0, 0.005, 0.015],
+      "highlights": [0.0, 0.0, 0.01],
+      "contrast": 1.14
+    },
+    "studio": {
+      "white_balance": [1.0, 1.0, 1.0],
+      "gain": [1.02, 1.02, 1.02],
+      "lift": [0.0, 0.0, 0.0],
+      "gamma": [1.0, 1.0, 1.0],
+      "saturation": 1.04,
+      "shadows": [0.0, 0.0, 0.0],
+      "highlights": [0.0, 0.0, 0.0],
+      "contrast": 1.05
+    }
+  }
+}

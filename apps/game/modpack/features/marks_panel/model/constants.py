@@ -19,9 +19,6 @@ APPROX = u'~'
 CURVE_SITE = 'site'
 CURVE_ESTIMATED = 'estimated'
 
-# The Alt view: every detail row on, whatever the switches say.
-DETAIL_SWITCHES = ('show_targets', 'show_battle', 'show_step', 'show_up')
-
 # The percent's tone on the battle plate: by the change, or by how many mark levels (65, 85, 95) it has passed.
 MARK_TONES = ('muted', 'text', 'text', 'gold')
 
@@ -32,10 +29,10 @@ BAR_DAMAGE = 'damage'
 MAX_STARS = 3
 # The silhouette of a vehicle whose class is unknown on the Tank card's hero (core.classes keys).
 DEFAULT_SHAPE = 'medium'
-# The detail rows of a plate that shows none (a style at rest, or no thresholds for the tank).
+# The detail rows of a plate that shows none (any style but the extended one, or no thresholds for the tank).
 NO_ROWS = {'thresholds': [], 'step': None, 'average': None}
 
-PREVIEW_SIZE = (230, 76)
+PREVIEW_SIZE = (230, 62)
 PREVIEW_SNAPSHOT = {'moving_avg_damage': 2540, 'damage_rating': 8612, 'marks_on_gun': 2}
 PREVIEW_THRESHOLDS = {'thresholds': {'65': 1900, '85': 2450, '95': 3050, '100': 3900}}
 PREVIEW_COMBINED = 3100
@@ -145,7 +142,7 @@ DELTA_GLYPHS = {1: 'trend_up', 0: 'dot', -1: 'trend_down'}
 # The settings window's editors: the battle panel (its look, then its numbers) and the hangar Tank card (its look, then
 # its rows, then the carousel tiles).
 EDITOR_GROUPS = (
-    ('battle', ('style', 'bar', 'color_mode', 'alt_detail')),
+    ('battle', ('style', 'bar', 'color_mode')),
     ('numbers', ('show_targets',)),
 )
 CARD_EDITOR_GROUPS = (

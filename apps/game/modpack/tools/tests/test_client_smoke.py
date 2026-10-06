@@ -73,15 +73,15 @@ HUD_OFF = (
     'hangar_battle_results', 'battle_progress',
 )
 BATTLE_PANELS = [
-    'battle_clock', 'battle_progress', 'damage_log', 'sixth_sense', 'team_hp',
+    'battle_progress', 'damage_log', 'sixth_sense', 'team_hp',
 ]
 DESCRIBED_PANELS = [
-    'battle_clock', 'battle_hotkeys', 'battle_loadout', 'battle_progress', 'crosshair', 'damage_log',
-    'gun_arc', 'hangar_marks', 'last_battle', 'marks_panel', 'platoon_points', 'sixth_sense', 'team_hp',
+    'battle_hotkeys', 'battle_loadout', 'battle_progress', 'crosshair', 'damage_log', 'gun_arc',
+    'hangar_marks', 'last_battle', 'marks_panel', 'platoon_points', 'sixth_sense', 'team_hp',
 ]
 HUD_EDIT_PREVIEWS = [
-    'battle_clock', 'battle_loadout', 'battle_progress', 'crosshair', 'damage_log', 'gun_arc',
-    'hangar_marks', 'last_battle', 'marks_panel', 'platoon_points', 'sixth_sense',
+    'battle_loadout', 'battle_progress', 'crosshair', 'damage_log', 'gun_arc', 'hangar_marks',
+    'last_battle', 'marks_panel', 'platoon_points', 'sixth_sense',
 ]
 # Where the reticle sits on a 1920x1080 screen; CROSSHAIR_VIEW_ID (RU 1.45): the arcade view.
 RETICLE_SCREEN = {'position': (960, 540), 'size': (1920, 1080), 'scale': 1.0}
@@ -1082,6 +1082,7 @@ class Game(object):
             WindowFlags=constants('WindowFlags', {'WINDOW': 1}),
             WindowLayer=constants('WindowLayer', {'WINDOW': 7}),
             WindowStatus=constants('WindowStatus', {'LOADED': 3, 'DESTROYING': 4, 'DESTROYED': 5}),
+            Window=type('Window', (object,), {'_cFocusChanged': lambda window, focused: None}),
         )
         package('gui.impl')
         module('gui.impl.pub', ViewImpl=ViewImpl, WindowImpl=window_impl_class(self))
@@ -1483,9 +1484,6 @@ class BattleHudTest(StoryTest):
     def test_damage_log_names_the_target_of_the_own_shot(self):
         self.assertIn('Pz. IV', self.panels['damage_log']['text'])
 
-    def test_battle_clock_leaves_the_battle_timer_to_the_stock_one(self):
-        self.assertNotIn('05:00', self.panels['battle_clock']['text'])
-
     def test_team_hp_shows_both_teams_and_the_score(self):
         team_hp = self.panels['team_hp']['text']
 
@@ -1581,7 +1579,7 @@ class EventBattleTest(StoryTest):
         cls.random_panels = copy.deepcopy(game.hud_components())
 
     def test_event_battles_get_the_compact_layout(self):
-        self.assertEqual(self.event_panels, ['battle_clock', 'damage_log'])
+        self.assertEqual(self.event_panels, ['damage_log'])
 
     def test_a_panel_moved_in_an_event_battle_keeps_its_place_for_event_battles_only(self):
         self.assertEqual(self.saved['hud_layout_places'], {'event': {'damage_log': {'x': 333, 'y': 44}}})

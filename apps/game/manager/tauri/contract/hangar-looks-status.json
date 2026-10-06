@@ -1,0 +1,18 @@
+{
+  "clientVersion": "1.45.0.0",
+  "looks": [
+    "night",
+    "studio"
+  ],
+  "skipped": [
+    {
+      "id": "sunset",
+      "reason": "untested_client"
+    },
+    {
+      "id": "steel",
+      "reason": "missing_texture"
+    }
+  ],
+  "state": "generated"
+}

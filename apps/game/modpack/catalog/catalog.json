@@ -11,8 +11,11 @@
     "scripts/client/gui/mods/mod_otmetki",
     "gui/gameface/mods/triotmetki/",
     "gui/maps/icons/otmetki/",
-    "mods/configs/res_map/net.triotmetki."
+    "mods/configs/res_map/net.triotmetki.",
+    "mods/configs/otmetki/hangar_looks/",
+    "system/maps/post_processing/cube/otmetki/"
   ],
+  "disabledLooks": [],
   "conflicts": [
     {
       "id": "xvm",
@@ -300,8 +303,8 @@
         "en": "Marks of Excellence"
       },
       "description": {
-        "ru": "Два компонента со своими настройками. «Отметки в бою» — панель справа от расходников: процент и прогноз после боя, урон до следующей цели одной строкой, по Alt — урон до 65/85/95 %, на шаг процента и среднее. «Карточка танка» в ангаре — процент на силуэте танка, тренд последних боёв, урон до отметок, включая 100 %, и боёв до следующей, а по Alt — WN8 танка с сайта, опыт за бой на знаки классности и опыт до элиты и следующих танков; в окне мода — история по каждому танку и расчёт отметок; по желанию — процент отметки в строке статистики под танками карусели, как в XVM.",
-        "en": "Two components with their own settings. «Marks in battle»: a panel right of the consumables with the percent and its projection after the battle and the damage to the next goal in one line, and on Alt the damage to 65/85/95%, per percent step and the average. The hangar «Tank card»: the percent on the tank’s silhouette, the trend of the last battles, the damage to each mark, 100% included, and battles to the next, and on Alt the tank’s WN8 from the site, the XP per battle for the mastery badges and the XP to elite and to the next tanks; in the mod window the history per tank and the marks report; optionally the MoE percent in the stats row under the carousel tanks, as in XVM."
+        "ru": "Два компонента со своими настройками. «Отметки в бою» — панель справа от расходников: процент и прогноз после боя, полоса урона за бой и урон до следующей цели; панель не раздвигается и стоит вровень с расходниками. «Карточка танка» в ангаре — процент на силуэте танка, тренд последних боёв, урон до отметок, включая 100 %, и боёв до следующей, а по Alt — WN8 танка с сайта, опыт за бой на знаки классности и опыт до элиты и следующих танков; в окне мода — история по каждому танку и расчёт отметок; по желанию — процент отметки в строке статистики под танками карусели, как в XVM.",
+        "en": "Two components with their own settings. «Marks in battle»: a panel right of the consumables with the percent and its projection after the battle and the battle damage bar and the damage to the next goal; the panel never grows and sits level with the consumables. The hangar «Tank card»: the percent on the tank’s silhouette, the trend of the last battles, the damage to each mark, 100% included, and battles to the next, and on Alt the tank’s WN8 from the site, the XP per battle for the mastery badges and the XP to elite and to the next tanks; in the mod window the history per tank and the marks report; optionally the MoE percent in the stats row under the carousel tanks, as in XVM."
       },
       "fairPlay": {
         "ru": "Считается по вашему урону и помощи, как в итогах боя.",
@@ -454,12 +457,12 @@
         "en": "Aim and shells"
       },
       "description": {
-        "ru": "Дистанция у прицела до любой техники под ним, а не только до той, у чьего маркера дистанция скрыта, и подсказка снаряда на панели боеприпасов: урон, пробитие, скорость и урон модулям. По желанию (по умолчанию выключено) — круг сведения меньше стандартного (40–100 %), ближе к реальному разбросу.",
-        "en": "The reticle distance to any vehicle under it, not only to the ones whose markers hide the distance, and a shell tooltip on the ammo panel: damage, penetration, speed and module damage. If you want (off by default), an aim circle smaller than the stock one (40–100 %), closer to the real dispersion."
+        "ru": "Дистанция у прицела до любой техники под ним, а не только до той, у чьего маркера дистанция скрыта, и подсказка снаряда на панели боеприпасов: урон, пробитие, скорость и урон модулям.",
+        "en": "The reticle distance to any vehicle under it, not only to the ones whose markers hide the distance, and a shell tooltip on the ammo panel: damage, penetration, speed and module damage."
       },
       "fairPlay": {
-        "ru": "Дистанцию до цели под прицелом клиент и так показывает на маркерах; подсказки — параметры своих снарядов. Круг сведения только рисуется меньше: наведение, выстрел и разброс не меняются, в реплей пишется настоящий размер. Брони под прицелом нет: Леста запрещает анализ бронирования в бою.",
-        "en": "The client already shows the distance to the target under the reticle on its markers; the tooltips are your own shells' parameters. The aim circle is only drawn smaller: the aim, the shot and the dispersion stay as they are, and the replay records the real size. No armour under the reticle: Lesta forbids in-battle armour analysis."
+        "ru": "Дистанцию до цели под прицелом клиент и так показывает на маркерах; подсказки — параметры своих снарядов. Брони под прицелом нет: Леста запрещает анализ бронирования в бою.",
+        "en": "The client already shows the distance to the target under the reticle on its markers; the tooltips are your own shells' parameters. No armour under the reticle: Lesta forbids in-battle armour analysis."
       },
       "perf": "medium",
       "preview": {
@@ -530,28 +533,6 @@
       "perf": "low",
       "preview": {
         "image": "previews/battle_hotkeys.png"
-      }
-    },
-    {
-      "id": "battle_menu",
-      "category": "battle",
-      "context": "battle",
-      "presets": ["recommended", "minimal", "streamer"],
-      "title": {
-        "ru": "Настройки мода из меню Esc",
-        "en": "Mod settings from the Esc menu"
-      },
-      "description": {
-        "ru": "Кнопка «///» под меню Esc в бою открывает окно настроек мода, не выходя из боя; Ctrl+Shift+T делает то же с клавиатуры. Включена по умолчанию: появляется только вместе с меню Esc и больше ничего не меняет.",
-        "en": "The «///» button under the Esc menu in battle opens the mod's settings window without leaving the battle; Ctrl+Shift+T does the same from the keyboard. On by default: it shows up only with the Esc menu and changes nothing else."
-      },
-      "fairPlay": {
-        "ru": "Только кнопка окна настроек; о бою ничего не читает.",
-        "en": "Only a settings window button; it reads nothing about the battle."
-      },
-      "perf": "low",
-      "preview": {
-        "image": "previews/battle_menu.svg"
       }
     },
     {
@@ -630,12 +611,12 @@
         "en": "Crosshairs"
       },
       "description": {
-        "ru": "Пресеты стандартного прицела игры (сетка, центральная метка, круг сведения, индикаторы) для аркадного и снайперского режимов, серверный прицел и 26 центральных меток на выбор: 19 своих одноцветных в восьми цветах (с тёмным контуром или без), 4 своих цветных (среди них зелёные дуги и уголки поправки) и 3 из CC0-набора Kenney; по умолчанию центр прицела — стандартный. Таймер перезарядки у прицела и барабан значками снарядов (заряженные светлые, отстрелянные тусклые, время всего барабана, дозарядка у автозаряжания), по желанию кратность снайперского прицела; пока они на экране, стандартные таймер, индикатор барабана и кратность скрыты. Ремонт модулей остаётся на стандартной панели повреждений.",
-        "en": "Presets for the game's own reticle (net, central marker, aiming circle, indicators) in arcade and sniper modes, the server reticle and 26 centre marks to pick from: 19 one-colour marks of ours in eight colours (with or without a dark outline), 4 full-colour marks of ours (green arcs and stacked chevrons among them) and 3 from Kenney's CC0 pack; the game's own centre stays by default. A reload timer by the reticle and the magazine as shell icons (loaded bright, fired dim, the whole drum's reload, the auto-reloader's refill), the sniper zoom on request; while they are on screen the stock reload timer, magazine indicator and zoom hide. Module repairs stay on the stock damage panel."
+        "ru": "Пресеты стандартного прицела игры (сетка, центральная метка, круг сведения, индикаторы) для аркадного и снайперского режимов, серверный прицел и 26 центральных меток на выбор: 19 своих одноцветных в восьми цветах (с тёмным контуром или без), 4 своих цветных (среди них зелёные дуги и уголки поправки) и 3 из CC0-набора Kenney; по умолчанию центр прицела — стандартный. Таймер перезарядки у прицела и барабан значками снарядов (заряженные светлые, отстрелянные тусклые, время всего барабана, дозарядка у автозаряжания), по желанию кратность снайперского прицела; пока они на экране, стандартные таймер, индикатор барабана и кратность скрыты. Ремонт модулей остаётся на стандартной панели повреждений. Уменьшенный круг сведения, как в модпаках (80, 70 или 60 % от игрового; по умолчанию — как в игре), для аркадного и снайперского прицела.",
+        "en": "Presets for the game's own reticle (net, central marker, aiming circle, indicators) in arcade and sniper modes, the server reticle and 26 centre marks to pick from: 19 one-colour marks of ours in eight colours (with or without a dark outline), 4 full-colour marks of ours (green arcs and stacked chevrons among them) and 3 from Kenney's CC0 pack; the game's own centre stays by default. A reload timer by the reticle and the magazine as shell icons (loaded bright, fired dim, the whole drum's reload, the auto-reloader's refill), the sniper zoom on request; while they are on screen the stock reload timer, magazine indicator and zoom hide. Module repairs stay on the stock damage panel. A smaller aim circle as in the packs (80, 70 or 60 % of the game's; the game's size by default) for the arcade and sniper reticles."
       },
       "fairPlay": {
-        "ru": "Только внешний вид: без автоприцела, калькулятора пробития и чужих данных.",
-        "en": "Looks only: no aim assist, no penetration calculator, no data about others."
+        "ru": "Только внешний вид: без автоприцела, калькулятора пробития и чужих данных. Уменьшенный круг сведения — это круг игры, нарисованный меньше; разброс, выстрел и реплей не меняются.",
+        "en": "Looks only: no aim assist, no penetration calculator, no data about others. The smaller aim circle is the game's own circle drawn smaller; dispersion, the shot and the replay stay as they are."
       },
       "perf": "medium",
       "preview": {
@@ -951,6 +932,30 @@
       }
     },
     {
+      "id": "hangar_looks",
+      "category": "hangar",
+      "context": "hangar",
+      "presets": [],
+      "title": {
+        "ru": "Виды ангара «Три отметки»",
+        "en": "Three Marks hangar looks"
+      },
+      "description": {
+        "ru": "Наше освещение основного ангара: «Ночь», «Закат», «Сталь» и «Студия» — время суток, небо, туман и цвет. Менеджер собирает их на вашем ПК из файлов вашей игры и пересобирает после обновления клиента; выбираются в «Выборе ангара», в разделе «Вид».",
+        "en": "Our lighting for the main hangar: «Night», «Sunset», «Steel» and «Studio» — time of day, sky, fog and colour. The manager builds them on your PC from your game's own files and rebuilds them after a client update; pick one in the «Hangar switcher», «Look» section."
+      },
+      "fairPlay": {
+        "ru": "Только освещение и вид вашего ангара, собирается на вашем ПК из файлов игры.",
+        "en": "Only the lighting and look of your hangar, built on your PC from the game's own files."
+      },
+      "perf": "low",
+      "dependencies": ["hangar_space"],
+      "generator": "hangar_looks",
+      "preview": {
+        "image": "previews/hangar_looks.svg"
+      }
+    },
+    {
       "id": "hit_viewer",
       "category": "hangar",
       "context": "hangar",
@@ -1019,15 +1024,15 @@
     {
       "id": "hangar_info",
       "category": "hangar",
-      "context": "any",
+      "context": "hangar",
       "presets": ["recommended", "streamer"],
       "title": {
         "ru": "Часы и сервер",
         "en": "Clock and server"
       },
       "description": {
-        "ru": "В ангаре — строка слева вверху под шапкой, как у Battle Observer: время, дата, сервер, пинг по качеству связи и онлайн. В бою — часы под стандартным таймером; по желанию заменяют таймер боя.",
-        "en": "In the hangar a row at the top left under the header, as in Battle Observer: time, date, server, ping coloured by quality and online. In battle a clock under the stock timer that can replace the battle timer."
+        "ru": "В ангаре — строка слева вверху под шапкой, как у Battle Observer: время, дата, сервер, пинг по качеству связи и онлайн.",
+        "en": "In the hangar a row at the top left under the header, as in Battle Observer: time, date, server, ping coloured by quality and online."
       },
       "fairPlay": {
         "ru": "Работает только в ангаре и читает только ваше подключение.",
@@ -1204,7 +1209,6 @@
         "gun_arc",
         "platoon_points",
         "battle_hotkeys",
-        "battle_menu",
         "hud_layouts",
         "battle_loadout",
         "crosshair",

@@ -6,6 +6,7 @@ from ....core.compat import is_int, is_number, string_types, to_text
 from .constants import COMMANDS, MAX_MESSAGE_CHARS, MAX_MOVE, SIDES
 
 MOVE_FIELDS = COMMANDS['move']
+TEXT_FIELDS = {'battle': 'id', 'diag': 'text'}
 
 
 def _valid(command, fields):
@@ -13,8 +14,9 @@ def _valid(command, fields):
         return fields['tab'] in SIDES
     if command == 'select':
         return is_int(fields['index']) and fields['index'] >= 0
-    if command == 'battle':
-        return isinstance(fields['id'], string_types) and bool(fields['id'])
+    if command in TEXT_FIELDS:
+        value = fields[TEXT_FIELDS[command]]
+        return isinstance(value, string_types) and bool(value)
     if command == 'move':
         return all(is_number(fields[key]) for key in MOVE_FIELDS)
     return True
@@ -38,8 +40,9 @@ def decode_message(raw):
     if any(key not in message for key in needed):
         return None
     fields = dict((key, message[key]) for key in needed)
-    if 'id' in fields and isinstance(fields['id'], string_types):
-        fields['id'] = to_text(fields['id'])
+    for key in TEXT_FIELDS.values():
+        if key in fields and isinstance(fields[key], string_types):
+            fields[key] = to_text(fields[key])
     if not _valid(command, fields):
         return None
     return (command, _clamped(fields)) if command == 'move' else (command, fields)

@@ -5,9 +5,9 @@ from ....core.hooks import override
 from ....core.log import log, safe
 from .. import FEATURE_ID
 from ..i18n import STRINGS
-from ..model import has_body, scaled_size, shell_lines, shell_stats, with_lines
+from ..model import has_body, shell_lines, shell_stats, with_lines
 from ..settings import SCHEMA, SWITCH
-from .constants import MARKER_METHOD, MARKER_RELAX_ARG, SHELL_TOOLTIP_METHOD, TRACK_METHOD
+from .constants import SHELL_TOOLTIP_METHOD, TRACK_METHOD
 
 try:
     from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import TargetDistancePlugin
@@ -18,11 +18,6 @@ try:
     from gui.Scaleform.daapi.view.battle.shared.consumables_panel import ConsumablesPanel
 except Exception:  # the panel moved: the stock tooltips stay
     ConsumablesPanel = None
-
-try:
-    from AvatarInputHandler.gun_marker_ctrl import _DefaultGunMarkerController
-except Exception:  # the controller moved: the stock circle stays
-    _DefaultGunMarkerController = None
 
 
 def _speed_factor():
@@ -38,7 +33,7 @@ def _gun_number(gun_settings, method, int_cd):
     return read(int_cd) if read is not None else None
 
 
-# The overrides (the reticle distance, the shell tooltips, the aim circle) are installed once and read their switch
+# The overrides (the reticle distance, the shell tooltips) are installed once and read their switch
 # on every call. Fair play: no armour readout under the reticle, Lesta forbids in-battle armour analysis.
 class AimInfo(FeatureComponent):
 
@@ -57,7 +52,6 @@ class AimInfo(FeatureComponent):
         self.installed = True
         self._install_distance()
         self._install_tooltips()
-        self._install_circle()
 
     def _install_distance(self):
         if TargetDistancePlugin is None or not hasattr(TargetDistancePlugin, TRACK_METHOD):
@@ -93,21 +87,3 @@ class AimInfo(FeatureComponent):
             _speed_factor(),
         )
         return with_lines(tooltip, shell_lines(stats, self.app.translate, not has_body(tooltip)))
-
-    def _install_circle(self):
-        if _DefaultGunMarkerController is None:
-            log('aim_info: the aim circle stays stock')
-            return
-        component = self
-
-        @override(_DefaultGunMarkerController, MARKER_METHOD)
-        def _update(original, controller, *args, **kwargs):
-            result = original(controller, *args, **kwargs)
-            if component.on('aim_circle') and len(args) > MARKER_RELAX_ARG:
-                component.scale_circle(controller, args[MARKER_RELAX_ARG])
-            return result
-
-    def scale_circle(self, controller, relax_time):
-        provider = getattr(controller, '_dataProvider', None)
-        if provider is not None:
-            provider.updateSize(scaled_size(controller.getSize(), self.settings.get('aim_circle_scale')), relax_time)

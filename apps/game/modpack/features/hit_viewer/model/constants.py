@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import re
+
 BOOK_FILE = 'hit_viewer_%d.json'
 BOOK_VERSION = 1
 MAX_BATTLES = 30
@@ -8,6 +10,16 @@ MAX_HITS = 160
 MAX_SEGMENTS = 8
 # The own feedback's damage and the hit's points arrive close together, in either order.
 DAMAGE_WINDOW_S = 1.0
+
+# The own team's result, set from the battle results that arrive after the battle.
+RESULT_WIN = 'win'
+RESULT_LOSS = 'loss'
+RESULT_DRAW = 'draw'
+RESULTS = (RESULT_WIN, RESULT_LOSS, RESULT_DRAW)
+MAX_TIER = 11
+# The client's small map picture (the replay manager shows the same), by the arena's geometry name.
+MAP_ICON = 'gui/maps/icons/map/small/%s.png'
+MAP_NAME = re.compile(r'^[0-9a-z_]{1,64}$')
 
 SIDE_RECEIVED = 'received'
 SIDE_DEALT = 'dealt'
@@ -70,6 +82,7 @@ COMMANDS = {
     'tab': ('tab',),
     'select': ('index',),
     'move': ('dx', 'dy', 'dz'),
+    'diag': ('text',),
 }
 # A camera drag or wheel step from the page, in screen pixels and wheel units (RU 1.45 maps_training_base_view
 # ._onMoveSpace passes the same dx, dy, dz on); anything larger is clamped.
@@ -98,6 +111,11 @@ PAGE_LABELS = (
     ('nominal', 'hv_nominal'),
     ('effective', 'hv_effective'),
     ('no_angle', 'hv_no_angle'),
+    ('win', 'hv_battle_win'),
+    ('loss', 'hv_battle_loss'),
+    ('draw', 'hv_battle_draw'),
+    ('part', 'hv_col_part'),
+    ('pick_battle', 'hv_pick_battle'),
 )
 
 ACTION_OPEN = 'open'

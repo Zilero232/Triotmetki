@@ -2,7 +2,7 @@ import type * as z from 'zod/mini';
 
 import { gameface } from '@/shared/api/gameface';
 
-import type { ViewerMessage, ViewerState } from './viewer-protocol.types';
+import type { ViewerMessage, ViewerSide, ViewerState } from './viewer-protocol.types';
 
 import { viewerStateSchema } from './viewer-protocol.schemas';
 
@@ -28,6 +28,12 @@ export const footerOf = ({ battle, loading, approx, labels }: ViewerState): stri
   }
 
   return (approx ? labels.approx : labels.hint) ?? '';
+};
+
+export const sideLabelsOf = (state: ViewerState | null): Record<ViewerSide, string> => {
+  const labelOf = (side: ViewerSide): string => state?.tabs.find((tab) => tab.id === side)?.label ?? '';
+
+  return { received: labelOf('received'), dealt: labelOf('dealt') };
 };
 
 export const sendViewer = (message: ViewerMessage): boolean => gameface.send(JSON.stringify(message));

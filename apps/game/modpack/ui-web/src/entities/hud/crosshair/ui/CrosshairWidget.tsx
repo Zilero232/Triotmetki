@@ -15,7 +15,7 @@ export const CrosshairWidget = ({ data }: CrosshairWidgetProps) => {
       className={s.canvas}
       style={{ width: `${String(RETICLE_READOUTS.canvas.width)}rem`, height: `${String(RETICLE_READOUTS.canvas.height)}rem` }}
     >
-      {data.sketch && <ReticleSketch hidesCentre={data.hides_centre} />}
+      {data.sketch && <ReticleSketch circle={data.circle} hidesCentre={data.hides_centre} />}
       {readouts?.arcs && <ReticleArcs arcs={readouts.arcs} />}
       <div className={s.centre}>
         {data.shape !== null && <ReticleMark color={data.color} outline={data.outline} shape={data.shape} size={data.size} />}

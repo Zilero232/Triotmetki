@@ -6,7 +6,6 @@ import { SECTION, SECTION_NAV } from '../../../config';
 import {
   $editor,
   $editorFocus,
-  $focusSeq,
   $hits,
   $invalid,
   $query,
@@ -25,13 +24,10 @@ const sample = stateSample;
 
 const withRevision = (revision: number): string => JSON.stringify({ ...JSON.parse(sample), revision });
 
-const focusedOnReplays = (seq: number): string => JSON.stringify({ ...JSON.parse(sample), revision: seq + 10, focus: { section: 'replays', seq } });
-
 beforeEach(() => {
   $state.set(null);
   $invalid.set(false);
   $query.set('');
-  $focusSeq.set(0);
   $editor.set(null);
   $view.set({ section: SECTION_NAV.first });
 });
@@ -65,30 +61,6 @@ describe(receiveState, () => {
 
   it('rejects a missing push', () => {
     expect(receiveState(null)).toBe(false);
-  });
-
-  it('opens the page a package asked for', () => {
-    receiveState(focusedOnReplays(1));
-
-    expect($view.get().section).toBe(SECTION.replays);
-  });
-
-  it('does not reopen the page for a request it already served', () => {
-    receiveState(focusedOnReplays(1));
-    openSection(SECTION.hud);
-
-    receiveState(focusedOnReplays(1));
-
-    expect($view.get().section).toBe(SECTION.hud);
-  });
-
-  it('opens the page again for a new request', () => {
-    receiveState(focusedOnReplays(1));
-    openSection(SECTION.hud);
-
-    receiveState(focusedOnReplays(2));
-
-    expect($view.get().section).toBe(SECTION.replays);
   });
 });
 

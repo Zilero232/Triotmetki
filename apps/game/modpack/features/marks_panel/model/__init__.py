@@ -17,11 +17,9 @@ from .constants import (
     TARGET_SEPARATOR,
     TITLE_SIZE_STEP,
 )
-from .view import PanelView
 
 __all__ = (
     'BattleTotals',
-    'PanelView',
     'format_panel',
     'hangar_state',
     'macro_values',

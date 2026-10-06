@@ -96,6 +96,8 @@ pub struct CatalogComponent {
     pub size: Option<u64>,
     #[serde(default)]
     pub perf: Option<Perf>,
+    #[serde(default)]
+    pub generator: Option<String>,
 }
 
 fn catalogued_default() -> bool {
@@ -172,6 +174,8 @@ struct RawCatalog {
     owned_paths: Vec<String>,
     #[serde(default)]
     conflicts: Vec<ConflictRule>,
+    #[serde(default)]
+    disabled_looks: Vec<String>,
 }
 
 impl TryFrom<RawCatalog> for Catalog {
@@ -201,6 +205,7 @@ impl TryFrom<RawCatalog> for Catalog {
             owned_patterns: raw.owned_patterns,
             owned_paths: raw.owned_paths,
             conflicts: raw.conflicts,
+            disabled_looks: raw.disabled_looks,
         })
     }
 }
@@ -228,6 +233,8 @@ pub struct Catalog {
     pub owned_paths: Vec<String>,
     #[serde(default)]
     pub conflicts: Vec<ConflictRule>,
+    #[serde(default)]
+    pub disabled_looks: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]

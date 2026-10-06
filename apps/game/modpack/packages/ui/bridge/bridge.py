@@ -34,7 +34,6 @@ class SettingsBridge(object):
         self.companion = CompanionActions(context.config, self.labels)
         self.notice = None
         self.revision = 0
-        self.focus = None
         self.feeds = {}
         self.watched = None
         self.scroll = {}
@@ -65,20 +64,8 @@ class SettingsBridge(object):
             'hud': {'editing': self.editor.editing, 'panels': self.editor.panels(labels)},
             'notice': self.notice,
             'window': self.window_layout().describe(),
-            'focus': self.focus,
             'scroll': dict(self.scroll),
         }
-
-    def focus_page(self, page):
-        if page not in SECTIONS + TOOL_PAGES:
-            return False
-        sequence = (self.focus or {}).get('seq', 0) + 1
-        self.focus = {'section': page, 'seq': sequence}
-        self.revision += 1
-        return True
-
-    def clear_focus(self):
-        self.focus = None
 
     def window_layout(self):
         return WindowLayout(self.context.component_config)

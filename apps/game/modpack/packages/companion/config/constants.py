@@ -39,7 +39,6 @@ FEATURES = (
     'battle_platoon_points',
     'battle_responsive_reticle',
     'battle_hotkeys',
-    'battle_menu_entry',
     'battle_hud_layouts',
     'battle_aim_info',
     'hangar_comp7_helper',
@@ -88,7 +87,7 @@ SHARE_CHANNELS = ('telegram', 'discord', 'both')
 # one when it still holds the old default and the file predates the change (`defaults_revision`).
 # (revision, key, old default, new default). A switch of a removed component is left out of DEFAULTS: Settings ignores
 # a key its schema does not know, so the leftover drops out of the file on the next save.
-DEFAULTS_REVISION = 5
+DEFAULTS_REVISION = 7
 RETIRED_DEFAULTS = (
     (1, 'battle_loadout', False, True),
     (3, 'hangar_tweaks', True, False),
@@ -153,7 +152,6 @@ MERGED_SECTIONS = (
     (('main_gun', 'align_x', 'right'), ('battle_progress', 'align_x')),
     (('main_gun', 'align_y', 'top'), ('battle_progress', 'align_y')),
     (('battle_hits', 'show_attacker', True), ('battle_results', 'hits_show_attacker')),
-    (('battle_clock', 'replace_timer', False), ('hangar_info', 'replace_timer')),
     (('hangar_marks', 'style', 'extended'), ('marks_panel', 'hangar_style')),
     (('marks_history', 'show_panel', True), ('marks_panel', 'show_trend')),
     (('marks_history', 'trend_battles', 5), ('marks_panel', 'trend_battles')),
@@ -184,7 +182,6 @@ RETIRED_VALUES = (
     (3, 'hangar_info', 'clock_format', '%H:%M:%S', '%H:%M'),
     (3, 'hangar_info', 'date_format', '%d.%m.%Y', '%d.%m'),
     (3, 'marks_panel', 'style', 'extended', 'compact'),
-    (3, 'marks_panel', 'alt_detail', False, True),
     (4, 'crosshair', 'mark', 'chevron_thin', 'none'),
     (4, 'crew_xp', 'show_card', True, False),
     (5, 'crosshair', 'show_zoom', False, True),
@@ -208,7 +205,7 @@ SPLIT_SWITCHES = (
 )
 # ((old section, old key), (new section, new key)): the stored value goes to its new section as it was (the defaults
 # are the same); a key the old section does not hold leaves the new one at its default. The moved keys leave
-# marks_panel through DROPPED_KEYS; alt_detail stays in both.
+# marks_panel through DROPPED_KEYS; the battle panel's own alt_detail goes there too in revision 6.
 SPLIT_KEYS = (
     (('marks_panel', 'hangar_style'), ('hangar_marks', 'style')),
     (('marks_panel', 'alt_detail'), ('hangar_marks', 'alt_detail')),
@@ -219,9 +216,17 @@ SPLIT_KEYS = (
     (('marks_panel', 'show_research'), ('hangar_marks', 'show_research')),
     (('marks_panel', 'carousel_percent'), ('hangar_marks', 'carousel_percent')),
 )
+# Revision 6: the smaller aim circle moved from aim_info (a switch and a percentage) to the crosshair (a choice), where
+# the packs keep it with the reticle. A circle the player had on takes the first choice whose lowest percentage its
+# percentage reaches; one that was off stays at the game's size. The old keys leave aim_info through DROPPED_KEYS.
+AIM_CIRCLE_REVISION = 6
+AIM_CIRCLE_FROM = ('aim_info', 'aim_circle', 'aim_circle_scale', 70)
+AIM_CIRCLE_TO = ('crosshair', 'aim_circle')
+AIM_CIRCLE_CHOICES = ((95, 'stock'), (75, 'p80'), (65, 'p70'), (0, 'p60'))
 # The sections of the removed components and panels (ComponentConfig keeps unknown sections, so they go here), dropped
 # from every file older than DEFAULTS_REVISION. Revision 4: battle_summary (the card of the battle being played) and
-# config_backup (the settings copy beside preferences.xml; core.durable keeps the files a wipe would lose).
+# config_backup (the settings copy beside preferences.xml; core.durable keeps the files a wipe would lose). Revision 7:
+# the battle clock's panel and battle_menu (the settings button under the Esc menu), both taken out of the battle.
 DROPPED_SECTIONS = (
     'hit_log',
     'received_hits',
@@ -241,13 +246,17 @@ DROPPED_SECTIONS = (
     'battle_sounds',
     'battle_summary',
     'config_backup',
+    'battle_clock',
+    'battle_menu',
 )
 # (section, key) of the removed options of components that stay, dropped from every file older than DEFAULTS_REVISION
 # (a section of an installed component loses them on its next save anyway; this covers a component not installed).
 # Revision 4: the crosshair's repair timers (the stock damage panel shows them), the update notice's hangar card
 # (the ModsList badge and one message took its place) and aim_info's armour readout with the HUD panel only it drew
 # (fair play: Lesta forbids in-battle armour analysis). Revision 5: the Tank card's options moved out of the battle
-# marks panel (SPLIT_KEYS), with the part switches and the battles row the battle panel no longer has.
+# marks panel (SPLIT_KEYS), with the part switches and the battles row the battle panel no longer has. Revision 6: the
+# battle panel's Alt view (alt_detail), so its box is the one the player places, and aim_info's aim circle keys
+# (AIM_CIRCLE_FROM). Revision 7: hangar_info's battle clock switch and its timer replacement.
 DROPPED_KEYS = (
     ('crosshair', 'repair_timers'),
     ('update_notice', 'show_card'),
@@ -256,6 +265,8 @@ DROPPED_KEYS = (
     ('aim_info', 'show_piercing'),
     ('aim_info', 'show_angle'),
     ('aim_info', 'placement'),
+    ('aim_info', 'aim_circle'),
+    ('aim_info', 'aim_circle_scale'),
     ('aim_info', 'x'),
     ('aim_info', 'y'),
     ('aim_info', 'align_x'),
@@ -273,6 +284,9 @@ DROPPED_KEYS = (
     ('marks_panel', 'show_research'),
     ('marks_panel', 'carousel_percent'),
     ('marks_panel', 'show_battles'),
+    ('marks_panel', 'alt_detail'),
+    ('hangar_info', 'battle_clock'),
+    ('hangar_info', 'replace_timer'),
 )
 # Components that stay but are no HUD panel any more, so their battle-type places go (revision 4: aim_info).
 DROPPED_PANELS = ('aim_info',)
@@ -318,7 +332,6 @@ DEFAULTS = {
     'battle_platoon_points': False,
     'battle_responsive_reticle': True,
     'battle_hotkeys': False,
-    'battle_menu_entry': True,
     'battle_hud_layouts': True,
     'battle_aim_info': True,
     'hangar_comp7_helper': True,

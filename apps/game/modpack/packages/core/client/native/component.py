@@ -12,7 +12,7 @@ class NativeSettingsComponent(FeatureComponent):
     player changes them (the settings window, a profile load: bus `component_settings`) and only in the
     hangar, so a later change in the game's own settings window is never overridden (a RecommendedSettingsComponent
     also writes its defaults once on a fresh install). A change writes only the client settings it moves; one made in
-    battle (the window opened from the Esc menu) is written on the next hangar. `to_account` maps the
+    battle (the window opened with the hotkey) is written on the next hangar. `to_account` maps the
     values kept in the client's AccountSettings instead of the settings core (the minimap size)."""
 
     def __init__(self, app, component_id, schema, switch, strings, to_native, to_account=None):

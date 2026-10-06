@@ -41,7 +41,7 @@ fragCorrelationBar, sixthSense`, restored at the battle's end.
 | hangar_info battle clock | `battleTimer` | BO keeps it under its clock (`clock.json`), and hides it only for its own battle timer (`ObserverBattleTimerUI.as:26` `hideComponent(BATTLE_TIMER)`, `battle_timer.json`) | only with `replace_timer` (off), as BO | page component |
 | battle_loadout | `consumablesPanel` | **Keep**: kurzdor `battleequipment` (Jove, Lebwa) places its row beside the stock panel (code study §4) | no, by design | — (different content: the equipment set) |
 | aim_info distance | Reticle target distance (`TargetDistancePlugin`) | — | n/a: we widen the stock readout itself (`_should_track`), nothing is drawn twice | — |
-| aim_info `aim_circle` (off) | Stock aiming circle | — | n/a: scales the stock circle, nothing is drawn twice | — |
+| crosshair `aim_circle` (stock) | Stock aiming circle | — | n/a: scales the stock circle, nothing is drawn twice | — |
 | aim_info `armor_under_aim` (off) | none (stock shows only the marker colour) | — | n/a | — |
 | marks_panel, battle_progress, platoon_points, gun_arc, bush_circle, battle_hotkeys notice | none (no stock MoE, main gun, record, WN8, tournament points, traverse scale, 15 m circle) | — | n/a | — |
 | battle_results (previous battle's card) | none in battle | — | n/a | — |

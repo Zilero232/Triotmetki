@@ -130,6 +130,10 @@ RETIRED_MARKS = {
     'kenney_pincer': 'angles',
 }
 CENTRE_PART = 'centralTag'
+# The share of the client's gun marker size each aim circle choice draws, in percent. The packs' reduced circle sits at
+# 0.6-0.8 of the stock one (DispersionReticle's measured 0.58, the old mod_sfgm curSize 0.6 or 0.7).
+AIM_CIRCLE_SCALES = {'stock': 100, 'p80': 80, 'p70': 70, 'p60': 60}
+PERCENT = 100.0
 PREVIEW_SIZE = (128, 128)
 # The preview widget: a sketch of the game's own reticle with the chosen centre mark over it (ui-web crosshair).
 KIND = 'crosshair'
@@ -140,7 +144,7 @@ EDITOR_GROUPS = (
     ('colour', ('mark_color', 'mark_outline')),
     ('size', ('mark_size', 'mark_hides_centre')),
     ('readouts', ('reload_box', 'drum_style', 'reload_arcs', 'show_zoom')),
-    ('reticle', ('preset', 'modes', 'server_reticle')),
+    ('reticle', ('preset', 'modes', 'server_reticle', 'aim_circle')),
 )
 EDITOR_GALLERY_KEY = 'mark'
 EDITOR_SWATCH_KEY = 'mark_color'
@@ -169,6 +173,8 @@ FINAL_S = 1.0
 READY_HOLD_S = 1.0
 MAX_CLIP_SIZE = 99
 SHELL_ICONS = ('ap', 'apcr', 'heat', 'he')
+# The magazine style an auto-reloader's box takes when the player left the magazine to the stock reticle.
+AUTOLOADER_DRUM_STYLE = 'shells'
 # The sample the settings previews show: an autoloader between shots, 1.8 s left of a 2.5 s interval, 4 of 6 APCR
 # shells in the drum and 24.6 s for the whole drum, 65 % HP, the sniper reticle at x8.
 SAMPLE_READOUTS = {

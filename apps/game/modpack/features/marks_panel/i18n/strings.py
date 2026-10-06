@@ -70,7 +70,6 @@ STRINGS = {
         'marks_panel_show_step': u'Урон на шаг процента',
         'marks_panel_show_up': u'Цель — следующий целый процент',
         'marks_panel_show_up_hint': u'Справа в строке урон до следующего целого процента; без него — до следующей отметки.',
-        'marks_panel_alt_detail': u'Подробности по Alt',
         'marks_panel_color_mode': u'Цвет процента',
         'marks_panel_color_mode_delta': u'По изменению',
         'marks_panel_color_mode_mark': u'По отметке',
@@ -80,15 +79,13 @@ STRINGS = {
         'marks_panel_group_numbers': u'Цифры',
         'component_marks_panel': u'Отметки в бою',
         'component_marks_panel_hint': u'Панель отметки в бою справа от расходников: процент и прогноз '
-                                      u'после боя, урон до следующей цели; по Alt — урон до 65/85/95 %, урон на шаг и среднее.',
+                                      u'после боя, полоса урона за бой и урон до следующей цели.',
         'component_hangar_marks': u'Карточка танка',
         'component_hangar_marks_hint': u'Карточка выбранного танка в ангаре: процент отметки на силуэте танка, тренд последних '
                                        u'боёв, урон за бой до каждой отметки и боёв до следующей; по Alt — WN8 танка с сайта, '
                                        u'знаки классности и опыт до исследования. В окне мода — история отметки по танкам; '
                                        u'по желанию — процент отметки в карусели.',
         'marks_panel_style': u'Вид',
-        'marks_panel_alt_detail_hint': u'Пока зажат Alt, панель показывает всё: урон до 65/85/95 %, урон на шаг процента и '
-                                       u'среднее до и после боя.',
         'hangar_marks_style': u'Вид',
         'hangar_marks_style_compact': u'Компактный',
         'hangar_marks_style_extended': u'Подробный',
@@ -177,7 +174,6 @@ STRINGS = {
         'marks_panel_show_step': u'Damage per percent step',
         'marks_panel_show_up': u'Goal: the next whole percent',
         'marks_panel_show_up_hint': u'The line ends with the damage to the next whole percent; without it, to the next mark.',
-        'marks_panel_alt_detail': u'Details on Alt',
         'marks_panel_color_mode': u'Percent colour',
         'marks_panel_color_mode_delta': u'By change',
         'marks_panel_color_mode_mark': u'By mark',
@@ -187,16 +183,14 @@ STRINGS = {
         'marks_panel_group_numbers': u'Numbers',
         'component_marks_panel': u'Marks in battle',
         'component_marks_panel_hint': u'The marks panel in battle right of the consumables: the '
-                                      u'percent and its projection after the battle, the damage to the next goal; on Alt the '
-                                      u'damage to 65/85/95%, the damage per step and the average.',
+                                      u'percent and its projection after the battle, the battle damage bar and the damage to '
+                                      u'the next goal.',
         'component_hangar_marks': u'Tank card',
         'component_hangar_marks_hint': u'The selected tank\'s card in the hangar: the MoE percent on the tank\'s silhouette, the '
                                        u'trend of the last battles, the damage per battle to each mark and battles to the next; '
                                        u'on Alt the tank\'s WN8 from the site, the mastery badges and the XP to research. In the '
                                        u'mod window the marks history per tank; optionally the MoE percent on the carousel.',
         'marks_panel_style': u'Style',
-        'marks_panel_alt_detail_hint': u'While Alt is held the panel shows everything: the damage to 65/85/95%, the damage per '
-                                       u'percent step and the average before and after the battle.',
         'hangar_marks_style': u'Style',
         'hangar_marks_style_compact': u'Compact',
         'hangar_marks_style_extended': u'Extended',

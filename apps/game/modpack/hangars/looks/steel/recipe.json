@@ -1,0 +1,32 @@
+{
+  "id": "steel",
+  "clients": ["1.45.0.0"],
+  "base": { "space": "spaces/h08_mt_hangar", "environment": "h08_mt_hangar_Autumn_TD2" },
+  "probes": true,
+  "sky": {
+    "deferred": "maps/skyboxes/Photometric_sky/minsk_04_10_cloudy_day_rgbe.dds",
+    "forward": "maps/skyboxes/hangar_v3/skydome/cloud_2Fwrd.dds"
+  },
+  "set": [
+    { "path": "day_night_cycle/starttime", "value": 13 },
+    { "path": "day_night_cycle/deferred/angle", "value": 48 },
+    { "path": "day_night_cycle/sunColor", "value": [220, 228, 240] },
+    { "path": "day_night_cycle/sunLightColor", "value": [0.72, 0.78, 0.88] },
+    { "path": "day_night_cycle/sunLightColorForward", "value": [0.78, 0.84, 0.94] },
+    { "path": "day_night_cycle/ambientColorForward", "value": [0.8, 0.86, 0.96] },
+    { "path": "HDR/environment/sunlightLumMultiplier", "value": 35 },
+    { "path": "HDR/environment/ambientLumMultiplier", "value": 1.15 },
+    { "path": "HDR/environment/sunDiskLumMultiplier", "value": 60 },
+    { "path": "HDR/bloom/threshold", "value": 0.08 },
+    { "path": "HDR/bloom/amount", "value": 0.3 },
+    { "path": "HDR/bloom/tint", "value": [0.85, 0.9, 1] },
+    { "path": "HDR/colorCorrection/map", "value": "system/maps/post_processing/cube/otmetki/steel.dds" },
+    { "path": "Fog/deferred/color", "value": [0.55, 0.62, 0.72, 5] },
+    { "path": "Fog/deferred/density", "value": 0.0012 },
+    { "path": "Fog/deferred/scatterColor", "value": [0.7, 0.75, 0.85, 2] },
+    { "path": "Fog/forward/color", "value": [0.7, 0.76, 0.86, 5] },
+    { "path": "GodRays/enable", "value": false },
+    { "path": "LensFlare/enable", "value": false },
+    { "path": "cloudsShadow/layer0/shadowFactor", "value": 0.8 }
+  ]
+}

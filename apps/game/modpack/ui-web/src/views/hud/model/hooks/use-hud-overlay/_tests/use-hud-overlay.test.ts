@@ -54,7 +54,17 @@ const mount = async (state: string) => {
   return overlay;
 };
 
-const sent = (mock: ReturnType<typeof createGamefaceMock>): unknown[] => mock.sent().map((message): unknown => JSON.parse(message));
+const NO_INPUT = [0, 0, 1, 1];
+
+const WHOLE_SCREEN = [0, 0, 1920, 1080];
+
+const messageSchema = z.looseObject({ type: z.string() });
+
+const allSent = (mock: ReturnType<typeof createGamefaceMock>) => mock.sent().map((message) => messageSchema.parse(JSON.parse(message)));
+
+const sent = (mock: ReturnType<typeof createGamefaceMock>): unknown[] => allSent(mock).filter(({ type }) => type !== 'area');
+
+const areaReports = (mock: ReturnType<typeof createGamefaceMock>): unknown[] => allSent(mock).filter(({ type }) => type === 'area');
 
 const sentAfterReady = (mock: ReturnType<typeof createGamefaceMock>): unknown[] => sent(mock).slice(1);
 
@@ -277,19 +287,56 @@ describe(useHudOverlay, () => {
   it('lets every click through outside an edit when no panel is clickable', async () => {
     const { mock } = await mount(OUTSIDE_EDIT);
 
-    expect(mock.inputAreas().at(-1)).toEqual([0, 0, 0, 0]);
+    expect(mock.inputAreas().at(-1)).toEqual(NO_INPUT);
   });
 
   it('takes the whole screen for the mouse in a hangar edit', async () => {
     const { mock } = await mount(withState({ patch: { hover: false } }));
 
-    expect(mock.inputAreas().at(-1)).toEqual([0, 0, 1920, 1080]);
+    expect(mock.inputAreas().at(-1)).toEqual(WHOLE_SCREEN);
+  });
+
+  it('tells the game its input area is limited outside an edit', async () => {
+    const { mock } = await mount(OUTSIDE_EDIT);
+
+    expect(areaReports(mock)).toEqual([{ type: 'area', whole: false }]);
+  });
+
+  it('tells the game once when a hangar edit takes the whole screen and once when it ends', async () => {
+    const { mock } = await mount(OUTSIDE_EDIT);
+
+    act(() => mock.push({ state: withState({ patch: { hover: false } }) }));
+    act(() => mock.push({ state: OUTSIDE_EDIT }));
+
+    expect(areaReports(mock)).toEqual([
+      { type: 'area', whole: false },
+      { type: 'area', whole: true },
+      { type: 'area', whole: false }
+    ]);
+  });
+
+  it('gives the whole screen back to the game when the edit modifier is released', async () => {
+    const { mock } = await mount(withState({ patch: { hover: false } }));
+
+    act(() => mock.push({ state: OUTSIDE_EDIT }));
+
+    expect(mock.inputAreas().at(-1)).toEqual(NO_INPUT);
+  });
+
+  it('sets its input area again every refresh, in case the engine reset it with the view', async () => {
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
+    const { mock } = await mount(OUTSIDE_EDIT);
+    const before = mock.inputAreas().length;
+
+    act(() => vi.advanceTimersByTime(HUD_OVERLAY.inputAreaRefreshMs));
+
+    expect(mock.inputAreas().slice(before)).toEqual([NO_INPUT]);
   });
 
   it('lets the mouse through in battle while the cursor is off every panel', async () => {
     const { mock } = await startInBattle();
 
-    expect(mock.inputAreas().at(-1)).toEqual([0, 0, 0, 0]);
+    expect(mock.inputAreas().at(-1)).toEqual(NO_INPUT);
   });
 
   it('takes the mouse in battle only over the panel under the cursor', async () => {
@@ -314,7 +361,7 @@ describe(useHudOverlay, () => {
     hover(ON_LABEL);
     fireEvent(window, mouseEvent({ type: 'mousedown', at: ON_LABEL }));
 
-    expect(mock.inputAreas().at(-1)).toEqual([0, 0, 1920, 1080]);
+    expect(mock.inputAreas().at(-1)).toEqual(WHOLE_SCREEN);
   });
 
   it('describes the panel under the cursor with its hint', async () => {
@@ -376,7 +423,7 @@ describe(useHudOverlay, () => {
 
     hover(ON_LABEL);
 
-    expect(mock.inputAreas().at(-1)).toEqual([0, 0, 0, 0]);
+    expect(mock.inputAreas().at(-1)).toEqual(NO_INPUT);
   });
 
   it('describes a pinned panel without taking the mouse over it', async () => {
@@ -385,7 +432,7 @@ describe(useHudOverlay, () => {
     hover(ON_LABEL);
 
     expect(hook.result.current.hint?.text).toBe(PANEL_HINT);
-    expect(mock.inputAreas().at(-1)).toEqual([0, 0, 0, 0]);
+    expect(mock.inputAreas().at(-1)).toEqual(NO_INPUT);
   });
 
   it('draws its own readable hint even when the client offers its tooltip', async () => {
@@ -405,11 +452,25 @@ describe(useHudOverlay, () => {
   });
 
   it('draws a known widget instead of the text', async () => {
-    const widget = { kind: 'battle_clock', v: 1, data: { time: '21:47', date: '', timer: '', big_timer: false, icon: 'otmetki:clock' } };
+    const widget = {
+      kind: 'clock_strip',
+      v: 1,
+      data: {
+        icon: 'otmetki:clock',
+        time: '21:47',
+        date: '',
+        server: 'RU4',
+        ping_icon: 'otmetki:ping',
+        ping: '42 ms',
+        ping_tone: 'good',
+        online_label: 'online',
+        online: '81 234'
+      }
+    };
 
     const { hook } = await mount(withState({ panel: { widget } }));
 
-    expect(hook.result.current.labels[0]?.widget?.kind).toBe('battle_clock');
+    expect(hook.result.current.labels[0]?.widget?.kind).toBe('clock_strip');
   });
 
   it('falls back to the text for an unknown widget', async () => {

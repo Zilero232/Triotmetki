@@ -14,6 +14,7 @@ mod durable;
 mod error;
 mod fsx;
 mod gameface;
+mod hangars;
 mod health;
 mod ini_file;
 mod install;
@@ -183,6 +184,7 @@ pub fn run() {
             commands::uninstall_modpack,
             commands::read_installer_profile,
             commands::get_gameface_status,
+            commands::get_hangar_looks_status,
             commands::take_deep_link,
             commands::get_conflicts,
             commands::restore_missing,

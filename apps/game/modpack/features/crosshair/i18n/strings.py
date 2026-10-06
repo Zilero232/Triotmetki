@@ -16,6 +16,11 @@ STRINGS = {
         'crosshair_modes_arcade': u'Аркадному',
         'crosshair_modes_sniper': u'Снайперскому',
         'crosshair_server_reticle': u'Серверный прицел',
+        'crosshair_aim_circle': u'Круг сведения',
+        'crosshair_aim_circle_stock': u'Как в игре',
+        'crosshair_aim_circle_p80': u'80 %',
+        'crosshair_aim_circle_p70': u'70 %',
+        'crosshair_aim_circle_p60': u'60 %',
         'crosshair_mark': u'Центральная метка',
         'crosshair_mark_none': u'Как в игре',
         'crosshair_mark_chevron_thin': u'Шеврон тонкий',
@@ -84,7 +89,9 @@ STRINGS = {
         'crosshair_drum_style_hint': u'Магазин своего орудия над таймером перезарядки: «Снаряды» — значок снаряда '
                                      u'на каждый выстрел (заряженные светлые, отстрелянные тусклые, большой магазин — '
                                      u'числом), «Полоски» — тонкие ячейки, «Как в игре» — стандартный индикатор. '
-                                     u'У автодозарядки следующий снаряд заполняется и рядом идут секунды.',
+                                     u'У автодозарядки следующий снаряд заполняется и рядом идут секунды; её '
+                                     u'стандартный индикатор — это и таймер, поэтому при «Как в игре» магазин '
+                                     u'рисуется снарядами.',
         'crosshair_show_zoom_hint': u'Кратность снайперского прицела справа от прицела, например «x8.0». '
                                     u'Стандартный индикатор кратности на это время скрыт.',
         'crosshair_reload_arcs_hint': u'Дуга слева — перезарядка своего орудия, справа — прочность своего танка. '
@@ -95,6 +102,9 @@ STRINGS = {
                                  u'Меняется только в ангаре.',
         'crosshair_modes_hint': u'К каким режимам прицела применить пресет и метку.',
         'crosshair_server_reticle_hint': u'Тот же переключатель, что в настройках игры.',
+        'crosshair_aim_circle_hint': u'Уменьшенный круг сведения, как в модпаках: круг игры рисуется меньше, ближе к '
+                                     u'тому, куда ложится большинство снарядов. Разброс и выстрел не меняются. Для '
+                                     u'аркадного и снайперского прицела, обычного и серверного; у арты — как в игре.',
     },
     'en': {
         'component_crosshair': u'Crosshairs',
@@ -110,6 +120,11 @@ STRINGS = {
         'crosshair_modes_arcade': u'Arcade',
         'crosshair_modes_sniper': u'Sniper',
         'crosshair_server_reticle': u'Server reticle',
+        'crosshair_aim_circle': u'Aim circle',
+        'crosshair_aim_circle_stock': u'Game default',
+        'crosshair_aim_circle_p80': u'80 %',
+        'crosshair_aim_circle_p70': u'70 %',
+        'crosshair_aim_circle_p60': u'60 %',
         'crosshair_mark': u'Centre mark',
         'crosshair_mark_none': u'Game\'s own',
         'crosshair_mark_chevron_thin': u'Thin chevron',
@@ -178,7 +193,8 @@ STRINGS = {
         'crosshair_drum_style_hint': u'Your gun\'s magazine above the reload timer: «Shells» draws a shell icon per round '
                                      u'(loaded bright, fired dim, a large magazine as a count), «Bars» thin cells, '
                                      u'«Game default» the stock indicator. On an auto-reloader the next shell fills '
-                                     u'up with its seconds beside it.',
+                                     u'up with its seconds beside it; its stock indicator is also its timer, so with '
+                                     u'«Game default» the magazine is drawn as shells.',
         'crosshair_show_zoom_hint': u'The sniper zoom right of the reticle, such as «x8.0». The stock zoom indicator '
                                     u'is hidden meanwhile.',
         'crosshair_reload_arcs_hint': u'The left arc is your gun\'s reload, the right one your tank\'s HP. '
@@ -189,5 +205,8 @@ STRINGS = {
                                  u'Changed in the hangar only.',
         'crosshair_modes_hint': u'Which reticle views the preset and the mark apply to.',
         'crosshair_server_reticle_hint': u'The same switch as in the game settings.',
+        'crosshair_aim_circle_hint': u'A smaller aim circle, as in the modpacks: the game\'s circle is drawn smaller, '
+                                     u'closer to where most shells land. Dispersion and the shot do not change. For the '
+                                     u'arcade and sniper reticles, client and server; SPGs keep the game\'s.',
     },
 }

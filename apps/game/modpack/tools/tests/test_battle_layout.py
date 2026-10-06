@@ -35,17 +35,17 @@ TEAM_HP_NUMBERS_SIZE = (180, 40)
 SCORE_STRIP = (345, 0, 60)
 CAPTURE_BARS = (200, 62, 130)
 QUEST_PROGRESS = (200, 107, 245)
-# The stock timer at the top right (battleTimer, 184 px) and the battle clock left of it.
+# The stock timer at the top right (battleTimer, 184 px).
 TIMER_WIDTH = 184
-BATTLE_CLOCK_WIDTH = 90
 BATTLE_PANELS = (
     'battle_hotkeys', 'battle_loadout', 'battle_progress', 'damage_log', 'gun_arc', 'marks_panel', 'platoon_points',
     'sixth_sense',
 )
 # The page's places of the attached panels (ui-web views/hud/lib/attach, HUD_OVERLAY.attach), design px: the gap to
-# the stock element, the bottom margin, the consumables panel's height, the gap over it, the marks' offset off the
-# centre when they lift and the equipment row's height they lift over, the gap over the minimap, and the place right
-# of the score strip (under it below 1700 px).
+# the stock element, the margin to the screen's edge (the marks beside the bar keep none: their bottom is the bar's),
+# the consumables panel's height, the gap over it, the marks' offset off the centre when they lift and the equipment
+# row's height they lift over, the gap over the minimap, and the place right of the score strip (under it below
+# 1700 px).
 ATTACH_GAP = 12
 ATTACH_EDGE = 8
 BAR_HEIGHT = 58
@@ -135,8 +135,8 @@ def covers(rect, box, screen):
     return overlaps(rect, centre_box(box, design_screen(*screen)))
 
 
-def clock_left_edge(screen):
-    return design_screen(*screen)[0] - TIMER_WIDTH - BATTLE_CLOCK_WIDTH
+def timer_left_edge(screen):
+    return design_screen(*screen)[0] - TIMER_WIDTH
 
 
 class StockBoxesTest(unittest.TestCase):
@@ -162,10 +162,10 @@ class StockBoxesTest(unittest.TestCase):
 
         assert covered == []
 
-    def test_team_hp_beside_the_stock_strip_stays_left_of_the_clock_and_the_timer(self):
+    def test_team_hp_beside_the_stock_strip_stays_left_of_the_timer(self):
         place = team_hp_beside_stock()
 
-        crowded = [screen for screen in SCREENS if team_hp_rect(place, screen)[2] > clock_left_edge(screen)]
+        crowded = [screen for screen in SCREENS if team_hp_rect(place, screen)[2] > timer_left_edge(screen)]
 
         assert crowded == []
 
@@ -220,11 +220,10 @@ HUD_RESOLUTIONS = ((1920, 1080), (2560, 1440))
 # traverse limit markers (gun_arc) follow the reticle, at its height across the width of their canvas, and have no
 # size here.
 PANEL_SIZES = {
-    'battle_clock': (90, 24),
     'battle_hotkeys': (300, 30),
     'battle_loadout': (300, 44),
     'sixth_sense': (48, 48),
-    'marks_panel': (260, 44),
+    'marks_panel': (250, 64),
     'battle_progress': (260, 80),
     'last_battle': (260, 110),
 }
@@ -269,12 +268,6 @@ def bottom_column(anchor, screen):
     return anchor['x'], bottom - height, anchor['x'] + width, bottom
 
 
-def clock_place():
-    from otmetki.features.hangar_info.settings import CLOCK_SCHEMA
-
-    return CLOCK_SCHEMA.defaults
-
-
 def sized(left, top, size):
     return left, top, left + size[0], top + size[1]
 
@@ -287,7 +280,7 @@ def beside_bar(kind, size, screen, minimap, bar):
     left = width / 2 + bar / 2 + ATTACH_GAP
     if left + size[0] > width - minimap - ATTACH_EDGE:
         return sized(width / 2 + BAR_SPLIT, above_top - BAR_ROW - BAR_ABOVE, size)
-    return sized(left, height - ATTACH_EDGE - size[1], size)
+    return sized(left, height - size[1], size)
 
 
 def attached_rect(kind, size, screen, minimap, bar=CONSUMABLES_WIDTH):
@@ -312,7 +305,6 @@ def attached_rects(screen, minimap):
 def default_rects(screen, minimap=MINIMAP_DEFAULT):
     rects = {
         'team_hp': centre_box(TEAM_HP_STRIP, screen),
-        'battle_clock': panel_rect(clock_place(), screen, PANEL_SIZES['battle_clock']),
         'platoon_points': top_column(DOCK_ANCHORS['battle_left_top'], screen),
         'damage_log': bottom_column(DOCK_ANCHORS['battle_left_bottom'], screen),
     }
@@ -404,6 +396,13 @@ class DefaultPlacesTest(unittest.TestCase):
         row = attached_rect('bar_above', (300, BAR_ROW), screen, MINIMAP_LARGEST, bar=12 * 57)
 
         assert marks[3] == row[1] - BAR_ABOVE
+
+    def test_the_marks_beside_the_bar_end_on_its_bottom(self):
+        screen = (1920, 1080)
+        marks = attached_rect('bar_right', PANEL_SIZES['marks_panel'], screen, MINIMAP_DEFAULT)
+        consumables = dict(stock_rects(screen))['consumables']
+
+        assert marks[3] == consumables[3]
 
     def test_the_marks_end_left_of_the_minimap(self):
         crowded = [

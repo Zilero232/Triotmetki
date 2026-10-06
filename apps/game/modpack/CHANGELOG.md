@@ -7,6 +7,34 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Entries are short: one line per change, saying what the player sees or gets — no implementation details.
 - Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## 0.3.4
+
+### ru
+
+- Клики по ангару и чату больше не теряются, чат печатается, после Alt+Tab ангар сразу нажимается; подсказки HUD не зависают над прицелом.
+- «Просмотр попаданий»: танк и камера стоят на месте, карточка не уходит под нижнюю панель лобби.
+- «Просмотр попаданий»: новый выбор боя с картой и итогом, обновлённые таблица и карточка попадания.
+- Смена ангара действительно переключает ангар и вид, а в логе видно, что выбрано.
+- Новый компонент «Виды ангара «Три отметки»»: «Ночь», «Закат», «Сталь» и «Студия», менеджер собирает их из файлов вашей игры.
+- «Отметки в бою» больше не раздвигаются по Alt и стоят вровень с расходниками.
+- Прицел: уменьшенный круг сведения, настройка переехала из «Прицела и снарядов».
+- Прицел: один таймер перезарядки на барабанах и автодозарядке, значки снарядов магазина не пропадают.
+- Кнопка «///» под меню Esc убрана, Ctrl+Shift+T в бою ничего не делает: окно настроек открывается только в ангаре.
+- Часы в бою убраны: время, сервер и пинг показываются только в ангаре.
+
+### en
+
+- Clicks on the hangar and the chat are no longer lost, the chat takes keys, the hangar takes clicks right after Alt+Tab; HUD tooltips no longer hang over the reticle.
+- «Hit viewer»: the tank and camera stay in place, the card no longer slides under the lobby's bottom bar.
+- «Hit viewer»: a new battle picker with the map and result, a redesigned hit table and card.
+- The hangar switcher really switches the hangar and look, and the log shows what is chosen.
+- New component «Three Marks hangar looks»: «Night», «Sunset», «Steel» and «Studio», built by the manager from your game's own files.
+- «Marks in battle» no longer grows on Alt and sits level with the consumables.
+- Crosshair: a smaller aim circle, the setting moved from «Aim and shells».
+- Crosshair: one reload timer on drum and auto-reloader guns, the magazine's shell icons no longer vanish.
+- The «///» button under the Esc menu is gone and Ctrl+Shift+T does nothing in battle: the settings window opens only in the hangar.
+- The battle clock is gone: the time, server and ping show only in the hangar.
+
 ## 0.3.3
 
 ### ru
@@ -271,6 +299,32 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Hangar components: battle summary, marks history, ratings, replay manager, quick actions and more.
 - A settings window with profiles and a HUD editor; settings survive a wiped mods folder.
 
+## hangar_looks 0.1.0
+
+### ru
+
+- Новый компонент «Виды ангара «Три отметки»» (выключен): «Ночь», «Закат», «Сталь» и «Студия» для основного ангара.
+- Менеджер собирает виды на вашем ПК из файлов вашей игры и пересобирает их после обновления клиента.
+
+### en
+
+- New component «Three Marks hangar looks» (off): «Night», «Sunset», «Steel» and «Studio» for the main hangar.
+- The manager builds the looks on your PC from your game's own files and rebuilds them after a client update.
+
+## hit_viewer 0.3.3
+
+### ru
+
+- Снаряд и метка стоят на танке и после смены танка; камера смотрит на попадание, а не в пол.
+- Карточка попадания больше не уходит под нижнюю панель лобби.
+- Новый вид: бои с картой, итогом, уровнем и числом попаданий, цветные метки исхода, деталь и урон в списке.
+
+### en
+
+- The shell and marker stay on the tank after a tank swap; the camera looks at the hit, not at the floor.
+- The hit card no longer slides under the lobby's bottom bar.
+- New look: battles with the map, result, tier and hit counts, coloured outcome chips, part and damage in the list.
+
 ## hit_viewer 0.3.2
 
 ### ru
@@ -451,6 +505,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - While flying, the game interface and mod panels hide (can be turned off).
 - It never works in a live battle.
 
+## aim_info 0.1.3
+
+### ru
+
+- Уменьшенный круг сведения переехал в компонент «Прицел».
+
+### en
+
+- The smaller aim circle moved to the «Crosshair» component.
+
 ## aim_info 0.1.2
 
 ### ru
@@ -531,36 +595,6 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Battle hotkeys for the server reticle and extended zoom x16/x25 (Ctrl+Shift+J and Ctrl+Shift+K) with a notice over the reticle.
 - Off by default: it changes your game settings.
 
-## battle_menu 0.1.2
-
-### ru
-
-- Сообщение об ошибке запуска в логе больше не ломается на русских ошибках Windows.
-
-### en
-
-- The start-up error message in the log no longer breaks on Russian Windows errors.
-
-## battle_menu 0.1.1
-
-### ru
-
-- Менеджер теперь сам ставит всё, что нужно для кнопки.
-
-### en
-
-- The manager now installs everything the button needs.
-
-## battle_menu 0.1.0
-
-### ru
-
-- Кнопка «///» под меню Esc открывает настройки мода на странице «Бой»; то же — Ctrl+Shift+T. Включена по умолчанию.
-
-### en
-
-- A «///» button under the Esc menu opens the mod settings at the Battle page; Ctrl+Shift+T does the same. On by default.
-
 ## quick_demount 0.1.1
 
 ### ru
@@ -582,6 +616,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - «Quick demount» in the equipment menu: takes the device off a chosen tank of yours in every setup.
 - The game confirms a paid demount itself. Off by default.
+
+## hud_layouts 0.1.2
+
+### ru
+
+- «Только основные» показывает отметку и лог урона: часов в бою больше нет.
+
+### en
+
+- «Essentials only» shows the marks and the damage log: the battle clock is gone.
 
 ## hud_layouts 0.1.1
 
@@ -708,6 +752,20 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - New component «Crew XP»: the XP and roughly the battles each crew member needs to finish a skill, with a level bar.
 - The same line in the crew member tooltip.
+
+## hangar_space 0.2.1
+
+### ru
+
+- Выбранный ангар и вид снова применяются, когда игра сама держит обычный ангар; ангар события по-прежнему главнее.
+- Виды «Три отметки» из компонента «Виды ангара» появляются в разделе «Вид».
+- В логе видно, какой ангар выбран и что загружено.
+
+### en
+
+- The chosen hangar and look apply again while the game itself holds the regular hangar; an event hangar still wins.
+- The Three Marks looks of the «Hangar looks» component show in the «Look» section.
+- The log shows which hangar is chosen and what is loaded.
 
 ## hangar_space 0.2.0
 
@@ -1039,6 +1097,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - A 15 m circle around your tank: always on or by a hotkey, four colours.
 
+## hangar_info 0.6.2
+
+### ru
+
+- Часы в бою убраны: компонент показывает время, сервер, пинг и онлайн только в ангаре; стандартный таймер боя всегда на месте.
+
+### en
+
+- The battle clock is gone: the component shows the time, server, ping and online only in the hangar; the stock battle timer always stays.
+
 ## hangar_info 0.6.1
 
 ### ru
@@ -1347,6 +1415,20 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - A key (Ctrl+Shift+H by default) hides and restores all mod panels; they can stay hidden in the next battle too.
 - Private mode hides other players' chat and the hangar labels with your numbers. Your name and clan stay.
 
+## crosshair 0.6.3
+
+### ru
+
+- Уменьшенный круг сведения, как в модпаках: 80, 70 или 60 % от игрового, обычный и серверный прицел. Настройка переехала сюда из «Прицела и снарядов».
+- Таймер перезарядки у прицела больше не дублируется стандартным в первом бою и на автодозарядке.
+- Значки снарядов магазина больше не пропадают.
+
+### en
+
+- A smaller aim circle as in the modpacks: 80, 70 or 60 % of the game's, client and server reticle. The setting moved here from «Aim and shells».
+- The reload timer by the reticle is no longer doubled by the stock one in the first battle and on auto-reloaders.
+- The magazine's shell icons no longer vanish.
+
 ## crosshair 0.6.2
 
 ### ru
@@ -1452,6 +1534,20 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### en
 
 - Five new one-colour centre marks and a choice of six colours.
+
+## core 0.9.3
+
+### ru
+
+- Клик по ангару или по чату больше не теряется, чат снова печатается после клика; после Alt+Tab ангар сразу нажимается.
+- Подсказка панели HUD не остаётся над прицелом.
+- Раскладка «Только основные» больше не включает часы в бою.
+
+### en
+
+- A click on the hangar or the chat is no longer lost, and the chat takes keys after a click; after Alt+Tab the hangar takes clicks right away.
+- A HUD panel tooltip no longer stays over the reticle.
+- The «Essentials only» layout no longer includes the battle clock.
 
 ## core 0.9.2
 
@@ -1703,6 +1799,18 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - The shared base of all mod components and the battle HUD with a layout editor.
 - Settings are mirrored to a backup copy and restored on load.
 
+## companion 0.8.3
+
+### ru
+
+- Из старых настроек «Отметок в бою» убирается опция «Подробности по Alt».
+- Настройки часов в бою и кнопки «///» под меню Esc удаляются из файлов настроек сами.
+
+### en
+
+- The «Details on Alt» option of «Marks in battle» is removed from older settings.
+- The settings of the battle clock and of the «///» button under the Esc menu leave the settings files by themselves.
+
 ## companion 0.8.2
 
 ### ru
@@ -1874,6 +1982,20 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Binding to triotmetki.ru with a one-time code from the site; nothing is collected or sent before it.
 - After each of your battles the results, MoE, queue time, loadout and shots go to the site.
 - Data sending can be switched off per component; settings sharing for streamers.
+
+## ui 0.9.3
+
+### ru
+
+- «Отметки в бою» встают вровень с низом расходников.
+- Часов в бою и кнопки «///» под меню Esc больше нет в окне настроек и в редакторе HUD.
+- Ctrl+Shift+T больше не открывает окно настроек в бою, только в ангаре.
+
+### en
+
+- «Marks in battle» lines up with the bottom of the consumables.
+- The battle clock and the «///» button under the Esc menu are gone from the settings window and the HUD editor.
+- Ctrl+Shift+T no longer opens the settings window in battle, only in the hangar.
 
 ## ui 0.9.2
 
@@ -2156,6 +2278,18 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - The settings window: a card per component, profiles (save, load, share as a code) and the on-screen HUD editor.
 - Opens from the «///» hangar button, ModsList or Ctrl+Shift+T.
+
+## marks_panel 0.8.2
+
+### ru
+
+- «Отметки в бою» больше не раздвигаются по Alt: панель всегда такого размера, как её поставили.
+- Панель стоит вровень с низом расходников и в редакторе HUD опускается до самого края экрана.
+
+### en
+
+- «Marks in battle» no longer grows on Alt: the panel is always the size you placed.
+- The panel sits level with the bottom of the consumables and drags down to the screen edge in the HUD editor.
 
 ## marks_panel 0.8.1
 

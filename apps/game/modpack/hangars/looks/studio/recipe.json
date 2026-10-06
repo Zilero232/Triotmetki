@@ -1,0 +1,18 @@
+{
+  "id": "studio",
+  "clients": ["1.45.0.0"],
+  "base": { "space": "spaces/h08_mt_hangar", "environment": "Customization" },
+  "probes": true,
+  "set": [
+    { "path": "day_night_cycle/sunColor", "value": [255, 250, 245] },
+    { "path": "day_night_cycle/sunLightColor", "value": [0.95, 0.93, 0.9] },
+    { "path": "day_night_cycle/sunLightColorForward", "value": [1, 0.97, 0.94] },
+    { "path": "day_night_cycle/ambientColorForward", "value": [0.92, 0.92, 0.95] },
+    { "path": "HDR/environment/ambientLumMultiplier", "value": 0.28 },
+    { "path": "HDR/bloom/amount", "value": 0.15 },
+    { "path": "HDR/colorCorrection/map", "value": "system/maps/post_processing/cube/otmetki/studio.dds" },
+    { "path": "Fog/deferred/color", "value": [0.09, 0.09, 0.105, 1.12911] },
+    { "path": "Fog/deferred/scatterColor", "value": [0.09, 0.09, 0.105, 1.12911] },
+    { "path": "Fog/forward/color", "value": [0.11, 0.11, 0.125, 1.12911] }
+  ]
+}

@@ -123,6 +123,28 @@ class ShellAmmo(NoShellAmmo):
         return 101
 
 
+class AutoReloadSettings(GunSettings):
+
+    def hasAutoReload(self):
+        return True
+
+
+class AutoReloadAmmo(Ammo):
+
+    def getGunSettings(self):
+        return AutoReloadSettings()
+
+
+# RU 1.45 ammo_ctrl.getCurrentShells: (SHELL_QUANTITY_UNKNOWN,) * 2 while no current shell is set (a setup change).
+class UnknownShellsAmmo(Ammo):
+
+    def getCurrentShells(self):
+        return (-1, -1)
+
+    def getCurrentShellCD(self):
+        return None
+
+
 class Layer(object):
 
     def __init__(self):
@@ -359,6 +381,35 @@ class CrosshairStockTest(unittest.TestCase):
 
         assert self.hidden() == (RETICLE_RELOAD_TIMER,)
 
+    def test_an_auto_reloader_with_the_drum_off_still_hides_the_stock_magazine_timer(self):
+        self.module.ammo = AutoReloadAmmo
+        self.config.update(PANEL_ID, {'drum_style': 'off'})
+        self.component._on_clip()
+
+        self.reload(1.8, 2.5)
+
+        assert self.hidden() == (RETICLE_RELOAD_TIMER, RETICLE_CASSETTE)
+
+    def test_an_auto_reloader_with_the_drum_off_draws_the_magazine_as_shells(self):
+        self.module.ammo = AutoReloadAmmo
+        self.config.update(PANEL_ID, {'drum_style': 'off'})
+        self.component._on_clip()
+
+        self.reload(1.8, 2.5)
+
+        assert self.drawn_readouts()['reload']['clip']['style'] == 'shells'
+
+    def test_an_unknown_shell_count_keeps_the_drawn_magazine(self):
+        self.module.ammo = Ammo
+        self.component._on_clip()
+        self.reload(1.8, 2.5)
+        self.module.ammo = UnknownShellsAmmo
+
+        self.component._on_clip()
+        self.component.render()
+
+        assert self.drawn_readouts()['reload']['clip']['loaded'] == 4
+
     def test_the_zoom_is_drawn_in_the_sniper_view_only(self):
         self.config.update(PANEL_ID, {'reload_box': False, 'show_zoom': True})
 
@@ -379,6 +430,85 @@ class CrosshairStockTest(unittest.TestCase):
         self.component._on_zoom(16.0)
 
         assert self.drawn_readouts()['zoom'] == '16.0'
+
+
+class Provider(object):
+
+    def __init__(self):
+        self.sizes = []
+
+    def updateSize(self, size, relax_time):
+        self.sizes.append((size, relax_time))
+
+
+# RU 1.45 gun_marker_ctrl._DefaultGunMarkerController.update ends with `_dataProvider.updateSize(size, relaxTime)`.
+class GunMarkerController(object):
+
+    def __init__(self):
+        self._dataProvider = Provider()
+
+    def update(self, marker_type, pos, direction, size_vector, relax_time, coll_data):
+        self._dataProvider.updateSize(80.0, relax_time)
+
+    def getSize(self):
+        return 80.0
+
+
+MARKER_MODULE = 'AvatarInputHandler.gun_marker_ctrl'
+
+
+class CrosshairAimCircleTest(unittest.TestCase):
+
+    def setUp(self):
+        self.saved = dict((name, sys.modules.get(name)) for name in ('BigWorld', 'AvatarInputHandler', MARKER_MODULE))
+        self.original_update = GunMarkerController.__dict__['update']
+        forget_client()
+        sys.modules['BigWorld'] = types.ModuleType(str('BigWorld'))
+        _support.stub_parents(MARKER_MODULE)
+        sys.modules[MARKER_MODULE] = types.ModuleType(str(MARKER_MODULE))
+        sys.modules[MARKER_MODULE]._DefaultGunMarkerController = GunMarkerController
+        hud = importlib.import_module('otmetki.core.client.hud')
+        self.saved_config = hud._state['config']
+        self.config = ComponentConfig(MemoryFile())
+        hud._state['config'] = self.config
+        self.hud = hud
+        module = importlib.import_module('otmetki.features.crosshair.client')
+        self.app = App()
+        self.component = module.CrosshairComponent(self.app)
+        self.controller = GunMarkerController()
+
+    def tearDown(self):
+        GunMarkerController.update = self.original_update
+        self.hud._state['config'] = self.saved_config
+        forget_client()
+        for name, module in self.saved.items():
+            if module is None:
+                sys.modules.pop(name, None)
+            else:
+                sys.modules[name] = module
+
+    def update(self):
+        self.controller.update(0, None, None, (80.0, 40.0), 0.1, None)
+        return self.controller._dataProvider.sizes
+
+    def test_the_game_circle_is_drawn_at_its_own_size_by_default(self):
+        assert self.update() == [(80.0, 0.1)]
+
+    def test_a_smaller_circle_is_drawn_at_the_chosen_share(self):
+        self.config.update(PANEL_ID, {'aim_circle': 'p70'})
+
+        assert self.update()[-1] == (56.0, 0.1)
+
+    def test_the_client_size_goes_out_first(self):
+        self.config.update(PANEL_ID, {'aim_circle': 'p60'})
+
+        assert self.update()[0] == (80.0, 0.1)
+
+    def test_the_component_switched_off_keeps_the_game_circle(self):
+        self.config.update(PANEL_ID, {'aim_circle': 'p60'})
+        self.app.config.is_enabled = lambda switch: False
+
+        assert self.update() == [(80.0, 0.1)]
 
 
 if __name__ == '__main__':

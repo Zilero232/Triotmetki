@@ -47,7 +47,6 @@ STRIP_KIND = 'clock_strip'
 EDITOR_GROUPS = (
     ('time', ('clock_format', 'date_format')),
     ('server', ('show_server', 'show_ping', 'show_online')),
-    ('battle', ('battle_clock',)),
 )
 SAMPLE_ID = 'strip'
 SAMPLE_MOMENT = (2026, 10, 3, 21, 47, 5, 5, 276, -1)

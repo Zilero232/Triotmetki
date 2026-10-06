@@ -8,7 +8,7 @@ import type { HitStep } from '../../../lib/hit-step';
 import type { ViewerSide, ViewerState } from '../../../lib/viewer-protocol';
 
 import { hitStep } from '../../../lib/hit-step';
-import { footerOf, parseViewerState, sendViewer } from '../../../lib/viewer-protocol';
+import { footerOf, parseViewerState, sendViewer, sideLabelsOf } from '../../../lib/viewer-protocol';
 
 export const useHitViewer = () => {
   const [state, setState] = useState<ViewerState | null>(null);
@@ -53,6 +53,7 @@ export const useHitViewer = () => {
   return {
     state,
     footer: state ? footerOf(state) : '',
+    sideLabels: sideLabelsOf(state),
     selectedRow: state?.rows.find((row) => row.index === state.selected) ?? null,
     close: () => sendViewer({ command: 'close' }),
     move: (move: CameraMove) => sendViewer({ command: 'move', ...move }),

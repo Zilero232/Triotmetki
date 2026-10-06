@@ -28,7 +28,7 @@ from setupkit.manifest.model import camel  # noqa: E402
 
 COMPONENT_KEYS = [
     'id', 'packageId', 'version', 'file', 'category', 'title', 'description', 'fairPlay', 'required', 'default',
-    'presets', 'preview', 'dependencies', 'catalogued', 'sha256', 'size', 'perf', 'context',
+    'presets', 'preview', 'dependencies', 'catalogued', 'sha256', 'size', 'perf', 'context', 'generator',
 ]
 
 

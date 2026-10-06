@@ -554,6 +554,13 @@ class HudMessageTest(unittest.TestCase):
         for ids in (None, 'x', [1], [None]):
             assert decode_hud_message(json.dumps({'type': 'drawn', 'ids': ids})) is None, ids
 
+    def test_the_input_area_report_is_decoded(self):
+        assert decode_hud_message('{"type": "area", "whole": true}') == ('area', {'whole': True})
+
+    def test_an_input_area_report_without_a_flag_is_refused(self):
+        for whole in (None, 1, 'yes'):
+            assert decode_hud_message(json.dumps({'type': 'area', 'whole': whole})) is None, whole
+
     def test_an_unknown_mouse_event_is_refused(self):
         assert decode_hud_message('{"type": "mouse", "event": "click"}') is None
 

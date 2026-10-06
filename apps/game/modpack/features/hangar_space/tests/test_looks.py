@@ -8,6 +8,7 @@ from otmetki.core.settings import Settings
 from otmetki.features.hangar_space.i18n import STRINGS
 from otmetki.features.hangar_space.model import (
     LOOKS,
+    NAMED_GENERATED_LOOKS,
     Look,
     available_looks,
     build_page,
@@ -100,6 +101,14 @@ class AvailableLooksTest(unittest.TestCase):
 
     def test_a_stock_look_shows_its_name(self):
         assert look_title(RAIN, translator()) == u'Осень: дождь'
+
+    def test_every_named_generated_look_has_a_name_in_both_languages(self):
+        for name in NAMED_GENERATED_LOOKS:
+            assert 'hangar_space_look_name_%s' % name in STRINGS['ru']
+            assert 'hangar_space_look_name_%s' % name in STRINGS['en']
+
+    def test_our_generated_look_shows_its_name(self):
+        assert look_title(Look('otm_night', MAIN, 'otm_night'), translator()) == u'Ночь ///'
 
     def test_a_generated_look_gets_a_title_from_its_environment(self):
         assert look_title(Look('otm_steel_grey', MAIN, 'otm_steel_grey'), translator()) == 'Steel grey'

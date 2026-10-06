@@ -16,6 +16,7 @@ export type CatalogRow = {
   video: string | null;
   audio: string | null;
   perf: Perf | null;
+  generator: string | null;
   isNew: boolean;
 };
 

@@ -1,4 +1,3 @@
-import { battleClockSchema, BattleClockWidget } from '@/entities/hud/battle-clock';
 import { battleLoadoutSchema, BattleLoadoutWidget } from '@/entities/hud/battle-loadout';
 import { battleSummarySchema, BattleSummaryWidget } from '@/entities/hud/battle-summary';
 import { cardSchema, CardWidget } from '@/entities/hud/card';
@@ -23,7 +22,6 @@ export const WIDGET_ENTRIES = [
   defineHudWidget({ kind: 'battle_summary', schema: battleSummarySchema, Component: BattleSummaryWidget }),
   defineHudWidget({ kind: 'option_notice', schema: optionNoticeSchema, Component: OptionNoticeWidget }),
   defineHudWidget({ kind: 'sixth_sense', schema: sixthSenseSchema, Component: SixthSenseWidget }),
-  defineHudWidget({ kind: 'battle_clock', schema: battleClockSchema, Component: BattleClockWidget }),
   defineHudWidget({ kind: 'clock_strip', schema: clockStripSchema, Component: ClockStripWidget }),
   defineHudWidget({ kind: 'platoon_points', schema: platoonPointsSchema, Component: PlatoonPointsWidget }),
   defineHudWidget({ kind: 'crosshair', schema: crosshairSchema, Component: CrosshairWidget }),

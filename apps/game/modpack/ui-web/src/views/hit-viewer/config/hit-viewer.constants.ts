@@ -1,10 +1,12 @@
 export const HIT_VIEWER = {
   sides: ['received', 'dealt'],
   tones: ['pen', 'crit', 'blocked', 'ricochet', 'nodamage'],
-  columns: ['number', 'vehicle', 'result', 'shell', 'angle', 'armor', 'damage'],
+  results: ['win', 'loss', 'draw'],
+  columns: ['number', 'vehicle', 'result', 'part', 'shell', 'angle', 'armor', 'damage'],
   zoomStep: 200,
   dash: '—',
-  table: { rowHeight: 32 },
-  frame: { design: { width: 1920, height: 1080 }, minScale: 1, maxScale: 2 },
+  table: { rowHeight: 34 },
+  picker: { rowHeight: 68, maxRows: 6 },
+  frame: { design: { width: 1920, height: 1035 }, minScale: 1, maxScale: 2, lobbyBar: 45 },
   keys: { previous: ['ArrowLeft', 'ArrowUp'], next: ['ArrowRight', 'ArrowDown'], tab: 'Tab' }
 } as const;

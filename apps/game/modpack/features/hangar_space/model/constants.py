@@ -5,6 +5,8 @@ import re
 # RU 1.45 client source: hangar spaces are the folders under res/spaces with a space.settings/hangarSettings
 # (gui.ClientHangarSpace._readHangarSettings), addressed as 'spaces/<folder>' in lower case.
 SPACES_PREFIX = 'spaces/'
+# RU 1.45 gui/shared/utils/hangar_space_reloader.py buildHangarSpacePath: a name starting with 'space' is a path.
+SPACE_PATH_MARK = 'space'
 SPACE_NAME = re.compile(r'^[a-z0-9_]{1,64}$')
 
 ACTION_CHOOSE = 'choose'
@@ -66,6 +68,9 @@ LOOK_ID = re.compile(r'^[A-Za-z0-9_]{1,64}$')
 # Environments the manager will generate from recipes (docs/specs/2026-10-06-custom-hangars.md, phase 1b) carry this
 # prefix: each one found in a space is a look of its own, named after the environment.
 GENERATED_PREFIX = 'otm_'
+# The Three Marks looks the manager builds from the recipes of the hangar_looks package (apps/game/modpack/hangars):
+# each has its hangar_space_look_name_<environment> string; any other otm_ environment gets a title from its name.
+NAMED_GENERATED_LOOKS = ('otm_night', 'otm_sunset', 'otm_steel', 'otm_studio')
 ACTION_LOOK = 'look'
 LOOK_ROW_PREFIX = 'look:'
 # No pictures of the looks yet: screenshots of each look from the dev loop are a TODO (README, hangar_space); until

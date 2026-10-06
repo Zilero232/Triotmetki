@@ -16,10 +16,8 @@ FULL_LINES = (
 # The line the stock body never has.
 EXTRA_LINES = (('module_damage', 'aim_info_shell_module_damage'),)
 
-PERCENT = 100.0
-
 # The settings window editor: field groups (spec 2026-09-30 section 12.3).
 EDITOR_GROUPS = (
     ('target', ('target_distance',)),
-    ('shells', ('shell_tooltips', 'aim_circle')),
+    ('shells', ('shell_tooltips',)),
 )

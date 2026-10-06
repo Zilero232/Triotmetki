@@ -18,8 +18,6 @@ DEFAULTS = {
     'show_server': True,
     'show_ping': True,
     'show_online': True,
-    'battle_clock': True,
-    'replace_timer': False,
     'template': '',
     'x': 50,
     'y': 83,
@@ -28,9 +26,9 @@ DEFAULTS = {
     'scale': 100,
 }
 
-# The battle clock follows the hangar clock's format; the type size follows the design scale.
+# The type size follows the design scale.
 FIXED = {'font_size': 14}
-ADVANCED = ('replace_timer', 'template')
+ADVANCED = ('template',)
 
 CHOICES = {
     'clock_format': CLOCK_FORMATS,
@@ -44,21 +42,3 @@ LIMITS = {
     'y': (-4000, 4000),
     'scale': (50, 300),
 }
-
-# The battle clock is a HUD panel of its own (its place in the `battle_clock` section, the id it had as a component of
-# its own): left of the stock timer (battleTimer, 184 x 44 at the top right) on its line, clear of the right team list
-# that starts under the timer and of the score strip in the middle (tools/tests/test_battle_layout.py).
-CLOCK_PANEL_ID = 'battle_clock'
-CLOCK_DEFAULTS = {
-    'x': -190,
-    'y': 4,
-    'align_x': 'right',
-    'align_y': 'top',
-}
-# The default places of older versions (x, y, align_x, align_y): a panel still at one moves to today's default.
-CLOCK_RETIRED_PLACES = (
-    (-128, 4, 'right', 'top'),
-    (-20, 8, 'right', 'top'),
-    (-8, 44, 'right', 'top'),
-    (-8, 46, 'right', 'top'),
-)

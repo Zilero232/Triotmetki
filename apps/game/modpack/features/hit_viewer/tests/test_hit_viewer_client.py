@@ -267,7 +267,7 @@ class RecorderTest(unittest.TestCase):
 
 
 def recorded_battle(battle_id, hits):
-    hit = {'target': 'own', 'side': 'received', 'outcome': 'pen', 'segments': [HULL_PEN]}
+    hit = {'target': 'own', 'side': 'received', 'outcome': 'pen', 'part': 'hull', 'segments': [HULL_PEN]}
     return {'id': battle_id, 'hits': [dict(hit) for _ in range(hits)], 'targets': {'own': {'cd': 1}}}
 
 
@@ -306,7 +306,7 @@ class ScreenTest(unittest.TestCase):
             self.callbacks.pop(0)()
 
     def opened_view(self):
-        view = object()
+        view = Namespace(viewModel=Namespace(set_state=lambda text: None))
         self.screen.window.is_open = True
         self.screen.window.on_loaded(view)
         return view
@@ -529,7 +529,6 @@ class StageTest(unittest.TestCase):
         self.space.spaceID = 1
         self.stage.space = self.space
         self.stage.scene.show = lambda *args: None
-        self.stage.node = lambda geometry: None
         self.stage.world = lambda geometry: ((0.0, 1.0, 2.0), Namespace(yaw=0.5, pitch=0.1))
         self.stage.focus(Namespace(part='hull'), {'outcome': 'pen'}, 0.5)
         return manager

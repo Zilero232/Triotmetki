@@ -1,1 +1,1 @@
-export type ReticleSketchProps = { hidesCentre: boolean };
+export type ReticleSketchProps = { hidesCentre: boolean; circle: number };

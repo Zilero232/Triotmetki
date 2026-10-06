@@ -5,10 +5,3 @@ HANGAR_PANEL = 'otmetki.hangar_info'
 # asking more often only returns the cached result.
 PING_REQUEST_S = 60.0
 LAYOUT_KEYS = ('x', 'y', 'align_x', 'align_y', 'scale')
-CLOCK_TICK_S = 1.0
-PERIOD_NAMES = (
-    ('WAITING', 'waiting'),
-    ('PREBATTLE', 'prebattle'),
-    ('BATTLE', 'battle'),
-    ('AFTERBATTLE', 'afterbattle'),
-)

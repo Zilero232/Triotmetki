@@ -42,7 +42,8 @@ export const catalogComponentSchema = z.object({
   catalogued: z.boolean(),
   sha256: z.string().nullable(),
   size: z.number().nullable(),
-  perf: perfSchema.nullable()
+  perf: perfSchema.nullable(),
+  generator: z.string().nullable().default(null)
 });
 
 const catalogDependencySchema = z.object({
@@ -75,5 +76,6 @@ export const catalogSchema = z.object({
   ownedPatterns: z.array(z.string()),
   ownedPaths: z.array(z.string()),
   conflicts: z.array(catalogConflictSchema),
+  disabledLooks: z.array(z.string()).default([]),
   previewsDir: z.string().nullable()
 });

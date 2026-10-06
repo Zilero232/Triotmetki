@@ -55,6 +55,7 @@ class CatalogEntry(object):
     dependencies = attr.ib(default=())
     perf = attr.ib(default=None)
     context = attr.ib(default=None)
+    generator = attr.ib(default=None)
 
 
 @attr.s(frozen=True)
@@ -117,6 +118,7 @@ class Catalog(object):
     dependencies = attr.ib(default=())
     owned_paths = attr.ib(default=())
     conflicts = attr.ib(default=())
+    disabled_looks = attr.ib(default=())
 
     def entry(self, key):
         return next((entry for entry in self.components if entry.id == key), None)
@@ -146,6 +148,7 @@ class Component(object):
     size = attr.ib(default=None)
     perf = attr.ib(default=None)
     context = attr.ib(default=None)
+    generator = attr.ib(default=None)
 
 
 @attr.s(frozen=True)
@@ -160,6 +163,7 @@ class Manifest(object):
     dependencies = attr.ib(default=())
     owned_paths = attr.ib(default=())
     conflicts = attr.ib(default=())
+    disabled_looks = attr.ib(default=())
     schema_version = attr.ib(default=SCHEMA_VERSION)
 
     def component(self, component_id):

@@ -5,9 +5,8 @@ import unittest
 
 import _support  # noqa: F401
 from otmetki.core.i18n import Catalog, Translator
-from otmetki.core.settings import Settings
 from otmetki.features.aim_info.i18n import STRINGS
-from otmetki.features.aim_info.model import has_body, scaled_size, shell_lines, shell_stats, with_lines
+from otmetki.features.aim_info.model import has_body, shell_lines, shell_stats, with_lines
 from otmetki.features.aim_info.settings import DEFAULTS, SCHEMA, SETTINGS, SWITCH
 
 STOCK_WITH_BODY = '{HEADER}AP 105 mm{/HEADER}\n/{BODY}Damage: 320\nPenetration: 212 mm{/BODY}'
@@ -16,10 +15,6 @@ STOCK_HEADER_ONLY = '{HEADER}AP 105 mm{/HEADER}'
 
 def translate(language='en'):
     return Translator(Catalog(STRINGS), language)
-
-
-def settings(values=None):
-    return Settings(values or {}, SCHEMA)
 
 
 def stats():
@@ -84,15 +79,6 @@ class WithLinesTest(unittest.TestCase):
         assert not has_body(STOCK_HEADER_ONLY)
 
 
-class AimCircleTest(unittest.TestCase):
-
-    def test_the_circle_is_drawn_at_the_chosen_share(self):
-        assert scaled_size(80.0, 70) == 56.0
-
-    def test_a_size_that_is_not_a_number_stays(self):
-        assert scaled_size(None, 70) is None
-
-
 class SettingsTest(unittest.TestCase):
 
     def test_the_distance_is_on(self):
@@ -101,17 +87,11 @@ class SettingsTest(unittest.TestCase):
     def test_the_shell_tooltips_are_on(self):
         assert DEFAULTS['shell_tooltips'] is True
 
-    def test_the_settings_are_the_distance_the_tooltips_and_the_circle(self):
-        assert set(DEFAULTS) == {'target_distance', 'shell_tooltips', 'aim_circle', 'aim_circle_scale'}
+    def test_the_settings_are_the_distance_and_the_tooltips(self):
+        assert set(DEFAULTS) == {'target_distance', 'shell_tooltips'}
 
     def test_the_component_is_no_hud_panel(self):
         assert set(SCHEMA.defaults) == set(DEFAULTS)
-
-    def test_the_aim_circle_is_off_until_the_player_turns_it_on(self):
-        assert DEFAULTS['aim_circle'] is False
-
-    def test_the_circle_is_never_drawn_bigger_than_the_client_draws_it(self):
-        assert settings({'aim_circle_scale': 150}).get('aim_circle_scale') == 100
 
     def test_the_switch_is_the_one_setting(self):
         assert SETTINGS == (SWITCH,)

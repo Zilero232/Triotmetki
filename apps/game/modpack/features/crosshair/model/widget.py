@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.hud.icons import image
 from ....core.hud.widget import widget
 from . import is_vector, settings_mark_image
+from .circle import circle_percent
 from .constants import KIND, MARK_SWATCHES
 from .readouts import readouts_data
 
@@ -23,5 +24,6 @@ def crosshair_widget(settings, translate, readouts=None, sketch=True, with_mark=
         'size': settings.get('mark_size'),
         'hides_centre': bool(path) and bool(settings.get('mark_hides_centre')),
         'sketch': sketch,
+        'circle': circle_percent(settings.get('aim_circle')),
         'readouts': readouts_data(readouts, settings, translate),
     })

@@ -9,8 +9,8 @@ describe(inputAreaOf, () => {
     expect(inputAreaOf({ whole: true, screen: SCREEN, rects: [] })).toEqual({ left: 0, top: 0, width: 1920, height: 1080 });
   });
 
-  it('lets every click through when no panel takes the mouse', () => {
-    expect(inputAreaOf({ whole: false, screen: SCREEN, rects: [] })).toEqual({ left: 0, top: 0, width: 0, height: 0 });
+  it('keeps a single corner pixel when no panel takes the mouse, never an empty area', () => {
+    expect(inputAreaOf({ whole: false, screen: SCREEN, rects: [] })).toEqual({ left: 0, top: 0, width: 1, height: 1 });
   });
 
   it('covers only the clickable panels, widened to whole pixels', () => {

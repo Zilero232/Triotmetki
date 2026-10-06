@@ -2,7 +2,7 @@ import * as z from 'zod/mini';
 
 import { hudIconSchema } from '@/shared/api/hud-protocol';
 
-import { RETICLE_MARKS, RETICLE_READOUTS } from '../../config';
+import { CROSSHAIR, RETICLE_MARKS, RETICLE_READOUTS } from '../../config';
 
 const refillSchema = z.object({
   value: z.string(),
@@ -44,5 +44,6 @@ export const crosshairSchema = z.object({
   size: z.number(),
   hides_centre: z.boolean(),
   sketch: z.boolean(),
+  circle: z._default(z.number(), CROSSHAIR.full),
   readouts: z.nullable(readoutsSchema)
 });

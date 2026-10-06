@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 
+import hangarLooksStatus from '@contract/hangar-looks-status.json';
 import installation from '@contract/installation.json';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { mockIPC } from '@tauri-apps/api/mocks';
@@ -51,7 +52,28 @@ describe('useComponentToggle', () => {
     act(() => result.current.onCheckedChange(false));
 
     await waitFor(() => expect(queryClient.getQueryData(QUERY_KEYS.installation(CLIENT))).toEqual(installation));
-    expect(calls).toEqual([{ command: COMMANDS.setComponentEnabled, args: { clientPath: CLIENT, componentId: 'hit_log', enabled: false } }]);
+    await waitFor(() => expect(calls).toHaveLength(2));
+
+    expect(calls).toEqual([
+      { command: COMMANDS.setComponentEnabled, args: { clientPath: CLIENT, componentId: 'hit_log', enabled: false } },
+      { command: COMMANDS.getHangarLooksStatus, args: { clientPath: CLIENT } }
+    ]);
+  });
+
+  it('warns without blocking when the hangar looks could not be built', async () => {
+    const warning = vi.spyOn(toast, 'warning');
+
+    mockIPC((command) => (command === COMMANDS.getHangarLooksStatus ? { ...hangarLooksStatus, state: 'failed' } : installation));
+
+    const { queryClient, wrapper } = setup();
+    const { result } = renderHook(() => useComponentToggle({ clientPath: CLIENT, componentId: 'hangar_looks', title: TITLE, libraries: [] }), {
+      wrapper
+    });
+
+    act(() => result.current.onCheckedChange(true));
+
+    await waitFor(() => expect(warning).toHaveBeenCalledWith(MESSAGES.ru.components.hangarLooks.failedToast));
+    expect(queryClient.getQueryData(QUERY_KEYS.installation(CLIENT))).toEqual(installation);
   });
 
   it('says the libraries are in place after switching a component on', async () => {

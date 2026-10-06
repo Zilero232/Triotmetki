@@ -48,6 +48,7 @@ export const buildCatalogRows = ({ catalog, installation, locale, fresh = [] }: 
     video: component.preview.video,
     audio: component.preview.audio,
     perf: component.perf,
+    generator: component.generator,
     isNew: fresh.includes(component.id)
   }));
 };

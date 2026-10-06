@@ -35,7 +35,7 @@ from otmetki.ui.protocol import COMMANDS, PROTOCOL_VERSION, encode_state
 
 UI_WEB = os.path.join(_support.MODPACK_DIR, 'ui-web', 'src', 'shared', 'api', 'protocol')
 STATE_FIXTURE = os.path.join(UI_WEB, '_tests', 'fixtures', 'state.sample.json')
-CLOCK_WIDGET = {'kind': 'battle_clock', 'v': 1, 'data': {'time': u'21:47'}}
+PANEL_WIDGET = {'kind': 'damage_log', 'v': 1, 'data': {'total': 2150}}
 
 PANEL_SCHEMA = Schema(
     {
@@ -649,46 +649,19 @@ class HudEditorPreviewTest(unittest.TestCase):
     def setUp(self):
         bus = EventBus()
         layer = HudLayer(NullBackend(), ComponentConfig(MemoryFile()))
-        layer.register('battle_clock', Schema({'x': 0, 'y': 0, 'align_x': 'center', 'align_y': 'top'}))
-        bus.on('hud_describe', lambda collect: collect('battle_clock', u'<b>21:47</b>', 120, 30, True, CLOCK_WIDGET))
+        layer.register('damage_log', Schema({'x': 0, 'y': 0, 'align_x': 'center', 'align_y': 'top'}))
+        bus.on('hud_describe', lambda collect: collect('damage_log', u'<b>2 150</b>', 120, 30, True, PANEL_WIDGET))
         self.editor = HudEditor(bus, layer)
 
     def test_a_panel_carries_its_preview_widget_for_the_page_renderer(self):
         panel = self.editor.panels(Titles())[0]
 
-        assert panel['widget'] == CLOCK_WIDGET
+        assert panel['widget'] == PANEL_WIDGET
 
     def test_a_panel_carries_its_rich_preview_text(self):
         panel = self.editor.panels(Titles())[0]
 
-        assert panel['text'] == u'<b>21:47</b>'
-
-
-class FocusPageTest(BridgeTestCase):
-
-    def test_no_page_is_focused_at_first(self):
-        assert self.bridge.state()['focus'] is None
-
-    def test_a_package_opens_the_window_at_a_page(self):
-        focused = self.bridge.focus_page('replays')
-
-        assert focused is True
-        assert self.bridge.state()['focus'] == {'section': 'replays', 'seq': 1}
-
-    def test_each_focus_gets_the_next_number(self):
-        self.bridge.focus_page('replays')
-
-        self.bridge.focus_page('hud')
-
-        assert self.bridge.state()['focus'] == {'section': 'hud', 'seq': 2}
-
-    def test_an_unknown_page_keeps_the_focus(self):
-        self.bridge.focus_page('hud')
-
-        focused = self.bridge.focus_page('garage')
-
-        assert focused is False
-        assert self.bridge.state()['focus']['section'] == 'hud'
+        assert panel['text'] == u'<b>2 150</b>'
 
 
 class SetMessageTest(BridgeTestCase):

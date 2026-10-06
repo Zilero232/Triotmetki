@@ -1,10 +1,10 @@
-import type { ViewerBattle } from '../../../lib/viewer-protocol';
+import type { ViewerBattle, ViewerSide } from '../../../lib/viewer-protocol';
 
 export type BattlePickerProps = {
   battles: ViewerBattle[];
   current: ViewerBattle;
   label: string;
+  labels: Record<string, string>;
+  sideLabels: Record<ViewerSide, string>;
   onPick: (id: string) => void;
 };
-
-export type BattleLineProps = { battle: ViewerBattle };

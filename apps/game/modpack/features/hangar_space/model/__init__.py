@@ -5,6 +5,7 @@ from .constants import (  # noqa: F401
     ACTION_CHOOSE,
     ACTION_LOOK,
     ACTION_NATIVE,
+    GENERATED_PREFIX,
     HANGAR_NUMBER,
     HIDDEN_MARKERS,
     KNOWN_SPACES,
@@ -12,6 +13,7 @@ from .constants import (  # noqa: F401
     LOOK_ROW_PREFIX,
     LOOKS,
     MT_PREFIX,
+    NAMED_GENERATED_LOOKS,
     NAME_KEY,
     PLAN_LATER,
     PLAN_LOADED,
@@ -20,6 +22,7 @@ from .constants import (  # noqa: F401
     PREVIEWS,
     ROW_NATIVE,
     SPACE_NAME,
+    SPACE_PATH_MARK,
     SPACES_PREFIX,
     SUBTITLE_SEPARATOR,
 )
@@ -69,16 +72,45 @@ def available_space(name, names):
     return name if name and name in names else None
 
 
-def override_changes(current, owned, wanted):
+def normalized_space(value):
+    """A space path the way the client's HangarSpaceReloader.buildHangarSpacePath builds it, lower-cased: a server
+    notification may name `h08_mt_hangar` or `spaces/h08_mt_hangar`."""
+    if not isinstance(value, string_types) or not to_text(value).strip():
+        return None
+    text = to_text(value).strip().lower()
+    return text if text.startswith(SPACE_PATH_MARK) else SPACES_PREFIX + text
+
+
+def is_default_override(value, default_path):
+    return value is not None and default_path is not None and normalized_space(value) == normalized_space(default_path)
+
+
+# A server notification (cmd_change_hangar) that names the game's own default hangar is no event hangar: it re-states
+# the regular hangar, often only for an environment of it. The choice stands in for such a slot and gives it back when
+# it goes; a slot naming any other space (an event hangar) is never touched.
+def taken_slots(current, owned, wanted, default_path):
+    if wanted is None:
+        return {}
+    return dict(
+        (is_premium, value) for is_premium, value in current.items()
+        if value is not None and value != owned and is_default_override(value, default_path)
+    )
+
+
+def override_changes(current, owned, wanted, default_path=None, kept=None):
     """{is_premium: new override or None to drop it} for the default hangar's space overrides: ours is written or
-    dropped only where the slot is empty or already holds ours; an override the server set (an event hangar) stays."""
+    dropped only where the slot is empty, holds ours or re-states the default hangar (`taken_slots`); dropping ours
+    puts back what it stood in for (`kept`). An override naming an event hangar stays."""
+    kept = kept or {}
     changes = {}
     for is_premium in (True, False):
         value = current.get(is_premium)
-        if value is not None and value != owned:
+        is_server = value is not None and value != owned
+        if is_server and not (wanted is not None and is_default_override(value, default_path)):
             continue
-        if value != wanted:
-            changes[is_premium] = wanted
+        target = wanted if wanted is not None else kept.get(is_premium)
+        if value != target:
+            changes[is_premium] = target
     return changes
 
 
@@ -93,15 +125,20 @@ def wanted_environments(targets, path, environment):
 
 
 # {is_premium: environment name, or u'' to empty the slot}: like the space slot, an environment the server set (an
-# event's environment) stays; ours is written or emptied only where the slot is empty or holds ours.
-def environment_changes(current, owned, wanted):
+# event's environment) stays; ours is written or emptied only where the slot is empty or holds ours, or where the
+# choice stands in for a server slot of the default hangar (`taken`), whose environment (`kept`) comes back with it.
+def environment_changes(current, owned, wanted, taken=(), kept=None):
+    kept = kept or {}
     changes = {}
     for is_premium in (True, False):
         value = current.get(is_premium) or u''
-        if value and value != owned:
+        if value and value != owned and is_premium not in taken:
             continue
-        if value != wanted.get(is_premium, u''):
-            changes[is_premium] = wanted.get(is_premium, u'')
+        target = wanted.get(is_premium, u'')
+        if not target and is_premium not in taken:
+            target = kept.get(is_premium, u'')
+        if value != target:
+            changes[is_premium] = target
     return changes
 
 

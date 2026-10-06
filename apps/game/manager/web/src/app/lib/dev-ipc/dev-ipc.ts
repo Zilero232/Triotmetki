@@ -6,6 +6,7 @@ import clients from '@contract/clients.json';
 import conflicts from '@contract/conflicts.json';
 import gameHealth from '@contract/game-health.json';
 import gamefaceStatus from '@contract/gameface-status.json';
+import hangarLooksStatus from '@contract/hangar-looks-status.json';
 import installOutcome from '@contract/install-outcome.json';
 import installPlan from '@contract/install-plan.json';
 import installation from '@contract/installation.json';
@@ -72,6 +73,7 @@ export const installDevIpcOnRequest = () => {
     [COMMANDS.prepareInstall]: { ...installPlan, catalog: devCatalog },
     [COMMANDS.installModpack]: installOutcome,
     [COMMANDS.getGamefaceStatus]: gamefaceStatus,
+    [COMMANDS.getHangarLooksStatus]: hangarLooksStatus,
     [COMMANDS.takeDeepLink]: null,
     [COMMANDS.getConflicts]: conflicts,
     [COMMANDS.scanCache]: cachePlan,

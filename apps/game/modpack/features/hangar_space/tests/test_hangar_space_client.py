@@ -75,6 +75,21 @@ class App(object):
 
     in_battle = False
 
+    @staticmethod
+    def translate(key, **params):
+        return key
+
+
+class Store(object):
+    # core.client.hud.component_config: update() merges into the component's settings section.
+
+    def __init__(self, component):
+        self.component = component
+
+    def update(self, component_id, values):
+        self.component.settings.values.update(values)
+        return sorted(values)
+
 
 class Settings(object):
 
@@ -108,10 +123,17 @@ class ApplyTest(unittest.TestCase):
         client.environment_names = lambda names: dict((name, ENVIRONMENTS[name][0]) for name in names)
         client.active_environment = lambda path: ENVIRONMENTS[path.split('/')[1]][1]
         client.switch_environment = self.switched.append
+        client.default_path = lambda: MAIN_PATH
+        self.logged = []
+        client.log = self.logged.append
+        client.component_config = lambda app: Store(self.component)
         self.component = client.HangarSpace.__new__(client.HangarSpace)
         self.component.app = App()
+        self.component.component_id = 'hangar_space'
         self.component.owned = None
         self.component.owned_environment = u''
+        self.component.kept_spaces = {}
+        self.component.kept_environments = {}
         self.component.waiting = False
         self.component.environment_pending = False
         self.component.missing_looks = set()
@@ -198,6 +220,81 @@ class ApplyTest(unittest.TestCase):
 
         assert self.config()._spaceIdOverride == {True: MUSEUM_PATH, False: MUSEUM_PATH}
         assert self.switched == []
+
+    def test_a_pick_logs_one_line_with_the_wish_the_slots_and_the_plan(self):
+        self.choose(u'', 'autumn_rain')
+
+        self.component.apply(force=True)
+
+        assert len(self.logged) == 1
+        assert 'spaces/h08_mt_hangar / h08_mt_hangar_Autumn_TD3' in self.logged[0]
+        assert self.logged[0].endswith(': loaded')
+
+    def test_a_server_slot_naming_the_default_hangar_gives_way_to_a_chosen_space(self):
+        self.config().setSpaceIdOverride(False, 'h08_mt_hangar')
+        self.config().setEnvironment(False, 'h08_mt_hangar_Autumn_TD2')
+        self.choose('h16_mt_museum', u'')
+
+        self.component.apply(force=True)
+
+        assert self.config()._spaceIdOverride == {True: MUSEUM_PATH, False: MUSEUM_PATH}
+        assert self.config()._environment[False] == ''
+        assert self.switcher.reloads == 1
+
+    def test_the_game_hangar_puts_the_server_slot_back(self):
+        self.config().setSpaceIdOverride(False, 'h08_mt_hangar')
+        self.config().setEnvironment(False, 'h08_mt_hangar_Autumn_TD2')
+        self.choose('h16_mt_museum', u'')
+        self.component.apply(force=True)
+        self.choose(u'', u'')
+
+        self.component.apply(force=True)
+
+        assert self.config()._spaceIdOverride == {True: None, False: 'h08_mt_hangar'}
+        assert self.config()._environment[False] == 'h08_mt_hangar_Autumn_TD2'
+
+    def test_a_look_takes_the_environment_of_a_server_slot_of_the_default_hangar(self):
+        self.config().setSpaceIdOverride(False, MAIN_PATH)
+        self.config().setEnvironment(False, 'h08_mt_hangar_Autumn_TD2')
+        self.choose(u'', 'autumn_rain')
+
+        self.component.apply(force=True)
+
+        assert self.config()._environment[False] == 'h08_mt_hangar_Autumn_TD3'
+        assert self.switched == ['h08_mt_hangar_Autumn_TD3']
+
+    def test_an_event_hangar_stays_and_the_pick_says_so(self):
+        self.component.enabled_in_hangar = lambda: True
+        self.config().setSpaceIdOverride(False, EVENT_PATH)
+        self.hangar = Hangar(EVENT_PATH)
+
+        notice = self.component.ui_action('choose', 'h16_mt_museum')
+
+        assert self.config()._spaceIdOverride[False] == EVENT_PATH
+        assert notice['text'] == 'hangar_space_held'
+
+    def test_choosing_a_space_in_the_window_reloads_into_it(self):
+        self.component.enabled_in_hangar = lambda: True
+
+        notice = self.component.ui_action('choose', 'h16_mt_museum')
+
+        assert self.switcher.reloads == 1
+        assert notice['text'] == 'hangar_space_applied'
+
+    def test_choosing_a_look_in_the_window_switches_it(self):
+        self.component.enabled_in_hangar = lambda: True
+
+        self.component.ui_action('look', 'look:autumn_rain')
+
+        assert self.switched == ['h08_mt_hangar_Autumn_TD3']
+
+    def test_the_game_hangar_in_the_window_drops_our_slots(self):
+        self.component.enabled_in_hangar = lambda: True
+        self.component.ui_action('choose', 'h16_mt_museum')
+
+        self.component.ui_action('native')
+
+        assert self.config()._spaceIdOverride == {True: None, False: None}
 
 
 if __name__ == '__main__':

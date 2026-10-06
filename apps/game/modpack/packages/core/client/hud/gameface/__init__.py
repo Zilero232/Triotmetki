@@ -36,11 +36,12 @@ from ....hud.surface import (
 )
 from ....log import log, log_exception, safe
 from ...game import client_windows, main_window
-from ...timer import game_time
+from ...timer import Ticker, game_time
 from ..icons import client_file_exists
 from ..modifier import ModifierWatch
 from ..space import current_space, cursor_events, cursor_visible, gui_spaces
-from .constants import INVALID_RES_ID, READY_SPACES, RESTART_FLAG_FILE, WINDOW_LAYER
+from .constants import CURSOR_POLL_S, FOCUS_RETRY_S, INVALID_RES_ID, READY_SPACES, RESTART_FLAG_FILE, WINDOW_LAYER
+from .last_focus import LastFocus
 
 try:
     from frameworks.wulf import ViewFlags, ViewModel, ViewSettings, WindowFlags, WindowLayer, WindowStatus
@@ -136,7 +137,9 @@ if IMPORT_ERROR is None:
         # live log: the lobby's windows destroyed, "focus: HudWindow 9" alone), and from then on the hangar took no
         # click and the chat no key until the game was minimised. The client corrects the engine's pick the same way,
         # with `tryFocus()` on the window that should have it (gui/impl/common/fade_manager.py `_bringToFront`,
-        # gui/impl/lobby/crew/base_crew_view.py `bringToFront`), so the backend hands every focus on (`core.hud.focus`).
+        # gui/impl/lobby/crew/base_crew_view.py `bringToFront`), so the backend hands every focus back to the window
+        # that had it (`last_focus`: the chat types into the Scaleform page's window, not the main window) or on
+        # (`core.hud.focus`).
         def _onFocus(self, focused):
             super(HudWindow, self)._onFocus(focused)
             self.backend.on_window_focus(self, focused)
@@ -147,6 +150,14 @@ else:
 
 def _next_frame(callback):
     BigWorld.callback(0, safe(callback))
+
+
+def _later(delay, callback):
+    BigWorld.callback(delay, safe(callback))
+
+
+def is_hud_window(window):
+    return HudWindow is not None and isinstance(window, HudWindow)
 
 
 def is_shown(window):
@@ -189,6 +200,9 @@ class GamefaceBackend(HudBackend):
         self.settling = False
         self.answered = False
         self.focus = FocusReturn()
+        self.last_focus = LastFocus(is_hud_window)
+        self.cursor_poll = Ticker(CURSOR_POLL_S, self._poll_cursor)
+        self.whole_area = None
         self._listen_cursor()
         self._listen_spaces()
         if self.usable() and restart_pending():
@@ -315,6 +329,8 @@ class GamefaceBackend(HudBackend):
             return False
         try:
             self.modifier.install()
+            if not self.last_focus.install():
+                log('HUD: the client window class is missing, a focus the HUD window takes goes to the topmost page')
             self.window = HudWindow(layout, self)
             self.window.load()
         except Exception:
@@ -326,6 +342,7 @@ class GamefaceBackend(HudBackend):
         self.waiting = False
         self.seen_edit = False
         self.seen_mouse = set()
+        self.whole_area = None
         self.focus = FocusReturn()
         log('HUD: Gameface window %s opened in the %s (layout %s)' % (self.window.uniqueID, current_space(), layout))
         self._check_cursor()
@@ -359,14 +376,25 @@ class GamefaceBackend(HudBackend):
         if decision == FOCUS_HAND_ON:
             _next_frame(self._hand_on_focus)
         elif decision == FOCUS_GIVE_UP:
-            log('HUD: Gameface window %s keeps the focus, the client keeps giving it back' % window.uniqueID)
+            log('HUD: Gameface window %s keeps the focus for now, the client keeps giving it back' % window.uniqueID)
+            _later(FOCUS_RETRY_S, self._retry_focus)
+
+    def _retry_focus(self):
+        self.focus = FocusReturn()
+        self._hand_on_focus()
+
+    def _focus_target(self, window):
+        previous = self.last_focus.window()
+        if previous is not None and window_info(previous, window).ready:
+            return previous
+        found = focus_target([window_info(other, window) for other in client_windows()])
+        return found if found is not None else main_window()
 
     def _hand_on_focus(self):
         window = self._focused_window()
         if window is None or self.editing():
             return
-        found = focus_target([window_info(other, window) for other in client_windows()])
-        target = found if found is not None else main_window()
+        target = self._focus_target(window)
         log('HUD: Gameface window %s took the focus in the %s, handing it to %s'
             % (window.uniqueID, current_space(), window_name(target)))
         self.focus.handed_on(game_time())
@@ -404,6 +432,7 @@ class GamefaceBackend(HudBackend):
             'moved': self._on_page_move,
             'resized': self._on_page_move,
             'drawn': self._on_page_drawn,
+            'area': self._on_page_area,
         }
         handlers[command](fields)
 
@@ -413,6 +442,17 @@ class GamefaceBackend(HudBackend):
         log('HUD: Gameface page ready (%d labels: %s)' % (len(labels), ', '.join(labels)))
         self.pusher.forget()
         self.push_state()
+
+    def _on_page_area(self, fields):
+        whole = fields['whole']
+        if whole == self.whole_area:
+            return
+        self.whole_area = whole
+        editing = 'editing' if self.editing() else 'not editing'
+        if whole:
+            log('HUD: the page takes the mouse over the whole screen (%s, %s)' % (current_space(), editing))
+        else:
+            log('HUD: the page takes the mouse only over its buttons (%s, %s)' % (current_space(), editing))
 
     def _on_page_drawn(self, fields):
         self._set_drawn(frozenset(fields['ids']))
@@ -487,10 +527,19 @@ class GamefaceBackend(HudBackend):
         if visible is not None:
             self._set_cursor(visible)
 
+    def _poll_cursor(self):
+        visible = cursor_visible()
+        if visible is False and self.cursor:
+            log('HUD: the battle cursor was hidden without an event, the panels stop taking the mouse')
+            self._set_cursor(False)
+        return self.cursor
+
     def _set_cursor(self, visible):
         if visible == self.cursor:
             return
         self.cursor = visible
+        if visible and current_space() == SPACE_BATTLE:
+            self.cursor_poll.start()
         if visible and not self.seen_edit and current_space() == SPACE_BATTLE and self.window is not None:
             self.seen_edit = True
             log('HUD: battle cursor shown, panels can be dragged')

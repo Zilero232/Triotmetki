@@ -13,6 +13,7 @@ from otmetki.ui.window_layout import unmoved_layout
 
 CATALOG = os.path.join(_support.MODPACK_DIR, 'catalog', 'catalog.json')
 WINDOW_ONLY = ('core', 'ui')
+DATA_PACKAGES = ('hangar_looks',)
 OLD_BUTTON = {'x': -24, 'y': 72, 'align_x': 'right', 'align_y': 'top', 'scale': 100}
 NEW_BUTTON = {'x': -176, 'y': -4, 'align_x': 'right', 'align_y': 'bottom', 'scale': 90}
 
@@ -25,7 +26,7 @@ def catalog_contexts():
 
 def placed_components():
     contexts = catalog_contexts()
-    placed = [component_id for component_id in contexts if component_id not in WINDOW_ONLY]
+    placed = [component_id for component_id in contexts if component_id not in WINDOW_ONLY + DATA_PACKAGES]
     return dict((component_id, contexts[component_id]) for component_id in placed)
 
 

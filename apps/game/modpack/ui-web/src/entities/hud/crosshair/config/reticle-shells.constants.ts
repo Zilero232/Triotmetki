@@ -1,4 +1,5 @@
 export const RETICLE_SHELLS = {
+  sprite: { file: 'shells.png', scale: 4, kinds: ['ap', 'apcr', 'heat', 'he'], paints: ['loaded', 'gold', 'spent', 'refill'] },
   viewBox: { width: 8, height: 20 },
   outlineWidth: 0.9,
   case: 'M1 10h6v8.5H1z',

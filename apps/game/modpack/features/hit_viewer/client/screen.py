@@ -9,7 +9,7 @@ from ....core.events import EVENT_SETTINGS_CLOSE
 from ....core.log import log, log_exception, safe
 from ..model import decode_message, default_index, first_side, viewer_state
 from .constants import EMPTY_SELECTION, FOCUS_DELAY_S, FOCUS_S, LOGGED_MESSAGE_CHARS, SETTLE_ATTEMPTS, SETTLE_S
-from .stage import HangarStage, is_exact
+from .stage import HangarStage, is_exact, map_image
 from .window import ViewerWindowHost, move_camera
 
 
@@ -92,6 +92,8 @@ class HitViewerScreen(object):
         battle = self._find(self.selection['battle'])
         if battle is None or battle['id'] != self.selection['battle']:
             self._select_battle(battle)
+            return
+        self.push()
 
     def _select_battle(self, battle):
         if battle is None:
@@ -216,7 +218,8 @@ class HitViewerScreen(object):
     def push(self):
         if not self.is_open:
             return
-        state = viewer_state(self._battles(), self.selection, self.component.app.translate, self.stage_state())
+        translate = self.component.app.translate
+        state = viewer_state(self._battles(), self.selection, translate, self.stage_state(), map_image)
         self.window.push_state(json.dumps(state, sort_keys=True))
 
     @safe
@@ -234,6 +237,7 @@ class HitViewerScreen(object):
             'tab': lambda: self._select_tab(fields['tab']),
             'select': lambda: self._select_hit(fields['index']),
             'move': lambda: move_camera(fields['dx'], fields['dy'], fields['dz']),
+            'diag': lambda: log('hit viewer: page %s' % fields['text'][:LOGGED_MESSAGE_CHARS]),
         }
         handlers[command]()
 

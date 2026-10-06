@@ -9,7 +9,10 @@ Hunter, replays) is treated the same way: what decides is whether the page has t
 `page.components` (the DAAPI components the page registered; `_onRegisterFlashComponent` re-checks as they arrive),
 never the battle type. Until the page registered any, an alias is taken as present. An alias we gave back is shown again
 at once (`as_setComponentsVisibilityS`), or handed to the page's full-stats set while Tab is open so it comes back with
-the rest. `summary()` is the battle page and the aliases found and hidden, for the battle's HUD report.
+the rest. `summary()` is the battle page and the aliases found and hidden, for the battle's HUD report. The overrides go
+in when the control is created (with the first battle panel, in the hangar): the battle page and the crosshair panel
+populate, and the crosshair panel takes its first settings, during the loading screen, before `battle_ready`, so an
+override installed by the first panel's request would miss both in the session's first battle.
 
 A panel's `stock_aliases()` may also name parts of the stock reticle (`core.hud.stock.RETICLE_PARTS`): those go to
 `reticle.ReticleControl`, which hands the crosshair panel its settings with the parts at opacity 0 while they are
@@ -58,6 +61,7 @@ class StockControl(object):
         watch = getattr(layer, 'watch', None)
         if watch is not None:
             watch(self.follow_layer)
+        self.install()
 
     @safe
     def install(self):

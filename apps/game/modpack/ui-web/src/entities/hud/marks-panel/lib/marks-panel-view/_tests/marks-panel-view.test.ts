@@ -8,6 +8,18 @@ import { marksPanelView, shareText } from '../marks-panel-view';
 
 const data = marksPanelSchema.parse(readWidgetFixture('marks_panel'));
 
+const extended = {
+  ...data,
+  style: 'extended' as const,
+  thresholds: [
+    { level: 65, need: 0, reached: true },
+    { level: 85, need: 0, reached: true },
+    { level: 95, need: 25195, reached: false }
+  ],
+  step: { step: 0.5, need: 955 },
+  average: { label: 'среднее', ema: 2540, ema_projected: 2551 }
+};
+
 describe(marksPanelView, () => {
   it('writes the percent the way the HUD formats numbers', () => {
     const view = marksPanelView(data);
@@ -77,19 +89,19 @@ describe(marksPanelView, () => {
   });
 
   it('writes the damage left only for the thresholds not yet reached', () => {
-    const view = marksPanelView(data);
+    const view = marksPanelView(extended);
 
     expect(view.thresholds.map((item) => item.value)).toEqual(['', '', '25 195']);
   });
 
   it('writes the damage for the next half-percent step', () => {
-    const view = marksPanelView(data);
+    const view = marksPanelView(extended);
 
     expect(view.step).toBe('+0,5 %: 955');
   });
 
   it('writes the average before and after the battle with its direction', () => {
-    const view = marksPanelView(data);
+    const view = marksPanelView(extended);
 
     expect(view.average).toEqual({ label: 'среднее', from: '2 540', to: '2 551', direction: 'up' });
   });

@@ -11,6 +11,7 @@ export type ViewerSide = (typeof HIT_VIEWER.sides)[number];
 export type ViewerMessage =
   | { command: 'battle'; id: string }
   | { command: 'close' }
+  | { command: 'diag'; text: string }
   | { command: 'move'; dx: number; dy: number; dz: number }
   | { command: 'ready' }
   | { command: 'select'; index: number }

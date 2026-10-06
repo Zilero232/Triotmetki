@@ -2,6 +2,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import json
+import math
 import unittest
 
 import _support
@@ -13,7 +14,9 @@ from otmetki.features.hit_viewer.model import (
     SIDE_DEALT,
     SIDE_RECEIVED,
     HitBook,
+    battle_result,
     clean_aim,
+    clean_battle,
     decode_message,
     default_index,
     effect_model,
@@ -25,6 +28,7 @@ from otmetki.features.hit_viewer.model import (
     normalization,
     plate_analysis,
     shell_model,
+    vehicle_vector,
     settings_page,
     viewer_state,
 )
@@ -145,6 +149,37 @@ class GeometryTest(unittest.TestCase):
 
     def test_a_shot_without_a_drawn_point_is_not_placed(self):
         assert hit_geometry([NO_LENGTH], {1: HULL_BOX}) is None
+
+
+OFFSETS = {'hull': (0.0, 0.5, 0.0), 'turret': (0.0, 1.0, 0.5), 'gun': (0.0, 0.2, 0.8)}
+QUARTER = math.pi / 2
+
+
+class PlacementTest(unittest.TestCase):
+
+    def test_a_chassis_point_is_already_in_the_vehicle_coordinates(self):
+        assert vehicle_vector('chassis', (1.0, 2.0, 3.0), OFFSETS) == (1.0, 2.0, 3.0)
+
+    def test_a_hull_point_sits_at_the_hull_position(self):
+        assert rounded(vehicle_vector('hull', (1.0, 0.0, 0.0), OFFSETS)) == (1.0, 0.5, 0.0)
+
+    def test_a_turret_point_turns_with_the_recorded_yaw(self):
+        found = vehicle_vector('turret', (0.0, 0.0, 1.0), OFFSETS, (QUARTER, 0.0))
+
+        assert rounded(found) == (1.0, 1.5, 0.5)
+
+    def test_a_gun_point_tips_down_with_a_positive_pitch(self):
+        found = vehicle_vector('gun', (0.0, 0.0, 1.0), OFFSETS, (0.0, QUARTER))
+
+        assert rounded(found) == (0.0, 0.7, 1.3)
+
+    def test_a_direction_turns_but_never_moves(self):
+        found = vehicle_vector('turret', (0.0, 0.0, 1.0), OFFSETS, (QUARTER, 0.0), is_point=False)
+
+        assert rounded(found) == (1.0, 0.0, 0.0)
+
+    def test_a_hit_without_a_recorded_pose_keeps_the_turret_straight(self):
+        assert rounded(vehicle_vector('turret', (0.0, 0.0, 1.0), OFFSETS)) == (0.0, 1.5, 1.5)
 
 
 class BookTest(unittest.TestCase):
@@ -439,7 +474,75 @@ class PageTest(unittest.TestCase):
         assert page['rows'][0]['actions'][0]['id'] == 'open'
 
 
+def results(winner, team=1):
+    personal = {'avatar': {'team': team}, 123: {'typeCompDescr': 1, 'team': team}}
+    return {'common': {'winnerTeam': winner}, 'personal': personal}
+
+
+class ResultTest(unittest.TestCase):
+
+    def test_the_own_team_winning_is_a_win(self):
+        assert battle_result(results(1)) == 'win'
+
+    def test_the_other_team_winning_is_a_loss(self):
+        assert battle_result(results(2)) == 'loss'
+
+    def test_no_winner_is_a_draw(self):
+        assert battle_result(results(0)) == 'draw'
+
+    def test_results_without_a_team_say_nothing(self):
+        assert battle_result({'common': {'winnerTeam': 1}}) is None
+
+    def test_the_result_reaches_its_recorded_battle(self):
+        battle, book = finished_battle()
+
+        book.resolved(battle['id'], 'win')
+
+        assert book.battle(battle['id'])['result'] == 'win'
+
+    def test_the_result_of_another_battle_changes_nothing(self):
+        battle, book = finished_battle()
+
+        assert book.resolved('other', 'win') is False
+
+
+class BattleItemTest(unittest.TestCase):
+
+    def item(self, image=lambda path: 'img://' + path):
+        book = started_book()
+        book.current.update({'geometry': u'05_prohorovka', 'tier': 8})
+        book.hit(received(), 1.0)
+        book.hit(dealt(), 2.0)
+        book.hit(dealt(), 3.0)
+        battle = book.finish()
+        return viewer_state(book.battles, {'battle': battle['id']}, translator(), None, image)['battle']
+
+    def test_the_battle_shows_the_clients_small_map_picture(self):
+        assert self.item()['image'] == 'img://gui/maps/icons/map/small/05_prohorovka.png'
+
+    def test_a_missing_map_picture_is_left_out(self):
+        assert self.item(lambda path: None)['image'] is None
+
+    def test_the_battle_counts_the_hits_of_each_side(self):
+        found = self.item()
+
+        assert (found['received'], found['dealt'], found['tier']) == (1, 2, 8)
+
+    def test_a_stored_battle_keeps_only_a_known_result_and_tier(self):
+        battle, _ = finished_battle()
+        battle.update({'result': 'boom', 'tier': 40, 'geometry': '../x'})
+
+        cleaned = clean_battle(battle)
+
+        assert (cleaned['result'], cleaned['tier'], cleaned['geometry']) == (None, None, None)
+
+
 class ProtocolTest(unittest.TestCase):
+
+    def test_a_page_diagnostic_line_is_understood(self):
+        found = decode_message(json.dumps({'command': 'diag', 'text': 'frame 1920x1035'}))
+
+        assert found == ('diag', {'text': 'frame 1920x1035'})
 
     def test_a_row_click_is_understood(self):
         assert decode_message('{"command": "select", "index": 3}') == ('select', {'index': 3})

@@ -8,7 +8,7 @@ export const inputAreaOf = ({ whole, screen, rects }: InputAreaOfInput): InputAr
   }
 
   if (rects.length === 0) {
-    return HUD_OVERLAY.emptyRect;
+    return HUD_OVERLAY.noInputRect;
   }
 
   const left = Math.min(...rects.map((rect) => rect.left));

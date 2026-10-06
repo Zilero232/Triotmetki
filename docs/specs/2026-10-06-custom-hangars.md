@@ -335,8 +335,8 @@ a paid product.
 | Hangar | Author | Link / previews | Size | Last client | Notes |
 | --- | --- | --- | --- | --- | --- |
 | «Минималистичные ангары» HMHM v2 (8 variants) | Hellinger | [H2]; previews `https://wot-zone.ru/wp-content/uploads/2017/11/hangar-clear1.jpg` … `-4.jpg` | 3.8–27.5 MB per variant | Lesta 1.45.0.0 / WG 2.4.0.2 | **Best fit**: original minimal space, tiny, good for weak PCs. Its own script redirects event hangars too — we would ship only the space folder and let `hangar_space` select it. Contact not found; ask through the publishing site or the mod's readme. |
-| «Минималистичный ангар с танком на подиуме» (+ V2) | Leonardo_Shpah | [forum.tanki.su/topic/2208423](https://forum.tanki.su/topic/2208423/) | not stated | 1.41 → updated in МОСТ 06.05.2026 | forum PM; ask what the podium/props are made from. |
-| «Лесной ангар» | MatroseFuchs (МОСТ curator posts) | previous spec [10] | not stated | МОСТ, 1.45 | provenance unknown; ask. |
+| «Минималистичный ангар с танком на подиуме» (+ V2) | Leonardo_Shpah | [forum.tanki.su/topic/2208423][F2208423] | not stated | 1.41 → updated in МОСТ 06.05.2026 | **never**: WG and Lesta textures, Hellinger's script (§4.4). |
+| «Лесной ангар» | MatroseFuchs (МОСТ curator posts) | previous spec [10] | not stated | МОСТ, 1.45 | **never**: yarki33's port of WG's 1.0 hangar (§4.4). |
 | Ангар Near You Team | Uotson / Valberton | [H7]; previews under `https://wotsite.net/cache/resized/` | 172.9 MB | Lesta 1.45.0.0 (2026-09-18) | Branded for a competitor and likely built on Lesta's Battle Pass 2025 assets: ask only about the authors' **other**, unbranded work. |
 
 **Do not ask / cannot ship** (ports of WG or Lesta assets — the modder has no rights to give; or no need):
@@ -381,6 +381,75 @@ Adapted from [docs/ops/mod-authors-outreach.md](../ops/mod-authors-outreach.md);
 >
 > Спасибо!
 > {подпись, triotmetki.ru, контакт}
+
+### 4.4 Licence deep-dive: "copy it if the licence allows" (2026-10-06)
+
+Question: can we simply ship someone's hangar when its licence allows redistribution? Answer: a licence is
+**necessary but not sufficient**. It covers only what its author owns. A hangar is two layers, and both must be clean:
+
+1. **The author's layer** — their own geometry, textures, scripts and configs. Needs a licence or a written permission
+   that allows redistribution by a company with a paid product (our modpack is free, the platform sells Plus). MIT,
+   CC0, CC-BY (with attribution) qualify; **CC-BY-NC does not** (a free component that promotes a paid subscription
+   is "directed towards commercial advantage"); GPL is workable only with the editable sources shipped too. A forum
+   phrase like «можно использовать в сборках» is an open licence in spirit, but it should be confirmed in writing with
+   the paid-product case named (template §4.3).
+2. **The game's layer** — any WG/Lesta bytes inside the package (ported event hangars, copied textures, baked probes
+   from WG scenes, sound banks, commander models). Nobody but Lesta can license these. Redistributing them breaches
+   EULA 4.2.1/4.2.5 «в коммерческих или некоммерческих целях», whatever the modder wrote. Even an MIT `LICENSE` in a
+   GitHub repo of a ported hangar would be void for those files. *Referencing* files that already sit in the player's
+   client (a texture path in our config) is a different thing: nothing is redistributed (§2.2).
+
+Results of this pass (packages downloaded and hashed against every file in the installed 1.45 client's
+`res/packages/*.pkg`; WG's 1.0 hangar files compared from a public mirror; all pages seen 2026-10-06):
+
+- **No hangar anywhere carries a licence or a «можно в сборки» statement.** Checked: the forum threads of Hellinger
+  ([745873][F745873]), Leonardo_Shpah ([2208423][F2208423]),
+  yarki33 ([2214436][F2214436]); the wot-zone, wotsite, protanki.tv hangar catalogues;
+  the Near You page; Jove's posts; the GitHub repository search (only code repos turn up: offline-hangar servers,
+  carousel and clock mods; no repo ships a hangar space under any licence); ModDB (its hangar mods are for WoT Blitz).
+  The HMHM v3.3 archive's readme has install steps only. The only kind of clean, licensed hangar does not exist yet.
+- **HMHM v3.3 (Hellinger) is mostly his own work but ships two WG files.** Own: the disc model `res/HELL/HELL.*`
+  (8 KB primitives), its four DDS textures (a grid on dark teal), prefabs, the script; none matches any client file.
+  WG: `environments/B699F57C-…/probes/global/pmrem.dds` (2 MB) and `skydome/skybox.model` are **byte-identical** to
+  WG's `hangar_v3` (the 1.0 forest hangar) files of the same environment GUID, and `environment.xml` is that
+  environment's config edited (157 of 161 tags, all texture paths shared). Terrain tiles, lens and sky textures are
+  only referenced from the player's client. So HMHM is shippable only as a **clean build** (our own probe, no
+  `hangar_v3` skybox) plus Hellinger's written permission.
+- **Leonardo_Shpah's «Минималистичный ангар с танком на подиуме» is not his own work** and moves to "cannot ship":
+  its loader `JSON_hangar_script.mtmod` is Hellinger's `mod_HMHM.pyc` byte for byte; its podium and floor use WG
+  `hangar_v4` textures (`hv4_104_HeroPodium_*`, `hv4_013_Floor_*`) and 8 textures byte-identical to Lesta's
+  `shared_content*.pkg` (`Dirt_CaucasusBridge_02`, `Dirt_Oil_01_DM`, `Metal_Bare_01_1024_*`).
+- **«Лесной ангар» is yarki33's port of WG's 1.0 hangar** («Ангар… из 1.0», 2026-01-15; MatroseFuchs only curates it
+  in МОСТ); its assets sit in `github.com/kostikmalish/YarkiModpackAssets` (no LICENSE) next to the WG
+  `h04_remday_2015` space and WG sound banks. Cannot ship.
+- Others: «Маковое поле» (WG 2015 event hangar, wot-zone credits «Waraming»), Hangar Premium V1/V2 (WG premium),
+  Miku Hangar by TaLLIePO on protanki.tv (overrides WG `hangar_v3`; Vocaloid characters are a third party's IP
+  besides), Protanki's own minimal hangar (4.87 MB, archive not reachable, no licence, competitor-branded), Near You
+  (Battle Pass 2025 commanders on a stage: Lesta models, inferred from the page), Jove's «Менеджер Ангаров» (phantasm's
+  HangMan, a switcher over client and ported hangars).
+
+| Hangar | Author | Licence / permission | Own vs game assets | Commercial OK? | Client | Verdict |
+| --- | --- | --- | --- | --- | --- | --- |
+| HMHM v3.3 (8 floor variants) | Hellinger (vk.com/hell_inger) | none ([745873][F745873]; readme: install steps only) | own model, textures, script; **WG `hangar_v3` probe + skybox.model shipped**; config derived from WG | not granted | Lesta 1.45 `.mtmod` only, 3.8 MB, `space.bin` compiled by the author, updated 2026-09-03 | **ask author** for a clean build + written permission |
+| Минималистичный ангар с танком на подиуме | Leonardo_Shpah | none ([2208423][F2208423]) | WG `hv4_*` + Lesta `shared_content` textures; Hellinger's script | — | Lesta 1.45, 25 MB | **never** |
+| Лесной ангар (из 1.0) | yarki33 | none ([2214436][F2214436]) | port of WG 1.0 hangar | — | Lesta 1.45, ~286 MB | **never** |
+| Маковое поле `h04_remday_2015` | yarki33 (port) | none | WG event hangar + WG `.bnk` | — | Lesta 1.45 / WG 2.4, 173 MB | **never** |
+| Hangar Premium V1 / V2 | kinasura_RU / olix_vameshu | none ([wgmods 5906](https://wgmods.net/5906/), [3909](https://wgmods.net/3909/)) | WG premium hangar | — | WG 1.19 / 1.17 `.wotmod` | **never** |
+| Miku Hangar | TaLLIePO | none ([protanki.tv](https://protanki.tv/ru/mods/anime-angar-miku-hangar)) | WG `hangar_v3` + third-party anime IP | — | 1.29 / WG 1.26, 111 MB | **never** |
+| Минималистичный ангар PROTанки | ProTanki | none ([protanki.tv](https://protanki.tv/ru/mods/minimalistichnyi-angar-protanki)) | not inspected | — | 1.45 / 2.4, 4.9 MB | competitor's; **don't ask** |
+| Ангар Near You Team | Uotson / Valberton | none ([wotsite](https://wotsite.net/angary-dlya-tankov/12552-angar-near-you-team-dlya-world-of-tanks.html)) | Lesta BP 2025 commanders (inferred) | — | Lesta 1.45, 173 MB | **never** |
+| Jove's hangars | phantasm's HangMan (switcher) | none | client and ported hangars | — | — | **n/a** (`hangar_space` is ours) |
+
+What shipping HMHM would take technically: one 3.8 MB `.mtmod` per client build, Lesta only (the author states it
+runs only on «Мир танков»); his `space.bin` and `.cdata_processed` are compiled for the current client and only the
+author can recompile them after a format change (we have no 1.45 compiler, §3.3); we drop his redirect script and
+`hangar_replace.json` and let `hangar_space` select `spaces/hmhm`; we replace the WG probe with one we bake ourselves
+(a near-black studio cube, or from a CC0 Poly Haven HDRI) and drop the `hangar_v3` skybox reference (that space is not
+in the Lesta client anyway, so the dome is already missing); spike S4 (§5.4) answers whether a hand-made probe loads.
+
+[F745873]: https://forum.tanki.su/topic/745873-14200-hmhm-v3-%D0%BC%D0%B8%D0%BD%D0%B8%D0%BC%D0%B0%D0%BB%D0%B8%D1%81%D1%82%D0%B8%D1%87%D0%BD%D1%8B%D0%B9-%D0%B0%D0%BD%D0%B3%D0%B0%D1%80/
+[F2208423]: https://forum.tanki.su/topic/2208423-14100-%D0%BC%D0%B8%D0%BD%D0%B8%D0%BC%D0%B0%D0%BB%D0%B8%D1%81%D1%82%D0%B8%D1%87%D0%BD%D1%8B%D0%B9-%D0%B0%D0%BD%D0%B3%D0%B0%D1%80-%D1%81-%D1%82%D0%B0%D0%BD%D0%BA%D0%BE%D0%BC-%D0%BD%D0%B0-%D0%BF%D0%BE%D0%B4%D0%B8%D1%83%D0%BC%D0%B5/
+[F2214436]: https://forum.tanki.su/topic/2214436-14300-%D0%BB%D0%B5%D1%81%D0%BD%D0%BE%D0%B9-%D0%B0%D0%BD%D0%B3%D0%B0%D1%80-%D0%B8%D0%B7-10/
 
 ## 5. Recommendation and plan
 
@@ -477,6 +546,15 @@ the gallery by itself and the choice falls back to «Как в игре».
 No Lesta file is shipped by us; copies stay on the player's PC. The looks stay in the free modpack (no Plus gate).
 Recipes never touch battle maps, shared shaders or anything outside `spaces/<hangar>/environments/`.
 
+**As built (2026-10-06), where the files above changed:**
+
+- **Recipe keys:** `{id, clients, base {space, environment}, probes, sky {deferred, forward}, set [{path, value}]}`; the environment name is always `otm_<id>`, the folder GUID is derived from the id (sha256 of `otmetki/hangar_looks/<id>`), so neither is in the recipe. Pose, camera and hidden layers stay out: phase 1a's looks carry no pose, nothing would read them. `value` is a JSON number, bool, texture path or number array; the manager keeps the stock node's type. Repeated siblings are `name[i]` (0-based).
+- **Sky:** the sky texture is not in `environment.xml` but in the sky dome's material (`skyDome/skybox.visual_processed`, property `diffuseMap`, `sky_box_HDR.fx` for deferred and `skyDome/forward/…` with `sky_box.fx` for forward): the manager copies the base's `skyDome/` and swaps that texture; the two `.model` files name their own folder (`nodelessVisual`) and are rewritten. The 4 looks use the Onslaught sky (night), `minsk_june_clear_sunset_rgbe` (sunset), `minsk_04_10_cloudy_day_rgbe` with `hangar_v3/cloud_2Fwrd` (steel) — shared or hangar packages, not map packages that rotate out.
+- **Colour tables:** every RU 1.45 table in `system/maps/post_processing/cube/` is a plain 2D DDS of 256×16 (the 16³ cube unwrapped into 16 slices; `lut_default.dds`: BGRA8, no mipmaps, 16 512 bytes), not a volume texture. `tools/assets/lut.py` writes ours from `assets/otmetki/hangar_looks/src/grades.json` (our grading), no PNG strip.
+- **Client index:** `hangars/client_<version>.json` (names only: texture paths under `maps/skyboxes/`, `maps/fx/`, `system/maps/`, and each base environment's parameter paths with their types) instead of `client_paths_1.45.txt`, so the test checks paths and types too; `tools/build/client_index.py` writes it, `tools/build/packed_xml.py` decodes.
+- **Catalog:** `requires` is the existing `dependencies`; only `generator` and the top-level `disabledLooks` are new.
+- **Manager:** the `wg-toolkit` crate is not used (its last release 0.4.1 is from 2024 and pulls rsa 0.8 — RUSTSEC-2023-0071 — blowfish, mio 0.8, glam and serde-pickle for a ~150-line codec); `hangars/packed_xml.rs` is ours, byte-identical round trip on every packed file of the h08 environments. The generated files are written as packed XML (what the client already reads from the stock files), not text XML. Details: [manager README «Hangar looks»](../../apps/game/manager/README.md).
+
 ### 5.6 Phase 2 — third-party hangars
 
 - Only hangars from the "may ask" list (§4.2) whose author confirms the work is theirs and grants a written permission
@@ -522,7 +600,7 @@ Only with a 3D artist and a contract that assigns the rights to «Три отм�
 1. Phase 1a now (looks from stock environments, ~3 days)?
 2. Phase 1b with the manager-side generator (~2 weeks incl. the spike), or the faster static-XML fallback in the free
    package (formally weaker, breaks on re-skins)?
-3. May we write to Hellinger and Leonardo_Shpah with the §4.3 message?
+3. May we write to Hellinger with the §4.3 message (asking for a build without the two WG files, §4.4)?
 4. Add hangars to the Lesta letter about the Plus model?
 
 ## Sources

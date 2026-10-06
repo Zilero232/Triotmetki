@@ -1,0 +1,509 @@
+{
+  "looks": [
+    {
+      "base": {
+        "environment": "h08_mt_hangar_Autumn_TD2",
+        "space": "spaces/h08_mt_hangar"
+      },
+      "clients": [
+        "1.45.0.0"
+      ],
+      "id": "night",
+      "probes": true,
+      "set": [
+        {
+          "path": "day_night_cycle/starttime",
+          "value": 23.5
+        },
+        {
+          "path": "day_night_cycle/deferred/angle",
+          "value": 34
+        },
+        {
+          "path": "day_night_cycle/deferred/angleZ",
+          "value": 210
+        },
+        {
+          "path": "day_night_cycle/forward/angle",
+          "value": 40
+        },
+        {
+          "path": "day_night_cycle/isMoon",
+          "value": true
+        },
+        {
+          "path": "day_night_cycle/drawSunAndMoon",
+          "value": true
+        },
+        {
+          "path": "day_night_cycle/sunScale",
+          "value": 1
+        },
+        {
+          "path": "day_night_cycle/sunColor",
+          "value": [
+            200,
+            215,
+            255
+          ]
+        },
+        {
+          "path": "day_night_cycle/sunLightColor",
+          "value": [
+            0.42,
+            0.52,
+            0.74
+          ]
+        },
+        {
+          "path": "day_night_cycle/sunLightColorForward",
+          "value": [
+            0.5,
+            0.6,
+            0.82
+          ]
+        },
+        {
+          "path": "day_night_cycle/ambientColorForward",
+          "value": [
+            0.32,
+            0.38,
+            0.52
+          ]
+        },
+        {
+          "path": "HDR/environment/sunlightLumMultiplier",
+          "value": 14
+        },
+        {
+          "path": "HDR/environment/ambientLumMultiplier",
+          "value": 0.35
+        },
+        {
+          "path": "HDR/environment/sunDiskLumMultiplier",
+          "value": 20
+        },
+        {
+          "path": "HDR/environment/skyExpositionOffset",
+          "value": -2.5
+        },
+        {
+          "path": "HDR/bloom/threshold",
+          "value": 0.1
+        },
+        {
+          "path": "HDR/bloom/amount",
+          "value": 0.5
+        },
+        {
+          "path": "HDR/bloom/tint",
+          "value": [
+            0.7,
+            0.8,
+            1
+          ]
+        },
+        {
+          "path": "HDR/colorCorrection/map",
+          "value": "system/maps/post_processing/cube/otmetki/night.dds"
+        },
+        {
+          "path": "Fog/deferred/color",
+          "value": [
+            0.12,
+            0.16,
+            0.26,
+            2
+          ]
+        },
+        {
+          "path": "Fog/deferred/scatterColor",
+          "value": [
+            0.3,
+            0.38,
+            0.6,
+            1
+          ]
+        },
+        {
+          "path": "Fog/forward/color",
+          "value": [
+            0.2,
+            0.26,
+            0.4,
+            3
+          ]
+        },
+        {
+          "path": "GodRays/enable",
+          "value": false
+        },
+        {
+          "path": "LensFlare/enable",
+          "value": false
+        },
+        {
+          "path": "cloudsShadow/enabled",
+          "value": false
+        }
+      ],
+      "sky": {
+        "deferred": "maps/skyboxes/h33_comp7_sky/skydome/h33_comp7_sky_rgbm.dds",
+        "forward": "maps/skyboxes/h33_comp7_sky/skydome/h33_comp7_sky_forward.dds"
+      }
+    },
+    {
+      "base": {
+        "environment": "h08_mt_hangar_Autumn_TD2",
+        "space": "spaces/h08_mt_hangar"
+      },
+      "clients": [
+        "1.45.0.0"
+      ],
+      "id": "steel",
+      "probes": true,
+      "set": [
+        {
+          "path": "day_night_cycle/starttime",
+          "value": 13
+        },
+        {
+          "path": "day_night_cycle/deferred/angle",
+          "value": 48
+        },
+        {
+          "path": "day_night_cycle/sunColor",
+          "value": [
+            220,
+            228,
+            240
+          ]
+        },
+        {
+          "path": "day_night_cycle/sunLightColor",
+          "value": [
+            0.72,
+            0.78,
+            0.88
+          ]
+        },
+        {
+          "path": "day_night_cycle/sunLightColorForward",
+          "value": [
+            0.78,
+            0.84,
+            0.94
+          ]
+        },
+        {
+          "path": "day_night_cycle/ambientColorForward",
+          "value": [
+            0.8,
+            0.86,
+            0.96
+          ]
+        },
+        {
+          "path": "HDR/environment/sunlightLumMultiplier",
+          "value": 35
+        },
+        {
+          "path": "HDR/environment/ambientLumMultiplier",
+          "value": 1.15
+        },
+        {
+          "path": "HDR/environment/sunDiskLumMultiplier",
+          "value": 60
+        },
+        {
+          "path": "HDR/bloom/threshold",
+          "value": 0.08
+        },
+        {
+          "path": "HDR/bloom/amount",
+          "value": 0.3
+        },
+        {
+          "path": "HDR/bloom/tint",
+          "value": [
+            0.85,
+            0.9,
+            1
+          ]
+        },
+        {
+          "path": "HDR/colorCorrection/map",
+          "value": "system/maps/post_processing/cube/otmetki/steel.dds"
+        },
+        {
+          "path": "Fog/deferred/color",
+          "value": [
+            0.55,
+            0.62,
+            0.72,
+            5
+          ]
+        },
+        {
+          "path": "Fog/deferred/density",
+          "value": 0.0012
+        },
+        {
+          "path": "Fog/deferred/scatterColor",
+          "value": [
+            0.7,
+            0.75,
+            0.85,
+            2
+          ]
+        },
+        {
+          "path": "Fog/forward/color",
+          "value": [
+            0.7,
+            0.76,
+            0.86,
+            5
+          ]
+        },
+        {
+          "path": "GodRays/enable",
+          "value": false
+        },
+        {
+          "path": "LensFlare/enable",
+          "value": false
+        },
+        {
+          "path": "cloudsShadow/layer0/shadowFactor",
+          "value": 0.8
+        }
+      ],
+      "sky": {
+        "deferred": "maps/skyboxes/Photometric_sky/minsk_04_10_cloudy_day_rgbe.dds",
+        "forward": "maps/skyboxes/hangar_v3/skydome/cloud_2Fwrd.dds"
+      }
+    },
+    {
+      "base": {
+        "environment": "Customization",
+        "space": "spaces/h08_mt_hangar"
+      },
+      "clients": [
+        "1.45.0.0"
+      ],
+      "id": "studio",
+      "probes": true,
+      "set": [
+        {
+          "path": "day_night_cycle/sunColor",
+          "value": [
+            255,
+            250,
+            245
+          ]
+        },
+        {
+          "path": "day_night_cycle/sunLightColor",
+          "value": [
+            0.95,
+            0.93,
+            0.9
+          ]
+        },
+        {
+          "path": "day_night_cycle/sunLightColorForward",
+          "value": [
+            1,
+            0.97,
+            0.94
+          ]
+        },
+        {
+          "path": "day_night_cycle/ambientColorForward",
+          "value": [
+            0.92,
+            0.92,
+            0.95
+          ]
+        },
+        {
+          "path": "HDR/environment/ambientLumMultiplier",
+          "value": 0.28
+        },
+        {
+          "path": "HDR/bloom/amount",
+          "value": 0.15
+        },
+        {
+          "path": "HDR/colorCorrection/map",
+          "value": "system/maps/post_processing/cube/otmetki/studio.dds"
+        },
+        {
+          "path": "Fog/deferred/color",
+          "value": [
+            0.09,
+            0.09,
+            0.105,
+            1.12911
+          ]
+        },
+        {
+          "path": "Fog/deferred/scatterColor",
+          "value": [
+            0.09,
+            0.09,
+            0.105,
+            1.12911
+          ]
+        },
+        {
+          "path": "Fog/forward/color",
+          "value": [
+            0.11,
+            0.11,
+            0.125,
+            1.12911
+          ]
+        }
+      ]
+    },
+    {
+      "base": {
+        "environment": "h08_mt_hangar_Autumn_TD2",
+        "space": "spaces/h08_mt_hangar"
+      },
+      "clients": [
+        "1.45.0.0"
+      ],
+      "id": "sunset",
+      "probes": true,
+      "set": [
+        {
+          "path": "day_night_cycle/starttime",
+          "value": 18.6
+        },
+        {
+          "path": "day_night_cycle/deferred/angle",
+          "value": 9
+        },
+        {
+          "path": "day_night_cycle/deferred/angleZ",
+          "value": 285
+        },
+        {
+          "path": "day_night_cycle/forward/angle",
+          "value": 12
+        },
+        {
+          "path": "day_night_cycle/sunColor",
+          "value": [
+            255,
+            150,
+            80
+          ]
+        },
+        {
+          "path": "day_night_cycle/sunLightColor",
+          "value": [
+            1,
+            0.55,
+            0.3
+          ]
+        },
+        {
+          "path": "day_night_cycle/sunLightColorForward",
+          "value": [
+            1,
+            0.62,
+            0.4
+          ]
+        },
+        {
+          "path": "day_night_cycle/ambientColorForward",
+          "value": [
+            0.85,
+            0.72,
+            0.7
+          ]
+        },
+        {
+          "path": "HDR/environment/sunlightLumMultiplier",
+          "value": 60
+        },
+        {
+          "path": "HDR/environment/ambientLumMultiplier",
+          "value": 0.8
+        },
+        {
+          "path": "HDR/environment/sunDiskLumMultiplier",
+          "value": 140
+        },
+        {
+          "path": "HDR/bloom/threshold",
+          "value": 0.05
+        },
+        {
+          "path": "HDR/bloom/amount",
+          "value": 0.55
+        },
+        {
+          "path": "HDR/bloom/tint",
+          "value": [
+            1,
+            0.75,
+            0.55
+          ]
+        },
+        {
+          "path": "HDR/colorCorrection/map",
+          "value": "system/maps/post_processing/cube/otmetki/sunset.dds"
+        },
+        {
+          "path": "Fog/deferred/color",
+          "value": [
+            0.95,
+            0.62,
+            0.42,
+            4
+          ]
+        },
+        {
+          "path": "Fog/deferred/scatterColor",
+          "value": [
+            1,
+            0.6,
+            0.32,
+            3.5
+          ]
+        },
+        {
+          "path": "Fog/forward/color",
+          "value": [
+            0.95,
+            0.7,
+            0.5,
+            5
+          ]
+        },
+        {
+          "path": "GodRays/enable",
+          "value": true
+        },
+        {
+          "path": "GodRays/color",
+          "value": [
+            1,
+            0.62,
+            0.38,
+            14
+          ]
+        }
+      ],
+      "sky": {
+        "deferred": "maps/skyboxes/Photometric_sky/minsk_june_clear_sunset_rgbe.dds"
+      }
+    }
+  ],
+  "schemaVersion": 1
+}

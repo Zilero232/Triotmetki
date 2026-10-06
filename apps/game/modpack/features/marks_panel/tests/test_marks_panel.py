@@ -8,7 +8,7 @@ from otmetki.core.format import COLOR_UP, strip_tags
 from otmetki.core.moe import ThresholdCurve
 from otmetki.core.settings import Settings
 from otmetki.features.marks_panel.i18n import STRINGS
-from otmetki.features.marks_panel.model import BattleTotals, PanelView, format_panel, panel_state, percent_source
+from otmetki.features.marks_panel.model import BattleTotals, format_panel, panel_state, percent_source
 from otmetki.features.marks_panel.model.preview import preview_text
 from otmetki.features.marks_panel.settings import SCHEMA, SETTINGS, SWITCH
 
@@ -33,10 +33,10 @@ def state(combined=2100, has_curve=True, snapshot=SNAPSHOT, **values):
     return panel_state(snapshot, combined, curve() if has_curve else None, 3000, settings(**values))
 
 
-def panel_text(combined=2100, snapshot=SNAPSHOT, held=False, language='en', **values):
+def panel_text(combined=2100, snapshot=SNAPSHOT, language='en', **values):
     chosen = settings(**values)
     panel = panel_state(snapshot, combined, curve(), 3000, chosen)
-    return strip_tags(format_panel(panel, PanelView(chosen, held), translator(language)))
+    return strip_tags(format_panel(panel, chosen, translator(language)))
 
 
 def battle_totals():
@@ -148,7 +148,7 @@ class PanelTest(unittest.TestCase):
         assert text.split('\n')[0] == u'MoE 81.50% → 81.24% (-0.26)'
 
     def test_colour_follows_a_rise(self):
-        text = format_panel(state(combined=6000), PanelView(settings()), translator())
+        text = format_panel(state(combined=6000), settings(), translator())
 
         assert COLOR_UP in text
 
@@ -163,7 +163,7 @@ class PanelTest(unittest.TestCase):
         assert chosen.get('color_mode') == 'delta'
 
     def test_without_the_site_curve_the_estimate_projects(self):
-        text = strip_tags(format_panel(state(has_curve=False), PanelView(settings()), translator('ru')))
+        text = strip_tags(format_panel(state(has_curve=False), settings(), translator('ru')))
 
         assert text.startswith(u'~81.32% (-0.18)')
 
@@ -175,15 +175,15 @@ class PanelTest(unittest.TestCase):
 
     def test_without_a_percent_and_a_curve_nothing_is_projected(self):
         text = strip_tags(format_panel(
-            state(has_curve=False, snapshot=UNRATED_SNAPSHOT), PanelView(settings()), translator('ru'),
+            state(has_curve=False, snapshot=UNRATED_SNAPSHOT), settings(), translator('ru'),
         ))
 
         assert text == u'Отметка -% · среднее 2 500 → 2 492'
 
-    def test_preview(self):
+    def test_the_preview_is_the_compact_line_of_the_battle(self):
         text = strip_tags(preview_text(settings(), translator()))
 
-        assert text.split('\n')[0] == u'MoE 86.12% → 86.30% (+0.18)'
+        assert text == u'86.30% (+0.18) · for 87%: 2 107'
 
     def test_strings_in_both_languages(self):
         assert sorted(STRINGS['ru']) == sorted(STRINGS['en'])
@@ -192,10 +192,10 @@ class PanelTest(unittest.TestCase):
         assert SETTINGS == (SWITCH,)
 
 
-class AltTest(unittest.TestCase):
+class StyleTest(unittest.TestCase):
 
-    def test_alt_details_are_on_by_default(self):
-        assert settings().get('alt_detail') is True
+    def test_the_battle_panel_has_no_alt_view(self):
+        assert 'alt_detail' not in SCHEMA.defaults
 
     def test_compact_rests_in_one_line(self):
         text = panel_text()
@@ -207,35 +207,24 @@ class AltTest(unittest.TestCase):
 
         assert text.split('\n')[1] == u'65%: ✓   85%: 5 450   95%: 30 700'
 
-    def test_alt_held_shows_every_line_whatever_the_switches(self):
-        text = panel_text(held=True, show_targets=False, show_battle=False)
-
-        assert text.split('\n') == [
-            u'MoE 81.50% → 81.24% (-0.26)',
-            u'damage 2 100 · average 2 500 → 2 492',
-            u'65%: ✓   85%: 5 450   95%: 30 700',
-            u'for 82%: 1 158   +0.5%: 1 158',
-        ]
-
-    def test_alt_held_changes_nothing_with_alt_mode_off(self):
-        text = panel_text(held=True, style='compact', alt_detail=False)
-
-        assert text == u'81.24% (-0.26) · for 82%: 1 158'
-
-    def test_alt_mode_keeps_the_minimal_style_at_rest(self):
-        text = panel_text(alt_detail=True, style='minimal')
+    def test_the_minimal_style_keeps_one_number(self):
+        text = panel_text(style='minimal')
 
         assert text == u'81.24% (-0.26)'
 
-    def test_alt_mode_keeps_the_custom_template_at_rest(self):
-        text = panel_text(alt_detail=True, style='custom', template='[{source}]')
+    def test_the_custom_template_stays_as_written(self):
+        text = panel_text(style='custom', template='[{source}]')
 
         assert text == u'[verified]'
 
-    def test_alt_held_replaces_the_custom_template_with_the_full_view(self):
-        text = panel_text(held=True, alt_detail=True, style='custom', template='[{source}]')
 
-        assert text.split('\n')[0] == u'MoE 81.50% → 81.24% (-0.26)'
+class PlaceTest(unittest.TestCase):
+
+    def test_the_panel_sits_on_the_bottom_edge_beside_the_consumables(self):
+        assert (SCHEMA.defaults['y'], SCHEMA.defaults['align_y']) == (0, 'bottom')
+
+    def test_a_panel_at_the_place_8_px_over_the_edge_moves_to_the_new_default(self):
+        assert (330, -8, 'center', 'bottom') in SCHEMA.retired
 
 
 class SourceTest(unittest.TestCase):

@@ -7,6 +7,8 @@ export const HUD_OVERLAY = {
   scaleOrigin: '0 0',
   hidden: 0,
   emptyRect: { left: 0, top: 0, width: 0, height: 0 },
+  noInputRect: { left: 0, top: 0, width: 1, height: 1 },
+  inputAreaRefreshMs: 1000,
   dock: { gap: 6, reserve: 190, ceiling: 80 },
   hintGap: 6,
   attach: {

@@ -9,7 +9,6 @@ from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import armor_actions, format_info, format_widget, layout_of
 from ..settings import SCHEMA, SECTION, SWITCH
-from .battle_clock import BattleClockPanel
 from .constants import HANGAR_PANEL, LAYOUT_KEYS, PING_REQUEST_S
 from .reads import online, ping, request_ping, server_name
 
@@ -19,7 +18,6 @@ class HangarInfo(FeatureComponent):
     def __init__(self, app):
         FeatureComponent.__init__(self, app, SECTION, SCHEMA, SWITCH, STRINGS)
         self.label = HangarLabel(app, HANGAR_PANEL)
-        self.clock = BattleClockPanel(app, self.settings)
         self.pinged_at = 0.0
         app.bus.on('hangar', self._on_hangar)
         app.bus.on('tick', self._on_tick)
@@ -33,7 +31,6 @@ class HangarInfo(FeatureComponent):
         self.render(now)
 
     def settings_changed(self, changed):
-        self.clock.info_changed()
         self.label.hide()
         self.render(time.time())
 

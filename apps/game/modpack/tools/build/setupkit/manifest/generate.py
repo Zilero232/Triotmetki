@@ -39,6 +39,7 @@ def _uncatalogued_fields(package, catalog, warnings):
         'extra_dependencies': (),
         'perf': None,
         'context': None,
+        'generator': None,
     }
 
 
@@ -56,6 +57,7 @@ def _catalogued_fields(package, entry):
         'extra_dependencies': entry.dependencies,
         'perf': entry.perf,
         'context': entry.context,
+        'generator': entry.generator,
     }
 
 
@@ -109,6 +111,7 @@ def _component(package, catalog, platform, packages_dir, warnings):
         size=size,
         perf=fields['perf'],
         context=fields['context'],
+        generator=fields['generator'],
     )
 
 
@@ -145,6 +148,7 @@ def build_manifest(packages, catalog, platform='lesta', packages_dir=None, stric
         dependencies=dependencies,
         owned_paths=catalog.owned_paths,
         conflicts=_conflicts(catalog, keys),
+        disabled_looks=catalog.disabled_looks,
     )
     return manifest, warnings
 

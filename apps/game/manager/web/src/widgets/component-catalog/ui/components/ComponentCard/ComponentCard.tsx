@@ -2,12 +2,14 @@ import { Gauge, Lock, PlayCircle, Sparkles } from 'lucide-react';
 import { useTranslations } from 'use-intl';
 
 import { ComponentPreview, FairPlayNote, PERF, PreviewAudio } from '@/entities/catalog';
+import { HANGAR_LOOKS } from '@/entities/hangar-looks';
 import { ComponentToggle } from '@/features/component/component-toggle';
 import { Badge, ExternalLink } from '@/ui-kit';
 
 import type { ComponentCardProps } from './ComponentCard.types';
 
 import { COMPONENT_CATALOG } from '../../../config';
+import { HangarLooksNote } from '../HangarLooksNote';
 
 import s from './ComponentCard.module.scss';
 
@@ -45,6 +47,7 @@ export const ComponentCard = ({ clientPath, isInstalled, row }: ComponentCardPro
             </span>
           </FairPlayNote>
         )}
+        {row.generator === HANGAR_LOOKS.generator && row.state === 'enabled' && <HangarLooksNote clientPath={clientPath} />}
         <footer className={s.footer}>
           {row.dependencies.length > 0 && <span className={s.dependencies}>{t('dependencies', { list: row.dependencies.join(', ') })}</span>}
           {row.libraries.length > 0 && <span className={s.dependencies}>{t('libraries', { list: row.libraries.join(', ') })}</span>}

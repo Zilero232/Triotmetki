@@ -39,6 +39,7 @@
           "ru": "Только свои данные."
         },
         "file": "net.triotmetki.core_0.1.0.mtmod",
+        "generator": null,
         "id": "core",
         "packageId": "net.triotmetki.core",
         "perf": "low",
@@ -75,6 +76,7 @@
           "ru": "Только свои данные."
         },
         "file": "otmetki.companion_0.1.0.mtmod",
+        "generator": null,
         "id": "companion",
         "packageId": "otmetki.companion",
         "perf": "low",
@@ -112,6 +114,7 @@
           "ru": "Только свои данные."
         },
         "file": "net.triotmetki.marks_panel_0.1.0.mtmod",
+        "generator": null,
         "id": "marks_panel",
         "packageId": "net.triotmetki.marks_panel",
         "perf": "low",
@@ -149,6 +152,7 @@
           "ru": "Только свои данные."
         },
         "file": "net.triotmetki.damage_log_0.1.0.mtmod",
+        "generator": null,
         "id": "damage_log",
         "packageId": "net.triotmetki.damage_log",
         "perf": "medium",
@@ -185,6 +189,7 @@
           "ru": "Только свои данные."
         },
         "file": "net.triotmetki.hit_log_0.1.0.mtmod",
+        "generator": null,
         "id": "hit_log",
         "packageId": "net.triotmetki.hit_log",
         "perf": "low",
@@ -311,6 +316,7 @@
         "version": "0.6.6"
       }
     ],
+    "disabledLooks": [],
     "extension": "mtmod",
     "modpackVersion": "0.1.0",
     "ownedPaths": [

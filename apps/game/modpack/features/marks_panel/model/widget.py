@@ -22,10 +22,11 @@ from .constants import (
 # The plate (docs/specs/2026-09-30-hud-consolidation-and-design.md §8.4) as the gunmarks panels of PROTanki, Near_You
 # and Lebwa lay it out: the percent after the battle with its change, the bar of this battle's damage against the
 # average that holds the percent (the gunmarks «damage progress» bar, or the 0-100 % scale), the damage dealt against
-# that average and the damage for the next goal; in the extended style or while Alt is held, the thresholds row and the
-# average row under it. The page draws the rows it gets; the style only tells it a custom template's text from the
-# plate. The plate marks the gun's marks as stars. The battles to the next mark, the trend and the tank's silhouette are
-# the hangar Tank card's (model/card.py): in battle the panel keeps to this battle.
+# that average and the damage for the next goal; in the extended style the thresholds row and the average row under it.
+# The panel never grows on its own (no Alt view), so its box is the one the player places. The page draws the rows it
+# gets; the style only tells it a custom template's text from the plate. The plate marks the gun's marks as stars. The
+# battles to the next mark, the trend and the tank's silhouette are the hangar Tank card's (model/card.py): in battle
+# the panel keeps to this battle.
 
 
 def _shown_percent(state):

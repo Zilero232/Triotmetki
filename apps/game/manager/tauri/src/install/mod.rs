@@ -272,6 +272,7 @@ pub fn owned_patterns_catalog(catalog: Option<Catalog>) -> Catalog {
         owned_patterns: Vec::new(),
         owned_paths: Vec::new(),
         conflicts: Vec::new(),
+        disabled_looks: Vec::new(),
     });
 
     if catalog.owned_patterns.is_empty() {

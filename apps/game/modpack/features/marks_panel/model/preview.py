@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.moe import ThresholdCurve
-from . import PanelView, format_panel, hangar_state, panel_state
+from . import format_panel, hangar_state, panel_state
 from .card import TankCard, card_text, tank_card
 from .constants import (
     CARD_PREVIEW_MASTERY,
@@ -28,15 +28,13 @@ def preview_state(settings):
     return panel_state(PREVIEW_SNAPSHOT, PREVIEW_COMBINED, _curve(), PREVIEW_PACE, settings)
 
 
-# The HUD editor shows the panel in its Alt state.
+# The HUD editor shows the panel as it is in battle: its box is the one the player places.
 def preview_text(settings, translate):
-    view = PanelView(settings, held=True)
-    return format_panel(preview_state(view), view, translate)
+    return format_panel(preview_state(settings), settings, translate)
 
 
 def preview_widget(settings, translate):
-    view = PanelView(settings, held=True)
-    return marks_widget(preview_state(view), view, translate)
+    return marks_widget(preview_state(settings), settings, translate)
 
 
 def card_preview():

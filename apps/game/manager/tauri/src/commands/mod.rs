@@ -14,6 +14,7 @@ use crate::conflicts::ConflictReport;
 use crate::deep_link::DeepLink;
 use crate::error::{AppError, AppResult, ErrorCode};
 use crate::gameface::GamefaceStatus;
+use crate::hangars::HangarLooksStatus;
 use crate::health::HealthReport;
 use crate::install::read_component_profile;
 use crate::logs::{self, CollectInput};
@@ -263,6 +264,11 @@ pub async fn uninstall_modpack(app: AppHandle, manager: State<'_, Manager>, requ
 #[tauri::command]
 pub async fn get_gameface_status(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<GamefaceStatus> {
     manager.gameface_status(client_path.as_deref())
+}
+
+#[tauri::command]
+pub async fn get_hangar_looks_status(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<HangarLooksStatus> {
+    manager.hangar_looks_status(client_path.as_deref())
 }
 
 #[tauri::command]

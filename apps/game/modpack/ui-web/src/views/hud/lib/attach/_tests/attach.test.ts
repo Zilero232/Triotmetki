@@ -12,11 +12,17 @@ const SIZE = { width: 230, height: 44 };
 const attach = (kind: HudAttach['kind'], bar = 399, minimap = 310): HudAttach => ({ kind, bar, minimap });
 
 describe(attachRect, () => {
-  it('puts the marks panel 12 px right of the consumables panel, 8 px over the bottom', () => {
+  it('puts the marks panel 12 px right of the consumables panel', () => {
     const rect = attachRect({ attach: attach('bar_right'), size: SIZE, screen: FULL_HD });
 
     expect(rect.left).toBe(960 + 399 / 2 + 12);
-    expect(rect.top + rect.height).toBe(1080 - 8);
+  });
+
+  it('lines the bottom of the marks panel up with the bottom of the consumables panel', () => {
+    const rect = attachRect({ attach: attach('bar_right'), size: SIZE, screen: FULL_HD });
+    const bar = stockBarRect({ attach: attach('bar_right'), screen: FULL_HD });
+
+    expect(rect.top + rect.height).toBe((bar?.top ?? 0) + (bar?.height ?? 0));
   });
 
   it('follows the live width of the consumables panel', () => {
@@ -61,7 +67,7 @@ describe(attachRect, () => {
     const rect = attachRect({ attach: attach('bar_right', 0), size: SIZE, screen: FULL_HD });
 
     expect(rect.left).toBe(960 + width / 2 + 12);
-    expect(rect.top + rect.height).toBe(1080 - 8);
+    expect(rect.top + rect.height).toBe(1080);
   });
 
   it('lifts the marks panel above the post-mortem tips when there is no room beside them', () => {

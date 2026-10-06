@@ -1,0 +1,37 @@
+@use '@/shared/styles/gameface' as *;
+
+$hit-tones: (
+  pen: token(color-danger),
+  crit: token(color-gold),
+  blocked: token(color-success),
+  ricochet: token(color-steel-blue),
+  nodamage: token(color-text-muted)
+);
+$battle-results: (
+  win: token(color-success),
+  loss: token(color-danger),
+  draw: token(color-warning)
+);
+
+@mixin tone-colors($property: color, $suffix: '') {
+  @each $name, $value in $hit-tones {
+    .#{$name}#{$suffix} {
+      #{$property}: $value;
+    }
+  }
+}
+
+@mixin result-colors($property: color, $suffix: '') {
+  @each $name, $value in $battle-results {
+    .#{$name}#{$suffix} {
+      #{$property}: $value;
+    }
+  }
+}
+
+@mixin panel {
+  border: 1px solid rgb(255 255 255 / 8%);
+  border-radius: token(radius-md);
+  background-color: rgb(20 20 23 / 88%);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 45%);
+}

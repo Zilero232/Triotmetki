@@ -165,7 +165,6 @@ class RequiredByFollowsTheCodeTest(unittest.TestCase):
         users = keys_using(GAMEFACE_IMPORT) | keys_using(HUD_USE) | keys_using(GAMEFACE_USE)
 
         self.assertIn('preset_advisor', users)
-        self.assertIn('battle_menu', users)
 
         self.assert_required_by(GAMEFACE, users)
 

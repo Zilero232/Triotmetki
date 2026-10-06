@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.compat import string_types, to_text
 from ....core.vendor import attr
-from .constants import GENERATED_PREFIX, LOOK_ID, LOOK_NAME_KEY, LOOK_PREVIEWS, LOOKS
+from .constants import GENERATED_PREFIX, LOOK_ID, LOOK_NAME_KEY, LOOK_PREVIEWS, LOOKS, NAMED_GENERATED_LOOKS
 
 
 @attr.s(frozen=True)
@@ -80,7 +80,9 @@ def generated_title(name):
 
 
 def look_title(look, translate):
-    return translate(LOOK_NAME_KEY % look.id) if is_stock(look.id) else generated_title(look.environment)
+    if is_stock(look.id) or look.id in NAMED_GENERATED_LOOKS:
+        return translate(LOOK_NAME_KEY % look.id)
+    return generated_title(look.environment)
 
 
 def look_preview(look_id):

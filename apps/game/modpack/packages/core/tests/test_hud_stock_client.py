@@ -395,5 +395,68 @@ class StockControlTest(unittest.TestCase):
         assert held == [True, False]
 
 
+class CrosshairPanelContainer(object):
+
+    def __init__(self):
+        self.pushed = []
+
+    def setSettings(self, vo):
+        self.pushed.append(vo)
+
+    def as_setSettingsS(self, vo):
+        self.pushed.append(vo)
+
+    def _dispose(self):
+        return 'disposed'
+
+
+RETICLE_MODULES = (
+    'gui.Scaleform.daapi.view.battle.shared.crosshair',
+    'gui.Scaleform.daapi.view.battle.shared.crosshair.container',
+)
+RETICLE_HOOKED = ('setSettings', '_dispose')
+
+
+class StockControlFirstBattleTest(unittest.TestCase):
+
+    def setUp(self):
+        self.saved = install_stubs()
+        self.saved.update((name, sys.modules.get(name)) for name in RETICLE_MODULES)
+        for name in RETICLE_MODULES:
+            sys.modules[name] = types.ModuleType(str(name))
+        sys.modules[RETICLE_MODULES[1]].CrosshairPanelContainer = CrosshairPanelContainer
+        self.originals = dict((name, SharedPage.__dict__[name]) for name in HOOKED)
+        self.reticle_originals = dict((name, CrosshairPanelContainer.__dict__[name]) for name in RETICLE_HOOKED)
+        from otmetki.core.client.hud.stock import StockControl
+        self.backend = Backend()
+        self.layer = HudLayer(self.backend, ComponentConfig(MemoryFile()))
+        self.layer.register('panel', panel_schema({}))
+        self.control = StockControl(self.layer, EventBus())
+
+    def tearDown(self):
+        for name, value in self.originals.items():
+            setattr(SharedPage, name, value)
+        for name, value in self.reticle_originals.items():
+            setattr(CrosshairPanelContainer, name, value)
+        restore_stubs(self.saved)
+
+    def test_a_page_populated_before_any_panel_asks_is_followed(self):
+        page = ClassicPage()
+        page._populate()
+
+        self.control.want('team_hp', ('fragCorrelationBar',))
+
+        assert page.applied[-1] == (set(), {'fragCorrelationBar'})
+
+    def test_reticle_settings_given_before_any_panel_asks_are_hidden_later(self):
+        panel = CrosshairPanelContainer()
+        panel.setSettings({1: {'reloaderTimerAlphaValue': 1.0}})
+        ClassicPage()._populate()
+
+        self.control.want('panel', ('reloaderTimerAlphaValue',))
+
+        assert panel.pushed[-1] == {1: {'reloaderTimerAlphaValue': 0}}
+
+
 if __name__ == '__main__':
     unittest.main()

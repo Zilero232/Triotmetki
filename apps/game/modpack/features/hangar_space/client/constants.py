@@ -9,6 +9,8 @@ CONTROLLER_SKELETON = ('skeletons.gui.game_control', 'IHangarSpaceSwitchControll
 DEFAULT_CONFIG_ATTR = '_defaultHangarSpaceConfig'
 OVERRIDES_ATTR = '_spaceIdOverride'
 HANGAR_CONFIGS = ('gui.ClientHangarSpace', '_HANGAR_CFGS')
+# gui.ClientHangarSpace.getDefaultHangarPath(isPremium): the regular hangar of gui/hangars.xml (spaces/h08_mt_hangar).
+DEFAULT_HANGAR_PATH = ('gui.ClientHangarSpace', 'getDefaultHangarPath')
 DEFAULT_SCENE = ('constants', 'DEFAULT_HANGAR_SCENE')
 HANGAR_SPACE_SKELETON = ('skeletons.gui.shared.utils', 'IHangarSpace')
 # IHangarSpace.onSpaceCreate fires once a space finished loading; the switch controller itself waits for it

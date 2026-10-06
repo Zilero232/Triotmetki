@@ -121,7 +121,7 @@ class AllowedPanelsTest(unittest.TestCase):
         assert allowed_panels('full') is None
 
     def test_compact_layout_allows_the_compact_panels(self):
-        assert allowed_panels('compact') == frozenset(('marks_panel', 'battle_clock', 'damage_log'))
+        assert allowed_panels('compact') == frozenset(('marks_panel', 'damage_log'))
 
     def test_off_layout_allows_nothing(self):
         assert allowed_panels('off') == frozenset()

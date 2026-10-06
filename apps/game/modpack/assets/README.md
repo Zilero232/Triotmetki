@@ -13,6 +13,7 @@ assets/
   otmetki/crosshair_tinted/src|png  5 one-colour centre marks (SVG -> PNG 64, 128 per mark colour)
   otmetki/sixth_sense/src|png    4 sixth-sense icons (SVG -> PNG 64, 128 + dimmed pulse frames)
   otmetki/damage_log/src|png     6 damage-kind and 5 vehicle-class glyphs (SVG -> PNG 32)
+  otmetki/hangar_looks/src|dds   4 colour grades of the hangar looks (grades.json -> 256x16 BGRA8 DDS, tools/assets/lut.py)
   third_party/<set>/             a vendored set: its licence text, the untouched originals in src/, renditions in png/
 ```
 

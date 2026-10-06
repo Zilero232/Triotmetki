@@ -115,6 +115,23 @@
       "target": "res/content/battlehits",
       "contents": "From BattleHits 2.4.1 (commit 6ed4c2b, resources/in/content/battlehits), unmodified and at their original in-game path: the AP, APCR, HEAT and HE shell models (common/shells/ap|apcr|heat|hemodern), the four hit-effect markers of style1 (ricochet, notpenetration, penetration, critical) and their textures",
       "fair_play": "Drawn only in the hangar's hit viewer after the battle, on the player's own recorded hits: the shell along its recorded path and a marker of the outcome the client showed."
+    },
+    {
+      "id": "hangar_looks_luts",
+      "feature": "hangar_looks",
+      "title": "Hangar look colour grading tables",
+      "origin": "original",
+      "author": "Три отметки",
+      "copyright": "Copyright (c) 2026 Три отметки",
+      "license": "LicenseRef-TriOtmetki-Artwork",
+      "license_file": "otmetki/LICENSE.md",
+      "license_target": "res/gui/maps/icons/otmetki/hangar_looks/LICENSE.md",
+      "url": "https://triotmetki.ru",
+      "sources": "otmetki/hangar_looks/src",
+      "files": "otmetki/hangar_looks/dds",
+      "target": "res/system/maps/post_processing/cube/otmetki",
+      "contents": "4 colour grading tables of our own (night, sunset, steel, studio): the grades in src/grades.json, written by tools/assets/lut.py as 256x16 BGRA8 DDS in the client's colour-table layout",
+      "fair_play": "Colour grading of the player's own hangar view, named by the hangar look environments the manager builds; never loaded in battle."
     }
   ]
 }

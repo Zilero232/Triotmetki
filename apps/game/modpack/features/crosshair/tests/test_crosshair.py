@@ -28,6 +28,7 @@ from otmetki.features.crosshair.model.constants import (
     VECTOR_MARKS,
     VECTOR_RENDITIONS,
 )
+from otmetki.features.crosshair.model.circle import circle_percent, is_scaled, scaled_size
 from otmetki.features.crosshair.model.editor import editor
 from otmetki.features.crosshair.model.preview import preview_text, preview_widget, sample_readouts
 from otmetki.core.hud.stock import (
@@ -68,6 +69,7 @@ FIELD_KEYS = (
     'preset',
     'modes',
     'server_reticle',
+    'aim_circle',
     'mark',
     'mark_size',
     'mark_color',
@@ -411,6 +413,47 @@ class ReadoutsTest(unittest.TestCase):
 
         assert data['reload']['clip'] is None
 
+    def test_an_unknown_loaded_count_keeps_the_last_magazine(self):
+        readouts = Readouts()
+        readouts.set_clip(6, 4, 'apcr', False)
+
+        changed = readouts.set_clip(6, -1)
+
+        assert changed is False
+        assert readouts.clip == (6, 4)
+
+    def test_an_unknown_loaded_count_keeps_the_last_shell(self):
+        readouts = Readouts()
+        readouts.set_clip(6, 4, 'apcr', False)
+
+        readouts.set_clip(6, None)
+
+        assert readouts.shell == 'apcr'
+
+    def test_an_unknown_loaded_count_of_another_magazine_clears_it(self):
+        readouts = Readouts()
+        readouts.set_clip(6, 4)
+
+        readouts.set_clip(3, -1)
+
+        assert readouts.clip is None
+
+    def test_a_gun_without_a_magazine_clears_it(self):
+        readouts = Readouts()
+        readouts.set_clip(6, 4)
+
+        readouts.set_clip(1, 1)
+
+        assert readouts.clip is None
+
+    def test_an_auto_reloader_draws_its_magazine_even_when_left_to_the_stock_reticle(self):
+        readouts = sample_readouts()
+        readouts.set_autoloader(True)
+
+        data = readouts_data(readouts, Settings({'drum_style': 'off'}, SCHEMA), str)
+
+        assert data['reload']['clip']['style'] == 'shells'
+
     def test_a_large_drum_keeps_its_real_size(self):
         readouts = Readouts()
         readouts.set_clip(30, 17)
@@ -625,6 +668,38 @@ class ReplacedReticlePartsTest(unittest.TestCase):
 
     def test_nothing_is_replaced_while_the_readouts_are_not_drawn(self):
         assert replaced_reticle_parts(None) == ()
+
+
+class AimCircleTest(unittest.TestCase):
+
+    def test_the_circle_keeps_the_game_size_by_default(self):
+        assert Settings(None, SCHEMA).get('aim_circle') == 'stock'
+
+    def test_the_game_size_is_not_scaled(self):
+        assert is_scaled('stock') is False
+
+    def test_each_smaller_circle_is_its_share(self):
+        assert [circle_percent(choice) for choice in ('p80', 'p70', 'p60')] == [80, 70, 60]
+
+    def test_an_unknown_choice_keeps_the_game_size(self):
+        assert circle_percent('p10') == 100
+
+    def test_the_size_is_drawn_at_the_share(self):
+        assert scaled_size(80.0, 70) == 56.0
+
+    def test_a_size_that_is_not_a_number_stays(self):
+        assert scaled_size(None, 70) is None
+
+    def test_the_circle_is_no_client_setting(self):
+        assert 'aim_circle' not in client_keys(SCHEMA)
+
+    def test_the_circle_writes_nothing_to_the_client_settings(self):
+        assert native({'aim_circle': 'p60'}) == native({})
+
+    def test_the_preview_draws_the_chosen_circle(self):
+        widget = crosshair_widget(Settings({'aim_circle': 'p60'}, SCHEMA), str)
+
+        assert widget['data']['circle'] == 60
 
 
 if __name__ == '__main__':

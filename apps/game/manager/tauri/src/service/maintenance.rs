@@ -24,6 +24,7 @@ impl Manager {
         ensure_closed(&scope.client.path)?;
         self.download_components(&scope, &wanted).await?;
         self.sync_res_map(&scope.client);
+        self.sync_hangar_looks(scope.context());
 
         conflicts::scan(scope.context())
     }

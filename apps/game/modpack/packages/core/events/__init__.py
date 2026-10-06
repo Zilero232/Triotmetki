@@ -6,10 +6,10 @@ handler is logged without stopping the ones after it, so one feature cannot brea
 
 Events sent between packages (not by the app host) are named here: `component_settings(component_id,
 changed_keys)` from the settings window and a profile load, `replay_uploaded(arena_unique_id, replay_id)`
-from the replay upload, `replay_upload_request(request, reply)` from the replay manager, `settings_open(section)`
-to open the settings window at a page, `settings_close()` to close it, `mods_list_alert(on)` for the badge on the
-mod's ModsList entry, `hit_viewer_open(battle_id)` to open the hit
-viewer at a recorded battle, `hit_viewer_battles(reply)` for the battles it can open (`hit_viewer_battles(bus)` asks),
+from the replay upload, `replay_upload_request(request, reply)` from the replay manager, `settings_close()` to
+close the settings window, `mods_list_alert(on)` for the badge on the mod's ModsList entry,
+`hit_viewer_open(battle_id)` to open the hit viewer at a recorded battle, `hit_viewer_battles(reply)` for the battles
+it can open (`hit_viewer_battles(bus)` asks),
 `battle_notice_lines(arena_id, reply)` for the lines added to the stock post-battle message
 (`battle_notice_lines(bus, arena_id)` asks).
 """
@@ -28,7 +28,6 @@ from .constants import (
     EVENT_REPLAY_UPLOAD_REQUEST,
     EVENT_REPLAY_UPLOADED,
     EVENT_SETTINGS_CLOSE,
-    EVENT_SETTINGS_OPEN,
 )
 
 __all__ = (
@@ -40,7 +39,6 @@ __all__ = (
     'EVENT_REPLAY_UPLOAD_REQUEST',
     'EVENT_REPLAY_UPLOADED',
     'EVENT_SETTINGS_CLOSE',
-    'EVENT_SETTINGS_OPEN',
     'EventBus',
     'battle_notice_lines',
     'hit_viewer_battles',

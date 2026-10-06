@@ -13,5 +13,11 @@ READOUT_STATES = (
     ('HEALTH', 'health'),
     ('DESTROYED', 'destroyed'),
 )
+# gun_marker_ctrl._DefaultGunMarkerController (RU 1.45): the arcade and sniper gun markers, client, server and dual
+# accuracy alike. update(markerType, pos, direction, sizeVector, relaxTime, collData) records the size for the replay,
+# then ends with `_dataProvider.updateSize(size, relaxTime)`; the strategic (SPG) markers are another class and stay
+# stock, as in DispersionReticle.
+MARKER_METHOD = 'update'
+MARKER_RELAX_ARG = 4
 # The ammo controller's events after which the own magazine is read again (RU 1.45 ammo_ctrl.AmmoController).
 CLIP_EVENTS = ('onShellsUpdated', 'onCurrentShellChanged', 'onGunSettingsSet')

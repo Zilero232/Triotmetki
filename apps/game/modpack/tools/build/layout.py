@@ -12,6 +12,10 @@ res/mods/configs/res_map/*.json (its OpenWG Gameface resource registration); and
 asset sets in assets/assets.json (images, sounds), their files, licences and THIRD_PARTY_NOTICES.md
 (asset_sets.py).
 
+A data package has no code: hangars/ (package.json) is net.triotmetki.hangar_looks, the hangar look recipes
+bundled into res/mods/configs/otmetki/hangar_looks/recipes.json plus its asset sets (our colour tables);
+the manager reads the recipes and builds the looks on the player's PC (hangars.py).
+
 so the split packages never ship the same file, and the single package is their union.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
@@ -22,6 +26,7 @@ import os
 import re
 
 import asset_sets
+import hangars
 
 MODPACK_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PACKAGES_DIR = os.path.join(MODPACK_DIR, 'packages')
@@ -168,6 +173,16 @@ def feature_package(feature_id, core, companion):
     return Package(feature_id, package_id, name, version, description, files, [core, companion])
 
 
+def data_packages():
+    """Code-less packages: hangars/ (the recipes bundle and the colour tables of the hangar looks)."""
+    if not os.path.isfile(hangars.PACKAGE_JSON):
+        return []
+    info = hangars.package_info()
+    files = [(hangars.BUNDLE, hangars.BUNDLE_TARGET)] + asset_sets.feature_files(info['key'])
+    description = info['name'] + ' (triotmetki.ru)'
+    return [Package(info['key'], info['id'], info['name'], info['version'], description, files)]
+
+
 def modpack_version():
     """The modpack release version: "version" in apps/game/modpack/package.json, its single source."""
     with io.open(PACKAGE_JSON, encoding='utf-8') as handle:
@@ -179,7 +194,7 @@ def split_packages(root_init):
     companion = companion_package(core)
     extensions = [extension_package(name, core, companion) for name in extension_ids()]
     features = [feature_package(feature_id, core, companion) for feature_id in feature_ids()]
-    return [core, companion] + extensions + features
+    return [core, companion] + extensions + features + data_packages()
 
 
 def single_package(root_init):

@@ -9,7 +9,7 @@ from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.moe import moe_service
 from ....core.log import safe
 from ..i18n import STRINGS
-from ..model import BattleTotals, PanelView, format_panel, panel_state
+from ..model import BattleTotals, format_panel, panel_state
 from ..model.constants import PREVIEW_SIZE
 from ..model.preview import preview_text, preview_widget
 from ..model.widget import marks_widget
@@ -72,10 +72,6 @@ class MarksPanel(BattlePanel):
     def settings_changed(self, changed):
         self.render()
 
-    def extended_changed(self, held):
-        if self.settings.get('alt_detail'):
-            self.render()
-
     def _on_curve(self, tank_id):
         if self.totals is not None and tank_id == self.tank_id:
             self.curve = self.moe.curve(tank_id)
@@ -111,11 +107,9 @@ class MarksPanel(BattlePanel):
     def render(self):
         if self.totals is None or self.snapshot is None:
             return
-        view = PanelView(self.settings, self.extended())
-        state = panel_state(self.snapshot, self.totals.combined(), self.curve, self.pace, view)
-
-        text = format_panel(state, view, self.app.translate)
-        self.show(text, marks_widget(state, view, self.app.translate))
+        state = panel_state(self.snapshot, self.totals.combined(), self.curve, self.pace, self.settings)
+        text = format_panel(state, self.settings, self.app.translate)
+        self.show(text, marks_widget(state, self.settings, self.app.translate))
 
     def ui_parts(self):
         return {CARD_PANEL_ID: self.card}

@@ -10,7 +10,7 @@ import { settingsConfig } from '../settings';
 import { viewerConfig } from '../viewer';
 import { UI_BUILD } from '../vite.constants';
 
-const BUNDLE_FILES = ['hud.html', 'icon.png', 'icons.png', 'index.html', 'preset_advisor.js', 'viewer.html'];
+const BUNDLE_FILES = ['hud.html', 'icon.png', 'icons.png', 'index.html', 'preset_advisor.js', 'shells.png', 'viewer.html'];
 const CLASSIC_SCRIPT_AT_BODY_END = /<script>\(function\(\)\{[\s\S]*\}\)\(\);<\/script>\s*<\/body>\s*<\/html>\s*$/;
 const POLYFILLED_ELEMENTS = /\.jsxs?\)\([`'"](?:ul|ol|li|dl|dt|dd|select|option)[`'"],/;
 

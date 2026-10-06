@@ -13,11 +13,12 @@ from ....core.client.battle import (
     feedback,
     on_shot_with_own_vehicle,
     vehicle_class,
+    vehicle_info,
     vehicle_name,
 )
 from ....core.client.game import values_by_name
 from ....core.log import log, safe
-from ..model import BOOK_FILE, MODULE_KEYS, OWN_TARGET, SIDE_DEALT, SIDE_RECEIVED, HitBook, gun_shell
+from ..model import BOOK_FILE, MODULE_KEYS, OWN_TARGET, SIDE_DEALT, SIDE_RECEIVED, HitBook, battle_result, gun_shell
 from .constants import SIDE_BY_EVENT
 
 
@@ -58,6 +59,14 @@ def _map_label():
     return getattr(arena_type, 'name', None) or getattr(arena_type, 'geometryName', None)
 
 
+def _arena_details(own_id):
+    vehicle_type = getattr(vehicle_info(own_id), 'vehicleType', None)
+    return {
+        'geometry': getattr(getattr(arena(), 'arenaType', None), 'geometryName', None),
+        'tier': getattr(vehicle_type, 'level', None),
+    }
+
+
 # Fair play: only the shots between the player's own tank and one other vehicle, as the client draws them
 # (core.client.battle.on_shot_with_own_vehicle): the hits on the own tank and the player's own hits, with the shooter's
 # shell and the hit vehicle's turret and gun pose as the client drew them (poliroid BattleHits records the same:
@@ -75,6 +84,7 @@ class HitRecorder(object):
         bus = component.app.bus
         bus.on('battle_ready', self._on_battle_ready)
         bus.on('battle_leave', self._on_battle_leave)
+        bus.on('battle_results', self._on_battle_results)
         component.follow_account(self._on_account)
         if not on_shot_with_own_vehicle(self.on_shot):
             log('hit viewer: Vehicle.%s not hooked, no hits are recorded' % SHOT_METHOD)
@@ -105,8 +115,8 @@ class HitRecorder(object):
         if self.book is None or not self.component.enabled():
             return
         battle_id = getattr(player, 'arenaUniqueID', None) or int(time.time())
-        own_vehicle = vehicle_name(getattr(player, 'playerVehicleID', None))
-        self.book.start(battle_id, time.time(), _map_label(), own_vehicle)
+        own_id = getattr(player, 'playerVehicleID', None)
+        self.book.start(battle_id, time.time(), _map_label(), vehicle_name(own_id), _arena_details(own_id))
         self.hooks.clear()
         self.hooks.add(feedback, 'onPlayerFeedbackReceived', self._on_feedback)
 
@@ -114,6 +124,11 @@ class HitRecorder(object):
         self.hooks.clear()
         if self.book is not None and self.book.finish() is not None:
             self.book.save()
+
+    def _on_battle_results(self, arena_id, results):
+        if self.book is not None and self.book.resolved(arena_id, battle_result(results)):
+            self.book.save()
+            self.component.screen.battles_changed()
 
     def _recording(self, side):
         return self.book is not None and self.book.current is not None and self.component.settings.get('record_' + side)

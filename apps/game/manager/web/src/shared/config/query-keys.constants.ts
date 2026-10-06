@@ -14,5 +14,6 @@ export const QUERY_KEYS = {
   syncStatus: (clientPath: string | null) => ['sync-status', clientPath],
   whatsNew: (clientPath: string | null) => ['whats-new', clientPath],
   reportPreview: (clientPath: string | null) => ['report-preview', clientPath],
-  gameHealth: (clientPath: string | null) => ['game-health', clientPath]
+  gameHealth: (clientPath: string | null) => ['game-health', clientPath],
+  hangarLooks: (clientPath: string | null) => ['hangar-looks', clientPath]
 } as const;

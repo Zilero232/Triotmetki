@@ -1,6 +1,7 @@
 import type { ReticleSketchProps } from './ReticleSketch.types';
 
 import { CROSSHAIR, RETICLE_READOUTS } from '../../../config';
+import { sketchRing } from '../../../lib/sketch-ring';
 
 import s from './ReticleSketch.module.scss';
 
@@ -12,9 +13,9 @@ const place = {
   height: `${String(CROSSHAIR.reticle)}rem`
 };
 
-export const ReticleSketch = ({ hidesCentre }: ReticleSketchProps) => (
+export const ReticleSketch = ({ hidesCentre, circle }: ReticleSketchProps) => (
   <div className={s.reticle} style={place}>
-    <div className={s.ring} />
+    <div className={s.ring} style={sketchRing(circle)} />
     <div className={s.horizontal} />
     <div className={s.vertical} />
     {!hidesCentre && <div className={s.centre} />}

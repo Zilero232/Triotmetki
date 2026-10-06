@@ -1,69 +1,126 @@
 @use '@/shared/styles/gameface' as *;
+@use '../../styles/tones' as *;
 
 .details {
   display: flex;
-  width: 280px;
+  overflow: hidden;
+  width: 100%;
   flex-direction: column;
-  padding: 10px 12px;
-  border: 1px solid token(color-border);
-  border-radius: token(radius-md);
-  background-color: token(color-surface-overlay);
+
+  @include panel;
 }
 
 .head {
+  position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  padding: 10px 14px 10px 16px;
+  background-color: rgb(255 255 255 / 4%);
+}
+
+.penHead {
+  background-color: rgb(241 112 91 / 16%);
+}
+
+.critHead {
+  background-color: rgb(232 184 74 / 16%);
+}
+
+.blockedHead {
+  background-color: rgb(111 181 68 / 16%);
+}
+
+.ricochetHead {
+  background-color: rgb(128 166 204 / 16%);
+}
+
+.bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 4px;
+}
+
+.titles {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 0;
+  flex-direction: column;
 }
 
 .vehicle {
   overflow: hidden;
-  min-width: 0;
-  flex: 1 1 0;
   color: token(color-text);
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
+  line-height: 22px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.result {
-  flex: 0 0 auto;
-  padding-left: 8px;
-  font-size: 14px;
+.sub {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
-.part {
-  margin-bottom: 6px;
-  color: token(color-text-muted);
+.result {
   font-size: 12px;
+  line-height: 18px;
 
   @include caps;
 }
 
+.part {
+  margin-left: 10px;
+  color: token(color-text-muted);
+  font-size: 12px;
+  line-height: 18px;
+
+  @include caps;
+}
+
+.damage {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: 12px;
+}
+
+.damageValue {
+  color: token(color-text);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 26px;
+}
+
+.damageNone {
+  color: token(color-text-dim);
+}
+
+.damageLabel {
+  color: token(color-text-dim);
+  font-size: 10px;
+  line-height: 14px;
+
+  @include caps;
+}
+
+.lines {
+  display: flex;
+  flex-direction: row;
+  padding: 10px 6px 12px;
+}
+
 .note {
-  padding-top: 6px;
+  padding: 0 16px 10px;
   color: token(color-text-dim);
   font-size: 12px;
+  line-height: 16px;
 }
 
-.pen {
-  color: token(color-danger);
-}
-
-.crit {
-  color: token(color-gold);
-}
-
-.blocked {
-  color: token(color-success);
-}
-
-.ricochet {
-  color: token(color-accent);
-}
-
-.nodamage {
-  color: token(color-text-muted);
-}
+@include tone-colors;
+@include tone-colors(background-color, 'Fill');

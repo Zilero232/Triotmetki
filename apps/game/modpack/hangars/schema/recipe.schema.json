@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://triotmetki.ru/schemas/modpack/hangar-recipe.schema.json",
+  "title": "Hangar look recipe (hangars/looks/<id>/recipe.json)",
+  "description": "Only our values: the stock environment of a hangar space it starts from, the client builds it was checked on, an optional sky and the environment parameters to set. The manager applies it to the player's own client files on the player's PC (docs/specs/2026-10-06-custom-hangars.md §5.2) and enforces the same allow-list itself. Parameter paths are relative to the environment.xml root; `name[i]` picks the i-th (0-based) of repeated siblings. Only the look blocks of an environment are allowed — never its name, materials, shadows, particles or anything outside spaces/<hangar>/environments/.",
+  "type": "object",
+  "required": ["id", "clients", "base", "probes", "set"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "description": "The look id; the environment it makes is named otm_<id>.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,31}$"
+    },
+    "clients": {
+      "description": "Client builds (version.xml) the look was checked on; the manager builds it only for these.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" }
+    },
+    "base": {
+      "type": "object",
+      "required": ["space", "environment"],
+      "additionalProperties": false,
+      "properties": {
+        "space": { "type": "string", "pattern": "^spaces/[a-z0-9_]+$" },
+        "environment": {
+          "description": "The <name> of a stock environment of that space.",
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_]+$"
+        }
+      }
+    },
+    "probes": {
+      "description": "Copy the base environment's baked reflection probes into the new one (on the player's PC).",
+      "type": "boolean"
+    },
+    "sky": {
+      "description": "Client sky textures for the sky dome's diffuseMap: deferred (sky_box_HDR.fx, HDR rgbm/rgbe) and forward (sky_box.fx, LDR).",
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "deferred": { "$ref": "#/definitions/texture" },
+        "forward": { "$ref": "#/definitions/texture" }
+      }
+    },
+    "set": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/operation" }
+    }
+  },
+  "definitions": {
+    "texture": {
+      "description": "A client-relative DDS path (or one of our colour tables under system/maps/post_processing/cube/otmetki/).",
+      "type": "string",
+      "pattern": "^(?!/)(?!.*\\.\\.)[A-Za-z0-9_./-]+\\.dds$"
+    },
+    "operation": {
+      "type": "object",
+      "required": ["path", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^(day_night_cycle|HDR|Fog|GodRays|LensFlare|DOF|cloudsShadow|SkyDome|Weather)(/[A-Za-z][A-Za-z0-9_]*(\\[[0-9]+\\])?){1,5}$",
+          "not": { "pattern": "(^|/)name$" }
+        },
+        "value": {
+          "oneOf": [
+            { "type": "number" },
+            { "type": "boolean" },
+            { "$ref": "#/definitions/texture" },
+            { "type": "array", "minItems": 1, "maxItems": 16, "items": { "type": "number" } }
+          ]
+        }
+      }
+    }
+  }
+}

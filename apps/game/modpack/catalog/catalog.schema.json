@@ -21,6 +21,12 @@
       "type": "array",
       "items": { "type": "string", "pattern": "^(?!/|res/)(?!.*\\.\\.)[a-z0-9_./-]+$" }
     },
+    "disabledLooks": {
+      "description": "Kill switch: ids of hangar looks (hangars/looks/<id>) the manager leaves out of the package it generates, without a modpack release.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,31}$" }
+    },
     "conflicts": { "type": "array", "items": { "$ref": "#/definitions/conflict" } },
     "presets": { "type": "array", "items": { "$ref": "#/definitions/preset" } },
     "categories": { "type": "array", "items": { "$ref": "#/definitions/category" } },
@@ -117,7 +123,11 @@
         "preview": { "$ref": "#/definitions/preview" },
         "dependencies": { "$ref": "#/definitions/ids" },
         "perf": { "enum": ["low", "medium", "high"] },
-        "context": { "enum": ["hangar", "battle", "any"] }
+        "context": { "enum": ["hangar", "battle", "any"] },
+        "generator": {
+          "description": "A package the manager builds on the player's PC from this component's data while it is on: hangar_looks (manager tauri/src/hangars).",
+          "enum": ["hangar_looks"]
+        }
       }
     },
     "dependency": {

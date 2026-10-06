@@ -5,9 +5,6 @@ EVENT_REPLAY_UPLOADED = 'replay_uploaded'
 # replay_upload_request(request, reply): the replay manager asks the replay upload to send one replay (request None
 # only asks whether it can); the upload answers reply(state) at once, and nobody answers when it is not installed.
 EVENT_REPLAY_UPLOAD_REQUEST = 'replay_upload_request'
-# settings_open(section): a package asks the in-game settings window to open at one of its pages (`battle`, `hangar`,
-# `marks`, `replays`, `streamer`, `data`, `profiles`, `hud`); the ui package answers, nobody does without it.
-EVENT_SETTINGS_OPEN = 'settings_open'
 # settings_close(): a package asks the in-game settings window to close (the hit viewer opens over the hangar instead).
 EVENT_SETTINGS_CLOSE = 'settings_close'
 # mods_list_alert(on): a package asks for the badge on the mod's ModsList entry (a one-off notice, as ModsList's own

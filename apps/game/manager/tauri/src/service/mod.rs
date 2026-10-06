@@ -25,6 +25,7 @@ use crate::deep_link::DeepLink;
 use crate::detect::{self, DetectInput, GameClient};
 use crate::error::{AppError, AppResult, ErrorCode};
 use crate::gameface::{self, GamefaceStatus, ResMapOutcome};
+use crate::hangars::{self, HangarLooksStatus};
 use crate::install::owned_patterns_catalog;
 use crate::patch::{commit_journal, recover_commit, PatchReport, PatchStatus};
 use crate::paths::{normalized, same_path, Layout};
@@ -51,6 +52,7 @@ pub struct Manager {
     report: Mutex<PatchReport>,
     others: Mutex<HashMap<String, PatchStatus>>,
     res_maps: Mutex<HashMap<String, ResMapOutcome>>,
+    hangar_failures: Mutex<HashMap<String, bool>>,
     pending_link: Mutex<Option<DeepLink>>,
     revealable: Mutex<Vec<PathBuf>>,
     state_lock: Mutex<()>,
@@ -100,6 +102,7 @@ impl Manager {
             report: Mutex::new(PatchReport::default()),
             others: Mutex::new(HashMap::new()),
             res_maps: Mutex::new(HashMap::new()),
+            hangar_failures: Mutex::new(HashMap::new()),
             pending_link: Mutex::new(None),
             revealable: Mutex::new(Vec::new()),
             state_lock: Mutex::new(()),
@@ -245,6 +248,34 @@ impl Manager {
         let outcome = self.res_maps.lock().ok().and_then(|known| known.get(&normalized(&client.path)).copied());
 
         Ok(GamefaceStatus { restart_expected: outcome.is_some_and(ResMapOutcome::restart_expected) })
+    }
+
+    pub fn sync_hangar_looks(&self, context: ClientContext) -> bool {
+        let failed = match hangars::sync(context) {
+            Ok(outcome) => {
+                log::info!("hangar looks for {}: {outcome:?}", context.client.path.display());
+
+                false
+            }
+            Err(error) => {
+                log::warn!("hangar looks for {}: {error}", context.client.path.display());
+
+                true
+            }
+        };
+
+        if let Ok(mut known) = self.hangar_failures.lock() {
+            known.insert(normalized(&context.client.path), failed);
+        }
+
+        !failed
+    }
+
+    pub fn hangar_looks_status(&self, path: Option<&Path>) -> AppResult<HangarLooksStatus> {
+        let client = self.client(path)?;
+        let failed = self.hangar_failures.lock().ok().and_then(|known| known.get(&normalized(&client.path)).copied()).unwrap_or(false);
+
+        Ok(hangars::status(&self.layout.client_dir(&client.path), failed, &client.version.to_string()))
     }
 
     pub fn detect(&self) -> Vec<GameClient> {

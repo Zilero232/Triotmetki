@@ -9,6 +9,7 @@ import { flatPagesPlugin } from '../flat-pages';
 import { iconPngPlugin } from '../icon-png';
 import { iconSpritePlugin } from '../icon-sprite';
 import { sharedConfig } from '../shared';
+import { shellSpritePlugin } from '../shell-sprite';
 import { UI_BUILD } from '../vite.constants';
 
 // The settings window ships as one self-contained index.html: styles inlined in the head and the
@@ -23,7 +24,8 @@ export const settingsConfig = (): UserConfig =>
       classicScriptPlugin(),
       flatPagesPlugin(),
       iconPngPlugin(),
-      iconSpritePlugin()
+      iconSpritePlugin(),
+      shellSpritePlugin()
     ],
     build: {
       emptyOutDir: true,

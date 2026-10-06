@@ -183,7 +183,6 @@ export const stateSchema = z.object({
   hud: z.object({ editing: z.boolean(), panels: z.array(panelSchema) }),
   notice: z.nullable(noticeSchema),
   window: windowSchema,
-  focus: z.nullable(z.object({ section: z.enum(PROTOCOL.pages), seq: z.number() })),
   scroll: z.partialRecord(z.enum(PROTOCOL.pages), z.number())
 });
 

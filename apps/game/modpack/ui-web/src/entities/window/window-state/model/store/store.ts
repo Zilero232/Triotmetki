@@ -16,7 +16,6 @@ export const $invalid = atom(false);
 export const $view = map<View>({ section: SECTION_NAV.first });
 export const $query = atom('');
 export const $undo = atom<UndoEntry[]>([]);
-export const $focusSeq = atom(0);
 export const $editor = atom<string | null>(null);
 export const $editorFocus = atom<string | null>(null);
 
@@ -54,11 +53,6 @@ export const receiveState = (raw: string | null): boolean => {
 
   if (!previous || state.revision >= previous.revision) {
     $state.set(state);
-  }
-
-  if (state.focus && state.focus.seq !== $focusSeq.get()) {
-    $focusSeq.set(state.focus.seq);
-    openSection(state.focus.section);
   }
 
   return true;

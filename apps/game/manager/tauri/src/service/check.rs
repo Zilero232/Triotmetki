@@ -6,13 +6,13 @@ use crate::components::{self, ToggleInput};
 use crate::dependencies::{self, CarryInput, DownloadPlanInput, InstallDependenciesInput, UpdatesInput};
 use crate::detect::{self, GameClient, GameVersion};
 use crate::error::{AppError, AppResult, ErrorCode};
-use crate::fsx::{replace_restorable, Replaced};
+use crate::fsx::{file_sha256, replace_restorable, Replaced};
 use crate::install::restore_after_failure;
 use crate::patch::{self, ApplyInput, MigrateInput, PatchAction, PatchReport, PatchStatus, PlanInput};
 use crate::paths::same_path;
 use crate::previews::{self, DownloadInput, PendingInput};
 use crate::process::{ensure_closed, is_client_running};
-use crate::releases::{verify_sha256, FetchLimits, Release, ReleaseStatus, MAX_CATALOG_BYTES};
+use crate::releases::{verify_sha256, FetchLimits, LatestRelease, Release, ReleaseStatus, MAX_CATALOG_BYTES};
 use crate::settings::ManagerSettings;
 use crate::state::Manifest;
 
@@ -122,7 +122,13 @@ impl Manager {
         let deferred = |from: String, game_version: String| Ok(PatchStatus::Deferred { game_version, from });
 
         match action {
-            PatchAction::Nothing => Ok(PatchStatus::UpToDate { game_version, modpack_version: current }),
+            PatchAction::Nothing => {
+                if !is_client_running(&client.path) {
+                    self.refresh_up_to_date(client, latest.as_ref(), installed_modpack).await;
+                }
+
+                Ok(PatchStatus::UpToDate { game_version, modpack_version: current })
+            }
             PatchAction::Offline => Ok(PatchStatus::Offline { game_version }),
             PatchAction::Wait => Ok(PatchStatus::Waiting { game_version, from }),
             PatchAction::Offer(release) => Ok(PatchStatus::UpdateAvailable { game_version, current, latest: release.version, notes: release.notes }),
@@ -153,12 +159,36 @@ impl Manager {
         }
     }
 
+    async fn refresh_up_to_date(&self, client: &GameClient, latest: Option<&LatestRelease>, installed: Option<&str>) {
+        let Ok(_guard) = self.try_write_guard() else {
+            return;
+        };
+        let cached = file_sha256(&self.layout.catalog_cache()).ok();
+        let stale = latest
+            .and_then(|latest| latest.release.as_ref().filter(|_| latest.status == ReleaseStatus::Compatible))
+            .filter(|release| Some(release.version.as_str()) == installed)
+            .filter(|release| {
+                release.catalog.as_ref().is_some_and(|catalog| cached.as_deref().is_none_or(|cached| !cached.eq_ignore_ascii_case(&catalog.sha256)))
+            });
+
+        if let Some(release) = stale {
+            if let Err(error) = self.refresh_catalog(release).await.map(drop) {
+                log::warn!("refresh the catalogue of {}: {error}", release.version);
+            }
+        }
+
+        if let Ok(scope) = self.usable_scope(Some(&client.path)) {
+            self.sync_hangar_looks(scope.context());
+        }
+    }
+
     fn migrate_scope(&self, scope: &ClientScope, from_mods_dir: &Path) -> AppResult<Vec<String>> {
         ensure_closed(&scope.client.path)?;
 
         let migrated = patch::migrate(MigrateInput { context: scope.context(), from_mods_dir })?;
 
         self.sync_res_map(&scope.client);
+        self.sync_hangar_looks(scope.context());
 
         Ok(migrated)
     }
@@ -252,6 +282,7 @@ impl Manager {
         }
 
         self.sync_res_map(&scope.client);
+        self.sync_hangar_looks(scope.context());
 
         Ok(written)
     }
@@ -295,6 +326,7 @@ impl Manager {
         let changed = components::set_enabled(ToggleInput { context: scope.context(), component_id, enabled })?;
 
         self.sync_res_map(&scope.client);
+        self.sync_hangar_looks(scope.context());
 
         Ok(changed)
     }

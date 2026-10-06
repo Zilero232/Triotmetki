@@ -6,6 +6,7 @@ from ..model import space_name
 from .constants import (
     CONTROLLER_SKELETON,
     DEFAULT_CONFIG_ATTR,
+    DEFAULT_HANGAR_PATH,
     DEFAULT_SCENE,
     HANGAR_CONFIGS,
     HANGAR_SPACE_SKELETON,
@@ -25,6 +26,15 @@ def hangar_space():
 def available_paths():
     configs = client_attr(*HANGAR_CONFIGS)
     return list(configs.keys()) if isinstance(configs, dict) else []
+
+
+# Before the lobby read the hangar configs the client's table is still an empty HangarConfig: no default yet.
+def default_path():
+    read = client_attr(*DEFAULT_HANGAR_PATH)
+    try:
+        return read(False) if callable(read) else None
+    except Exception:
+        return None
 
 
 def current_name():

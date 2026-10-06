@@ -222,6 +222,7 @@ impl Manager {
             .map(|error| error.code());
 
         self.sync_res_map(&scope.client);
+        self.sync_hangar_looks(scope.context());
 
         Ok(InstallOutcome {
             installation: read_installation(scope.context())?,

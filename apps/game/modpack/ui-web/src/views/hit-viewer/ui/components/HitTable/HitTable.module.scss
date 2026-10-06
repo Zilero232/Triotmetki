@@ -1,4 +1,5 @@
 @use '@/shared/styles/gameface' as *;
+@use '../../styles/tones' as *;
 
 .table {
   display: flex;
@@ -15,11 +16,13 @@
 }
 
 .row {
+  position: relative;
   display: flex;
   width: 100%;
+  box-sizing: border-box;
   flex-direction: row;
   align-items: center;
-  padding: 0 8px;
+  padding: 0 18px 0 12px;
   border: 0;
   background-color: transparent;
   color: token(color-text);
@@ -29,40 +32,58 @@
 }
 
 .head {
-  height: 26px;
+  height: 30px;
   flex: 0 0 auto;
-  border-bottom: 1px solid token(win-divider);
-  color: token(color-text-muted);
+  border-bottom: 1px solid rgb(255 255 255 / 8%);
+  color: token(color-text-dim);
   font-size: 11px;
 
   @include caps;
 }
 
 .item {
-  height: 32px;
-  box-sizing: border-box;
+  height: 34px;
   flex: 0 0 auto;
-  border-bottom: 1px solid token(color-border);
+  border-bottom: 1px solid rgb(255 255 255 / 4%);
   cursor: pointer;
 
+  @include ease(background-color);
+
   &:hover {
-    background-color: token(color-surface-hover);
+    background-color: rgb(255 255 255 / 5%);
   }
 }
 
 .itemOn {
-  background-color: token(win-accent-tint);
+  background-color: rgb(255 122 26 / 12%);
+
+  &:hover {
+    background-color: rgb(255 122 26 / 16%);
+  }
+}
+
+.marker {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 0;
+  width: 3px;
+  border-radius: 2px;
+}
+
+.markerOn {
+  background-color: token(color-accent);
 }
 
 .cell {
   overflow: hidden;
-  padding-right: 6px;
+  padding-right: 8px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .number {
-  width: 28px;
+  width: 26px;
   flex: 0 0 auto;
   color: token(color-text-dim);
 }
@@ -70,48 +91,93 @@
 .vehicle {
   min-width: 0;
   flex: 1 1 0;
+  font-weight: 700;
 }
 
 .result {
-  width: 92px;
+  width: 112px;
   flex: 0 0 auto;
+}
+
+.part {
+  width: 72px;
+  flex: 0 0 auto;
+  color: token(color-text-muted);
 }
 
 .shell {
   width: 64px;
   flex: 0 0 auto;
+  color: token(color-text-muted);
 }
 
 .angle,
 .armor,
 .damage {
-  width: 46px;
+  width: 50px;
   flex: 0 0 auto;
   text-align: right;
 }
 
-.pen {
-  color: token(color-danger);
+.damage {
+  padding-right: 0;
+  color: token(color-text-dim);
 }
 
-.crit {
-  color: token(color-gold);
+.damageHit {
+  color: token(color-text);
+  font-size: 14px;
+  font-weight: 700;
 }
 
-.blocked {
-  color: token(color-success);
+.chip {
+  display: flex;
+  height: 22px;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 8px;
+  border-radius: 11px;
+  background-color: rgb(255 255 255 / 5%);
 }
 
-.ricochet {
-  color: token(color-accent);
+.dot {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  border-radius: 3px;
+  margin-right: 6px;
 }
 
-.nodamage {
-  color: token(color-text-muted);
+.chipText {
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.penChip {
+  background-color: rgb(241 112 91 / 14%);
+}
+
+.critChip {
+  background-color: rgb(232 184 74 / 14%);
+}
+
+.blockedChip {
+  background-color: rgb(111 181 68 / 14%);
+}
+
+.ricochetChip {
+  background-color: rgb(128 166 204 / 14%);
 }
 
 .empty {
-  padding: 24px 8px;
+  padding: 28px 12px;
   color: token(color-text-muted);
   font-size: 14px;
+  text-align: center;
 }
+
+@include tone-colors;
+@include tone-colors(background-color, 'Fill');

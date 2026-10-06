@@ -6,9 +6,12 @@ from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.native import ClientDefaults, NativeSettingsComponent, section_is_new
 from ....core.client.timer import Ticker
 from ....core.compat import is_int
+from ....core.hooks import override
+from ....core.log import log, safe
 from ....core.shells import shell_code
 from ..i18n import STRINGS
 from ..model import mark_offset, mark_text, shows_in, to_native
+from ..model.circle import circle_percent, is_scaled, scaled_size
 from ..model.constants import PREVIEW_SIZE, READOUT_TICK_S
 from ..model.editor import editor
 from ..model.preview import preview_text, preview_widget
@@ -22,12 +25,25 @@ from ..model.readouts import (
 )
 from ..model.widget import crosshair_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
-from .constants import CLIP_EVENTS, READOUT_STATES, READOUT_VIEWS, VIEW_ARCADE, VIEW_SNIPER
+from .constants import (
+    CLIP_EVENTS,
+    MARKER_METHOD,
+    MARKER_RELAX_ARG,
+    READOUT_STATES,
+    READOUT_VIEWS,
+    VIEW_ARCADE,
+    VIEW_SNIPER,
+)
 
 try:
     from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 except ImportError:
     VEHICLE_VIEW_STATE = None
+
+try:
+    from AvatarInputHandler.gun_marker_ctrl import _DefaultGunMarkerController
+except Exception:  # the controller moved: the aim circle stays the client's size
+    _DefaultGunMarkerController = None
 
 
 PANEL_SPEC = PanelSpec(
@@ -83,9 +99,37 @@ class CrosshairComponent(BattlePanel):
         self.view = None
         self.native = NativeSettingsComponent(app, PANEL_ID, SCHEMA, SWITCH, STRINGS, to_native)
         self.client_defaults = ClientDefaults(self.native, is_new_section)
+        self.circle_installed = False
+        self.install_circle()
 
     def ui_actions(self):
         return self.client_defaults.ui_actions()
+
+    # The smaller aim circle: installed once, it reads the choice on every marker update, so a change applies at once.
+    # Fair play: the gun marker the client draws, smaller; nothing else is read or changed (README, crosshair).
+    @safe
+    def install_circle(self):
+        if self.circle_installed:
+            return
+        self.circle_installed = True
+        if _DefaultGunMarkerController is None:
+            log('crosshair: the aim circle stays the client size')
+            return
+        component = self
+
+        @override(_DefaultGunMarkerController, MARKER_METHOD)
+        def _update(original, controller, *args, **kwargs):
+            result = original(controller, *args, **kwargs)
+            if len(args) > MARKER_RELAX_ARG:
+                component.scale_circle(controller, args[MARKER_RELAX_ARG])
+            return result
+
+    def scale_circle(self, controller, relax_time):
+        choice = self.settings.get('aim_circle')
+        provider = getattr(controller, '_dataProvider', None)
+        if not self.enabled() or not is_scaled(choice) or provider is None:
+            return
+        provider.updateSize(scaled_size(controller.getSize(), circle_percent(choice)), relax_time)
 
     def ui_action(self, action, row=None, value=None):
         return self.client_defaults.ui_action(action)
@@ -166,6 +210,7 @@ class CrosshairComponent(BattlePanel):
             self.render()
 
     def _read_clip(self):
+        self.readouts.set_autoloader(call(call(ammo(), 'getGunSettings'), 'hasAutoReload', False))
         changed = self.readouts.set_clip(*own_clip())
         self.readouts.set_drum_reload(call(ammo(), 'getShellChangeTime'))
         return changed

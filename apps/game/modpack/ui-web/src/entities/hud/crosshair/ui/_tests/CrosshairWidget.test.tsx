@@ -59,6 +59,21 @@ describe(CrosshairWidget, () => {
     expect(crosshairSchema.safeParse({ ...data, readouts: { reload, arcs: null, zoom: null } }).success).toBe(true);
   });
 
+  it('reads a payload of an older crosshair as the game circle', () => {
+    const { circle: _circle, ...older } = data;
+
+    expect(crosshairSchema.parse(older).circle).toBe(100);
+  });
+
+  it('draws the chosen aim circle smaller in the preview', () => {
+    const ring = (circle: number) =>
+      mount({ ...data, circle })
+        .querySelector('[class*="ring"]')
+        ?.getAttribute('style');
+
+    expect(ring(60)).toContain('width: 36%');
+  });
+
   it('draws one shell icon per round, the fired ones dimmed', () => {
     const states = shells(mount(data)).map((shell) => shell.getAttribute('data-shell'));
 
@@ -100,6 +115,23 @@ describe(CrosshairWidget, () => {
     view.rerender(<CrosshairWidget data={withClip({ loaded: 3 })} />);
 
     expect(view.container.querySelectorAll('[class*="eject"]')).toHaveLength(1);
+  });
+
+  it('keeps every shell slot on screen through a shot', () => {
+    const view = render(<CrosshairWidget data={data} />);
+    const before = shells(view.container);
+
+    view.rerender(<CrosshairWidget data={withClip({ loaded: 3 })} />);
+
+    expect(shells(view.container)).toStrictEqual(before);
+  });
+
+  it('draws the shells from the shell sprite, not inline SVG', () => {
+    const html = mount(data);
+    const icon = shells(html)[0]?.firstElementChild;
+
+    expect(icon?.querySelector('svg')).toBeNull();
+    expect(icon?.getAttribute('style')).toContain('shells.png');
   });
 
   it('writes the sniper zoom right of the reticle', () => {

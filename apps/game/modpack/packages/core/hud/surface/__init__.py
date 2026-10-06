@@ -17,7 +17,8 @@ The page sends `{type: 'ready'}` once it can draw, `{type: 'moved', id, x, y, al
 `{type: 'resized', id, scale}` after a wheel turn, `{type: 'pressed', id}` when the player clicks a button panel, and
 `{type: 'mouse', event}` the first time it sees the pointer over a panel, a press or a wheel turn in edit mode, and
 `{type: 'drawn', ids}` whenever the panels it laid out with a size changed (a panel replaces a stock element only while
-the page draws it).
+the page draws it), and `{type: 'area', whole}` whenever its input area turns into the whole screen or back to its
+buttons and the panel under the pointer.
 `handle(raw)` decodes one message; the ui-web side is `src/shared/api/hud-protocol` (a test checks both command
 lists).
 """
@@ -146,6 +147,11 @@ def _mouse(message):
     return {'event': message['event']}
 
 
+def _area(message):
+    whole = message.get('whole')
+    return {'whole': whole} if isinstance(whole, bool) else None
+
+
 def _drawn(message):
     ids = message.get('ids')
     if not isinstance(ids, list) or len(ids) > HUD_MAX_DRAWN:
@@ -156,7 +162,7 @@ def _drawn(message):
 
 
 _PANEL_FIELDS = {'moved': _moved, 'resized': _resized, 'pressed': lambda message: {}}
-_PAGE_FIELDS = {'ready': lambda message: {}, 'mouse': _mouse, 'drawn': _drawn}
+_PAGE_FIELDS = {'ready': lambda message: {}, 'mouse': _mouse, 'drawn': _drawn, 'area': _area}
 
 
 def _parse_message(raw):
