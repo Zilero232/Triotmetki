@@ -158,6 +158,13 @@ class SectionsTest(unittest.TestCase):
 
         self.assertFalse(components['crew_xp']['show_card'])
 
+    def test_a_zoom_readout_left_off_by_default_turns_on(self):
+        config = {'defaults_revision': 4}
+
+        _, components = migrate(config, {'crosshair': {'show_zoom': False}})
+
+        self.assertTrue(components['crosshair']['show_zoom'])
+
     def test_a_clock_strip_the_player_moved_stays(self):
         moved = {'x': 40, 'y': 76, 'align_x': 'right', 'align_y': 'top'}
 

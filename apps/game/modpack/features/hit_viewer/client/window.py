@@ -4,7 +4,6 @@ from ....core.log import log_exception, safe
 from .constants import (
     BACKGROUND_ALPHA,
     INVALID_RES_ID,
-    MARKS_PROPERTY,
     MESSAGE_ARG,
     RES_MAP_ID,
     SEND_COMMAND,
@@ -79,20 +78,16 @@ if AVAILABLE:
 
     class ViewerModel(ViewModel):
 
-        def __init__(self, properties=2, commands=1):
+        def __init__(self, properties=1, commands=1):
             super(ViewerModel, self).__init__(properties=properties, commands=commands)
 
         def _initialize(self):
             super(ViewerModel, self)._initialize()
             self._addStringProperty(STATE_PROPERTY, '')
-            self._addStringProperty(MARKS_PROPERTY, '')
             self.send = self._addCommand(SEND_COMMAND)
 
         def set_state(self, text):
             self._setString(0, text)
-
-        def set_marks(self, text):
-            self._setString(1, text)
 
     class ViewerView(ViewImpl):
 
@@ -155,7 +150,7 @@ class ViewerWindowHost(object):
         self.view = None
         self.retired = []
         self.escape_manager = None
-        self.pushed = {}
+        self.pushed = None
 
     @staticmethod
     def available():
@@ -177,35 +172,25 @@ class ViewerWindowHost(object):
         was_open = self.is_open
         if self.view is not None:
             self.retired.append(self.view)
-        self.is_open, self.view, self.pushed = False, None, {}
+        self.is_open, self.view, self.pushed = False, None, None
         self._release_escape()
         if was_open and restore_hangar:
             show_hangar()
 
     def push_state(self, text):
-        self._push(STATE_PROPERTY, text)
-
-    def push_marks(self, text):
-        self._push(MARKS_PROPERTY, text)
-
-    def _push(self, name, text):
-        if self.view is None or self.pushed.get(name) == text:
+        if self.view is None or self.pushed == text:
             return
-        self.pushed[name] = text
-        model = self.view.viewModel
-        if name == STATE_PROPERTY:
-            model.set_state(text)
-        else:
-            model.set_marks(text)
+        self.pushed = text
+        self.view.viewModel.set_state(text)
 
     def on_loaded(self, view):
         if not self.is_open:
             return
-        self.view, self.pushed = view, {}
+        self.view, self.pushed = view, None
         self.on_ready()
 
     # The client replaces the sub view itself (a header tab, a battle that starts without a queue, a logout): the
-    # screen still has its ticker and the swapped hangar vehicle to give back.
+    # screen still has the swapped hangar vehicle to give back.
     def on_destroyed(self, view):
         if view in self.retired:
             self.retired.remove(view)

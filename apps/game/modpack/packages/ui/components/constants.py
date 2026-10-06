@@ -50,16 +50,16 @@ PANEL_ADVANCED_KEYS = ('alpha',)
 OPTIONAL_HOOKS = (('editor', 'ui_editor'), ('thumb', 'ui_thumb'), ('gallery', 'ui_gallery'))
 
 # The settings window's navigation: every component card sits on one section page. Profiles and the HUD editor are
-# pages of their own (the page's SECTION constants), not component sections.
+# pages of their own (the page's SECTION constants), not component sections. Component pages follow where a component
+# shows (battle or hangar, the way the packs' configurators split them); the replays page is the replay browser with
+# its components, the data page the site binding.
 SECTION_BATTLE = 'battle'
 SECTION_HANGAR = 'hangar'
-SECTION_MARKS = 'marks'
 SECTION_REPLAYS = 'replays'
-SECTION_STREAMER = 'streamer'
 SECTION_DATA = 'data'
 # The HUD editor's page also lists the components that shape the whole battle HUD (the layout per battle type).
 SECTION_HUD = 'hud'
-SECTIONS = (SECTION_BATTLE, SECTION_HANGAR, SECTION_MARKS, SECTION_REPLAYS, SECTION_STREAMER, SECTION_DATA, SECTION_HUD)
+SECTIONS = (SECTION_BATTLE, SECTION_HANGAR, SECTION_REPLAYS, SECTION_DATA, SECTION_HUD)
 
 # Where a component shows anything: only in the hangar, only in battle, or in both. catalog/catalog.json carries the
 # `context` of each package for the manager: its component's, or `any` when its components (the feature's settings
@@ -71,8 +71,8 @@ CONTEXTS = (CONTEXT_HANGAR, CONTEXT_BATTLE, CONTEXT_ANY)
 
 PLACEMENT = {
     'companion': (SECTION_DATA, CONTEXT_ANY),
-    'marks_panel': (SECTION_MARKS, CONTEXT_BATTLE),
-    'battle_progress': (SECTION_MARKS, CONTEXT_BATTLE),
+    'marks_panel': (SECTION_BATTLE, CONTEXT_BATTLE),
+    'battle_progress': (SECTION_BATTLE, CONTEXT_BATTLE),
     'damage_log': (SECTION_BATTLE, CONTEXT_BATTLE),
     'team_hp': (SECTION_BATTLE, CONTEXT_BATTLE),
     'sixth_sense': (SECTION_BATTLE, CONTEXT_BATTLE),
@@ -88,13 +88,13 @@ PLACEMENT = {
     'minimap': (SECTION_BATTLE, CONTEXT_BATTLE),
     'crosshair': (SECTION_BATTLE, CONTEXT_BATTLE),
     'camera': (SECTION_BATTLE, CONTEXT_BATTLE),
-    'chat_filter': (SECTION_STREAMER, CONTEXT_BATTLE),
-    'streamer_mode': (SECTION_STREAMER, CONTEXT_ANY),
-    'hangar_cleaner': (SECTION_STREAMER, CONTEXT_HANGAR),
-    'session_stats': (SECTION_MARKS, CONTEXT_HANGAR),
-    'battle_results': (SECTION_MARKS, CONTEXT_ANY),
-    'last_battle': (SECTION_MARKS, CONTEXT_BATTLE),
-    'hangar_marks': (SECTION_MARKS, CONTEXT_HANGAR),
+    'chat_filter': (SECTION_BATTLE, CONTEXT_BATTLE),
+    'streamer_mode': (SECTION_HANGAR, CONTEXT_ANY),
+    'hangar_cleaner': (SECTION_HANGAR, CONTEXT_HANGAR),
+    'session_stats': (SECTION_HANGAR, CONTEXT_HANGAR),
+    'battle_results': (SECTION_HANGAR, CONTEXT_ANY),
+    'last_battle': (SECTION_BATTLE, CONTEXT_BATTLE),
+    'hangar_marks': (SECTION_HANGAR, CONTEXT_HANGAR),
     'hangar_tweaks': (SECTION_HANGAR, CONTEXT_HANGAR),
     'hangar_info': (SECTION_HANGAR, CONTEXT_ANY),
     'personal_missions': (SECTION_HANGAR, CONTEXT_HANGAR),
@@ -114,4 +114,11 @@ PLACEMENT = {
     'preset_advisor': (SECTION_HANGAR, CONTEXT_HANGAR),
     'free_camera': (SECTION_REPLAYS, CONTEXT_ANY),
     'quick_demount': (SECTION_HANGAR, CONTEXT_HANGAR),
+}
+
+# HUD panels a feature draws besides its own card, with no switch of their own: the owner's card switches them, and
+# their row points there.
+PANEL_OWNERS = {
+    'battle_clock': 'hangar_info',
+    'last_battle': 'battle_results',
 }

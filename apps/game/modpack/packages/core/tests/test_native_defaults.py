@@ -9,6 +9,7 @@ from otmetki.core.native_settings import (
     NATIVE,
     TRI_STATE,
     NativeState,
+    client_holds,
     client_keys,
     is_recommended,
     native_choices,
@@ -59,6 +60,24 @@ class OfferedActionTest(unittest.TestCase):
 
     def test_recommended_values_without_a_backup_offer_nothing(self):
         assert offered_action(False, True) is None
+
+
+class ClientHoldsTest(unittest.TestCase):
+
+    def test_the_client_at_the_wanted_values_holds_them(self):
+        assert client_holds({'a': 2, 'b': True}, {'a': 2, 'b': True}) is True
+
+    def test_one_client_value_off_the_wanted_one_does_not_hold(self):
+        assert client_holds({'a': 0, 'b': True}, {'a': 2, 'b': True}) is False
+
+    def test_a_name_the_client_does_not_know_does_not_count(self):
+        assert client_holds({'a': 2}, {'a': 2, 'unknown': 1}) is True
+
+    def test_a_dict_setting_holds_when_the_wanted_parts_match(self):
+        assert client_holds({'reticle': {'x': 1, 'y': 2}}, {'reticle': {'x': 1}}) is True
+
+    def test_nothing_wanted_is_held(self):
+        assert client_holds({'a': 0}, {}) is True
 
 
 class BackupTest(unittest.TestCase):

@@ -96,7 +96,7 @@ describe('$summaries', () => {
   it('summarises the pages of the latest state', () => {
     receiveState(sample);
 
-    expect($summaries.get()).toHaveLength(7);
+    expect($summaries.get()).toHaveLength(5);
   });
 });
 

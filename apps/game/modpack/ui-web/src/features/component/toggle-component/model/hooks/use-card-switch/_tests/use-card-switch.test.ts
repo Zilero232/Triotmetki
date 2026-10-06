@@ -1,46 +1,46 @@
 // @vitest-environment jsdom
 import { act, renderHook } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import type { UiComponent } from '@/shared/api/protocol';
 
-import { send } from '@/shared/api/protocol/protocol';
-import { RU } from '@/shared/i18n/strings';
+import { $components, $editor, $state, receiveState } from '@/entities/window/window-state';
+import stateSample from '@/shared/api/protocol/_tests/fixtures/state.sample.json?raw';
 
 import { useCardSwitch } from '../use-card-switch';
 
-vi.mock('@/shared/api/protocol/protocol', () => ({ send: vi.fn(() => true) }));
+const part = (owner: string): UiComponent => {
+  const [base] = $components.get();
 
-const component = (overrides: Partial<UiComponent> = {}): UiComponent => ({
-  id: 'replay_manager',
-  group: 'hangar',
-  section: 'replays',
-  context: 'hangar',
-  title: 'Replays',
-  hint: null,
-  switch: { key: 'hangar_replay_manager', value: true },
-  fields: [],
-  panel: false,
-  actions: [],
-  page: null,
-  ...overrides
-});
+  if (!base) {
+    throw new Error('the state sample has no components');
+  }
+
+  return { ...base, id: 'last_battle', switch: null, owner };
+};
 
 beforeEach(() => {
-  vi.mocked(send).mockClear();
+  $state.set(null);
+  $editor.set(null);
+  receiveState(stateSample);
 });
 
 describe(useCardSwitch, () => {
-  it('flips the switch through a set message', () => {
-    const hook = renderHook(() => useCardSwitch(component()));
+  it('names the card that switches a part without its own switch', () => {
+    const { result } = renderHook(() => useCardSwitch(part('session_stats')));
 
-    act(() => hook.result.current.toggle());
-
-    expect(send).toHaveBeenCalledWith({ type: 'set', component: 'replay_manager', key: 'hangar_replay_manager', value: false });
+    expect(result.current.owner?.title).toBe($components.get().find(({ id }) => id === 'session_stats')?.title);
   });
 
-  it('labels the switch by its value', () => {
-    expect(renderHook(() => useCardSwitch(component())).result.current.label).toBe(RU.on);
-    expect(renderHook(() => useCardSwitch(component({ switch: { key: 'hangar_replay_manager', value: false } }))).result.current.label).toBe(RU.off);
+  it('opens the owner card', () => {
+    const { result } = renderHook(() => useCardSwitch(part('session_stats')));
+
+    act(() => result.current.owner?.open());
+
+    expect($editor.get()).toBe('session_stats');
+  });
+
+  it('has no owner for an unknown card', () => {
+    expect(renderHook(() => useCardSwitch(part('missing'))).result.current.owner).toBeNull();
   });
 });

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseViewerMarks, parseViewerState } from '..';
+import { parseViewerState } from '..';
 
 const STATE = {
   labels: { title: 'Просмотр попаданий' },
@@ -44,17 +44,5 @@ describe('parseViewerState', () => {
 
   it('refuses text that is not JSON', () => {
     expect(parseViewerState('{')).toBeNull();
-  });
-});
-
-describe('parseViewerMarks', () => {
-  it('reads the projected markers', () => {
-    const marks = parseViewerMarks(JSON.stringify({ selected: 2, marks: [{ i: 2, tone: 'ricochet', x: 0.5, y: 0.4, tx: 0.45, ty: 0.38 }] }));
-
-    expect(marks?.marks[0]?.tone).toBe('ricochet');
-  });
-
-  it('answers null without a property yet', () => {
-    expect(parseViewerMarks(null)).toBeNull();
   });
 });

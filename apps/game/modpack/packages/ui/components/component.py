@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ...core.log import log_exception
 from ...core.vendor import attr
 from ..fields import SWITCH_KEY, TYPE_BOOL, describe_fields, field_type
-from .constants import OPTIONAL_HOOKS, PANEL_ADVANCED_KEYS, PANEL_POSITION_KEYS
+from .constants import OPTIONAL_HOOKS, PANEL_ADVANCED_KEYS, PANEL_OWNERS, PANEL_POSITION_KEYS
 from .placement import placement_of
 
 
@@ -114,6 +114,9 @@ class Component(object):
         if instance is not None and hasattr(instance, 'ui_page'):
             described['page'] = _hook(instance, 'ui_page')
         described.update(self._describe_optional(labels))
+        owner = PANEL_OWNERS.get(self.id) if self.switch is None else None
+        if owner is not None:
+            described['owner'] = owner
         return described
 
 

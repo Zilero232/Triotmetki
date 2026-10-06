@@ -9,19 +9,36 @@ from .. import FEATURE_ID
 from ..i18n import STRINGS
 from ..model import (
     ACTION_CHOOSE,
+    ACTION_LOOK,
     ACTION_NATIVE,
     PLAN_LATER,
+    PLAN_LOADED,
     PLAN_RELOAD,
     PLAN_WAIT,
-    available_space,
+    available_looks,
     build_page,
+    chosen_target,
+    environment_changes,
+    find_look,
+    listed_spaces,
+    look_preview,
     override_changes,
     reload_plan,
+    row_look,
+    same_path,
     space_names,
-    space_path,
     space_preview,
+    wanted_environments,
 )
 from ..settings import ADVANCED, SCHEMA, SWITCH
+from .environment import (
+    active_environment,
+    environment_names,
+    environment_slots,
+    slot_targets,
+    switch_environment,
+    write_environments,
+)
 from .space import (
     available_paths,
     controller,
@@ -35,44 +52,81 @@ from .space import (
     write_overrides,
 )
 
+ACTIONS = (ACTION_CHOOSE, ACTION_LOOK, ACTION_NATIVE)
+
 
 # The hangar space the player picked stands in for the game's default one: written into the client's default hangar
 # config the way its server event notifications write theirs, so an event hangar and the hangars of other modes still
 # win, and taken out again when the switch goes off or the choice goes back to the game's own. The default hangar
 # reloads at once when it is the one open; a space still loading is waited for the way the switch controller waits.
+# A look adds a stock environment of its space: written into the same config's environment slot (used when the space
+# loads) and switched live when its space is the one loaded.
 class HangarSpace(FeatureComponent):
 
     def __init__(self, app):
         FeatureComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS)
         self.owned = None
+        self.owned_environment = u''
         self.waiting = False
+        self.environment_pending = False
+        self.missing_looks = set()
         app.bus.on('hangar', self.apply)
 
     def settings_changed(self, changed):
         self.apply(force=True)
 
-    def wanted_path(self):
+    def looks(self, names):
+        spaces = listed_spaces(names)
+        return available_looks(spaces, environment_names(spaces))
+
+    def chosen_look(self, names):
+        look_id = self.settings.get('look')
+        look = find_look(self.looks(names), look_id)
+        if look_id and look is None and look_id not in self.missing_looks:
+            self.missing_looks.add(look_id)
+            log('hangar space: look %s is not in this client, the game\'s own look stays' % look_id)
+        return look
+
+    def wanted(self):
         if not self.enabled():
-            return None
-        return space_path(available_space(self.settings.get('space'), space_names(available_paths())))
+            return None, u''
+        names = space_names(available_paths())
+        return chosen_target(self.settings.get('space'), self.chosen_look(names), names)
 
     def apply(self, force=False):
         switcher = controller()
         if switcher is None or self.app.in_battle:
             return PLAN_LATER
-        wanted = self.wanted_path()
-        changes = override_changes(overrides(switcher), self.owned, wanted)
-        self.owned = wanted
+        path, environment = self.wanted()
+        changes = override_changes(overrides(switcher), self.owned, path)
+        self.owned = path
         if changes:
             write_overrides(switcher, changes)
-            log('hangar space: %s' % (wanted or 'the game default'))
+            log('hangar space: %s' % (path or 'the game default'))
         hangar = hangar_space()
+        environment_changed = self._write_environment(switcher, hangar, path, environment)
         ready = space_ready(hangar) and bool(available_paths())
         target = target_path(switcher, hangar) if ready else None
-        plan = reload_plan(is_default_scene(switcher), ready, target, getattr(hangar, 'spacePath', None))
+        loaded = getattr(hangar, 'spacePath', None)
+        plan = reload_plan(is_default_scene(switcher), ready, target, loaded)
         if changes or force:
             self._follow(switcher, hangar, plan)
+        live = environment if same_path(loaded, path) else u''
+        self._follow_environment(plan, loaded, live, environment_changed)
         return plan
+
+    def _write_environment(self, switcher, hangar, path, environment):
+        current = environment_slots(switcher)
+        if current is None:
+            return False
+        targets = slot_targets(switcher) if environment else {}
+        changes = environment_changes(current, self.owned_environment, wanted_environments(targets, path, environment))
+        self.owned_environment = environment
+        if not changes:
+            return False
+        write_environments(switcher, changes)
+        log('hangar space: environment %s' % (environment or 'of the game'))
+        return bool(getattr(hangar, 'isPremium', False)) in changes
 
     def _follow(self, switcher, hangar, plan):
         if plan == PLAN_RELOAD:
@@ -80,6 +134,16 @@ class HangarSpace(FeatureComponent):
         elif plan == PLAN_WAIT and not self.waiting:
             self.waiting = True
             once_space_created(hangar, self._space_created)
+
+    # A changed environment of the loaded space is switched live; a reload or a space still loading takes it from the
+    # slot, and a space that loaded before the slot was written is switched once it is ready.
+    def _follow_environment(self, plan, loaded, environment, changed):
+        self.environment_pending = self.environment_pending or changed
+        if plan == PLAN_RELOAD:
+            self.environment_pending = False
+        elif plan == PLAN_LOADED and self.environment_pending:
+            self.environment_pending = False
+            switch_environment(environment or active_environment(loaded))
 
     def _space_created(self):
         self.waiting = False
@@ -89,21 +153,34 @@ class HangarSpace(FeatureComponent):
         if not self.enabled_in_hangar():
             return None
         names = space_names(available_paths())
-        return build_page(names, self.settings.get('space'), current_name(), self.app.translate)
+        looks = self.looks(names)
+        return build_page(names, self.settings.get('space'), current_name(), self.app.translate,
+                          looks=looks, look=self.settings.get('look'))
 
     def ui_thumb(self):
-        return space_preview(self.settings.get('space'))
+        look_id = self.settings.get('look')
+        return look_preview(look_id) if look_id else space_preview(self.settings.get('space'))
 
     def ui_advanced(self):
         return ADVANCED
 
     def ui_action(self, action, row=None, value=None):
-        if not self.enabled_in_hangar() or action not in (ACTION_CHOOSE, ACTION_NATIVE):
+        if not self.enabled_in_hangar() or action not in ACTIONS:
             return None
+        if action == ACTION_LOOK:
+            return self._choose_look(row_look(row))
         chosen = row if action == ACTION_CHOOSE else u''
         if chosen and chosen not in space_names(available_paths()):
             return self.notice_error('hangar_space_refused_missing')
-        component_config(self.app).update(self.component_id, {'space': chosen})
+        return self._save({'space': chosen, 'look': u''}, 'hangar_space_applied')
+
+    def _choose_look(self, look_id):
+        if find_look(self.looks(space_names(available_paths())), look_id) is None:
+            return self.notice_error('hangar_space_refused_look')
+        return self._save({'look': look_id}, 'hangar_space_look_applied')
+
+    def _save(self, values, applied):
+        component_config(self.app).update(self.component_id, values)
         if self.apply(force=True) == PLAN_LATER:
             return self.notice_info('hangar_space_later')
-        return self.notice_info('hangar_space_applied')
+        return self.notice_info(applied)

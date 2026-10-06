@@ -22,8 +22,8 @@ DRUM_STYLES = ('shells', 'bars', 'off')
 # default (docs/research/competitors/2026-10-05-behavior-parity.md section 2), so the chevron and the others wait in
 # the gallery, each with its colour and outline below. The readouts beside the reticle show the own reload, the arcs
 # are opt-in, the magazine is drawn as shell icons (docs/research/design/2026-10-05-autoloader-styles.md); the sniper
-# zoom stays the game's own indicator unless the player asks for ours (XVM's is off by default, Battle Observer has
-# none); the repair of the own modules stays on the stock damage panel, which every pack keeps.
+# zoom readout is on (the owner's call; it hides the stock indicator only while ours is drawn); the repair of the own
+# modules stays on the stock damage panel, which every pack keeps.
 # x/y are the mark's offset from the reticle centre, not a screen position: the mark follows the reticle,
 # so it is not dragged (a drag would save a screen position).
 DEFAULTS = {
@@ -38,7 +38,7 @@ DEFAULTS = {
     'reload_box': True,
     'drum_style': 'shells',
     'reload_arcs': False,
-    'show_zoom': False,
+    'show_zoom': True,
     'x': 0,
     'y': 0,
     'align_x': 'center',

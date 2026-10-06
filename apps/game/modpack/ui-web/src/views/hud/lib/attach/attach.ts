@@ -17,19 +17,21 @@ const barBox = ({ attach }: AttachRectInput): Size => (attach.bar > 0 ? { width:
 
 const aboveBarTop = (input: AttachRectInput): number => input.screen.height - barBox(input).height - bar.above - input.size.height;
 
+const rowLift = ({ attach }: AttachRectInput): number => (attach.bar > 0 ? bar.row + bar.above : 0);
+
 const barRight = (input: AttachRectInput): Pick<Rect, 'left' | 'top'> => {
   const { attach, size, screen } = input;
   const left = screen.width / 2 + barBox(input).width / 2 + gap;
 
   if (left + size.width > screen.width - attach.minimap - edge) {
-    return { left: screen.width / 2 + bar.split, top: aboveBarTop(input) };
+    return { left: screen.width / 2 + bar.split, top: aboveBarTop(input) - rowLift(input) };
   }
 
   return { left, top: bottomTop(input) };
 };
 
-const barLeft = (input: AttachRectInput): Pick<Rect, 'left' | 'top'> => ({
-  left: input.screen.width / 2 - bar.split - input.size.width,
+const barCentre = (input: AttachRectInput): Pick<Rect, 'left' | 'top'> => ({
+  left: (input.screen.width - input.size.width) / 2,
   top: aboveBarTop(input)
 });
 
@@ -51,7 +53,7 @@ const scoreRight = ({ size, screen }: AttachRectInput): Pick<Rect, 'left' | 'top
 
 const RULES: Record<HudAttach['kind'], AttachRule> = {
   bar_right: barRight,
-  bar_left: barLeft,
+  bar_above: barCentre,
   minimap_above: minimapAbove,
   score_right: scoreRight
 };

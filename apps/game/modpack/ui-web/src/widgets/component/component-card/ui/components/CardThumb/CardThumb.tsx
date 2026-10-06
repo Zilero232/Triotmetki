@@ -1,3 +1,5 @@
+import clsx from 'clsx';
+
 import { HudSample } from '@/features/hud/widget-registry';
 import { FitBox, Icon } from '@/ui-kit';
 
@@ -8,42 +10,40 @@ import { CarouselPreview } from '../CarouselPreview';
 
 import s from './CardThumb.module.scss';
 
-export const CardThumb = ({ card }: CardThumbProps) => {
-  const fallback = <Icon name={card.icon} size={CARD_THUMB.fallbackIcon} tone='muted' />;
+const ThumbContent = ({ card }: CardThumbProps) => {
+  const fallback = <Icon name={card.icon} size={CARD_THUMB.fallbackIcon} tone={card.enabled ? 'text' : 'muted'} />;
 
   if (card.thumb) {
-    return (
-      <span aria-hidden='true' className={s.thumb}>
-        <img alt='' className={s.image} draggable={false} src={card.thumb} />
-      </span>
-    );
+    return <img alt='' className={s.image} draggable={false} src={card.thumb} />;
   }
 
   if (card.previewKind === 'panel' && card.preview) {
     return (
-      <span aria-hidden='true' className={s.thumb}>
-        <HudSample
-          className={s.sample}
-          fallback={fallback}
-          minScale={CARD_THUMB.minScale}
-          text={card.preview.text ?? card.preview.preview}
-          widget={card.preview.widget}
-        />
-      </span>
+      <HudSample
+        className={s.sample}
+        fallback={fallback}
+        minScale={CARD_THUMB.minScale}
+        text={card.preview.text ?? card.preview.preview}
+        widget={card.preview.widget}
+      />
     );
   }
 
   if (card.previewKind === 'carousel') {
     return (
-      <span aria-hidden='true' className={s.thumb}>
-        <FitBox className={s.sample}>
-          <span className={s.carousel}>
-            <CarouselPreview model={card.carousel} />
-          </span>
-        </FitBox>
-      </span>
+      <FitBox className={s.sample}>
+        <span className={s.carousel}>
+          <CarouselPreview model={card.carousel} />
+        </span>
+      </FitBox>
     );
   }
 
-  return <span aria-hidden='true' className={s.slot} />;
+  return <span className={s.icon}>{fallback}</span>;
 };
+
+export const CardThumb = ({ card }: CardThumbProps) => (
+  <span aria-hidden='true' className={clsx(s.thumb, !card.enabled && s.thumbOff)}>
+    <ThumbContent card={card} />
+  </span>
+);

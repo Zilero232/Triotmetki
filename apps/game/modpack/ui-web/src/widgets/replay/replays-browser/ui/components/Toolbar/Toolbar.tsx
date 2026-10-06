@@ -7,7 +7,7 @@ import type { ToolbarProps } from './Toolbar.types';
 
 import { resultOptions } from '../../../lib/filter-options';
 import { useReplaysT } from '../../../model/hooks';
-import { ToolbarSearch, ToolbarSort, ToolbarTools } from './components';
+import { ToolbarSearch, ToolbarSort } from './components';
 
 import s from './Toolbar.module.scss';
 
@@ -35,7 +35,6 @@ export const Toolbar = ({ browser }: ToolbarProps) => {
         <span className={s.favouritesLabel}>{t('favourites')}</span>
       </button>
       <ToolbarSort browser={browser} />
-      <ToolbarTools browser={browser} />
     </div>
   );
 };

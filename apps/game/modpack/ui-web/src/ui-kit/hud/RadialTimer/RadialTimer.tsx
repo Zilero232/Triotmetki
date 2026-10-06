@@ -8,6 +8,7 @@ import s from './RadialTimer.module.scss';
 export const RadialTimer = ({ progress, size, stroke, inner, tone = 'accent', children }: RadialTimerProps) => {
   const centre = size / 2;
   const radius = centre - stroke;
+  const track = radialArc({ progress: 1, radius, centre });
   const arc = radialArc({ progress, radius, centre });
   const box = { width: `${String(size)}rem`, height: `${String(size)}rem` };
   const offset = `${String((size - inner) / 2)}rem`;
@@ -16,23 +17,8 @@ export const RadialTimer = ({ progress, size, stroke, inner, tone = 'accent', ch
   return (
     <div className={s.radial} style={box}>
       <span className={s.layer} style={box}>
-        <svg
-          aria-hidden='true'
-          height='100%'
-          style={box}
-          viewBox={`0 0 ${String(size)} ${String(size)}`}
-          width='100%'
-          xmlns='http://www.w3.org/2000/svg'
-        >
-          <circle
-            cx={centre}
-            cy={centre}
-            fill='none'
-            r={radius}
-            stroke={HUD_FIGURE.empty.color}
-            strokeOpacity={HUD_FIGURE.empty.opacity}
-            strokeWidth={stroke}
-          />
+        <svg aria-hidden='true' height='100%' viewBox={`0 0 ${String(size)} ${String(size)}`} width='100%' xmlns='http://www.w3.org/2000/svg'>
+          <path d={track} fill='none' stroke={HUD_FIGURE.empty.color} strokeOpacity={HUD_FIGURE.empty.opacity} strokeWidth={stroke} />
           {arc && <path d={arc} fill='none' stroke={HUD_TONE_COLORS[tone].hex} strokeWidth={stroke} />}
         </svg>
       </span>

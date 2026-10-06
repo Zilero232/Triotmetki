@@ -4,33 +4,40 @@
   position: relative;
   display: flex;
   overflow: hidden;
-  width: 104px;
-  height: 58px;
+  width: 96px;
+  height: 54px;
   flex: 0 0 auto;
   align-items: stretch;
   border: 1px solid token(win-stage-line);
   border-radius: token(radius-md);
-  margin-left: 12px;
+  margin-right: 16px;
   background-color: token(color-bg-deep);
   background-image: token(win-stage);
   box-shadow: token(win-well-shadow);
+
+  @include ease(opacity);
 }
 
-.slot {
-  width: 104px;
-  height: 58px;
-  flex: 0 0 auto;
-  margin-left: 12px;
+.thumbOff {
+  opacity: 0.55;
 }
 
 .image {
-  width: 102px;
-  height: 56px;
+  width: 94px;
+  height: 52px;
 }
 
 .sample {
-  width: 102px;
-  height: 56px;
+  width: 94px;
+  height: 52px;
+}
+
+.icon {
+  display: flex;
+  width: 94px;
+  height: 52px;
+  align-items: center;
+  justify-content: center;
 }
 
 .carousel {

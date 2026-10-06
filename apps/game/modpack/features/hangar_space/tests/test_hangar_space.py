@@ -155,7 +155,7 @@ class PageTest(unittest.TestCase):
         page = build_page(['a'], u'', 'a', translator())
 
         assert page['layout'] == 'gallery'
-        assert page['note'].startswith(u'Ангар меняется сразу')
+        assert page['note'].startswith(u'Ангар и вид меняются сразу')
 
     def test_the_chosen_space_has_no_choose_button(self):
         rows = build_page(['a', 'b'], 'b', 'a', translator())['rows']
@@ -176,8 +176,8 @@ class PageTest(unittest.TestCase):
         assert row['badge'] == u'Выбран'
         assert row['meta'] == u'Сейчас загружен'
 
-    def test_the_folder_field_is_advanced(self):
-        assert ADVANCED == ('space',)
+    def test_the_folder_and_look_fields_are_advanced(self):
+        assert ADVANCED == ('space', 'look')
 
 
 if __name__ == '__main__':

@@ -34,13 +34,6 @@ def unit(vector):
     return tuple(value / length for value in vector)
 
 
-def along(point, direction, distance):
-    found = unit(direction)
-    if found is None:
-        return tuple(point)
-    return tuple(start + value * distance for start, value in zip(point, found))
-
-
 def local_segment(point, box):
     low, high = box
     start = tuple(lo + (hi - lo) * fraction for lo, hi, fraction in zip(low, high, point.start))

@@ -9,5 +9,4 @@ export type SectionPageProps = {
   columns: number;
   card: ComponentType<CardProps>;
   intro?: ReactNode;
-  fill?: boolean;
 };

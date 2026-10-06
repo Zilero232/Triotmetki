@@ -1,13 +1,15 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import re
 import unittest
 
 import _support  # noqa: F401
-from otmetki.core.native_settings import client_keys, native_choices, setting_names
+from otmetki.core.native_settings import client_holds, client_keys, native_choices, recommended, setting_names
 from otmetki.core.settings import Settings
 from otmetki.features.minimap.model import ACCOUNT_FIELDS, FIELDS, to_account, to_native
 from otmetki.features.minimap.model.constants import VEHICLE_NAMES
+from otmetki.features.minimap.i18n import STRINGS
 from otmetki.features.minimap.settings import SCHEMA, SETTINGS
 
 # RU 1.45 account_helpers/settings_core/options.py MinimapVehModelsSetting: VEHICLE_MODELS_TYPES index of 'never', and
@@ -103,6 +105,24 @@ class MinimapTest(unittest.TestCase):
 
     def test_the_extended_features_map_to_the_client_indices(self):
         assert to_native(dict(chosen_values(), vehicle_names='always'))[VEHICLE_NAMES] == 2
+
+    def test_the_extended_features_are_the_stock_setting_name(self):
+        assert VEHICLE_NAMES == 'showVehModelsOnMap'
+
+    def test_a_game_at_never_does_not_hold_the_recommended_minimap(self):
+        wanted = to_native(recommended(SCHEMA, client_keys(SCHEMA)))
+        game = dict(wanted, showVehModelsOnMap=VEHICLE_MODELS_NEVER)
+
+        assert client_holds(game, wanted) is False
+
+    def test_a_game_at_the_recommended_values_holds_them(self):
+        wanted = to_native(recommended(SCHEMA, client_keys(SCHEMA)))
+
+        assert client_holds(dict(wanted, minimapAlpha=30), wanted) is True
+
+    def test_the_option_is_named_after_what_it_shows(self):
+        assert u'названия' in STRINGS['ru']['minimap_vehicle_names']
+        assert 'names' in STRINGS['en']['minimap_vehicle_names']
 
     def test_only_vanilla_minimap_options_are_written(self):
         expected = ('minimapAlpha', 'minimapDrawRange', 'minimapMaxViewRange', 'minimapViewRange', 'showVehModelsOnMap')

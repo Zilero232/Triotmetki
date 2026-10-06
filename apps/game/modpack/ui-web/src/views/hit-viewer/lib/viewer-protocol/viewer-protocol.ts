@@ -2,9 +2,9 @@ import type * as z from 'zod/mini';
 
 import { gameface } from '@/shared/api/gameface';
 
-import type { ViewerMarks, ViewerMessage, ViewerState } from './viewer-protocol.types';
+import type { ViewerMessage, ViewerState } from './viewer-protocol.types';
 
-import { viewerMarksSchema, viewerStateSchema } from './viewer-protocol.schemas';
+import { viewerStateSchema } from './viewer-protocol.schemas';
 
 const parseWith = <Schema extends z.ZodMiniType>(schema: Schema, raw: string | null): z.infer<Schema> | null => {
   try {
@@ -17,8 +17,6 @@ const parseWith = <Schema extends z.ZodMiniType>(schema: Schema, raw: string | n
 };
 
 export const parseViewerState = (raw: string | null): ViewerState | null => parseWith(viewerStateSchema, raw);
-
-export const parseViewerMarks = (raw: string | null): ViewerMarks | null => parseWith(viewerMarksSchema, raw);
 
 export const footerOf = ({ battle, loading, approx, labels }: ViewerState): string => {
   if (!battle) {

@@ -24,7 +24,7 @@ from otmetki.features.marks_panel.i18n import STRINGS as MARKS_STRINGS
 from otmetki.features.marks_panel.settings import CARD_SCHEMA, PARTS
 from otmetki.features.session_stats.i18n import STRINGS as SESSION_STRINGS
 from otmetki.ui.bridge import SettingsBridge, site_link, site_url
-from otmetki.ui.components import COMPANION_ID, COMPANION_KEYS, FeatureInfo, load_features, root_package
+from otmetki.ui.components import COMPANION_ID, COMPANION_KEYS, SECTIONS, FeatureInfo, load_features, root_package
 from otmetki.ui.components.component import Component
 from otmetki.ui.components.sources import SectionSource
 from otmetki.ui.fields import Labels
@@ -484,6 +484,19 @@ class BridgeStateTest(BridgeTestCase):
 
         assert [field['key'] for field in fields] == ['show']
 
+    def test_a_panel_without_a_switch_names_the_card_that_switches_it(self):
+        self.context.component_config.section('last_battle', Schema({'x': 0, 'scale': 100}))
+        component = Component('last_battle', 'battle', SectionSource(self.context.component_config, 'last_battle'),
+                              ('x', 'scale'), panel=True)
+
+        described = component.describe(Labels(Catalog(), 'en'))
+
+        assert described['switch'] is None
+        assert described['owner'] == 'battle_results'
+
+    def test_a_component_with_its_own_switch_names_no_owner(self):
+        assert 'owner' not in card(self.bridge.state(), 'damage_log')
+
     def test_a_panel_folds_its_opacity(self):
         fields = card(self.bridge.state(), 'damage_log')['fields']
 
@@ -498,7 +511,7 @@ class BridgeStateTest(BridgeTestCase):
         state = self.bridge.state()
 
         assert placement(state, COMPANION_ID) == ('data', 'any')
-        assert placement(state, 'marks_panel') == ('marks', 'battle')
+        assert placement(state, 'marks_panel') == ('battle', 'battle')
         assert placement(state, 'replay_manager') == ('replays', 'hangar')
 
     def test_window_layout_defaults_to_centred(self):
@@ -1367,6 +1380,14 @@ class PageContractTest(unittest.TestCase):
         block = re.search(r'commands: \[([^\]]*)\]', source).group(1)
 
         assert tuple(re.findall(r"'([a-z_]+)'", block)) == COMMANDS
+
+    def test_sections_match_the_page(self):
+        with io.open(os.path.join(UI_WEB, 'protocol.constants.ts'), 'r', encoding='utf-8') as handle:
+            source = handle.read()
+
+        block = re.search(r'sections: \[([^\]]*)\]', source).group(1)
+
+        assert tuple(re.findall(r"'([a-z_]+)'", block)) == SECTIONS
 
 
 if __name__ == '__main__':

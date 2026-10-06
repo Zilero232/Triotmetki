@@ -307,7 +307,7 @@ class AttachTest(unittest.TestCase):
         assert attach_of('otmetki.hud.damage_log', MARKS_DEFAULTS, MARKS_DEFAULTS, stock_metrics()) is None
 
     def test_the_attached_panels_are_the_parity_places(self):
-        assert sorted(ATTACHED.values()) == ['bar_left', 'bar_right', 'minimap_above', 'score_right']
+        assert sorted(ATTACHED.values()) == ['bar_above', 'bar_right', 'minimap_above', 'score_right']
 
     def test_the_minimap_side_follows_the_setting(self):
         sides = [stock_metrics(index)['minimap'] for index in range(6)]

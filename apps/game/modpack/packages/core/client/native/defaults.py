@@ -6,6 +6,7 @@ from ...native_settings import (
     BACKUP_STATE_KEY,
     RETIRED_STAMP_STATE_KEY,
     NativeState,
+    client_holds,
     client_keys,
     is_recommended,
     native_choices,
@@ -74,12 +75,26 @@ class ClientDefaults(object):
         has_backup = self.state.backup(self.component_id) is not None
         if not has_backup and not self.component.enabled():
             return []
-        action = offered_action(has_backup, is_recommended(self.component.settings.to_dict(), self.schema, self.keys))
+        holds = is_recommended(self.component.settings.to_dict(), self.schema, self.keys) and self._client_holds()
+        action = offered_action(has_backup, holds)
         if action is None:
             return []
         translate = self.app.translate
         key = '%s_%s' % (self.component_id, action)
         return [{'id': action, 'label': translate(key), 'confirm': translate(key + '_confirm')}]
+
+    def _client_holds(self):
+        """Whether the client itself holds the recommended values: a section at them while the game's own settings
+        window moved one away (the minimap's extended features to 'never') still offers the recommended button. True
+        when the client cannot be read, so nothing is offered blind."""
+        values = dict(self.component.settings.to_dict())
+        values.update(recommended(self.schema, self.keys))
+        settings, account = self.component.client_values(values)
+        current = read_settings(list(settings))
+        if current is None:
+            return True
+        current_account = (read_account_settings(list(account)) or {}) if account else {}
+        return client_holds(current, settings) and client_holds(current_account, account)
 
     def ui_action(self, action):
         if action == ACTION_RESTORE:

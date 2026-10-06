@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 
 import type { StringKey } from '@/shared/i18n';
 
+import { REPLAYS } from '@/entities/replay/replay';
 import { $editor, $invalid, $query, $state, $view, receiveFeed, receiveState, WINDOW_VIEW } from '@/entities/window/window-state';
 import { gameface } from '@/shared/api/gameface';
 import { send } from '@/shared/api/protocol';
@@ -52,6 +53,7 @@ export const useApp = () => {
     section: view.section,
     searching: query.trim().length >= WINDOW_VIEW.searchMinLength,
     editing,
+    hasReplays: state?.components.some(({ page }) => page?.kind === REPLAYS.pageKind) ?? false,
     frame,
     compact: frame.layout.compactNav,
     columns: frame.layout.columns,

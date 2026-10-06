@@ -7,10 +7,10 @@ import { HudEditor } from '@/widgets/hud/hud-editor';
 
 import type { ContentProps } from './Content.types';
 
-import { ReplaysIntro } from '../ReplaysIntro';
+import { ReplaysPage } from '../ReplaysPage';
 import { ToolPage } from '../ToolPage';
 
-export const Content = ({ state, section, searching, editing, columns, compact }: ContentProps) => {
+export const Content = ({ state, section, searching, editing, columns, compact, hasReplays }: ContentProps) => {
   if (editing) {
     return <ComponentEditor key={editing.id} compact={compact} component={editing} />;
   }
@@ -36,8 +36,8 @@ export const Content = ({ state, section, searching, editing, columns, compact }
     );
   }
 
-  if (section === SECTION.replays) {
-    return <SectionPage fill key={section} card={ComponentCard} columns={columns} intro={<ReplaysIntro />} section={section} />;
+  if (section === SECTION.replays && hasReplays) {
+    return <ReplaysPage key={section} />;
   }
 
   return <SectionPage key={section} card={ComponentCard} columns={columns} intro={section === SECTION.data && <AccountCard />} section={section} />;

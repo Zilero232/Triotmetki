@@ -18,17 +18,15 @@ describe(RadialTimer, () => {
   });
 
   it("draws the countdown on the track's own circle, with no SVG transform Gameface would place elsewhere", () => {
-    const html = ring(0.7);
-    const track = html.querySelector('circle');
-    const arc = html.querySelector('path');
+    const [track, arc] = [...ring(0.7).querySelectorAll('path')];
 
-    expect(track?.getAttribute('r')).toBe('39');
+    expect(track?.getAttribute('d')).toBe('M42 3A39 39 0 1 1 42 81A39 39 0 1 1 42 3');
     expect(arc?.getAttribute('d')).toMatch(/^M42 3A39 39 0 1 1 /);
-    expect(html.querySelector('[transform]')).toBeNull();
+    expect(ring(0.7).querySelector('[transform]')).toBeNull();
   });
 
   it('paints the arc with a hex colour, never currentColor', () => {
-    expect(ring(0.5).querySelector('path')?.getAttribute('stroke')).toBe(HUD_TONE_COLORS.accent.hex);
+    expect(ring(0.5).querySelectorAll('path')[1]?.getAttribute('stroke')).toBe(HUD_TONE_COLORS.accent.hex);
   });
 
   it('puts the content in its own square at the centre of the ring, without relying on flex centring', () => {
@@ -43,13 +41,17 @@ describe(RadialTimer, () => {
     expect([content?.style.top, content?.style.left, content?.style.width, content?.style.height]).toEqual(['14rem', '14rem', '56rem', '56rem']);
   });
 
-  it('sizes the svg itself in rem, so the engine cannot resolve the ring against another box', () => {
+  it('fills its rem box with the svg the way the reticle arcs that draw in the client do: attributes, no inline style', () => {
     const svg = ring(0.5).querySelector('svg');
 
-    expect([svg?.style.width, svg?.style.height]).toEqual(['84rem', '84rem']);
+    expect([svg?.getAttribute('width'), svg?.getAttribute('height'), svg?.getAttribute('style')]).toEqual(['100%', '100%', null]);
+  });
+
+  it('draws the track as a path, the one SVG shape the reticle arcs prove in the client', () => {
+    expect(ring(0.5).querySelector('circle')).toBeNull();
   });
 
   it('leaves only the track once the time is out', () => {
-    expect(ring(0).querySelector('path')).toBeNull();
+    expect(ring(0).querySelectorAll('path')).toHaveLength(1);
   });
 });

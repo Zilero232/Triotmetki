@@ -12,7 +12,7 @@ from otmetki.core.events import EventBus
 from otmetki.core.storage import MemoryFile
 from otmetki.features.hit_viewer.model import HitBook
 
-STUBBED = ('BigWorld', 'Vehicle', 'BattleFeedbackCommon', 'items', 'items.vehicles')
+STUBBED = ('BigWorld', 'Vehicle', 'BattleFeedbackCommon', 'items', 'items.vehicles', 'Math')
 CLIENT_PREFIXES = ('otmetki.core.client', 'otmetki.features.hit_viewer.client')
 OWN_ID = 3
 ENEMY_ID = 7
@@ -105,6 +105,22 @@ class FeedbackEvent(object):
         return self.extra
 
 
+class Vector2(list):
+
+    def __init__(self, x, y):
+        list.__init__(self, (x, y))
+
+
+class CameraManager(object):
+
+    def __init__(self):
+        self.limits = None
+
+    def moveCamera(self, point, yaw, pitch, distance, duration, limits):
+        limits[0] = min(limits[0], limits[1])
+        self.limits = limits
+
+
 class Component(object):
 
     def __init__(self):
@@ -136,7 +152,9 @@ def stub_client():
     vehicles = types.ModuleType(str('items.vehicles'))
     vehicles.g_cache = Namespace(shotEffects={})
     items.vehicles = vehicles
-    for name, module in zip(STUBBED, (big_world, vehicle_module, feedback_common, items, vehicles)):
+    math = types.ModuleType(str('Math'))
+    math.Vector2 = Vector2
+    for name, module in zip(STUBBED, (big_world, vehicle_module, feedback_common, items, vehicles, math)):
         sys.modules[name] = module
 
 
@@ -291,7 +309,6 @@ class ScreenTest(unittest.TestCase):
         view = object()
         self.screen.window.is_open = True
         self.screen.window.on_loaded(view)
-        self.screen.ticker.start()
         return view
 
     def openable_window(self):
@@ -301,12 +318,12 @@ class ScreenTest(unittest.TestCase):
         self.screen.window.push_state = self.pushed.append
         self.screen.stage.begin = lambda: True
 
-    def test_a_window_the_client_destroyed_stops_the_ticker_and_gives_the_hangar_back(self):
+    def test_a_window_the_client_destroyed_gives_the_hangar_back(self):
         view = self.opened_view()
 
         self.screen.window.on_destroyed(view)
 
-        assert (self.screen.ticker.running, self.ended) == (False, [True])
+        assert (self.screen.is_open, self.ended) == (False, [True])
 
     def test_the_viewer_opens_before_the_first_recorded_battle(self):
         self.openable_window()
@@ -362,7 +379,7 @@ class ScreenTest(unittest.TestCase):
         self.screen.close()
         self.screen.window.on_destroyed(view)
 
-        assert (self.screen.ticker.running, self.ended) == (False, [True])
+        assert (self.screen.is_open, self.ended) == (False, [True])
 
     def test_closing_the_viewer_brings_the_stock_hangar_view_back(self):
         self.opened_view()
@@ -460,6 +477,7 @@ class StageTest(unittest.TestCase):
         forget_client()
         stub_client()
         stage_module = importlib.import_module('otmetki.features.hit_viewer.client.stage')
+        self.stage_module = stage_module
         self.space = Namespace(onVehicleChanged=Event())
         stage_module.hangar_space = lambda: self.space
         stage_module.camera_place = lambda: None
@@ -504,6 +522,22 @@ class StageTest(unittest.TestCase):
         self.callbacks[0]()
 
         assert self.stage.subscribed is not None
+
+    def focused_camera(self):
+        manager = CameraManager()
+        self.stage_module.camera_manager = lambda space: manager
+        self.space.spaceID = 1
+        self.stage.space = self.space
+        self.stage.scene.show = lambda *args: None
+        self.stage.node = lambda geometry: None
+        self.stage.world = lambda geometry: ((0.0, 1.0, 2.0), Namespace(yaw=0.5, pitch=0.1))
+        self.stage.focus(Namespace(part='hull'), {'outcome': 'pen'}, 0.5)
+        return manager
+
+    def test_the_camera_gets_limits_it_can_change_like_the_orbit_ones(self):
+        manager = self.focused_camera()
+
+        assert (type(manager.limits), list(manager.limits)) == (Vector2, [2.9, 9.0])
 
     def test_reopening_keeps_one_hangar_subscription(self):
         self.reopened_and_closed()

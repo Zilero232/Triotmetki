@@ -3,7 +3,9 @@
 .details {
   display: flex;
   overflow: hidden;
-  width: 340px;
+  width: 34%;
+  min-width: 320px;
+  max-width: 460px;
   min-height: 0;
   flex: 0 0 auto;
   flex-direction: column;

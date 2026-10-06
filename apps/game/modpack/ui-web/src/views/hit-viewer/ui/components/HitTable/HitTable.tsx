@@ -5,6 +5,7 @@ import { ScrollArea } from '@/ui-kit';
 import type { HitTableProps } from './HitTable.types';
 
 import { HIT_VIEWER } from '../../../config';
+import { tableBodyHeight } from '../../../lib/viewer-frame';
 
 import s from './HitTable.module.scss';
 
@@ -20,7 +21,7 @@ export const HitTable = ({ rows, labels, selected, onPick }: HitTableProps) => (
     {rows.length === 0 ? (
       <div className={s.empty}>{labels.empty}</div>
     ) : (
-      <div className={s.body} style={{ height: Math.min(rows.length, HIT_VIEWER.table.maxRows) * HIT_VIEWER.table.rowPx }}>
+      <div className={s.body} style={{ height: tableBodyHeight(rows.length) }}>
         <ScrollArea label={labels.title}>
           {rows.map((row) => (
             <button

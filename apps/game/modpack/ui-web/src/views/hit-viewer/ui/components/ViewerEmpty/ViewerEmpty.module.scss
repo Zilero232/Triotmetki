@@ -12,6 +12,7 @@
   border: 1px solid token(color-border);
   border-radius: token(radius-md);
   background-color: token(color-surface-overlay);
+  pointer-events: auto;
   transform: translate(-50%, -50%);
 }
 

@@ -5,14 +5,13 @@ import { onDistinct } from '@/shared/lib/on-distinct';
 
 import type { CameraMove } from '../../../lib/camera-move';
 import type { HitStep } from '../../../lib/hit-step';
-import type { ViewerMarks, ViewerSide, ViewerState } from '../../../lib/viewer-protocol';
+import type { ViewerSide, ViewerState } from '../../../lib/viewer-protocol';
 
 import { hitStep } from '../../../lib/hit-step';
-import { footerOf, parseViewerMarks, parseViewerState, sendViewer } from '../../../lib/viewer-protocol';
+import { footerOf, parseViewerState, sendViewer } from '../../../lib/viewer-protocol';
 
 export const useHitViewer = () => {
   const [state, setState] = useState<ViewerState | null>(null);
-  const [marks, setMarks] = useState<ViewerMarks | null>(null);
 
   useEffect(() => {
     gameface.fitView();
@@ -25,11 +24,8 @@ export const useHitViewer = () => {
       }
     });
 
-    const takeMarks = onDistinct((raw: string | null) => setMarks(parseViewerMarks(raw)));
-
     gameface.onDataChanged(() => {
       takeState(gameface.state());
-      takeMarks(gameface.feed());
     });
 
     sendViewer({ command: 'ready' });
@@ -56,7 +52,6 @@ export const useHitViewer = () => {
 
   return {
     state,
-    marks,
     footer: state ? footerOf(state) : '',
     selectedRow: state?.rows.find((row) => row.index === state.selected) ?? null,
     close: () => sendViewer({ command: 'close' }),

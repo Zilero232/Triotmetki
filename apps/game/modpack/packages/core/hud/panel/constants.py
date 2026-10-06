@@ -104,15 +104,17 @@ DOCKS = {
 # the places Battle Observer, Lebwa, PROTanki and kurzdor's battleequipment use): while a panel sits at its default
 # place its `attach` prop names the rule, with the measured stock sizes (core.hud.stock.stock_metrics), and the page
 # places it from them (ui-web views/hud/lib/attach); the default place itself is where GUIFlash draws it.
-# `bar_right`: right of the consumables panel (marks); `bar_left`: left of it (equipment row); `minimap_above`: right
-# aligned above the minimap (the previous battle's results); `score_right`: right of the score strip (battle progress).
+# `bar_right`: right of the consumables panel, lifted above the equipment row when it would reach the minimap (marks);
+# `bar_above`: centred right above it, over the screen centre the stock panel is centred on (equipment row, as
+# kurzdor's battleequipment); `minimap_above`: right aligned above the minimap (the previous battle's results);
+# `score_right`: right of the score strip (battle progress).
 # A followed stock element the page hides (core.hud.stock FOLLOWED_ALIASES) is sent as 0 px: the marks then sit beside
 # the stock post-mortem tips, the previous battle's card drops to the corner. The score strip is never measured
 # (`score_right` follows the screen centre, where team HP draws its replacement), so nothing there can go stale.
-ATTACH_KINDS = ('bar_right', 'bar_left', 'minimap_above', 'score_right')
+ATTACH_KINDS = ('bar_right', 'bar_above', 'minimap_above', 'score_right')
 ATTACHED = {
     'otmetki.hud.marks_panel': 'bar_right',
-    'otmetki.hud.battle_loadout': 'bar_left',
+    'otmetki.hud.battle_loadout': 'bar_above',
     'otmetki.hud.last_battle': 'minimap_above',
     'otmetki.hud.battle_progress': 'score_right',
 }

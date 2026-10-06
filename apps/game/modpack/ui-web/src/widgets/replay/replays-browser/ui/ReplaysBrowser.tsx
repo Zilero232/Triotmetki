@@ -31,7 +31,6 @@ export const ReplaysBrowser = ({ page, enabled, onTurnOn }: ReplaysBrowserProps)
     <section aria-label={t('title')} className={s.browser}>
       <Toolbar browser={browser} />
       <FilterBar browser={browser} />
-      <SummaryStrip browser={browser} />
       <div className={s.body}>
         {view === 'list' ? (
           <ReplayList
@@ -46,6 +45,7 @@ export const ReplaysBrowser = ({ page, enabled, onTurnOn }: ReplaysBrowserProps)
         )}
         {selected && view === 'list' && <ReplayDetails browser={browser} item={selected} />}
       </div>
+      <SummaryStrip browser={browser} />
     </section>
   );
 };

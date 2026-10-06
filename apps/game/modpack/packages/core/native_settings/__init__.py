@@ -13,7 +13,15 @@ from .constants import (
     RETIRED_STAMP_STATE_KEY,
     TRI_STATE,
 )
-from .initial import NativeState, client_keys, is_recommended, native_choices, offered_action, recommended
+from .initial import (
+    NativeState,
+    client_holds,
+    client_keys,
+    is_recommended,
+    native_choices,
+    offered_action,
+    recommended,
+)
 from .mapping import changed_values, from_table, merge_value, native_values, setting_names, tri_state
 from .write import write_settings
 
@@ -28,6 +36,7 @@ __all__ = (
     'TRI_STATE',
     'NativeState',
     'changed_values',
+    'client_holds',
     'client_keys',
     'from_table',
     'is_recommended',

@@ -23,19 +23,16 @@ describe(useSidebar, () => {
     const counts = components.map(({ section, count }) => [section, count]);
 
     expect(counts).toEqual([
-      ['battle', '1 вкл.'],
-      ['hangar', null],
-      ['marks', '2 вкл.'],
-      ['replays', '1 вкл.'],
-      ['streamer', null],
-      ['data', '1 вкл.']
+      ['battle', '2 вкл.'],
+      ['hangar', '1 вкл.'],
+      ['replays', '1 вкл.']
     ]);
   });
 
   it('lists the tools after the component pages', () => {
     const { tools } = renderHook(useSidebar).result.current;
 
-    expect(tools.map(({ section }) => section)).toEqual([SECTION.profiles, SECTION.hud]);
+    expect(tools.map(({ section }) => section)).toEqual([SECTION.profiles, SECTION.hud, SECTION.data]);
   });
 
   it('marks the current page active', () => {

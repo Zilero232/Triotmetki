@@ -26,9 +26,9 @@ export const PROTOCOL = {
     'scroll'
   ],
   groups: ['data', 'hangar', 'battle'],
-  sections: ['battle', 'hangar', 'marks', 'replays', 'streamer', 'data', 'hud'],
+  sections: ['battle', 'hangar', 'replays', 'data', 'hud'],
   contexts: ['hangar', 'battle', 'any'],
-  pages: ['battle', 'hangar', 'marks', 'replays', 'streamer', 'data', 'profiles', 'hud'],
+  pages: ['battle', 'hangar', 'replays', 'data', 'profiles', 'hud'],
   alignX: ['left', 'center', 'right'],
   alignY: ['top', 'center', 'bottom'],
   noticeKinds: ['info', 'error', 'code'],

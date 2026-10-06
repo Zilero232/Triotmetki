@@ -2,21 +2,19 @@
 
 .strip {
   display: flex;
-  min-height: 28px;
+  height: 28px;
+  flex: 0 0 auto;
   flex-direction: row;
-  flex-wrap: wrap;
   align-items: center;
-  padding: 4px 12px;
-  border: 1px solid token(color-border);
-  border-radius: token(radius-md);
-  margin-bottom: 8px;
-  background-color: token(color-surface-sunken);
+  padding: 0 4px;
+  margin-top: 8px;
   color: token(color-text-muted);
   font-size: 12px;
+  white-space: nowrap;
 }
 
 .count {
-  margin-right: 18px;
+  margin-right: 20px;
 }
 
 .number {
@@ -27,7 +25,7 @@
 .fact {
   display: flex;
   flex-direction: row;
-  margin-right: 18px;
+  margin-right: 20px;
 }
 
 .factLabel {

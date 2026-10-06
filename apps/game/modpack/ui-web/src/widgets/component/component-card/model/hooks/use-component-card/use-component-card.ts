@@ -21,7 +21,7 @@ export const useComponentCard = ({ component, fields }: UseComponentCardInput) =
     ...actions,
     icon: componentIcon(component.id),
     enabled: isEnabled(component),
-    badges: CONTEXT_BADGES[component.context],
+    badges: component.context === component.section ? [] : CONTEXT_BADGES[component.context],
     changedCount: changedFields(component).length,
     preview: panelPreview({ component, panels: state?.hud.panels ?? [] }),
     previewKind: cardPreviewKind(component),

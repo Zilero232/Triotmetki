@@ -7,6 +7,7 @@ from .constants import (  # noqa: F401
     COMPANION_ID,
     COMPANION_KEYS,
     CONTEXTS,
+    PANEL_OWNERS,
     PANEL_POSITION_KEYS,
     PLACEMENT,
     SECTIONS,

@@ -4,7 +4,7 @@ export const HUD_PROTOCOL = {
   mouseEvents: ['hover', 'down', 'wheel'],
   kinds: ['label', 'button'],
   covers: ['', 'stats', 'modal'],
-  attachKinds: ['bar_right', 'bar_left', 'minimap_above', 'score_right'],
+  attachKinds: ['bar_right', 'bar_above', 'minimap_above', 'score_right'],
   widgetVersion: 1,
   tones: [
     'text',

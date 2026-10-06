@@ -14,13 +14,11 @@ export const ToolbarTools = ({ browser }: ToolbarProps) => {
       <Button aria-label={t('refresh')} className={s.tool} size='small' tooltip={t('refresh')} variant='ghost' onClick={browser.refresh}>
         <Icon name='refresh-cw' size={16} tone='text' />
       </Button>
-      <Button className={s.tool} size='small' variant='ghost' onClick={browser.openFolder}>
-        <Icon className={s.toolIcon} name='folder' size={16} tone='text' />
-        {t('openFolder')}
+      <Button aria-label={t('openFolder')} className={s.tool} size='small' tooltip={t('openFolder')} variant='ghost' onClick={browser.openFolder}>
+        <Icon name='folder' size={16} tone='text' />
       </Button>
-      <Button className={s.tool} size='small' variant='ghost' onClick={browser.openSiteList}>
-        <Icon className={s.toolIcon} name='external-link' size={14} tone='text' />
-        {t('siteList')}
+      <Button aria-label={t('siteList')} className={s.tool} size='small' tooltip={t('siteList')} variant='ghost' onClick={browser.openSiteList}>
+        <Icon name='external-link' size={16} tone='text' />
       </Button>
     </div>
   );

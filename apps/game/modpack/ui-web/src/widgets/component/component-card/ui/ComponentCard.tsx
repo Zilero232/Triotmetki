@@ -4,7 +4,7 @@ import { Icon } from '@/ui-kit';
 import type { ComponentCardProps } from './ComponentCard.types';
 
 import { useComponentCard } from '../model/hooks';
-import { CardThumb, CardTile, CardTitles } from './components';
+import { CardThumb, CardTitles } from './components';
 
 import s from './ComponentCard.module.scss';
 
@@ -14,11 +14,10 @@ export const ComponentCard = ({ component, fields }: ComponentCardProps) => {
   return (
     <article className={s.card}>
       <button aria-haspopup='dialog' className={s.main} type='button' onClick={card.open}>
-        <CardTile enabled={card.enabled} icon={card.icon} />
-        <CardTitles card={card} component={component} />
         <CardThumb card={card} />
+        <CardTitles card={card} component={component} />
         <span className={s.chevron}>
-          <Icon name='chevron-right' tone='text' />
+          <Icon name='chevron-right' size={16} tone='muted' />
         </span>
       </button>
       <CardSwitch component={component} />

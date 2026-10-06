@@ -26,32 +26,34 @@ describe(attachRect, () => {
     expect(wide.left - narrow.left).toBe((570 - 285) / 2);
   });
 
-  it('moves the marks panel above the right half of the bar when it would reach the minimap', () => {
+  it('lifts the marks panel over the equipment row when it would reach the minimap', () => {
+    const { row } = HUD_OVERLAY.attach.bar;
     const rect = attachRect({ attach: attach('bar_right', 570, 610), size: SIZE, screen: FULL_HD });
 
     expect(rect.left).toBe(960 + 6);
-    expect(rect.top + rect.height).toBe(1080 - 58 - 6);
+    expect(rect.top + rect.height).toBe(1080 - 58 - 6 - row - 6);
   });
 
-  it('puts the equipment row above the left half of the consumables panel', () => {
-    const rect = attachRect({ attach: attach('bar_left'), size: SIZE, screen: FULL_HD });
+  it('centres the equipment row right above the consumables panel', () => {
+    const rect = attachRect({ attach: attach('bar_above'), size: SIZE, screen: FULL_HD });
 
-    expect(rect.left + rect.width).toBe(960 - 6);
+    expect(rect.left + rect.width / 2).toBe(1920 / 2);
     expect(rect.top + rect.height).toBe(1080 - 64);
   });
 
   it('keeps the equipment row above the bar however wide the bar is', () => {
-    const narrow = attachRect({ attach: attach('bar_left', 285), size: SIZE, screen: FULL_HD });
-    const wide = attachRect({ attach: attach('bar_left', 684), size: SIZE, screen: FULL_HD });
+    const narrow = attachRect({ attach: attach('bar_above', 285), size: SIZE, screen: FULL_HD });
+    const wide = attachRect({ attach: attach('bar_above', 684), size: SIZE, screen: FULL_HD });
 
     expect(wide).toStrictEqual(narrow);
   });
 
-  it('keeps both lifted panels apart above the bar', () => {
-    const row = attachRect({ attach: attach('bar_left', 684, 610), size: { width: 300, height: 44 }, screen: FULL_HD });
+  it('keeps the lifted marks panel clear of the equipment row', () => {
+    const { row: rowHeight } = HUD_OVERLAY.attach.bar;
+    const row = attachRect({ attach: attach('bar_above', 684, 610), size: { width: 300, height: rowHeight }, screen: FULL_HD });
     const marks = attachRect({ attach: attach('bar_right', 684, 610), size: SIZE, screen: FULL_HD });
 
-    expect(row.left + row.width).toBeLessThan(marks.left);
+    expect(marks.top + marks.height).toBeLessThan(row.top);
   });
 
   it('moves the marks panel right of the post-mortem tips when the bar is gone', () => {
@@ -72,7 +74,7 @@ describe(attachRect, () => {
 
   it('keeps the equipment row above the post-mortem tips when the bar is gone', () => {
     const { height } = HUD_OVERLAY.postmortemTips;
-    const rect = attachRect({ attach: attach('bar_left', 0), size: { width: 160, height: 44 }, screen: FULL_HD });
+    const rect = attachRect({ attach: attach('bar_above', 0), size: { width: 160, height: 44 }, screen: FULL_HD });
 
     expect(rect.top + rect.height).toBe(1080 - height - 6);
   });
@@ -104,7 +106,7 @@ describe(attachRect, () => {
 
 describe(stockBarRect, () => {
   it('is the consumables panel centred at the bottom of the screen', () => {
-    expect(stockBarRect({ attach: attach('bar_left'), screen: FULL_HD })).toEqual({
+    expect(stockBarRect({ attach: attach('bar_above'), screen: FULL_HD })).toEqual({
       left: (1920 - 399) / 2,
       top: 1080 - HUD_OVERLAY.attach.bar.height,
       width: 399,
@@ -113,6 +115,6 @@ describe(stockBarRect, () => {
   });
 
   it('is nothing while the consumables panel is off the screen', () => {
-    expect(stockBarRect({ attach: attach('bar_left', 0), screen: FULL_HD })).toBeNull();
+    expect(stockBarRect({ attach: attach('bar_above', 0), screen: FULL_HD })).toBeNull();
   });
 });

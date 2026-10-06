@@ -252,12 +252,18 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Открывается и без записанного боя: экран подсказывает сыграть бой.
 - Снаряд, угол и броня теперь рисуются на модели для каждого попадания.
 - Сообщение об ошибке запуска в логе больше не ломается на русских ошибках Windows.
+- Попадание отмечено только на модели: метка больше не прыгает при вращении камеры.
+- Список попаданий растёт по числу строк и масштабируется под экран.
+- Закрытие просмотра и смена вкладки больше не оставляют ангар на «обновлении».
 
 ### en
 
 - Opens without a recorded battle too: the screen asks you to play one.
 - The shell, angle and armour are now drawn on the model for every hit.
 - The start-up error message in the log no longer breaks on Russian Windows errors.
+- The hit is marked on the model only: the marker no longer jumps while the camera turns.
+- The hit list grows with its rows and scales with the screen.
+- Closing the viewer or switching tabs no longer leaves the hangar «updating».
 
 ## hit_viewer 0.3.0
 
@@ -669,14 +675,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - New component «Crew XP»: the XP and roughly the battles each crew member needs to finish a skill, with a level bar.
 - The same line in the crew member tooltip.
 
-## hangar_space 0.1.2
+## hangar_space 0.2.0
 
 ### ru
 
+- Раздел «Вид»: освещение ангара из игры — «Осень», «Осень: дождь», «Студия», ночной «Натиск»; меняется сразу.
 - Сообщение об ошибке запуска в логе больше не ломается на русских ошибках Windows.
 
 ### en
 
+- A «Look» section: hangar lighting from the game — «Autumn», «Autumn: rain», «Studio», the night «Onslaught»; changes at once.
 - The start-up error message in the log no longer breaks on Russian Windows errors.
 
 ## hangar_space 0.1.1
@@ -1047,12 +1055,12 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 ### ru
 
-- Ряд оборудования стоит над панелью расходников, пустые слоты не занимают места.
+- Ряд оборудования стоит над панелью расходников по её центру, пустые слоты не занимают места.
 - Сообщение об ошибке запуска в логе больше не ломается на русских ошибках Windows.
 
 ### en
 
-- The equipment row sits above the consumables panel; empty slots take no room.
+- The equipment row sits centred above the consumables panel; empty slots take no room.
 - The start-up error message in the log no longer breaks on Russian Windows errors.
 
 ## battle_loadout 0.7.1
@@ -1390,12 +1398,14 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Файлы настроек заменяются за один шаг: сбой игры во время сохранения их больше не теряет.
 - 12-часовые часы показывают AM/PM и на русской Windows.
 - Сообщение об ошибке запуска в логе больше не ломается на русских ошибках Windows.
+- Окно HUD больше не забирает клавиатуру: ангар нажимается и чат печатается без сворачивания игры.
 
 ### en
 
 - Settings files are replaced in one step: a game crash while saving no longer loses them.
 - The 12-hour clock shows AM/PM on Russian Windows too.
 - The start-up error message in the log no longer breaks on Russian Windows errors.
+- The HUD window no longer takes the keyboard: the hangar takes clicks and the chat takes keys without minimising the game.
 
 ## core 0.9.0
 
@@ -1790,12 +1800,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Окно настроек: у каждого компонента своя страница, ровный список, стрелка «назад» и выпадающие списки.
 - Окно помещается на экран, вкладок «Все/Ангар/Бой» нет, подсказка отмены скрывается сама; у реплеев две прокрутки.
 - Новый макет экрана боя в редакторе HUD; лампа «Шестого чувства» стоит по центру.
+- Секунды под лампой «Шестого чувства» стоят по её центру и не сдвигают её; кольцо таймера видно в игре.
+- Реплеи занимают всё окно, компоненты реплеев — кнопками в шапке; разделы только «Бой», «Ангар» и «Реплеи», строки списка ровные.
 
 ### en
 
 - The settings window: every component opens its own page, an aligned list, a back arrow and dropdowns.
 - The window fits the screen, the «All/Hangar/Battle» tabs are gone, the undo toast hides itself; replays scroll in two panes.
 - A new battle screen mock in the HUD editor; the «Sixth sense» lamp sits centred.
+- The seconds under the «Sixth sense» lamp sit on its axis and no longer shift it; the timer ring shows in the game.
+- Replays fill the window, the replay components are header buttons; the pages are just Battle, Hangar and Replays, list rows are even.
 
 ## ui 0.9.0
 
@@ -2892,11 +2906,13 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### ru
 
 - Мини-карта снова показывает технику и места, где её потеряли из виду: «Никогда» убрано, по умолчанию «Постоянно».
+- Опция называется «Последние места и названия техники»; если в игре они выключены, предлагаются «Рекомендуемые настройки».
 - Сообщение об ошибке запуска в логе больше не ломается на русских ошибках Windows.
 
 ### en
 
 - The minimap shows vehicles and their last-seen points again: «Never» is gone, «Always» is the default.
+- The option is called «Last-seen spots and vehicle names»; when the game has them off, «Recommended settings» is offered.
 - The start-up error message in the log no longer breaks on Russian Windows errors.
 
 ## minimap 0.2.1

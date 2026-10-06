@@ -130,6 +130,7 @@ export const componentSchema = z.object({
   page: z.nullable(z.discriminatedUnion('kind', [pageSchema, replaysPageSchema])),
   editor: z.optional(editorSchema),
   thumb: optionalText,
+  owner: z.optional(text),
   gallery: z.optional(z.record(text, z.record(text, z.nullable(z.string()))))
 });
 

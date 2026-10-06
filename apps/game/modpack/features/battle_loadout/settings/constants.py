@@ -4,11 +4,12 @@ SWITCH = 'battle_loadout'
 PANEL_ID = 'battle_loadout'
 GROUP = 'battle'
 
-# Above the left half of the stock consumables panel, ending 6 px left of the screen centre (core/hud/panel ATTACHED
-# bar_left); the right half above the panel is the marks panel's when it lifts. Pinned there, the row belongs to the
-# stock panel. This place is the one for the GUIFlash renderer.
+# Centred right above the stock consumables panel, which the client centres on the screen (RU 1.45 gui_battle
+# ConsumablesPanel.updatePosition: x = (stage width - panel width) / 2; core/hud/panel ATTACHED bar_above), as kurzdor's
+# battleequipment sits. Pinned there, the row belongs to the stock panel. This place is the one for the GUIFlash
+# renderer.
 DEFAULTS = {
-    'x': -120,
+    'x': 0,
     'y': -64,
     'align_x': 'center',
     'align_y': 'bottom',
@@ -25,6 +26,6 @@ RETIRED_PLACES = (
     (-200, -66, 'center', 'bottom'),
     (-480, -14, 'center', 'bottom'),
     (0, -200, 'center', 'bottom'),
-    (0, -64, 'center', 'bottom'),
     (-360, -8, 'center', 'bottom'),
+    (-120, -64, 'center', 'bottom'),
 )

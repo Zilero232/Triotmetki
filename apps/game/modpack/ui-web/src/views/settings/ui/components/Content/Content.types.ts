@@ -8,4 +8,5 @@ export type ContentProps = {
   editing: UiComponent | null;
   columns: number;
   compact: boolean;
+  hasReplays: boolean;
 };

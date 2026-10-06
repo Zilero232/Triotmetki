@@ -14,7 +14,12 @@ export const CardSwitch = ({ component }: CardSwitchProps) => {
   if (!component.switch) {
     return (
       <span className={s.switch}>
-        <span className={s.shared}>{t('switchShared')}</span>
+        {cardSwitch.owner && (
+          <button className={s.owner} type='button' onClick={cardSwitch.owner.open} {...cardSwitch.owner.tip}>
+            <span className={s.ownerLabel}>{t('switchPartOf')}</span>
+            <span className={s.ownerTitle}>{cardSwitch.owner.title}</span>
+          </button>
+        )}
       </span>
     );
   }

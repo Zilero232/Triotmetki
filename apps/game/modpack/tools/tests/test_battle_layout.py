@@ -43,14 +43,15 @@ BATTLE_PANELS = (
     'sixth_sense',
 )
 # The page's places of the attached panels (ui-web views/hud/lib/attach, HUD_OVERLAY.attach), design px: the gap to
-# the stock element, the bottom margin, the consumables panel's height, the gap over it and the gap between the two
-# halves above it, the battle log's right edge, the gap over the minimap, and the place right of the score strip
-# (under it below 1700 px).
+# the stock element, the bottom margin, the consumables panel's height, the gap over it, the marks' offset off the
+# centre when they lift and the equipment row's height they lift over, the gap over the minimap, and the place right
+# of the score strip (under it below 1700 px).
 ATTACH_GAP = 12
 ATTACH_EDGE = 8
 BAR_HEIGHT = 58
 BAR_ABOVE = 6
 BAR_SPLIT = 6
+BAR_ROW = 52
 MINIMAP_GAP = 12
 SCORE_OFFSET = 308
 SCORE_TOP = 4
@@ -239,8 +240,10 @@ DOCKED = (
 # the centre), as Battle Observer places its main gun beside its own strip.
 SHARED = (('last_battle', 'player messages'), ('battle_progress', 'score strip'))
 # The same with the largest minimap: at 1080 px it ends 18 px under the right team list, so the card over it meets the
-# list's last rows for its few seconds; there is no other place above the minimap.
-SHARED_LARGEST = (('last_battle', 'right team list'),)
+# list's last rows for its few seconds; there is no other place above the minimap. The marks, lifted over the
+# equipment row there, meet the right end of the stock vehicle messages (a line or two for a moment), as nothing is
+# free between the bar and the minimap.
+SHARED_LARGEST = (('last_battle', 'right team list'), ('marks_panel', 'vehicle messages'))
 # Our team HP strip (team_hp, 600 px wide, centred at the top): half its width and its height.
 TEAM_HP_STRIP = (300, 0, 44)
 
@@ -279,17 +282,17 @@ def sized(left, top, size):
 def beside_bar(kind, size, screen, minimap, bar):
     width, height = screen
     above_top = height - BAR_HEIGHT - BAR_ABOVE - size[1]
-    if kind == 'bar_left':
-        return sized(width / 2 - BAR_SPLIT - size[0], above_top, size)
+    if kind == 'bar_above':
+        return sized((width - size[0]) / 2, above_top, size)
     left = width / 2 + bar / 2 + ATTACH_GAP
     if left + size[0] > width - minimap - ATTACH_EDGE:
-        return sized(width / 2 + BAR_SPLIT, above_top, size)
+        return sized(width / 2 + BAR_SPLIT, above_top - BAR_ROW - BAR_ABOVE, size)
     return sized(left, height - ATTACH_EDGE - size[1], size)
 
 
 def attached_rect(kind, size, screen, minimap, bar=CONSUMABLES_WIDTH):
     width, height = screen
-    if kind in ('bar_right', 'bar_left'):
+    if kind in ('bar_right', 'bar_above'):
         return beside_bar(kind, size, screen, minimap, bar)
     if kind == 'minimap_above':
         return sized(width - ATTACH_EDGE - size[0], height - minimap - MINIMAP_GAP - size[1], size)
@@ -387,13 +390,20 @@ class DefaultPlacesTest(unittest.TestCase):
 
         assert crowded == []
 
-    def test_the_equipment_row_sits_above_the_consumables(self):
+    def test_the_equipment_row_sits_centred_above_the_consumables(self):
         for screen in ((2560, 1440), (1920, 1080)):
-            row = attached_rect('bar_left', PANEL_SIZES['battle_loadout'], screen, MINIMAP_DEFAULT)
+            row = attached_rect('bar_above', PANEL_SIZES['battle_loadout'], screen, MINIMAP_DEFAULT)
             consumables = dict(stock_rects(screen))['consumables']
 
-            assert row[2] == screen[0] / 2 - BAR_SPLIT
-            assert consumables[1] - row[3] >= 6
+            assert row[0] + row[2] == consumables[0] + consumables[2]
+            assert consumables[1] - row[3] == BAR_ABOVE
+
+    def test_the_lifted_marks_clear_the_equipment_row(self):
+        screen = (1920, 1080)
+        marks = attached_rect('bar_right', PANEL_SIZES['marks_panel'], screen, MINIMAP_LARGEST, bar=12 * 57)
+        row = attached_rect('bar_above', (300, BAR_ROW), screen, MINIMAP_LARGEST, bar=12 * 57)
+
+        assert marks[3] == row[1] - BAR_ABOVE
 
     def test_the_marks_end_left_of_the_minimap(self):
         crowded = [
@@ -410,6 +420,7 @@ class DefaultPlacesTest(unittest.TestCase):
 
         expected = {
             'gap': ATTACH_GAP, 'edge': ATTACH_EDGE, 'height': BAR_HEIGHT, 'above': BAR_ABOVE, 'split': BAR_SPLIT,
+            'row': BAR_ROW,
             'offset': SCORE_OFFSET, 'top': SCORE_TOP, 'narrow': SCORE_NARROW, 'under': SCORE_UNDER,
         }
         assert dict((key, page.get(key)) for key in expected) == expected

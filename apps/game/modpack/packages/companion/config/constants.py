@@ -187,6 +187,7 @@ RETIRED_VALUES = (
     (3, 'marks_panel', 'alt_detail', False, True),
     (4, 'crosshair', 'mark', 'chevron_thin', 'none'),
     (4, 'crew_xp', 'show_card', True, False),
+    (5, 'crosshair', 'show_zoom', False, True),
 )
 # (revision, section, old default place, new default place) as (x, y, align_x, align_y): a component that is not a HUD
 # panel (no RETIRED_PLACES of its own) moves in a file older than the revision only while it still sits at the old

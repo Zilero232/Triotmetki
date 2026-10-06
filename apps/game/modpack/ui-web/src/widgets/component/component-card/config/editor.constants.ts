@@ -16,5 +16,5 @@ export const EDITOR = {
 
 export const CARD_THUMB = {
   minScale: 0.3,
-  fallbackIcon: 24
+  fallbackIcon: 22
 } as const;

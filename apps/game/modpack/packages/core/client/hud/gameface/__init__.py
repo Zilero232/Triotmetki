@@ -21,8 +21,8 @@ import os
 
 import BigWorld
 
-from ....hooks import override
 from ....hud import HudBackend
+from ....hud.focus import FOCUS_GIVE_UP, FOCUS_HAND_ON, FocusReturn, WindowInfo, focus_target
 from ....hud.icons import resolve
 from ....hud.surface import (
     HUD_MESSAGE_ARG,
@@ -35,11 +35,12 @@ from ....hud.surface import (
     HudSurface,
 )
 from ....log import log, log_exception, safe
-from ...game import focused_windows, main_window
+from ...game import client_windows, main_window
+from ...timer import game_time
 from ..icons import client_file_exists
 from ..modifier import ModifierWatch
 from ..space import current_space, cursor_events, cursor_visible, gui_spaces
-from .constants import CLICK_REPORTS, INVALID_RES_ID, READY_SPACES, RESTART_FLAG_FILE, WINDOW_LAYER
+from .constants import INVALID_RES_ID, READY_SPACES, RESTART_FLAG_FILE, WINDOW_LAYER
 
 try:
     from frameworks.wulf import ViewFlags, ViewModel, ViewSettings, WindowFlags, WindowLayer, WindowStatus
@@ -125,11 +126,17 @@ if IMPORT_ERROR is None:
                                             layer=getattr(WindowLayer, WINDOW_LAYER), parent=main_window())
 
         # RU 1.45 client source: frameworks/wulf/windows_system/window.py `_onReady` calls `self.show()`, whose `focus`
-        # defaults to True. The HUD window took the keyboard from the battle page (chat no longer opened). UNVERIFIED on
-        # Lesta 1.45: whether a press on the page still focuses it; `_onFocus` logs every change.
+        # defaults to True. The HUD window took the keyboard from the battle page (chat no longer opened).
         def _onReady(self):
             self.show(focus=False)
 
+        # The engine owns the wulf focus: window.py (RU 1.45 client source) only forwards `show(focus)` and `tryFocus()`
+        # to the C++ proxy and hears back through `_cFocusChanged`; no window flag or layer the Python side sees opts a
+        # window out of it. The engine gave the HUD window the focus unasked when the focused window went away (1.45
+        # live log: the lobby's windows destroyed, "focus: HudWindow 9" alone), and from then on the hangar took no
+        # click and the chat no key until the game was minimised. The client corrects the engine's pick the same way,
+        # with `tryFocus()` on the window that should have it (gui/impl/common/fade_manager.py `_bringToFront`,
+        # gui/impl/lobby/crew/base_crew_view.py `bringToFront`), so the backend hands every focus on (`core.hud.focus`).
         def _onFocus(self, focused):
             super(HudWindow, self)._onFocus(focused)
             self.backend.on_window_focus(self, focused)
@@ -142,9 +149,20 @@ def _next_frame(callback):
     BigWorld.callback(0, safe(callback))
 
 
-def focus_text():
-    names = ['%s %s' % (type(window).__name__, window.uniqueID) for window in focused_windows()]
-    return ', '.join(names) or 'no window'
+def is_shown(window):
+    try:
+        return window.windowStatus == WindowStatus.LOADED and not window.isHidden()
+    except Exception:
+        return False
+
+
+def window_info(window, own):
+    ready = window.uniqueID != own.uniqueID and is_shown(window)
+    return WindowInfo(window, window.layer, window.typeFlag, ready)
+
+
+def window_name(window):
+    return '%s %s' % (type(window).__name__, window.uniqueID) if window is not None else 'no window'
 
 
 class GamefaceBackend(HudBackend):
@@ -170,10 +188,9 @@ class GamefaceBackend(HudBackend):
         self.waiting = False
         self.settling = False
         self.answered = False
-        self.clicks_left = 0
+        self.focus = FocusReturn()
         self._listen_cursor()
         self._listen_spaces()
-        self._watch_clicks()
         if self.usable() and restart_pending():
             log(
                 'HUD: OpenWG Gameface is restarting the client to apply its res_map '
@@ -299,7 +316,6 @@ class GamefaceBackend(HudBackend):
         try:
             self.modifier.install()
             self.window = HudWindow(layout, self)
-            self.window.onStatusChanged += self._on_window_status
             self.window.load()
         except Exception:
             log_exception('HUD: Gameface window')
@@ -310,9 +326,8 @@ class GamefaceBackend(HudBackend):
         self.waiting = False
         self.seen_edit = False
         self.seen_mouse = set()
-        self.clicks_left = CLICK_REPORTS if current_space() == SPACE_LOBBY else 0
-        log('HUD: Gameface window %s opened in the %s (layout %s, focus: %s)'
-            % (self.window.uniqueID, current_space(), layout, focus_text()))
+        self.focus = FocusReturn()
+        log('HUD: Gameface window %s opened in the %s (layout %s)' % (self.window.uniqueID, current_space(), layout))
         self._check_cursor()
         return True
 
@@ -321,34 +336,42 @@ class GamefaceBackend(HudBackend):
         window, self.window, self.view = self.window, None, None
         self._set_drawn(None)
         if window is not None:
-            log('HUD: Gameface window %s closed (focused: %s)' % (window.uniqueID, getattr(window, 'isFocused', None)))
+            log('HUD: Gameface window %s closed' % window.uniqueID)
             window.destroy()
 
     @safe
-    def _on_window_status(self, status):
-        window = self.window
-        log('HUD: Gameface window %s status %s' % (window.uniqueID if window is not None else '?', status))
-
-    @safe
     def on_window_focus(self, window, focused):
-        verb = 'took' if focused else 'lost'
-        log('HUD: Gameface window %s %s the focus in the %s (focus: %s)'
-            % (window.uniqueID, verb, current_space(), focus_text()))
+        if focused and window is self.window:
+            self._settle_focus()
 
-    def _watch_clicks(self):
-        try:
-            import game
-        except ImportError:
+    def editing(self):
+        return self.modifier.held if current_space() == SPACE_LOBBY else self.cursor
+
+    def _focused_window(self):
+        window = self.window
+        return window if window is not None and window.isFocused else None
+
+    def _settle_focus(self):
+        window = self._focused_window()
+        if window is None:
             return
-        if getattr(game, 'handleKeyEvent', None) is not None:
-            override(game, 'handleKeyEvent')(self._on_client_key)
+        decision = self.focus.decide(game_time(), self.editing())
+        if decision == FOCUS_HAND_ON:
+            _next_frame(self._hand_on_focus)
+        elif decision == FOCUS_GIVE_UP:
+            log('HUD: Gameface window %s keeps the focus, the client keeps giving it back' % window.uniqueID)
 
-    def _on_client_key(self, original, event, *args, **kwargs):
-        handled = original(event, *args, **kwargs)
-        if self.clicks_left > 0 and event.isMouseButton() and event.isKeyDown():
-            self.clicks_left -= 1
-            log('HUD: a press in the hangar, taken by the client: %s (focus: %s)' % (bool(handled), focus_text()))
-        return handled
+    def _hand_on_focus(self):
+        window = self._focused_window()
+        if window is None or self.editing():
+            return
+        found = focus_target([window_info(other, window) for other in client_windows()])
+        target = found if found is not None else main_window()
+        log('HUD: Gameface window %s took the focus in the %s, handing it to %s'
+            % (window.uniqueID, current_space(), window_name(target)))
+        self.focus.handed_on(game_time())
+        if target is not None:
+            target.tryFocus()
 
     @safe
     def on_loaded(self, view):
@@ -451,6 +474,7 @@ class GamefaceBackend(HudBackend):
     @safe
     def _on_modifier(self, held):
         self.push_state()
+        self._settle_focus()
 
     # The client shows or hides the battle cursor after the key event (Ctrl), and no event is fired when another view
     # already holds the cursor: read it on the next frame.
@@ -471,6 +495,7 @@ class GamefaceBackend(HudBackend):
             self.seen_edit = True
             log('HUD: battle cursor shown, panels can be dragged')
         self.push_state()
+        self._settle_focus()
 
     def _on_page_mouse(self, fields):
         event = fields['event']

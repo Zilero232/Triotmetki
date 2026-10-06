@@ -1,57 +1,57 @@
 {
   "data": {
     "average": {
-      "ema": 2540,
-      "ema_projected": 2551,
+      "ema": 2540, 
+      "ema_projected": 2551, 
       "label": "среднее"
-    },
+    }, 
     "bar": {
-      "end": 5207,
-      "hold": 2540,
+      "end": 5207, 
+      "hold": 2540, 
       "value": 3100
-    },
+    }, 
     "damage": {
-      "label": "урон",
-      "target": 2540,
+      "label": "урон", 
+      "target": 2540, 
       "value": 3100
-    },
-    "delta": 0.18,
-    "estimated": false,
+    }, 
+    "delta": 0.18, 
+    "estimated": false, 
     "goal": {
-      "level": 87,
+      "level": 87, 
       "need": 2107
-    },
-    "has_curve": true,
-    "mark": "img://gui/maps/icons/library/marksOnGun/mark_2.png|otmetki:target",
-    "note": null,
-    "percent": 86.3,
-    "stars": 2,
+    }, 
+    "has_curve": true, 
+    "mark": "img://gui/maps/icons/library/marksOnGun/mark_2.png|otmetki:target", 
+    "note": null, 
+    "percent": 86.3, 
+    "stars": 2, 
     "step": {
-      "need": 955,
+      "need": 955, 
       "step": 0.5
-    },
-    "style": "extended",
-    "text": null,
+    }, 
+    "style": "extended", 
+    "text": null, 
     "thresholds": [
       {
-        "level": 65,
-        "need": 0,
+        "level": 65, 
+        "need": 0, 
         "reached": true
-      },
+      }, 
       {
-        "level": 85,
-        "need": 0,
+        "level": 85, 
+        "need": 0, 
         "reached": true
-      },
+      }, 
       {
-        "level": 95,
-        "need": 25195,
+        "level": 95, 
+        "need": 25195, 
         "reached": false
       }
-    ],
-    "to": "до",
+    ], 
+    "to": "до", 
     "tone": "text"
-  },
-  "kind": "marks_panel",
+  }, 
+  "kind": "marks_panel", 
   "v": 1
 }

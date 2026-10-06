@@ -14,6 +14,7 @@ GAMEFACE_MODULE = 'otmetki.core.client.hud.gameface'
 class Constants(object):
     WINDOW = 1
     VIEW = 1
+    LOADED = 3
 
 
 class ClientWindow(object):
@@ -22,6 +23,9 @@ class ClientWindow(object):
         self.shown = []
         self.focus_changes = []
         self.uniqueID = 7
+        self.isFocused = False
+        self.layer = 7
+        self.typeFlag = 1
 
     def show(self, focus=True):
         self.shown.append(focus)
@@ -33,23 +37,6 @@ class ClientWindow(object):
         self.focus_changes.append(focused)
 
 
-class FocusedWindow(object):
-    uniqueID = 4
-
-
-class KeyEvent(object):
-
-    def __init__(self, mouse, down):
-        self.mouse = mouse
-        self.down = down
-
-    def isMouseButton(self):
-        return self.mouse
-
-    def isKeyDown(self):
-        return self.down
-
-
 class BackendSpy(object):
 
     def __init__(self):
@@ -57,6 +44,22 @@ class BackendSpy(object):
 
     def on_window_focus(self, window, focused):
         self.focus.append((window.uniqueID, focused))
+
+
+class OtherWindow(object):
+
+    def __init__(self, unique_id, layer, type_flag=98):
+        self.uniqueID = unique_id
+        self.layer = layer
+        self.typeFlag = type_flag
+        self.windowStatus = Constants.LOADED
+        self.focus_tries = 0
+
+    def isHidden(self):
+        return False
+
+    def tryFocus(self):
+        self.focus_tries += 1
 
 
 class ClientViewModel(object):
@@ -80,7 +83,6 @@ def install_stubs():
     wulf.ViewSettings = lambda layout, flags=None, model=None: None
     sys.modules['gui.impl.pub'].WindowImpl = ClientWindow
     sys.modules['gui.impl.pub'].ViewImpl = ClientView
-    sys.modules['game'].handleKeyEvent = lambda event: event.mouse
 
 
 class HudWindowTest(unittest.TestCase):
@@ -91,9 +93,15 @@ class HudWindowTest(unittest.TestCase):
         install_stubs()
         sys.modules.pop(GAMEFACE_MODULE, None)
         self.gameface = importlib.import_module(GAMEFACE_MODULE)
-        self.gameface.main_window = lambda: None
-        self.gameface.focused_windows = lambda: [FocusedWindow()]
+        self.main = OtherWindow(1, 1)
+        self.lobby = OtherWindow(4, 4)
+        self.windows = [self.main, self.lobby]
+        self.callbacks = []
+        self.gameface.main_window = lambda: self.main
+        self.gameface.client_windows = lambda: self.windows
         self.gameface.current_space = lambda: 'lobby'
+        self.gameface.game_time = lambda: 100.0
+        self.gameface._next_frame = self.callbacks.append
         self.lines = []
         self.gameface.log = self.lines.append
 
@@ -127,49 +135,87 @@ class HudWindowTest(unittest.TestCase):
 
         self.assertEqual(window.focus_changes, [False])
 
-    def test_the_backend_logs_which_windows_hold_the_focus_when_its_window_takes_it(self):
+    def focused_backend(self):
         backend = self.gameface.GamefaceBackend()
+        window = ClientWindow()
+        window.isFocused = True
+        backend.window = window
+        self.windows.append(window)
+        return backend, window
 
-        backend.on_window_focus(ClientWindow(), True)
+    def run_frames(self):
+        while self.callbacks:
+            self.callbacks.pop(0)()
 
-        self.assertEqual(self.lines[-1], 'HUD: Gameface window 7 took the focus in the lobby (focus: FocusedWindow 4)')
+    def test_a_focus_the_window_took_goes_back_to_the_page_under_it(self):
+        backend, window = self.focused_backend()
 
-    def test_a_hangar_press_is_logged_with_the_client_answer(self):
-        backend = self.gameface.GamefaceBackend()
-        backend.clicks_left = 1
+        backend.on_window_focus(window, True)
+        self.run_frames()
 
-        sys.modules['game'].handleKeyEvent(KeyEvent(mouse=True, down=True))
+        self.assertEqual(self.lobby.focus_tries, 1)
 
-        expected = 'HUD: a press in the hangar, taken by the client: True (focus: FocusedWindow 4)'
+    def test_the_focus_is_handed_on_a_frame_later(self):
+        backend, window = self.focused_backend()
+
+        backend.on_window_focus(window, True)
+
+        self.assertEqual(self.lobby.focus_tries, 0)
+
+    def test_the_hand_on_is_logged_once(self):
+        backend, window = self.focused_backend()
+
+        backend.on_window_focus(window, True)
+        self.run_frames()
+
+        expected = 'HUD: Gameface window 7 took the focus in the lobby, handing it to OtherWindow 4'
         self.assertEqual(self.lines[-1], expected)
 
-    def test_the_press_reports_stop_after_the_budget(self):
-        backend = self.gameface.GamefaceBackend()
-        backend.clicks_left = 1
-        handle = sys.modules['game'].handleKeyEvent
+    def test_the_main_window_gets_the_focus_without_a_page(self):
+        backend, window = self.focused_backend()
+        self.windows.remove(self.lobby)
 
-        handle(KeyEvent(mouse=True, down=True))
-        handle(KeyEvent(mouse=True, down=True))
+        backend.on_window_focus(window, True)
+        self.run_frames()
 
-        self.assertEqual(len([line for line in self.lines if 'a press in the hangar' in line]), 1)
+        self.assertEqual(self.main.focus_tries, 1)
 
-    def test_keys_and_releases_are_not_reported(self):
-        backend = self.gameface.GamefaceBackend()
-        backend.clicks_left = 3
-        handle = sys.modules['game'].handleKeyEvent
+    def test_a_lost_focus_is_left_alone(self):
+        backend, window = self.focused_backend()
+        window.isFocused = False
 
-        handle(KeyEvent(mouse=False, down=True))
-        handle(KeyEvent(mouse=True, down=False))
+        backend.on_window_focus(window, False)
+        self.run_frames()
 
-        self.assertEqual(backend.clicks_left, 3)
+        self.assertEqual(self.lobby.focus_tries, 0)
 
-    def test_the_client_answer_is_returned_unchanged(self):
-        backend = self.gameface.GamefaceBackend()
-        backend.clicks_left = 1
+    def test_the_focus_stays_while_a_panel_is_dragged(self):
+        backend, window = self.focused_backend()
+        backend.modifier.held = True
 
-        handled = sys.modules['game'].handleKeyEvent(KeyEvent(mouse=False, down=True))
+        backend.on_window_focus(window, True)
+        self.run_frames()
 
-        self.assertFalse(handled)
+        self.assertEqual(self.lobby.focus_tries, 0)
+
+    def test_the_focus_is_handed_on_when_the_drag_key_is_released(self):
+        backend, window = self.focused_backend()
+        backend.modifier.held = True
+        backend.on_window_focus(window, True)
+        backend.modifier.held = False
+
+        backend._on_modifier(False)
+        self.run_frames()
+
+        self.assertEqual(self.lobby.focus_tries, 1)
+
+    def test_a_focus_of_a_window_already_replaced_is_left_alone(self):
+        backend, window = self.focused_backend()
+
+        backend.on_window_focus(ClientWindow(), True)
+        self.run_frames()
+
+        self.assertEqual(self.lobby.focus_tries, 0)
 
 
 if __name__ == '__main__':

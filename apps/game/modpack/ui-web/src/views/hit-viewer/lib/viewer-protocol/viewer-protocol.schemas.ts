@@ -33,8 +33,3 @@ export const viewerStateSchema = z.object({
   loading: z.optional(z.boolean()),
   approx: z.optional(z.boolean())
 });
-
-export const viewerMarksSchema = z.object({
-  selected: z.nullable(z.number()),
-  marks: z.array(z.object({ i: z.number(), tone, x: z.number(), y: z.number(), tx: z.number(), ty: z.number() }))
-});

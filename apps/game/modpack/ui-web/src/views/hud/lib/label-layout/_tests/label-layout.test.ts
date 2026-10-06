@@ -121,7 +121,7 @@ describe(layoutLabels, () => {
     });
 
     const equipment = (overrides: Partial<HudPanel> = {}) =>
-      panel({ id: 'otmetki.hud.battle_loadout', align_y: 'bottom', attach: { kind: 'bar_left', bar: 399, minimap: 310 }, ...overrides });
+      panel({ id: 'otmetki.hud.battle_loadout', align_y: 'bottom', attach: { kind: 'bar_above', bar: 399, minimap: 310 }, ...overrides });
 
     const logTop = (shown: HudPanel[], moved: Partial<Record<string, { x: number; y: number; align_x: 'left'; align_y: 'top' }>> = {}) =>
       layoutLabels({

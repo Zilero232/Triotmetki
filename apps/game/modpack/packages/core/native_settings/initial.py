@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from .constants import ACTION_RECOMMENDED, ACTION_RESTORE, NATIVE
+from .mapping import merge_value
 
 
 def _dict_of(value):
@@ -23,6 +24,12 @@ def recommended(schema, keys):
 
 def is_recommended(values, schema, keys):
     return all(values.get(key) == schema.defaults[key] for key in keys)
+
+
+def client_holds(current, wanted):
+    """Whether the client values `current` ({name: value} as read) already are `wanted` ({name: value} a write would
+    send); a name the client does not know is never written, so it does not count."""
+    return all(current[name] == merge_value(current[name], value) for name, value in wanted.items() if name in current)
 
 
 def offered_action(has_backup, holds_recommended):

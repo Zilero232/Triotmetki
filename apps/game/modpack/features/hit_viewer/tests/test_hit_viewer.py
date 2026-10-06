@@ -13,7 +13,6 @@ from otmetki.features.hit_viewer.model import (
     SIDE_DEALT,
     SIDE_RECEIVED,
     HitBook,
-    along,
     clean_aim,
     decode_message,
     default_index,
@@ -23,12 +22,10 @@ from otmetki.features.hit_viewer.model import (
     hit_geometry,
     impact,
     local_segment,
-    marker,
     normalization,
     plate_analysis,
     shell_model,
     settings_page,
-    to_screen,
     viewer_state,
 )
 from otmetki.features.hit_viewer.model.geometry import impact_point
@@ -148,11 +145,6 @@ class GeometryTest(unittest.TestCase):
 
     def test_a_shot_without_a_drawn_point_is_not_placed(self):
         assert hit_geometry([NO_LENGTH], {1: HULL_BOX}) is None
-
-    def test_the_incoming_path_starts_behind_the_hit_point(self):
-        found = hit_geometry([HULL_ALONG_Z], {1: HULL_BOX})
-
-        assert rounded(along(found.point, found.direction, -2.5)) == (0.0, 0.0, -1.5)
 
 
 class BookTest(unittest.TestCase):
@@ -376,29 +368,6 @@ class SceneTest(unittest.TestCase):
 
     def test_a_critical_hit_without_damage_draws_the_critical_marker(self):
         assert effect_model('crit', 0) == 'content/battlehits/style1/effects/critical/effect.model'
-
-    def test_the_line_starts_back_along_the_shell_path(self):
-        assert along((1.0, 2.0, 3.0), (0.0, 0.0, 2.0), -0.5) == (1.0, 2.0, 2.5)
-
-    def test_a_direction_without_length_keeps_the_point(self):
-        assert along((1.0, 2.0, 3.0), (0.0, 0.0, 0.0), -0.5) == (1.0, 2.0, 3.0)
-
-
-class ProjectionTest(unittest.TestCase):
-
-    def test_the_centre_of_the_clip_space_is_the_middle_of_the_screen(self):
-        assert to_screen((0.0, 0.0, 0.5, 2.0)) == (0.5, 0.5)
-
-    def test_up_in_clip_space_is_the_top_of_the_screen(self):
-        assert to_screen((0.0, 1.0, 0.5, 1.0)) == (0.5, 0.0)
-
-    def test_a_point_behind_the_camera_is_not_drawn(self):
-        assert to_screen((0.0, 0.0, 0.5, -1.0)) is None
-
-    def test_a_marker_without_a_tail_draws_no_line(self):
-        found = marker(3, 'pen', (0.0, 0.0, 0.5, 1.0), (0.0, 0.0, 0.5, -1.0))
-
-        assert (found['tx'], found['ty']) == (found['x'], found['y'])
 
 
 class PageTest(unittest.TestCase):

@@ -1,17 +1,17 @@
 {
   "data": {
-    "centre": null,
-    "centre_marker": "none",
+    "centre": null, 
+    "centre_marker": "none", 
     "left": {
-      "x": -212,
+      "x": -212, 
       "y": 2
-    },
-    "marker": "corner",
+    }, 
+    "marker": "corner", 
     "right": {
-      "x": 148,
+      "x": 148, 
       "y": -2
     }
-  },
-  "kind": "gun_arc",
+  }, 
+  "kind": "gun_arc", 
   "v": 1
 }

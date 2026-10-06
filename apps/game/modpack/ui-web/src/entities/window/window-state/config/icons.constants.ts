@@ -5,9 +5,7 @@ import type { SECTION } from './section.constants';
 export const SECTION_ICONS: Record<(typeof SECTION)[keyof typeof SECTION], UiIconName> = {
   battle: 'swords',
   hangar: 'warehouse',
-  marks: 'award',
   replays: 'clapperboard',
-  streamer: 'radio',
   data: 'globe',
   profiles: 'layers',
   hud: 'layout-dashboard'
@@ -52,7 +50,8 @@ export const COMPONENT_ICONS: Partial<Record<string, UiIconName>> = {
   update_notice: 'download',
   notification_filter: 'bell-off',
   replay_manager: 'film',
-  replay_upload: 'cloud-upload'
+  replay_upload: 'cloud-upload',
+  free_camera: 'video'
 };
 
 export const FALLBACK_COMPONENT_ICON: UiIconName = 'puzzle';

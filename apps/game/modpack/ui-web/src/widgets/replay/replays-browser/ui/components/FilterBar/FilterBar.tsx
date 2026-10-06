@@ -5,6 +5,7 @@ import type { FilterBarProps } from './FilterBar.types';
 import { filterOptions } from '../../../lib/filter-options';
 import { useReplaysT } from '../../../model/hooks';
 import { Dropdown } from '../Dropdown';
+import { ToolbarTools } from '../Toolbar/components';
 
 import s from './FilterBar.module.scss';
 
@@ -57,6 +58,7 @@ export const FilterBar = ({ browser }: FilterBarProps) => {
           <span className={s.resetCount}>{browser.activeFilters}</span>
         </button>
       )}
+      <ToolbarTools browser={browser} />
     </div>
   );
 };

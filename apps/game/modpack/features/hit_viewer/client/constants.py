@@ -8,9 +8,6 @@ SIDE_BY_EVENT = (('DAMAGE', 'dealt'), ('RECEIVED_DAMAGE', 'received'))
 RES_MAP_ID = 'otmetki/ui/hit_viewer'
 INVALID_RES_ID = -1
 STATE_PROPERTY = 'state'
-# The markers ride in the property the ui-web bridge already reads as `feed` (shared/api/gameface), pushed every frame
-# apart from the slower state.
-MARKS_PROPERTY = 'feed'
 SEND_COMMAND = 'send'
 MESSAGE_ARG = 'message'
 # The viewer is a lobby sub view over the 3D hangar, the way the stock Gameface views that show a vehicle open (RU 1.45
@@ -20,9 +17,7 @@ MESSAGE_ARG = 'message'
 # BattleHits opens a LobbySubView with __background_alpha__ 0 the same way.
 BACKGROUND_ALPHA = 0.0
 
-# How often the markers follow the camera, how long the camera flies to a hit and how long after the pose it starts
-# (the posed nodes move on the next frames).
-TICK_S = 0.04
+# How long the camera flies to a hit and how long after the pose it starts (the posed nodes move on the next frames).
 FOCUS_S = 0.5
 FOCUS_DELAY_S = 0.1
 # A loaded hangar vehicle may get its collision a few frames late (BattleHits HangarScene.__updateOutRicochet waits
@@ -36,9 +31,7 @@ LOGGED_MESSAGE_CHARS = 200
 # BattleHits HangarScene.__updateCamera: the camera orbits the hit point at 2.9-9 m, looking along the shell's path.
 FOCUS_DISTANCE_M = 5.5
 FOCUS_LIMITS_M = (2.9, 9.0)
-# The incoming path of a marker: this far back along the shell's path, in metres; the plate probe reaches this far
-# on both sides of the hit point.
-TAIL_M = 2.5
+# The plate probe reaches this far on both sides of the hit point, in metres.
 PROBE_M = 0.6
 
 # RU 1.45 client source: the stock modules a vehicle descriptor is rebuilt from, the hangar services and classes.
@@ -46,8 +39,6 @@ CAMERA_MANAGER_MODULE = 'cgf_components.hangar_camera_manager'
 CAMERA_MANAGER_CLASS = 'HangarCameraManager'
 PREVIEW_MODULE = 'CurrentVehicle'
 PREVIEW_NAME = 'g_currentPreviewVehicle'
-PROJECTION_MODULE = 'AvatarInputHandler.cameras'
-PROJECTION_FUNCTION = 'getViewProjectionMatrix'
 # vehicle_systems.tankStructure.TankPartIndexes: CHASSIS 0, HULL 1, TURRET 2, GUN 3; the materials of each part.
 MATERIAL_PARTS = ('chassis', 'hull', 'turret', 'gun')
 # vehicle_systems.tankStructure: TankPartNames.TURRET and TankNodeNames.GUN_INCLINATION, the nodes BattleHits poses.

@@ -2,6 +2,7 @@
 
 .list {
   overflow: hidden;
+  min-width: 0;
   border: 1px solid token(color-border);
   border-radius: token(radius-md);
   background-color: token(color-bg);

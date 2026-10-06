@@ -938,8 +938,8 @@
         "en": "Hangar switcher"
       },
       "description": {
-        "ru": "Ангар из тех, что уже есть в игре, вместо стандартного; событийные ангары и ангары режимов остаются как в игре. По умолчанию выключен: меняет вид ангара, который игра выбирает сама.",
-        "en": "A hangar the game already has instead of the standard one; event and mode hangars stay as in the game. Off by default: it changes the hangar the game picks itself."
+        "ru": "Ангар из тех, что уже есть в игре, вместо стандартного, и его вид: «Осень», «Дождь», «Студия», ночной «Натиск» — освещение из самой игры; событийные ангары и ангары режимов остаются как в игре. По умолчанию выключен: меняет вид ангара, который игра выбирает сама.",
+        "en": "A hangar the game already has instead of the standard one, and its look: «Autumn», «Rain», «Studio», the night «Onslaught», lighting from the game itself; event and mode hangars stay as in the game. Off by default: it changes the hangar the game picks itself."
       },
       "fairPlay": {
         "ru": "Только вид вашего ангара из файлов игры.",

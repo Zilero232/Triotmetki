@@ -1,14 +1,14 @@
 {
   "data": {
-    "color": null,
-    "dim": false,
-    "duration": 10.0,
-    "elapsed": 3.0,
-    "icon": "img://gui/maps/icons/otmetki/sixth_sense/icons/lamp_64.png|otmetki:lamp",
-    "size": 56,
-    "text": "",
+    "color": null, 
+    "dim": false, 
+    "duration": 10.0, 
+    "elapsed": 3.0, 
+    "icon": "img://gui/maps/icons/otmetki/sixth_sense/icons/lamp_64.png|otmetki:lamp", 
+    "size": 56, 
+    "text": "", 
     "timer": true
-  },
-  "kind": "sixth_sense",
+  }, 
+  "kind": "sixth_sense", 
   "v": 1
 }

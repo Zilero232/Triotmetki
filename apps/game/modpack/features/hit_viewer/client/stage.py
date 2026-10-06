@@ -5,7 +5,7 @@ import BigWorld
 from ....core.client.game import client_attr, service
 from ....core.hooks import subscribe, unsubscribe
 from ....core.log import log, log_exception, safe
-from ..model import MODULE_KEYS, along, effect_model, first_plate, hit_geometry, shell_model
+from ..model import MODULE_KEYS, effect_model, first_plate, hit_geometry, shell_model
 from ..model.constants import PART_NAMES
 from .constants import (
     CAMERA_MANAGER_CLASS,
@@ -17,10 +17,7 @@ from .constants import (
     PREVIEW_MODULE,
     PREVIEW_NAME,
     PROBE_M,
-    PROJECTION_FUNCTION,
-    PROJECTION_MODULE,
     RESTORE_WAIT_S,
-    TAIL_M,
     TURRET_NODE,
 )
 
@@ -65,6 +62,15 @@ def _material(descriptor, part_index, material_kind):
         from items import vehicles
         found = vehicles.g_cache.commonConfig['materials'].get(material_kind)
     return found
+
+
+# RU 1.45 HangarCameraManager.moveCamera keeps the limits it is given and setMinDist writes into them
+# (distConstraints[0] = ...), as into the orbit's own Math.Vector2. A tuple raised TypeError there, and again in every
+# later vehicle load (HangarVehicleAppearance._reloadColliderType calls setMinDist), so the hangar stayed on "updating
+# the hangar" after a tab switch or closing the viewer (python.log, 2026-10-06).
+def camera_limits():
+    import Math
+    return Math.Vector2(*FOCUS_LIMITS_M)
 
 
 def _rotation(yaw, pitch):
@@ -275,19 +281,6 @@ class HangarStage(object):
                 layers.append((hit_angle_cos, material.armor, material.useHitAngle))
         return first_plate(layers, shell, caliber)
 
-    def clip(self, geometry):
-        import Math
-        project = client_attr(PROJECTION_MODULE, PROJECTION_FUNCTION)
-        matrix = project()
-        point, direction = self.world(geometry)
-        tail = Math.Vector3(*along(tuple(point), tuple(direction), -TAIL_M))
-        return tuple(self._apply(matrix, Math.Vector4(value.x, value.y, value.z, 1.0)) for value in (point, tail))
-
-    @staticmethod
-    def _apply(matrix, vector):
-        found = matrix.applyV4Point(vector)
-        return found.x, found.y, found.z, found.w
-
     def focus(self, geometry, hit, duration):
         paths = (shell_model(hit.get('shell')), effect_model(hit['outcome'], hit.get('damage')))
         try:
@@ -298,4 +291,4 @@ class HangarStage(object):
         if manager is None:
             return
         point, direction = self.world(geometry)
-        manager.moveCamera(point, direction.yaw, -direction.pitch, FOCUS_DISTANCE_M, duration, FOCUS_LIMITS_M)
+        manager.moveCamera(point, direction.yaw, -direction.pitch, FOCUS_DISTANCE_M, duration, camera_limits())

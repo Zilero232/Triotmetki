@@ -22,18 +22,24 @@ describe(SixthSenseWidget, () => {
     const html = render(<SixthSenseWidget data={data} />).container;
 
     expect(html.textContent).toBe('7');
-    expect([html.querySelectorAll('circle').length, html.querySelectorAll('path').length]).toEqual([1, 1]);
+    expect(html.querySelectorAll('path')).toHaveLength(2);
   });
 
-  it('centres the lamp in its ring and writes the seconds under the ring, not over it', () => {
-    const lamp = render(<SixthSenseWidget data={data} />).container.querySelector(':scope > div');
-    const ring = lamp?.querySelector(':scope > div');
-    const seconds = lamp?.querySelector(':scope > span');
-    const box = ring?.querySelector<HTMLElement>('div');
+  it('places the ring and the seconds at fixed rem spots of a fixed box, with no text centring Gameface ignores', () => {
+    const lamp = render(<SixthSenseWidget data={data} />).container.querySelector<HTMLElement>(':scope > div');
+    const [ring, seconds] = [...(lamp?.querySelectorAll<HTMLElement>(':scope > span') ?? [])];
 
-    expect([box?.style.width, box?.style.height]).toEqual(['84rem', '84rem']);
-    expect(box?.querySelector('img')).not.toBeNull();
+    expect([lamp?.style.width, lamp?.style.height]).toEqual(['84rem', '108rem']);
+    expect([ring?.style.left, ring?.style.top]).toEqual(['0rem', '0rem']);
+    expect([seconds?.style.left, seconds?.style.top, seconds?.style.width]).toEqual(['22rem', '84rem', '40rem']);
     expect(seconds?.textContent).toBe('7');
-    expect(seconds && ring?.contains(seconds)).toBe(false);
+  });
+
+  it('keeps the seconds box in place when the count runs out', () => {
+    const html = render(<SixthSenseWidget data={{ ...data, elapsed: data.duration }} />).container;
+    const lamp = html.querySelector<HTMLElement>(':scope > div');
+    const seconds = lamp?.querySelectorAll<HTMLElement>(':scope > span')[1];
+
+    expect([lamp?.style.height, seconds?.style.left, seconds?.textContent]).toEqual(['108rem', '22rem', '']);
   });
 });

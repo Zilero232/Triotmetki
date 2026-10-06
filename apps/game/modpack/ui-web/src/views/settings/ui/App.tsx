@@ -32,6 +32,7 @@ export const App = () => {
             columns={app.columns}
             compact={app.compact}
             editing={app.editing}
+            hasReplays={app.hasReplays}
             searching={app.searching}
             section={app.section}
             state={app.state}

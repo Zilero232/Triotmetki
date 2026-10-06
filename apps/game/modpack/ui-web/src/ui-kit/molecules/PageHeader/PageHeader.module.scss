@@ -12,8 +12,8 @@
 
 .titles {
   display: flex;
-  min-width: 240px;
-  flex: 1 1 320px;
+  min-width: 160px;
+  flex: 1 1 auto;
   flex-direction: column;
 }
 
@@ -39,4 +39,14 @@
   color: token(win-text-label);
   font-size: 12px;
   line-height: 16px;
+}
+
+.aside {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 0 0 -8px auto;
 }

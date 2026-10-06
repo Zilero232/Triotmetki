@@ -15,30 +15,35 @@
 }
 
 .lamp {
-  @include hud-stack;
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+
+  @include hud-text;
 }
 
 .ring {
+  position: absolute;
   display: flex;
-  flex: 0 0 auto;
-  flex-direction: row;
-  justify-content: center;
 }
 
 .lit {
   animation: lamp-pulse 0.6s ease-in-out infinite;
 }
 
-.text {
-  margin-top: 2px;
-  text-align: center;
+.row {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
 
+.text {
   @include hud-type(value);
 }
 
 .seconds {
   @include hud-type(key);
-
-  line-height: 20px;
-  text-align: center;
 }

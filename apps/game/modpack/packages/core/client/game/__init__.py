@@ -172,12 +172,12 @@ def main_window():
         return None
 
 
-def focused_windows():
-    """The client's wulf windows that hold the focus (IGuiLoader.windowsManager.findWindows over Window.isFocused, RU
-    1.45 client source), or an empty list before the GUI loader exists."""
+def client_windows():
+    """Every wulf window of the client (IGuiLoader.windowsManager.findWindows, RU 1.45 client source), or an empty list
+    before the GUI loader exists."""
     try:
         manager = _windows_manager()
-        return list(manager.findWindows(lambda window: window.isFocused)) if manager is not None else []
+        return list(manager.findWindows(lambda window: True)) if manager is not None else []
     except Exception:
         return []
 

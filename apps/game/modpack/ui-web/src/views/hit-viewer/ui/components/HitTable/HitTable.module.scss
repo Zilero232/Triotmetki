@@ -2,11 +2,15 @@
 
 .table {
   display: flex;
+  min-height: 0;
+  flex: 0 1 auto;
   flex-direction: column;
 }
 
 .body {
   display: flex;
+  min-height: 0;
+  flex: 0 1 auto;
   flex-direction: column;
 }
 
@@ -26,6 +30,7 @@
 
 .head {
   height: 26px;
+  flex: 0 0 auto;
   border-bottom: 1px solid token(win-divider);
   color: token(color-text-muted);
   font-size: 11px;
@@ -35,6 +40,8 @@
 
 .item {
   height: 32px;
+  box-sizing: border-box;
+  flex: 0 0 auto;
   border-bottom: 1px solid token(color-border);
   cursor: pointer;
 

@@ -4,18 +4,19 @@ import json
 
 import BigWorld
 
-from ....core.client.timer import Ticker
 from ....core.compat import string_types
 from ....core.events import EVENT_SETTINGS_CLOSE
 from ....core.log import log, log_exception, safe
-from ..model import decode_message, default_index, first_side, marker, viewer_state
-from .constants import EMPTY_SELECTION, FOCUS_DELAY_S, FOCUS_S, LOGGED_MESSAGE_CHARS, SETTLE_ATTEMPTS, SETTLE_S, TICK_S
+from ..model import decode_message, default_index, first_side, viewer_state
+from .constants import EMPTY_SELECTION, FOCUS_DELAY_S, FOCUS_S, LOGGED_MESSAGE_CHARS, SETTLE_ATTEMPTS, SETTLE_S
 from .stage import HangarStage, is_exact
 from .window import ViewerWindowHost, move_camera
 
 
 # poliroid BattleHits' layout: the page lists the hits at the side, the hangar shows the vehicle with its turret and gun
-# as the shot found them. With no battle recorded yet the page still opens, with its empty state.
+# as the shot found them. With no battle recorded yet the page still opens, with its empty state. The hit itself is
+# drawn only in 3D (HangarStage.focus), never as a page overlay: a marker projected in Python and pushed through the
+# view model reached the page a frame or more after the camera moved, so it jumped while the camera orbited.
 class HitViewerScreen(object):
 
     def __init__(self, component, recorder):
@@ -23,7 +24,6 @@ class HitViewerScreen(object):
         self.recorder = recorder
         self.window = ViewerWindowHost(self.on_message, self.close, self.push, self._on_window_gone)
         self.stage = HangarStage(self._on_model_loaded)
-        self.ticker = Ticker(TICK_S, self._tick)
         self.selection = dict(EMPTY_SELECTION)
         self.loaded = None
         self.wanted = None
@@ -59,7 +59,6 @@ class HitViewerScreen(object):
                 log('hit viewer: not opened: the viewer page is not registered with OpenWG Gameface')
                 return
             self.stage.begin()
-            self.ticker.start()
             log('hit viewer: opened, %d recorded battles' % len(self._battles()))
         self._select_battle(self._find(battle_id))
 
@@ -79,7 +78,6 @@ class HitViewerScreen(object):
         self.settling += 1
 
     def _release(self):
-        self.ticker.stop()
         self.stage.end()
         self._forget_model()
         log('hit viewer: closed')
@@ -220,22 +218,6 @@ class HitViewerScreen(object):
             return
         state = viewer_state(self._battles(), self.selection, self.component.app.translate, self.stage_state())
         self.window.push_state(json.dumps(state, sort_keys=True))
-
-    @safe
-    def _tick(self):
-        battle = self.battle()
-        if battle is None or not self.decoded:
-            self.window.push_marks(json.dumps({'selected': None, 'marks': []}))
-            return
-        marks = []
-        for index, geometry in sorted(self.decoded.items()):
-            hit = battle['hits'][index]
-            if hit['side'] == self.selection['tab']:
-                point, tail = self.stage.clip(geometry)
-                found = marker(index, hit['outcome'], point, tail)
-                if found is not None:
-                    marks.append(found)
-        self.window.push_marks(json.dumps({'selected': self.selection['index'], 'marks': marks}, sort_keys=True))
 
     @safe
     def on_message(self, raw):

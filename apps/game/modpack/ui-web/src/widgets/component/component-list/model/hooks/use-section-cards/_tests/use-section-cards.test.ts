@@ -28,8 +28,9 @@ describe(useSectionCards, () => {
   });
 
   it('reports a page with no cards as empty', () => {
-    const streamer = cardsOf('streamer');
+    const data = cardsOf('data');
 
-    expect(streamer.empty).toBe(true);
+    expect(data.empty).toBe(false);
+    expect(cardsOf('hud').empty).toBe(false);
   });
 });

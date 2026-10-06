@@ -46,7 +46,7 @@ describe(componentsOf, () => {
   it('keeps a page to its own cards, sorted by title', () => {
     const titles = componentsOf({ components: components(), section: 'battle' }).map(({ title }) => title);
 
-    expect(titles).toEqual(['Журнал боя', 'minimap']);
+    expect(titles).toEqual(['Журнал боя', 'Отметки в бою', 'minimap']);
   });
 
   it('sorts Cyrillic titles first, ignoring case and ё, the same on every machine', () => {
@@ -58,10 +58,10 @@ describe(componentsOf, () => {
     expect(titles).toEqual(['арта', 'Ёж', 'Жук', 'Alpha', 'zoom']);
   });
 
-  it('lists the hangar and the battle cards of a page together', () => {
-    const cards = componentsOf({ components: components(), section: 'marks' });
+  it('puts the hangar cards on the hangar page', () => {
+    const cards = componentsOf({ components: components(), section: 'hangar' });
 
-    expect(new Set(idsOf(cards))).toEqual(new Set(['marks_panel', 'session_stats']));
+    expect(idsOf(cards)).toEqual(['session_stats']);
   });
 });
 
@@ -69,13 +69,13 @@ describe(summarize, () => {
   it('lists every page in the navigation order', () => {
     const summaries = summarize(components());
 
-    expect(summaries.map(({ section }) => section)).toEqual(['battle', 'hangar', 'marks', 'replays', 'streamer', 'data', 'hud']);
+    expect(summaries.map(({ section }) => section)).toEqual(['battle', 'hangar', 'replays', 'data', 'hud']);
   });
 
   it('counts the switched-off cards of a page apart', () => {
     const summaries = summarize(components());
 
-    expect(summaries.find(({ section }) => section === 'battle')).toEqual({ section: 'battle', total: 2, enabled: 1 });
+    expect(summaries.find(({ section }) => section === 'battle')).toEqual({ section: 'battle', total: 3, enabled: 2 });
     expect(summaries.find(({ section }) => section === 'replays')).toEqual({ section: 'replays', total: 1, enabled: 1 });
   });
 });

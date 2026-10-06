@@ -8,7 +8,7 @@ import os
 import unittest
 
 import _support  # noqa: F401
-from otmetki.ui.components import CONTEXTS, PLACEMENT, SECTIONS, placement_of
+from otmetki.ui.components import CONTEXTS, PANEL_OWNERS, PLACEMENT, SECTIONS, placement_of
 from otmetki.ui.window_layout import unmoved_layout
 
 CATALOG = os.path.join(_support.MODPACK_DIR, 'catalog', 'catalog.json')
@@ -89,10 +89,29 @@ class PlacementTest(unittest.TestCase):
         assert placement_of('new_share', 'data') == ('data', 'hangar')
 
     def test_a_known_component_keeps_its_placement_whatever_its_group(self):
-        assert placement_of('marks_panel', 'hangar') == ('marks', 'battle')
+        assert placement_of('marks_panel', 'hangar') == ('battle', 'battle')
 
-    def test_the_tank_card_is_a_hangar_component_of_the_marks_page(self):
-        assert placement_of('hangar_marks', 'battle', panel=True) == ('marks', 'hangar')
+    def test_the_tank_card_sits_on_the_hangar_page(self):
+        assert placement_of('hangar_marks', 'battle', panel=True) == ('hangar', 'hangar')
+
+    def test_the_battle_summaries_sit_where_they_show(self):
+        assert placement_of('battle_results', 'hangar')[0] == 'hangar'
+        assert placement_of('last_battle', 'battle', panel=True)[0] == 'battle'
+
+    def test_a_component_page_follows_where_it_shows(self):
+        mismatched = [
+            component_id for component_id, (section, context) in PLACEMENT.items()
+            if section in ('battle', 'hangar') and context != 'any' and section != context
+        ]
+
+        assert mismatched == []
+
+    def test_every_panel_owner_is_a_placed_component(self):
+        unknown = [
+            owner for panel_id, owner in PANEL_OWNERS.items() if panel_id not in PLACEMENT or owner not in PLACEMENT
+        ]
+
+        assert unknown == []
 
 
 class HangarButtonLayoutTest(unittest.TestCase):
