@@ -76,7 +76,7 @@
 - **41 components**, each with its own switch, as split packages or one union package.
 - **Battle HUD drawn with the client's own icons:**
   - panels that replace the stock ones: team HP and score, damage log, sixth sense;
-  - hit log, marks with a projection, consumables, reload, equipment, clock;
+  - hit log, marks with a projection, consumables, reload, equipment;
   - arty meter and platoon points.
 - **Hangar:** marks and ratings, hangar info, session stats and goals, personal bests, a tidier hangar.
 - **Replays:** a replay manager and upload to the site.

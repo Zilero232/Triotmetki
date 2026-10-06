@@ -18,3 +18,6 @@ docs
 CHANGELOG.md
 # Third-party licences ship unmodified, as their authors wrote them.
 apps/game/modpack/assets/third_party/**
+# Written by tools/build/hangars.py --write and tools/build/client_index.py, checked byte for byte by their test.
+apps/game/modpack/hangars/recipes.json
+apps/game/modpack/hangars/client_*.json
