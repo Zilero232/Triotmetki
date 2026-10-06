@@ -45,9 +45,11 @@ SPIKE_HOTKEY = ('KEY_I', ('KEY_LCONTROL', 'KEY_LALT'))
 
 # The spike's input modes: whether the page is told it is in edit mode (it then takes the mouse over its whole input
 # area, ui-web views/hud use-input-area) and whether the Scaleform side lets the mouse reach the injected view at all
-# (InteractiveObject.mouseChildren of the GFInjectComponent).
+# (InteractiveObject.mouseChildren of the GFInjectComponent). Verified in game: with the Scaleform mouse on, the page's
+# input area lets clicks through but not the hangar camera's drag, so `view` keeps it off, as the real hangar page does
+# outside edit.
 SPIKE_MODES = (
-    ('view', False, True),
+    ('view', False, False),
     ('edit', True, True),
     ('locked', True, False),
 )

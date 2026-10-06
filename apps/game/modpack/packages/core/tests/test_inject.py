@@ -70,7 +70,7 @@ class SpikeModeTest(unittest.TestCase):
     def test_starts_in_view_mode_with_the_mouse_passing_through_the_page(self):
         mode = SpikeMode()
 
-        assert (mode.name, mode.edit, mode.mouse) == ('view', False, True)
+        assert (mode.name, mode.edit, mode.mouse) == ('view', False, False)
 
     def test_next_is_edit(self):
         mode = SpikeMode().next()

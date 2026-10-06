@@ -3145,7 +3145,7 @@ class InjectBattleSpikeTest(StoryTest):
         self.assertEqual(self.order, ['page', 'battleLoading', 'fullStats', 'radialMenu'])
 
     def test_the_battle_spike_starts_in_view_mode(self):
-        self.assertTrue(self.mouse)
+        self.assertFalse(self.mouse)
         self.assertFalse(self.state['edit'])
 
     def test_the_battle_spike_label_names_its_mode(self):
