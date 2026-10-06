@@ -1,6 +1,6 @@
 {
   "name": "@otmetki/modpack",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "private": true,
   "description": "Three Marks game modpack for Mir Tankov: Python 2.7 .mtmod packages (core, companion, features), the Gameface UI pages and their Python 2.7 build, dev and test tooling.",
   "homepage": "https://triotmetki.ru",

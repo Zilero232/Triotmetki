@@ -2,5 +2,5 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 MOD_ID = 'otmetki.companion'
 MOD_NAME = 'Three Marks Companion'
-VERSION = '0.8.1'
+VERSION = '0.8.2'
 SCHEMA_VERSION = 1

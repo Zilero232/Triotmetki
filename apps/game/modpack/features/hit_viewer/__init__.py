@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'hit_viewer'
 PACKAGE_ID = 'net.triotmetki.hit_viewer'
 PACKAGE_NAME = 'Three Marks: hit viewer'
-VERSION = '0.3.1'
+VERSION = '0.3.2'
 
 
 def create(app):

@@ -7,6 +7,32 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Entries are short: one line per change, saying what the player sees or gets — no implementation details.
 - Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## 0.3.3
+
+### ru
+
+- После боя и после закрытия окна настроек ангар снова нажимается, а чат печатается.
+- «Просмотр попаданий»: метка держится на модели, список не сжимается, страница подстраивается под экран, камера подлетает к попаданию.
+- «Просмотр попаданий»: закрытие и смена вкладки больше не оставляют ангар на «обновлении ангара».
+- Лампа «Шестого чувства»: секунды стоят по её центру, кольцо таймера видно.
+- Ряд оборудования стоит по центру над панелью расходников.
+- Мини-карта предлагает «Рекомендуемые настройки», если в игре стоит «Никогда».
+- Окно настроек: разделы «Отметки и статистика» и «Стримерам» вошли в «Бой» и «Ангар», реплеи занимают всё окно, строки списка ровные.
+- Прицел: кратность зума включена по умолчанию.
+- Смена ангара: раздел «Вид» — освещение ангара из игры.
+
+### en
+
+- After a battle and after closing the settings window the hangar takes clicks and the chat takes keys again.
+- «Hit viewer»: the marker stays on the model, the list is not squashed, the page fits the screen, the camera flies to the hit.
+- «Hit viewer»: closing it or switching tabs no longer leaves the hangar «updating».
+- «Sixth sense» lamp: the seconds sit centred under it, the timer ring shows.
+- The equipment row sits centred above the consumables panel.
+- The minimap offers «Recommended settings» when the game has «Never».
+- Settings window: «Marks and stats» and «Streamers» fold into Battle and Hangar, replays fill the window, list rows are even.
+- Crosshair: the zoom readout is on by default.
+- Hangar switcher: a «Look» section with hangar lighting from the game.
+
 ## 0.3.2
 
 ### ru
@@ -245,6 +271,20 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Hangar components: battle summary, marks history, ratings, replay manager, quick actions and more.
 - A settings window with profiles and a HUD editor; settings survive a wiped mods folder.
 
+## hit_viewer 0.3.2
+
+### ru
+
+- Попадание отмечено только на модели: метка больше не прыгает при вращении камеры.
+- Список попаданий растёт по числу строк и масштабируется под экран.
+- Закрытие просмотра и смена вкладки больше не оставляют ангар на «обновлении», камера снова подлетает к попаданию.
+
+### en
+
+- The hit is marked on the model only: the marker no longer jumps while the camera turns.
+- The hit list grows with its rows and scales with the screen.
+- Closing the viewer or switching tabs no longer leaves the hangar «updating»; the camera flies to the hit again.
+
 ## hit_viewer 0.3.1
 
 ### ru
@@ -252,18 +292,12 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Открывается и без записанного боя: экран подсказывает сыграть бой.
 - Снаряд, угол и броня теперь рисуются на модели для каждого попадания.
 - Сообщение об ошибке запуска в логе больше не ломается на русских ошибках Windows.
-- Попадание отмечено только на модели: метка больше не прыгает при вращении камеры.
-- Список попаданий растёт по числу строк и масштабируется под экран.
-- Закрытие просмотра и смена вкладки больше не оставляют ангар на «обновлении».
 
 ### en
 
 - Opens without a recorded battle too: the screen asks you to play one.
 - The shell, angle and armour are now drawn on the model for every hit.
 - The start-up error message in the log no longer breaks on Russian Windows errors.
-- The hit is marked on the model only: the marker no longer jumps while the camera turns.
-- The hit list grows with its rows and scales with the screen.
-- Closing the viewer or switching tabs no longer leaves the hangar «updating».
 
 ## hit_viewer 0.3.0
 
@@ -679,12 +713,20 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 ### ru
 
-- Раздел «Вид»: освещение ангара из игры — «Осень», «Осень: дождь», «Студия», ночной «Натиск»; меняется сразу.
+- Раздел «Вид»: освещение ангара из игры — «Осень», «Осень: дождь», «Студия», «Натиск: ночь»; меняется сразу.
+
+### en
+
+- A «Look» section: hangar lighting from the game — «Autumn», «Autumn: rain», «Studio», «Onslaught: night»; changes at once.
+
+## hangar_space 0.1.2
+
+### ru
+
 - Сообщение об ошибке запуска в логе больше не ломается на русских ошибках Windows.
 
 ### en
 
-- A «Look» section: hangar lighting from the game — «Autumn», «Autumn: rain», «Studio», the night «Onslaught»; changes at once.
 - The start-up error message in the log no longer breaks on Russian Windows errors.
 
 ## hangar_space 0.1.1
@@ -1051,16 +1093,26 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - An «Armour on the site» button opens the selected tank's 3D armour on triotmetki.ru.
 
+## battle_loadout 0.7.3
+
+### ru
+
+- Ряд оборудования стоит над панелью расходников по её центру.
+
+### en
+
+- The equipment row sits centred above the consumables panel.
+
 ## battle_loadout 0.7.2
 
 ### ru
 
-- Ряд оборудования стоит над панелью расходников по её центру, пустые слоты не занимают места.
+- Ряд оборудования стоит над панелью расходников, пустые слоты не занимают места.
 - Сообщение об ошибке запуска в логе больше не ломается на русских ошибках Windows.
 
 ### en
 
-- The equipment row sits centred above the consumables panel; empty slots take no room.
+- The equipment row sits above the consumables panel; empty slots take no room.
 - The start-up error message in the log no longer breaks on Russian Windows errors.
 
 ## battle_loadout 0.7.1
@@ -1295,6 +1347,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - A key (Ctrl+Shift+H by default) hides and restores all mod panels; they can stay hidden in the next battle too.
 - Private mode hides other players' chat and the hangar labels with your numbers. Your name and clan stay.
 
+## crosshair 0.6.2
+
+### ru
+
+- Кратность зума у прицела включена по умолчанию; изменённая вручную настройка остаётся.
+
+### en
+
+- The zoom readout by the reticle is on by default; a setting you changed stays.
+
 ## crosshair 0.6.1
 
 ### ru
@@ -1391,6 +1453,18 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - Five new one-colour centre marks and a choice of six colours.
 
+## core 0.9.2
+
+### ru
+
+- Окно HUD больше не забирает клавиатуру: после боя и закрытия окон ангар нажимается, а чат печатается.
+- «Рекомендуемые настройки» сверяются с настройками самой игры.
+
+### en
+
+- The HUD window no longer takes the keyboard: after a battle or a closed window the hangar takes clicks and the chat takes keys.
+- «Recommended settings» are checked against the game's own settings.
+
 ## core 0.9.1
 
 ### ru
@@ -1398,14 +1472,12 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Файлы настроек заменяются за один шаг: сбой игры во время сохранения их больше не теряет.
 - 12-часовые часы показывают AM/PM и на русской Windows.
 - Сообщение об ошибке запуска в логе больше не ломается на русских ошибках Windows.
-- Окно HUD больше не забирает клавиатуру: ангар нажимается и чат печатается без сворачивания игры.
 
 ### en
 
 - Settings files are replaced in one step: a game crash while saving no longer loses them.
 - The 12-hour clock shows AM/PM on Russian Windows too.
 - The start-up error message in the log no longer breaks on Russian Windows errors.
-- The HUD window no longer takes the keyboard: the hangar takes clicks and the chat takes keys without minimising the game.
 
 ## core 0.9.0
 
@@ -1631,6 +1703,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - The shared base of all mod components and the battle HUD with a layout editor.
 - Settings are mirrored to a backup copy and restored on load.
 
+## companion 0.8.2
+
+### ru
+
+- Кратность зума у прицела включается в старых настройках, если её не меняли.
+
+### en
+
+- The crosshair zoom readout is turned on in older settings unless you changed it.
+
 ## companion 0.8.1
 
 ### ru
@@ -1793,6 +1875,20 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - After each of your battles the results, MoE, queue time, loadout and shots go to the site.
 - Data sending can be switched off per component; settings sharing for streamers.
 
+## ui 0.9.2
+
+### ru
+
+- Секунды под лампой «Шестого чувства» стоят по её центру и не сдвигают её; кольцо таймера видно в игре.
+- Разделы окна только «Бой», «Ангар» и «Реплеи»; реплеи занимают всё окно, строки списка ровные.
+- «Просмотр попаданий» подстраивается под экран, список попаданий не сжимается.
+
+### en
+
+- The seconds under the «Sixth sense» lamp sit on its axis and no longer shift it; the timer ring shows in the game.
+- The window's pages are just Battle, Hangar and Replays; replays fill the window, list rows are even.
+- The «Hit viewer» fits the screen, the hit list is not squashed.
+
 ## ui 0.9.1
 
 ### ru
@@ -1800,16 +1896,12 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Окно настроек: у каждого компонента своя страница, ровный список, стрелка «назад» и выпадающие списки.
 - Окно помещается на экран, вкладок «Все/Ангар/Бой» нет, подсказка отмены скрывается сама; у реплеев две прокрутки.
 - Новый макет экрана боя в редакторе HUD; лампа «Шестого чувства» стоит по центру.
-- Секунды под лампой «Шестого чувства» стоят по её центру и не сдвигают её; кольцо таймера видно в игре.
-- Реплеи занимают всё окно, компоненты реплеев — кнопками в шапке; разделы только «Бой», «Ангар» и «Реплеи», строки списка ровные.
 
 ### en
 
 - The settings window: every component opens its own page, an aligned list, a back arrow and dropdowns.
 - The window fits the screen, the «All/Hangar/Battle» tabs are gone, the undo toast hides itself; replays scroll in two panes.
 - A new battle screen mock in the HUD editor; the «Sixth sense» lamp sits centred.
-- The seconds under the «Sixth sense» lamp sit on its axis and no longer shift it; the timer ring shows in the game.
-- Replays fill the window, the replay components are header buttons; the pages are just Battle, Hangar and Replays, list rows are even.
 
 ## ui 0.9.0
 
@@ -2901,18 +2993,26 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - Carousel options and quick actions: demount equipment, crew to the barracks, return the previous crew.
 
+## minimap 0.2.3
+
+### ru
+
+- Опция называется «Последние места и названия техники»; если в игре стоит «Никогда», предлагаются «Рекомендуемые настройки».
+
+### en
+
+- The option is called «Last-seen spots and vehicle names»; when the game has «Never», «Recommended settings» is offered.
+
 ## minimap 0.2.2
 
 ### ru
 
 - Мини-карта снова показывает технику и места, где её потеряли из виду: «Никогда» убрано, по умолчанию «Постоянно».
-- Опция называется «Последние места и названия техники»; если в игре они выключены, предлагаются «Рекомендуемые настройки».
 - Сообщение об ошибке запуска в логе больше не ломается на русских ошибках Windows.
 
 ### en
 
 - The minimap shows vehicles and their last-seen points again: «Never» is gone, «Always» is the default.
-- The option is called «Last-seen spots and vehicle names»; when the game has them off, «Recommended settings» is offered.
 - The start-up error message in the log no longer breaks on Russian Windows errors.
 
 ## minimap 0.2.1
