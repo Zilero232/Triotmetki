@@ -12,8 +12,6 @@ def _damage_rating(provider, vehicle):
     return dossier.getRecordValue(DOSSIER_BLOCK, DOSSIER_RATING) if dossier is not None else None
 
 
-# The MoE percent in a carousel tile's stats row while `is_on()`; the tiles take it when the carousel builds them again
-# (a hangar visit, a filter change).
 class CarouselPercent(object):
 
     def __init__(self, is_on):

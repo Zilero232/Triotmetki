@@ -48,7 +48,7 @@ def ids(items):
 
 
 def by_id(items):
-    return dict((entry['id'], entry) for entry in items)
+    return {entry['id']: entry for entry in items}
 
 
 # The page's side (ui-web applyFeed), for the round trip: a snapshot replaces, a delta on the held base patches.

@@ -7,7 +7,7 @@ import re
 SPACES_PREFIX = 'spaces/'
 # RU 1.45 gui/shared/utils/hangar_space_reloader.py buildHangarSpacePath: a name starting with 'space' is a path.
 SPACE_PATH_MARK = 'space'
-SPACE_NAME = re.compile(r'^[a-z0-9_]{1,64}$')
+SPACE_NAME = re.compile(r'^[a-z0-9_]{1,64}\Z')
 
 ACTION_CHOOSE = 'choose'
 ACTION_NATIVE = 'native'
@@ -64,7 +64,7 @@ LOOKS = (
     ('onslaught_night', 'h33_comp7', 'Night_N1_Light_shadow'),
 )
 LOOK_NAME_KEY = 'hangar_space_look_name_%s'
-LOOK_ID = re.compile(r'^[A-Za-z0-9_]{1,64}$')
+LOOK_ID = re.compile(r'^[A-Za-z0-9_]{1,64}\Z')
 # Environments the manager will generate from recipes (docs/specs/2026-10-06-custom-hangars.md, phase 1b) carry this
 # prefix: each one found in a space is a look of its own, named after the environment.
 GENERATED_PREFIX = 'otm_'
@@ -84,7 +84,12 @@ SUBTITLE_SEPARATOR = ' \u00b7 '
 # client's own render of the player's own client). The gallery sends a kept preview to the page as a data URI: the
 # page's img:// and coui:// schemes read only the client's mounted resources (paths.xml mounts res_mods/<version>,
 # the mods' packages and res), not mods/configs.
+# The default hangar config keeps one slot of each kind per premium flag; the log names them by these labels.
+PREMIUM_FLAGS = (True, False)
+SLOT_LABELS = {True: 'premium', False: 'basic'}
+NO_ENVIRONMENT = '-'
 ACTION_REFRESH_PREVIEW = 'refresh_preview'
+ACTIONS = (ACTION_CHOOSE, ACTION_LOOK, ACTION_NATIVE, ACTION_REFRESH_PREVIEW)
 PREVIEW_FOLDER = 'hangar_previews'
 PREVIEW_KEY_SEPARATOR = '__'
 PREVIEW_EXTENSION = '.png'
@@ -126,3 +131,17 @@ PNG_DEPTH = 8
 PNG_FILTER_SUB = 1
 PNG_COMPRESSION = 9
 RGB_CHANNELS = 3
+# struct formats of the headers: little-endian BMP fields, big-endian PNG chunk lengths, checksums and IHDR.
+BMP_UINT16 = '<H'
+BMP_UINT32 = '<I'
+BMP_SIZE_FORMAT = '<ii'
+BMP_MASKS_FORMAT = '<III'
+BMP_MASKS_SIZE = 12
+PNG_UINT32 = '>I'
+PNG_HEADER_FORMAT = '>IIBBBBB'
+# A BMP row is padded to whole 32-bit words.
+ROW_ALIGN_BITS = 32
+ROW_ALIGN_BYTES = 4
+BITS_PER_BYTE = 8
+CRC_MASK = 0xFFFFFFFF
+BYTE_MASK = 0xFF

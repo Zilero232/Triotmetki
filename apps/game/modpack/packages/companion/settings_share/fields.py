@@ -70,5 +70,5 @@ FIELDS = (
     ('sixthSenseIcon', 'battleUi', 'sixthSenseIcon', TEXT),
 )
 
-BY_RAW = dict((entry[0], entry) for entry in FIELDS)
-BY_PATH = dict(((entry[1], entry[2]), entry) for entry in FIELDS)
+BY_RAW = {entry[0]: entry for entry in FIELDS}
+BY_PATH = {(entry[1], entry[2]): entry for entry in FIELDS}

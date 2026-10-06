@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from .....core.classes import CLASS_KEYS, class_key
-from .....core.compat import is_number, to_text
+from .....core.compat import fraction, is_number, to_text
 from .....core.hit_book import OUTCOMES, PART_NAMES, BattleBook, is_battle_id, text_or_none
 from .constants import AXES, MAX_HITS, MIDDLE, PART_ORDER, SIDES
 from .points import impact, side_of
@@ -14,7 +14,7 @@ def _optional_text(value):
 def _fraction(value):
     if not is_number(value):
         return MIDDLE
-    return min(1.0, max(0.0, float(value)))
+    return fraction(float(value))
 
 
 def _positive_damage(value):
@@ -102,14 +102,14 @@ class HitBook(BattleBook):
 
 
 def _zero_counts(keys):
-    return dict((key, 0) for key in keys)
+    return {key: 0 for key in keys}
 
 
 def summary(battle):
     hits = battle.get('hits') or []
     counts = _zero_counts(OUTCOMES)
     parts = _zero_counts(PART_ORDER)
-    sides = dict((part, _zero_counts(SIDES)) for part in PART_ORDER)
+    sides = {part: _zero_counts(SIDES) for part in PART_ORDER}
     damage = 0
 
     for entry in hits:

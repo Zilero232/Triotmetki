@@ -7,7 +7,7 @@ from ....core.client.hud.icons import client_file_exists
 from ....core.hud.icons import image
 from ....core.hit_book import PART_NAMES
 from ....core.hooks import subscribe, unsubscribe
-from ....core.log import log, log_exception, safe
+from ....core.log import guarded, log, safe
 from ..model import MODULE_KEYS, effect_model, first_plate, hit_geometry, shell_model, vehicle_vector
 from .constants import (
     CAMERA_MANAGER_CLASS,
@@ -40,6 +40,7 @@ def camera_manager(space):
     return CGF.getManager(space.spaceID, manager_class)
 
 
+@guarded('hit viewer: vehicle descriptor')
 def preview_descriptor(target):
     from items import parseIntCompactDescr, vehicles
     _, nation_id, inner_id = parseIntCompactDescr(target['cd'])
@@ -176,12 +177,7 @@ class HangarStage(object):
         self.loading = True
         self.shown = True
         self.scene.hide()
-        try:
-            str_cd = preview_descriptor(target)
-        except Exception:
-            log_exception('hit viewer: vehicle descriptor')
-            str_cd = None
-        self.preview().selectVehicle(target['cd'], str_cd)
+        self.preview().selectVehicle(target['cd'], preview_descriptor(target))
 
     def end(self):
         self.scene.destroy()
@@ -278,8 +274,6 @@ class HangarStage(object):
         found.normalise()
         return vehicle.applyPoint(Math.Vector3(*point)), found
 
-    # The armour along the shell's path through the hit point, on the hangar model's collision: the plate's angle to
-    # the path and its material (the vehicle's own armour values, items.vehicles). None until the collision answers.
     def measure(self, geometry, shell=None, caliber=None):
         collisions = self.collisions()
         if collisions is None:
@@ -294,13 +288,14 @@ class HangarStage(object):
                 layers.append((hit_angle_cos, material.armor, material.useHitAngle))
         return first_plate(layers, shell, caliber)
 
+    @guarded('hit viewer: scene models')
+    def _show_scene(self, paths, point, direction):
+        self.scene.show(self.space.spaceID, paths, point, direction)
+
     def focus(self, geometry, hit, duration):
         paths = (shell_model(hit.get('shell')), effect_model(hit['outcome'], hit.get('damage')))
         point, direction = self.world(geometry)
-        try:
-            self.scene.show(self.space.spaceID, paths, point, direction)
-        except Exception:
-            log_exception('hit viewer: scene models')
+        self._show_scene(paths, point, direction)
         manager = camera_manager(self.space)
         if manager is None:
             return

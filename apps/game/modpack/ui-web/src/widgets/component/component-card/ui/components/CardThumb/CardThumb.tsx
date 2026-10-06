@@ -31,7 +31,7 @@ const ThumbContent = ({ card }: CardThumbProps) => {
 
   if (card.previewKind === 'carousel') {
     return (
-      <FitBox className={s.sample}>
+      <FitBox className={s.sample} contentKey={JSON.stringify(card.carousel)}>
         <span className={s.carousel}>
           <CarouselPreview model={card.carousel} />
         </span>

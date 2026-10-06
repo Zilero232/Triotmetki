@@ -21,7 +21,6 @@ def _schema_defaults(section):
 
 
 def migrate_stored(config_dir, stored_config):
-    """The stored config.json moved to the current revision, with components.json migrated alongside."""
     components_file = open_config(config_dir, COMPONENTS_FILE, pretty=True)
     components = components_file.read({})
     config, migrated_components = migrated(stored_config, components, _schema_defaults)

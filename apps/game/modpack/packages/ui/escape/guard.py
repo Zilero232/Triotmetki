@@ -23,7 +23,8 @@ class EscapeGuard(object):
         return True
 
     def release(self):
-        manager, self.manager = self.manager, None
+        manager = self.manager
+        self.manager = None
         if manager is not None:
             manager.removeEscapeListener(self.listener)
 

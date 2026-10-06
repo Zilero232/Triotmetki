@@ -18,8 +18,6 @@ EXPLOSION_METHOD = 'showDamageFromExplosion'
 
 
 def vehicle_class(with_explosion=True):
-    """The client's Vehicle entity class (RU 1.45 Vehicle.py), with the two hit effect methods it draws."""
-
     class Vehicle(object):
 
         def __init__(self, own, entity_id=OWN):
@@ -45,7 +43,6 @@ class Avatar(object):
 
 
 def load_own_vehicle(vehicle):
-    """core.client.battle on a stubbed client whose Vehicle module holds `vehicle`."""
     sys.modules['BigWorld'] = types.ModuleType(str('BigWorld'))
     sys.modules['BigWorld'].player = Avatar
     sys.modules['Vehicle'] = types.ModuleType(str('Vehicle'))
@@ -67,7 +64,7 @@ def restore(saved):
 class OwnShotTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         self.vehicle = vehicle_class()
         self.battle = load_own_vehicle(self.vehicle)
         self.shots = []
@@ -108,7 +105,7 @@ class OwnShotTest(unittest.TestCase):
 class ShotWithOwnVehicleTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         self.vehicle = vehicle_class()
         self.battle = load_own_vehicle(self.vehicle)
         self.shots = []
@@ -136,7 +133,7 @@ class ShotWithOwnVehicleTest(unittest.TestCase):
 class OwnVehicleEffectTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         self.effects = []
 
     def tearDown(self):

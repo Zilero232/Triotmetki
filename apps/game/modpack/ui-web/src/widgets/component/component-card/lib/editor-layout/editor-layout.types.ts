@@ -37,3 +37,9 @@ export type EditorGroupsInput = {
   otherLabel: string;
   advancedLabel: string;
 };
+
+export type ChipsFitInput = { field: UiField; rowWidth: number };
+
+export type PerRowInput = { kind: EditorRowKind; rowWidth: number };
+
+export type IsStackedInput = { kind: EditorRowKind; options: EditorOption[] };

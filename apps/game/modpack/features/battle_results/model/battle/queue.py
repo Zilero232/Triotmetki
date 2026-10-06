@@ -3,7 +3,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from .constants import QUEUE_SIZE
 
 
-# One card on screen (`current`), the others waiting in arrival order; past `size` waiting the oldest one is dropped.
 class CardQueue(object):
 
     def __init__(self, size=QUEUE_SIZE):

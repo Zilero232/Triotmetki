@@ -11,7 +11,7 @@ from ....core.log import safe
 from .. import settings
 from ..i18n import STRINGS
 from ..model import BattleTotals, format_panel, panel_state, preview
-from ..model.constants import PREVIEW_SIZE
+from ..model.constants import KIND_DAMAGE, PREVIEW_SIZE
 from ..model.widget import marks_widget
 from ..settings import CARD_PANEL_ID
 from .card import TankCardPanel
@@ -83,7 +83,7 @@ class MarksPanel(BattlePanel):
         extra = event.getExtra()
         if extra is None:
             return False
-        if kind == 'damage' and not is_enemy(event.getTargetID()):
+        if kind == KIND_DAMAGE and not is_enemy(event.getTargetID()):
             return False
         return self.totals.add(kind, extra.getDamage())
 

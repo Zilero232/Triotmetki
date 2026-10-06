@@ -17,7 +17,6 @@ def _is_request(data):
     return isinstance(data.get('path'), string_types) and is_number(data.get('at'))
 
 
-# The replay path a fresh client start should play from the stored request, or None.
 def pending_launch(data, now, exists):
     if not _is_request(data):
         return None

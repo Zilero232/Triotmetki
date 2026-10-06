@@ -6,12 +6,14 @@ import itertools
 from ....core.compat import is_number, to_text
 from ....core.hud.icons import CLASS_GLYPHS
 from ....core.vendor import attr
+from ..settings.constants import STYLE_MINIMAL
 from .constants import (
     BLOCKED_OUTCOMES,
     COMPACT_STYLES,
     DETAIL_EXTENDED,
     DETAIL_FULL,
     DETAIL_SHORT,
+    KIND_CRIT,
     KINDS,
     MAX_ENTRIES,
     MINIMAL_TOTALS,
@@ -41,8 +43,8 @@ class DamageLog(object):
 
     def __init__(self):
         self.sequence = itertools.count(1)
-        self.totals = dict((kind, 0) for kind in KINDS)
-        self.counts = dict((kind, 0) for kind in KINDS)
+        self.totals = {kind: 0 for kind in KINDS}
+        self.counts = {kind: 0 for kind in KINDS}
         self.summary = {}
         self.assists = []
         self.shots = ShotLog(self.sequence)
@@ -66,7 +68,7 @@ class DamageLog(object):
         return True
 
     def add_crits(self, kind, count, hit):
-        if kind == 'crit':
+        if kind == KIND_CRIT:
             return self.shots.add_crits(hit.vehicle_id, count, hit.at)
         return self.received.add_crits(hit, count)
 
@@ -127,7 +129,7 @@ def shown_sections(settings):
 def _is_shown_total(key, section, settings):
     if section not in shown_sections(settings):
         return False
-    return settings.get('style') != 'minimal' or key in MINIMAL_TOTALS
+    return settings.get('style') != STYLE_MINIMAL or key in MINIMAL_TOTALS
 
 
 # A total is shown once it is above zero; before anything counts, the first total the settings show stands at zero, so

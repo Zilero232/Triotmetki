@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.log import log_exception, safe
+from ....core.client.game import lobby_app
+from ....core.log import guarded, safe
 from .constants import (
     BACKGROUND_ALPHA,
     INVALID_RES_ID,
@@ -38,15 +39,6 @@ def message_of(args):
         return args.get(MESSAGE_ARG)
     getter = getattr(args, 'get', None)
     return getter(MESSAGE_ARG) if getter is not None else None
-
-
-def lobby_app():
-    try:
-        from helpers import dependency
-        from skeletons.gui.app_loader import IAppLoader
-    except ImportError:
-        return None
-    return dependency.instance(IAppLoader).getApp()
 
 
 def input_manager():
@@ -116,13 +108,11 @@ if AVAILABLE:
             super(ViewerView, self)._finalize()
 
         @staticmethod
+        @guarded('hit viewer: lobby header')
         def _step_aside(is_back):
-            try:
-                if not is_back:
-                    lobby_app().setBackgroundAlpha(BACKGROUND_ALPHA)
-                set_header_menu(is_back)
-            except Exception:
-                log_exception('hit viewer: lobby header')
+            if not is_back:
+                lobby_app().setBackgroundAlpha(BACKGROUND_ALPHA)
+            set_header_menu(is_back)
 
         @safe
         def _on_send(self, args=None):
@@ -213,7 +203,8 @@ class ViewerWindowHost(object):
         self.escape_manager = manager
 
     def _release_escape(self):
-        manager, self.escape_manager = self.escape_manager, None
+        manager = self.escape_manager
+        self.escape_manager = None
         if manager is not None:
             manager.removeEscapeListener(self._escape)
 

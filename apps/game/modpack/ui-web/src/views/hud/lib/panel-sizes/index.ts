@@ -1,3 +1,3 @@
-export { changedPanels, emptyContent, readSize, settleSizes } from './panel-sizes';
+export { changedPanels, elementRef, emptyContent, readCountdown, settleSizes } from './panel-sizes';
 
-export type { PanelContent, Sizes } from './panel-sizes.types';
+export type { ElementRef, PanelContent, Sizes } from './panel-sizes.types';

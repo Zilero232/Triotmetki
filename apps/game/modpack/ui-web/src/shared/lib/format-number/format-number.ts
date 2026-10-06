@@ -1,4 +1,4 @@
-import type { FormatPercentInput, OptionalPercentInput, PercentSignInput, Trend } from './format-number.types';
+import type { DeltaTextInput, FormatPercentInput, OptionalPercentInput, PercentSignInput, Trend } from './format-number.types';
 
 import { NUMBER_FORMAT } from './format-number.constants';
 
@@ -42,6 +42,11 @@ export const formatPercent = ({ value, digits, signed = false, unit = true }: Fo
 
 export const formatPercentOrDash = ({ value, digits }: OptionalPercentInput): string =>
   value === null ? NUMBER_FORMAT.dash : formatPercent({ value, digits });
+
+export const percentText = (value: number | null): string => formatPercentOrDash({ value, digits: NUMBER_FORMAT.percentDigits });
+
+export const deltaText = ({ value, unit = true }: DeltaTextInput): string | null =>
+  value === null ? null : formatPercent({ value, digits: NUMBER_FORMAT.percentDigits, signed: true, unit });
 
 const clockText = (whole: number): string => {
   const minutes = Math.floor(whole / NUMBER_FORMAT.secondsPerMinute);

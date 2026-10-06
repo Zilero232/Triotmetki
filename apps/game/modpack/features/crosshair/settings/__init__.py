@@ -21,7 +21,6 @@ SETTINGS = (SWITCH,)
 SCHEMA = panel_schema(DEFAULTS, choices=CHOICES, limits=LIMITS, normalizers={'mark': normalize_mark})
 CIRCLE_SCHEMA = Schema(CIRCLE_DEFAULTS, choices=CIRCLE_CHOICES)
 
-# The settings window's other component of this feature: the smaller aim circle, a row with its own switch and page.
 PARTS = (
     {
         'id': CIRCLE_PANEL_ID,

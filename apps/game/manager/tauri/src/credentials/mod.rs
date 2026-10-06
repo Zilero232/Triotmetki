@@ -1,4 +1,5 @@
 mod dpapi;
+mod format;
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -7,7 +8,9 @@ use serde::Serialize;
 use serde_json::{json, Map, Value};
 
 pub use dpapi::{open as open_secret, seal as seal_secret};
+pub use format::SecretFormat;
 
+use crate::durable::MirroredFile;
 use crate::error::{AppError, AppResult, ErrorCode};
 use crate::fsx::write_atomic;
 use crate::paths::same_path;
@@ -19,8 +22,8 @@ pub const DEVICE_FIELD: &str = "device_id";
 pub const ACCOUNT_FIELD: &str = "account_id";
 pub const SEALED_FIELD: &str = "secret_dpapi";
 pub const LEGACY_SECRET_FIELD: &str = "secret";
-pub const LEGACY_BOUND_FIELD: &str = "bound_at";
-pub const PUBLIC_FIELDS: [&str; 2] = [DEVICE_FIELD, ACCOUNT_FIELD];
+pub const BOUND_FIELD: &str = "bound_at";
+pub const PUBLIC_FIELDS: [&str; 3] = [DEVICE_FIELD, ACCOUNT_FIELD, BOUND_FIELD];
 pub const UTF8_BOM: char = '\u{feff}';
 
 #[derive(Debug, Clone, PartialEq)]
@@ -53,6 +56,18 @@ impl Credentials {
 
         entry.insert(DEVICE_FIELD.to_owned(), json!(self.device_id));
         entry.insert(ACCOUNT_FIELD.to_owned(), json!(self.account_id));
+
+        if let Some(bound_at) = self.bound_at {
+            entry.insert(BOUND_FIELD.to_owned(), json!(bound_at));
+        }
+
+        entry
+    }
+
+    fn plaintext_entry(&self) -> Map<String, Value> {
+        let mut entry = self.public_entry();
+
+        entry.insert(LEGACY_SECRET_FIELD.to_owned(), json!(self.secret));
         entry
     }
 }
@@ -70,23 +85,93 @@ fn text_field<'a>(entry: &'a Map<String, Value>, field: &str) -> Option<&'a str>
     entry.get(field).and_then(Value::as_str).filter(|text| !text.is_empty())
 }
 
-fn has_legacy_fields(entry: &Value) -> bool {
+fn has_extra_fields(entry: &Value) -> bool {
     entry.as_object().is_some_and(|entry| entry.keys().any(|key| !PUBLIC_FIELDS.contains(&key.as_str())))
 }
 
+#[derive(Debug, Clone)]
+struct SealedAway {
+    key: String,
+    private: Option<Map<String, Value>>,
+    public: Option<Map<String, Value>>,
+}
+
+struct Halves<'a> {
+    key: &'a str,
+    own: Option<&'a Map<String, Value>>,
+    shown: Option<&'a Map<String, Value>>,
+}
+
+enum Entry {
+    Usable { credentials: Credentials, plaintext: bool },
+    SealedAway(SealedAway),
+    Unusable,
+}
+
+fn read_entry(halves: &Halves) -> Entry {
+    let sealed_text = halves.own.and_then(|entry| text_field(entry, SEALED_FIELD));
+    let sealed = sealed_text.and_then(open_secret);
+    let legacy = [halves.own, halves.shown].into_iter().flatten().find_map(|entry| text_field(entry, LEGACY_SECRET_FIELD)).map(str::to_owned);
+
+    if sealed_text.is_some() && sealed.is_none() && legacy.is_none() {
+        log::warn!("the protected secret of account {} did not open; it is kept to retry at the next start", halves.key);
+
+        return Entry::SealedAway(SealedAway { key: halves.key.to_owned(), private: halves.own.cloned(), public: halves.shown.cloned() });
+    }
+
+    let source = halves.own.or(halves.shown).cloned().unwrap_or_default();
+    let plaintext = sealed.is_none() && legacy.is_some();
+    let credentials = Credentials {
+        device_id: text_field(&source, DEVICE_FIELD).unwrap_or_default().to_owned(),
+        secret: sealed.or(legacy).unwrap_or_default(),
+        account_id: source.get(ACCOUNT_FIELD).and_then(Value::as_u64).unwrap_or_default(),
+        bound_at: source.get(BOUND_FIELD).and_then(Value::as_f64),
+    };
+
+    if !credentials.is_valid() {
+        return Entry::Unusable;
+    }
+
+    Entry::Usable { credentials, plaintext }
+}
+
+#[derive(Default)]
 struct Loaded {
     stored: Vec<Credentials>,
-    stale: bool,
+    sealed_away: Vec<SealedAway>,
+    plaintext: bool,
+}
+
+impl Loaded {
+    fn keys(&self) -> BTreeSet<String> {
+        let stored = self.stored.iter().map(|credentials| credentials.account_id.to_string());
+
+        stored.chain(self.sealed_away.iter().map(|entry| entry.key.clone())).collect()
+    }
+
+    fn without(mut self, account_id: u64) -> Self {
+        let key = account_id.to_string();
+
+        self.stored.retain(|known| known.account_id != account_id);
+        self.sealed_away.retain(|entry| entry.key != key);
+        self
+    }
 }
 
 pub struct CredentialStore {
     pub configs_dir: PathBuf,
     pub durable_dir: PathBuf,
+    pub format: SecretFormat,
 }
 
 impl CredentialStore {
     pub fn new(configs_dir: impl Into<PathBuf>, durable_dir: impl Into<PathBuf>) -> Self {
-        Self { configs_dir: configs_dir.into(), durable_dir: durable_dir.into() }
+        Self { configs_dir: configs_dir.into(), durable_dir: durable_dir.into(), format: SecretFormat::Plaintext }
+    }
+
+    pub fn with_format(mut self, format: SecretFormat) -> Self {
+        self.format = format;
+        self
     }
 
     fn public_path(&self) -> PathBuf {
@@ -101,46 +186,62 @@ impl CredentialStore {
         same_path(&self.configs_dir, &self.durable_dir)
     }
 
+    fn public_accounts(&self) -> Map<String, Value> {
+        if self.is_single_file() {
+            return Map::new();
+        }
+
+        read_accounts(&self.public_path())
+    }
+
     fn read(&self) -> Loaded {
         let private = read_accounts(&self.private_path());
-        let public = if self.is_single_file() { Map::new() } else { read_accounts(&self.public_path()) };
-        let empty = Map::new();
-        let mut plaintext = false;
-        let mut stored = Vec::new();
+        let public = self.public_accounts();
+        let mut loaded = Loaded::default();
 
         for key in private.keys().chain(public.keys()).collect::<BTreeSet<_>>() {
-            let own = private.get(key).and_then(Value::as_object);
-            let shown = public.get(key).and_then(Value::as_object);
-            let source = own.or(shown).unwrap_or(&empty);
-            let sealed = own.and_then(|entry| text_field(entry, SEALED_FIELD)).and_then(open_secret);
-            let legacy = [own, shown].into_iter().flatten().find_map(|entry| text_field(entry, LEGACY_SECRET_FIELD)).map(str::to_owned);
+            let halves = Halves { key, own: private.get(key).and_then(Value::as_object), shown: public.get(key).and_then(Value::as_object) };
 
-            plaintext |= sealed.is_none() && legacy.is_some();
-
-            let credentials = Credentials {
-                device_id: text_field(source, DEVICE_FIELD).unwrap_or_default().to_owned(),
-                secret: sealed.or(legacy).unwrap_or_default(),
-                account_id: source.get(ACCOUNT_FIELD).and_then(Value::as_u64).unwrap_or_default(),
-                bound_at: source.get(LEGACY_BOUND_FIELD).and_then(Value::as_f64),
-            };
-
-            if credentials.is_valid() {
-                stored.push(credentials);
+            match read_entry(&halves) {
+                Entry::Usable { credentials, plaintext } => {
+                    loaded.plaintext |= plaintext;
+                    loaded.stored.push(credentials);
+                }
+                Entry::SealedAway(entry) => loaded.sealed_away.push(entry),
+                Entry::Unusable => {}
             }
         }
 
-        let stored_keys: BTreeSet<String> = stored.iter().map(|credentials| credentials.account_id.to_string()).collect();
-        let public_keys: BTreeSet<String> = public.keys().cloned().collect();
-        let public_stale = !self.is_single_file() && (public_keys != stored_keys || public.values().any(has_legacy_fields));
-
-        Loaded { stale: plaintext || public_stale, stored }
+        loaded
     }
 
-    fn persist(&self, stored: &[Credentials]) -> AppResult<()> {
+    fn is_stale(&self, loaded: &Loaded) -> bool {
+        if loaded.plaintext {
+            return true;
+        }
+
+        if self.is_single_file() {
+            return false;
+        }
+
+        let public = self.public_accounts();
+        let public_keys: BTreeSet<String> = public.keys().cloned().collect();
+
+        public_keys != loaded.keys() || public.values().any(has_extra_fields)
+    }
+
+    fn persist(&self, loaded: &Loaded) -> AppResult<()> {
+        match self.format {
+            SecretFormat::Sealed => self.persist_sealed(loaded),
+            SecretFormat::Plaintext => self.persist_plaintext(loaded),
+        }
+    }
+
+    fn persist_sealed(&self, loaded: &Loaded) -> AppResult<()> {
         let mut public = Map::new();
         let mut private = Map::new();
 
-        for credentials in stored {
+        for credentials in &loaded.stored {
             let sealed = seal_secret(&credentials.secret)
                 .ok_or_else(|| AppError::coded(ErrorCode::Io, "Windows could not protect the device secret (DPAPI)"))?;
             let mut entry = credentials.public_entry();
@@ -148,6 +249,16 @@ impl CredentialStore {
             public.insert(credentials.account_id.to_string(), Value::Object(entry.clone()));
             entry.insert(SEALED_FIELD.to_owned(), json!(sealed));
             private.insert(credentials.account_id.to_string(), Value::Object(entry));
+        }
+
+        for entry in &loaded.sealed_away {
+            if let Some(half) = &entry.private {
+                private.insert(entry.key.clone(), Value::Object(half.clone()));
+            }
+
+            if let Some(half) = &entry.public {
+                public.insert(entry.key.clone(), Value::Object(half.clone()));
+            }
         }
 
         write_atomic(&self.private_path(), &serde_json::to_vec_pretty(&json!({ ACCOUNTS_KEY: private }))?)?;
@@ -159,14 +270,24 @@ impl CredentialStore {
         Ok(())
     }
 
-    pub fn load(&self) -> Vec<Credentials> {
-        let Loaded { mut stored, stale } = self.read();
+    fn persist_plaintext(&self, loaded: &Loaded) -> AppResult<()> {
+        let mut accounts = Map::new();
 
-        if stale {
-            if let Err(error) = self.persist(&stored) {
-                log::warn!("rewrite the credentials in the protected format: {error}");
+        for credentials in &loaded.stored {
+            accounts.insert(credentials.account_id.to_string(), Value::Object(credentials.plaintext_entry()));
+        }
+
+        for entry in &loaded.sealed_away {
+            if let Some(half) = entry.private.as_ref().or(entry.public.as_ref()) {
+                accounts.insert(entry.key.clone(), Value::Object(half.clone()));
             }
         }
+
+        MirroredFile::new(FILE_NAME, &self.configs_dir, &self.durable_dir).write(&json!({ ACCOUNTS_KEY: accounts }))
+    }
+
+    pub fn load(&self) -> Vec<Credentials> {
+        let mut stored = self.read().stored;
 
         stored.sort_by(|left, right| {
             right.bound_at.unwrap_or_default().total_cmp(&left.bound_at.unwrap_or_default()).then(left.account_id.cmp(&right.account_id))
@@ -181,12 +302,27 @@ impl CredentialStore {
     }
 
     pub fn save(&self, credentials: &Credentials) -> AppResult<()> {
-        let mut stored = self.read().stored;
+        let mut loaded = self.read().without(credentials.account_id);
 
-        stored.retain(|known| known.account_id != credentials.account_id);
-        stored.push(credentials.clone());
+        loaded.stored.push(credentials.clone());
 
-        self.persist(&stored)
+        self.persist(&loaded)
+    }
+
+    pub fn migrate(&self) -> AppResult<bool> {
+        if self.format != SecretFormat::Sealed {
+            return Ok(false);
+        }
+
+        let loaded = self.read();
+
+        if !self.is_stale(&loaded) {
+            return Ok(false);
+        }
+
+        self.persist(&loaded)?;
+
+        Ok(true)
     }
 }
 

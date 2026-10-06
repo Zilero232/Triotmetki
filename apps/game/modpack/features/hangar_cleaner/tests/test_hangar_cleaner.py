@@ -22,7 +22,7 @@ def default_values():
 
 
 def everything_hidden():
-    return dict((key, True) for key in SCHEMA.defaults)
+    return {key: True for key in SCHEMA.defaults}
 
 
 class HidesTest(unittest.TestCase):

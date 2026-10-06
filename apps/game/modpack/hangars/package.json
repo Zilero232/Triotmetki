@@ -1,6 +1,6 @@
 {
   "name": "Three Marks hangar looks",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "$comment": "The code-less package that carries the hangar look recipes and our colour tables (tools/build/layout.py data_package). `client` is the build whose index (client_<version>.json) the recipes are checked against.",
   "client": "1.45.0.0",
   "id": "net.triotmetki.hangar_looks",

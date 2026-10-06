@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.game import client_attr, selected_vehicle, service
 from ....core.compat import to_text
-from ....core.log import log_exception
+from ....core.log import guarded
 
 # RU 1.45 client source: Vehicle.crew is [(slot, Tankman or None)]; Tankman.getNextSkillXpCost() is the XP to finish the
 # skill (or the role) in training, 0 once a new skill is ready to pick; roleLevel under 100, else
@@ -49,12 +49,14 @@ def selected_crew():
     vehicle = selected_vehicle()
     if vehicle is None:
         return []
-    try:
-        items = _items()
-        return [member(tankman, vehicle, items) for _, tankman in (getattr(vehicle, 'crew', None) or []) if tankman]
-    except Exception:
-        log_exception('crew xp: crew')
-        return []
+    return _crew_of(vehicle)
+
+
+@guarded('crew xp: crew', fallback=[])
+def _crew_of(vehicle):
+    items = _items()
+    crew = getattr(vehicle, 'crew', None) or []
+    return [member(tankman, vehicle, items) for _, tankman in crew if tankman]
 
 
 def tankman_member(tankman_id):

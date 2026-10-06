@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.native_settings import NATIVE, TRI_STATE
-from ..model.constants import MARK_COLORS, VECTOR_MARKS
+from ..model.constants import DRUM_BARS, DRUM_OFF, DRUM_SHELLS, MARK_COLORS, VECTOR_MARKS
 
 SWITCH = 'crosshair_presets'
 GROUP = 'battle'
@@ -15,7 +15,7 @@ FULL_COLOUR_MARKS = ('colorblind', 'triad', 'arcs', 'stack', 'kenney_cluster', '
 MARKS = ('none',) + VECTOR_MARKS + FULL_COLOUR_MARKS
 # The magazine above the reload box: one shell icon per round (a count past the page's compact threshold), the
 # thin cells of earlier versions, or left to the stock reticle's own indicator.
-DRUM_STYLES = ('shells', 'bars', 'off')
+DRUM_STYLES = (DRUM_SHELLS, DRUM_BARS, DRUM_OFF)
 
 # preset: the recommended client value (core.client.native.ClientDefaults), the game's own reticle without the grid.
 # mark: the game's own centre; a centre mark is a reticle pack the player picks, no pack replaces the stock centre by

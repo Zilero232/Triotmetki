@@ -34,9 +34,14 @@ class FakeClock(object):
         self.pending.append((delay, callback))
 
     def run_all(self):
-        pending, self.pending = self.pending, []
+        pending = self.pending
+        self.pending = []
         for _, callback in pending:
             callback()
+
+
+def is_waiting(watchdog):
+    return watchdog.answered < watchdog.asked
 
 
 class EscapeGuardTest(unittest.TestCase):
@@ -111,7 +116,7 @@ class EscapeWatchdogTest(unittest.TestCase):
         self.clock.run_all()
 
         assert self.silences == []
-        assert not self.watchdog.is_waiting
+        assert not is_waiting(self.watchdog)
 
     def test_a_silent_page_closes_the_window_once(self):
         self.watchdog.ask()
@@ -120,7 +125,7 @@ class EscapeWatchdogTest(unittest.TestCase):
         self.clock.run_all()
 
         assert self.silences == [True]
-        assert not self.watchdog.is_waiting
+        assert not is_waiting(self.watchdog)
 
     def test_an_answer_to_the_last_esc_covers_the_earlier_ones(self):
         self.watchdog.ask()
@@ -136,7 +141,7 @@ class EscapeWatchdogTest(unittest.TestCase):
 
         delay = self.clock.pending[0][0]
 
-        assert self.watchdog.is_waiting
+        assert is_waiting(self.watchdog)
         assert delay < 1
 
 

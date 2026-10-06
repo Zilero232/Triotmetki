@@ -10,7 +10,7 @@ import os
 import sys
 import time
 
-from ....core.client.game import client_attr
+from ....core.client.game import client_attr, service
 from ....core.hooks import override
 from ....core.log import log, log_exception, safe
 from ....core.storage import JsonFile
@@ -52,7 +52,6 @@ def can_play():
     return can_restart and client_attr('BattleReplay', 'g_replayCtrl') is not None
 
 
-# Stores the request and restarts the client (hangar side; the caller checked `play_refusal`).
 def request_play(path):
     import BigWorld
     _store().write(launch_request(os.path.abspath(path), time.time()))
@@ -61,7 +60,6 @@ def request_play(path):
     BigWorld.callback(RESTART_DELAY_S, BigWorld.restartGame)
 
 
-# Runs from the entry script at client start: plays the stored request once, if there is a fresh one.
 @safe
 def boot():
     store = _store()
@@ -85,9 +83,8 @@ def boot():
 
 def _start(path):
     from gameplay.listeners import PlayerEventsAdaptor
-    from helpers import dependency
     from skeletons.gameplay import IGameplayLogic
-    logic = dependency.instance(IGameplayLogic)
+    logic = service(IGameplayLogic)
     machine = _replay_machine(logic._GameplayLogic__machine)
 
     _Session.path = path
@@ -97,7 +94,6 @@ def _start(path):
     logic._GameplayLogic__adaptor = PlayerEventsAdaptor(machine)
 
 
-# The machine the client runs for a replay opened from Windows, watched by the observers of the one it replaces.
 def _replay_machine(previous):
     from gameplay.machine import BattleReplayMachine
     machine = BattleReplayMachine()

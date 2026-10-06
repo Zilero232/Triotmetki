@@ -10,7 +10,7 @@ from otmetki.core.events import EVENT_COMPONENT_SETTINGS, EventBus
 from otmetki.core.hud import ComponentConfig
 from otmetki.core.native_settings import changed_values
 from otmetki.core.settings import Schema
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 
 CLIENT_PREFIX = 'otmetki.core.client'
 SCHEMA = Schema({'rows': 'two', 'zoom': 'x4', 'quick_actions': False})
@@ -18,7 +18,7 @@ TABLES = {'rows': ('carouselType', {'one': 1, 'two': 2}), 'zoom': ('sniperZoom',
 
 
 def to_native(values):
-    return dict((name, table[values[key]]) for key, (name, table) in TABLES.items() if values.get(key) in table)
+    return {name: table[values[key]] for key, (name, table) in TABLES.items() if values.get(key) in table}
 
 
 def load_native_component():

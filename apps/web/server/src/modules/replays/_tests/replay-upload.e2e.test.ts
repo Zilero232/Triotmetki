@@ -7,6 +7,7 @@ import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import RedisMock from 'ioredis-mock';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
+import { createHmac } from 'node:crypto';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -116,6 +117,7 @@ const uploadFromMod = (visibility?: string) => {
 };
 
 beforeAll(async () => {
+  devices.signer.mockImplementation(() => createHmac('sha256', 'device-secret'));
   prisma.$transaction.mockImplementation(async (run) => (typeof run === 'function' ? run(prisma) : Promise.all(run)));
   root = await mkdtemp(join(tmpdir(), 'otmetki-replays-'));
   storage = new LocalDiskStorage(root);
@@ -217,8 +219,8 @@ describe('POST /replays', () => {
     expect(prisma.replay.create).not.toHaveBeenCalled();
   });
 
-  it('answers 409 for a replay uploaded before without naming the other upload', async () => {
-    prisma.replay.findUnique.mockResolvedValueOnce(replayRow({ id: replayId }));
+  it('answers 409 for a replay another user uploaded without naming the other upload', async () => {
+    prisma.replay.findUnique.mockResolvedValueOnce(replayRow({ id: replayId, uploaderUserId: 'someone-else', visibility: 'private' }));
 
     const response = await request(app.getHttpServer())
       .post('/replays')
@@ -226,6 +228,19 @@ describe('POST /replays', () => {
 
     expect(response.status).toBe(409);
     expect(JSON.stringify(response.body)).not.toContain(replayId);
+  });
+
+  it('answers its own upload again as stored when the uploader sends the same file twice', async () => {
+    prisma.replay.findUnique.mockResolvedValueOnce(replayRow({ id: replayId, uploaderUserId: 'user-1', status: 'parsed' }));
+    prisma.replay.create.mockClear();
+
+    const response = await request(app.getHttpServer())
+      .post('/replays')
+      .attach('file', Buffer.from(readFixture(FIXTURE.wgFull)), 'battle.wotreplay');
+
+    expect(response.status).toBe(201);
+    expect(response.body).toEqual({ id: replayId, status: 'parsed' });
+    expect(prisma.replay.create).not.toHaveBeenCalled();
   });
 
   it('removes the row and the file when the parse job cannot be queued, so the replay can be uploaded again', async () => {
@@ -249,7 +264,7 @@ describe('POST /replays', () => {
 describe('POST /replays/mod', () => {
   it('turns away an unknown device before reading the file', async () => {
     devices.identify.mockRejectedValueOnce(new AppForbiddenException('FORBIDDEN', 'unknown device'));
-    devices.authenticate.mockClear();
+    devices.authenticateDigest.mockClear();
 
     const response = await request(app.getHttpServer())
       .post('/replays/mod')
@@ -257,11 +272,11 @@ describe('POST /replays/mod', () => {
       .attach('file', Buffer.from(readFixture(FIXTURE.wgFull)), 'battle.wotreplay');
 
     expect(response.status).toBe(403);
-    expect(devices.authenticate).not.toHaveBeenCalled();
+    expect(devices.authenticateDigest).not.toHaveBeenCalled();
   });
 
   it('stores an own replay as private when the mod names no visibility', async () => {
-    devices.authenticate.mockResolvedValueOnce(boundDevice(recorderId));
+    devices.authenticateDigest.mockResolvedValueOnce(boundDevice(recorderId));
     prisma.replay.findUnique.mockResolvedValueOnce(null);
     prisma.replay.create.mockClear();
     prisma.replay.create.mockResolvedValue(replayRow({ id: replayId, status: 'uploaded' }));
@@ -269,12 +284,12 @@ describe('POST /replays/mod', () => {
     const response = await uploadFromMod();
 
     expect(response.status).toBe(201);
-    expect(devices.authenticate).toHaveBeenLastCalledWith(expect.objectContaining({ signedHeaders: [REPLAY_UPLOAD.visibilityHeader] }));
+    expect(devices.signer).toHaveBeenLastCalledWith(expect.objectContaining({ signedHeaders: [REPLAY_UPLOAD.visibilityHeader] }));
     expect(prisma.replay.create.mock.calls[0]?.[0].data).toMatchObject({ uploaderUserId: 'mod-user', deviceId: 'dev_bound', visibility: 'private' });
   });
 
   it('publishes an own replay when the mod asks for public', async () => {
-    devices.authenticate.mockResolvedValueOnce(boundDevice(recorderId));
+    devices.authenticateDigest.mockResolvedValueOnce(boundDevice(recorderId));
     prisma.replay.findUnique.mockResolvedValueOnce(null);
     prisma.replay.create.mockClear();
     prisma.replay.create.mockResolvedValue(replayRow({ id: replayId, status: 'uploaded' }));
@@ -286,7 +301,7 @@ describe('POST /replays/mod', () => {
   });
 
   it('refuses a replay recorded by another account before storing it', async () => {
-    devices.authenticate.mockResolvedValueOnce(boundDevice(recorderId + 1n));
+    devices.authenticateDigest.mockResolvedValueOnce(boundDevice(recorderId + 1n));
     prisma.replay.findUnique.mockClear();
     prisma.replay.create.mockClear();
 
@@ -298,8 +313,28 @@ describe('POST /replays/mod', () => {
     expect(prisma.replay.create).not.toHaveBeenCalled();
   });
 
+  it('tells the mod a replay this player already uploaded is stored, so it stops retrying', async () => {
+    devices.authenticateDigest.mockResolvedValueOnce(boundDevice(recorderId));
+    prisma.replay.findUnique.mockResolvedValueOnce(replayRow({ id: replayId, uploaderUserId: 'mod-user', status: 'parsed' }));
+
+    const response = await uploadFromMod();
+
+    expect(response.status).toBe(201);
+    expect(response.body).toEqual({ id: replayId, status: 'parsed' });
+  });
+
+  it('keeps the 409 the mod treats as done for a copy another user uploaded, without naming it', async () => {
+    devices.authenticateDigest.mockResolvedValueOnce(boundDevice(recorderId));
+    prisma.replay.findUnique.mockResolvedValueOnce(replayRow({ id: replayId, uploaderUserId: 'someone-else' }));
+
+    const response = await uploadFromMod();
+
+    expect(response.status).toBe(409);
+    expect(JSON.stringify(response.body)).not.toContain(replayId);
+  });
+
   it('refuses a visibility the mod cannot choose', async () => {
-    devices.authenticate.mockResolvedValueOnce(boundDevice(recorderId));
+    devices.authenticateDigest.mockResolvedValueOnce(boundDevice(recorderId));
     prisma.replay.create.mockClear();
 
     const response = await uploadFromMod('unlisted');
@@ -309,7 +344,7 @@ describe('POST /replays/mod', () => {
   });
 
   it('tells the mod the server time on an error so it can re-sign', async () => {
-    devices.authenticate.mockRejectedValueOnce(new ModException({ status: 428, error: 'stale_request' }));
+    devices.authenticateDigest.mockRejectedValueOnce(new ModException({ status: 428, error: 'stale_request' }));
 
     const response = await uploadFromMod();
 

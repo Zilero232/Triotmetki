@@ -36,14 +36,15 @@ from ....core.client.game import client_language, client_version, on_vehicle_cha
 from ....core.client.native import repair_detection_sound
 from ....core.client.packaging import warn_mixed_install
 from ....core.client.session_log import open_session_log
-from ....core.client.storage import deferred, flush_writes
+from ....core.client.storage import deferred, flush_all_writes, flush_writes
 from ....core.client.timer import Ticker
 from ....core.client.transport import create_transport
 from ....core.client.ui import Ui
 from ....core.events import EventBus
 from ....core.hooks import Subscriptions
 from ....core.durable import open_config, open_secret_pair, secret_box
-from ....core.log import log, safe
+from ....core.log import flush_file, log, safe
+from ....core.net.transport import tls_available
 from ....core.registry import registry
 from ....core.storage import JsonFile
 from ....core.version import VERSION as CORE_VERSION
@@ -129,7 +130,7 @@ class OtmetkiApp(object):
         hooks.add(g_playerEvents, 'onAvatarBecomeNonPlayer', self._on_avatar_leave)
         hooks.add(g_playerEvents, 'onBattleResultsReceived', self._on_battle_results)
         if hasattr(g_playerEvents, 'onDisconnected'):
-            hooks.add(g_playerEvents, 'onDisconnected', flush_writes)
+            hooks.add(g_playerEvents, 'onDisconnected', flush_all_writes)
         on_vehicle_changed(self._on_vehicle_changed, 'companion')
         self.settings_ui.register()
         self.ticker.start()
@@ -139,7 +140,9 @@ class OtmetkiApp(object):
 
     def stop(self):
         """The client is closing: write the settings saves still held back (`core.client.storage`)."""
-        flush_writes()
+        log('stopping: writing the held saves')
+        flush_all_writes()
+        flush_file()
 
     def user_agent(self):
         return '%s/%s' % (MOD_ID, VERSION)
@@ -170,6 +173,8 @@ class OtmetkiApp(object):
         return self.current_credentials() is not None
 
     def status_text(self):
+        if tls_available() is False:
+            return self.translate('status_tls_unavailable')
         if self.auth_failed:
             return self.translate('status_auth_failed')
         if self.is_bound():
@@ -223,6 +228,7 @@ class OtmetkiApp(object):
 
     def _tick(self):
         _step(self.transport.poll)
+        flush_file()
         if self.in_battle:
             return
         now = time.time()
@@ -252,7 +258,7 @@ class OtmetkiApp(object):
         self.settings_ui.refresh()
         self.settings_share.on_hangar()
         safe(repair_detection_sound)()
-        flush_writes()
+        flush_all_writes()
 
     @safe
     def _on_ingest_response(self, data):

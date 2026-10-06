@@ -1,9 +1,10 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ....core.compat import clamp
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, Markup, font, format_number, format_signed
 from ....core.templates import render_markup
 from ....core.teams import TeamHp  # noqa: F401
-from ..settings.constants import BESIDE_STOCK_PLACE, OVERLAY_STYLES
+from ..settings.constants import BESIDE_STOCK_PLACE, OVERLAY_STYLES, STYLE_COMPACT
 from .constants import (
     BAR_CHAR,
     COMPACT_STYLES,
@@ -32,7 +33,7 @@ def pinned_place(settings, renders_widgets):
 
 def bar(value, maximum, width, color):
     filled = int(round(width * value / maximum)) if maximum > 0 else 0
-    filled = max(0, min(width, filled))
+    filled = clamp(filled, 0, width)
 
     return font(BAR_CHAR * filled, color) + font(BAR_CHAR * (width - filled), COLOR_MUTED)
 
@@ -88,7 +89,7 @@ def side_parts(values, settings, side, shown):
 def score_parts(values, settings, style):
     if settings.get('show_score'):
         return [score_text(values, settings)]
-    if style == 'compact':
+    if style == STYLE_COMPACT:
         return [font(':', COLOR_MUTED)]
     return []
 
@@ -123,6 +124,6 @@ def format_team_hp(values, settings, translate):
 
     style = pair_style(settings)
     lines = [font(Markup('  '.join(number_parts(values, settings, style))), COLOR_NEUTRAL, size)]
-    if settings.get('show_diff') and style != 'compact':
+    if settings.get('show_diff') and style != STYLE_COMPACT:
         lines.append(diff_line(values, settings, translate))
     return '\n'.join(lines)

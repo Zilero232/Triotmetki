@@ -15,9 +15,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ...compat import is_number, string_types, to_text
 from ...settings import Schema, fix
-from .constants import (
+from .constants import (  # noqa: F401
     ALIAS_PREFIX,
     ATTACHED,
+    CARD_FIXED,
     DOCK_ANCHORS,
     DOCKS,
     FIT_AXES,
@@ -87,7 +88,7 @@ def panel_schema(defaults=None, choices=None, limits=None, normalizers=None, ret
     """The common panel keys plus the panel's own; the panel's defaults win (its own x/y, alignment)."""
     merged = dict(PANEL_DEFAULTS)
     merged.update(defaults or {})
-    fixed = dict((key, merged.get(key, value)) for key, value in PANEL_FIXED.items())
+    fixed = {key: merged.get(key, value) for key, value in PANEL_FIXED.items()}
     all_choices = dict(PANEL_CHOICES)
     all_choices.update(choices or {})
     all_limits = dict(PANEL_LIMITS)
@@ -107,7 +108,7 @@ def retired_reset(settings):
     defaults = schema.defaults
     if place_of(settings) not in getattr(schema, 'retired', ()) or place_of(settings) == place_of(defaults):
         return {}
-    return dict((key, defaults[key]) for key in PLACE_KEYS)
+    return {key: defaults[key] for key in PLACE_KEYS}
 
 
 def fit_place(values):

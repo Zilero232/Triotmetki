@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import math
 
-from ..compat import is_number
+from ..compat import clamp, is_number
 from ..vendor import attr
 from .constants import MARK_LEVELS, MAX_PERCENT, TARGET_LEVELS
 from .curve import next_level
@@ -25,7 +25,7 @@ def next_whole_percent(percent):
 
 
 def _clamp_percent(value):
-    return round(min(MAX_PERCENT, max(0.0, value)), 2)
+    return round(clamp(value, 0.0, MAX_PERCENT), 2)
 
 
 def _base_state(moving_avg, percent, combined, projected_avg, pace, step, marks):

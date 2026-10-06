@@ -14,7 +14,6 @@ LAST_TILES = (
     ('net_credits', None, 'br_tile_credits', 'gold'),
 )
 
-RESULT_TONES = {'win': 'good', 'loss': 'bad', 'draw': 'muted'}
 # GUIFlash text colours of the tones; any other tone is the plain text colour.
 TONE_COLORS = {'good': COLOR_UP, 'bad': COLOR_DOWN, 'muted': COLOR_MUTED}
 ROW_GLYPHS = {'marks': 'wn8'}
@@ -32,7 +31,7 @@ PREVIEW_FONT_SIZE = 14
 PREVIEW_LAST = {
     'arena': 1,
     'vehicle': u'Т-34-85',
-    'map': u'Малиновка',
+    'map': 'br_preview_map',
     'result': 'loss',
     'damage': 1960,
     'xp': 812,

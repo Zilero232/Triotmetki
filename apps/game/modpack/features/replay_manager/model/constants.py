@@ -18,12 +18,13 @@ RESERVED_NAMES = (
 )
 
 # The folder is listed again at most this often while the window reads the page; headers are read in slices of the
-# main thread's time so a first look at a large folder never stalls the hangar.
+# main thread's time, one slice a frame while the window wants them, so a first look at a large folder never stalls
+# the hangar (one 40 ms slice a second was a visible hitch every second).
 SCAN_EVERY_S = 3.0
-INDEX_BUDGET_S = 0.04
+INDEX_BUDGET_S = 0.008
+INDEX_FRAME_S = 0.0
 INDEX_WANTED_S = 5.0
 
-ACTION_REFRESH = 'refresh'
 ACTION_FOLDER = 'open_folder'
 ACTION_RENAME = 'rename'
 ACTION_DELETE = 'delete'
@@ -117,8 +118,8 @@ MAP_SMALL_ICON = 'gui/maps/icons/map/small/%s.png'
 VEHICLE_ICON = 'gui/maps/icons/vehicle/%s.png'
 MASTERY_ICON = 'gui/maps/icons/library/proficiency/class_icons_%d_small.png'
 MAX_MASTERY = 4
-VEHICLE_NAME = re.compile(r'^[a-z]+-[A-Za-z0-9_\-]+$')
-MAP_NAME = re.compile(r'^[A-Za-z0-9_]+$')
+VEHICLE_NAME = re.compile(r'^[a-z]+-[A-Za-z0-9_\-]+\Z')
+MAP_NAME = re.compile(r'^[A-Za-z0-9_]+\Z')
 
 STAT_KEYS = (
     'assist',

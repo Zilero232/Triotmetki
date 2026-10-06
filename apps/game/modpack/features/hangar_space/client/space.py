@@ -71,7 +71,12 @@ def write_overrides(switcher, changes):
 def once_space_created(hangar, handler):
     guarded = []
 
+    def cancel():
+        if guarded:
+            unsubscribe(hangar, SPACE_CREATED, guarded.pop())
+
     def created():
-        unsubscribe(hangar, SPACE_CREATED, guarded[0])
+        cancel()
         handler()
     guarded.append(subscribe(hangar, SPACE_CREATED, created))
+    return cancel

@@ -5,8 +5,7 @@ export const RETICLE_MARKS = {
   paint: {
     mark: '#ffffff',
     outline: '#0b0c0e',
-    outlineOpacity: 0.9,
-    shadeOpacity: 0.55
+    opacity: { mark: 1, outline: 0.9, shade: 0.55 }
   },
   shapeIds: [
     'chevron_thin',

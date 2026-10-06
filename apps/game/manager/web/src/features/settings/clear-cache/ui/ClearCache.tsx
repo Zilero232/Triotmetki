@@ -42,7 +42,12 @@ export const ClearCache = () => {
           <ul className={s.list}>
             {rows.map((row) => (
               <li key={row.id} className={s.row}>
-                <Checkbox checked={row.checked} description={row.path} label={row.name} onCheckedChange={(checked) => onToggle(row.id, checked)} />
+                <Checkbox
+                  checked={row.checked}
+                  description={row.path}
+                  label={row.name}
+                  onCheckedChange={(checked) => onToggle({ id: row.id, checked })}
+                />
                 <span className={s.meta}>
                   <Badge>{t(`settings.cache.location.${row.location}`)}</Badge>
                   {row.size}

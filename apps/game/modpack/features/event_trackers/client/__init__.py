@@ -19,11 +19,10 @@ from ..model.constants import (
 from ..model.triathlon import TriathlonRounds, clean_event
 from ..model.widget import caravan_widget, triathlon_widget
 from ..settings import SCHEMA, SECTION, SWITCH
+from ..settings.constants import TRIATHLON_ALWAYS
 from .reads import caravan, triathlon_event
 
 
-# Two hangar cards shown only while their event runs: the own Triathlon rounds (from the own battle results) and the
-# own Trading Caravan tokens; read every REFRESH_EVERY_S in the hangar.
 class EventTrackers(FeatureComponent):
 
     def __init__(self, app):
@@ -79,7 +78,7 @@ class EventTrackers(FeatureComponent):
 
     def _show_triathlon(self, now):
         event = clean_event(triathlon_event())
-        if event is None and self.settings.get('triathlon_shown') == 'always':
+        if event is None and self.settings.get('triathlon_shown') == TRIATHLON_ALWAYS:
             event = clean_event({})
         if event is None or not self.settings.get('show_triathlon'):
             self.triathlon.clear()

@@ -6,7 +6,11 @@ from .constants import (  # noqa: F401
     ACTION_LOOK,
     ACTION_NATIVE,
     ACTION_REFRESH_PREVIEW,
+    ACTIONS,
     CHECK_CAPTURE,
+    NO_ENVIRONMENT,
+    PREMIUM_FLAGS,
+    SLOT_LABELS,
     CHECK_EXPIRED,
     CHECK_IDLE,
     CHECK_WAIT,
@@ -81,7 +85,8 @@ def space_name(path):
 
 
 def space_names(paths):
-    return sorted(set(name for name in (space_name(path) for path in paths or ()) if name))
+    names = (space_name(path) for path in paths or ())
+    return sorted({name for name in names if name})
 
 
 # A folder typed into the advanced field that the client has no hangar config of would break the hangar load
@@ -90,9 +95,9 @@ def available_space(name, names):
     return name if name and name in names else None
 
 
+# A space path the way the client's HangarSpaceReloader.buildHangarSpacePath builds it, lower-cased: a server
+# notification may name `h08_mt_hangar` or `spaces/h08_mt_hangar`.
 def normalized_space(value):
-    """A space path the way the client's HangarSpaceReloader.buildHangarSpacePath builds it, lower-cased: a server
-    notification may name `h08_mt_hangar` or `spaces/h08_mt_hangar`."""
     if not isinstance(value, string_types) or not to_text(value).strip():
         return None
     text = to_text(value).strip().lower()
@@ -109,19 +114,18 @@ def is_default_override(value, default_path):
 def taken_slots(current, owned, wanted, default_path):
     if wanted is None:
         return {}
-    return dict(
-        (is_premium, value) for is_premium, value in current.items()
+    return {
+        is_premium: value for is_premium, value in current.items()
         if value is not None and value != owned and is_default_override(value, default_path)
-    )
+    }
 
 
+# Ours is written or dropped only where the slot is empty, holds ours or re-states the default hangar (`taken_slots`);
+# dropping ours puts back what it stood in for (`kept`). An override naming an event hangar stays.
 def override_changes(current, owned, wanted, default_path=None, kept=None):
-    """{is_premium: new override or None to drop it} for the default hangar's space overrides: ours is written or
-    dropped only where the slot is empty, holds ours or re-states the default hangar (`taken_slots`); dropping ours
-    puts back what it stood in for (`kept`). An override naming an event hangar stays."""
     kept = kept or {}
     changes = {}
-    for is_premium in (True, False):
+    for is_premium in PREMIUM_FLAGS:
         value = current.get(is_premium)
         is_server = value is not None and value != owned
         if is_server and not (wanted is not None and is_default_override(value, default_path)):
@@ -136,19 +140,19 @@ def override_changes(current, owned, wanted, default_path=None, kept=None):
 # ours goes only where that flag's hangar is the look's space; elsewhere (an event hangar, the other flag) it is empty.
 def wanted_environments(targets, path, environment):
     wanted = {}
-    for is_premium in (True, False):
+    for is_premium in PREMIUM_FLAGS:
         is_ours = bool(environment) and same_path(targets.get(is_premium), path)
         wanted[is_premium] = environment if is_ours else u''
     return wanted
 
 
-# {is_premium: environment name, or u'' to empty the slot}: like the space slot, an environment the server set (an
-# event's environment) stays; ours is written or emptied only where the slot is empty or holds ours, or where the
-# choice stands in for a server slot of the default hangar (`taken`), whose environment (`kept`) comes back with it.
+# Like the space slot, an environment the server set (an event's environment) stays; ours is written or emptied only
+# where the slot is empty or holds ours, or where the choice stands in for a server slot of the default hangar
+# (`taken`), whose environment (`kept`) comes back with it.
 def environment_changes(current, owned, wanted, taken=(), kept=None):
     kept = kept or {}
     changes = {}
-    for is_premium in (True, False):
+    for is_premium in PREMIUM_FLAGS:
         value = current.get(is_premium) or u''
         if value and value != owned and is_premium not in taken:
             continue
@@ -189,7 +193,7 @@ def is_listed(name):
 
 
 def listed_spaces(names):
-    order = dict((name, index) for index, name in enumerate(KNOWN_SPACES))
+    order = {name: index for index, name in enumerate(KNOWN_SPACES)}
     listed = [name for name in names if is_listed(name)]
     return sorted(listed, key=lambda name: (order.get(name, len(order)), name))
 
@@ -256,10 +260,6 @@ def native_row(is_chosen, translate, image=None):
     }
 
 
-# The looks come first, as the rows of the page's look section (each subtitled with the section and its space), then
-# the spaces. A tile shows the player's own preview of its space or look when one was taken (`pictures.previews`: key
-# to data URI), else the client art of its event, else the window's drawn fallback; the game's own row shows the default
-# hangar's preview.
 def build_page(names, chosen, current, translate, looks=(), look=u'', pictures=None):
     pictures = pictures or GalleryPictures()
     previews = pictures.previews

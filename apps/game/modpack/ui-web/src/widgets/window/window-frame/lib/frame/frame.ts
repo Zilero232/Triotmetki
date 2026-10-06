@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react';
+
 import { clamp, round } from 'remeda';
 
 import { rem } from '@/shared/lib/css-unit';
@@ -14,6 +16,7 @@ import type {
   MoveFrameInput,
   OpeningFrameInput,
   ResizeFrameInput,
+  ZoomLimits,
   ZoomStepInput
 } from './frame.types';
 
@@ -109,4 +112,22 @@ export const layoutOf = ({ frame, zoom }: LayoutInput): FrameLayout => {
   };
 };
 
-export const toRem = (value: number): string => rem(round(value, 2));
+const toRem = (value: number): string => rem(round(value, 2));
+
+export const frameStyleOf = (frame: Frame): CSSProperties => ({
+  left: toRem(frame.x),
+  top: toRem(frame.y),
+  width: toRem(frame.width),
+  height: toRem(frame.height)
+});
+
+export const innerStyleOf = ({ inner, scale }: FrameLayout): CSSProperties => ({
+  width: toRem(inner.width),
+  height: toRem(inner.height),
+  ...(scale === 1 ? {} : { transform: `scale(${scale})`, transformOrigin: WINDOW_FRAME.scaleOrigin })
+});
+
+export const zoomLimits = (zoom: number): ZoomLimits => ({
+  canZoomIn: zoom < Math.max(...WINDOW_FRAME.zoomSteps),
+  canZoomOut: zoom > Math.min(...WINDOW_FRAME.zoomSteps)
+});

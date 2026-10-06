@@ -16,6 +16,8 @@ STRINGS = {
         'platoon_points_title': u'Очки взвода',
         'platoon_points_frags': u'фр. {frags}',
         'platoon_points_row': u'{name}: {points} (фраги {frags})',
+        'platoon_points_preview_own': u'Вы',
+        'platoon_points_preview_mate': u'Союзник',
     },
     'en': {
         'platoon_points_group_shown': u'Who is shown',
@@ -31,5 +33,7 @@ STRINGS = {
         'platoon_points_title': u'Platoon points',
         'platoon_points_frags': u'fr. {frags}',
         'platoon_points_row': u'{name}: {points} ({frags} frags)',
+        'platoon_points_preview_own': u'You',
+        'platoon_points_preview_mate': u'Platoon mate',
     },
 }

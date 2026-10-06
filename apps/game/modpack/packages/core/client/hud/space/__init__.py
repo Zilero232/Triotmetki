@@ -5,6 +5,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import BigWorld
 
 from ....hud.surface import SPACE_BATTLE, SPACE_LOBBY
+from ...game import client_attr, service
 
 
 def current_space():
@@ -36,9 +37,7 @@ def cursor_visible():
 
 
 def gui_spaces():
-    try:
-        from helpers import dependency
-        from skeletons.gui.app_loader import GuiGlobalSpaceID, IAppLoader
-    except ImportError:
+    space_ids = client_attr('skeletons.gui.app_loader', 'GuiGlobalSpaceID')
+    if space_ids is None:
         return None, None
-    return dependency.instance(IAppLoader), GuiGlobalSpaceID
+    return service(client_attr('skeletons.gui.app_loader', 'IAppLoader')), space_ids

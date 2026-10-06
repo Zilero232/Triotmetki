@@ -72,6 +72,40 @@ impl Bundle<'_> {
         Ok(())
     }
 
+    fn add_config_files(&mut self, prefix: &str, client: &GameClient) -> AppResult<()> {
+        for name in CONFIG_FILES {
+            let path = configs_dir(&client.path).join(name);
+            let small_enough = fs::metadata(&path).is_ok_and(|metadata| metadata.is_file() && metadata.len() <= MAX_LOG_BYTES);
+
+            if small_enough {
+                self.add_bytes(&format!("{prefix}/configs/{name}"), &redact_config(&fs::read(&path)?))?;
+            }
+        }
+
+        Ok(())
+    }
+
+    fn add_client(&mut self, layout: &Layout, client: &GameClient) -> AppResult<()> {
+        let state_dir = layout.client_dir(&client.path);
+        let prefix = format!("clients/{}", client_key(&client.path));
+        let dirs = [("mods", client.mods_dir.clone()), ("res_mods", client.res_mods_dir.clone()), ("disabled", disabled_dir(&state_dir))];
+
+        self.add_bytes(&format!("{prefix}/client.txt"), format!("{}\n{}\n", client.path.display(), client.version).as_bytes())?;
+        self.add_bytes(&format!("{prefix}/listing.txt"), listing(&dirs).as_bytes())?;
+
+        for name in CLIENT_FILES {
+            self.add_file(&format!("{prefix}/{name}"), &client.path.join(name))?;
+        }
+
+        self.add_config_files(&prefix, client)?;
+
+        for name in [MANIFEST_INI, CLIENT_INI] {
+            self.add_file(&format!("{prefix}/state/{name}"), &state_dir.join(name))?;
+        }
+
+        Ok(())
+    }
+
     fn add_file(&mut self, name: &str, path: &Path) -> AppResult<()> {
         let small_enough = fs::metadata(path).is_ok_and(|metadata| metadata.is_file() && metadata.len() <= MAX_LOG_BYTES);
 
@@ -120,30 +154,7 @@ pub fn collect(input: CollectInput) -> AppResult<PathBuf> {
     bundle.add_file("manager/settings.json", &input.layout.settings_file())?;
 
     for client in input.clients {
-        let key = client_key(&client.path);
-        let state_dir = input.layout.client_dir(&client.path);
-        let prefix = format!("clients/{key}");
-        let dirs = [("mods", client.mods_dir.clone()), ("res_mods", client.res_mods_dir.clone()), ("disabled", disabled_dir(&state_dir))];
-
-        bundle.add_bytes(&format!("{prefix}/client.txt"), format!("{}\n{}\n", client.path.display(), client.version).as_bytes())?;
-        bundle.add_bytes(&format!("{prefix}/listing.txt"), listing(&dirs).as_bytes())?;
-
-        for name in CLIENT_FILES {
-            bundle.add_file(&format!("{prefix}/{name}"), &client.path.join(name))?;
-        }
-
-        for name in CONFIG_FILES {
-            let path = configs_dir(&client.path).join(name);
-            let small_enough = fs::metadata(&path).is_ok_and(|metadata| metadata.is_file() && metadata.len() <= MAX_LOG_BYTES);
-
-            if small_enough {
-                bundle.add_bytes(&format!("{prefix}/configs/{name}"), &redact_config(&fs::read(&path)?))?;
-            }
-        }
-
-        for name in [MANIFEST_INI, CLIENT_INI] {
-            bundle.add_file(&format!("{prefix}/state/{name}"), &state_dir.join(name))?;
-        }
+        bundle.add_client(input.layout, client)?;
     }
 
     bundle.writer.finish()?;

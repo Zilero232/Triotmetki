@@ -15,8 +15,6 @@ from .constants import (
 from .history import percent, rating_delta, start_of
 from .report import marks_report
 
-# The marks history page of the mod window: one row per tank, newest first, with its entries and the report.
-
 
 def signed_percent(value):
     return format_signed(value, True, u'')

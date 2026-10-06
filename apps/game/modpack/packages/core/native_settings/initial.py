@@ -16,7 +16,7 @@ def client_keys(schema):
 
 def native_choices(keys, once=None):
     """Every key at 'native'; the key of a one-time switch (`once`) starts at its value instead."""
-    values = dict((key, NATIVE) for key in keys)
+    values = {key: NATIVE for key in keys}
     if once is not None:
         values[once['key']] = once['value']
     return values
@@ -40,7 +40,7 @@ def once_step(once, section_value, is_chosen, game_value, wanted):
 
 def recommended(schema, keys):
     """The recommended client values: the schema defaults of `keys`."""
-    return dict((key, schema.defaults[key]) for key in keys)
+    return {key: schema.defaults[key] for key in keys}
 
 
 def is_recommended(values, schema, keys):

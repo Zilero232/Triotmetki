@@ -7,8 +7,9 @@ from otmetki.companion.binding import Credentials
 from otmetki.core.codec import decode_json, parse_retry_after
 from otmetki.companion.outbox import MAX_BACKOFF_S, Outbox, Outcome, classify_status
 from otmetki.companion.sender import IngestEndpoint, IngestSender
-from otmetki.core.net.signing import DEVICE_HEADER, verify_request
-from otmetki.core.storage import MemoryFile
+from _support import verify_request
+from otmetki.core.net.signing import DEVICE_HEADER
+from _support import MemoryFile
 
 INGEST_URL = 'https://api.example/mod/ingest'
 STATUS_OUTCOMES = (

@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
 use super::fixtures::{release, TestSigner};
-use super::sequence::{check_sequence, SequenceInput};
+use super::sequence::{by_game_line, check_sequence, game_line, Freshness, SequenceInput, CORRUPT_SUFFIX};
 use super::signature::{signed_payload, verify_release_with, PayloadFormat, RELEASE_PUBLIC_KEY};
 use super::*;
 
@@ -133,28 +133,113 @@ fn returns_the_signed_timestamp_as_the_sequence() {
     assert_eq!(verify_release_with(&signed, &signer.public_key()).unwrap(), 1_800_000_000);
 }
 
-#[test]
-fn refuses_a_release_signed_before_one_already_seen_for_the_game() {
-    let seen = BTreeMap::from([("1.46.0.0".to_owned(), 200)]);
-    let check = |game: &str, sequence| check_sequence(SequenceInput { seen: &seen, game, version: "0.2.0", sequence });
+const SEEN_GAME: &str = "1.46.0.0";
 
-    assert!(!check("1.46.0.0", 200).unwrap());
-    assert!(check("1.46.0.0", 201).unwrap());
-    assert!(check("1.47.0.0", 1).unwrap());
-    assert_eq!(check("1.46.0.0", 199).unwrap_err().code(), ErrorCode::SignatureInvalid);
+fn seen_at(sequence: u64) -> BTreeMap<String, u64> {
+    BTreeMap::from([(game_line(SEEN_GAME), sequence)])
 }
 
 #[test]
-fn remembers_the_highest_sequence_per_game() {
+fn calls_a_release_signed_after_the_highest_seen_newer() {
+    let seen = seen_at(200);
+
+    assert_eq!(check_sequence(SequenceInput { seen: &seen, game: SEEN_GAME, sequence: 201 }), Freshness::Newer);
+}
+
+#[test]
+fn calls_a_release_signed_at_the_highest_seen_the_same() {
+    let seen = seen_at(200);
+
+    assert_eq!(check_sequence(SequenceInput { seen: &seen, game: SEEN_GAME, sequence: 200 }), Freshness::Same);
+}
+
+#[test]
+fn calls_a_release_signed_before_the_highest_seen_older() {
+    let seen = seen_at(200);
+
+    assert_eq!(check_sequence(SequenceInput { seen: &seen, game: SEEN_GAME, sequence: 199 }), Freshness::Older);
+}
+
+#[test]
+fn keeps_the_history_across_a_patch_of_the_same_game_line() {
+    let seen = seen_at(200);
+
+    assert_eq!(check_sequence(SequenceInput { seen: &seen, game: "1.46.1.0", sequence: 199 }), Freshness::Older);
+}
+
+#[test]
+fn starts_a_new_history_for_another_game_line() {
+    let seen = seen_at(200);
+
+    assert_eq!(check_sequence(SequenceInput { seen: &seen, game: "1.47.0.0", sequence: 1 }), Freshness::Newer);
+}
+
+#[test]
+fn folds_sequences_kept_per_client_version_into_their_game_line() {
+    let seen = BTreeMap::from([("1.46.0.0".to_owned(), 300), ("1.46.1.0".to_owned(), 200), ("1.47.0.0".to_owned(), 100)]);
+
+    assert_eq!(by_game_line(seen), BTreeMap::from([("1.46".to_owned(), 300), ("1.47".to_owned(), 100)]));
+}
+
+fn store_in(dir: &tempfile::TempDir) -> SequenceStore {
+    SequenceStore::new(dir.path().join("Игрок").join(SEQUENCES_FILE))
+}
+
+fn remember_at(store: &SequenceStore, sequence: u64) -> Freshness {
+    store.remember(RememberInput { game: SEEN_GAME, version: "0.2.0", sequence }).unwrap()
+}
+
+#[test]
+fn reports_a_release_signed_before_the_highest_remembered_as_older() {
     let dir = tempfile::tempdir().unwrap();
-    let store = SequenceStore::new(dir.path().join("Игрок").join(SEQUENCES_FILE));
-    let remember = |sequence| store.remember(RememberInput { game: "1.46.0.0", version: "0.2.0", sequence });
+    let store = store_in(&dir);
 
-    remember(300).unwrap();
-    remember(300).unwrap();
-    remember(400).unwrap();
+    remember_at(&store, 300);
+    remember_at(&store, 400);
 
-    assert_eq!(remember(350).unwrap_err().code(), ErrorCode::SignatureInvalid);
+    assert_eq!(remember_at(&store, 350), Freshness::Older);
+}
+
+#[test]
+fn does_not_lower_the_remembered_sequence_for_an_older_release() {
+    let dir = tempfile::tempdir().unwrap();
+    let store = store_in(&dir);
+
+    remember_at(&store, 400);
+    remember_at(&store, 350);
+
+    assert_eq!(remember_at(&store, 399), Freshness::Older);
+}
+
+#[test]
+fn sets_a_corrupt_sequences_file_aside() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join(SEQUENCES_FILE);
+
+    std::fs::write(&path, "{ not json").unwrap();
+    remember_at(&SequenceStore::new(&path), 500);
+
+    assert_eq!(std::fs::read_to_string(dir.path().join(format!("{SEQUENCES_FILE}{CORRUPT_SUFFIX}"))).unwrap(), "{ not json");
+}
+
+#[test]
+fn rebuilds_a_corrupt_sequences_file_from_the_verified_release_only() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join(SEQUENCES_FILE);
+
+    std::fs::write(&path, "{ not json").unwrap();
+    remember_at(&SequenceStore::new(&path), 500);
+
+    let rebuilt: BTreeMap<String, u64> = serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
+
+    assert_eq!(rebuilt, seen_at(500));
+}
+
+#[test]
+fn offers_no_release_in_place_of_one_older_than_seen() {
+    let latest = LatestRelease { game: SEEN_GAME.to_owned(), status: ReleaseStatus::Compatible, release: Some(release("0.2.0")) };
+
+    assert_eq!(without_release(latest), LatestRelease { game: SEEN_GAME.to_owned(), status: ReleaseStatus::Waiting, release: None });
 }
 
 #[test]

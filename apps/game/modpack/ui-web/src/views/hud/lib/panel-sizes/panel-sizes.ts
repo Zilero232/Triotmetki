@@ -2,9 +2,21 @@ import { isDeepEqual } from 'remeda';
 
 import type { Measured } from '@/entities/hud/panel-layout';
 
-import { stickySize } from '@/entities/hud/panel-layout';
+import { screenScale, stickySize } from '@/entities/hud/panel-layout';
+import { widgetLines } from '@/features/hud/widget-registry';
 
-import type { ChangedPanelsInput, PanelContent, ReadSizeInput, SameContentInput, SettleSizesInput, Sizes } from './panel-sizes.types';
+import type {
+  ChangedPanelsInput,
+  ElementRef,
+  ElementRefInput,
+  LineCountInput,
+  PanelContent,
+  ReadCountdownInput,
+  ReadSizeInput,
+  SameContentInput,
+  SettleSizesInput,
+  Sizes
+} from './panel-sizes.types';
 
 export const settleSizes = ({ current, readings }: SettleSizesInput): Sizes => {
   const measured: Sizes = { ...current };
@@ -35,3 +47,40 @@ export const readSize = ({ element, lines, scale }: ReadSizeInput): Measured | n
 };
 
 export const emptyContent = (): PanelContent => ({ lines: new Map(), widgets: new Map() });
+
+const lineCount = ({ id, content }: LineCountInput): number => {
+  const widget = content.widgets.get(id);
+
+  return widget ? widgetLines(widget) : (content.lines.get(id)?.length ?? 0);
+};
+
+export const readCountdown = ({ framesLeft, elements, content }: ReadCountdownInput): Map<string, Measured> => {
+  const scale = screenScale();
+  const readings = new Map<string, Measured>();
+
+  framesLeft.forEach((left, id) => {
+    const size = readSize({ element: elements.get(id), lines: lineCount({ id, content }), scale });
+
+    if (size) {
+      readings.set(id, size);
+    }
+
+    if (left > 1) {
+      framesLeft.set(id, left - 1);
+    } else {
+      framesLeft.delete(id);
+    }
+  });
+
+  return readings;
+};
+
+export const elementRef =
+  ({ elements, id }: ElementRefInput): ElementRef =>
+  (element) => {
+    if (element) {
+      elements.set(id, element);
+    } else {
+      elements.delete(id);
+    }
+  };

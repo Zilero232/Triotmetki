@@ -31,3 +31,8 @@ export const NAV_KEYS = {
   shortcutModifier: 'Ctrl',
   ariaShortcutModifier: 'Control'
 } as const;
+
+export const NAV_SELECTORS = {
+  container: 'nav',
+  item: 'button[data-nav-item]'
+} as const;

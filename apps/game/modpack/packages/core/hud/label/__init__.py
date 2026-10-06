@@ -9,7 +9,7 @@ def _saved_places(state):
     saved = state.get(PLACES_STATE_KEY) if isinstance(state, dict) else None
     if not isinstance(saved, dict):
         return {}
-    return dict((alias, dict(place)) for alias, place in saved.items() if isinstance(place, dict))
+    return {alias: dict(place) for alias, place in saved.items() if isinstance(place, dict)}
 
 
 def hangar_places(app):

@@ -1,5 +1,7 @@
 export type FormatPercentInput = { value: number; digits: number; signed?: boolean; unit?: boolean };
 
+export type DeltaTextInput = { value: number | null; unit?: boolean };
+
 export type OptionalPercentInput = { value: number | null; digits: number };
 
 export type PercentSignInput = { value: number; rounded: number; signed: boolean };

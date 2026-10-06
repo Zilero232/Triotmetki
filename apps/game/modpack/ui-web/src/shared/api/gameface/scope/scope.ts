@@ -1,6 +1,6 @@
 import { isRecord } from '@/shared/lib/is-record';
 
-import type { InvokeInput, WhenReadyInput } from './scope.types';
+import type { InvokeInput, ReadGlobalInput, WhenReadyInput } from './scope.types';
 
 import { GAMEFACE } from '../gameface.constants';
 
@@ -32,7 +32,7 @@ export const whenReady = ({ engine, callback }: WhenReadyInput): void => {
   callback();
 };
 
-export const readGlobal = (scope: object, name: string): Record<string, unknown> | null => {
+export const readGlobal = ({ scope, name }: ReadGlobalInput): Record<string, unknown> | null => {
   const value: unknown = Reflect.get(scope, name);
 
   return isRecord(value) ? value : null;
@@ -53,8 +53,8 @@ const subViewModels = (subViews: Record<string, unknown> | null): unknown[] => {
 };
 
 export const scopeModels = (scope: object): unknown[] => {
-  const model = readGlobal(scope, GAMEFACE.globals.model);
-  const subViews = readGlobal(scope, GAMEFACE.globals.subViews);
+  const model = readGlobal({ scope, name: GAMEFACE.globals.model });
+  const subViews = readGlobal({ scope, name: GAMEFACE.globals.subViews });
 
   return [model, ...subViewModels(subViews)];
 };

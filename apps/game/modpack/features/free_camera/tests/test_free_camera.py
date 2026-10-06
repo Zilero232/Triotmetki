@@ -9,7 +9,7 @@ import unittest
 import _support
 from otmetki.core.events import EventBus
 from otmetki.core.hud import ComponentConfig
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 from otmetki.features.free_camera.i18n import STRINGS
 from otmetki.features.free_camera.model import PLACE_HANGAR, PLACE_REPLAY, START, STOP, Flight, flight_place
 from otmetki.features.free_camera.model.constants import HOTKEY_CHOICES, HOTKEYS
@@ -211,7 +211,7 @@ class ModelTest(unittest.TestCase):
 class FreeCameraClientTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         self.hangar_camera = Camera('hangar')
         self.cameras = [self.hangar_camera]
         self.replay = False
@@ -394,6 +394,30 @@ class FreeCameraClientTest(unittest.TestCase):
         assert camera.destroyed
         assert self.lobby_layers == []
         assert not self.layer.muted
+
+    def test_the_client_key_handler_stays_its_own_outside_a_flight(self):
+        original = sys.modules['game'].handleKeyEvent
+
+        self.feature.settings_changed(['hotkey'])
+
+        assert sys.modules['game'].handleKeyEvent is original
+
+    def test_landing_gives_the_client_its_key_handler_back(self):
+        self.press('KEY_LCONTROL', 'KEY_LSHIFT', 'KEY_F')
+
+        self.press('KEY_ESCAPE')
+
+        assert not self.feature.input_hooked
+
+    def test_a_handler_another_mod_wrapped_mid_flight_stays_wrapped(self):
+        self.press('KEY_LCONTROL', 'KEY_LSHIFT', 'KEY_F')
+        game = sys.modules['game']
+        ours = game.handleKeyEvent
+        game.handleKeyEvent = lambda event: ours(event)
+
+        self.press('KEY_ESCAPE')
+
+        assert self.feature.input_hooked
 
     def test_switched_off_the_key_does_nothing(self):
         self.app.config.enabled = False

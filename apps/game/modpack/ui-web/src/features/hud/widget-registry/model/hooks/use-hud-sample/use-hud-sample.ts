@@ -10,8 +10,9 @@ import { resolveWidget } from '../../../lib/widget-registry';
 export const useHudSample = ({ widget, text }: UseHudSampleInput) => {
   const resolved = useMemo(() => resolveWidget(widget), [widget]);
   const lines = useMemo(() => fontSafeLines(parseRichText(text ?? '')), [text]);
+  const contentKey = useMemo(() => JSON.stringify([widget, text]), [widget, text]);
 
   const hasText = lines.some((line) => line.runs.length > 0);
 
-  return { widget: resolved, lines, isEmpty: resolved === null && !hasText };
+  return { widget: resolved, lines, contentKey, isEmpty: resolved === null && !hasText };
 };

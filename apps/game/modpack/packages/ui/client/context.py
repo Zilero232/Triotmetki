@@ -3,10 +3,12 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ...companion.config import FEATURES
 from ...companion.i18n import resolve_language
 from ...core.client.game import client_language
+from ...core.client.storage import flush_all_writes
+from ...core.net.transport import tls_available
 from ...core.registry import registry
 from .. import UI_ID
 from ..bridge import EVENT_LANGUAGE
-from ..components import load_features, root_package
+from ..components import ACTION_SETTINGS_EXPORT, load_features, root_package
 from .browser import open_url
 
 
@@ -56,6 +58,9 @@ class UiContext(object):
     def save_config(self):
         self.app.save_config()
 
+    def flush_saves(self):
+        flush_all_writes()
+
     def language(self):
         return self.app.translate.language
 
@@ -70,6 +75,7 @@ class UiContext(object):
             'account_id': app.account_id,
             'text': app.status_text(),
             'server': app.config.custom_server(),
+            'tls': tls_available() is not False,
         }
 
     def set_language(self, language):
@@ -84,7 +90,7 @@ class UiContext(object):
         self.app.settings_ui.refresh()
 
     def companion_action(self, action):
-        if action == 'settings_export':
+        if action == ACTION_SETTINGS_EXPORT:
             self.app.settings_share.export()
 
     def bind(self, code):

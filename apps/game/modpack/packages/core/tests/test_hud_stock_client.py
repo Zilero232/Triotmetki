@@ -8,7 +8,7 @@ import unittest
 import _support
 from otmetki.core.events import EventBus
 from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer, alias_of, panel_schema
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 
 STUBBED = (
     'BigWorld',
@@ -95,7 +95,7 @@ class Backend(HudBackend):
 
 
 def install_stubs():
-    saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+    saved = {name: sys.modules.get(name) for name in STUBBED}
     for name in STUBBED:
         sys.modules[name] = types.ModuleType(str(name))
     sys.modules['BigWorld'].player = lambda: None
@@ -117,7 +117,7 @@ class StockControlTest(unittest.TestCase):
 
     def setUp(self):
         self.saved = install_stubs()
-        self.originals = dict((name, SharedPage.__dict__[name]) for name in HOOKED)
+        self.originals = {name: SharedPage.__dict__[name] for name in HOOKED}
         from otmetki.core.client.hud.stock import StockControl
         self.backend = Backend()
         self.layer = HudLayer(self.backend, ComponentConfig(MemoryFile()))
@@ -425,8 +425,8 @@ class StockControlFirstBattleTest(unittest.TestCase):
         for name in RETICLE_MODULES:
             sys.modules[name] = types.ModuleType(str(name))
         sys.modules[RETICLE_MODULES[1]].CrosshairPanelContainer = CrosshairPanelContainer
-        self.originals = dict((name, SharedPage.__dict__[name]) for name in HOOKED)
-        self.reticle_originals = dict((name, CrosshairPanelContainer.__dict__[name]) for name in RETICLE_HOOKED)
+        self.originals = {name: SharedPage.__dict__[name] for name in HOOKED}
+        self.reticle_originals = {name: CrosshairPanelContainer.__dict__[name] for name in RETICLE_HOOKED}
         from otmetki.core.client.hud.stock import StockControl
         self.backend = Backend()
         self.layer = HudLayer(self.backend, ComponentConfig(MemoryFile()))

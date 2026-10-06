@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.compat import is_int, is_number, to_text
 from ....core.shells import SHELL_CODES
-from .constants import DAMAGE_OUTCOMES, MAX_ENTRIES, MERGE_WINDOW_S, OUTCOMES, SOURCES
+from .constants import DAMAGE_OUTCOMES, MAX_ENTRIES, MERGE_WINDOW_S, OUTCOMES, SOURCE_SHOT, SOURCES
 
 # Fair play: the player's own shots, their outcome (the own hit markers), damage and crits, and the HP left after the
 # player's own shot as the target's marker shows it; class and max HP as the player panels show them.
@@ -87,7 +87,7 @@ class ShotLog(object):
 
     def _latest(self, target_id, at, accepts=None):
         for entry in reversed(self.entries):
-            if entry['target'] != target_id or entry['source'] != 'shot':
+            if entry['target'] != target_id or entry['source'] != SOURCE_SHOT:
                 continue
             if at is None or entry['at'] is None or at - entry['at'] > MERGE_WINDOW_S:
                 return None
@@ -144,8 +144,8 @@ class ShotLog(object):
 
     # Fire and ramming damage is a row of its own: no hit marker belongs to it.
     def _damage_entry(self, hit):
-        source = hit.source if hit.source in SOURCES else 'shot'
-        if source != 'shot':
+        source = hit.source if hit.source in SOURCES else SOURCE_SHOT
+        if source != SOURCE_SHOT:
             entry = self._append(hit.vehicle_id, None, hit.at, hit.vehicle)
             entry['source'] = source
             return entry

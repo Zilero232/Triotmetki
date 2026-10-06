@@ -1,5 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ....core.hud import CARD_FIXED
+
 SWITCH = 'hangar_info'
 SECTION = 'hangar_info'
 GROUP = 'hangar'
@@ -27,7 +29,7 @@ DEFAULTS = {
 }
 
 # The type size follows the design scale.
-FIXED = {'font_size': 14}
+FIXED = CARD_FIXED
 ADVANCED = ('template',)
 
 CHOICES = {

@@ -44,6 +44,16 @@ def as_int(value, default=0):
     return int(value) if is_number(value) else default
 
 
+def clamp(value, low, high):
+    """`value` held within [low, high]."""
+    return max(low, min(high, value))
+
+
+def fraction(value):
+    """`value` held within [0.0, 1.0]."""
+    return clamp(value, 0.0, 1.0)
+
+
 def _within(value, low, high):
     return (low is None or value >= low) and (high is None or value <= high)
 

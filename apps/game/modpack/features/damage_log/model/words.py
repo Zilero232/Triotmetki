@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.format import format_number
-from .constants import ASSIST_KINDS, GOLD_LABELS, MINUS, NOTE_SEPARATOR, SILENT_OUTCOMES
+from .constants import ASSIST_KINDS, GOLD_LABELS, KIND_RECEIVED, MINUS, NOTE_SEPARATOR, SILENT_OUTCOMES, SOURCE_SHOT
 
 
 def shell_label(row, translate):
@@ -17,14 +17,14 @@ def amount_text(row):
     damage = row.get('damage')
     if not damage:
         return ''
-    if row['kind'] == 'received':
+    if row['kind'] == KIND_RECEIVED:
         return MINUS + format_number(damage)
     return format_number(damage)
 
 
 def source_word(row, translate):
     source = row.get('source')
-    if not source or source == 'shot':
+    if not source or source == SOURCE_SHOT:
         return ''
     return translate('dlog_source_' + source)
 

@@ -19,6 +19,7 @@ class WindowBlur(object):
         self.blur = CachedBlur(enabled=True, ownLayer=window_layer - 1)
 
     def hide(self):
-        blur, self.blur = self.blur, None
+        blur = self.blur
+        self.blur = None
         if blur is not None:
             blur.fini()

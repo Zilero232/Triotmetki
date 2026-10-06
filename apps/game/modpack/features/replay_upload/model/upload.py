@@ -117,8 +117,6 @@ def upload_job(item, endpoint, files, now, should_stop=None):
     return reply
 
 
-# `listener` has on_auth_failed() and on_uploaded(arena_unique_id, replay_id). `endpoint` is frozen: the client
-# replaces it, so a running upload keeps what it started with.
 class ReplayUploader(object):
 
     def __init__(self, queue, endpoint, files, runner, clock, listener):

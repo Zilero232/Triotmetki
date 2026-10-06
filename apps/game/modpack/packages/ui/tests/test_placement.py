@@ -8,26 +8,27 @@ import os
 import unittest
 
 import _support  # noqa: F401
-from otmetki.ui.components import CONTEXTS, PANEL_OWNERS, PLACEMENT, SECTIONS, placement_of
+from otmetki.ui.components import PANEL_OWNERS, PLACEMENT, SECTIONS, placement_of
 from otmetki.ui.window_layout import unmoved_layout
 
 CATALOG = os.path.join(_support.MODPACK_DIR, 'catalog', 'catalog.json')
 WINDOW_ONLY = ('core', 'ui')
 DATA_PACKAGES = ('hangar_looks',)
 OLD_BUTTON = {'x': -24, 'y': 72, 'align_x': 'right', 'align_y': 'top', 'scale': 100}
+CONTEXTS = ('hangar', 'battle', 'any')
 NEW_BUTTON = {'x': -176, 'y': -4, 'align_x': 'right', 'align_y': 'bottom', 'scale': 90}
 
 
 def catalog_contexts():
     with io.open(CATALOG, 'r', encoding='utf-8') as handle:
         entries = json.load(handle)['components']
-    return dict((entry['id'], entry['context']) for entry in entries if entry.get('kind') is None)
+    return {entry['id']: entry['context'] for entry in entries if entry.get('kind') is None}
 
 
 def placed_components():
     contexts = catalog_contexts()
     placed = [component_id for component_id in contexts if component_id not in WINDOW_ONLY + DATA_PACKAGES]
-    return dict((component_id, contexts[component_id]) for component_id in placed)
+    return {component_id: contexts[component_id] for component_id in placed}
 
 
 def part_ids(package_id):

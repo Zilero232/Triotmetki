@@ -5,6 +5,7 @@ import zlib
 
 from ....core.vendor import attr
 from .constants import (
+    BITS_PER_BYTE,
     BMP_BITFIELDS,
     BMP_BITS,
     BMP_BITS_AT,
@@ -13,16 +14,27 @@ from .constants import (
     BMP_MAGIC,
     BMP_MASKS,
     BMP_MASKS_AT,
+    BMP_MASKS_FORMAT,
+    BMP_MASKS_SIZE,
     BMP_PIXELS_OFFSET_AT,
     BMP_RGB,
     BMP_SIZE_AT,
+    BMP_SIZE_FORMAT,
+    BMP_UINT16,
+    BMP_UINT32,
+    BYTE_MASK,
+    CRC_MASK,
     PNG_COMPRESSION,
     PNG_DEPTH,
     PNG_FILTER_SUB,
+    PNG_HEADER_FORMAT,
     PNG_RGB,
     PNG_SIGNATURE,
+    PNG_UINT32,
     PREVIEW_TAPS,
     RGB_CHANNELS,
+    ROW_ALIGN_BITS,
+    ROW_ALIGN_BYTES,
 )
 
 # The client embeds no image library (no PIL), so the capture is read as an uncompressed bitmap and written back as
@@ -49,33 +61,42 @@ class Bitmap(object):
         return self.offset + stored * self.stride
 
 
-def _unpack(fmt, data, position):
-    return struct.unpack_from(str(fmt), data, position)
+def _unpack(struct_format, data, position):
+    return struct.unpack_from(str(struct_format), data, position)
+
+
+def _unpack_one(struct_format, data, position):
+    return _unpack(struct_format, data, position)[0]
 
 
 def _check_masks(data):
-    if len(data) < BMP_MASKS_AT + 12 or _unpack('<III', data, BMP_MASKS_AT) != BMP_MASKS:
+    if len(data) < BMP_MASKS_AT + BMP_MASKS_SIZE or _unpack(BMP_MASKS_FORMAT, data, BMP_MASKS_AT) != BMP_MASKS:
         raise ThumbnailError('bmp_masks')
+
+
+def _row_stride(width, bits):
+    words = (width * bits + ROW_ALIGN_BITS - 1) // ROW_ALIGN_BITS
+    return words * ROW_ALIGN_BYTES
 
 
 def read_bitmap(raw):
     data = bytearray(raw)
-    if len(data) < BMP_HEADER_END or bytes(data[:2]) != BMP_MAGIC:
+    if len(data) < BMP_HEADER_END or bytes(data[:len(BMP_MAGIC)]) != BMP_MAGIC:
         raise ThumbnailError('not_bmp')
 
-    offset = _unpack('<I', data, BMP_PIXELS_OFFSET_AT)[0]
-    width, height = _unpack('<ii', data, BMP_SIZE_AT)
-    bits = _unpack('<H', data, BMP_BITS_AT)[0]
-    compression = _unpack('<I', data, BMP_COMPRESSION_AT)[0]
+    offset = _unpack_one(BMP_UINT32, data, BMP_PIXELS_OFFSET_AT)
+    width, height = _unpack(BMP_SIZE_FORMAT, data, BMP_SIZE_AT)
+    bits = _unpack_one(BMP_UINT16, data, BMP_BITS_AT)
+    compression = _unpack_one(BMP_UINT32, data, BMP_COMPRESSION_AT)
     if bits not in BMP_BITS or compression not in (BMP_RGB, BMP_BITFIELDS) or width <= 0 or height == 0:
         raise ThumbnailError('bmp_format')
     if compression == BMP_BITFIELDS:
         _check_masks(data)
 
-    stride = (width * bits + 31) // 32 * 4
+    stride = _row_stride(width, bits)
     if offset + stride * abs(height) > len(data):
         raise ThumbnailError('bmp_short')
-    return Bitmap(data, width, abs(height), bits // 8, stride, offset, height < 0)
+    return Bitmap(data, width, abs(height), bits // BITS_PER_BYTE, stride, offset, height < 0)
 
 
 def crop_box(width, height, size):
@@ -92,7 +113,7 @@ def _samples(start, length, count, tap):
 
 
 def _row(data, starts, columns):
-    out = bytearray(len(columns[0]) * RGB_CHANNELS)
+    row_bytes = bytearray(len(columns[0]) * RGB_CHANNELS)
     taps = len(starts) * len(columns)
     position = 0
     for offsets in zip(*columns):
@@ -103,43 +124,52 @@ def _row(data, starts, columns):
                 blue += data[pixel]
                 green += data[pixel + 1]
                 red += data[pixel + 2]
-        out[position] = red // taps
-        out[position + 1] = green // taps
-        out[position + 2] = blue // taps
+        row_bytes[position] = red // taps
+        row_bytes[position + 1] = green // taps
+        row_bytes[position + 2] = blue // taps
         position += RGB_CHANNELS
-    return out
+    return row_bytes
+
+
+def _column_offsets(bitmap, left, cropped_width, width, tap):
+    return [column * bitmap.pixel_bytes for column in _samples(left, cropped_width, width, tap)]
+
+
+def _row_starts(bitmap, rows, index):
+    return [bitmap.row_start(taps[index]) for taps in rows]
 
 
 def thumbnail_rows(bitmap, size):
     width, height = size
     left, top, cropped_width, cropped_height = crop_box(bitmap.width, bitmap.height, size)
-    columns = [[column * bitmap.pixel_bytes for column in _samples(left, cropped_width, width, tap)]
-               for tap in PREVIEW_TAPS]
+    columns = [_column_offsets(bitmap, left, cropped_width, width, tap) for tap in PREVIEW_TAPS]
     rows = [_samples(top, cropped_height, height, tap) for tap in PREVIEW_TAPS]
-    return [_row(bitmap.data, [bitmap.row_start(taps[index]) for taps in rows], columns) for index in range(height)]
+    return [_row(bitmap.data, _row_starts(bitmap, rows, index), columns) for index in range(height)]
 
 
 def _sub_filtered(row):
-    out = bytearray(len(row) + 1)
-    out[0] = PNG_FILTER_SUB
+    filtered = bytearray(len(row) + 1)
+    filtered[0] = PNG_FILTER_SUB
     for index, value in enumerate(row):
         left = row[index - RGB_CHANNELS] if index >= RGB_CHANNELS else 0
-        out[index + 1] = (value - left) & 0xFF
-    return out
+        filtered[index + 1] = (value - left) & BYTE_MASK
+    return filtered
 
 
 def _chunk(kind, body):
-    checksum = zlib.crc32(kind + body) & 0xFFFFFFFF
-    return struct.pack(str('>I'), len(body)) + kind + body + struct.pack(str('>I'), checksum)
+    checksum = zlib.crc32(kind + body) & CRC_MASK
+    length = struct.pack(str(PNG_UINT32), len(body))
+    return length + kind + body + struct.pack(str(PNG_UINT32), checksum)
 
 
 def encode_png(width, rows):
     stream = bytearray()
     for row in rows:
         stream.extend(_sub_filtered(row))
-    header = struct.pack(str('>IIBBBBB'), width, len(rows), PNG_DEPTH, PNG_RGB, 0, 0, 0)
-    return b''.join((PNG_SIGNATURE, _chunk(b'IHDR', header),
-                     _chunk(b'IDAT', zlib.compress(bytes(stream), PNG_COMPRESSION)), _chunk(b'IEND', b'')))
+    header = struct.pack(str(PNG_HEADER_FORMAT), width, len(rows), PNG_DEPTH, PNG_RGB, 0, 0, 0)
+    compressed = zlib.compress(bytes(stream), PNG_COMPRESSION)
+    chunks = (PNG_SIGNATURE, _chunk(b'IHDR', header), _chunk(b'IDAT', compressed), _chunk(b'IEND', b''))
+    return b''.join(chunks)
 
 
 def bitmap_thumbnail(raw, size):

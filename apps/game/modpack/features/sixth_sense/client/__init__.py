@@ -13,6 +13,8 @@ from ..i18n import STRINGS
 from ..model import SixthSense, format_sixth_sense, icon_gallery, lamp_duration, preview
 from ..model.constants import (
     ENDING_PERIODS,
+    LAMP_HIDE,
+    LAMP_SHOW,
     OBSERVED,
     OWN_SPOTTING_ATTR,
     PREVIEW_SIZE,
@@ -100,9 +102,9 @@ class SixthSenseAlert(BattlePanel):
         duration = lamp_duration(self.settings.get('hide_after_s'), own_spotting_decrease())
         change = self.lamp.vehicle_state(name, value, time.time(), duration)
 
-        if change == 'show':
+        if change == LAMP_SHOW:
             self._light()
-        elif change == 'hide':
+        elif change == LAMP_HIDE:
             self.hide()
 
     def _light(self):

@@ -1,6 +1,6 @@
 import type { DescribeEngineInput, EngineScope, EngineShim, InstallEngineShimsInput } from './engine-shims.types';
 
-import { ENGINE_PROBE } from './engine-shims.constants';
+import { ENGINE_PROBE, ENGINE_SHIMS } from './engine-shims.constants';
 
 const microtask = (callback: () => void): void => {
   void Promise.resolve()
@@ -22,13 +22,8 @@ const hideNullEvent = (scope: EngineScope): boolean => {
   }
 };
 
-const FOCUS_PAIRS = [
-  ['focus', 'focusin'],
-  ['blur', 'focusout']
-] as const;
-
 const bubbleFocus = (document: EventTarget): void => {
-  for (const [native, bubbling] of FOCUS_PAIRS) {
+  for (const [native, bubbling] of ENGINE_SHIMS.focusPairs) {
     document.addEventListener(
       native,
       (event) => {

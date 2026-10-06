@@ -88,7 +88,7 @@ def _switched_parts(config):
     parts = {}
     for section_name, keys in SWITCHED_PARTS:
         if any(config.get(switch) is True for switch, _ in keys):
-            parts[section_name] = dict((key, config.get(switch) is True) for switch, key in keys)
+            parts[section_name] = {key: config.get(switch) is True for switch, key in keys}
     return parts
 
 
@@ -117,7 +117,7 @@ def _without_dropped_places(places):
     kept = {}
     for mode, panels in places.items():
         if isinstance(panels, dict):
-            panels = dict((panel, place) for panel, place in panels.items() if panel not in dropped)
+            panels = {panel: place for panel, place in panels.items() if panel not in dropped}
         kept[mode] = panels
     return kept
 
@@ -126,7 +126,7 @@ def _drop_keys(components):
     for section_name, key in DROPPED_KEYS:
         section = _section(components, section_name)
         if section is not None and key in section:
-            components[section_name] = dict((name, value) for name, value in section.items() if name != key)
+            components[section_name] = {name: value for name, value in section.items() if name != key}
 
 
 def _apply(components, updates):
@@ -212,15 +212,15 @@ def _merged(config, components, schema_defaults):
     return config
 
 
+# (config, components) of a stored install moved to the current revision. Below MIGRATION_REVISION merged switches turn
+# on when any of theirs was on and the merged values move; below SPLIT_REVISION the marks part switches and the Tank
+# card's options move to the card's own switch and section; below AIM_CIRCLE_REVISION an aim circle the player had on in
+# aim_info becomes the crosshair's choice; below AIM_CIRCLE_PART_REVISION a crosshair aim circle smaller than the game's
+# turns on its own component with the same size; below DEFAULTS_REVISION a changed default moves only when the player
+# never changed it, and the sections of removed components go. `schema_defaults(section)` gives a component's schema
+# defaults, or None when it is not installed. A fresh install (no stored config) and a file already at the revision come
+# back unchanged.
 def migrated(config, components, schema_defaults):
-    """(config, components) of a stored install moved to the current revision. Below MIGRATION_REVISION merged switches
-    turn on when any of theirs was on and the merged values move; below SPLIT_REVISION the marks part switches and
-    the Tank card's options move to the card's own switch and section; below AIM_CIRCLE_REVISION an aim circle the
-    player had on in aim_info becomes the crosshair's choice; below AIM_CIRCLE_PART_REVISION a crosshair aim circle
-    smaller than the game's turns on its own component with the same size; below DEFAULTS_REVISION a changed default
-    moves only when the player never changed it, and the sections of removed components go. `schema_defaults(section)`
-    gives a component's schema defaults, or None when it is not installed. A fresh install (no stored config) and a file
-    already at the revision come back unchanged."""
     if not isinstance(config, dict) or not config:
         return config, components
     revision = _stored_revision(config)

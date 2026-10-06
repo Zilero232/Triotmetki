@@ -4,11 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from collections import OrderedDict
 
 from ....core.vendor import six
-from .constants import NOTICE_ARENAS_LIMIT, STOCK_WAIT_S, UNCLAIMED_AFTER_S
-
-APPEND = 'append'
-PUSH = 'push'
-HOLD = 'hold'
+from .constants import APPEND, HOLD, NOTICE_ARENAS_LIMIT, PUSH, STOCK_WAIT_S, UNCLAIMED_AFTER_S
 
 
 # The stock message names its arena by the results' int arenaUniqueID, a battle event by its text (companion payload).

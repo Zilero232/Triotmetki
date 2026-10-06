@@ -7,7 +7,7 @@ const ignore = (): undefined => undefined;
 
 const createUiSound = (scope: object): UiSound => ({
   play: (name) => {
-    const engine = readGlobal(scope, GAMEFACE.globals.engine);
+    const engine = readGlobal({ scope, name: GAMEFACE.globals.engine });
     const call = invoke({ target: engine, method: GAMEFACE.engine.call, args: [GAMEFACE.sound.event, GAMEFACE.sound.names[name]] });
 
     if (call instanceof Promise) {

@@ -1,4 +1,4 @@
-import type { HasMarkInput, MarkCardInput, MarkCardsInput } from './card-marks.types';
+import type { HasMarkInput, MarkCardInput, MarkCardsInput, ShowsImageInput } from './card-marks.types';
 
 import { PRESET_ADVISOR } from '../../config';
 
@@ -14,8 +14,7 @@ const imageOf = (element: Element): string => {
   return element instanceof HTMLElement ? element.style.backgroundImage : '';
 };
 
-const showsImage = (url: string, images: readonly string[]): boolean =>
-  url !== '' && images.some((name) => url.includes(`/${name}${imageExtension}`));
+const showsImage = ({ url, images }: ShowsImageInput): boolean => url !== '' && images.some((name) => url.includes(`/${name}${imageExtension}`));
 
 const isCard = (element: Element): boolean => cardPattern.test(element.getAttribute('class') ?? '');
 
@@ -80,7 +79,7 @@ export const markCards = ({ root, images, label }: MarkCardsInput): number => {
 
   if (images.length > 0) {
     for (const element of elements) {
-      if (showsImage(imageOf(element), images)) {
+      if (showsImage({ url: imageOf(element), images })) {
         cards.add(cardOf(element));
       }
     }

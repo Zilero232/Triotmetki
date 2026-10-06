@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.native.settings_core import settings_core
 from ....core.hooks import subscribe
-from ....core.log import log_exception
+from ....core.log import guarded
 from ..model.constants import INTERFACE_SCALE
 
 # RU 1.45 client source: account_helpers/settings_core/options.InterfaceScaleSetting.setSystemValue(scale) resizes the
@@ -28,8 +28,7 @@ def restore_scale():
     core.interfaceScale.scaleChanged()
 
 
+@guarded('hangar tweaks: interface scale')
 def on_scale_changed(callback):
-    try:
-        subscribe(settings_core().interfaceScale, 'onScaleChanged', callback)
-    except Exception:
-        log_exception('hangar tweaks: interface scale')
+    subscribe(settings_core().interfaceScale, 'onScaleChanged', callback)
+

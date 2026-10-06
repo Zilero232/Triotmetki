@@ -4,8 +4,6 @@ from ....core.hud.modes import MODES, allowed_panels
 from .constants import ACTION_RESET_PLACES
 
 
-# The shape HudLayer.set_policy takes: per battle type, the panels its layout shows and whether it keeps places of
-# its own.
 def layout_policy(settings, is_enabled):
     def policy(mode):
         if not is_enabled() or mode not in MODES:

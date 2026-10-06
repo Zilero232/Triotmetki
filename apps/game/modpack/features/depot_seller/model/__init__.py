@@ -7,7 +7,6 @@ import json
 from ....core.compat import clean_text, int_or_none, to_text
 from ....core.format import count_phrase, format_number
 from .constants import (  # noqa: F401
-    ACTION_REFRESH,
     ACTION_SELL,
     CONFIRM_ITEMS,
     CREW_ROW_PREFIX,
@@ -84,7 +83,6 @@ def _worth(item):
 
 
 def plan(items, crew, values):
-    """(sale, None) or (None, refusal): the depot items and reserve crew the settings put on sale."""
     if not any(values.get(key) for key in tuple(KINDS.values()) + (CREW_SWITCH,)):
         return None, REFUSE_UNSET
     chosen = [item for item in (clean_item(raw) for raw in items or ()) if item and item_wanted(item, values)]

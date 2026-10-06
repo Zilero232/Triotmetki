@@ -14,7 +14,7 @@ from otmetki.core.hud.layer.constants import (
     COVER_SCREEN,
 )
 from otmetki.core.hud.panel import fit_place
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 
 
 class Recorder(HudBackend):

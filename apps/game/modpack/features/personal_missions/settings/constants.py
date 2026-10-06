@@ -1,5 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ....core.hud import CARD_FIXED
+
 SWITCH = 'hangar_personal_missions'
 SECTION = 'personal_missions'
 GROUP = 'hangar'
@@ -11,4 +13,4 @@ DEFAULTS = {
 }
 LIMITS = {'max_missions': (1, 6)}
 # The card's type size follows the design scale (docs/specs/2026-09-30-hud-consolidation-and-design.md section 12).
-FIXED = {'font_size': 14}
+FIXED = CARD_FIXED

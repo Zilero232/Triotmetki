@@ -46,7 +46,7 @@ class LayoutTest(unittest.TestCase):
 
     def setUp(self):
         self.packages = layout.split_packages('root_init.py')
-        self.by_key = dict((package.key, package) for package in self.packages)
+        self.by_key = {package.key: package for package in self.packages}
 
     def paths(self, key):
         return [archive_path for _, archive_path in self.by_key[key].files]
@@ -85,15 +85,24 @@ class LayoutTest(unittest.TestCase):
 
     def test_core_ships_the_root_namespace_registry_and_vendored_libraries(self):
         core = self.paths('core')
+        expected = [
+            'otmetki/__init__.py',
+            'otmetki/core/registry/__init__.py',
+            'otmetki/features/__init__.py',
+            'otmetki/core/vendor/six.py',
+            'otmetki/core/vendor/blinker/base.py',
+            'otmetki/core/vendor/attr/_make.py',
+            'otmetki/core/vendor/enum34/__init__.py',
+            'otmetki/core/vendor/licenses/six.txt',
+        ]
 
-        self.assertIn(MODS + 'otmetki/__init__.py', core)
-        self.assertIn(MODS + 'otmetki/core/registry/__init__.py', core)
-        self.assertIn(MODS + 'otmetki/features/__init__.py', core)
-        self.assertIn(MODS + 'otmetki/core/vendor/six.py', core)
-        self.assertIn(MODS + 'otmetki/core/vendor/blinker/base.py', core)
-        self.assertIn(MODS + 'otmetki/core/vendor/attr/_make.py', core)
-        self.assertIn(MODS + 'otmetki/core/vendor/enum34/__init__.py', core)
-        self.assertIn(MODS + 'otmetki/core/vendor/licenses/six.txt', core)
+        missing = [path for path in expected if MODS + path not in core]
+
+        self.assertEqual(missing, [])
+
+    def test_core_leaves_out_the_python_3_only_attrs_module(self):
+        core = self.paths('core')
+
         self.assertNotIn(MODS + 'otmetki/core/vendor/attr/_next_gen.py', core)
 
     def test_companion_ships_its_entry_script_and_app(self):

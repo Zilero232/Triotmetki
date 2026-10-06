@@ -16,7 +16,7 @@ export {
   VEHICLE_TYPE_TO_DB
 } from './enums/enums.constants';
 export { errorMessage, isMissingFileError } from './errors/errors';
-export { hmacSha256Hex, isSignatureHeader, timingSafeEqual, verifySignatureHeader } from './hmac/hmac';
+export { hmacSha256Hex, isSignatureHeader, matchesSignatureHeader, sha256Hmac, timingSafeEqual } from './hmac/hmac';
 export { registerJobSchedules } from './job-schedules/job-schedules';
 export type { JobSchedule } from './job-schedules/job-schedules.types';
 export { parseJsonText, readNumber, readRecord, toJsonValue } from './json/json';

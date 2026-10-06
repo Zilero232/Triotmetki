@@ -8,7 +8,7 @@ import shutil
 import tempfile
 import unittest
 
-import _support  # noqa: F401
+import _support
 from otmetki.core import storage
 from otmetki.core.durable import PrivateFile, open_config, open_secret_pair
 from otmetki.core.durable.constants import STAMPS_NAME
@@ -44,6 +44,19 @@ class FailingFile(CountingFile):
         raise IOError('disk full')
 
 
+class FlakyFile(CountingFile):
+
+    def __init__(self, failures):
+        CountingFile.__init__(self)
+        self.failures = failures
+
+    def write(self, data):
+        if self.failures:
+            self.failures -= 1
+            raise IOError('locked by the antivirus')
+        CountingFile.write(self, data)
+
+
 class Scheduler(object):
 
     def __init__(self):
@@ -53,7 +66,8 @@ class Scheduler(object):
         self.calls.append((delay_s, callback))
 
     def run(self):
-        calls, self.calls = self.calls, []
+        calls = self.calls
+        self.calls = []
         for _, callback in calls:
             callback()
 
@@ -117,11 +131,66 @@ class DeferredFileTest(unittest.TestCase):
 
         self.assertEqual(self.store.writes, 1)
 
+    def flaky(self, failures):
+        store = FlakyFile(failures)
+        deferred = DeferredFile(store, self.schedule, DELAY_S)
+        self.addCleanup(deferred.delete)
+        return store, deferred
+
     def test_a_failed_write_is_logged_not_raised(self):
         deferred = DeferredFile(FailingFile(), self.schedule, DELAY_S)
+        self.addCleanup(deferred.delete)
         deferred.write({'a': 1})
 
         self.assertFalse(deferred.flush())
+
+    def test_a_failed_write_keeps_the_data(self):
+        store, deferred = self.flaky(1)
+        deferred.write({'a': 1})
+        deferred.flush()
+
+        deferred.flush()
+
+        self.assertEqual(store.data, {'a': 1})
+
+    def test_a_failed_write_stays_pending_for_the_next_flush(self):
+        store, deferred = self.flaky(1)
+        deferred.write({'a': 1})
+        deferred.flush()
+
+        flush_pending()
+
+        self.assertEqual(store.data, {'a': 1})
+
+    def test_a_failed_timed_write_asks_for_another_try(self):
+        store, deferred = self.flaky(1)
+        deferred.write({'a': 1})
+        self.schedule.run()
+
+        self.schedule.run()
+
+        self.assertEqual(store.data, {'a': 1})
+
+    def test_repeated_failures_are_logged_once(self):
+        _, deferred = self.flaky(5)
+        deferred.write({'a': 1})
+        lines = []
+
+        with _support.captured_log(lines):
+            for _ in range(5):
+                deferred.flush()
+
+        self.assertEqual(len(lines), 1)
+
+    def test_a_write_after_a_failure_wins_over_the_kept_data(self):
+        store, deferred = self.flaky(1)
+        deferred.write({'a': 1})
+        deferred.flush()
+        deferred.write({'a': 2})
+
+        deferred.flush()
+
+        self.assertEqual(store.data, {'a': 2})
 
     def test_a_delete_drops_the_held_write(self):
         self.deferred.write({'a': 1})
@@ -130,6 +199,81 @@ class DeferredFileTest(unittest.TestCase):
         self.schedule.run()
 
         self.assertEqual(self.store.writes, 0)
+
+
+class HeldFileTest(unittest.TestCase):
+
+    def setUp(self):
+        self.store = CountingFile()
+        self.held = DeferredFile(self.store)
+        self.addCleanup(flush_pending)
+
+    def test_a_held_write_asks_for_no_timer(self):
+        self.held.write({'a': 1})
+
+        self.assertEqual(self.store.writes, 0)
+
+    def test_the_timed_flush_leaves_a_held_write(self):
+        self.held.write({'a': 1})
+
+        flush_pending(held=False)
+
+        self.assertEqual(self.store.writes, 0)
+
+    def test_the_full_flush_writes_a_held_write(self):
+        self.held.write({'a': 1})
+
+        flush_pending()
+
+        self.assertEqual(self.store.data, {'a': 1})
+
+    def test_another_file_of_the_same_path_reads_the_held_write(self):
+        self.held.write({'a': 1})
+
+        loaded = DeferredFile(self.store).read()
+
+        self.assertEqual(loaded, {'a': 1})
+
+
+class CompactJsonFileTest(unittest.TestCase):
+
+    def setUp(self):
+        self.root = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.root)
+        self.path = os.path.join(self.root, 'book.json')
+
+    def test_a_compact_file_is_ascii_without_spaces(self):
+        JsonFile(self.path).write({'name': u'Объект', 'hits': [1, 2]})
+
+        with io.open(self.path, 'rb') as handle:
+            text = handle.read()
+        self.assertNotIn(b' ', text)
+        self.assertEqual(text.count(b'\\u'), 6)
+
+    def test_a_compact_file_reads_back_equal(self):
+        data = {'b': [1, {'c': u'й'}], 'a': None}
+        JsonFile(self.path).write(data)
+
+        self.assertEqual(JsonFile(self.path).read(), data)
+
+
+class WriteBytesAtomicTest(unittest.TestCase):
+
+    def setUp(self):
+        self.root = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.root)
+        self.path = os.path.join(self.root, 'previews', 'space.png')
+
+    def test_creates_the_folder_and_writes_the_bytes(self):
+        storage.write_bytes_atomic(self.path, b'\x89PNG')
+
+        with io.open(self.path, 'rb') as handle:
+            assert handle.read() == b'\x89PNG'
+
+    def test_leaves_no_temporary_file(self):
+        storage.write_bytes_atomic(self.path, b'\x89PNG')
+
+        assert os.listdir(os.path.dirname(self.path)) == ['space.png']
 
 
 class DeferredComponentConfigTest(unittest.TestCase):

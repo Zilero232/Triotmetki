@@ -1,10 +1,13 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import base64
+import hashlib
+import re
 import threading
 import time
 import unittest
 
-import _support  # noqa: F401
+import _support
 from otmetki.core.codec import parse_retry_after
 from otmetki.core.net.backoff import backoff_delay
 from otmetki.core.net.signing import server_time
@@ -16,9 +19,23 @@ from otmetki.core.net.transport import (
     is_allowed_url,
     perform,
     response_headers,
+    tls_available,
     verified_context,
 )
 from otmetki.core.net.transport import tls
+from otmetki.core.net.transport.constants import TRUSTED_ROOTS
+
+# https://letsencrypt.org/certificates/: ISRG Root X1 and ISRG Root X2.
+ISRG_FINGERPRINTS = [
+    '96bcec06264976f37460779acf28c5a7cfe8a3c0aae11a8ffcee05c0bddf08c6',
+    '69729b8e15a86efc177a57afb7171dfc64add28c2fca8cf1507e34453ccb1470',
+]
+PEM_BLOCK = re.compile(r'-----BEGIN CERTIFICATE-----(.*?)-----END CERTIFICATE-----', re.S)
+
+
+def pem_fingerprints(text):
+    return [hashlib.sha256(base64.b64decode(block)).hexdigest() for block in PEM_BLOCK.findall(text)]
+
 
 try:
     from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
@@ -64,6 +81,10 @@ class FakeContext(object):
     def __init__(self, verify_mode, check_hostname):
         self.verify_mode = verify_mode
         self.check_hostname = check_hostname
+        self.cadata = None
+
+    def load_verify_locations(self, cadata=None):
+        self.cadata = cadata
 
 
 def fake_ssl(verify_mode=2, check_hostname=True, create=True):
@@ -168,6 +189,34 @@ class ThreadTransportTest(LocalServerTestCase):
         transport.stop()
         self.assertEqual([reply[0] for reply in self.results], [NETWORK_ERROR])
 
+    def test_making_a_transport_leaves_the_tls_context_for_the_first_request(self):
+        saved = dict(tls._cache)
+        tls._cache.clear()
+        try:
+            ThreadTransport().stop()
+
+            self.assertNotIn('context', tls._cache)
+        finally:
+            tls._cache.clear()
+            tls._cache.update(saved)
+
+    def test_missing_tls_is_logged_once_on_the_poll_thread(self):
+        saved = dict(tls._cache)
+        tls._cache['context'] = None
+        lines = []
+        transport = ThreadTransport(timeout=UNREACHABLE_TIMEOUT_S)
+        try:
+            with _support.captured_log(lines):
+                for _ in range(2):
+                    transport.request('GET', 'https://127.0.0.1:1/x', {}, None, self.record)
+                wait_for(transport, self.results, 2)
+        finally:
+            transport.stop()
+            tls._cache.clear()
+            tls._cache.update(saved)
+
+        self.assertEqual(len([line for line in lines if 'TLS verification' in line]), 1)
+
 
 class SyncTransportTest(LocalServerTestCase):
 
@@ -252,6 +301,48 @@ class VerifiedContextTest(unittest.TestCase):
 
     def test_no_context_when_it_does_not_check_the_host_name(self):
         self.assertIsNone(verified_context(fake_ssl(check_hostname=False)))
+
+    def test_the_bundled_roots_are_loaded_next_to_the_system_store(self):
+        context = verified_context(fake_ssl())
+
+        self.assertEqual(context.cadata, TRUSTED_ROOTS)
+
+    def test_a_context_that_refuses_the_roots_still_verifies(self):
+        def refuse(cadata=None):
+            raise ValueError('bad cadata')
+        ssl_module = fake_ssl()
+        context = ssl_module.create_default_context()
+        context.load_verify_locations = refuse
+
+        self.assertFalse(tls._add_roots(context))
+
+    def test_the_bundled_roots_are_the_lets_encrypt_ones(self):
+        self.assertEqual(pem_fingerprints(TRUSTED_ROOTS), ISRG_FINGERPRINTS)
+
+    def test_this_python_takes_the_bundled_roots(self):
+        import ssl
+        context = ssl.create_default_context()
+
+        context.load_verify_locations(cadata=TRUSTED_ROOTS)
+
+        self.assertGreaterEqual(context.cert_store_stats()['x509_ca'], 2)
+
+    def test_tls_state_is_unknown_before_the_first_request(self):
+        saved = dict(tls._cache)
+        tls._cache.clear()
+        try:
+            self.assertIsNone(tls_available())
+        finally:
+            tls._cache.update(saved)
+
+    def test_tls_state_is_false_once_no_context_could_be_made(self):
+        saved = dict(tls._cache)
+        tls._cache['context'] = None
+        try:
+            self.assertIs(tls_available(), False)
+        finally:
+            tls._cache.clear()
+            tls._cache.update(saved)
 
     def test_this_python_makes_a_verifying_context(self):
         import ssl

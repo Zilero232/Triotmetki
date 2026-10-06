@@ -10,7 +10,7 @@ import _support
 from otmetki.core.events import EventBus
 from otmetki.core.hud import ComponentConfig
 from otmetki.core.settings import Schema
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 
 CLIENT_PREFIX = 'otmetki.core.client'
 STRINGS = {
@@ -23,7 +23,6 @@ REFRESH_EVERY_S = 5.0
 
 
 def load_component_module(name='component'):
-    """core.client.<name> on a stubbed BigWorld, its components.json in memory."""
     saved = sys.modules.get('BigWorld')
     sys.modules['BigWorld'] = types.ModuleType(str('BigWorld'))
     try:

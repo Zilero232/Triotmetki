@@ -18,7 +18,9 @@ import { AllExceptionsFilter } from '../../../common/filters';
 import { AppConfigService } from '../../../config';
 import { PrismaService, REDIS } from '../../../core';
 import { deviceSecret, hashSecret, MOD_DEVICE, ModDeviceService, signedMessage } from '../../mod';
+import { MOD_BADGES_QUOTA } from '../config/mod-badges.constants';
 import { ModBadgesController } from '../mod-badges.controller';
+import { ModBadgeQuotaWriterService } from '../services/mod-badge-quota-writer.service';
 import { ModBadgeWriterService } from '../services/mod-badge-writer.service';
 import { ModBadgesReaderService } from '../services/mod-badges-reader.service';
 
@@ -86,6 +88,7 @@ beforeAll(async () => {
       ModDeviceService,
       ModBadgesReaderService,
       ModBadgeWriterService,
+      ModBadgeQuotaWriterService,
       { provide: PrismaService, useValue: prisma },
       { provide: AppConfigService, useValue: config },
       { provide: REDIS, useValue: new RedisMock() },
@@ -124,6 +127,22 @@ describe('the badges contract', () => {
 });
 
 describe('POST /mod/badges', () => {
+  it('turns a device away with Retry-After once it used up its daily distinct accounts', async () => {
+    const quota = app.get(ModBadgeQuotaWriterService);
+    const asked = Array.from({ length: MOD_BADGES_QUOTA.distinctIdsPerDay }, (_, index) => index + 1);
+
+    await quota.claim({ deviceId: DEVICE_ID, accountIds: asked, now: new Date() });
+
+    const response = await signedPost({
+      path: '/mod/badges',
+      body: { device_id: DEVICE_ID, account_id: ACCOUNT_ID, account_ids: [OTHER_ACCOUNT_ID] }
+    });
+
+    expect(response.status).toBe(429);
+    expect(response.body).toMatchObject({ error: 'rate_limited' });
+    expect(Number(response.headers['retry-after'])).toBeGreaterThan(0);
+  });
+
   it('answers the asked accounts that reported the badge on', async () => {
     prisma.modDevice.findMany.mockResolvedValue([mock<ModDevice>({ accountId: BigInt(OTHER_ACCOUNT_ID), badgeVisible: true })]);
 

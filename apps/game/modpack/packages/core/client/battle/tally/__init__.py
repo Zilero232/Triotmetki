@@ -43,13 +43,14 @@ class BattleTallyLog(object):
         self.hooks.add(personal_efficiency, 'onTotalEfficiencyUpdated', self._on_efficiency, report)
 
     def stop(self):
-        tally, self.tally = self.tally, None
+        tally = self.tally
+        self.tally = None
         self.hooks.clear()
         if tally is None:
             return
         controller = personal_efficiency()
         if controller is not None:
-            totals = dict((kind, call(controller, 'getTotalEfficiency', None, kind)) for kind in self.efficiency)
+            totals = {kind: call(controller, 'getTotalEfficiency', None, kind) for kind in self.efficiency}
             tally.apply_vanilla(efficiency_totals(totals, self.efficiency))
         for line in tally.summary():
             log(line)

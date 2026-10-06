@@ -63,7 +63,7 @@ def _module(name, **attrs):
 class HotkeyChatFocusTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUB_MODULES)
+        self.saved = {name: sys.modules.get(name) for name in STUB_MODULES}
         self.key_down = Event()
         self.chat = ChatGui()
         input_handler = Namespace(onKeyDown=self.key_down)

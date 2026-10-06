@@ -18,10 +18,13 @@ describe('syncConflicts', () => {
 });
 
 describe('syncBroughtChanges', () => {
-  it('tells a sync that changed local data apart from a plain upload', () => {
-    const profiles = { local: 1, remote: 1, localChanges: 1, remoteChanges: 0 };
+  const profiles = { local: 1, remote: 1, localChanges: 1, remoteChanges: 0 };
 
+  it('does not count a plain upload as bringing changes', () => {
     expect(syncBroughtChanges({ profiles: { ...profiles, outcome: 'pushed' } })).toBe(false);
+  });
+
+  it('counts a sync that pulled remote data as bringing changes', () => {
     expect(syncBroughtChanges({ profiles: { ...profiles, outcome: 'pulled' } })).toBe(true);
   });
 });

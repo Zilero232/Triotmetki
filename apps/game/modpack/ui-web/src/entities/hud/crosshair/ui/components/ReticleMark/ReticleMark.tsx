@@ -10,7 +10,6 @@ import s from './ReticleMark.module.scss';
 export const ReticleMark = ({ shape, size, color, outline }: ReticleMarkProps) => {
   const { paint } = RETICLE_MARKS;
   const colours = { mark: color ?? paint.mark, outline: paint.outline, shade: paint.outline };
-  const opacities = { mark: 1, outline: paint.outlineOpacity, shade: paint.shadeOpacity };
 
   return (
     <span className={s.mark} style={remSquare(size)}>
@@ -21,7 +20,7 @@ export const ReticleMark = ({ shape, size, color, outline }: ReticleMarkProps) =
               key={`${String(index)}-${primitive.paint}`}
               d={primitive.d}
               fill={colours[primitive.paint]}
-              fillOpacity={opacities[primitive.paint]}
+              fillOpacity={paint.opacity[primitive.paint]}
             />
           ) : (
             <path
@@ -30,7 +29,7 @@ export const ReticleMark = ({ shape, size, color, outline }: ReticleMarkProps) =
               fill='none'
               stroke={colours[primitive.paint]}
               strokeLinecap='square'
-              strokeOpacity={opacities[primitive.paint]}
+              strokeOpacity={paint.opacity[primitive.paint]}
               strokeWidth={primitive.stroke}
             />
           )

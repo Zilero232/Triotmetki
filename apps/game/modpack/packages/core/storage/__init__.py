@@ -4,9 +4,8 @@ import io
 import json
 import os
 
-from ..codec import canonical_json
 from ..compat import to_bytes, to_text
-from .constants import MOVE_REPLACE_FLAGS, MOVE_WRITE_THROUGH, PRETTY
+from .constants import COMPACT, MOVE_REPLACE_FLAGS, MOVE_WRITE_THROUGH, PRETTY, TEMP_SUFFIX
 from .deferred import DeferredFile, flush_pending  # noqa: F401
 
 
@@ -35,6 +34,18 @@ def replace_file(src, dst, write_through=False):
     os.rename(src, dst)
 
 
+def write_bytes_atomic(path, data, write_through=False):
+    """Write `data` to `path` through a temporary file moved over it (`replace_file`), creating the folder first, so
+    a crash mid-write never leaves `path` half written."""
+    directory = os.path.dirname(path)
+    if directory and not os.path.isdir(directory):
+        os.makedirs(directory)
+    temp_path = path + TEMP_SUFFIX
+    with io.open(temp_path, 'wb') as handle:
+        handle.write(data)
+    replace_file(temp_path, path, write_through)
+
+
 class JsonFile(object):
 
     write_through = False
@@ -52,35 +63,12 @@ class JsonFile(object):
             return default
 
     def write(self, data):
-        directory = os.path.dirname(self.path)
-        if directory and not os.path.isdir(directory):
-            os.makedirs(directory)
-        text = json.dumps(data, **PRETTY) if self.pretty else canonical_json(data)
-        temp_path = self.path + '.tmp'
-        with io.open(temp_path, 'wb') as handle:
-            handle.write(to_bytes(text))
-        replace_file(temp_path, self.path, self.write_through)
+        text = json.dumps(data, **(PRETTY if self.pretty else COMPACT))
+        write_bytes_atomic(self.path, to_bytes(text), self.write_through)
 
     def delete(self):
         if os.path.exists(self.path):
             os.remove(self.path)
-
-
-class MemoryFile(object):
-
-    def __init__(self, data=None):
-        self.data = data
-
-    def read(self, default=None):
-        if self.data is None:
-            return default
-        return json.loads(canonical_json(self.data))
-
-    def write(self, data):
-        self.data = json.loads(canonical_json(data))
-
-    def delete(self):
-        self.data = None
 
 
 def account_file(config_dir, pattern, account_id):

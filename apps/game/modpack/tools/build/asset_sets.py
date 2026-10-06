@@ -9,6 +9,7 @@ Each set belongs to one feature; the build puts its files into that feature's pa
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import argparse
 import io
 import json
 import os
@@ -215,7 +216,16 @@ def is_stale(text):
         return handle.read() != text
 
 
+def parse_args(argv):
+    parser = argparse.ArgumentParser(description='Check the asset sets and their licence notices')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--write', action='store_true', help='regenerate assets/THIRD_PARTY_NOTICES.md')
+    mode.add_argument('--check', action='store_true', help='fail on an invalid set or stale notices (default)')
+    return parser.parse_args(argv)
+
+
 def main(argv):
+    args = parse_args(argv)
     sets = load()
     found = problems(sets)
     if found:
@@ -223,7 +233,7 @@ def main(argv):
         return 1
 
     text = notices(sets)
-    if '--write' in argv:
+    if args.write:
         write_text(NOTICES, text)
         return 0
     if is_stale(text):

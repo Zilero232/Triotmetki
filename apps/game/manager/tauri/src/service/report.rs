@@ -9,8 +9,9 @@ use crate::error::{AppError, AppResult, ErrorCode};
 use crate::health::{merge_failures, scan_file, HealthReport, LogSource};
 use crate::paths::configs_dir;
 use crate::report::{
-    item, newest_file, read_tail, upload, write_zip, RedactContext, Redactor, ReportItem, ReportPart, ReportPreview, ReportReceipt, ENVIRONMENT_FILE,
-    MANAGER_LOG_FILE, MANAGER_TAIL_BYTES, OTMETKI_LOG, OTMETKI_TAIL_BYTES, PYTHON_LOG, PYTHON_TAIL_BYTES, REPORTS_PATH,
+    item, newest_file, read_tail, upload, write_zip, ItemInput, RedactContext, Redactor, ReportItem, ReportPart, ReportPreview, ReportReceipt,
+    WriteZipInput, ENVIRONMENT_FILE, MANAGER_LOG_FILE, MANAGER_TAIL_BYTES, OTMETKI_LOG, OTMETKI_TAIL_BYTES, PYTHON_LOG, PYTHON_TAIL_BYTES,
+    REPORTS_PATH,
 };
 use crate::state::Manifest;
 
@@ -26,6 +27,13 @@ fn expired() -> AppError {
 
 fn modified(path: &Path) -> Option<DateTime<Local>> {
     std::fs::metadata(path).and_then(|metadata| metadata.modified()).ok().map(DateTime::<Local>::from)
+}
+
+pub struct SaveReportInput<'a> {
+    pub preview_id: &'a str,
+    pub parts: &'a [ReportPart],
+    pub message: &'a str,
+    pub target: &'a Path,
 }
 
 impl Manager {
@@ -71,11 +79,16 @@ impl Manager {
         let redactor = self.redactor();
         let client = self.client(client_path).ok();
         let modpack = self.installed_modpack(client_path);
-        let mut items: Vec<ReportItem> =
-            vec![item(ReportPart::Environment, ENVIRONMENT_FILE, &self.environment(client.as_ref(), modpack.as_deref()), false, &redactor)];
+        let mut items: Vec<ReportItem> = vec![item(ItemInput {
+            part: ReportPart::Environment,
+            name: ENVIRONMENT_FILE,
+            text: &self.environment(client.as_ref(), modpack.as_deref()),
+            truncated: false,
+            redactor: &redactor,
+        })];
         let mut add = |part: ReportPart, name: &str, path: Option<PathBuf>, max_bytes: u64| {
             if let Some((text, truncated)) = path.and_then(|path| read_tail(&path, max_bytes)).filter(|(text, _)| !text.trim().is_empty()) {
-                items.push(item(part, name, &text, truncated, &redactor));
+                items.push(item(ItemInput { part, name, text: &text, truncated, redactor: &redactor }));
             }
         };
 
@@ -108,10 +121,10 @@ impl Manager {
         Ok(receipt)
     }
 
-    pub fn save_report(&self, preview_id: &str, parts: &[ReportPart], message: &str, target: &Path) -> AppResult<PathBuf> {
-        let preview = self.report_preview(preview_id).ok_or_else(expired)?;
+    pub fn save_report(&self, input: SaveReportInput) -> AppResult<PathBuf> {
+        let preview = self.report_preview(input.preview_id).ok_or_else(expired)?;
 
-        write_zip(target, &preview, parts, message)
+        write_zip(WriteZipInput { target: input.target, preview: &preview, parts: input.parts, message: input.message })
     }
 
     pub fn game_health(&self, client_path: Option<&Path>) -> AppResult<HealthReport> {

@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.compat import is_int, is_number, string_types, to_text
-from .constants import MAX_NAME
+from ....core.compat import clamp, is_int, is_number, string_types, to_text
+from .constants import MAX_NAME, OWN_KINDS
 
 # Fair play: the player's own damage and assist; for platoon mates only what the stock UI shows every player in
 # battle: frags (the kill feed and Tab), alive state and HP (team panels, markers). The mates' damage is not known to
@@ -54,7 +54,6 @@ class Platoon(object):
         self.assist = 0
         self.summary = {}
 
-    # `seen` is the member as the arena lists it: {name, own, class, max_hp, alive (True by default)}.
     def add(self, vehicle_id, seen):
         if not is_int(vehicle_id):
             return False
@@ -79,7 +78,7 @@ class Platoon(object):
         member = self.members.get(vehicle_id)
         if member is None or not is_number(hp):
             return False
-        hp = max(0, min(member['max'] or int(hp), int(hp)))
+        hp = clamp(int(hp), 0, member['max'] or int(hp))
         if hp == member['hp']:
             return False
         member['hp'] = hp
@@ -99,7 +98,7 @@ class Platoon(object):
         return changed
 
     def add_own(self, kind, amount):
-        if not is_number(amount) or amount <= 0 or kind not in ('damage', 'assist'):
+        if not is_number(amount) or amount <= 0 or kind not in OWN_KINDS:
             return False
         setattr(self, kind, getattr(self, kind) + int(amount))
         return True

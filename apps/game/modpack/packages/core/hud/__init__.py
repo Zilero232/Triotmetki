@@ -26,6 +26,7 @@ from .label import HangarLabel
 from .layer import HudLayer
 from .surface import HudSurface
 from .panel import (
+    CARD_FIXED,
     PANEL_DEFAULTS,
     alias_of,
     component_schema,
@@ -38,6 +39,7 @@ from .panel import (
 
 __all__ = (
     'BackendChain',
+    'CARD_FIXED',
     'ComponentConfig',
     'EVENT_DESCRIBE',
     'EVENT_EDIT',

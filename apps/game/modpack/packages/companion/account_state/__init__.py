@@ -1,7 +1,3 @@
-"""The parts of state.json that belong to one account (a session, the battle history): kept under
-`accounts.<account id>` and handed to their owner again whenever the player logs into another account, so nothing of
-one account shows for or is sent as another's. A part stored at the top level by an older version goes to the first
-account that loads it."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from .constants import ACCOUNTS_KEY
@@ -14,6 +10,8 @@ def _accounts(state):
     return accounts if isinstance(accounts, dict) else {}
 
 
+# Kept per account so nothing of one account shows for, or is sent as, another's; a part an older version stored at the
+# top level goes to the first account that loads it.
 class AccountState(object):
 
     def __init__(self):
@@ -21,8 +19,6 @@ class AccountState(object):
         self.account_id = None
 
     def register(self, state, key, dump, load):
-        """`load(value)` gets the current account's stored `key` (None when it has none) now when the account is known,
-        and on every account switch; `dump()` is what is stored for it."""
         self.parts.append((key, dump, load))
         if self.account_id is not None:
             load(self.stored(state, self.account_id, key))
@@ -34,7 +30,6 @@ class AccountState(object):
         return state.get(key) if isinstance(state, dict) else None
 
     def switch(self, state, account_id):
-        """The state with the previous account's parts stored; every part then loads `account_id`'s."""
         state = self.saved(state)
         self.account_id = account_id
         for key, _, load in self.parts:
@@ -42,7 +37,6 @@ class AccountState(object):
         return state
 
     def saved(self, state):
-        """`state` with the current account's parts dumped into its slot (unchanged before any account)."""
         data = dict(state) if isinstance(state, dict) else {}
         if self.account_id is None:
             return data

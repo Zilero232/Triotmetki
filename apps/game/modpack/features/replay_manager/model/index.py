@@ -16,8 +16,6 @@ def _list_of(data, key):
     return value if isinstance(value, list) else []
 
 
-# One account's replay marks: the site id of each uploaded battle (by arena) and the favourites (by arena, or by
-# file name for a replay without one).
 class UploadedIndex(object):
 
     def __init__(self, store):

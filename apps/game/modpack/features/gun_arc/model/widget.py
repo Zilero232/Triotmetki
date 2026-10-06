@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.hud.widget import widget
-from .constants import KIND, MARK_NAMES
+from .constants import CENTRE_NONE, KIND, MARK_NAMES
 
 
 def _mark(offset):
@@ -29,5 +29,5 @@ def panel_widget(marks, settings):
         'centre_marker': centre_marker,
         'left': _mark(marks.get('left')),
         'right': _mark(marks.get('right')),
-        'centre': _mark(marks.get('centre')) if centre_marker != 'none' else None,
+        'centre': None if centre_marker == CENTRE_NONE else _mark(marks.get('centre')),
     })

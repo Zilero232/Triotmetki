@@ -9,7 +9,7 @@ import _support
 from otmetki.core.events import EVENT_COMPONENT_SETTINGS, EventBus
 from otmetki.core.hud.stock import RETICLE_CASSETTE, RETICLE_RELOAD_TIMER, RETICLE_ZOOM
 from otmetki.core.hud import ComponentConfig
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 from otmetki.features.crosshair.model.readouts import Readouts
 from otmetki.features.crosshair.settings import CIRCLE_PANEL_ID, CIRCLE_SWITCH, PANEL_ID
 
@@ -460,7 +460,7 @@ MARKER_MODULE = 'AvatarInputHandler.gun_marker_ctrl'
 class CrosshairAimCircleTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in ('BigWorld', 'AvatarInputHandler', MARKER_MODULE))
+        self.saved = {name: sys.modules.get(name) for name in ('BigWorld', 'AvatarInputHandler', MARKER_MODULE)}
         self.original_update = GunMarkerController.__dict__['update']
         forget_client()
         sys.modules['BigWorld'] = types.ModuleType(str('BigWorld'))
@@ -488,8 +488,34 @@ class CrosshairAimCircleTest(unittest.TestCase):
                 sys.modules[name] = module
 
     def update(self):
+        self.app.bus.emit('battle_enter')
         self.controller.update(0, None, None, (80.0, 40.0), 0.1, None)
         return self.controller._dataProvider.sizes
+
+    def test_the_marker_stays_the_clients_outside_a_battle(self):
+        assert GunMarkerController.__dict__['update'] is self.original_update
+
+    def test_the_marker_stays_the_clients_with_the_circle_off(self):
+        self.switch_circle(False)
+
+        self.app.bus.emit('battle_enter')
+
+        assert GunMarkerController.__dict__['update'] is self.original_update
+
+    def test_the_end_of_a_battle_gives_the_marker_back(self):
+        self.app.bus.emit('battle_enter')
+
+        self.app.bus.emit('battle_leave')
+
+        assert GunMarkerController.__dict__['update'] is self.original_update
+
+    def test_a_circle_switched_on_in_the_hangar_applies_in_the_next_battle(self):
+        self.switch_circle(False)
+        self.app.bus.emit('battle_enter')
+        self.app.bus.emit('battle_leave')
+        self.switch_circle(True)
+
+        assert self.update()[-1] == (56.0, 0.1)
 
     def switch_circle(self, is_on):
         self.app.config.is_enabled = lambda switch: is_on if switch == CIRCLE_SWITCH else True

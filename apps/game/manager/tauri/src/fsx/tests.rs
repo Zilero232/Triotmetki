@@ -140,3 +140,38 @@ fn a_new_file_is_removed_when_put_back() {
 
     assert!(!path.exists());
 }
+
+#[test]
+fn keeps_a_path_whose_folders_do_not_exist_yet_inside_the_roots() {
+    let dir = tempfile::tempdir().unwrap();
+    let mods = dir.path().join("Мир танков").join("mods");
+
+    fs::create_dir_all(&mods).unwrap();
+
+    assert!(ensure_within(&mods.join("1.46.0.0").join("новая").join("core.mtmod"), &[mods]).is_ok());
+}
+
+#[test]
+fn keeps_a_path_under_a_root_that_does_not_exist_yet() {
+    let dir = tempfile::tempdir().unwrap();
+    let mods = dir.path().join("Мир танков").join("mods").join("1.47.0.0");
+
+    assert!(ensure_within(&mods.join("core.mtmod"), &[mods]).is_ok());
+}
+
+#[cfg(windows)]
+#[test]
+fn refuses_a_new_path_behind_a_junction_out_of_the_roots() {
+    let dir = tempfile::tempdir().unwrap();
+    let mods = dir.path().join("Мир танков").join("mods");
+    let outside = dir.path().join("Документы");
+    let junction = mods.join("ссылка");
+
+    fs::create_dir_all(&mods).unwrap();
+    fs::create_dir_all(&outside).unwrap();
+
+    let made = std::process::Command::new("cmd").arg("/C").arg("mklink").arg("/J").arg(&junction).arg(&outside).output().unwrap();
+
+    assert!(made.status.success());
+    assert!(ensure_within(&junction.join("новая").join("core.mtmod"), &[mods]).is_err());
+}

@@ -609,7 +609,7 @@ class UiSmokeTest(unittest.TestCase):
 
         self.send(type='escape')
 
-        assert not window.watchdog.is_waiting
+        assert window.watchdog.answered == window.watchdog.asked
         assert len(self.windows) == 1
 
     def test_the_hotkey_opens_the_window(self):

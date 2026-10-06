@@ -76,6 +76,13 @@ pub fn server_time(headers: &HeaderMap) -> Option<f64> {
     headers.get(SERVER_TIME_HEADER)?.to_str().ok()?.trim().parse::<f64>().ok().filter(|time| time.is_finite() && *time > 0.0)
 }
 
+pub struct SignedRequest<'a, B> {
+    pub method: Method,
+    pub path: &'a str,
+    pub credentials: &'a Credentials,
+    pub body: &'a B,
+}
+
 pub struct SiteClient {
     base_url: String,
     http: reqwest::Client,
@@ -133,7 +140,8 @@ impl SiteClient {
         }
     }
 
-    async fn send_signed(&self, method: &Method, path: &str, credentials: &Credentials, body: &[u8]) -> AppResult<reqwest::Response> {
+    async fn send_signed<B: Serialize>(&self, request: &SignedRequest<'_, B>, body: &[u8]) -> AppResult<reqwest::Response> {
+        let SignedRequest { method, path, credentials, .. } = request;
         let timestamp = self.timestamp();
         let nonce = new_nonce();
         let message = signed_message(&SignedMessage { method: method.as_str(), path, timestamp: &timestamp, nonce: &nonce, body });
@@ -152,12 +160,12 @@ impl SiteClient {
             .map_err(network_error)
     }
 
-    pub async fn signed<T: DeserializeOwned>(&self, method: Method, path: &str, credentials: &Credentials, body: &impl Serialize) -> AppResult<T> {
-        let bytes = serde_json::to_vec(body)?;
-        let response = self.send_signed(&method, path, credentials, &bytes).await?;
+    pub async fn signed<T: DeserializeOwned, B: Serialize>(&self, request: SignedRequest<'_, B>) -> AppResult<T> {
+        let bytes = serde_json::to_vec(request.body)?;
+        let response = self.send_signed(&request, &bytes).await?;
 
         if response.status() == STALE_REQUEST && self.sync_clock(response.headers()) {
-            return read_json(self.send_signed(&method, path, credentials, &bytes).await?).await;
+            return read_json(self.send_signed(&request, &bytes).await?).await;
         }
 
         read_json(response).await

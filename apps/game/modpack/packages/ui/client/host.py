@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import time
 
 from ...companion.settings_ui.client import SettingsView, add_settings_view
+from ...core.client.storage import flush_all_writes
 from ...core.events import EVENT_MODS_LIST_ALERT, EVENT_SETTINGS_CLOSE
 from ...core.log import log, safe
 from ...core.durable import open_config
@@ -124,6 +125,7 @@ class UiHost(object):
     def close(self):
         self.bridge.stop_feed()
         self.window.close()
+        flush_all_writes()
 
     @safe
     def on_hotkey(self):

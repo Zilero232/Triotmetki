@@ -21,9 +21,7 @@ describe(drumView, () => {
   it('packs a ten-round drum into narrower shells', () => {
     const view = drumView({ ...clip, size: 10, loaded: 10 });
 
-    expect(view.mode).toBe('row');
-    expect(view.density).toBe('dense');
-    expect(view.cells).toHaveLength(10);
+    expect({ mode: view.mode, density: view.density, cells: view.cells.length }).toStrictEqual({ mode: 'row', density: 'dense', cells: 10 });
   });
 
   it('writes a larger magazine as a count', () => {
@@ -32,6 +30,9 @@ describe(drumView, () => {
 
   it('keeps the thin cells up to twelve rounds', () => {
     expect(drumView({ ...clip, style: 'bars', size: 12, loaded: 2 }).mode).toBe('row');
+  });
+
+  it('writes thirteen thin rounds as a count', () => {
     expect(drumView({ ...clip, style: 'bars', size: 13, loaded: 2 }).mode).toBe('count');
   });
 
@@ -49,6 +50,9 @@ describe(shellMotion, () => {
 
   it('ejects the shell a shot just spent', () => {
     expect(shellMotion({ index: 2, loaded: 2, previous: 3 })).toBe('eject');
+  });
+
+  it('leaves the shells still loaded alone', () => {
     expect(shellMotion({ index: 1, loaded: 2, previous: 3 })).toBeNull();
   });
 

@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import BigWorld
 
 from ....core.client.battle import arena, controls_own_vehicle, optional_devices, player, session_provider
-from ....core.log import log_exception
+from ....core.log import guarded, log_exception
 from .constants import NO_VEHICLE, NOTHING_INSTALLED, SOURCE_ARENA, SOURCE_SETUPS
 
 # RU 1.45 client source: the own vehicle's descriptor in the arena's vehicle list (ClientArena
@@ -195,36 +195,26 @@ def _empty(reason):
 # The directive slots of the vehicle, empty, while its setups cannot be read: the descriptor's supply slots hold them
 # (RU 1.45 items/vehicles.py VehicleType supply slots, what vehicle_equipment's collectors size their layouts by).
 def _directive_slots(descriptor):
-    try:
-        from items import EQUIPMENT_TYPES, ITEM_TYPES
-
-        amount = descriptor.supplySlots.getAmountForType(ITEM_TYPES.equipment, EQUIPMENT_TYPES.battleBoosters)
-    except Exception:
-        log_exception('battle loadout: directive slots')
-        amount = 0
-    return set(), [None] * amount
+    return set(), [None] * _directive_amount(descriptor)
 
 
+@guarded('battle loadout: directive slots', fallback=0)
+def _directive_amount(descriptor):
+    from items import EQUIPMENT_TYPES, ITEM_TYPES
+
+    return descriptor.supplySlots.getAmountForType(ITEM_TYPES.equipment, EQUIPMENT_TYPES.battleBoosters)
+
+
+@guarded('battle loadout: own setups')
 def _own_vehicle(descriptor):
-    try:
-        return _gui_vehicle(descriptor)
-    except Exception:
-        log_exception('battle loadout: own setups')
-        return None
+    return _gui_vehicle(descriptor)
 
 
+@guarded('battle loadout: setup devices', fallback=(None, (set(), [])))
 def _setup_slots(vehicle):
-    try:
-        return _slots(_setup_descriptor(vehicle)), _directives(vehicle)
-    except Exception:
-        log_exception('battle loadout: setup devices')
-        return None, (set(), [])
+    return _slots(_setup_descriptor(vehicle)), _directives(vehicle)
 
 
-# Read from the GUI vehicle of the own setups when the client can build it (the directives, the boosted marks and the
-# devices of the chosen setup), from the arena's descriptor otherwise. Every slot is kept, None where it is empty;
-# `slots` holds each device slot's intCD (0: empty) for the log, `reason` says why nothing was read (None once
-# something was).
 def own_loadout():
     descriptor = _own_descriptor()
     if descriptor is None:

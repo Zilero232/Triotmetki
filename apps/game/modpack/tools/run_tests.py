@@ -8,6 +8,7 @@ A test's output (the mod's own log lines included) is printed only when it fails
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import argparse
 import os
 import sys
 import unittest
@@ -61,7 +62,14 @@ def find_duplicate_module(directories):
     return None
 
 
+def parse_args(argv):
+    parser = argparse.ArgumentParser(description='Run every modpack unittest suite on Python 2.7')
+    parser.add_argument('-v', '--verbose', action='store_true', help='print every test and its output')
+    return parser.parse_args(argv)
+
+
 def main(argv):
+    verbose = parse_args(argv).verbose
     if sys.version_info[:2] != (2, 7):
         sys.stderr.write('the modpack runs on Python 2.7, the game client interpreter (mise: conda:python 2.7.18)\n')
         return 2
@@ -74,7 +82,6 @@ def main(argv):
     suite = unittest.TestSuite()
     for directory in directories:
         suite.addTests(unittest.TestLoader().discover(directory, pattern='test_*.py', top_level_dir=directory))
-    verbose = '-v' in argv
     result = unittest.TextTestRunner(verbosity=2 if verbose else 1, buffer=not verbose).run(suite)
     return 0 if result.wasSuccessful() else 1
 

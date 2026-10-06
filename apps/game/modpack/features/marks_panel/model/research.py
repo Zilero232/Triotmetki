@@ -14,7 +14,7 @@ from ....core.compat import is_int, is_number
 
 
 def _locked(info):
-    return dict((node['id'], node) for node in info.get('nodes') or ())
+    return {node['id']: node for node in info.get('nodes') or ()}
 
 
 def _with_prerequisites(node_id, locked, seen=None):
@@ -60,9 +60,6 @@ def next_vehicles(info):
     return sorted(rows, key=lambda row: (row['need'], row['name']))
 
 
-# The XP still to earn on the tank: to elite (every module and next tank) and to each next tank with the modules
-# it needs first, each with the battles it takes at the tank's average XP; None when there is nothing left to
-# research. Free XP is left out: the player decides where it goes.
 def research_state(info):
     if not isinstance(info, dict):
         return None

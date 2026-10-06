@@ -5,10 +5,13 @@ from ....core.compat import is_number
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, counted, font
 from ....core.moe import combined_damage, estimated_curve, moe_color, moe_macros, moe_state, rating_to_percent
 from ....core.templates import render, render_markup
+from ..settings.constants import STYLE_COMPACT, STYLE_CUSTOM
 from .constants import (
     APPROX,
     CARD_STEP,
     KINDS,
+    LINE_KEY_COMPACT_UP,
+    LINE_KEYS,
     LINE_SEPARATOR,
     CURVE_ESTIMATED,
     CURVE_SITE,
@@ -29,11 +32,10 @@ __all__ = (
 )
 
 
-# The player's own damage and assist of this battle, raised to the client's summary of the server's totals.
 class BattleTotals(object):
 
     def __init__(self):
-        self.values = dict((kind, 0) for kind in KINDS)
+        self.values = {kind: 0 for kind in KINDS}
         self.summary = {}
 
     def add(self, kind, amount):
@@ -97,7 +99,6 @@ def panel_state(snapshot, combined, curve, pace, settings):
     return state
 
 
-# The Tank card's view of the selected tank between battles: nothing projected, the needs are the next battle's.
 def hangar_state(snapshot, curve, pace):
     is_verified = percent_source(snapshot, curve) == SOURCE_VERIFIED
     return moe_state(
@@ -164,18 +165,23 @@ def macro_values(state, translate):
     return values
 
 
+def _line_key(style, state, settings):
+    if style == STYLE_COMPACT and _shows_up(state, settings):
+        return LINE_KEY_COMPACT_UP
+    return LINE_KEYS.get(style)
+
+
 def format_panel(state, settings, translate):
     values = macro_values(state, translate)
     color = moe_color(state, settings.get('color_mode'))
     size = settings.get('font_size')
     style = settings.get('style')
-    if style == 'custom' and settings.get('template'):
+    if style == STYLE_CUSTOM and settings.get('template'):
         return font(render_markup(settings.get('template'), values), color, size)
     if not state['has_curve']:
         return font(render(translate('marks_panel_line_no_curve'), values), COLOR_MUTED, size)
-    if style == 'minimal':
-        return font(render(translate('marks_panel_line_minimal'), values), color, size)
-    if style == 'compact':
-        key = 'marks_panel_line_compact_up' if _shows_up(state, settings) else 'marks_panel_line_compact'
+
+    key = _line_key(style, state, settings)
+    if key is not None:
         return font(render(translate(key), values), color, size)
     return LINE_SEPARATOR.join(_extended(state, values, settings, translate))

@@ -34,7 +34,7 @@ class VendorVersionTest(unittest.TestCase):
         self.assertEqual(attr.__version__, VENDORED['attrs'])
 
     def test_versions_match_the_pins(self):
-        pinned = dict((pin[0], pin[1]) for pin in pins())
+        pinned = {pin[0]: pin[1] for pin in pins()}
 
         self.assertEqual(pinned, VENDORED)
 

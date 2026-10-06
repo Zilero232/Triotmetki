@@ -14,6 +14,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....hud.cover import window_reason
 from ....log import log, safe
+from ...game import service
 from ...lobby_view import OWN_MODULES
 from .constants import GONE_STATUSES
 
@@ -40,9 +41,8 @@ class WindowWatch(object):
             return True
         try:
             from frameworks.wulf import WindowStatus
-            from helpers import dependency
             from skeletons.gui.impl import IGuiLoader
-            manager = dependency.instance(IGuiLoader).windowsManager
+            manager = service(IGuiLoader).windowsManager
         except Exception as error:
             log('HUD cover: no wulf windows manager (%s), Gameface windows do not cover the panels' % error)
             return False
@@ -53,7 +53,8 @@ class WindowWatch(object):
         return True
 
     def stop(self):
-        manager, self.manager = self.manager, None
+        manager = self.manager
+        self.manager = None
         if manager is not None:
             manager.onWindowStatusChanged -= self._on_status
         self.reasons = frozenset()

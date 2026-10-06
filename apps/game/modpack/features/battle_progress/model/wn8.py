@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import bisect
 
-from ....core.compat import is_number
+from ....core.compat import clamp, is_number
 from .constants import (
     DAMAGE_FLOOR,
     DEF_FLOOR,
@@ -37,7 +37,7 @@ def _cut(ratio, floor):
 
 
 def _capped(value, expected, floor, cap):
-    return max(0.0, min(cap, _cut(_ratio(value, expected), floor)))
+    return clamp(_cut(_ratio(value, expected), floor), 0.0, cap)
 
 
 def wn8(counts, expected, win_ratio=NEUTRAL_WIN_RATIO):

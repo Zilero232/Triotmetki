@@ -32,8 +32,6 @@ def blob_bytes(reference):
 
 
 class StubCrypt32(object):
-    """crypt32 as ctypes sees it: reads the input DATA_BLOB, fills the output one with a buffer it allocated."""
-
     def __init__(self, succeed=True):
         self.succeed = succeed
         self.calls = []

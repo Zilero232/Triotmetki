@@ -38,6 +38,20 @@ export type AuthenticateInput = {
   signedHeaders?: readonly string[];
 };
 
+export type RequestSignerInput = {
+  request: SignedModRequest;
+  signedHeaders?: readonly string[];
+};
+
+export type AuthenticateDigestInput = {
+  request: SignedModRequest;
+  digest: string | undefined;
+};
+
+export type VerifyDigestInput = AuthenticateDigestInput & {
+  device: AuthenticatedDevice;
+};
+
 export type BindInput = {
   body: unknown;
   requester: string;

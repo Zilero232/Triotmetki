@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....hud import HudPreview
-from ....log import log
+from ....log import log, log_exception
 from ....vendor import attr
 from ...battle import BattleHooks
 from ...component import FeatureComponent
@@ -99,13 +99,18 @@ class BattlePanel(FeatureComponent):
             self.start(*args)
             self.sync_stock()
 
+    # Each step on its own: a failing stop() must still hide the panel and give the stock element back, or the label
+    # would show in the next battle with this one's data.
     def _on_leave(self):
         self.running = False
-        self.preview.end()
-        self.hooks.clear()
-        self.stop()
-        self.hide()
-        self.sync_stock()
+        for step in (self.preview.end, self.hooks.clear, self.stop, self.hide, self.sync_stock):
+            self._leave_step(step)
+
+    def _leave_step(self, step):
+        try:
+            step()
+        except Exception:
+            log_exception('%s: leaving (%s)' % (self.component_id, getattr(step, '__name__', 'step')))
 
     def _leave_battle(self):
         self._on_leave()

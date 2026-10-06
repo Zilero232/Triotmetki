@@ -2,11 +2,11 @@ import type * as z from 'zod/mini';
 
 import { gameface } from '@/shared/api/gameface';
 
-import type { ViewerMessage, ViewerSide, ViewerState } from './viewer-protocol.types';
+import type { ParseWithInput, ViewerMessage, ViewerSide, ViewerState } from './viewer-protocol.types';
 
 import { viewerStateSchema } from './viewer-protocol.schemas';
 
-const parseWith = <Schema extends z.ZodMiniType>(schema: Schema, raw: string | null): z.infer<Schema> | null => {
+const parseWith = <Schema extends z.ZodMiniType>({ schema, raw }: ParseWithInput<Schema>): z.infer<Schema> | null => {
   try {
     const parsed = schema.safeParse(JSON.parse(raw ?? ''));
 
@@ -16,7 +16,7 @@ const parseWith = <Schema extends z.ZodMiniType>(schema: Schema, raw: string | n
   }
 };
 
-export const parseViewerState = (raw: string | null): ViewerState | null => parseWith(viewerStateSchema, raw);
+export const parseViewerState = (raw: string | null): ViewerState | null => parseWith({ schema: viewerStateSchema, raw });
 
 export const footerOf = ({ battle, loading, approx, labels }: ViewerState): string => {
   if (!battle) {

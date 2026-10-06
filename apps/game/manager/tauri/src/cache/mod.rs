@@ -101,7 +101,15 @@ fn is_real_dir(path: &Path) -> bool {
     fs::symlink_metadata(path).is_ok_and(|metadata| metadata.is_dir() && !metadata.file_type().is_symlink())
 }
 
-fn target(id: String, name: String, location: CacheLocation, path: Option<PathBuf>) -> Option<CacheTarget> {
+struct TargetInput {
+    id: String,
+    name: String,
+    location: CacheLocation,
+    path: Option<PathBuf>,
+}
+
+fn target(input: TargetInput) -> Option<CacheTarget> {
+    let TargetInput { id, name, location, path } = input;
     let path = path?;
     let files = file_count(&path);
 
@@ -115,22 +123,22 @@ pub fn plan(input: PlanInput) -> CachePlan {
         let profile_name = profile.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
 
         for relative in APP_DATA_CACHE_DIRS {
-            targets.extend(target(
-                format!("{profile_name}/{relative}"),
-                relative.to_owned(),
-                CacheLocation::AppData,
-                real_dir_below(&profile, relative),
-            ));
+            targets.extend(target(TargetInput {
+                id: format!("{profile_name}/{relative}"),
+                name: relative.to_owned(),
+                location: CacheLocation::AppData,
+                path: real_dir_below(&profile, relative),
+            }));
         }
     }
 
     for relative in GAME_CACHE_DIRS {
-        targets.extend(target(
-            format!("{GAME_ID_PREFIX}/{relative}"),
-            relative.to_owned(),
-            CacheLocation::Game,
-            real_dir_below(&input.client.path, relative),
-        ));
+        targets.extend(target(TargetInput {
+            id: format!("{GAME_ID_PREFIX}/{relative}"),
+            name: relative.to_owned(),
+            location: CacheLocation::Game,
+            path: real_dir_below(&input.client.path, relative),
+        }));
     }
 
     CachePlan { total_bytes: targets.iter().map(|target| target.size_bytes).sum(), targets }

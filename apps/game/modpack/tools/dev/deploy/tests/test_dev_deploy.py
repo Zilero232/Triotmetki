@@ -33,7 +33,7 @@ class DeployTest(unittest.TestCase):
         return sorted(os.listdir(self.folder))
 
     def sync(self, *sources):
-        return deploy.sync(self.folder, dict((os.path.basename(path), path) for path in sources), DETAILS)
+        return deploy.sync(self.folder, {os.path.basename(path): path for path in sources}, DETAILS)
 
     def test_installs_into_its_own_subfolder_with_a_manifest(self):
         self.sync(self.core, self.panel)

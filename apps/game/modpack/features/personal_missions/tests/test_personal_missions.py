@@ -14,7 +14,7 @@ from otmetki.features.personal_missions.model import (
     in_progress,
 )
 from otmetki.features.personal_missions.model.constants import MAX_MISSIONS, MAX_TEXT, PREVIEW_MISSIONS
-from otmetki.features.personal_missions.model.preview import preview_text, preview_widget
+from otmetki.features.personal_missions.model.preview import preview_missions, preview_text, preview_widget
 from otmetki.features.personal_missions.settings import SCHEMA, SETTINGS
 
 FINISHED_COUNT = MAX_MISSIONS + 20
@@ -28,8 +28,8 @@ def settings(**values):
     return Settings(values, SCHEMA)
 
 
-def missions():
-    return clean_missions(PREVIEW_MISSIONS)[0]
+def missions(language='ru'):
+    return preview_missions(translator(language))[0]
 
 
 def ids(items):
@@ -107,19 +107,37 @@ class InProgressTest(unittest.TestCase):
 
 class HangarTextTest(unittest.TestCase):
 
-    def test_title_and_conditions(self):
+    def test_the_title_counts_the_missions(self):
         text = format_hangar(missions(), settings(), translator())
 
         assert u'ЛБЗ: в работе 2, выполнено 1, с отличием 1' in text
+
+    def test_the_main_condition_is_shown(self):
+        text = format_hangar(missions(), settings(), translator())
+
         assert u'Основное: Нанести 3000 урона' in text
+
+    def test_the_honours_condition_is_shown(self):
+        text = format_hangar(missions(), settings(), translator())
+
         assert u'С отличием: Не получить' in text
 
-    def test_short_view_caps_the_missions_and_hides_the_conditions(self):
-        text = format_hangar(missions(), settings(show_conditions=False, max_missions=1), translator('en'))
+    def short_text(self):
+        return format_hangar(missions('en'), settings(show_conditions=False, max_missions=1), translator('en'))
 
-        assert u'СТ-7' in text
-        assert u'ТТ-3' not in text
-        assert 'Main:' not in text
+    def test_the_short_view_keeps_the_first_mission(self):
+        assert u'MT-7' in self.short_text()
+
+    def test_the_short_view_caps_the_missions(self):
+        assert u'HT-3' not in self.short_text()
+
+    def test_the_short_view_hides_the_conditions(self):
+        assert 'Main:' not in self.short_text()
+
+    def test_the_english_preview_names_the_missions_in_english(self):
+        names = [mission['name'] for mission in missions('en')]
+
+        assert names == [u'MT-7. Fire Support', u'HT-3. Breakthrough', u'LT-1. Recon']
 
     def test_no_mission_in_progress(self):
         done_only = [mission for mission in missions() if mission['state'] != 'in_progress']

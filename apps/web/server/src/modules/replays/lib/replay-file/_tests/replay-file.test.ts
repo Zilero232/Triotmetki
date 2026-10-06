@@ -1,7 +1,11 @@
+import { createHmac } from 'node:crypto';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { REPLAY_UPLOAD } from '../../../config/upload.constants';
-import { replayExtension, replayStorageKey, sha256Hex, tracksStorageKey } from '../replay-file';
+import { fileDigest, replayExtension, replayStorageKey, sha256Hex, tracksStorageKey } from '../replay-file';
 
 describe('replayExtension', () => {
   it('accepts every supported extension regardless of case', () => {
@@ -23,5 +27,25 @@ describe('replayStorageKey', () => {
 
     expect(key).toBe(`${REPLAY_UPLOAD.keyPrefix}/${sha256.slice(0, 2)}/${sha256}.mtreplay`);
     expect(tracksStorageKey(key).startsWith(key)).toBe(true);
+  });
+});
+
+describe('fileDigest', () => {
+  it('continues a keyed hash over the file bytes, as if the prefix and the file were hashed in one piece', async () => {
+    const folder = await mkdtemp(join(tmpdir(), 'otmetki-digest-'));
+    const path = join(folder, 'replay');
+    const bytes = Buffer.alloc(200_000, 7);
+
+    await writeFile(path, bytes);
+
+    const digest = await fileDigest({ hash: createHmac('sha256', 'key').update('prefix\n'), path });
+
+    await rm(folder, { recursive: true, force: true });
+
+    expect(digest).toBe(
+      createHmac('sha256', 'key')
+        .update(Buffer.concat([Buffer.from('prefix\n'), bytes]))
+        .digest('hex')
+    );
   });
 });

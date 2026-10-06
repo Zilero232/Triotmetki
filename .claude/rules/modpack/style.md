@@ -14,9 +14,11 @@ paths:
   in a `constants.py` of the concern. Settings keys `snake_case`. An override of a client
   class keeps the client's names (`_onLoading`, `viewModel`, `doFormatting`).
 - Constants: literals (numbers, strings, tuples, dicts, compiled regexes) live in the
-  concern's `constants.py`. Two kinds stay beside their code: the package descriptor and
-  public names (`FEATURE_ID`, `PACKAGE_ID`, `VERSION`, `STRINGS`, `SETTINGS`, `SCHEMA`,
-  `GROUP`), and a table built from the module's own code (`FIELDS` of converters,
+  concern's `constants.py`. Host tooling (`tools/`) is the exception: a tool is a script
+  run on the host, so it keeps its literals as `UPPER_CASE` names at the top of its own
+  module, the way the repo's `scripts/*.mjs` do, and no `constants.py`. Two kinds stay
+  beside their code: the package descriptor and public names (`FEATURE_ID`, `PACKAGE_ID`,
+  `VERSION`, `STRINGS`, `SETTINGS`, `SCHEMA`, `GROUP`), and a table built from the module's own code (`FIELDS` of converters,
   `BACKENDS`, `VIEWS`, `settings_share/fields.py`). Bus event names sent between packages
   are `core.events` constants; colours come from `core.format`.
 - One public responsibility per module; functions small and pure where possible.
@@ -33,8 +35,10 @@ paths:
   logs it and falls back to the original (an exception of the original itself propagates),
   `app.bus` logs and runs the next handler. `@safe` is only for what the client or a
   callback calls directly (transport and processor callbacks, Gameface commands, a method
-  also called from code). Features raise normally in `model`.
-- Logging through `core.log` (`log`, `log_exception`, `safe`), which writes native `str`
+  also called from code); `@guarded(context, fallback)` for a client read that may fail on
+  API drift (it logs under `context` and returns a copy of `fallback`), never a hand-written
+  `try/except/log_exception/return`. Features raise normally in `model`.
+- Logging through `core.log` (`log`, `log_exception`, `safe`, `guarded`), which writes native `str`
   lines on both Pythons. `print` only inside `core.log` and in the entry scripts' last-resort
   `except` (the core itself may be what failed to import).
 - A feature component starts from core, never from copies: `core.client.component.FeatureComponent`
@@ -47,5 +51,6 @@ paths:
   `core.client.me.signed_read(app, SignedRead, on_data)`,
   `core.client.native.NativeSettingsComponent`, `core.client.garage` (lock flags, item
   processors), `core.client.game` (`client_attr`, `service`, `values_by_name`,
-  `selected_vehicle`), `core.errors.ReasonError`.
+  `selected_vehicle`, `lobby_app`), `core.errors.ReasonError`, `core.compat.clamp` / `fraction`
+  (never a hand-written `max(low, min(high, value))`), `core.storage.write_bytes_atomic`.
 - Strings shown to the player come from `i18n/` (ru and en in sync).

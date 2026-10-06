@@ -15,16 +15,17 @@ import type {
   TeamHpSideView,
   TeamHpStripVehicle,
   TeamHpTierLabel,
-  TeamHpView
+  TeamHpView,
+  TierGroupInput
 } from './team-hp-view.types';
 
 import { TEAM_HP } from '../../config';
 
-const startsTierGroup = (vehicle: TeamHpVehicle, index: number): boolean => index > 0 && vehicle.tier !== null;
+const startsTierGroup = ({ vehicle, index }: TierGroupInput): boolean => index > 0 && vehicle.tier !== null;
 
 const segmentsOf = (vehicles: TeamHpVehicle[]): (TeamHpGap | TeamHpSegment)[] => {
   const total = sumBy(vehicles, (vehicle) => vehicle.max);
-  const gaps = vehicles.filter(startsTierGroup).length;
+  const gaps = vehicles.filter((vehicle, index) => startsTierGroup({ vehicle, index })).length;
   const room = TEAM_HP.barWidth - TEAM_HP.segmentGap * Math.max(0, vehicles.length - 1) - TEAM_HP.tierGap * gaps;
 
   return vehicles.flatMap((vehicle, index) => {
@@ -37,7 +38,7 @@ const segmentsOf = (vehicles: TeamHpVehicle[]): (TeamHpGap | TeamHpSegment)[] =>
       alive: vehicle.alive
     };
 
-    return startsTierGroup(vehicle, index) ? [{ kind: 'gap', key: `gap-${index}` } satisfies TeamHpGap, segment] : [segment];
+    return startsTierGroup({ vehicle, index }) ? [{ kind: 'gap', key: `gap-${index}` } satisfies TeamHpGap, segment] : [segment];
   });
 };
 

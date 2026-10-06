@@ -14,7 +14,6 @@ KIND_SWITCHES = (
 CREW_SWITCH = 'dismiss_crew'
 
 ACTION_SELL = 'sell'
-ACTION_REFRESH = 'refresh'
 # The sell action's id is `sell:<token>` of the sale its confirmation listed (model sale_token).
 SALE_TOKEN_SEPARATOR = ':'
 SALE_TOKEN_LENGTH = 16

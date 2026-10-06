@@ -2,8 +2,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from .....core.compat import is_number
 from .....core.format import format_number
+from .....core.own_result import RESULT_TONES
 from ..text import percent_text, result_label, signed
-from .constants import LAST_TILES, RESULT_TONES, SUBTITLE_SEPARATOR
+from .constants import LAST_TILES, SUBTITLE_SEPARATOR
 
 # What the previous battle's card shows, as plain data both renderers read: the Gameface widget (widget.py) and the
 # GUIFlash text (text.py). Fair play: the own numbers of the own battle results only.
@@ -48,8 +49,6 @@ def last_moe_row(summary, translate):
     return _row('marks', translate('br_row_moe'), percent_text(percent), note=note, tone=delta_tone(delta))
 
 
-# The previous battle's card from its summary (model.build_summary): map, tank, the result, damage, XP, credits after
-# costs and the MoE change; `card` tells one card from the next (the page restarts its entrance for a new one).
 def last_view(summary, translate):
     result, result_tone = _result(summary.get('result'), translate)
     moe = last_moe_row(summary, translate)

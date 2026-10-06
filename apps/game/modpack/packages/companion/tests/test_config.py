@@ -20,7 +20,7 @@ from otmetki.companion.config import (
 from otmetki.companion.i18n import STRINGS, Translator, resolve_language
 from otmetki.companion.settings_ui import BIND_CODE_VAR, build_template, settings_to_config
 
-RETIRED_VALUES = dict((key, old) for _, key, old, _ in RETIRED_DEFAULTS)
+RETIRED_VALUES = {key: old for _, key, old, _ in RETIRED_DEFAULTS}
 INVALID_UPDATE = {
     'enabled': 'yes',
     'send_queue_times': False,
@@ -229,7 +229,7 @@ class SettingsTemplateTest(unittest.TestCase):
         self.assertEqual(names, list(FEATURES))
 
     def test_checkboxes_carry_the_config_values(self):
-        by_name = dict((checkbox['varName'], checkbox) for checkbox in self.template['column1'])
+        by_name = {checkbox['varName']: checkbox for checkbox in self.template['column1']}
 
         self.assertFalse(by_name['send_queue_times']['value'])
 

@@ -12,5 +12,5 @@ def editor(settings, translate):
         EDITOR_GROUPS,
         translate,
         icons=icon_gallery(ICON_SETS),
-        swatches={'color': dict((color, color) for color in COLORS)},
+        swatches={'color': {color: color for color in COLORS}},
     )

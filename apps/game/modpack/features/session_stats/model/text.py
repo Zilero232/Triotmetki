@@ -2,7 +2,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.format import (
-    COLOR_DOWN,
     COLOR_MUTED,
     COLOR_NEUTRAL,
     COLOR_UP,
@@ -11,7 +10,7 @@ from ....core.format import (
     format_number,
     format_percent,
 )
-from .constants import DONE_MARK, FACT_SEPARATOR, RESULT_COLORS, TITLE_SIZE
+from .constants import CHANGE_COLORS, DONE_MARK, FACT_SEPARATOR, RESULT_COLORS, TITLE_SIZE
 from .goals import is_done, progress
 from .labels import account_facts, account_wn8, goal_label, goal_value, pending_caption
 from .moe import signed_change
@@ -47,7 +46,8 @@ def _goal_line(goal, translate, vehicle_name):
 
 def _moe_line(entry, translate, vehicle_name):
     change = entry['change']
-    color = COLOR_UP if change > 0 else (COLOR_DOWN if change < 0 else COLOR_MUTED)
+    sign = (change > 0) - (change < 0)
+    color = CHANGE_COLORS[sign]
     head = font(u'%s %s' % (translate('session_moe'), vehicle_name or u''), COLOR_MUTED)
     return u'%s %s' % (head, font(signed_change(change), color))
 

@@ -3,6 +3,7 @@ import type {
   DependentsInput,
   MatchingPresetInput,
   PresetSelectionInput,
+  SameSelectionInput,
   Selection,
   ToggleSelectionInput
 } from './selection.types';
@@ -65,10 +66,12 @@ export const toggleSelection = ({ components, selection, id, checked }: ToggleSe
   return new Set([...selection].filter((selected) => !removed.has(selected)));
 };
 
-const sameSelection = (left: Selection, right: Selection) => left.size === right.size && [...left].every((id) => right.has(id));
+const sameSelection = ({ left, right }: SameSelectionInput): boolean => left.size === right.size && [...left].every((id) => right.has(id));
 
 export const matchingPreset = ({ components, presets, selection }: MatchingPresetInput): string => {
-  const match = presets.find((preset) => !preset.custom && sameSelection(presetSelection({ components, presetId: preset.id }), selection));
+  const match = presets.find(
+    (preset) => !preset.custom && sameSelection({ left: presetSelection({ components, presetId: preset.id }), right: selection })
+  );
 
   return match?.id ?? presets.find((preset) => preset.custom)?.id ?? INSTALL_WIZARD.customPreset;
 };

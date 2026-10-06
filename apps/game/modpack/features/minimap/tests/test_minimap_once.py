@@ -10,7 +10,7 @@ import _support
 from otmetki.core.events import EventBus
 from otmetki.core.hud import ComponentConfig
 from otmetki.core.native_settings import ONCE_STATE_KEY
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 from otmetki.features.minimap.model.constants import ONCE, VEHICLE_NAMES, VEHICLE_NAMES_NEVER
 
 CLIENT_PREFIX = 'otmetki.core.client'
@@ -58,7 +58,7 @@ class Client(object):
         self.writes = []
 
     def read(self, names):
-        return dict((name, self.values[name]) for name in names if name in self.values)
+        return {name: self.values[name] for name in names if name in self.values}
 
     def apply(self, values):
         self.writes.append(dict(values))

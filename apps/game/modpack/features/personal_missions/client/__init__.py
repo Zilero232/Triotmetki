@@ -1,12 +1,11 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.client.component import CardSpec, PolledHangarCard
+from ....core.client.component import ACTION_REFRESH, CardSpec, PolledHangarCard
 from ..i18n import STRINGS
 from ..model import build_page, clean_missions, format_hangar
 from ..model.constants import HANGAR_LAYOUT, HANGAR_PANEL, REFRESH_EVERY_S
 from ..model.widget import hangar_widget
 from ..settings import SCHEMA, SECTION, SWITCH
-from .constants import ACTION_REFRESH
 from .reads import own_missions
 
 CARD_SPEC = CardSpec(
@@ -20,8 +19,7 @@ CARD_SPEC = CardSpec(
 )
 
 
-# The personal missions in progress: a hangar card and the list page in the mod window. In battle the stock quest
-# progress panel under the capture bars already shows the conditions.
+# Hangar only: in battle the stock quest progress panel under the capture bars already shows the conditions.
 class PersonalMissionsPanel(PolledHangarCard):
 
     def __init__(self, app):

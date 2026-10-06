@@ -41,9 +41,9 @@ class MarksCapture(object):
     def before_battle(self, arena_id, tank_id):
         return self.battles.before(arena_id, tank_id)
 
+    # The battle results' MoE block with the exact rating of the hangar's post-battle dossier read, when the client
+    # refreshed the dossier before the results came.
     def exact_moe(self, tank_id, moe):
-        """The battle results' MoE block with the exact rating of the hangar's post-battle dossier read, when the client
-        refreshed the dossier before the results came."""
         return exact_moe(moe, self.hangar_moe.get(tank_id))
 
     # The results' reading goes into the hangar snapshot unless the hangar already holds the post-battle dossier read,

@@ -3,12 +3,7 @@ import type { UiComponent, UiField } from '@/shared/api/protocol';
 import type { CardPreviewKind, CardSummaryModel, CarouselPreviewModel, KeyChip } from './card-preview.types';
 
 import { CARD_PREVIEWS, CARD_SUMMARY, CAROUSEL_PREVIEW } from '../../config';
-
-const valueOf = (fields: UiField[], key: string): string | null => {
-  const field = fields.find((item) => item.key === key);
-
-  return field ? String(field.value) : null;
-};
+import { fieldValue } from '../field-value';
 
 export const cardPreviewKind = (component: UiComponent): CardPreviewKind | null => {
   if (component.panel) {
@@ -21,11 +16,11 @@ export const cardPreviewKind = (component: UiComponent): CardPreviewKind | null 
 };
 
 export const carouselPreview = (fields: UiField[]): CarouselPreviewModel => {
-  const rows = Number(valueOf(fields, CAROUSEL_PREVIEW.rowsKey));
+  const rows = Number(fieldValue({ fields, key: CAROUSEL_PREVIEW.rowsKey }));
 
   return {
     rows: Number.isInteger(rows) && rows >= 1 && rows <= CAROUSEL_PREVIEW.maxRows ? rows : null,
-    small: valueOf(fields, CAROUSEL_PREVIEW.tilesKey) === CAROUSEL_PREVIEW.smallTiles
+    small: fieldValue({ fields, key: CAROUSEL_PREVIEW.tilesKey }) === CAROUSEL_PREVIEW.smallTiles
   };
 };
 

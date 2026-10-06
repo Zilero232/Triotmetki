@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.compat import is_int, string_types, to_text
+from ....core.compat import fraction, is_int, string_types, to_text
 from ....core.me import number, owned
 from .constants import ACHIEVED, ACTIVE, GOAL_METRICS, MAX_GOALS, MAX_REMEMBERED, SHOWN_STATUSES
 
@@ -58,7 +58,7 @@ def progress(goal):
     if span <= 0:
         return 0.0
     share = (current - goal['baseline']) / span
-    return max(0.0, min(1.0, share))
+    return fraction(share)
 
 
 def _remembered_ids(data):

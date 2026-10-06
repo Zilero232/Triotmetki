@@ -11,7 +11,7 @@ from otmetki.core.hud.stock import bar_slots, stock_metrics
 from otmetki.core.hud.surface import SPACE_BATTLE, SPACE_LOBBY, HudSurface
 from otmetki.core.hud.widget import CARD_KIND, card, card_chip, card_row
 from otmetki.core.lobby_view import plain_hangar
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 
 
 def sample_rows():

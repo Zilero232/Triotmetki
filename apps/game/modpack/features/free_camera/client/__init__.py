@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.client.component import FeatureComponent
 from ....core.client.hotkey import HotkeyChoice
 from ....core.client.hud import hud_layer
-from ....core.hooks import override
+from ....core.hooks import is_restorable, override, restore
 from ....core.log import log, log_exception, safe
 from ..i18n import STRINGS
 from ..model import PLACE_HANGAR, PLACE_REPLAY, START, STOP, Flight, flight_place
@@ -11,6 +11,15 @@ from ..model.constants import HOTKEYS
 from ..settings import SCHEMA, SECTION, SWITCH
 from .constants import ESCAPE_KEY
 from .flights import HangarFlight, ReplayFlight, set_lobby_gui, toggle_battle_gui
+
+
+def _game_module():
+    try:
+        import game
+    except ImportError:
+        log('free camera: the client input module is missing, the camera keys stay with the client')
+        return None
+    return game
 
 
 def _is_replay():
@@ -30,7 +39,7 @@ class FreeCamera(FeatureComponent):
         self.hotkey = HotkeyChoice(HOTKEYS, self._on_hotkey)
         self.hotkey_choice = None
         self.muted = None
-        self._hook_input()
+        self.input_hooked = False
         self._install_hotkey()
         bus = app.bus
         bus.on('hangar', self._install_hotkey)
@@ -42,14 +51,24 @@ class FreeCamera(FeatureComponent):
         if self.flight.active and not self.enabled():
             self.stop()
 
+    # The client's key and mouse handlers are taken only while a flight is on: every event of the session would run
+    # through them otherwise. Another mod that wrapped them after us keeps them wrapped (ours only passes through).
     def _hook_input(self):
-        try:
-            import game
-        except ImportError:
-            log('free camera: the client input module is missing, the hangar camera stays')
+        game = _game_module()
+        if self.input_hooked or game is None:
             return
         override(game, 'handleKeyEvent')(self._handle_key)
         override(game, 'handleMouseEvent')(self._handle_mouse)
+        self.input_hooked = True
+
+    def _unhook_input(self):
+        game = _game_module()
+        if not self.input_hooked or game is None:
+            return
+        if is_restorable(game, 'handleKeyEvent') and is_restorable(game, 'handleMouseEvent'):
+            restore(game, 'handleKeyEvent')
+            restore(game, 'handleMouseEvent')
+            self.input_hooked = False
 
     def _install_hotkey(self):
         choice = self.settings.get('hotkey') if self.enabled() else 'none'
@@ -79,12 +98,14 @@ class FreeCamera(FeatureComponent):
             self.stop()
 
     def start(self, place):
+        self._hook_input()
         try:
             started = self.flights[place].start()
         except Exception:
             log_exception('free camera: start in the %s' % place)
             started = False
         if not started:
+            self._unhook_input()
             return False
         hide_ui = bool(self.settings.get('hide_ui'))
         self.flight.started(place, hide_ui)
@@ -105,6 +126,7 @@ class FreeCamera(FeatureComponent):
             self._finish(show_gui=True)
 
     def _finish(self, show_gui):
+        self._unhook_input()
         place, hid_ui = self.flight.stopped()
         if hid_ui:
             self._show_gui(place, show_gui)

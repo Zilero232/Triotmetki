@@ -11,7 +11,6 @@ def parse_overview(data, account_id):
     return {'overall': stats(overall, ACCOUNT_RATINGS) if isinstance(overall, dict) else None}
 
 
-# The bound account's site reads of one game session: the goals and the account overview.
 class SiteData(ReadState):
 
     def __init__(self, account_id=None):

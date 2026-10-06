@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.battle import call
 from ....core.client.game import client_attr, service
-from ....core.log import log_exception
+from ....core.log import guarded
 from .constants import (
     CONDITIONS_ATTR,
     CONDITIONS_MODULE,
@@ -12,6 +12,7 @@ from .constants import (
     I18N_MODULE,
     KEY_DESCRIPTION,
 )
+from ..model.constants import STATE_IN_PROGRESS
 
 # RU 1.45 client source: IEventsCache.getPersonalMissions().getAllQuests() -> {id: PersonalMission}
 # (gui/server_events/event_items.py) with getUserName(), getUserDescription() (a #personal_missions_details key, the
@@ -57,8 +58,8 @@ def _mission(quest_id, quest, state, formatter):
         'extra': None,
         'state': state,
     }
-    # The conditions are built per mission from its config: only for the ones in progress, what the labels show.
-    if state == 'in_progress':
+    # The conditions are built per mission from its config, so only for the missions the labels show.
+    if state == STATE_IN_PROGRESS:
         main = _conditions(formatter, quest, True)
         mission['main'] = main or _text(call(quest, 'getUserDescription', None))
         mission['extra'] = _conditions(formatter, quest, False)
@@ -71,18 +72,17 @@ def _all_quests():
     return call(personal, 'getAllQuests', {}) or {}
 
 
+@guarded('personal missions: read', fallback=[])
+def _quest_items(quests):
+    return list(quests.items()) if hasattr(quests, 'items') else []
+
+
 def own_missions():
     quests = _all_quests()
     formatter_class = client_attr(CONDITIONS_MODULE, CONDITIONS_ATTR)
     formatter = formatter_class() if formatter_class is not None else None
-    try:
-        items = list(quests.items()) if hasattr(quests, 'items') else []
-    except Exception:
-        log_exception('personal missions: read')
-        return []
-
     missions = []
-    for quest_id, quest in items:
+    for quest_id, quest in _quest_items(quests):
         state = _state(quest)
         if state is not None:
             missions.append(_mission(quest_id, quest, state, formatter))

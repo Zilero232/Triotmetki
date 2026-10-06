@@ -11,3 +11,5 @@ FILE_NAME = 'otmetki.log'
 FILE_KEEP = 3
 FILE_MAX_BYTES = 1 << 20
 FILE_PENDING_LINES = 500
+# A crash loses at most this much of the log that was not an error (errors are flushed at once).
+FILE_FLUSH_S = 1.0

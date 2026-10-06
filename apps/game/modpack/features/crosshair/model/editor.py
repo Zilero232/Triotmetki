@@ -29,7 +29,6 @@ def editor(settings, translate):
     return editor_spec(PANEL_ID, EDITOR_GROUPS, translate, icons=icons, swatches=swatches)
 
 
-# The smaller aim circle's page: the game's circle beside the chosen size, so the player sees how much smaller it gets.
 def circle_editor(settings, translate):
     samples = (
         sample(CIRCLE_PANEL_ID, CIRCLE_STOCK, circle_widget(CIRCLE_STOCK), translate),

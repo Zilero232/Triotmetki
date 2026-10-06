@@ -79,30 +79,57 @@ fn preview() -> ReportPreview {
         modpack_version: Some("0.1.3".into()),
         game_version: None,
         items: vec![
-            item(ReportPart::Environment, ENVIRONMENT_FILE, "manager 0.2.0", false, &redactor),
-            item(ReportPart::PythonLog, PYTHON_LOG, "Игрок logged in", true, &redactor),
+            item(ItemInput { part: ReportPart::Environment, name: ENVIRONMENT_FILE, text: "manager 0.2.0", truncated: false, redactor: &redactor }),
+            item(ItemInput { part: ReportPart::PythonLog, name: PYTHON_LOG, text: "Игрок logged in", truncated: true, redactor: &redactor }),
         ],
     }
 }
 
+fn upload_body(message: &str) -> serde_json::Value {
+    serde_json::to_value(upload(&preview(), &[ReportPart::PythonLog], message)).unwrap()
+}
+
+#[test]
+fn marks_a_truncated_item_and_redacts_the_player_name() {
+    assert_eq!(preview().items[1].text, format!("{TRUNCATED_MARK}<user> logged in"));
+}
+
+#[test]
+fn counts_the_redactions_of_an_item() {
+    assert_eq!(preview().items[1].redactions, 1);
+}
+
 #[test]
 fn builds_the_upload_from_the_ticked_parts_only() {
-    let preview = preview();
-    let body = serde_json::to_value(upload(&preview, &[ReportPart::PythonLog], &format!("  {}  ", "ы".repeat(MESSAGE_MAX_CHARS + 5)))).unwrap();
+    let body = upload_body("");
 
-    assert_eq!(preview.items[1].text, format!("{TRUNCATED_MARK}<user> logged in"));
-    assert_eq!(preview.items[1].redactions, 1);
-    assert_eq!(body["files"].as_array().unwrap().len(), 1);
-    assert_eq!(body["files"][0]["name"], "python.log");
-    assert_eq!(body["modpack_version"], "0.1.3");
-    assert_eq!(body["game_version"], serde_json::Value::Null);
+    assert_eq!(body["files"], serde_json::json!([{ "name": "python.log", "text": format!("{TRUNCATED_MARK}<user> logged in") }]));
+}
+
+#[test]
+fn sends_the_versions_of_the_preview() {
+    let body = upload_body("");
+
+    assert_eq!((&body["modpack_version"], &body["game_version"]), (&serde_json::json!("0.1.3"), &serde_json::Value::Null));
+}
+
+#[test]
+fn trims_and_caps_the_message() {
+    let body = upload_body(&format!("  {}  ", "ы".repeat(MESSAGE_MAX_CHARS + 5)));
+
     assert_eq!(body["message"].as_str().unwrap().chars().count(), MESSAGE_MAX_CHARS);
 }
 
 #[test]
 fn saves_the_same_content_as_a_zip() {
     let root = tempfile::tempdir().unwrap();
-    let saved = write_zip(&root.path().join("отчёт"), &preview(), &[ReportPart::Environment, ReportPart::PythonLog], "Не грузится").unwrap();
+    let saved = write_zip(WriteZipInput {
+        target: &root.path().join("отчёт"),
+        preview: &preview(),
+        parts: &[ReportPart::Environment, ReportPart::PythonLog],
+        message: "Не грузится",
+    })
+    .unwrap();
     let mut archive = zip::ZipArchive::new(File::open(&saved).unwrap()).unwrap();
     let mut names: Vec<String> = archive.file_names().map(str::to_owned).collect();
     let mut message = String::new();
@@ -132,7 +159,8 @@ fn a_failed_save_keeps_the_file_it_would_replace() {
     fs::write(&target, "the previous report").unwrap();
     broken.items[1].name = broken.items[0].name.clone();
 
-    assert!(write_zip(&target, &broken, &[ReportPart::Environment, ReportPart::PythonLog], "").is_err());
+    assert!(write_zip(WriteZipInput { target: &target, preview: &broken, parts: &[ReportPart::Environment, ReportPart::PythonLog], message: "" })
+        .is_err());
     assert_eq!(fs::read_to_string(&target).unwrap(), "the previous report");
     assert_eq!(fs::read_dir(root.path()).unwrap().count(), 1);
 }

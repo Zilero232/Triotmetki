@@ -4,7 +4,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 SWITCH = 'hangar_battle_results'
 SECTION = 'battle_results'
 MAX_TEMPLATE = 1000
-BONUS_TYPES = ('random', 'all')
+BONUS_RANDOM = 'random'
+BONUS_ALL = 'all'
+BONUS_TYPES = (BONUS_RANDOM, BONUS_ALL)
 
 DEFAULTS = {
     'show_economy': True,

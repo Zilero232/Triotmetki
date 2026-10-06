@@ -33,7 +33,7 @@ def default_values():
 
 
 def everything_hidden():
-    return dict((key, True) for key in SCHEMA.defaults)
+    return {key: True for key in SCHEMA.defaults}
 
 
 def hidden_types(values, class_name='NotificationDecorator'):

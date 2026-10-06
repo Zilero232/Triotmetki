@@ -79,6 +79,12 @@ const readyToBind = (code: OneTimeCode = storedCode()) => {
   return created;
 };
 
+const queueMisses = ({ prisma, count }: { prisma: ReturnType<typeof createService>['prisma']; count: number }) => {
+  for (let miss = 0; miss < count; miss += 1) {
+    prisma.oneTimeCode.findUnique.mockResolvedValueOnce(null);
+  }
+};
+
 beforeEach(() => {
   vi.useFakeTimers();
   vi.setSystemTime(NOW);
@@ -378,19 +384,43 @@ describe('ModBindWriterService.bind', () => {
     expect(prisma.oneTimeCode.findUnique).toHaveBeenCalledTimes(BIND_CODE.maxFailuresPerRequester);
   });
 
-  it('counts failures per requester, so naming a different account each time does not reset the budget', async () => {
+  it('lets a player behind a shared address bind while another player there is locked out', async () => {
+    const { service, prisma } = readyToBind();
+
+    queueMisses({ prisma, count: BIND_CODE.maxFailuresPerRequester });
+
+    for (let attempt = 0; attempt <= BIND_CODE.maxFailuresPerRequester; attempt += 1) {
+      await service.bind({ body: bindBody({ account_id: ACCOUNT_ID + 1 }), requester: REQUESTER }).catch(() => undefined);
+    }
+
+    await expect(service.bind({ body: bindBody(), requester: REQUESTER })).resolves.toMatchObject({ account_id: ACCOUNT_ID });
+  });
+
+  it('cools an account down once several addresses fail to guess its code', async () => {
     const { service, prisma } = createService();
 
     prisma.oneTimeCode.findUnique.mockResolvedValue(null);
 
-    for (let attempt = 0; attempt < BIND_CODE.maxFailuresPerRequester; attempt += 1) {
-      await service.bind({ body: bindBody({ account_id: ACCOUNT_ID + attempt }), requester: REQUESTER }).catch(() => undefined);
+    for (let attempt = 0; attempt < BIND_CODE.maxFailuresPerAccount; attempt += 1) {
+      await service.bind({ body: bindBody(), requester: `198.51.100.${attempt + 1}` }).catch(() => undefined);
     }
 
-    await expect(service.bind({ body: bindBody({ account_id: ACCOUNT_ID - 1 }), requester: REQUESTER })).rejects.toMatchObject({
+    await expect(service.bind({ body: bindBody(), requester: '192.0.2.1' })).rejects.toMatchObject({
       status: HttpStatus.TOO_MANY_REQUESTS,
       response: { error: 'rate_limited' }
     });
+  });
+
+  it('keeps an account open when one address alone keeps failing for it', async () => {
+    const { service, prisma } = readyToBind();
+
+    queueMisses({ prisma, count: BIND_CODE.maxFailuresPerRequester });
+
+    for (let attempt = 0; attempt < BIND_CODE.maxFailuresPerAccount * 2; attempt += 1) {
+      await service.bind({ body: bindBody(), requester: REQUESTER }).catch(() => undefined);
+    }
+
+    await expect(service.bind({ body: bindBody(), requester: '192.0.2.1' })).resolves.toMatchObject({ account_id: ACCOUNT_ID });
   });
 
   it('binds the account the code was pinned to when the request names none', async () => {

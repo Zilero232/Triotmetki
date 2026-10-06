@@ -13,6 +13,7 @@ index (client_index.py) says which parameters and textures a build has.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import argparse
 import io
 import os
 import re
@@ -158,14 +159,23 @@ def is_stale():
         return handle.read() != json_text(bundle(), True)
 
 
+def parse_args(argv):
+    parser = argparse.ArgumentParser(description='Check the hangar look recipes and their bundle')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--write', action='store_true', help='rewrite hangars/recipes.json from the recipes')
+    mode.add_argument('--check', action='store_true', help='fail on an invalid recipe or a stale bundle (default)')
+    return parser.parse_args(argv)
+
+
 def main(argv):
+    args = parse_args(argv)
     recipes = load_recipes()
     index = load_client_index(package_info()['client'])
     found = problems(recipes, index)
     if found:
         sys.stderr.write('\n'.join(found) + '\n')
         return 1
-    if '--write' in argv:
+    if args.write:
         write_text(BUNDLE, json_text(bundle(recipes), True))
         return 0
     if is_stale():

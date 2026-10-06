@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  deltaText,
   formatClock,
   formatNumber,
   formatPercent,
@@ -8,6 +9,7 @@ import {
   formatSeconds,
   formatSigned,
   groupDigits,
+  percentText,
   romanTier,
   trendOf
 } from '../format-number';
@@ -67,6 +69,30 @@ describe(formatPercentOrDash, () => {
 
   it('writes a known percent', () => {
     expect(formatPercentOrDash({ value: 87.344, digits: 2 })).toBe('87,34 %');
+  });
+});
+
+describe(percentText, () => {
+  it('writes a dash for an unknown percent', () => {
+    expect(percentText(null)).toBe('—');
+  });
+
+  it('writes a known percent with two decimals', () => {
+    expect(percentText(87.344)).toBe('87,34 %');
+  });
+});
+
+describe(deltaText, () => {
+  it('gives nothing for an unknown change', () => {
+    expect(deltaText({ value: null })).toBeNull();
+  });
+
+  it('signs a rise with two decimals and the unit', () => {
+    expect(deltaText({ value: 0.456 })).toBe('+0,46 %');
+  });
+
+  it('drops the unit when asked', () => {
+    expect(deltaText({ value: -1.2, unit: false })).toBe('-1,20');
   });
 });
 

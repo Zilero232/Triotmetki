@@ -1,3 +1,5 @@
+import { isIncludedIn } from 'remeda';
+
 import type { HitStep, HitStepInput } from './hit-step.types';
 
 import { HIT_VIEWER } from '../../config';
@@ -13,12 +15,10 @@ export const hitStep = ({ indexes, selected, step }: HitStepInput): number | nul
   return indexes[next] ?? null;
 };
 
-const isOneOf = (keys: readonly string[], key: string): boolean => keys.includes(key);
-
 export const stepOfKey = (key: string): HitStep | null => {
-  if (isOneOf(HIT_VIEWER.keys.next, key)) {
+  if (isIncludedIn(key, HIT_VIEWER.keys.next)) {
     return 1;
   }
 
-  return isOneOf(HIT_VIEWER.keys.previous, key) ? -1 : null;
+  return isIncludedIn(key, HIT_VIEWER.keys.previous) ? -1 : null;
 };

@@ -57,6 +57,6 @@ def team_hp_widget(teams, settings, options):
         'score_alive': bool(settings.get('show_alive')),
         'diff': values['diff'] if settings.get('show_diff') else None,
         'tones': dict(SIDE_TONES),
-        'colors': dict((side, color_override(settings.get(key), FIXED[key])) for side, key in SIDE_COLOR_KEYS),
+        'colors': {side: color_override(settings.get(key), FIXED[key]) for side, key in SIDE_COLOR_KEYS},
         'vehicles': strip_sides(teams, settings, options),
     })

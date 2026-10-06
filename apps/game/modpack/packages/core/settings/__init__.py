@@ -10,7 +10,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import math
 
-from ..compat import is_int, is_number, string_types, to_text
+from ..compat import clamp, is_int, is_number, string_types, to_text
 
 
 class Schema(object):
@@ -40,7 +40,7 @@ class Schema(object):
         low, high = self.limits.get(key, (None, None))
         if low is None:
             return value
-        return max(low, min(high, value))
+        return clamp(value, low, high)
 
     def _coerce_text(self, key, value):
         if not isinstance(value, string_types):

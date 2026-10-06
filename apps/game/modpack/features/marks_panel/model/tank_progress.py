@@ -6,8 +6,8 @@ from ....core.moe import mastery_state
 from .cells import cell
 from .constants import ACE_LEVEL, APPROX, METRIC_SEPARATOR, RESEARCH_ROWS
 
-# The Tank card's grid cells about the tank's own progress besides the marks: the base XP one battle needs for the next
-# mastery badge (the site's thresholds, the protanki idea) and the XP still to research (izeberg «vehicle_exp»).
+# The XP to the next mastery badge is the protanki idea (from the site's thresholds), the XP still to research
+# izeberg's «vehicle_exp».
 
 
 def _badge(level, translate):

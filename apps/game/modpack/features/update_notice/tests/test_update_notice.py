@@ -14,6 +14,7 @@ from otmetki.features.update_notice.model import (
     is_shown,
     version_key,
 )
+from otmetki.features.update_notice.model.constants import RELEASE_VERSION
 from otmetki.features.update_notice.settings import SCHEMA, SETTINGS
 
 SPLIT_INSTALL = [
@@ -108,6 +109,9 @@ class UpdateTest(unittest.TestCase):
 
     def test_a_prerelease_version_is_kept(self):
         assert clean_release(answer(version='0.2.0-beta.1'))['version'] == '0.2.0-beta.1'
+
+    def test_a_version_pattern_takes_no_trailing_newline(self):
+        assert RELEASE_VERSION.match('0.2.0\n') is None
 
     def test_versions_compare_as_numbers(self):
         assert version_key('0.10.0') > version_key('0.9.9')

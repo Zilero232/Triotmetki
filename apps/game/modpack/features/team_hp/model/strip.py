@@ -33,7 +33,6 @@ def tier_order(vehicles):
     return sorted(vehicles, key=lambda vehicle: -(vehicle['level'] or 0))
 
 
-# [(vehicle, tier label or None)] of one side in the stock strip's order, from the centre outwards.
 def strip_rows(teams, allies, options):
     vehicles = teams.team(allies)
     if not options['tiers']:

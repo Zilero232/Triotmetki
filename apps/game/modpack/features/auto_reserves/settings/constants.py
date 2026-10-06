@@ -16,6 +16,6 @@ RESERVES = (
 WHEN_SESSION = 'session'
 WHEN_EXPIRY = 'expiry'
 
-DEFAULTS = dict((key, False) for _kind, key in RESERVES)
+DEFAULTS = {key: False for _kind, key in RESERVES}
 DEFAULTS['when'] = WHEN_SESSION
 CHOICES = {'when': (WHEN_SESSION, WHEN_EXPIRY)}

@@ -9,6 +9,10 @@ FALLBACK_SEPARATOR = '|'
 
 # Client images, RU 1.45 (checked in gui-part1/2.pkg of the installed client).
 ICONS_ROOT = 'gui/maps/icons'
+# The shell icon sets: the battle ammo panel's own pictures, else the small shell icons.
+SHELL_KIND_BATTLE_AMMO = 'battle_ammo'
+SHELL_FOLDERS = {SHELL_KIND_BATTLE_AMMO: 'ammopanel/battle_ammo'}
+SHELL_FOLDER_SMALL = 'shell/small'
 CLASS_TINTS = ('white', 'green', 'red', 'gold')
 # vehicleTypes/green and /red spell the two artillery-like classes in lower case.
 LOWER_CASE_TINTS = ('green', 'red')
@@ -51,7 +55,7 @@ PREMIUM_SHELLS = (
 PREMIUM_SUFFIX = '_PREMIUM'
 # The stem of a shell descriptor icon (`descriptor.icon[0]`, e.g. ARMOR_PIERCING_CR_PREMIUM.png), the ammopanel file
 # name.
-SHELL_STEM = re.compile(r'^[A-Z0-9_]{2,60}(\.png)?$')
+SHELL_STEM = re.compile(r'^[A-Z0-9_]{2,60}(\.png)?\Z')
 
 # Efficiency kinds of the post-battle screen, 48x48 (library/efficiency).
 EFFICIENCY = (

@@ -67,7 +67,7 @@ class CoverState(object):
 
     def reset(self, keep=()):
         """Forget every source but the ones in `keep`."""
-        self.sources = dict((source, reasons) for source, reasons in self.sources.items() if source in keep)
+        self.sources = {source: reasons for source, reasons in self.sources.items() if source in keep}
 
     def reasons(self, windows=True):
         found = frozenset()

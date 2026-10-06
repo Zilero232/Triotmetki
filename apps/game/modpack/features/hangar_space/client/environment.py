@@ -13,8 +13,8 @@ from .constants import (
     ENVIRONMENT_SWITCHER,
     ENVIRONMENT_XML,
     ENVIRONMENTS_XML,
-    PREMIUM_FLAGS,
 )
+from ..model.constants import PREMIUM_FLAGS
 
 # A space's files do not change while the client runs: each space's environments are read once.
 _tables = {}
@@ -52,7 +52,7 @@ def environment_table_of(path):
 
 
 def environment_names(names):
-    return dict((name, environment_table_of(space_path(name))[0]) for name in names)
+    return {name: environment_table_of(space_path(name))[0] for name in names}
 
 
 def active_environment(path):
@@ -66,12 +66,12 @@ def environment_slots(switcher):
     read = getattr(config, 'getEnvironment', None)
     if read is None:
         return None
-    return dict((is_premium, read(is_premium)) for is_premium in PREMIUM_FLAGS)
+    return {is_premium: read(is_premium) for is_premium in PREMIUM_FLAGS}
 
 
 def slot_targets(switcher):
     config = getattr(switcher, DEFAULT_CONFIG_ATTR)
-    return dict((is_premium, config.getHangarSpaceId(is_premium)) for is_premium in PREMIUM_FLAGS)
+    return {is_premium: config.getHangarSpaceId(is_premium) for is_premium in PREMIUM_FLAGS}
 
 
 def write_environments(switcher, changes):

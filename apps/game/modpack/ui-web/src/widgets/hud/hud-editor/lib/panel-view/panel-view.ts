@@ -1,5 +1,6 @@
 import { clamp, sortBy } from 'remeda';
 
+import { panelRect, stageBox } from '@/entities/hud/panel-layout';
 import { remBox } from '@/shared/lib/css-unit';
 
 import type {
@@ -7,8 +8,12 @@ import type {
   PanelFit,
   PanelFitInput,
   PanelLayerInput,
+  PanelLook,
+  PanelLookInput,
   PanelTone,
   PanelToneInput,
+  PlacedPanel,
+  PlacedPanelsInput,
   StackedRect,
   StageFrame,
   StageFrameInput,
@@ -63,4 +68,23 @@ export const stageFrame = ({ screen, width }: StageFrameInput): StageFrame => {
   const height = Math.round(screen.height * scale * 100) / 100;
 
   return { scale, style: remBox({ width, height }) };
+};
+
+export const placedPanels = ({ panels, showDisabled, live, screen }: PlacedPanelsInput): PlacedPanel[] =>
+  panels
+    .filter((panel) => panel.enabled || showDisabled)
+    .map((panel) => ({ panel, rect: live?.id === panel.id ? live.rect : panelRect({ panel, screen }) }));
+
+export const panelLook = ({ placed: { panel, rect }, scale, screen, order, selected, hovered }: PanelLookInput): PanelLook => {
+  const isSelected = selected === panel.id;
+  const isHovered = hovered === panel.id;
+  const isActive = isSelected || isHovered;
+
+  return {
+    fit: panelFit({ rect, scale }),
+    selected: isSelected,
+    active: isActive,
+    tone: panelTone({ active: isActive, enabled: panel.enabled }),
+    style: { ...stageBox({ rect, screen }), zIndex: panelLayer({ base: order.get(panel.id) ?? 0, selected: isSelected, hovered: isHovered }) }
+  };
 };

@@ -1,4 +1,5 @@
 export {
+  deltaText,
   formatClock,
   formatNumber,
   formatPercent,
@@ -6,6 +7,7 @@ export {
   formatSeconds,
   formatSigned,
   groupDigits,
+  percentText,
   romanTier,
   trendOf
 } from './format-number';

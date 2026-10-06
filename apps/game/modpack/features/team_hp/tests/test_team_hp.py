@@ -365,20 +365,6 @@ class ArenaVehiclesTest(unittest.TestCase):
 
         assert kinds == ['heavyTank', None]
 
-    def test_an_enemy_is_not_an_ally(self):
-        teams = mixed_class_battle()
-
-        is_ally = teams.is_ally(9)
-
-        assert is_ally is False
-
-    def test_an_unknown_vehicle_is_not_an_ally(self):
-        teams = mixed_class_battle()
-
-        is_ally = teams.is_ally(77)
-
-        assert is_ally is False
-
 
 class SettingsTest(unittest.TestCase):
 

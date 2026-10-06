@@ -3,8 +3,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from .constants import CELL_DECIMAL, CELL_PERCENT, CELL_PERCENT_DIGITS
 
 
-# One cell of the Tank card's grid: a caption over the value, an optional dimmed note after it, the value's tone or its
-# rating scale colour (`#RRGGBB`).
 def cell(label, value, note=None, tone='text', color=None):
     return {'label': label, 'value': value, 'note': note, 'tone': tone, 'color': color}
 

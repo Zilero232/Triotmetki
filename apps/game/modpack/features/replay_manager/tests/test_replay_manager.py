@@ -11,7 +11,7 @@ import unittest
 
 import _support
 from otmetki.core.replay_file import MAGIC, read_header
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 from otmetki.features.replay_manager.i18n import STRINGS
 from otmetki.features.replay_manager.model import (
     is_taken,

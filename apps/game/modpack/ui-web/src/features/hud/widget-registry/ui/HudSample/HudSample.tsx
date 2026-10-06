@@ -16,7 +16,7 @@ export const HudSample = ({ widget, text, className, scale, minScale, fallback }
   }
 
   return (
-    <FitBox className={className} fallback={fallback} max={scale} minScale={minScale}>
+    <FitBox className={className} contentKey={sample.contentKey} fallback={fallback} max={scale} minScale={minScale}>
       <div className={s.sample}>{sample.widget ? sample.widget.node : <HudLines lines={sample.lines} />}</div>
     </FitBox>
   );

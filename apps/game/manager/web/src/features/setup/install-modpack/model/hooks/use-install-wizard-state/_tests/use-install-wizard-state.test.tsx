@@ -54,10 +54,46 @@ describe('useInstallWizardState', () => {
       { wrapper }
     );
 
-    await waitFor(() => expect(result.current.plan).not.toBeNull());
+    await waitFor(() => expect(result.current.plan?.otherMods.length).toBeGreaterThan(0));
 
-    expect(result.current.plan?.otherMods.length).toBeGreaterThan(0);
     expect(result.current.removeOthers.size).toBe(0);
+  });
+
+  it('ticks another mod for removal when the player does', async () => {
+    const { wrapper } = setup();
+    const { result } = renderHook(
+      () => useInstallWizardState({ initialPreset: null, initialComponents: null, startAtReview: false, profileId: null }),
+      { wrapper }
+    );
+
+    await waitFor(() => expect(result.current.plan?.otherMods.length).toBeGreaterThan(0));
+    act(() => result.current.onToggleOther({ id: result.current.plan?.otherMods[0]?.path ?? '', checked: true }));
+
+    expect(result.current.removeOthers.size).toBe(1);
+  });
+
+  it('never steps past the last step', async () => {
+    const { wrapper } = setup();
+    const { result } = renderHook(
+      () => useInstallWizardState({ initialPreset: null, initialComponents: null, startAtReview: true, profileId: null }),
+      { wrapper }
+    );
+
+    act(() => result.current.goNext());
+
+    expect(result.current.isLastStep).toBe(true);
+  });
+
+  it('never steps back before the first step', () => {
+    const { wrapper } = setup();
+    const { result } = renderHook(
+      () => useInstallWizardState({ initialPreset: null, initialComponents: null, startAtReview: false, profileId: null }),
+      { wrapper }
+    );
+
+    act(() => result.current.goBack());
+
+    expect(result.current.isFirstStep).toBe(true);
   });
 
   it('installs the selection with its libraries and removes nothing by default', async () => {
@@ -78,7 +114,7 @@ describe('useInstallWizardState', () => {
     });
   });
 
-  it('writes the settings of the profile it installs, once the install succeeded', async () => {
+  const installProfile = async () => {
     const { calls, navigation, wrapper } = setup();
     const { result } = renderHook(
       () => useInstallWizardState({ initialPreset: null, initialComponents: ['core'], startAtReview: true, profileId: 'a1b2c3d4e5f6' }),
@@ -89,10 +125,18 @@ describe('useInstallWizardState', () => {
     act(() => result.current.onInstall());
     await waitFor(() => expect(navigation.navigate).toHaveBeenCalledWith({ page: 'home' }));
 
-    const commands = calls.map((call) => call.command);
-    const activate = calls.find((call) => call.command === COMMANDS.activateProfile);
+    return calls;
+  };
+
+  it('writes the settings of the profile it installs once the install succeeded', async () => {
+    const commands = (await installProfile()).map((call) => call.command);
 
     expect(commands.indexOf(COMMANDS.activateProfile)).toBeGreaterThan(commands.indexOf(COMMANDS.installModpack));
+  });
+
+  it('writes the settings of the profile it was asked to install', async () => {
+    const activate = (await installProfile()).find((call) => call.command === COMMANDS.activateProfile);
+
     expect(activate?.args).toEqual({ clientPath: clients.selected, id: 'a1b2c3d4e5f6' });
   });
 });

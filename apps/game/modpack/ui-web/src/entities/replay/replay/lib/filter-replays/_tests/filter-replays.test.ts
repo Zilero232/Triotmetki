@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest';
 import type { ReplayFilters } from '../../../model/schemas';
 
 import { replayItem } from '../../../_tests/fixtures';
-import { REPLAY_FILTER } from '../../../config';
-import { activeFilterCount, clearFilters, DEFAULT_REPLAY_FILTERS, filterReplays, matchesReplay } from '../filter-replays';
+import { DEFAULT_REPLAY_FILTERS, REPLAY_FILTER } from '../../../config';
+import { activeFilterCount, clearFilters, filterReplays, matchesReplay } from '../filter-replays';
 
 const NOW = 1_790_600_000;
 const DAY = 86_400;

@@ -58,7 +58,7 @@ class ResearchTest(unittest.TestCase):
         assert to_elite(dict(RESEARCH, elite=True)) is None
 
     def test_a_next_tank_adds_the_modules_it_needs_first(self):
-        by_name = dict((row['name'], row['need']) for row in next_vehicles(RESEARCH))
+        by_name = {row['name']: row['need'] for row in next_vehicles(RESEARCH)}
 
         assert by_name == {u'T-54': 20000 + 60000 - 15000, u'IS': 40000 - 15000}
 

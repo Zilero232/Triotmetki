@@ -1,19 +1,20 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .....core.compat import is_number
+from .....core.compat import fraction, is_number
+from .....core.hit_book import PART_CHASSIS, PART_HULL
 from .constants import FIGURE, FIGURE_ORDER, MIDDLE, SHAPE_KEYS
 
 
 def _fraction(value):
     if not is_number(value):
         return MIDDLE
-    return min(1.0, max(0.0, float(value)))
+    return fraction(float(value))
 
 
 # The schematic draws each track as its own rectangle: a chassis hit's x picks the track and spans half the width.
 def _shape_and_across(part, x):
-    if part != 'chassis':
-        return (part if part in FIGURE else 'hull'), x
+    if part != PART_CHASSIS:
+        return (part if part in FIGURE else PART_HULL), x
     if x < MIDDLE:
         return 'chassis_left', x * 2
     return 'chassis_right', (x - MIDDLE) * 2

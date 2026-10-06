@@ -1,1 +1,1 @@
-export { panelFit, panelLayer, panelTone, stackOrder, stageFrame, stageWidthFor } from './panel-view';
+export { panelLook, placedPanels, stackOrder, stageFrame, stageWidthFor } from './panel-view';

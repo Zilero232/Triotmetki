@@ -150,8 +150,6 @@ def _feature_component(feature, sources):
     )
 
 
-# A feature's other component (settings PARTS): a row of its own with its components.json section, config.json switch
-# and editor, for a feature that draws more than one thing (the marks: the battle panel and the hangar Tank card).
 def _part_component(feature, part, sources):
     part_id = part['id']
     section = sources.section(part_id)

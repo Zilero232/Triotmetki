@@ -5,7 +5,7 @@ from ....core.codec import encode_json, parse_json_body
 from ....core.log import safe
 from ...payload import REALM
 from ...version import VERSION
-from .. import BIND_PATH, BindError, build_bind_request, parse_bind_response
+from .. import BIND_PATH, REASON_NO_ACCOUNT, BindError, build_bind_request, parse_bind_response
 from ..messages import failure_key
 
 
@@ -30,7 +30,7 @@ class Binder(object):
         try:
             request = build_bind_request(raw_code, app.account_id, VERSION, client_version(), REALM)
         except BindError as error:
-            key = 'bind_no_account' if error.reason == 'no_account' else 'bind_invalid_code'
+            key = 'bind_no_account' if error.reason == REASON_NO_ACCOUNT else 'bind_invalid_code'
             app.ui.notify(app.translate(key))
             return
         self._send(request, app.account_id)

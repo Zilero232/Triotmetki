@@ -20,6 +20,8 @@ from .constants import (
     GLYPH_SCHEME,
     ICON_NAME_LIMIT,
     ICONS_ROOT,
+    SHELL_FOLDER_SMALL,
+    SHELL_FOLDERS,
     IMAGE_SCHEME,
     LOWER_CASE_TAGS,
     LOWER_CASE_TINTS,
@@ -103,7 +105,7 @@ def shell_icon(name, premium=False, kind='small'):
         return None
     if premium and stem in PREMIUM_SHELLS and not stem.endswith(PREMIUM_SUFFIX):
         stem += PREMIUM_SUFFIX
-    folder = 'ammopanel/battle_ammo' if kind == 'battle_ammo' else 'shell/small'
+    folder = SHELL_FOLDERS.get(kind, SHELL_FOLDER_SMALL)
     return image('%s/%s/%s.png' % (ICONS_ROOT, folder, stem), 'damage')
 
 
@@ -157,7 +159,7 @@ def resolve(value, exists):
     """`value` (a widget payload) with every client image whose file `exists(path)` denies replaced by its fallback
     glyph (or None when it has none)."""
     if isinstance(value, dict):
-        return dict((key, resolve(item, exists)) for key, item in value.items())
+        return {key: resolve(item, exists) for key, item in value.items()}
     if isinstance(value, list):
         return [resolve(item, exists) for item in value]
     if isinstance(value, string_types) and to_text(value).startswith(IMAGE_SCHEME):

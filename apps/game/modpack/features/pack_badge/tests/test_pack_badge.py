@@ -41,8 +41,10 @@ class IsAnonymisedTest(unittest.TestCase):
     def test_a_fake_name_other_than_the_name_is_anonymised(self):
         self.assertTrue(is_anonymised('Tanker', 'Player123'))
 
-    def test_the_same_name_or_none_is_not(self):
+    def test_the_same_name_is_not_anonymised(self):
         self.assertFalse(is_anonymised('Tanker', 'Tanker'))
+
+    def test_no_fake_name_is_not_anonymised(self):
         self.assertFalse(is_anonymised('Tanker', ''))
 
 

@@ -5,7 +5,6 @@ from .constants import ERROR_BATTLE, ERROR_MISSING, ERROR_PLAYING, ERROR_UNAVAIL
 from .version import compatible
 
 
-# Why the client cannot start `replay` now (an error reason), or None when it can.
 def play_refusal(replay, client_version, in_battle, playing, available):
     if not available:
         return ERROR_UNAVAILABLE

@@ -33,7 +33,7 @@ from otmetki.core.hud.stock import (
 )
 from otmetki.core.hud.surface import SPACE_BATTLE, HudSurface
 from otmetki.core.hud.widget import TONES, WIDGET_VERSION, color_override, tone, widget
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 
 HUD_PROTOCOL_CONSTANTS = os.path.join(
     _support.MODPACK_DIR,

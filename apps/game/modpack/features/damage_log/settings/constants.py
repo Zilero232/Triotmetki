@@ -2,7 +2,11 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 SWITCH = 'battle_damage_log'
 PANEL_ID = 'damage_log'
-STYLES = ('full', 'compact', 'minimal', 'custom')
+STYLE_FULL = 'full'
+STYLE_COMPACT = 'compact'
+STYLE_MINIMAL = 'minimal'
+STYLE_CUSTOM = 'custom'
+STYLES = (STYLE_FULL, STYLE_COMPACT, STYLE_MINIMAL, STYLE_CUSTOM)
 SECTIONS = ('both', 'dealt', 'received')
 # Colour sets of the text lines (model PALETTES): the classic one, our graphite and gold, high contrast, colour-blind
 # safe.

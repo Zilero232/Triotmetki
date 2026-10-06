@@ -8,7 +8,7 @@ import unittest
 import _support
 from otmetki.core.events import EVENT_COMPONENT_SETTINGS, EventBus
 from otmetki.core.hud import ComponentConfig
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 from otmetki.features.hangar_tweaks.i18n import STRINGS
 from otmetki.features.hangar_tweaks.settings import SWITCH
 
@@ -39,7 +39,7 @@ class App(object):
 class HangarTweaksClientTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         self.purge()
         for name in STUBBED:
             sys.modules[name] = types.ModuleType(str(name))

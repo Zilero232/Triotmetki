@@ -6,6 +6,7 @@ export const NUMBER_FORMAT = {
   decimalComma: ',',
   percent: '%',
   dash: '—',
+  percentDigits: 2,
   kiloFrom: 100_000,
   kiloSuffix: 'k',
   secondsPerMinute: 60,

@@ -137,9 +137,17 @@ fn is_strictly_inside(path: &Path, root: &Path) -> bool {
 }
 
 fn resolved(path: &Path) -> Option<PathBuf> {
-    fs::canonicalize(path)
-        .ok()
-        .or_else(|| path.parent().and_then(|parent| fs::canonicalize(parent).ok()).zip(path.file_name()).map(|(parent, name)| parent.join(name)))
+    let mut missing = Vec::new();
+    let mut existing = path;
+
+    loop {
+        if let Ok(real) = fs::canonicalize(existing) {
+            return Some(missing.iter().rev().fold(real, |resolved, name| resolved.join(name)));
+        }
+
+        missing.push(existing.file_name()?);
+        existing = existing.parent()?;
+    }
 }
 
 fn is_within(path: &Path, root: &Path) -> bool {
@@ -147,9 +155,9 @@ fn is_within(path: &Path, root: &Path) -> bool {
         return false;
     }
 
-    match (resolved(path), fs::canonicalize(root).ok()) {
+    match (resolved(path), resolved(root)) {
         (Some(path), Some(root)) => is_strictly_inside(&path, &root),
-        _ => true,
+        _ => false,
     }
 }
 

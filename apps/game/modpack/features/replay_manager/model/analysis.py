@@ -39,7 +39,6 @@ def parse_statuses(data, account_id):
     return statuses
 
 
-# The replays this game session uploaded whose analysis the site has not finished yet, and the ones it has.
 class AnalysisWatch(object):
 
     def __init__(self):

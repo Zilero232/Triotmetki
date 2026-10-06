@@ -10,13 +10,13 @@ STATUS_COMPATIBLE = 'compatible'
 
 # tools/build/archive.file_name: a split package is <package id>_<version>.<ext>, the single one
 # otmetki.<version>.<ext>.
-SPLIT_FILE = re.compile(r'^(net\.triotmetki\.[a-z0-9_]+|otmetki\.companion)_(\d[\w.-]*)\.(?:mtmod|wotmod)$')
-SINGLE_FILE = re.compile(r'^otmetki\.(\d[\w.-]*)\.(?:mtmod|wotmod)$')
+SPLIT_FILE = re.compile(r'^(net\.triotmetki\.[a-z0-9_]+|otmetki\.companion)_(\d[\w.-]*)\.(?:mtmod|wotmod)\Z')
+SINGLE_FILE = re.compile(r'^otmetki\.(\d[\w.-]*)\.(?:mtmod|wotmod)\Z')
 SINGLE_ID = 'otmetki'
-GAME_FOLDER = re.compile(r'^\d+(?:\.\d+){1,3}$')
+GAME_FOLDER = re.compile(r'^\d+(?:\.\d+){1,3}\Z')
 VERSION_NUMBERS = re.compile(r'^\d+(?:\.\d+)*')
 # The whole version the index names, shown in the update notification: anything else (markup included) is no release.
-RELEASE_VERSION = re.compile(r'^\d+(?:\.\d+){0,3}(?:-[0-9A-Za-z.]+)?$')
+RELEASE_VERSION = re.compile(r'^\d+(?:\.\d+){0,3}(?:-[0-9A-Za-z.]+)?\Z')
 
 MAX_VERSION = 32
 STATE_KEY = 'update_notice'

@@ -124,8 +124,6 @@ class ReplayAutoUpload(object):
         if self.queue.add(arena_unique_id, self.app.account_id, started_at, time.time()):
             log('replay queued for upload: %s' % arena_unique_id)
 
-    # The replay manager's 'upload' (core.events.EVENT_REPLAY_UPLOAD_REQUEST): the same opt-in switch and binding as the
-    # automatic upload; `request` None only asks whether an upload would be accepted.
     def on_request(self, request, reply):
         reply(self._request_state(request))
 

@@ -26,7 +26,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import json
 
-from ...compat import is_number, string_types, to_text
+from ...compat import clamp, is_number, string_types, to_text
+from ...log import log_exception
 from ..panel.constants import ATTACH_KINDS
 from .constants import (
     ALIGN_X,
@@ -83,14 +84,14 @@ def _is_plain_number(value):
 def _position(value):
     if not _is_plain_number(value):
         return None
-    return max(-POSITION_LIMIT, min(POSITION_LIMIT, int(round(value))))
+    return clamp(int(round(value)), -POSITION_LIMIT, POSITION_LIMIT)
 
 
 def _scale(value):
     if not _is_plain_number(value):
         return None
     low, high = SCALE_LIMITS
-    return round(max(low, min(high, float(value))), 2)
+    return round(clamp(float(value), low, high), 2)
 
 
 def _moved(message):
@@ -308,15 +309,30 @@ class HudSurface(object):
     def encode(self, space, cursor, edit=False):
         """`state(space, cursor, edit)` as JSON text, built from the panels' kept fragments."""
         head = json.dumps(self._head(space, cursor, edit), **HUD_JSON)
-        panels = ','.join(self._fragment(alias) for alias in self.aliases(space))
+        fragments = (self._fragment(alias) for alias in self.aliases(space))
+        panels = ','.join(text for text in fragments if text)
         return '%s,"panels":[%s]}' % (head[:-1], panels)
 
     def _fragment(self, alias):
         text = self.fragments.get(alias)
         if text is None:
-            text = json.dumps(self.panel(alias), **HUD_JSON)
+            text = self._encoded(alias)
             self.fragments[alias] = text
         return text
+
+    # A feature that puts a value JSON cannot hold into its widget (a Math.Vector3, a set) hides its own panel, logged
+    # once until its props change, instead of blanking the whole HUD on every push.
+    def _encoded(self, alias):
+        panel = self.panel(alias)
+        try:
+            return json.dumps(panel, **HUD_JSON)
+        except (TypeError, ValueError):
+            log_exception('HUD panel %s is not JSON, hidden' % alias)
+        panel.update(text='', widget=None, visible=False)
+        try:
+            return json.dumps(panel, **HUD_JSON)
+        except (TypeError, ValueError):
+            return ''
 
     def handle(self, raw):
         decoded = decode_hud_message(raw)
@@ -329,6 +345,6 @@ class HudSurface(object):
         if fields['id'] not in self.labels:
             return None
 
-        changes = dict((key, value) for key, value in fields.items() if key != 'id')
+        changes = {key: value for key, value in fields.items() if key != 'id'}
         self.update(fields['id'], changes)
         return decoded

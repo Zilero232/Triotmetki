@@ -36,7 +36,7 @@ class WindowLayout(object):
         settings = self.settings()
         if settings is None:
             return dict(DEFAULTS)
-        return dict((key, settings.get(key)) for key in DEFAULTS)
+        return {key: settings.get(key) for key in DEFAULTS}
 
     def update(self, message):
         if self.settings() is None:
@@ -47,4 +47,4 @@ class WindowLayout(object):
 def unmoved_layout(stored, old_defaults, new_defaults):
     if any(stored.get(key) != value for key, value in old_defaults.items()):
         return {}
-    return dict((key, new_defaults[key]) for key in old_defaults)
+    return {key: new_defaults[key] for key in old_defaults}

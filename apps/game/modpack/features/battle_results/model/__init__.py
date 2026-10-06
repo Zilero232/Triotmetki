@@ -4,6 +4,7 @@ from ....core.compat import as_int, is_int
 from ....core.moe import rating_change
 from ....core.format import COLOR_DOWN, COLOR_UP, font, format_number
 from ....core.templates import render
+from ..settings.constants import BONUS_ALL
 from .constants import ASSIST_KEYS, COST_KEYS, RANDOM_BONUS_TYPE, RESULT_COLORS, STAT_FIELDS
 from .notice import APPEND, HOLD, PUSH, StockNotices, arena_key, with_lines  # noqa: F401
 from .page import build_page, compact, page_actions, restore_history, session_of, trimmed  # noqa: F401
@@ -31,7 +32,7 @@ def _battle_fields(event, map_label):
 
 
 def _stat_fields(stats):
-    fields = dict((key, as_int(stats.get(source))) for key, source in STAT_FIELDS.items())
+    fields = {key: as_int(stats.get(source)) for key, source in STAT_FIELDS.items()}
     fields['alive'] = bool(stats.get('is_alive'))
     fields['assist'] = sum(fields[key] for key in ASSIST_KEYS)
     fields['net_credits'] = fields['credits'] - sum(fields[key] for key in COST_KEYS)
@@ -73,7 +74,7 @@ def build_summary(event, moe_before=None, map_label=None):
 
 
 def counts(summary, bonus_types):
-    if bonus_types == 'all':
+    if bonus_types == BONUS_ALL:
         return True
     return summary.get('bonus_type') == RANDOM_BONUS_TYPE
 

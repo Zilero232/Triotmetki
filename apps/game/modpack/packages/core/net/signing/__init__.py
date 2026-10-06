@@ -32,24 +32,6 @@ def sign(secret, body):
     return SIGNATURE_PREFIX + digest
 
 
-def _constant_time_equals(left, right):
-    compare = getattr(hmac, 'compare_digest', None)
-    if compare is not None:
-        return compare(to_bytes(left), to_bytes(right))
-    left = to_bytes(left)
-    right = to_bytes(right)
-    if len(left) != len(right):
-        return False
-    result = 0
-    for a, b in zip(bytearray(left), bytearray(right)):
-        result |= a ^ b
-    return result == 0
-
-
-def verify(secret, body, signature):
-    return _constant_time_equals(sign(secret, body), signature)
-
-
 def request_path(url):
     rest = url.split('://', 1)[-1]
     slash = rest.find('/')
@@ -70,24 +52,10 @@ def signed_message(method, path, timestamp, nonce, body, extra_headers=()):
     return to_bytes('\n'.join(lines) + '\n') + to_bytes(body)
 
 
-def verify_request(secret, method, url, headers, body, signed_names=()):
-    """Whether `headers` carry a valid v2 signature of the request (the server's check, for tests and tools)."""
-    extra = [(name, headers[name]) for name in signed_names if name in headers]
-    message = signed_message(
-        method,
-        request_path(url),
-        headers.get(TIMESTAMP_HEADER, ''),
-        headers.get(NONCE_HEADER, ''),
-        body,
-        extra,
-    )
-    return verify(secret, message, headers.get(SIGNATURE_HEADER, ''))
-
-
 def server_time(headers):
     if not isinstance(headers, dict):
         return None
-    values = dict((to_text(key).lower(), to_text(value).strip()) for key, value in headers.items())
+    values = {to_text(key).lower(): to_text(value).strip() for key, value in headers.items()}
     raw = values.get(SERVER_TIME_HEADER.lower(), '')
     if raw.isdigit():
         return float(raw)

@@ -7,7 +7,8 @@ KIND = 'gun_arc'
 # player's modsettings.dat): a marker left and one right of the reticle where the gun stops at each traverse limit, in
 # one of five styles, plus an optional marker in the middle of the traverse sector; both default to the first choice.
 MARKERS = ('corner', 'brackets', 'big_semicircle', 'semicircle', 'octagon')
-CENTRE_MARKERS = ('none', 'line', 'dot', 'triangle', 'octagon')
+CENTRE_NONE = 'none'
+CENTRE_MARKERS = (CENTRE_NONE, 'line', 'dot', 'triangle', 'octagon')
 MARK_NAMES = ('left', 'right', 'centre')
 
 # The markers follow the camera, so they are redrawn 20 times a second; GunConstraints' «Ускоренная отрисовка» (off by

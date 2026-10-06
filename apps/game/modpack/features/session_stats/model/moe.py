@@ -43,11 +43,11 @@ class SessionMoe(object):
         tanks = data.get('tanks') if isinstance(data.get('tanks'), dict) else {}
         self.session_id = data.get('session_id')
         entries = ((key, _entry(value)) for key, value in tanks.items())
-        self.tanks = dict((key, entry) for key, entry in entries if entry)
+        self.tanks = {key: entry for key, entry in entries if entry}
         self.counter = max([entry['order'] for entry in self.tanks.values()] or [0])
 
     def to_dict(self):
-        return {'session_id': self.session_id, 'tanks': dict((key, dict(entry)) for key, entry in self.tanks.items())}
+        return {'session_id': self.session_id, 'tanks': {key: dict(entry) for key, entry in self.tanks.items()}}
 
     def add(self, session_id, tank_id, change, percent):
         if session_id != self.session_id:

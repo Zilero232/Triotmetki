@@ -14,7 +14,8 @@ from ...payload import PayloadError, build_battle_event, build_battle_start_even
 from ...queue_timer import QueueTimer
 from ...shots.client import ShotTracker
 from ..constants import PLAYED_ARENAS_LIMIT, RESULTS_POLL_ATTEMPTS, RESULTS_POLL_EVERY_S, SEEN_ARENAS_LIMIT
-from .results import POSTED_EVENT, cached_results, posted_arena_id, results_service
+from .constants import POSTED_EVENT
+from .results import cached_results, posted_arena_id, results_service
 
 
 class BattleCapture(object):

@@ -1,8 +1,9 @@
+// @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
 
 import type { OverlayDrag } from '../drag-motion.types';
 
-import { beyondSlop, dragOutcome } from '../drag-motion';
+import { beyondSlop, dragOutcome, pressedTarget } from '../drag-motion';
 
 const SCREEN = { width: 1920, height: 1080 };
 
@@ -60,5 +61,21 @@ describe(dragOutcome, () => {
     const outcome = dragOutcome({ drag: drag({ button: true, moved: true }), press: { clientX: 101, clientY: 101 }, screen: SCREEN });
 
     expect(outcome.kind).toBe('moved');
+  });
+});
+
+const TARGET = { id: 'clock', rect: { left: 40, top: 60, width: 200, height: 40 }, button: false, movable: true, pointer: false, scale: 1 };
+
+describe(pressedTarget, () => {
+  it('takes the movable panel under a left press during an edit', () => {
+    expect(pressedTarget({ edit: true, targets: [TARGET], press: { button: 0, clientX: 100, clientY: 80 } })).toBe(TARGET);
+  });
+
+  it('takes nothing outside an edit', () => {
+    expect(pressedTarget({ edit: false, targets: [TARGET], press: { button: 0, clientX: 100, clientY: 80 } })).toBeNull();
+  });
+
+  it('takes nothing on a right press', () => {
+    expect(pressedTarget({ edit: true, targets: [TARGET], press: { button: 2, clientX: 100, clientY: 80 } })).toBeNull();
   });
 });

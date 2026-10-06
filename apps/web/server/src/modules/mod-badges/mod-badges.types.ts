@@ -9,3 +9,9 @@ export type SaveBadgePreferenceInput = {
   device: AuthenticatedDevice;
   visible: boolean;
 };
+
+export type ClaimBadgeQuotaInput = {
+  deviceId: string;
+  accountIds: readonly number[];
+  now: Date;
+};

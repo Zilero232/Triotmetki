@@ -33,6 +33,7 @@ from ..model.received import is_ricochet
 from ..model.shots import own_shot_health
 from ..model.text import format_damage_log
 from ..model.widget import damage_log_widget
+from ..model.constants import KIND_DAMAGE
 from .constants import AMMO_RACK_DEVICE, AMMO_RACK_STATES, CRIT_KINDS, DEALT_KINDS, EVENT_KINDS
 
 try:
@@ -129,7 +130,7 @@ class DamageLogPanel(BattlePanel):
             return self.log.add_crits(kind, call(extra, 'getCritsCount', 0), hit)
 
         added = self.log.add(kind, call(extra, 'getDamage', 0), hit)
-        if added and kind == 'damage':
+        if added and kind == KIND_DAMAGE:
             self._describe(vehicle_id)
         return added
 

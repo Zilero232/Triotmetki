@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .constants import COLORS, RADIUS_M
+from .constants import COLORS, MODE_ALWAYS, MODE_HOTKEY, RADIUS_M
 
 # Fair play: a circle of a fixed radius around the player's own tank, drawn on the ground like the game's own area
 # markers. It is placed from the own vehicle only and says nothing about other vehicles; nothing is changed in the game.
@@ -22,7 +22,7 @@ class CircleState(object):
         self.alive = True
 
     def toggle(self):
-        if self.mode != 'hotkey':
+        if self.mode != MODE_HOTKEY:
             return False
         self.toggled = not self.toggled
         return True
@@ -38,4 +38,4 @@ class CircleState(object):
         return changed
 
     def wanted(self):
-        return self.alive and (self.mode == 'always' or self.toggled)
+        return self.alive and (self.mode == MODE_ALWAYS or self.toggled)

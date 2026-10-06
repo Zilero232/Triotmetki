@@ -1,8 +1,8 @@
-import type { LiveRect } from '@/entities/hud/panel-layout';
+import type { DragTarget, LiveRect } from '@/entities/hud/panel-layout';
 
-import { dragTo, pastSlop, placementOf } from '@/entities/hud/panel-layout';
+import { dragTo, pastSlop, placementOf, screenScale, targetAt } from '@/entities/hud/panel-layout';
 
-import type { DragMotionInput, DragOutcome, OverlayDrag, PressDragInput } from './drag-motion.types';
+import type { DragMotionInput, DragOutcome, OverlayDrag, PressDragInput, PressedTargetInput } from './drag-motion.types';
 
 import { EDIT_PANELS } from '../../config';
 
@@ -30,4 +30,12 @@ export const dragOutcome = ({ drag, press, screen }: DragMotionInput): DragOutco
   }
 
   return { kind: 'moved', placement: placementOf({ rect: liveAt({ drag, press, screen }).rect, screen }) };
+};
+
+export const pressedTarget = ({ edit, targets, press }: PressedTargetInput): DragTarget | null => {
+  if (!edit || press.button > 0) {
+    return null;
+  }
+
+  return targetAt({ targets, press, scale: screenScale() });
 };

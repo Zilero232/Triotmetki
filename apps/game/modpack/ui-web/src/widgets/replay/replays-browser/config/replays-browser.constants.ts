@@ -6,6 +6,7 @@ export const REPLAYS_BROWSER = {
   renameMaxLength: 100,
   progressScale: 100,
   winRateDigits: 0,
+  millisecondsPerSecond: 1000,
   templateToken: /\{(\w+)\}/g,
   separators: { name: ', ', meta: ' · ', accuracy: ' / ' },
   uploadHints: { ready: null, off: 'uploadOff', unbound: 'uploadUnbound', missing: 'uploadMissing' },

@@ -1,1 +1,1 @@
-export { sortedBy, viewOf } from './browser-view';
+export { nowSeconds, sortedBy, viewOf } from './browser-view';

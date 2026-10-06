@@ -1,5 +1,3 @@
-import { match, P } from 'ts-pattern';
-
 import { circlePath, pathNumber, polarPoint } from '@/shared/lib/radial';
 
 import type {
@@ -42,12 +40,17 @@ const arcPath = ({ part, frame, width }: PathInput<ArcPart>): string => {
 const ringPath = ({ part, frame, width }: PathInput<RingPart>): string =>
   circlePath({ centre: snap({ value: frame.centre, width }), radius: Math.round(part.r * frame.scale) });
 
-const strokedPath = (input: PathInput<StrokedPart>): string =>
-  match(input)
-    .with({ part: { kind: 'line' } }, linePath)
-    .with({ part: { kind: 'arc' } }, arcPath)
-    .with({ part: { kind: 'ring' } }, ringPath)
-    .exhaustive();
+const strokedPath = ({ part, frame, width }: PathInput<StrokedPart>): string => {
+  if (part.kind === 'line') {
+    return linePath({ part, frame, width });
+  }
+
+  if (part.kind === 'arc') {
+    return arcPath({ part, frame, width });
+  }
+
+  return ringPath({ part, frame, width });
+};
 
 const discPrimitives = ({ part, frame, outline }: PrimitivesInput<DiscPart>): ReticlePrimitive[] => {
   const diameter = Math.max(1, Math.round(2 * part.r * frame.scale));
@@ -78,11 +81,8 @@ const strokedPrimitives = ({ part, frame, outline }: PrimitivesInput<StrokedPart
   return [halo, body];
 };
 
-const partPrimitives = (input: PrimitivesInput): ReticlePrimitive[] =>
-  match(input)
-    .with({ part: { kind: 'disc' } }, discPrimitives)
-    .with({ part: { kind: P.union('line', 'arc', 'ring') } }, strokedPrimitives)
-    .exhaustive();
+const partPrimitives = ({ part, frame, outline }: PrimitivesInput): ReticlePrimitive[] =>
+  part.kind === 'disc' ? discPrimitives({ part, frame, outline }) : strokedPrimitives({ part, frame, outline });
 
 export const reticleMarkPrimitives = ({ shape, size, outline }: ReticleMarkInput): ReticlePrimitive[] => {
   const frame = { centre: size / 2, scale: size / RETICLE_MARKS.grid };
@@ -96,7 +96,7 @@ export const reticleMarkPrimitives = ({ shape, size, outline }: ReticleMarkInput
 const sourceAttributes = (primitive: ReticlePrimitive): string => {
   const { paint } = RETICLE_MARKS;
   const colour = primitive.paint === 'mark' ? paint.mark : paint.outline;
-  const opacity = { mark: 1, outline: paint.outlineOpacity, shade: paint.shadeOpacity }[primitive.paint];
+  const opacity = paint.opacity[primitive.paint];
   const alpha = opacity === 1 ? '' : ` opacity="${opacity}"`;
 
   if (primitive.stroke === null) {

@@ -11,10 +11,6 @@ class EscapeWatchdog(object):
         self.asked = 0
         self.answered = 0
 
-    @property
-    def is_waiting(self):
-        return self.answered < self.asked
-
     def ask(self):
         self.asked += 1
         asked = self.asked

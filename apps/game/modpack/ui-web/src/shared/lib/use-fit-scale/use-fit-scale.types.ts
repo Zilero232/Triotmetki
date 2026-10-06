@@ -1,5 +1,5 @@
 export type UseFitScaleInput = {
-  content: unknown;
+  contentKey: string;
   max?: number;
   frames?: number;
 };

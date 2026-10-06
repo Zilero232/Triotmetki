@@ -3,7 +3,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.game import client_attr, service
 from ....core.compat import to_text
-from ....core.log import log_exception
+from ....core.log import guarded
+from ..model.constants import KIND_SHELLS
 from .constants import KIND_TYPES, SPECIAL_DEVICE_FLAGS
 
 # RU 1.45 client source: IItemsCache.items.getItems(itemTypeID, criteria) and getVehicles(REQ_CRITERIA.INVENTORY);
@@ -46,7 +47,7 @@ def _fitting_shells(items, criteria, vehicles):
 
 
 def _fitting(items, criteria, vehicles, kind, type_ids):
-    if kind == 'shells':
+    if kind == KIND_SHELLS:
         return _fitting_shells(items, criteria, vehicles)
     suitable = items.getItems(type_ids, criteria.INVENTORY | criteria.VEHICLE.SUITABLE(vehicles, type_ids))
     return set(suitable.keys())
@@ -67,24 +68,21 @@ def _item(item, kind, fitting):
     }
 
 
+@guarded('depot seller: depot', fallback=[])
 def depot_items():
-    try:
-        items = _items_cache()
-        criteria = client_attr('gui.shared.utils.requesters', 'REQ_CRITERIA')
-        if items is None or criteria is None:
-            return []
-        vehicles = list(items.getVehicles(criteria.INVENTORY).values())
-        found = []
-        for kind, names in KIND_TYPES:
-            type_ids = _type_ids(names)
-            if not type_ids:
-                continue
-            fitting = _fitting(items, criteria, vehicles, kind, type_ids)
-            found.extend(_item(item, kind, fitting) for item in items.getItems(type_ids, criteria.INVENTORY).values())
-        return found
-    except Exception:
-        log_exception('depot seller: depot')
+    items = _items_cache()
+    criteria = client_attr('gui.shared.utils.requesters', 'REQ_CRITERIA')
+    if items is None or criteria is None:
         return []
+    vehicles = list(items.getVehicles(criteria.INVENTORY).values())
+    found = []
+    for kind, names in KIND_TYPES:
+        type_ids = _type_ids(names)
+        if not type_ids:
+            continue
+        fitting = _fitting(items, criteria, vehicles, kind, type_ids)
+        found.extend(_item(item, kind, fitting) for item in items.getItems(type_ids, criteria.INVENTORY).values())
+    return found
 
 
 def _member(tankman):
@@ -99,17 +97,14 @@ def _member(tankman):
     }
 
 
+@guarded('depot seller: barracks', fallback=[])
 def reserve_crew():
-    try:
-        items = _items_cache()
-        if items is None:
-            return []
-        tankmen = items.getInventoryTankmen()
-        members = tankmen.values() if hasattr(tankmen, 'values') else tankmen
-        return [_member(tankman) for tankman in members if not getattr(tankman, 'isInTank', True)]
-    except Exception:
-        log_exception('depot seller: barracks')
+    items = _items_cache()
+    if items is None:
         return []
+    tankmen = items.getInventoryTankmen()
+    members = tankmen.values() if hasattr(tankmen, 'values') else tankmen
+    return [_member(tankman) for tankman in members if not getattr(tankman, 'isInTank', True)]
 
 
 def tankmen_by_id(inv_ids):

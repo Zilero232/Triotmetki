@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .....core.compat import is_number
+from .....core.compat import fraction, is_number
 from .....core.hud.icons import glyph
 from .....core.hud.widget import tone, widget
 from .constants import LIMITS, ROW_GLYPHS, WIDGET_KIND
@@ -22,7 +22,7 @@ def _tile(tile):
 def _progress(value):
     if not is_number(value):
         return None
-    return round(max(0.0, min(1.0, value)), 3)
+    return round(fraction(value), 3)
 
 
 def _row(row):
@@ -37,7 +37,6 @@ def _row(row):
     }
 
 
-# The `battle_summary` widget of the previous battle's card (view.last_view), shown for `show_s` seconds.
 def card_widget(view, show_s):
     return widget(WIDGET_KIND, {
         'card': _text(view['card'], 'card') or u'',

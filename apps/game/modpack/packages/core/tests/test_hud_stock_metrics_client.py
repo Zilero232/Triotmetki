@@ -8,7 +8,7 @@ import unittest
 import _support
 from otmetki.core.events import EventBus
 from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 
 STUBBED = (
     'BigWorld',
@@ -76,7 +76,7 @@ class Backend(HudBackend):
 
 
 def install_stubs():
-    saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+    saved = {name: sys.modules.get(name) for name in STUBBED}
     for name in STUBBED:
         sys.modules[name] = types.ModuleType(str(name))
     sys.modules['BigWorld'].player = lambda: None
@@ -99,9 +99,9 @@ class StockMetricsTest(unittest.TestCase):
 
     def setUp(self):
         self.saved = install_stubs()
-        self.originals = dict(
-            ((owner, name), CLASSES[owner].__dict__[name]) for owner, names in HOOKED.items() for name in names
-        )
+        self.originals = {
+            (owner, name): CLASSES[owner].__dict__[name] for owner, names in HOOKED.items() for name in names
+        }
         from otmetki.core.client.hud.stock import StockControl
         self.layer = HudLayer(Backend(), ComponentConfig(MemoryFile()))
         self.control = StockControl(self.layer, EventBus())

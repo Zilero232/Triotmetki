@@ -4,8 +4,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.compat import int_or_none
 from ....core.format import count_phrase, format_signed
 from ....core.hud.modes import MODE_COMP7, battle_mode
-from ....core.own_result import own_result
-from .constants import KEPT_BATTLES, MIN_STREAK, RESULT_TONES, SHOWN_BATTLES
+from ....core.own_result import RESULT_DRAW, RESULT_TONES, own_result
+from .constants import KEPT_BATTLES, MIN_STREAK, SHOWN_BATTLES
 
 # Fair play: only the player's own Onslaught battles, from the own battle results the client already shows (the
 # `personal` block: the own vehicle's team and the rating change of the post-battle screen). Nothing about other
@@ -13,7 +13,6 @@ from .constants import KEPT_BATTLES, MIN_STREAK, RESULT_TONES, SHOWN_BATTLES
 
 
 def own_battle(arena_id, results):
-    """The own Onslaught battle of `results` ({arena, result, delta, t}), or None for another battle type."""
     if not isinstance(results, dict) or int_or_none(arena_id) is None:
         return None
     common = results.get('common') or {}
@@ -44,9 +43,9 @@ def record(history, battle):
     return (history + [battle])[-KEPT_BATTLES:]
 
 
+# (result, length) of the run of equal results the newest battle ends; a draw ends every run.
 def streak(history):
-    """(result, length) of the run of equal results the newest battle ends; a draw ends every run."""
-    if not history or history[-1]['result'] == 'draw':
+    if not history or history[-1]['result'] == RESULT_DRAW:
         return None, 0
     result = history[-1]['result']
     length = 0

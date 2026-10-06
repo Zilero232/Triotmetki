@@ -60,7 +60,7 @@ class GamefaceSpaceTest(unittest.TestCase):
 
     def setUp(self):
         self.loaded = set(sys.modules)
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED + (GAMEFACE_MODULE,))
+        self.saved = {name: sys.modules.get(name) for name in STUBBED + (GAMEFACE_MODULE,)}
         install_stubs()
         sys.modules.pop(GAMEFACE_MODULE, None)
         self.gameface = importlib.import_module(GAMEFACE_MODULE)
@@ -95,6 +95,48 @@ class GamefaceSpaceTest(unittest.TestCase):
         self.backend.on_message(json.dumps({'type': 'ready'}))
         self.run_frames()
         return view
+
+    def draw(self, *aliases):
+        self.backend.on_message(json.dumps({'type': 'drawn', 'ids': list(aliases)}))
+
+    def test_a_blinking_lamp_logs_its_first_drawing_only(self):
+        self.page_up()
+        lines = []
+        self.gameface.log = lines.append
+
+        for _ in range(3):
+            self.draw(LAMP)
+            self.draw()
+
+        self.assertEqual(len([line for line in lines if 'draws' in line]), 1)
+
+    def test_a_new_window_logs_the_drawing_again(self):
+        self.page_up()
+        self.draw(LAMP)
+        self.backend._on_space_left(1)
+        lines = []
+        self.gameface.log = lines.append
+
+        self.page_up()
+        self.draw(LAMP)
+
+        self.assertEqual(len([line for line in lines if 'draws' in line]), 1)
+
+    def test_the_page_resource_id_is_looked_up_once_it_is_valid(self):
+        lookups = []
+        self.gameface.layout_id = lambda: lookups.append(1) or LAYOUT_ID
+
+        for _ in range(5):
+            self.backend.available()
+
+        self.assertEqual(len(lookups), 1)
+
+    def test_a_missing_page_resource_id_is_looked_up_again(self):
+        answers = [None, LAYOUT_ID]
+        self.gameface.layout_id = lambda: answers.pop(0)
+        self.backend.available()
+
+        self.assertTrue(self.backend.available())
 
     def test_the_window_stays_open_when_the_last_label_goes(self):
         self.page_up()

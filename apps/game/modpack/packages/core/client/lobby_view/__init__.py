@@ -10,7 +10,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ...events import Listeners
 from ...log import log, safe
-from ...lobby_view import BLOCKING_LAYERS, GONE_STATUSES, HANGAR_ALIAS, plain_hangar
+from ...lobby_view import BLOCKING_LAYERS, GONE_STATUSES, HANGAR_ALIAS, HIDDEN_LAYERS, plain_hangar
+from ..game import service
 
 OWN_MODULES = __name__.rsplit('.core.', 1)[0] + '.'
 
@@ -45,9 +46,8 @@ class LobbyViewWatch(object):
             return True
         try:
             from frameworks.wulf import WindowLayer, WindowStatus
-            from helpers import dependency
             from skeletons.gui.impl import IGuiLoader
-            self.manager = dependency.instance(IGuiLoader).windowsManager
+            self.manager = service(IGuiLoader).windowsManager
         except Exception:
             if not self.logged:
                 self.logged = True
@@ -98,6 +98,12 @@ class LobbyViewWatch(object):
             return
         self.visible = visible
         self.listeners.notify(visible)
+
+
+def hidden_layers():
+    """The wulf layers the client's overlay controller hides to show the bare hangar."""
+    from frameworks.wulf import WindowLayer
+    return tuple(getattr(WindowLayer, name) for name in HIDDEN_LAYERS if hasattr(WindowLayer, name))
 
 
 _state = {'watch': None}

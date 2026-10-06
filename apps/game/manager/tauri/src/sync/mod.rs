@@ -3,7 +3,7 @@ mod profiles;
 
 use serde::{Deserialize, Serialize};
 
-pub use merge::{merge_items, Side};
+pub use merge::{merge_items, MergeInput, Side};
 pub use profiles::{apply_profiles, local_profiles, ProfileSyncState, SyncProfile};
 
 use crate::sets::{ComponentSet, Tombstone};
@@ -147,7 +147,16 @@ pub fn remote_changes<T: Stamped + PartialEq>(local: &Side<T>, remote: &Side<T>)
     changed + removed
 }
 
-pub fn decide(local_changes: usize, remote_changes: usize, base: &SyncBase, revision: u64, resolution: Option<Resolution>) -> Decision {
+pub struct DecideInput<'a> {
+    pub local_changes: usize,
+    pub remote_changes: usize,
+    pub base: &'a SyncBase,
+    pub revision: u64,
+    pub resolution: Option<Resolution>,
+}
+
+pub fn decide(input: DecideInput) -> Decision {
+    let DecideInput { local_changes, remote_changes, base, revision, resolution } = input;
     let remote_changed = remote_changes > 0 && base.revision != Some(revision);
 
     match (local_changes > 0, remote_changed, resolution) {

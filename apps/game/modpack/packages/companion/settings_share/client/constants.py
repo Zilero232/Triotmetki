@@ -1,5 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+ACTION_EXPORT = 'export'
+
 POLL_EVERY_S = 120.0
 # Settings-core names (account_helpers/settings_core/settings_constants.py), checked against the RU 1.45
 # client source; a name the core does not know reads as None and is dropped by the whitelist. The

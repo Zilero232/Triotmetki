@@ -6,6 +6,8 @@ from . import detail_mode, section_rows, shown_totals
 from .constants import (
     ASSIST_KINDS,
     KIND,
+    KIND_DAMAGE,
+    KIND_RECEIVED,
     KIND_TONES,
     NOTED_DETAILS,
     RECEIVED_ICONS,
@@ -48,7 +50,7 @@ def row_icon(row):
         return source_icon
     if row['kind'] in ASSIST_KINDS:
         return glyph(row['kind'])
-    if row['kind'] == 'damage':
+    if row['kind'] == KIND_DAMAGE:
         return outcome_icon(row['outcome'])
     return _icon_of(RECEIVED_ICONS.get(row['outcome']))
 
@@ -66,7 +68,7 @@ def signed_amount(row):
     if not damage:
         return None
 
-    return -damage if row['kind'] == 'received' else damage
+    return -damage if row['kind'] == KIND_RECEIVED else damage
 
 
 def row_bar(row, show_hp):
@@ -95,8 +97,6 @@ def row_widget(row, translate, looks):
     }
 
 
-# `wide` is the row detail (model detail_mode) the page lays out 330 px wide: the notes (outcome words, crits, ammo
-# rack, HP left) are in the rows then.
 def damage_log_widget(log, settings, translate, extended=False):
     detail = detail_mode(settings, extended)
     rows = section_rows(log, settings, detail)

@@ -10,6 +10,7 @@ import { useNavigation } from '@/shared/lib';
 
 import { DOCK_ACTIONS } from '../../../config';
 import { statusDock } from '../../../lib';
+import { useDockLines } from '../use-dock-lines';
 
 export const useStatusDock = () => {
   const t = useTranslations('nav.dock');
@@ -26,6 +27,13 @@ export const useStatusDock = () => {
   const { state, action } = statusDock({ hasUsableClient, isInstalled, view });
   const patch = usePatchAction({ kind: action === 'update' || action === 'migrate' ? action : 'check', clientPath });
   const values = statusMessageValues({ status, modpackVersion });
+  const lines = useDockLines({
+    state,
+    stateText: t(`state.${state}`, values),
+    clientVersion: client?.version ?? null,
+    availableVersion: catalog?.modpackVersion ?? null,
+    modpackVersion
+  });
 
   const runAction = () =>
     match(action)
@@ -36,19 +44,6 @@ export const useStatusDock = () => {
       .exhaustive();
 
   const isFirstRunOnScreen = page === 'home' && (action === 'install' || action === 'chooseGame');
-  const stateText = t(`state.${state}`, values);
-  const lines = match(state)
-    .with('noGame', () => ({ primary: client ? t('game', { version: client.version }) : t('noGame'), secondary: stateText }))
-    .with('notInstalled', () => ({
-      primary: stateText,
-      secondary: catalog
-        ? t('available', { version: catalog.modpackVersion, game: client?.version ?? '' })
-        : t('game', { version: client?.version ?? '' })
-    }))
-    .otherwise(() => ({
-      primary: t('modpack', { version: modpackVersion ?? '' }),
-      secondary: t('installedDetail', { state: stateText, version: client?.version ?? '' })
-    }));
 
   return {
     ...lines,

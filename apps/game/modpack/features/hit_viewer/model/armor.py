@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import math
 
-from ....core.compat import is_number
+from ....core.compat import clamp, is_number
 from .constants import MIN_COS, NORMALIZATION_DEG, OVERMATCH_FACTOR, OVERMATCH_RATIO
 
 
@@ -14,7 +14,7 @@ def normalization(shell, caliber, nominal):
 
 
 def _clamped_cos(value):
-    return min(1.0, max(MIN_COS, abs(float(value))))
+    return clamp(abs(float(value)), MIN_COS, 1.0)
 
 
 def plate_analysis(hit_angle_cos, nominal, uses_angle=True, shell=None, caliber=None):

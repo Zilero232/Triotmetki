@@ -7,6 +7,36 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Entries are short: one line per change, saying what the player sees or gets — no implementation details.
 - Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## 0.3.5
+
+### ru
+
+- Новый компонент «Значок модпака»: значок «Три отметки» у ника в ушах, по Tab и на загрузке — у вас и у игроков с привязанным модом.
+- «Карточка танка» в ангаре переделана: отметки на стволе, крупный процент, тренд и шкала до 100 %.
+- «Журнал боя» в новом виде: итоги плашками, ровные столбцы, снаряды по цветам, ХП цели и криты.
+- Тени текста и рамки панелей HUD снова рисуются в бою.
+- «Уменьшенный круг сведения» — отдельный компонент; таймер перезарядки у прицела крупнее и читается на любом фоне.
+- Мини-карта один раз включает последние места и названия техники; ХП команд по умолчанию — полоска на каждый танк.
+- «Отзывчивый прицел» сводится плавно и не подтормаживает при низком FPS.
+- Нажатия по HUD на 4K, перетаскивание с Alt, чат и возврат по Alt+Tab работают надёжнее.
+- Ряд оборудования поднят над номерами слотов, превью ангаров снимаются прямо в игре.
+- Связь с сайтом только по проверенному HTTPS, секрет привязки хранится зашифрованным.
+- HUD работает плавнее, в конце боя меньше подтормаживаний.
+
+### en
+
+- New component «Modpack badge»: the Three Marks badge by the name in the player panels, the Tab stats and the loading screen, on you and on players who bound the mod.
+- The hangar «Tank card» is redesigned: gun marks, a large percentage, the trend and a scale up to 100 %.
+- The «Battle log» has a new look: totals as chips, even columns, shells by colour, the target HP bar and crits.
+- HUD text shadows and panel outlines are drawn in battle again.
+- The «Reduced aim circle» is its own component; the reload timer by the reticle is bigger and reads on any background.
+- The minimap switches on last-seen spots and vehicle names once; team HP is a bar per tank by default.
+- The «Responsive reticle» shrinks smoothly and no longer stutters at low FPS.
+- HUD clicks on 4K screens, Alt dragging, the chat and coming back with Alt+Tab work more reliably.
+- The equipment row sits above the slot numbers, hangar previews are captured in the game.
+- The site is reached only over verified HTTPS, the binding secret is stored encrypted.
+- The HUD runs smoother, with fewer hitches at the end of a battle.
+
 ## 0.3.4
 
 ### ru
@@ -309,6 +339,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - New component: the Three Marks badge by the name in the player panels, the Tab stats and the loading screen, on you and on players who bound the mod and left their badge on.
 
+## hangar_looks 0.1.1
+
+### ru
+
+- Обновлены сведения о лицензиях на изображения модпака.
+
+### en
+
+- The modpack's image licence notices are updated.
+
 ## hangar_looks 0.1.0
 
 ### ru
@@ -320,6 +360,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - New component «Three Marks hangar looks» (off): «Night», «Sunset», «Steel» and «Studio» for the main hangar.
 - The manager builds the looks on your PC from your game's own files and rebuilds them after a client update.
+
+## hit_viewer 0.3.4
+
+### ru
+
+- Меньше подтормаживаний в конце боя: попадания записываются в ангаре.
+
+### en
+
+- Fewer hitches at the end of a battle: the hits are written in the hangar.
 
 ## hit_viewer 0.3.3
 
@@ -413,6 +463,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - An «On me / On enemies» list with impact angle and effective armour, a battle picker; keeps the last 20 battles.
 - Opens from the component's button, the «Battle results» history and the «Replay manager».
 
+## battle_progress 0.2.2
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
+
 ## battle_progress 0.2.1
 
 ### ru
@@ -449,6 +509,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - New component «Battle progress» (off): one plate with High Caliber, the tank record and this battle’s WN8.
 - Replaces High Caliber, Battle efficiency and Personal best; tank records are kept.
 
+## preset_advisor 0.1.3
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
+
 ## preset_advisor 0.1.2
 
 ### ru
@@ -480,6 +550,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - New component: the loadout window marks the equipment and directives the top 10 % of players fit on this tank.
 - Consumables can be switched on separately. The mod never fits or buys anything itself; hangar only.
+
+## free_camera 0.1.3
+
+### ru
+
+- Свободная камера не перехватывает клавиши и мышь, пока не летает.
+
+### en
+
+- The free camera no longer takes the keys and the mouse while it is not flying.
 
 ## free_camera 0.1.2
 
@@ -514,6 +594,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - New component «Free camera» (off): Ctrl+Shift+F in replays and the hangar, controlled with WASD, Q/E, the mouse and wheel.
 - While flying, the game interface and mod panels hide (can be turned off).
 - It never works in a live battle.
+
+## aim_info 0.1.4
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
 
 ## aim_info 0.1.3
 
@@ -565,17 +655,13 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 ### ru
 
-- Круг сведения снова сужается плавно, а не рывками десять раз в секунду.
-- Маркер больше не подтормаживает на каждом серверном тике при низком FPS и не отстаёт на кадр.
-- Пока прицел и танк стоят, компонент не тратит ни кадра: работает обычная отрисовка.
-- Ствол на модели танка поспевает за маркером.
+- Круг сведения снова сужается плавно, маркер не подтормаживает при низком FPS и не отстаёт на кадр.
+- Пока прицел и танк стоят, компонент не нагружает игру; ствол на модели поспевает за маркером.
 
 ### en
 
-- The aiming circle shrinks smoothly again instead of in ten steps a second.
-- The marker no longer hitches on every server tick at a low frame rate and no longer trails by a frame.
-- While the aim and the tank stand still the component costs nothing: the stock drawing runs.
-- The gun on the tank model keeps up with the marker.
+- The aim circle shrinks smoothly again, the marker no longer stutters at low FPS or lags a frame behind.
+- While the reticle and the tank are still the component costs nothing; the gun on the model keeps up with the marker.
 
 ## responsive_reticle 0.1.1
 
@@ -599,6 +685,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - «Responsive reticle»: the gun marker follows the gun every frame and no longer lags behind the mouse.
 - Catch up at once or smoothly, your choice. On; turns itself off for SPGs and in replays.
 
+## battle_hotkeys 0.1.2
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
+
 ## battle_hotkeys 0.1.1
 
 ### ru
@@ -621,6 +717,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Battle hotkeys for the server reticle and extended zoom x16/x25 (Ctrl+Shift+J and Ctrl+Shift+K) with a notice over the reticle.
 - Off by default: it changes your game settings.
 
+## quick_demount 0.1.2
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
+
 ## quick_demount 0.1.1
 
 ### ru
@@ -642,6 +748,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - «Quick demount» in the equipment menu: takes the device off a chosen tank of yours in every setup.
 - The game confirms a paid demount itself. Off by default.
+
+## hud_layouts 0.1.3
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
 
 ## hud_layouts 0.1.2
 
@@ -676,6 +792,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - New component «Layout per battle type»: a panel set for random battles, Onslaught, Frontline, events and Steel Hunter.
 - Options: «All panels», «Essentials only» or «No panels»; the battle type is detected automatically.
 - Panel places can be set per battle type in the «HUD editor».
+
+## depot_seller 0.1.3
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
 
 ## depot_seller 0.1.2
 
@@ -713,6 +839,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Every category is off by default; premium crew is never dismissed.
 - «Sell» shows the list and the credits for confirmation.
 
+## auto_reserves 0.1.3
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
+
 ## auto_reserves 0.1.2
 
 ### ru
@@ -746,6 +882,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - New component «Auto personal reserves» (off): turns the chosen personal reserves on at game start and, optionally, when one runs out.
 - Strongest first, never more than the free slots; a «Turn the chosen ones on now» button.
+
+## crew_xp 0.2.2
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
 
 ## crew_xp 0.2.1
 
@@ -784,10 +930,12 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### ru
 
 - Плитки ангаров и видов показывают кадр вашего ангара: он снимается один раз после выбора, когда окно закрыто; кнопка «Обновить превью» снимает заново.
+- Выбранный ангар применяется и после входа в бой до загрузки ангара.
 
 ### en
 
 - Hangar and look tiles show a shot of your own hangar, taken once after you pick it with the window closed; «Refresh preview» takes it again.
+- The chosen hangar applies even after joining a battle before the hangar loaded.
 
 ## hangar_space 0.2.1
 
@@ -889,6 +1037,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - New component «New mod version»: checks for updates once per game start and reports a new version.
 - The mod window can skip the version, download it on the site or check again.
 
+## comp7_helper 0.4.2
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
+
 ## comp7_helper 0.4.1
 
 ### ru
@@ -941,6 +1099,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - New component «Onslaught divisions»: rating, division and progress to the next, the Champion and Legend thresholds, the role skill.
 - Hidden outside Onslaught.
 
+## event_trackers 0.1.3
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
+
 ## event_trackers 0.1.2
 
 ### ru
@@ -974,6 +1142,18 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - New component «Event trackers» (off).
 - Triathlon: the current round, best battles, time left and the event's best round.
 - Trading Caravan: your tokens and the time to the end of the event.
+
+## platoon_points 0.2.3
+
+### ru
+
+- Меньше нагрузки на загрузке боя.
+- Пример в окне настроек показан на языке игры.
+
+### en
+
+- Less work while a battle loads.
+- The sample in the settings window is shown in the game's language.
 
 ## platoon_points 0.2.2
 
@@ -1123,6 +1303,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - Your gun's traverse limits: degrees left to each side and a highlight near the edge, only on limited-traverse vehicles.
 
+## bush_circle 0.1.3
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
+
 ## bush_circle 0.1.2
 
 ### ru
@@ -1152,6 +1342,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### en
 
 - A 15 m circle around your tank: always on or by a hotkey, four colours.
+
+## hangar_info 0.6.3
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
 
 ## hangar_info 0.6.2
 
@@ -1222,10 +1422,12 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### ru
 
 - Ряд оборудования поднят над номерами слотов расходников.
+- Пример в окне настроек показан на языке игры.
 
 ### en
 
 - The equipment row sits higher, clear of the consumables' slot numbers.
+- The sample in the settings window is shown in the game's language.
 
 ## battle_loadout 0.7.3
 
@@ -1385,6 +1587,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - Your tank's equipment, field modifications and directives in battle: as icons or a list by group, ★ marks a bonus slot.
 
+## personal_missions 0.3.2
+
+### ru
+
+- Пример в окне настроек показан на языке игры.
+
+### en
+
+- The sample in the settings window is shown in the game's language.
+
 ## personal_missions 0.3.1
 
 ### ru
@@ -1487,11 +1699,13 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - «Уменьшенный круг сведения» — отдельный компонент со своим переключателем и страницей: 80, 70 или 60 % с превью; из «Прицела» настройка убрана.
 - Таймер перезарядки и значки снарядов у прицела крупнее, цифры светлые и с контуром.
+- Выключенный «Уменьшенный круг сведения» не нагружает игру.
 
 ### en
 
 - «Smaller aim circle» is a component of its own with its switch and page: 80, 70 or 60 % with a preview; the setting left «Crosshairs».
 - The reload timer and shell icons by the reticle are larger, the figures bright and outlined.
+- The «Smaller aim circle» costs nothing while it is off.
 
 ## crosshair 0.6.3
 
@@ -1617,27 +1831,15 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 ### ru
 
-- Настройки мини-карты: последние места и названия техники включаются один раз, дальше выбор игрока не меняется.
-- Панели в ангаре снова перетаскиваются с зажатым Alt: режим правки держится, пока Alt зажат.
-- Связь с сайтом только по проверенному HTTPS, без перенаправлений; слишком большой ответ сервера отбрасывается.
-- Секрет привязки больше не лежит открытым текстом: в папке игры его нет, в %APPDATA% он зашифрован для вашей учётной записи Windows.
-- Текст игроков и сервера в подписях панелей больше не может менять их разметку.
-- Испорченный заголовок реплея больше не роняет чтение реплеев.
-- Панели HUD обновляются с меньшей нагрузкой на игру: пересчитывается только изменившаяся панель.
-- Окно HUD больше не перезагружается, когда на экране на миг не остаётся панелей (лампа, уведомление).
-- Настройки и раскладка HUD пишутся на диск не чаще раза в секунду и в конце боя, а не на каждый шаг перетаскивания или колеса.
+- Связь с сайтом только по проверенному HTTPS, а секрет привязки хранится зашифрованным для вашей учётной записи Windows.
+- Панели HUD обновляются с меньшей нагрузкой на игру, в конце боя меньше подтормаживаний.
+- Панели в ангаре снова перетаскиваются с зажатым Alt; испорченный реплей или упавшая панель больше ничего не ломают.
 
 ### en
 
-- Minimap settings: last-seen spots and vehicle names are switched on once, after that the player's choice stays.
-- Hangar panels can be dragged with Alt held again: edit mode lasts as long as Alt is held.
-- The site is reached only over verified HTTPS, without redirects; an oversized server answer is dropped.
-- The binding secret is no longer stored in plain text: none in the game folder, encrypted for your Windows account in %APPDATA%.
-- Player and server text in panel labels can no longer change their markup.
-- A broken replay header no longer breaks reading replays.
-- HUD panels update with less load on the game: only the panel that changed is rebuilt.
-- The HUD window no longer reloads when no panel is on screen for a moment (the lamp, a notice).
-- Settings and the HUD layout are written to disk at most once a second and at the end of a battle, not on every drag or wheel step.
+- The site is reached only over verified HTTPS, and the binding secret is stored encrypted for your Windows account.
+- HUD panels update with less load on the game, with fewer hitches at the end of a battle.
+- Hangar panels drag with Alt held again; a broken replay or a failed panel no longer breaks anything.
 
 ## core 0.9.3
 
@@ -1907,23 +2109,15 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 ### ru
 
-- При обновлении: последние места и названия техники на мини-карте включаются, если вы их не настраивали; ХП команд по умолчанию — полоска на каждый танк, если вы не меняли вид.
-- При обновлении: если круг сведения был уменьшен, новый компонент «Уменьшенный круг сведения» включается с тем же размером.
+- При обновлении: мини-карта показывает места и названия техники, ХП команд — полоска на каждый танк, уменьшенный круг сведения переходит в новый компонент с тем же размером.
 - Новый переключатель «Показывать мой значок «Три отметки» другим игрокам» в «Данные и сайт», включён.
-- При обновлении: открытый секрет привязки переписывается в зашифрованный, привязка сохраняется.
-- Мод всегда работает с основным сервером; другой адрес в config.json действует только в сборке для разработки.
-- Ошибка привязки показывается понятной фразой, а не текстом сервера.
-- Сбой одной части мода больше не оставляет боевые компоненты работать в ангаре.
+- Открытый секрет привязки переписывается в зашифрованный, привязка сохраняется; ошибки привязки и TLS описаны понятно.
 
 ### en
 
-- On update: the minimap's last-seen spots and vehicle names turn on unless you set them; Team HP defaults to a bar per tank unless you changed the style.
-- On update: a smaller aim circle you had set turns on the new «Smaller aim circle» component with the same size.
-- New switch «Show my Three Marks badge to other players» in «Data and site», on.
-- On update: a plain-text binding secret is rewritten encrypted, the binding stays.
-- The mod always talks to the main server; another address in config.json works only in a development build.
-- A binding error shows a clear message, never the server text.
-- A failure in one part of the mod no longer leaves battle components running in the hangar.
+- On update: the minimap shows last-seen spots and vehicle names, team HP is a bar per tank, a reduced aim circle moves to the new component at the same size.
+- A new «Show my Three Marks badge to other players» switch in «Data and site», on.
+- A plain-text binding secret is rewritten encrypted and the binding stays; binding and TLS errors are explained clearly.
 
 ## companion 0.8.3
 
@@ -2113,25 +2307,15 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 ### ru
 
-- Тени текста и рамки панелей в бою снова видны.
-- «Отметки в бою» снова перетаскиваются; перетащенная панель остаётся там, куда её поставили.
-- В «Данные и сайт» появился переключатель своего значка «Три отметки»; он не попадает в профили настроек.
-- Страница компонента: кнопки в один ряд под превью, история — отдельный раздел, без «висящих» подписей.
-- Прицел: таймер перезарядки и снаряды магазина крупнее и читаются на любом фоне.
-- Коды профилей больше не включают и не переносят компоненты, которые сами делают запросы в клиенте или скрывают его элементы.
-- В окне настроек видно, если мод работает не с основным сервером.
-- Одна сломанная панель HUD больше не гасит остальные.
+- Тени текста и рамки панелей в бою снова видны, а одна сломанная панель HUD больше не гасит остальные.
+- «Отметки в бою» снова перетаскиваются; страница компонента аккуратнее, таймер перезарядки у прицела крупнее.
+- В «Данные и сайт» — переключатель своего значка «Три отметки»; коды профилей не переносят компоненты, которые сами делают запросы в клиенте.
 
 ### en
 
-- Text shadows and panel borders show in battle again.
-- «Marks in battle» can be dragged again and stays where it is dropped.
-- «Data and site» has the switch of your own Three Marks badge; it stays out of settings profiles.
-- Component page: the buttons in one row under the preview, the history its own section, no stray captions.
-- Crosshair: the reload timer and the magazine's shells are larger and readable on any background.
-- Profile codes no longer switch on or carry components that send client requests or hide client elements.
-- The settings window shows when the mod is not using the main server.
-- One broken HUD panel no longer blanks the others.
+- Text shadows and panel outlines show in battle again, and one broken HUD panel no longer hides the rest.
+- «Marks in battle» drags again; the component page is tidier, the reload timer by the reticle is bigger.
+- A switch for your own Three Marks badge in «Data and site»; profile codes no longer carry components that make requests in the client.
 
 ## ui 0.9.3
 
@@ -2435,15 +2619,13 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - «Карточка танка» переделана: класс, уровень и отметки на стволе, крупный процент, тренд и шкала 65/85/95/100 %.
 - Под шкалой — урон за бой и боёв до следующей отметки; «Подробный» вид и Alt добавляют сетку в две колонки.
-- История отметки в окне мода — отдельный раздел с заголовком, отметки подписаны словами.
-- Имена техники и подписи больше не могут менять разметку панели; ваш собственный шаблон работает как раньше.
+- История отметки в окне мода — отдельный раздел; имена техники больше не могут менять разметку панели.
 
 ### en
 
-- The «Tank card» is redesigned: class, tier and marks on the gun, the big percent, the trend and the 65/85/95/100% scale.
-- Under the scale: the damage per battle and battles to the next mark; the «Extended» style and Alt add a two-column grid.
-- The marks history in the mod window is its own titled section, the marks spelled out.
-- Vehicle names and labels can no longer change the panel markup; your own template works as before.
+- The «Tank card» is redesigned: class, tier and gun marks, a large percentage, the trend and a 65/85/95/100 % scale.
+- Under the scale: damage per battle and battles to the next mark; the «Detailed» view and Alt add a two-column grid.
+- The mark history in the mod window is its own section; vehicle names can no longer change the panel markup.
 
 ## marks_panel 0.8.2
 
@@ -2604,6 +2786,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### en
 
 - In battle: the current MoE percent, the projection after the battle and the damage needed for the next mark.
+
+## session_stats 0.7.2
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
 
 ## session_stats 0.7.1
 
@@ -2983,6 +3175,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - In battle: team HP as bars and/or numbers, the frag score and the HP difference.
 
+## sixth_sense 0.5.2
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
+
 ## sixth_sense 0.5.1
 
 ### ru
@@ -3073,6 +3275,18 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - In battle: a text or icon with the seconds since the sixth-sense lamp lit, and an optional sound.
 - Four icons of our own (lamp, eye, «!», «///») with a pulse, and our own detection chime.
 
+## battle_results 0.3.3
+
+### ru
+
+- Меньше подтормаживаний в конце боя: попадания по вам записываются в ангаре.
+- Пример в окне настроек показан на языке игры.
+
+### en
+
+- Fewer hitches at the end of a battle: the hits on you are written in the hangar.
+- The sample in the settings window is shown in the game's language.
+
 ## battle_results 0.3.2
 
 ### ru
@@ -3141,6 +3355,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - A notification after each battle with result, XP, credits, stats and the MoE change; the session's battles in the mod window.
 
+## chat_filter 0.1.3
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
+
 ## chat_filter 0.1.2
 
 ### ru
@@ -3172,6 +3396,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### en
 
 - In battle: chat time stamps and hiding of repeats, flood, quick-command spam and blocked words. Your own lines are never hidden.
+
+## replay_manager 0.3.6
+
+### ru
+
+- Список реплеев заполняется плавно, без рывка раз в секунду.
+
+### en
+
+- The replay list fills smoothly, without a hitch every second.
 
 ## replay_manager 0.3.5
 
@@ -3266,6 +3500,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### en
 
 - In the hangar: your replays with map, vehicle, date and size; rename, delete, a link to the site, auto names.
+
+## hangar_tweaks 0.3.3
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
 
 ## hangar_tweaks 0.3.2
 
@@ -3399,6 +3643,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - The game's minimap options: size, transparency, vehicle names and your own range circles.
 
+## camera 0.3.3
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
+
 ## camera 0.3.2
 
 ### ru
@@ -3480,6 +3734,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### en
 
 - In the hangar: local time and date, the current server, your ping to it and the online count.
+
+## auto_resupply 0.1.2
+
+### ru
+
+- Внутренняя доработка: компонент работает как раньше.
+
+### en
+
+- Internal cleanup: the component works as before.
 
 ## auto_resupply 0.1.1
 

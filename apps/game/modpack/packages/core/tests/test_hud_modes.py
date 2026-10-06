@@ -12,7 +12,7 @@ from otmetki.core.hud.modes import (
     battle_mode,
     clean_place,
 )
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 
 GUI_TYPE_MODES = (
     ((1, 1), 'random'),

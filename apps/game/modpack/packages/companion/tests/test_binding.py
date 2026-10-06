@@ -12,7 +12,7 @@ from otmetki.companion.binding import (
     parse_bind_response,
 )
 from otmetki.core.durable import SecretPair
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 
 SECRET = 'q' * 43
 MALFORMED_CODES = ('ABCDEFGH2', 'ABCDEFGH20', 'ABCDEFGH2I', 'ABCDEFGH234', None)
@@ -144,8 +144,8 @@ class CredentialStoreTest(unittest.TestCase):
         _, pair = store_with_two_accounts()
 
         self.assertEqual(pair.public.read(), {'accounts': {
-            '7': {'device_id': 'dev_a', 'account_id': 7},
-            '8': {'device_id': 'dev_b', 'account_id': 8},
+            '7': {'device_id': 'dev_a', 'account_id': 7, 'bound_at': 1},
+            '8': {'device_id': 'dev_b', 'account_id': 8, 'bound_at': 2},
         }})
 
     def test_the_durable_copy_holds_the_sealed_secret_only(self):
@@ -153,7 +153,9 @@ class CredentialStoreTest(unittest.TestCase):
 
         entry = pair.private.read()['accounts']['7']
 
-        self.assertEqual(entry, {'device_id': 'dev_a', 'account_id': 7, 'secret_dpapi': 'sealed:' + SECRET[::-1]})
+        self.assertEqual(entry, {
+            'device_id': 'dev_a', 'account_id': 7, 'bound_at': 1, 'secret_dpapi': 'sealed:' + SECRET[::-1],
+        })
 
     def test_a_plaintext_secret_is_taken_once_and_rewritten_sealed(self):
         legacy = {'accounts': {'7': {'device_id': 'dev_a', 'secret': SECRET, 'account_id': 7, 'bound_at': 1}}}
@@ -161,7 +163,8 @@ class CredentialStoreTest(unittest.TestCase):
 
         store.migrate()
 
-        self.assertEqual(pair.public.read(), {'accounts': {'7': {'device_id': 'dev_a', 'account_id': 7}}})
+        public = pair.public.read()['accounts']['7']
+        self.assertEqual(public, {'device_id': 'dev_a', 'account_id': 7, 'bound_at': 1})
         self.assertNotIn('secret', pair.private.read()['accounts']['7'])
         self.assertEqual(CredentialStore(pair, FakeBox()).get(7).secret, SECRET)
 
@@ -204,6 +207,45 @@ class CredentialStoreTest(unittest.TestCase):
         store, _ = split_store(public={'accounts': {'7': {'device_id': 'dev_a', 'account_id': 7}}}, private=private)
 
         self.assertIsNone(store.get(7))
+
+    def unopened_store(self):
+        public = {'accounts': {'7': {'device_id': 'dev_a', 'account_id': 7, 'bound_at': 5}}}
+        private = {'accounts': {'7': {'device_id': 'dev_a', 'account_id': 7, 'bound_at': 5, 'secret_dpapi': 'later'}}}
+        return split_store(public=public, private=private)
+
+    def test_a_secret_that_does_not_open_keeps_both_halves(self):
+        store, pair = self.unopened_store()
+
+        store.get(7)
+
+        self.assertEqual(pair.private.read()['accounts']['7']['secret_dpapi'], 'later')
+        self.assertEqual(pair.public.read()['accounts']['7']['bound_at'], 5)
+
+    def test_a_secret_that_does_not_open_survives_another_binding(self):
+        store, pair = self.unopened_store()
+
+        store.save(Credentials('dev_b', SECRET, 8, 6))
+
+        self.assertEqual(sorted(pair.private.read()['accounts']), ['7', '8'])
+        self.assertEqual(pair.private.read()['accounts']['7']['secret_dpapi'], 'later')
+
+    def test_a_secret_that_does_not_open_is_reported_once(self):
+        store, _ = self.unopened_store()
+        lines = []
+
+        with _support.captured_log(lines):
+            for _ in range(3):
+                store.get(7)
+
+        self.assertEqual(len(lines), 1)
+
+    def test_a_secret_that_does_not_open_can_still_be_unbound(self):
+        store, pair = self.unopened_store()
+
+        removed = store.remove(7)
+
+        self.assertTrue(removed)
+        self.assertEqual(pair.private.read()['accounts'], {})
 
     def test_a_missing_game_folder_copy_is_written_again(self):
         _, pair = store_with_two_accounts()

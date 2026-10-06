@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from CurrentVehicle import g_currentVehicle
 
-from ....core.log import log_exception
+from ....core.log import guarded
 
 
 def _int_cd(item):
@@ -67,19 +67,17 @@ def _crew(vehicle):
     return result
 
 
+@guarded('read loadout', fallback=(None, None))
 def read_current_loadout():
-    try:
-        vehicle = getattr(g_currentVehicle, 'item', None)
-        if vehicle is None:
-            return None, None
-        return _int_cd(vehicle), {
-            'optional_devices': _items(vehicle, 'optDevices'),
-            'consumables': _items(vehicle, 'consumables'),
-            'directives': _items(vehicle, 'battleBoosters'),
-            'shells': _shells(vehicle),
-            'field_modifications': _modification_names(vehicle),
-            'crew': _crew(vehicle),
-        }
-    except Exception:
-        log_exception('read loadout')
+    vehicle = getattr(g_currentVehicle, 'item', None)
+    if vehicle is None:
         return None, None
+    return _int_cd(vehicle), {
+        'optional_devices': _items(vehicle, 'optDevices'),
+        'consumables': _items(vehicle, 'consumables'),
+        'directives': _items(vehicle, 'battleBoosters'),
+        'shells': _shells(vehicle),
+        'field_modifications': _modification_names(vehicle),
+        'crew': _crew(vehicle),
+    }
+

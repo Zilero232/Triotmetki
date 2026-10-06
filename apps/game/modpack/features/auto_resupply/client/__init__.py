@@ -54,7 +54,7 @@ class AutoResupply(FeatureComponent):
         return [vehicle]
 
     def _enqueue(self, vehicles, requests):
-        by_inventory_id = dict((getattr(vehicle, 'invID', None), vehicle) for vehicle in vehicles)
+        by_inventory_id = {getattr(vehicle, 'invID', None): vehicle for vehicle in vehicles}
         was_idle = not self.queue
         for inventory_id, flag, flag_value in requests:
             self.queue.append((by_inventory_id[inventory_id], flag, flag_value))

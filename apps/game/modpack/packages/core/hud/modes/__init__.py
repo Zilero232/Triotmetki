@@ -10,7 +10,7 @@ Pure (Python 2/3). The client side (reading the arena and the battle page) is `c
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ...compat import is_int, is_number, string_types, to_text
+from ...compat import clamp, is_int, is_number, string_types, to_text
 from ..panel.constants import PANEL_LIMITS
 from .constants import (
     BONUS_TYPE_MODES,
@@ -86,7 +86,7 @@ def clean_place(values):
         value = values.get(key)
         if is_number(value) and not isinstance(value, bool):
             low, high = PANEL_LIMITS[key]
-            place[key] = int(max(low, min(high, int(round(value)))))
+            place[key] = int(clamp(int(round(value)), low, high))
     for key, choices in PLACE_ALIGNS:
         value = values.get(key)
         if isinstance(value, string_types) and to_text(value) in choices:
@@ -120,7 +120,7 @@ class ModePlaces(object):
         if mode not in MODES or mode == MODE_RANDOM or not isinstance(panel_id, string_types):
             return []
         values = clean_place(values)
-        stored = dict((key, value) for key, value in self._all().items() if key in MODES and isinstance(value, dict))
+        stored = {key: value for key, value in self._all().items() if key in MODES and isinstance(value, dict)}
         panels = dict(stored.get(mode) or {})
         place = clean_place(panels.get(panel_id))
         changed = sorted(key for key, value in values.items() if place.get(key) != value)

@@ -43,7 +43,7 @@ def stub_client():
 class OwnShotTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         forget_client()
         stub_client()
         self.module = importlib.import_module('otmetki.features.damage_log.client')

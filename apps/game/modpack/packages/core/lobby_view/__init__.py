@@ -9,9 +9,9 @@ which shows the panels it edits) does not.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .constants import BLOCKING_LAYERS, GONE_STATUSES, HANGAR_ALIAS
+from .constants import BLOCKING_LAYERS, GONE_STATUSES, HANGAR_ALIAS, HIDDEN_LAYERS
 
-__all__ = ('BLOCKING_LAYERS', 'GONE_STATUSES', 'HANGAR_ALIAS', 'plain_hangar')
+__all__ = ('BLOCKING_LAYERS', 'GONE_STATUSES', 'HANGAR_ALIAS', 'HIDDEN_LAYERS', 'plain_hangar')
 
 
 def plain_hangar(windows):

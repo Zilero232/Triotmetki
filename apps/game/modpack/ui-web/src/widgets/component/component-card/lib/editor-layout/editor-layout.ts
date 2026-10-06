@@ -1,8 +1,15 @@
 import { chunk, indexBy, isNonNullish, sumBy } from 'remeda';
 
-import type { UiField } from '@/shared/api/protocol';
-
-import type { EditorGroup, EditorGroupsInput, EditorOption, EditorRow, EditorRowInput, EditorRowKind } from './editor-layout.types';
+import type {
+  ChipsFitInput,
+  EditorGroup,
+  EditorGroupsInput,
+  EditorRow,
+  EditorRowInput,
+  EditorRowKind,
+  IsStackedInput,
+  PerRowInput
+} from './editor-layout.types';
 
 import { EDITOR } from '../../config';
 
@@ -12,7 +19,7 @@ const chipWidth = (label: string): number => Math.max(CHIP.minWidth, label.lengt
 
 const stackedWidth = (rowWidth: number): number => rowWidth - ROW.indent;
 
-const chipsFit = (field: UiField, rowWidth: number): boolean =>
+const chipsFit = ({ field, rowWidth }: ChipsFitInput): boolean =>
   field.type === 'choice' && sumBy(field.choices, ({ label }) => chipWidth(label)) <= stackedWidth(rowWidth);
 
 const rowKind = ({ field, editor, rowWidth = ROW.width }: EditorRowInput): EditorRowKind => {
@@ -32,16 +39,16 @@ const rowKind = ({ field, editor, rowWidth = ROW.width }: EditorRowInput): Edito
     return 'swatches';
   }
 
-  return chipsFit(field, rowWidth) ? 'chips' : 'select';
+  return chipsFit({ field, rowWidth }) ? 'chips' : 'select';
 };
 
-const perRow = (kind: EditorRowKind, rowWidth: number): number => {
+const perRow = ({ kind, rowWidth }: PerRowInput): number => {
   const { size, gap } = kind === 'gallery' ? TILE : SWATCH;
 
   return Math.max(1, Math.floor((stackedWidth(rowWidth) + gap) / size));
 };
 
-const isStacked = (kind: EditorRowKind, options: EditorOption[]): boolean => {
+const isStacked = ({ kind, options }: IsStackedInput): boolean => {
   if (kind === 'control') {
     return false;
   }
@@ -53,7 +60,7 @@ export const editorRow = ({ field, editor, rowWidth = ROW.width }: EditorRowInpu
   const kind = rowKind({ field, editor, rowWidth });
 
   if (field.type !== 'choice') {
-    return { field, kind, stacked: isStacked(kind, []), options: [], optionRows: [] };
+    return { field, kind, stacked: isStacked({ kind, options: [] }), options: [], optionRows: [] };
   }
 
   const icons = editor.icons[field.key] ?? {};
@@ -68,7 +75,7 @@ export const editorRow = ({ field, editor, rowWidth = ROW.width }: EditorRowInpu
 
   const isGrid = kind === 'gallery' || kind === 'swatches';
 
-  return { field, kind, stacked: isStacked(kind, options), options, optionRows: isGrid ? chunk(options, perRow(kind, rowWidth)) : [] };
+  return { field, kind, stacked: isStacked({ kind, options }), options, optionRows: isGrid ? chunk(options, perRow({ kind, rowWidth })) : [] };
 };
 
 export const editorGroups = ({ fields, editor, rowWidth, otherLabel, advancedLabel }: EditorGroupsInput): EditorGroup[] => {

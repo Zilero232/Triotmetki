@@ -68,7 +68,7 @@ export const ReportProblemButton = () => {
                       checked={row.checked}
                       description={t('itemMeta', { name: row.name, size: row.size, redactions: row.redactions })}
                       label={t(`parts.${row.part}`)}
-                      onCheckedChange={(checked) => onToggle(row.part, checked)}
+                      onCheckedChange={(checked) => onToggle({ part: row.part, checked })}
                     />
                     <details className={s.details}>
                       <summary>{row.truncated ? t('showTail') : t('show')}</summary>

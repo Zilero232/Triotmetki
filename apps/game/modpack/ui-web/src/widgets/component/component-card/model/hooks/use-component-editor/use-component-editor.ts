@@ -14,10 +14,6 @@ import { editorSchematic, editorScreens } from '../../../lib/editor-screens';
 import { useComponentCard } from '../use-component-card';
 import { useFocusLine } from '../use-focus-line';
 
-const BACKDROP_LABELS = { forest: 'backdropForest', snow: 'backdropSnow' } as const;
-
-const EDITOR_CAPTIONS = { schematic: 'schematicCaption', preview: 'preview' } as const;
-
 export const useComponentEditor = ({ component, compact }: UseComponentEditorInput) => {
   const t = useT();
   const card = useComponentCard({ component });
@@ -38,7 +34,7 @@ export const useComponentEditor = ({ component, compact }: UseComponentEditorInp
     screens,
     schematic,
     hasScreen: component.panel || screens.length > 0 || schematic !== null,
-    caption: schematic ? EDITOR_CAPTIONS.schematic : EDITOR_CAPTIONS.preview,
+    caption: schematic ? EDITOR.captions.schematic : EDITOR.captions.preview,
     groups: editorGroups({
       fields: component.fields,
       editor,
@@ -53,7 +49,7 @@ export const useComponentEditor = ({ component, compact }: UseComponentEditorInp
     zoomItems: EDITOR.zoomLevels.map((level) => ({ value: String(level), label: `${level}×` })),
     setZoom: (value: string) => setZoom(Number(value)),
     backdrop,
-    backdropItems: EDITOR.backdrops.map((value) => ({ value, label: t(BACKDROP_LABELS[value]) })),
+    backdropItems: EDITOR.backdrops.map((value) => ({ value, label: t(EDITOR.backdropLabels[value]) })),
     setBackdrop: (value: string) => setBackdrop(value === 'snow' ? 'snow' : 'forest'),
     showHint: (next: EditorHint) => setHint(next.text ? next : null),
     clearHint: () => setHint(null),

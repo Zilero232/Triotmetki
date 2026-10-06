@@ -19,3 +19,5 @@ export type ShellMotionInput = {
   loaded: number;
   previous: number | undefined;
 };
+
+export type CellStateInput = { index: number; clip: DrumClip };

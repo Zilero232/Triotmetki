@@ -7,7 +7,7 @@ import _support
 from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer, panel_schema
 from otmetki.core.hud.modes import COMPACT_PANELS, MODES
 from otmetki.core.settings import Settings
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 from otmetki.features.hud_layouts.i18n import STRINGS
 from otmetki.features.hud_layouts.model import layout_policy, place_actions
 from otmetki.features.hud_layouts.settings import SCHEMA, SETTINGS

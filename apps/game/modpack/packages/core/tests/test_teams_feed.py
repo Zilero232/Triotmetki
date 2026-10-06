@@ -80,7 +80,7 @@ def refuse_a_second_linkage(*data):
 
 
 def install_stubs(provider):
-    saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+    saved = {name: sys.modules.get(name) for name in STUBBED}
     for name in STUBBED:
         sys.modules[name] = types.ModuleType(str(name))
     sys.modules['BigWorld'].player = lambda: Namespace(team=1, guiSessionProvider=provider)
@@ -108,7 +108,7 @@ class BattleFieldFeedTest(unittest.TestCase):
         self.provider = SessionProvider()
         self.saved = install_stubs(self.provider)
         hooked = ('_startBattleSession', '_stopBattleSession')
-        self.originals = dict((name, SharedPage.__dict__[name]) for name in hooked)
+        self.originals = {name: SharedPage.__dict__[name] for name in hooked}
         from otmetki.core.client.battle.teams import TeamTracker
         from otmetki.core.client.battle.teams.feed import battle_field_feed
         self.feed = battle_field_feed()

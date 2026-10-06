@@ -78,7 +78,6 @@ class TriathlonRounds(object):
         rounds = [found for found in map(_round, items or ()) if found]
         self.rounds = rounds[-MAX_ROUNDS:]
 
-    # `tank` is the name to show (the carousel's short name), the event's own by default.
     def add(self, event, min_tier=MIN_TIER, tank=None):
         if not counts(event, min_tier):
             return False

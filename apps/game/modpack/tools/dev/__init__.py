@@ -33,4 +33,4 @@ def text_environ(environ):
     """`environ` with text values: Python 2 hands them out as bytes in the file system encoding (a Cyrillic user name
     in %APPDATA%), which would not join with the text paths."""
     encoding = sys.getfilesystemencoding() or 'utf-8'
-    return dict((key, value.decode(encoding) if isinstance(value, bytes) else value) for key, value in environ.items())
+    return {key: value.decode(encoding) if isinstance(value, bytes) else value for key, value in environ.items()}

@@ -5,7 +5,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # schematic instead.
 # RU 1.45 common/BattleFeedbackCommon.BATTLE_EVENT_TYPE: the own feedback's received damage (the attacker is the
 # target id).
-KIND_BY_EVENT = (('RECEIVED_DAMAGE', 'received'),)
+KIND_RECEIVED = 'received'
+KIND_BY_EVENT = (('RECEIVED_DAMAGE', KIND_RECEIVED),)
 # RU 1.45 messenger/formatters/service_channel.py: BattleResultsFormatter.format(message, callback) builds the stock
 # post-battle message from `message.data` (its `arenaUniqueID`) and calls back with MessageData items whose `data` is
 # the template's dict (doc_loaders/html_templates.py): the text under `message`, the arena under `savedData`.

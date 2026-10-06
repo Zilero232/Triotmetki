@@ -6,7 +6,7 @@ from .constants import FEED_INTERVAL_S, ITEM_ID, ITEMS_KEY
 def split_page(page):
     if not isinstance(page, dict):
         return None, []
-    meta = dict((key, value) for key, value in page.items() if key != ITEMS_KEY)
+    meta = {key: value for key, value in page.items() if key != ITEMS_KEY}
     items = [item for item in page.get(ITEMS_KEY) or () if _has_id(item)]
     return meta, items
 
@@ -42,7 +42,7 @@ class Feed(object):
         self.checked_at = now
         meta, items = split_page(page)
         known = self.items
-        self.items = dict((item[ITEM_ID], item) for item in items)
+        self.items = {item[ITEM_ID]: item for item in items}
         if not self.synced:
             return self._snapshot(meta, items)
         return self._delta(meta, items, known)

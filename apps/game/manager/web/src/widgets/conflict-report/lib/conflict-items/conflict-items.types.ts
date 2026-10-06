@@ -19,3 +19,18 @@ export type ConflictItemsInput = {
   catalog: Pick<Catalog, 'components' | 'conflicts'> | null;
   locale: Locale;
 };
+
+export type ConflictNamesInput = Omit<ConflictItemsInput, 'report'>;
+
+export type ConflictRule = Catalog['conflicts'][number];
+
+export type ConflictNames = {
+  titleOf: (id: string) => string;
+  ruleOf: (id: string) => ConflictRule | undefined;
+  locale: Locale;
+};
+
+export type KindInput = {
+  report: ConflictReport;
+  names: ConflictNames;
+};

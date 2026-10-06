@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.client.component import CardSpec, PolledHangarCard
 from ....core.client.game import client_attr, on_vehicle_changed
 from ....core.hooks import override
-from ....core.log import log_exception
+from ....core.log import guarded
 from ..i18n import STRINGS
 from ..model import clean_crew, clean_member, format_hangar, tooltip_text
 from ..model.constants import HANGAR_LAYOUT, HANGAR_PANEL, REFRESH_EVERY_S
@@ -23,8 +23,6 @@ CARD_SPEC = CardSpec(
 )
 
 
-# XP and battles to the next skill for the crew of the selected vehicle: a hangar card under the stock crew column and
-# a line in the crew member's tooltip.
 class CrewXp(PolledHangarCard):
 
     def __init__(self, app):
@@ -43,10 +41,11 @@ class CrewXp(PolledHangarCard):
         tooltip = client_attr(TOOLTIP_MODULE, TOOLTIP_CLASS)
         if tooltip is None or getattr(tooltip, TOOLTIP_METHOD, None) is None:
             return
-        try:
-            override(tooltip, TOOLTIP_METHOD)(self._fill_tooltip)
-        except Exception:
-            log_exception('crew xp: tooltip')
+        self._override_tooltip(tooltip)
+
+    @guarded('crew xp: tooltip')
+    def _override_tooltip(self, tooltip):
+        override(tooltip, TOOLTIP_METHOD)(self._fill_tooltip)
 
     def _fill_tooltip(self, original, view, *args, **kwargs):
         result = original(view, *args, **kwargs)

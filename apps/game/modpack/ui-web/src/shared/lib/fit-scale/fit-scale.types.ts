@@ -12,3 +12,5 @@ export type FitPlacement = {
   y: number;
   measured: boolean;
 };
+
+export type RatioInput = { room: number; size: number };

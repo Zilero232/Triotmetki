@@ -88,7 +88,7 @@ class HudEditor(object):
         if panel_id not in self.panel_ids():
             return []
         defaults = self.layer.panels[panel_id].schema.defaults
-        position = dict((key, defaults[key]) for key in PANEL_POSITION_KEYS if key in defaults)
+        position = {key: defaults[key] for key in PANEL_POSITION_KEYS if key in defaults}
         return self.layer.update_settings(panel_id, position)
 
     def set_editing(self, active):

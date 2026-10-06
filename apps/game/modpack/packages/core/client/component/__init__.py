@@ -58,7 +58,7 @@ class FeatureComponent(object):
     def reset_place(self, keys):
         """Put the keys `keys` of the component's section back to their defaults; returns the changed keys."""
         defaults = self.settings.schema.defaults
-        values = dict((key, defaults[key]) for key in keys if key in defaults)
+        values = {key: defaults[key] for key in keys if key in defaults}
         return component_config(self.app).update(self.component_id, values)
 
     def notice_info(self, key, **params):

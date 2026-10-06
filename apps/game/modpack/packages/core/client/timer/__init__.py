@@ -1,8 +1,11 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import functools
+
 import BigWorld
 
-from ...log import log_exception
+from ...log import log, log_exception
+from .constants import MAX_FAILURES
 
 
 def game_time():
@@ -13,8 +16,9 @@ def game_time():
 
 class Ticker(object):
     """Calls `on_tick()` every `interval_s` through BigWorld.callback from `start()` until `stop()`, or until
-    `on_tick` returns False. A failing tick is logged and the ticking goes on; a stop followed by a start
-    never leaves two chains running. `elapsed()` inside `on_tick` is the game time since the previous tick (or
+    `on_tick` returns False. A failing tick is logged and the ticking goes on, up to MAX_FAILURES in a row (then it
+    stops with one line); `stop()` cancels the pending callback, and a stop followed by a start never leaves two chains
+    running. `elapsed()` inside `on_tick` is the game time since the previous tick (or
     the start or `restart_elapsed()`): a callback fires on the first frame after its delay, so counting
     `interval_s` per tick drifts."""
 
@@ -25,17 +29,34 @@ class Ticker(object):
         self.generation = 0
         self.last_at = None
         self.last_elapsed = interval_s
+        self.failures = 0
+        self.callback = None
+        self.callback_id = None
 
     def start(self):
         if self.running:
             return
         self.running = True
         self.generation += 1
+        self.failures = 0
         self.last_at = game_time()
-        self._schedule(self.generation)
+        self.callback = functools.partial(self._tick, self.generation)
+        self._schedule()
 
     def stop(self):
         self.running = False
+        self._cancel()
+
+    def _cancel(self):
+        callback_id = self.callback_id
+        self.callback_id = None
+        cancel = getattr(BigWorld, 'cancelCallback', None)
+        if callback_id is None or cancel is None:
+            return
+        try:
+            cancel(callback_id)
+        except Exception:
+            return
 
     def elapsed(self):
         return self.last_elapsed
@@ -44,8 +65,8 @@ class Ticker(object):
         """The next `elapsed()` counts from now: call it when a countdown was just set from the client."""
         self.last_at = game_time()
 
-    def _schedule(self, generation):
-        BigWorld.callback(self.interval_s, lambda: self._tick(generation))
+    def _schedule(self):
+        self.callback_id = BigWorld.callback(self.interval_s, self.callback)
 
     def _measure(self):
         now = game_time()
@@ -56,15 +77,28 @@ class Ticker(object):
         self.last_at = now
 
     def _tick(self, generation):
+        self.callback_id = None
         if not self.running or generation != self.generation:
             return
+        keep = self._run()
+        if keep is False:
+            self.running = False
+            return
+        self._schedule()
+
+    def _run(self):
         try:
             self._measure()
             keep = self.on_tick()
         except Exception:
             log_exception('tick')
-            keep = True
-        if keep is False:
-            self.running = False
-            return
-        self._schedule(generation)
+            return self._failed()
+        self.failures = 0
+        return keep
+
+    def _failed(self):
+        self.failures += 1
+        if self.failures < MAX_FAILURES:
+            return True
+        log('tick %s failed %d times in a row, stopped' % (getattr(self.on_tick, '__name__', '?'), self.failures))
+        return False

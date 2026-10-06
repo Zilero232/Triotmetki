@@ -73,6 +73,7 @@ STRINGS = {
         'br_cleared': 'Список очищен',
         'br_open_hits': 'Посмотреть попадания',
         'br_empty': 'Боёв пока нет: итоги появятся после первого боя.',
+        'br_preview_map': 'Малиновка',
     },
     'en': {
         'component_battle_results': 'Battle results',
@@ -145,5 +146,6 @@ STRINGS = {
         'br_cleared': 'List cleared',
         'br_open_hits': 'View hits',
         'br_empty': 'No battles yet: summaries appear after your first battle.',
+        'br_preview_map': 'Malinovka',
     },
 }

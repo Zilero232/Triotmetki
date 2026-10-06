@@ -1,5 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ....core.moe import COLOR_MODES  # noqa: F401
+
 GROUP = 'battle'
 SWITCH = 'battle_moe_panel'
 PANEL_ID = 'marks_panel'
@@ -9,9 +11,12 @@ PANEL_ID = 'marks_panel'
 CARD_PANEL_ID = 'hangar_marks'
 CARD_SWITCH = 'hangar_tank_card'
 CARD_GROUP = 'hangar'
-STYLES = ('compact', 'extended', 'minimal', 'custom')
-CARD_STYLES = ('compact', 'extended')
-COLOR_MODES = ('delta', 'mark', 'off')
+STYLE_COMPACT = 'compact'
+STYLE_EXTENDED = 'extended'
+STYLE_MINIMAL = 'minimal'
+STYLE_CUSTOM = 'custom'
+STYLES = (STYLE_COMPACT, STYLE_EXTENDED, STYLE_MINIMAL, STYLE_CUSTOM)
+CARD_STYLES = (STYLE_COMPACT, STYLE_EXTENDED)
 # The bar of the battle plate, as the gunmarks panels offer it: this battle's damage against the average that holds the
 # percent (their default), or the percent on the 0-100 % scale with the 65/85/95 ticks.
 BARS = ('damage', 'percent')

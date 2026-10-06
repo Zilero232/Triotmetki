@@ -7,10 +7,6 @@ from .constants import MAX_DETAIL_HITS, MIDDLE, MINUS, PART_ORDER, SEPARATOR, SI
 from .figure import figure_of
 from .points import side_of
 
-# «Попадания по мне» in the battle list: a battle row with a recorded battle of hits gets the schematic and the hits in
-# its details; a recorded battle without a summary (other battle types, or its results still on the way) is a row of
-# its own.
-
 
 def totals_text(counts, translate):
     return translate(

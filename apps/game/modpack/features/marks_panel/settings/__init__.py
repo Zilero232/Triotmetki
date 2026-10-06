@@ -34,8 +34,6 @@ SCHEMA = fix(panel_schema(
 ), FIXED)
 CARD_SCHEMA = fix(panel_schema(CARD_DEFAULTS, choices={'style': CARD_STYLES}, limits=CARD_LIMITS), CARD_FIXED)
 
-# The settings window's other components of this feature, each a row with its own page: its components.json section,
-# config.json switch, group, folded fields and the editor of model/editor.py.
 PARTS = (
     {
         'id': CARD_PANEL_ID,

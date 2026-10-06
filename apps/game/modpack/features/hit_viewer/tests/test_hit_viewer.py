@@ -7,7 +7,7 @@ import unittest
 
 import _support
 from otmetki.core.settings import Settings
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 from otmetki.features.hit_viewer.i18n import STRINGS
 from otmetki.features.hit_viewer.model import (
     OWN_TARGET,

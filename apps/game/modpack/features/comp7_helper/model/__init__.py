@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.compat import clean_text, int_or_none
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, font, format_number
 from .battles import battle_lines
-from .constants import DIVISION_LETTERS, LEGEND_RANK, MAX_SKILL, RANK_IDS, THRESHOLD_RANKS, TITLE_SIZE_STEP
+from .constants import DIVISION_LETTERS, LEGEND_RANK, MAX_SKILL, RANK_IDS, STATUS_IDLE, THRESHOLD_RANKS, TITLE_SIZE_STEP
 
 # Fair play: only what the Onslaught hangar already shows the player: their own division, the division ranges of the
 # client's rank tooltips and the role skill chosen for the selected vehicle. Nothing about other players. The own rating
@@ -74,7 +74,8 @@ def format_hangar(state, settings, translate):
     if settings.get('show_thresholds'):
         for step, status in thresholds(state):
             line = u'%s: %s' % (division_name(step, translate), threshold_value(step, translate))
-            lines.append(font(line, COLOR_UP if status != 'idle' else COLOR_MUTED, size))
+            color = COLOR_MUTED if status == STATUS_IDLE else COLOR_UP
+            lines.append(font(line, color, size))
     if settings.get('show_skill') and state['skill']:
         lines.append(font(translate('comp7_helper_skill_line', skill=state['skill']), COLOR_MUTED, size))
     if settings.get('show_battles'):

@@ -187,7 +187,7 @@ def camel(name):
 
 def _to_json(value):
     if attr.has(type(value)):
-        return dict((camel(field.name), _to_json(getattr(value, field.name))) for field in attr.fields(type(value)))
+        return {camel(field.name): _to_json(getattr(value, field.name)) for field in attr.fields(type(value))}
     if isinstance(value, (tuple, list)):
         return [_to_json(item) for item in value]
     return value

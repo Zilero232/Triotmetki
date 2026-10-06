@@ -8,7 +8,7 @@ import unittest
 import _support
 from otmetki.core.events import EventBus
 from otmetki.core.hud import ComponentConfig
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 from otmetki.features.auto_reserves.i18n import STRINGS
 
 CLIENT_PREFIXES = ('otmetki.core.client', 'otmetki.features.auto_reserves.client')
@@ -46,7 +46,7 @@ class App(object):
 class AutoReservesClientTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         self.purge()
         for name in STUBBED:
             sys.modules[name] = types.ModuleType(str(name))

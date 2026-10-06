@@ -5,7 +5,9 @@ from .battle.constants import LAST_SHOW_S, PREVIEW_FONT_SIZE, PREVIEW_LAST
 
 
 def last_sample(translate):
-    return last_view(PREVIEW_LAST, translate)
+    sample = dict(PREVIEW_LAST)
+    sample['map'] = translate(PREVIEW_LAST['map'])
+    return last_view(sample, translate)
 
 
 def last_preview_text(settings, translate):
@@ -16,6 +18,5 @@ def last_preview_widget(settings, translate):
     return card_widget(last_sample(translate), LAST_SHOW_S)
 
 
-# The component's catalog picture (tools/build/previews): the previous battle's card.
 preview_text = last_preview_text
 preview_widget = last_preview_widget

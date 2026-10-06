@@ -6,8 +6,8 @@ import type { FitBoxProps } from './FitBox.types';
 
 import s from './FitBox.module.scss';
 
-export const FitBox = ({ className, max, minScale = 0, fallback, children }: FitBoxProps) => {
-  const fit = useFitScale({ content: children, max });
+export const FitBox = ({ className, contentKey, max, minScale = 0, fallback, children }: FitBoxProps) => {
+  const fit = useFitScale({ contentKey, max });
   const isTooSmall = fallback !== undefined && fit.measured && fit.scale < minScale;
 
   return (

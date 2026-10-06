@@ -8,11 +8,12 @@ import { marksReportView } from '../marks-report';
 const REPORT = marksReportSchema.parse(JSON.parse(marksReportSample));
 
 describe(marksReportView, () => {
-  it('shows the current percent in the header and as the progress width', () => {
-    const view = marksReportView(REPORT);
+  it('shows the current percent in the header', () => {
+    expect(marksReportView(REPORT).percent).toBe('85,20 %');
+  });
 
-    expect(view.percent).toBe('85,20 %');
-    expect(view.progress).toBe('85.2%');
+  it('shows the current percent as the progress width', () => {
+    expect(marksReportView(REPORT).progress).toBe('85.2%');
   });
 
   it('lays out the last, the best and one trend card per window', () => {
@@ -39,11 +40,12 @@ describe(marksReportView, () => {
     expect(view.rows.at(-1)?.delta).toBe('—');
   });
 
-  it('draws one chart bar per percent with the lowest one as the floor', () => {
-    const view = marksReportView(REPORT);
+  it('draws one chart bar per percent', () => {
+    expect(marksReportView(REPORT).chart?.bars).toHaveLength(7);
+  });
 
-    expect(view.chart?.bars).toHaveLength(7);
-    expect(view.chart?.min).toBe('80,12 %');
+  it('writes the lowest percent as the floor of the chart', () => {
+    expect(marksReportView(REPORT).chart?.min).toBe('80,12 %');
   });
 
   it('skips the chart for a single point', () => {

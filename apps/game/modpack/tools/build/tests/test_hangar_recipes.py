@@ -89,7 +89,7 @@ class RecipesTest(unittest.TestCase):
 
     def test_every_look_uses_its_own_colour_table(self):
         for look_id in LOOK_IDS:
-            values = dict((item['path'], item['value']) for item in recipe(look_id)['set'])
+            values = {item['path']: item['value'] for item in recipe(look_id)['set']}
 
             self.assertEqual(values[COLOUR_MAP], OUR_TABLE % look_id)
 

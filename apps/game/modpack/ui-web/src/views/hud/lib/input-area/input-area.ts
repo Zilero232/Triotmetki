@@ -1,4 +1,6 @@
-import type { InputArea, InputAreaOfInput } from './input-area.types';
+import type { DragTarget } from '@/entities/hud/panel-layout';
+
+import type { GrabbedTargetInput, InputArea, InputAreaOfInput } from './input-area.types';
 
 import { HUD_OVERLAY } from '../../config';
 
@@ -23,3 +25,6 @@ export const inputAreaOf = ({ whole, screen, rects }: InputAreaOfInput): InputAr
 };
 
 export const inputAreaKey = ({ left, top, width, height }: InputArea): string => `${left},${top},${width},${height}`;
+
+export const grabbedTarget = ({ tracking, targets, hovered }: GrabbedTargetInput): DragTarget | undefined =>
+  tracking ? targets.find((target) => target.id === hovered && (target.movable || target.pointer)) : undefined;

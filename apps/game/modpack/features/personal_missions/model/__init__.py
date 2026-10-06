@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.compat import string_types, to_text
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, font, single_spaces, strip_tags
-from .constants import MARK_OF, MAX_MISSIONS, MAX_TEXT, STATES, TITLE_SIZE_STEP
+from .constants import MARK_OF, MAX_MISSIONS, MAX_TEXT, STATE_IN_PROGRESS, STATES, TITLE_SIZE_STEP
 
 # Fair play: the player's own personal missions as the client's missions screen holds them (names, conditions, the
 # own progress state). Nothing about other players.
@@ -31,7 +31,7 @@ def clean_mission(item):
 
 
 def by_state(missions):
-    order = dict((state, index) for index, state in enumerate(STATES))
+    order = {state: index for index, state in enumerate(STATES)}
     return sorted(missions, key=lambda item: order[item['state']])
 
 
@@ -44,7 +44,7 @@ def clean_missions(items):
 
 
 def in_progress(missions):
-    return [mission for mission in missions if mission['state'] == 'in_progress']
+    return [mission for mission in missions if mission['state'] == STATE_IN_PROGRESS]
 
 
 def shown_missions(missions, settings):

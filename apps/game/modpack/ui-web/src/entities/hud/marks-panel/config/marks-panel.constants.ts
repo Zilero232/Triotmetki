@@ -1,4 +1,5 @@
 export const MARKS_PANEL = {
+  styles: ['compact', 'extended', 'minimal', 'custom'],
   markSize: 20,
   fallbackMark: 'otmetki:target',
   checkGlyph: 'check',

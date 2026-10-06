@@ -65,4 +65,4 @@ class PaceBook(object):
         return float(sum(row[1] for row in rows)) / len(rows)
 
     def to_dict(self):
-        return dict((key, [list(row) for row in rows]) for key, rows in self.tanks.items())
+        return {key: [list(row) for row in rows] for key, rows in self.tanks.items()}

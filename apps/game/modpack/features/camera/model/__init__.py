@@ -28,7 +28,7 @@ def preset_reset(values, changed):
     if 'preset' not in changed:
         return {}
     covered = CAMERA_PRESETS.get(values.get('preset'), {})
-    return dict((key, NATIVE) for key in covered if key not in changed)
+    return {key: NATIVE for key in covered if key not in changed}
 
 
 def to_native(values):

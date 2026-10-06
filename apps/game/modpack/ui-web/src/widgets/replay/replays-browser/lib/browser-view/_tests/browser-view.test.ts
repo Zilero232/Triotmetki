@@ -1,11 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import type { ReplayFilters, ReplaysPage } from '@/entities/replay/replay';
 
 import { DEFAULT_REPLAY_FILTERS } from '@/entities/replay/replay';
 import { pageSample } from '@/entities/replay/replay/_tests/fixtures';
 
-import { sortedBy, viewOf } from '../browser-view';
+import { nowSeconds, sortedBy, viewOf } from '../browser-view';
 
 const page = (overrides: Partial<ReplaysPage> = {}): ReplaysPage => ({ ...pageSample(), ...overrides });
 
@@ -60,5 +60,18 @@ describe(sortedBy, () => {
     const next = sortedBy('damage')(filters({ sort: 'time', descending: false }));
 
     expect(next).toMatchObject({ sort: 'damage', descending: true });
+  });
+});
+
+describe(nowSeconds, () => {
+  it('gives the current time in whole seconds', () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(1_790_600_000_750);
+
+    const now = nowSeconds();
+
+    vi.useRealTimers();
+
+    expect(now).toBe(1_790_600_000);
   });
 });

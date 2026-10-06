@@ -33,9 +33,6 @@ ENVIRONMENT_NAME = 'name'
 # (HangarSpaceSwitchController.__updateEnvironmentForCurrentScene).
 ENVIRONMENT_SWITCHER = 'EnvironmentSwitcher'
 
-# The default hangar config keeps one slot of each kind per premium flag.
-PREMIUM_FLAGS = (True, False)
-
 # The preview shot. RU 1.45 client source: BigWorld.screenShot(extension, name) is the engine's screenshot (the
 # client's own key writes res/engine_config.xml screenShot: extension 'jpg', name 'screenshots/shot', a path under
 # the game folder to which the engine adds a number); the engine reports each saved file to the one callback set
@@ -52,7 +49,6 @@ PERSONALITY_CALLBACK = 'onScreenShotMade'
 # ours that are not blocking (the HUD page: hangar labels, the settings button) are hidden through the wulf window's
 # hide() / show(focus=False). The shot waits HIDE_SETTLE_S for the next frames to draw without them and gives the
 # interface back when the engine reports the file, or after SHOT_TIMEOUT_S at the latest.
-HIDDEN_LAYERS = ('MARKER', 'VIEW', 'WINDOW', 'WAITING', 'SYSTEM_MESSAGE', 'FULLSCREEN_WINDOW')
 HIDE_SETTLE_S = 0.4
 SHOT_TIMEOUT_S = 3.0
 PREVIEW_CHECK_S = 0.5

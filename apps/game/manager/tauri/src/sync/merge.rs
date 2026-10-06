@@ -13,7 +13,15 @@ pub struct Merged<T> {
     pub deleted: Vec<Tombstone>,
 }
 
-pub fn merge_items<T: Stamped + Clone>(local: &Side<T>, remote: &Side<T>, max_items: usize, max_tombstones: usize) -> Merged<T> {
+pub struct MergeInput<'a, T> {
+    pub local: Side<'a, T>,
+    pub remote: Side<'a, T>,
+    pub max_items: usize,
+    pub max_tombstones: usize,
+}
+
+pub fn merge_items<T: Stamped + Clone>(input: MergeInput<T>) -> Merged<T> {
+    let MergeInput { local, remote, max_items, max_tombstones } = input;
     let mut deleted: BTreeMap<String, f64> = BTreeMap::new();
 
     for tombstone in local.deleted.iter().chain(remote.deleted) {

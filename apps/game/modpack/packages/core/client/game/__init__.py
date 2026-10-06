@@ -48,6 +48,12 @@ def service(skeleton):
         return None
 
 
+def lobby_app():
+    """The client's current Scaleform app (IAppLoader.getApp: the lobby in the hangar), or None."""
+    loader = service(client_attr('skeletons.gui.app_loader', 'IAppLoader'))
+    return loader.getApp() if loader is not None else None
+
+
 def values_by_name(holder, pairs):
     """{holder.<name>: value} for the (name, value) pairs whose name the client's enum class has."""
     table = {}

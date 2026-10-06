@@ -7,7 +7,7 @@ use std::time::Duration;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
-pub use sequence::{RememberInput, SequenceStore, SEQUENCES_FILE};
+pub use sequence::{Freshness, RememberInput, SequenceStore, SEQUENCES_FILE};
 pub use signature::verify_release;
 pub use sources::{is_dependency_redirect, is_dependency_source};
 
@@ -109,6 +109,10 @@ pub fn for_game(mut latest: LatestRelease, game: &str) -> LatestRelease {
     }
 
     latest
+}
+
+pub fn without_release(latest: LatestRelease) -> LatestRelease {
+    LatestRelease { status: ReleaseStatus::Waiting, release: None, ..latest }
 }
 
 impl Release {
@@ -253,15 +257,24 @@ impl ReleasesClient {
             .error_for_status()?;
         let latest: LatestRelease = response.json().await?;
 
-        if let Some(release) = &latest.release {
-            let sequence = verify_release(release)?;
-
-            if let (Some(store), Some(sequence)) = (&self.sequences, sequence) {
-                store.remember(RememberInput { game, version: &release.version, sequence })?;
-            }
+        if self.is_older_than_seen(&latest, game)? {
+            return Ok(without_release(latest));
         }
 
         Ok(for_game(latest, game))
+    }
+
+    fn is_older_than_seen(&self, latest: &LatestRelease, game: &str) -> AppResult<bool> {
+        let Some(release) = &latest.release else {
+            return Ok(false);
+        };
+        let sequence = verify_release(release)?;
+        let (Some(store), Some(sequence)) = (&self.sequences, sequence) else {
+            return Ok(false);
+        };
+        let freshness = store.remember(RememberInput { game, version: &release.version, sequence })?;
+
+        Ok(freshness == Freshness::Older)
     }
 
     pub async fn changelog(&self) -> AppResult<Changelog> {

@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import math
 
+from ....core.compat import fraction
 from ....core.hud.stock import (
     RETICLE_CASSETTE,
     RETICLE_CONDITION,
@@ -10,7 +11,24 @@ from ....core.hud.stock import (
     RETICLE_RELOAD_TIMER,
     RETICLE_ZOOM,
 )
-from .constants import AUTOLOADER_DRUM_STYLE, FINAL_S, MAX_CLIP_SIZE, NO_SHELLS, READY_HOLD_S, SHELL_ICONS
+from .constants import (
+    AUTOLOADER_DRUM_STYLE,
+    COUNTING_STATES,
+    DRUM_OFF,
+    FINAL_S,
+    MAX_CLIP_SIZE,
+    NO_RELOAD_VALUE,
+    NO_SHELLS,
+    READOUT_SWITCHES,
+    READY_HOLD_S,
+    READY_KEY,
+    RELOAD_EMPTY,
+    RELOAD_FINAL,
+    RELOAD_LOADED,
+    RELOAD_READY,
+    RELOAD_RELOADING,
+    SHELL_ICONS,
+)
 
 # Fair play: the own vehicle only. The reload and the magazine are the own gun's (the stock reticle's reload indicator
 # reads the same ammo controller), the HP is the own damage panel's (VEHICLE_VIEW_STATE.HEALTH); nothing here reads
@@ -30,7 +48,7 @@ def _seconds(value):
 def _ratio(part, whole):
     if part is None or not whole:
         return None
-    return round(max(0.0, min(1.0, float(part) / whole)), 3)
+    return round(fraction(float(part) / whole), 3)
 
 
 def _tenths(seconds):
@@ -150,12 +168,14 @@ class Readouts(object):
 
     def reload_state(self):
         if self.reload_left == NO_SHELLS:
-            return 'empty'
+            return RELOAD_EMPTY
         if self.is_reloading():
-            return 'final' if self.reload_left < FINAL_S else 'reloading'
+            return RELOAD_FINAL if self.reload_left < FINAL_S else RELOAD_RELOADING
         if self.ready_left > 0:
-            return 'ready'
-        return 'loaded' if self.reload_left is not None and self.reload_base else None
+            return RELOAD_READY
+        if self.reload_left is not None and self.reload_base:
+            return RELOAD_LOADED
+        return None
 
     def reload_progress(self):
         if self.reload_left is None:
@@ -170,14 +190,28 @@ class Readouts(object):
         return _ratio(self.health, self.max_health)
 
 
-def _reload_value(readouts, state, translate):
-    if state == 'empty':
-        return u'—'
-    if state == 'ready':
-        return translate('crosshair_ready')
-    if state == 'loaded':
-        return _tenths(readouts.reload_base)
+def _empty_value(readouts, translate):
+    return NO_RELOAD_VALUE
+
+
+def _ready_value(readouts, translate):
+    return translate(READY_KEY)
+
+
+def _loaded_value(readouts, translate):
+    return _tenths(readouts.reload_base)
+
+
+def _counted_value(readouts, translate):
     return _tenths(readouts.reload_left)
+
+
+RELOAD_VALUES = {RELOAD_EMPTY: _empty_value, RELOAD_READY: _ready_value, RELOAD_LOADED: _loaded_value}
+
+
+def _reload_value(readouts, state, translate):
+    value = RELOAD_VALUES.get(state, _counted_value)
+    return value(readouts, translate)
 
 
 def _refill(readouts):
@@ -190,9 +224,9 @@ def _refill(readouts):
 # On an auto-reloader the stock magazine indicator is also its reload timer, so the box draws the magazine itself
 # whatever the style, and the stock one goes with the stock timer.
 def _clip(readouts, style):
-    if style == 'off' and readouts.autoloader:
+    if style == DRUM_OFF and readouts.autoloader:
         style = AUTOLOADER_DRUM_STYLE
-    if readouts.clip is None or style == 'off':
+    if readouts.clip is None or style == DRUM_OFF:
         return None
     size, loaded = readouts.clip
     return {
@@ -225,7 +259,7 @@ def _reload_box(readouts, settings, translate):
     clip = _clip(readouts, settings.get('drum_style'))
     return {
         'value': value,
-        'full': _full(readouts, value, state in ('reloading', 'final'), clip),
+        'full': _full(readouts, value, state in COUNTING_STATES, clip),
         'state': state,
         'clip': clip,
     }
@@ -262,13 +296,11 @@ def readouts_text(data):
 
 
 def wants_readouts(settings):
-    return any(settings.get(key) for key in ('reload_box', 'reload_arcs', 'show_zoom'))
+    return any(settings.get(key) for key in READOUT_SWITCHES)
 
 
-# The stock reticle parts the readouts stand in for, read from what was drawn (`readouts_data` of the payload the page
-# got), so the player never sees both and never neither: the reload box the stock reload timer, and the stock magazine
-# indicator while the box shows the magazine; each arc the stock indicator of its value, the zoom the stock zoom
-# indicator. A box or an arc with nothing to show replaces nothing.
+# Read from what the page drew, so the player never sees a stock part and ours both, or neither: a box or an arc with
+# nothing to show replaces nothing.
 def replaced_reticle_parts(drawn):
     if drawn is None:
         return ()

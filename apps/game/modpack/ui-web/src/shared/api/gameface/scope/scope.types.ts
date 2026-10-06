@@ -5,3 +5,5 @@ export type InvokeInput = {
   method: string;
   args: unknown[];
 };
+
+export type ReadGlobalInput = { scope: object; name: string };

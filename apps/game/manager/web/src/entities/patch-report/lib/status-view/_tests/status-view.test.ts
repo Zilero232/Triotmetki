@@ -44,12 +44,18 @@ describe('statusView', () => {
 });
 
 describe('statusMessageValues', () => {
-  it('keeps only the text fields a message can interpolate', () => {
-    const updated = statuses.find((status) => status.kind === 'update_available');
-    const values = updated ? statusMessageValues({ status: updated, modpackVersion: null }) : {};
+  const updated = statuses.find((status) => status.kind === 'update_available');
+  const values = updated ? statusMessageValues({ status: updated, modpackVersion: null }) : {};
 
+  it('keeps only text fields a message can interpolate', () => {
     expect(Object.values(values).every((value) => typeof value === 'string')).toBe(true);
+  });
+
+  it('leaves the release notes out of the message values', () => {
     expect(values).not.toHaveProperty('notes');
+  });
+
+  it('turns a missing modpack version into an empty string', () => {
     expect(values.version).toBe('');
   });
 });

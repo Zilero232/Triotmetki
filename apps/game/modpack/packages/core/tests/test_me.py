@@ -24,7 +24,7 @@ from otmetki.core.me import (
     tank_rows,
     tanks_request,
 )
-from otmetki.core.net.signing import verify_request
+from _support import verify_request
 
 ACCOUNT = 12345678
 CREDENTIALS = Credentials('dev_me', 's' * 40, ACCOUNT)

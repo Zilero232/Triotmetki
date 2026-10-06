@@ -3,7 +3,7 @@ import type { z } from 'zod';
 
 import type { Replay, Visibility } from '../../../generated';
 import type { ReplaySummary } from '../../lib/replay';
-import type { AuthenticatedDevice, SignedModRequest } from '../mod';
+import type { AuthenticatedDevice } from '../mod';
 import type {
   bestOfWeekSchema,
   heatmapSchema,
@@ -24,7 +24,6 @@ export type UploadedReplayFile = {
 
 export type AcceptReplayInput = {
   file: UploadedReplayFile | undefined;
-  body?: Buffer;
 };
 
 export type UploadReplayInput = {
@@ -47,7 +46,13 @@ export type StoreReplayInput = Omit<UploadReplayInput, 'file'> & {
 
 export type UploadFromModInput = {
   file: UploadedReplayFile | undefined;
-  request: SignedModRequest;
+  device: AuthenticatedDevice | undefined;
+  visibility: string | undefined;
+};
+
+export type DuplicateReplayInput = {
+  existing: Pick<Replay, 'id' | 'status' | 'uploaderUserId'>;
+  uploaderUserId: string;
 };
 
 export type ReplaySearchQuery = z.output<typeof replaySearchQuerySchema>;

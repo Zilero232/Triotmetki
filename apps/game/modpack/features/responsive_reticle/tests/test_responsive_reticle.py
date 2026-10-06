@@ -13,7 +13,6 @@ from otmetki.features.responsive_reticle.model import (
     blend,
     frame_time_diff,
     nearly_same,
-    realm_of,
     relax_time,
     server_tick,
     skip_reason,
@@ -34,31 +33,16 @@ class Rotator(object):
         return gunIndex
 
 
-class RealmTest(unittest.TestCase):
-
-    def test_the_ru_realm_is_lesta(self):
-        assert realm_of('RU') == 'lesta'
-
-    def test_any_other_realm_is_wg(self):
-        assert realm_of('EU') == 'wg'
-
-    def test_an_unknown_realm_is_wg(self):
-        assert realm_of(None) == 'wg'
-
-
 class RotateSignatureTest(unittest.TestCase):
 
     def test_the_names_after_self_are_read_from_a_method(self):
         assert argument_names(Rotator.lesta_rotate) == ('shotPoint', 'timeDiff')
 
-    def test_the_lesta_signature_is_supported_on_lesta(self):
-        assert supports_rotate(argument_names(Rotator.lesta_rotate), 'lesta')
-
-    def test_the_known_signature_is_expected_on_wg(self):
-        assert supports_rotate(('shotPoint', 'timeDiff'), 'wg')
+    def test_the_client_signature_is_supported(self):
+        assert supports_rotate(argument_names(Rotator.lesta_rotate))
 
     def test_another_signature_keeps_the_component_off(self):
-        assert not supports_rotate(argument_names(Rotator.other_rotate), 'lesta')
+        assert not supports_rotate(argument_names(Rotator.other_rotate))
 
     def test_something_that_is_not_a_function_has_no_names(self):
         assert argument_names(None) == ()

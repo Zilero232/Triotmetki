@@ -27,7 +27,7 @@ from otmetki.core.hud import (
 from otmetki.core.templates import format_value, render
 from otmetki.core.settings import Settings
 from otmetki.core.shells import shell_code, shell_name
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 
 PREVIEW_TEXT = u'<font color="#FFFFFF">390</font>'
 DAMAGE_LOG = alias_of('damage_log')

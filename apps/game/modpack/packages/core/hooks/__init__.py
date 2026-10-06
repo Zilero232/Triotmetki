@@ -111,12 +111,22 @@ def _guarded(original, handler, name):
     return wrapper
 
 
-def restore(owner, name):
+def _saved_original(owner, name):
     had_own, current = _own_value(owner, name)
     if isinstance(current, staticmethod):
         current = current.__get__(None, owner)
-    saved = getattr(current, RESTORE_ATTR, None)
-    if not had_own or saved is None:
+    return getattr(current, RESTORE_ATTR, None) if had_own else None
+
+
+def is_restorable(owner, name):
+    """True while `owner.name` is still the wrapper `override` put there: no other mod wrapped it since, so
+    `restore` can put the original back."""
+    return _saved_original(owner, name) is not None
+
+
+def restore(owner, name):
+    saved = _saved_original(owner, name)
+    if saved is None:
         return False
     was_own, raw = saved
     if was_own:

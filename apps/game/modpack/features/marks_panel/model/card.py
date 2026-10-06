@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.compat import is_int, is_number
+from ....core.compat import clamp, is_int, is_number
 from ....core.format import TIER_COLORS, counted, format_number
 from ....core.hud.icons import class_icon
 from ....core.hud.widget import widget
 from ....core.moe import TARGET_LEVELS
 from ....core.vendor import attr
+from ..settings.constants import STYLE_EXTENDED
 from .constants import (
     APPROX,
     DELTA_TONES,
@@ -20,19 +21,11 @@ from .widget import stars_of
 # Fair play: the player's own marks of the selected tank (own dossier, own average and pace, own battles kept on this
 # computer) and the bound account's own ratings of that tank from the site.
 #
-# The Tank card as the hangar marks cards of the packs lay it out (Jove's and Lebwa's marks info, Battle Observer's
-# hangar widget, XVM's hangar macros): the tank with its tier and class and the marks on its gun, the percent big with
-# its last change and the trend of the last battles beside it, the bar of the four mark steps (0-65-85-95-100 %) with
-# the average each level needs, and the damage one battle needs for the next mark with the battles to it at the pace.
-# The extended style (or Alt) adds the two-column grid: the average, the pace, the damage to the next whole percent and
-# the trend; the tank's site WN8, wins and mastery badge; the XP to elite and to the next tanks.
+# Laid out as the packs' hangar marks cards are (Jove's and Lebwa's marks info, Battle Observer's hangar widget, XVM's
+# hangar macros).
 
 
-# What the card shows: the hangar marks `state` (hangar_state; None for a tank without marks, below tier 5, whose card
-# keeps the tank's grid), the `vehicle` name, the marks history `summary` of the tank and its site ratings row `tank`
-# (either None when unknown), and whether Alt is `held`; for the grid the site's `mastery` badges XP
-# (core.moe.mastery_from_api) with the dossier's `own_mastery`, and the `research` state (model/research.py); the
-# vehicle's `class_tag` and `tier` for the header.
+# `state` is None for a tank without marks (below tier 5): its card keeps the tank's grid.
 @attr.s(frozen=True)
 class TankCard(object):
 
@@ -50,19 +43,20 @@ class TankCard(object):
 
 # A tank without marks has only the grid, so it shows at rest.
 def shows_detail(data, settings):
-    return data.held or data.state is None or settings.get('style') == 'extended'
+    return data.held or data.state is None or settings.get('style') == STYLE_EXTENDED
 
 
 def shows_ratings(data, settings):
     return data.tank is not None and bool(settings.get('show_tank_ratings'))
 
 
-# The percent after each of the last battles, oldest first, walked back from today's percent by the battles' changes.
 def percent_history(percent, deltas):
     points = [percent]
     for delta in reversed(deltas or ()):
         points.insert(0, points[0] - delta)
-    return [round(min(100.0, max(0.0, point)), 2) for point in points] if len(points) > 1 else []
+    if len(points) < 2:
+        return []
+    return [round(clamp(point, 0.0, 100.0), 2) for point in points]
 
 
 def _percent(state):
@@ -84,7 +78,6 @@ def _points(data, settings):
     return percent_history(percent, data.summary.get('deltas'))
 
 
-# Each level of the bar with the average it needs (the site's thresholds), 100% included when the site has it.
 def _thresholds(state):
     if state is None or not state['has_curve']:
         return []
@@ -96,6 +89,7 @@ def _thresholds(state):
     return levels
 
 
+# 100% is the goal once the three marks are on the gun.
 def _goal_level(state):
     if state['next_level'] is not None:
         return state['next_level']
@@ -109,7 +103,6 @@ def _battles(state, level, translate):
     return APPROX + counted(state['battles'], 'battles', translate)
 
 
-# The damage one battle needs for the next mark (100% once the three are on the gun) and the battles to it at the pace.
 def _goal(state, translate):
     if state is None or not state['has_curve']:
         return None

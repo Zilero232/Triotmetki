@@ -223,6 +223,7 @@ impl Manager {
 
         self.sync_res_map(&scope.client);
         self.sync_hangar_looks(scope.context());
+        self.migrate_credentials(&scope.client);
 
         Ok(InstallOutcome {
             installation: read_installation(scope.context())?,

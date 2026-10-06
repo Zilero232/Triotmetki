@@ -66,7 +66,6 @@ def card_preview_widget(settings, translate):
     return tank_card(card_preview(), settings, translate)
 
 
-# The component catalogue pictures the feature by the hangar Tank card at its defaults (tools/build/previews).
 def catalog_preview_text(translate):
     return card_preview_text(Settings({}, CARD_SCHEMA), translate)
 

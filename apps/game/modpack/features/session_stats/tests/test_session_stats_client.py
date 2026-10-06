@@ -9,7 +9,7 @@ import _support
 from otmetki.companion.account_state import AccountState
 from otmetki.core.events import EVENT_COMPONENT_SETTINGS, EventBus
 from otmetki.core.hud import ComponentConfig
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 from otmetki.features.session_stats.i18n import STRINGS
 from otmetki.features.session_stats.settings import IDLE_MINUTES, SECTION
 

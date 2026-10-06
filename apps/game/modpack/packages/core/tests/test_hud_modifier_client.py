@@ -39,7 +39,7 @@ class ModifierWatchTest(unittest.TestCase):
 
     def setUp(self):
         self.loaded = set(sys.modules)
-        self.saved = dict((name, sys.modules.get(name)) for name in STUB_MODULES)
+        self.saved = {name: sys.modules.get(name) for name in STUB_MODULES}
         self.keys = KeyState()
         sys.modules['BigWorld'] = _module('BigWorld', isKeyDown=self.keys.client_down, callback=lambda delay, fn: None)
         sys.modules['Keys'] = _module('Keys', KEY_LALT=KEY_LALT, KEY_RALT=KEY_RALT)

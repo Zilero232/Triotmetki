@@ -1,5 +1,7 @@
 import type { DeltaDirection, HudTone } from '@/ui-kit';
 
+import type { MarksPanelData } from '../../model/schemas';
+
 export type LevelNeedView = { level: number; label: string; value: string; reached: boolean };
 
 export type MarksGoalView = { label: string; need: number; reached: boolean };
@@ -35,3 +37,9 @@ export type MarksPanelView = {
   average: MarksAverageView | null;
   note: string | null;
 };
+
+export type LevelNeedInput = { level: number; need: number };
+
+export type ToLabelInput = { data: MarksPanelData; level: number };
+
+export type ShareInput = { value: number; end: number };

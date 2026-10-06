@@ -4,6 +4,7 @@ import type { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { HttpStatus } from '@nestjs/common';
 import RedisMock from 'ioredis-mock';
 import { createHmac } from 'node:crypto';
+import { omit } from 'remeda';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
@@ -12,7 +13,7 @@ import type { AppConfigService } from '../../../../config';
 import type { PrismaService } from '../../../../core';
 
 import { AppBadRequestException } from '../../../../common/exceptions';
-import { deviceSecret, hashSecret, MOD_DEVICE, ModDeviceService } from '../../../mod';
+import { deviceSecret, hashSecret, MOD_DEVICE, MOD_REQUEST, ModDeviceService } from '../../../mod';
 import { REPLAY_UPLOAD } from '../../config/upload.constants';
 import { ModDeviceGuard } from '../mod-device.guard';
 
@@ -56,7 +57,12 @@ const createGuard = (stored: ModDevice | null = boundDevice) => {
   return { guard: new ModDeviceGuard(new ModDeviceService(prisma, config, new RedisMock())), prisma };
 };
 
-const credentials = { [MOD_DEVICE.header]: DEVICE_ID, [MOD_DEVICE.signatureHeader]: signature };
+const credentials = {
+  [MOD_DEVICE.header]: DEVICE_ID,
+  [MOD_DEVICE.signatureHeader]: signature,
+  [MOD_DEVICE.timestampHeader]: String(Math.floor(Date.now() / 1000)),
+  [MOD_DEVICE.nonceHeader]: 'nonce-0123456789abcdef'
+};
 
 describe('ModDeviceGuard', () => {
   it('lets a bound device with a valid signature upload', async () => {
@@ -107,5 +113,24 @@ describe('ModDeviceGuard', () => {
 
     await expect(guard.canActivate(contextFor({ ...credentials, 'content-length': 'lots' }))).resolves.toBe(true);
     expect(prisma.modDevice.findUnique).toHaveBeenCalled();
+  });
+
+  it('turns away a request signed outside the allowed clock skew before reading the body', async () => {
+    const { guard } = createGuard();
+    const stale = String(Math.floor(Date.now() / 1000) - MOD_REQUEST.maxSkewSeconds - 60);
+
+    await expect(guard.canActivate(contextFor({ ...credentials, [MOD_DEVICE.timestampHeader]: stale }))).rejects.toMatchObject({
+      status: HttpStatus.PRECONDITION_REQUIRED,
+      response: { error: 'stale_request' }
+    });
+  });
+
+  it('turns away a request without a nonce before reading the body', async () => {
+    const { guard } = createGuard();
+
+    await expect(guard.canActivate(contextFor(omit(credentials, [MOD_DEVICE.nonceHeader])))).rejects.toMatchObject({
+      status: HttpStatus.UNAUTHORIZED,
+      response: { error: 'bad_signature' }
+    });
   });
 });

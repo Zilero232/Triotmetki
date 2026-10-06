@@ -2,10 +2,12 @@ import * as z from 'zod/mini';
 
 import { hudIconSchema, hudToneSchema } from '@/shared/api/hud-protocol';
 
+import { MARKS_PANEL } from '../../config';
+
 const levelNeedSchema = z.object({ level: z.number(), need: z.number() });
 
 export const marksPanelSchema = z.object({
-  style: z.enum(['compact', 'extended', 'minimal', 'custom']),
+  style: z.enum(MARKS_PANEL.styles),
   stars: z.optional(z.number()),
   damage: z.optional(z.nullable(z.object({ label: z.string(), value: z.number(), target: z.number() }))),
   has_curve: z.boolean(),

@@ -7,7 +7,7 @@ from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.native import ClientDefaults, NativeSettingsComponent, section_is_new
 from ....core.client.timer import Ticker
 from ....core.compat import is_int
-from ....core.hooks import override
+from ....core.hooks import is_restorable, override, restore
 from ....core.log import log, safe
 from ....core.shells import shell_code
 from .. import settings
@@ -32,6 +32,7 @@ from .constants import (
     MARKER_RELAX_ARG,
     READOUT_STATES,
     READOUT_VIEWS,
+    STATE_HEALTH,
     VIEW_ARCADE,
     VIEW_SNIPER,
 )
@@ -94,22 +95,27 @@ class CrosshairComponent(BattlePanel):
         self.client_defaults = ClientDefaults(self.native, is_new_section)
         self.circle_settings = component_config(app).section(CIRCLE_PANEL_ID, CIRCLE_SCHEMA)
         self.circle_installed = False
-        self.install_circle()
+        self.circle_missing_logged = False
+        app.bus.on('battle_enter', self.install_circle)
+        app.bus.on('battle_leave', self.remove_circle)
 
     def ui_actions(self):
         return self.client_defaults.ui_actions()
 
-    # The smaller aim circle, a component of its own with its switch and section: installed once, it reads them on every
-    # marker update, so a change applies at once. Fair play: the gun marker the client draws, smaller; nothing else is
-    # read or changed (README, crosshair).
+    # The smaller aim circle, a component of its own with its switch and section: the marker override is installed for a
+    # battle only while the switch is on and the circle is smaller (every marker update would run through it), and
+    # taken out at its end unless another mod wrapped the method since. Fair play: the gun marker the client draws,
+    # smaller; nothing else is read or changed (README, crosshair).
     @safe
     def install_circle(self):
-        if self.circle_installed:
+        if self.circle_installed or not self._wants_circle():
+            return
+        if _DefaultGunMarkerController is None:
+            if not self.circle_missing_logged:
+                self.circle_missing_logged = True
+                log('crosshair: the aim circle stays the client size')
             return
         self.circle_installed = True
-        if _DefaultGunMarkerController is None:
-            log('crosshair: the aim circle stays the client size')
-            return
         component = self
 
         @override(_DefaultGunMarkerController, MARKER_METHOD)
@@ -118,6 +124,16 @@ class CrosshairComponent(BattlePanel):
             if len(args) > MARKER_RELAX_ARG:
                 component.scale_circle(controller, args[MARKER_RELAX_ARG])
             return result
+
+    @safe
+    def remove_circle(self):
+        if not self.circle_installed or not is_restorable(_DefaultGunMarkerController, MARKER_METHOD):
+            return
+        restore(_DefaultGunMarkerController, MARKER_METHOD)
+        self.circle_installed = False
+
+    def _wants_circle(self):
+        return bool(self.app.config.is_enabled(CIRCLE_SWITCH)) and is_scaled(self.circle_settings.get('size'))
 
     def scale_circle(self, controller, relax_time):
         choice = self.circle_settings.get('size')
@@ -235,7 +251,7 @@ class CrosshairComponent(BattlePanel):
             self.render()
 
     def _apply_state(self, name, value):
-        if name == 'health':
+        if name == STATE_HEALTH:
             return self.readouts.set_health(value, own_max_health())
         return self.readouts.set_health(0)
 

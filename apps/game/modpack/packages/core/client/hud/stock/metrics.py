@@ -29,9 +29,6 @@ def _minimap_index():
         return None
 
 
-# The stock sizes the attached panels follow (core.hud.panel ATTACHED): the minimap side from the player's setting, then
-# from every resize in battle, and the consumables panel's width from the slots it added, measured when the battle page
-# appears, after each slot change and whenever the page shows or hides the panel (death, a respawn).
 class StockMetrics(object):
 
     def __init__(self, layer):

@@ -1,1 +1,1 @@
-export { inputAreaKey, inputAreaOf } from './input-area';
+export { grabbedTarget, inputAreaKey, inputAreaOf } from './input-area';

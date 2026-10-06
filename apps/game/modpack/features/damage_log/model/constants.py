@@ -1,15 +1,26 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-# Row kinds: own damage, the three assist kinds, hits on the player blocked by the own armour, damage to the player.
-KINDS = ('damage', 'radio', 'track', 'stun', 'blocked', 'received')
+from ..settings.constants import STYLE_COMPACT, STYLE_MINIMAL
+
+KIND_DAMAGE = 'damage'
+KIND_RADIO = 'radio'
+KIND_TRACK = 'track'
+KIND_STUN = 'stun'
+KIND_BLOCKED = 'blocked'
+KIND_RECEIVED = 'received'
+KIND_CRIT = 'crit'
+KIND_RECEIVED_CRIT = 'received_crit'
+KINDS = (KIND_DAMAGE, KIND_RADIO, KIND_TRACK, KIND_STUN, KIND_BLOCKED, KIND_RECEIVED)
 ASSIST_KINDS = ('radio', 'track', 'stun')
 # The totals the stock client reports (summary feedback, personal efficiency), in DamageLog.apply_summary order.
 SUMMARY_KEYS = ('damage', 'assist', 'blocked', 'stun')
 MAX_ENTRIES = 60
 
+OUTCOME_PEN = 'pen'
+OUTCOME_CRIT = 'crit'
 # The own hit markers (core.battle_tally MARKER_OUTCOMES) a shot row can carry.
-OUTCOMES = ('pen', 'crit', 'no_pen', 'ricochet', 'spaced', 'tracks', 'missed_armor')
+OUTCOMES = (OUTCOME_PEN, OUTCOME_CRIT, 'no_pen', 'ricochet', 'spaced', 'tracks', 'missed_armor')
 # The markers a damaging shot can carry (feedback_adaptor.__getHitResultEventID, RU 1.45 client source): the others
 # (ricochet, spaced armour, tracks, missed armour) come only with damageFactor 0. no_pen takes an HE splash.
 DAMAGE_OUTCOMES = ('pen', 'crit', 'no_pen')
@@ -29,7 +40,8 @@ RICOCHET_CODES = (1, 2)
 
 # Where damage came from, as the feedback event's extra tells it (feedback_events._DamageExtra, RU 1.45: isShot /
 # isFire / isRam / isWorldCollision / isDeathZone); anything else (artillery strikes, mines, ...) is `other`.
-SOURCES = ('shot', 'fire', 'ram', 'world', 'other')
+SOURCE_SHOT = 'shot'
+SOURCES = (SOURCE_SHOT, 'fire', 'ram', 'world', 'other')
 # The own ammo rack reported damaged (the damage panel's DEVICES state 'ammoBay') within this many seconds of a
 # received hit marks that hit as the one that reached the ammo rack.
 AMMO_RACK_WINDOW_S = 1.5
@@ -60,7 +72,7 @@ SECTIONS = {
     'received': ('received',),
 }
 # Styles that show only the totals until Alt is held; `minimal` keeps only the dealt and received totals.
-COMPACT_STYLES = ('compact', 'minimal')
+COMPACT_STYLES = (STYLE_COMPACT, STYLE_MINIMAL)
 MINIMAL_TOTALS = ('dealt', 'received')
 # The totals in their order with the section each belongs to (model shown_totals: which are shown).
 TOTALS = (

@@ -1,7 +1,7 @@
 import { isRecord } from '@/shared/lib/is-record';
 
 import type { ClientSize, InputArea, ViewRect } from '../gameface.types';
-import type { ViewEnv } from './view-env.types';
+import type { ViewEnv, ViewEnvCallInput } from './view-env.types';
 
 import { GAMEFACE } from '../gameface.constants';
 import { invoke, invokeIfPresent, readGlobal, whenReady } from '../scope';
@@ -25,17 +25,17 @@ const toPoint = (value: unknown): { x: number; y: number } | null => {
 const toScale = (value: unknown): number | null => (typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : null);
 
 export const createViewEnv = (scope: object): ViewEnv => {
-  const target = () => readGlobal(scope, GAMEFACE.globals.viewEnv);
-  const call = (method: string, args: unknown[] = []): unknown => invoke({ target: target(), method, args });
+  const target = () => readGlobal({ scope, name: GAMEFACE.globals.viewEnv });
+  const call = ({ method, args = [] }: ViewEnvCallInput): unknown => invoke({ target: target(), method, args });
 
-  const clientSize = (): ClientSize | null => toClientSize(call(GAMEFACE.viewEnv.clientSize));
+  const clientSize = (): ClientSize | null => toClientSize(call({ method: GAMEFACE.viewEnv.clientSize }));
 
   const resizeView = ({ width, height }: ClientSize): boolean =>
     invokeIfPresent({ target: target(), method: GAMEFACE.viewEnv.resizeView, args: [width, height] });
 
   const viewRect = (): ViewRect | null => {
-    const position = toPoint(call(GAMEFACE.viewEnv.viewPosition));
-    const size = toClientSize(call(GAMEFACE.viewEnv.viewSize));
+    const position = toPoint(call({ method: GAMEFACE.viewEnv.viewPosition }));
+    const size = toClientSize(call({ method: GAMEFACE.viewEnv.viewSize }));
 
     return position && size ? { ...position, ...size } : null;
   };
@@ -47,7 +47,7 @@ export const createViewEnv = (scope: object): ViewEnv => {
   };
 
   const onScreenChanged = (callback: () => void): void => {
-    const engine = readGlobal(scope, GAMEFACE.globals.engine);
+    const engine = readGlobal({ scope, name: GAMEFACE.globals.engine });
     const listen = (event: string): unknown => invoke({ target: engine, method: GAMEFACE.engine.on, args: [event, callback] });
 
     whenReady({ engine, callback });
@@ -60,10 +60,10 @@ export const createViewEnv = (scope: object): ViewEnv => {
 
   return {
     clientSize,
-    clientSizeRem: () => toClientSize(call(GAMEFACE.viewEnv.clientSizeRem)),
+    clientSizeRem: () => toClientSize(call({ method: GAMEFACE.viewEnv.clientSizeRem })),
     viewRect,
-    remScale: () => toScale(call(GAMEFACE.viewEnv.remToPx, [1])),
-    mousePosition: () => toPoint(call(GAMEFACE.viewEnv.mousePosition)),
+    remScale: () => toScale(call({ method: GAMEFACE.viewEnv.remToPx, args: [1] })),
+    mousePosition: () => toPoint(call({ method: GAMEFACE.viewEnv.mousePosition })),
     resizeView,
     fitView,
     onScreenChanged,

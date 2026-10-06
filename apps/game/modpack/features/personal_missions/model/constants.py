@@ -3,7 +3,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.hud.panel import dock_layout
 
-STATES = ('in_progress', 'done', 'honors')
+STATE_IN_PROGRESS = 'in_progress'
+STATES = (STATE_IN_PROGRESS, 'done', 'honors')
 MAX_MISSIONS = 60
 MAX_TEXT = 200
 # The page row badge of a finished mission.
@@ -18,20 +19,22 @@ REFRESH_EVERY_S = 10.0
 HANGAR_PANEL = 'otmetki.personal_missions'
 HANGAR_LAYOUT = dock_layout('hangar_right')
 
+# The sample missions' texts are i18n keys (model/preview.py translates them).
 PREVIEW_MISSIONS = (
     {
         'id': 1,
-        'name': u'СТ-7. Огневая поддержка',
-        'main': u'Нанести 3000 урона',
-        'extra': u'Не получить повреждений от ТТ',
-        'state': 'in_progress',
+        'name': 'pm_preview_1_name',
+        'main': 'pm_preview_1_main',
+        'extra': 'pm_preview_1_extra',
+        'state': STATE_IN_PROGRESS,
     },
     {
         'id': 2,
-        'name': u'ТТ-3. Прорыв',
-        'main': u'Уничтожить 2 машины',
+        'name': 'pm_preview_2_name',
+        'main': 'pm_preview_2_main',
         'extra': u'',
-        'state': 'in_progress',
+        'state': STATE_IN_PROGRESS,
     },
-    {'id': 3, 'name': u'ЛТ-1. Разведка', 'main': u'', 'extra': u'', 'state': 'honors'},
+    {'id': 3, 'name': 'pm_preview_3_name', 'main': u'', 'extra': u'', 'state': 'honors'},
 )
+PREVIEW_TEXT_KEYS = ('name', 'main', 'extra')

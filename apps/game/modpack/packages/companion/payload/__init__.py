@@ -4,9 +4,9 @@ import uuid
 
 from ...core.compat import as_int, is_int, string_types, to_text
 from ...core.moe import results_rating
+from ...core.own_result import AVATAR_KEY
 from ..loadout import normalize_loadout
 from ..shots import MAX_SHOTS
-from ..version import SCHEMA_VERSION
 from .constants import (
     COST_FIELDS,
     MASTERY_BADGES,
@@ -14,6 +14,7 @@ from .constants import (
     MAX_ACHIEVEMENTS,
     MAX_PLATOON_SIZE,
     REALM,
+    SCHEMA_VERSION,
     STAT_FIELDS,
 )
 
@@ -59,7 +60,7 @@ def find_own_vehicle(results):
     if not isinstance(personal, dict):
         raise PayloadError('no personal block')
     for key, value in personal.items():
-        if key == 'avatar':
+        if key == AVATAR_KEY:
             continue
         vehicle = _first_dict(value)
         if vehicle is not None and 'typeCompDescr' in vehicle:
@@ -164,7 +165,7 @@ def extract_achievements(vehicle, name_of):
 
 def extract_stats(vehicle):
     death_reason = as_int(vehicle.get('deathReason'), -1)
-    stats = dict((target, as_int(vehicle.get(source))) for target, source in STAT_FIELDS)
+    stats = {target: as_int(vehicle.get(source)) for target, source in STAT_FIELDS}
     stats['is_alive'] = death_reason == -1
     stats['death_reason'] = death_reason
     stats['is_premium'] = bool(vehicle.get('isPremium', False))

@@ -2,32 +2,37 @@ import { clamp } from 'remeda';
 
 import type { DeltaDirection, HudTone } from '@/ui-kit';
 
-import { formatNumber, formatPercent, formatPercentOrDash, trendOf } from '@/shared/lib/format-number';
+import { deltaText, formatNumber, formatPercent, percentText, trendOf } from '@/shared/lib/format-number';
 
 import type { MarksPanelData } from '../../model/schemas';
-import type { LevelNeedView, MarksAverageView, MarksBarView, MarksDamageView, MarksGoalView, MarksPanelView } from './marks-panel-view.types';
+import type {
+  LevelNeedInput,
+  LevelNeedView,
+  MarksAverageView,
+  MarksBarView,
+  MarksDamageView,
+  MarksGoalView,
+  MarksPanelView,
+  ShareInput,
+  ToLabelInput
+} from './marks-panel-view.types';
 
 import { MARKS_PANEL } from '../../config';
 
 const levelLabel = (level: number): string => formatPercent({ value: level, digits: 0 });
 
-const levelNeed = ({ level, need }: { level: number; need: number }): LevelNeedView => ({
+const levelNeed = ({ level, need }: LevelNeedInput): LevelNeedView => ({
   level,
   label: levelLabel(level),
   value: need > 0 ? formatNumber(need) : '',
   reached: need <= 0
 });
 
-export const percentText = (percent: number | null): string => formatPercentOrDash({ value: percent, digits: 2 });
-
-export const deltaText = (delta: number | null): string | null =>
-  delta === null ? null : formatPercent({ value: delta, digits: 2, signed: true, unit: false });
-
 const deltaTone = (delta: number | null): HudTone => MARKS_PANEL.deltaTones[trendOf(delta)];
 
 const direction = (delta: number | null): DeltaDirection => MARKS_PANEL.directions[trendOf(delta)];
 
-const toLabel = (data: MarksPanelData, level: number): string => [data.to, levelLabel(level)].filter(Boolean).join(' ');
+const toLabel = ({ data, level }: ToLabelInput): string => [data.to, levelLabel(level)].filter(Boolean).join(' ');
 
 const stepText = (step: MarksPanelData['step']): string | null =>
   step === null ? null : `${formatPercent({ value: step.step, digits: 1, signed: true })}: ${formatNumber(step.need)}`;
@@ -59,13 +64,13 @@ const targetView = (data: MarksPanelData): MarksGoalView | null => {
 
   const reached = data.goal.need <= 0;
 
-  return { label: reached ? levelLabel(data.goal.level) : toLabel(data, data.goal.level), need: Math.max(data.goal.need, 0), reached };
+  return { label: reached ? levelLabel(data.goal.level) : toLabel({ data, level: data.goal.level }), need: Math.max(data.goal.need, 0), reached };
 };
 
 const goalView = (data: MarksPanelData): LevelNeedView | null =>
   data.goal === null ? null : { ...levelNeed(data.goal), label: targetView(data)?.label ?? levelLabel(data.goal.level) };
 
-const share = (value: number, end: number): number => clamp(value / end, { min: 0, max: 1 });
+const share = ({ value, end }: ShareInput): number => clamp(value / end, { min: 0, max: 1 });
 
 export const shareText = (share: number): string => `${String(Math.round(share * 1000) / 10)}%`;
 
@@ -78,7 +83,7 @@ const barTone = (bar: NonNullable<MarksPanelData['bar']>): MarksBarView['tone'] 
 };
 
 const barView = (bar: MarksPanelData['bar']): MarksBarView | null =>
-  bar ? { fill: share(bar.value, bar.end), hold: share(bar.hold, bar.end), tone: barTone(bar) } : null;
+  bar ? { fill: share({ value: bar.value, end: bar.end }), hold: share({ value: bar.hold, end: bar.end }), tone: barTone(bar) } : null;
 
 const lookOf = (data: MarksPanelData): MarksPanelView['look'] => (data.style === 'minimal' || !data.has_curve ? 'line' : 'box');
 
@@ -101,7 +106,7 @@ export const marksPanelView = (data: MarksPanelData): MarksPanelView => ({
   approx: data.estimated,
   percent: percentText(data.percent),
   tone: data.tone,
-  delta: deltaText(data.delta),
+  delta: deltaText({ value: data.delta, unit: false }),
   deltaValue: data.delta,
   deltaTone: deltaTone(data.delta),
   direction: direction(data.delta),

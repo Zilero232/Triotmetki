@@ -8,7 +8,7 @@ client receives (an unseen enemy keeps its last known HP, as on its marker), dea
 are the stock score strip's own numbers when the client's BattleFieldCtrl feeds them (`set_team_health`)."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ..compat import is_int, is_number, string_types, to_text
+from ..compat import clamp, is_int, is_number, string_types, to_text
 
 
 def side_name(allies):
@@ -46,7 +46,7 @@ class TeamHp(object):
         vehicle = self.vehicles.get(vehicle_id)
         if vehicle is None or not is_number(hp):
             return False
-        hp = max(0, min(vehicle['max'], int(hp)))
+        hp = clamp(int(hp), 0, vehicle['max'])
         if hp == vehicle['hp']:
             return False
         vehicle['hp'] = hp
@@ -75,10 +75,6 @@ class TeamHp(object):
         changed = health != self.team_health
         self.team_health = health
         return changed
-
-    def is_ally(self, vehicle_id):
-        vehicle = self.vehicles.get(vehicle_id)
-        return vehicle is not None and vehicle['team'] == self.own_team
 
     def team(self, allies):
         """The vehicles of one side in the order they joined the arena: [{team, max, hp, alive, kind, level}]."""

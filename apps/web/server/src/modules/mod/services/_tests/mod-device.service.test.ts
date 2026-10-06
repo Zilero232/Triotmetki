@@ -268,6 +268,84 @@ describe('ModDeviceService.authenticate', () => {
   });
 });
 
+describe('ModDeviceService.authenticateDigest', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(NOW);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('accepts a digest that the signer continued over the body elsewhere', async () => {
+    const { service } = createService();
+    const { request } = signedRequest();
+    const digest = service.signer({ request }).update(BODY).digest('hex');
+
+    await expect(service.authenticateDigest({ request, digest })).resolves.toMatchObject({ id: DEVICE_ID });
+  });
+
+  it('rejects a digest of a body other than the signed one', async () => {
+    const { service } = createService();
+    const { request } = signedRequest();
+    const digest = service.signer({ request }).update(Buffer.from('tampered')).digest('hex');
+
+    await expect(service.authenticateDigest({ request, digest })).rejects.toMatchObject({ response: { error: 'bad_signature' } });
+  });
+
+  it('rejects a request whose body was never hashed', async () => {
+    const { service } = createService();
+    const { request } = signedRequest();
+
+    await expect(service.authenticateDigest({ request, digest: undefined })).rejects.toMatchObject({ response: { error: 'bad_signature' } });
+  });
+
+  it('spends the nonce, so the same signed upload is refused a second time', async () => {
+    const { service } = createService();
+    const { request } = signedRequest();
+    const digestOf = () => service.signer({ request }).update(BODY).digest('hex');
+
+    await service.authenticateDigest({ request, digest: digestOf() });
+
+    await expect(service.authenticateDigest({ request, digest: digestOf() })).rejects.toMatchObject({ response: { error: 'replayed_request' } });
+  });
+});
+
+describe('ModDeviceService.assertSignable', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(NOW);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('lets a fresh request with a nonce through to the body', () => {
+    const { service } = createService();
+
+    expect(() => service.assertSignable(signedRequest().request)).not.toThrow();
+  });
+
+  it('asks the mod to re-sign a stale request before its body is read', () => {
+    const { service } = createService();
+    const stale = String(NOW.getTime() / 1000 - MOD_REQUEST.maxSkewSeconds - 1);
+
+    expect(() => service.assertSignable(signedRequest({ timestamp: stale }).request)).toThrow(
+      expect.objectContaining({ response: { error: 'stale_request' } })
+    );
+  });
+
+  it('refuses a request without a usable nonce before its body is read', () => {
+    const { service } = createService();
+
+    expect(() => service.assertSignable(signedRequest({ nonce: 'short' }).request)).toThrow(
+      expect.objectContaining({ response: { error: 'bad_signature' } })
+    );
+  });
+});
+
 const bodySchema = z.object({ device_id: z.string(), account_id: z.number() });
 
 const bodyRequest = (payload: Record<string, unknown>) => {

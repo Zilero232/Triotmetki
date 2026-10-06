@@ -30,7 +30,6 @@ def crosshair_widget(settings, translate, readouts=None, sketch=True, with_mark=
     })
 
 
-# The smaller aim circle's preview: the sketch of the game's reticle alone, its circle at the share of `size`.
 def circle_widget(size):
     return widget(KIND, {
         'mark': None,

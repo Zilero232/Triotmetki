@@ -11,6 +11,8 @@ from .constants import (
     ICON_ROOT,
     IMAGE_SCHEME,
     LAMP_DURATION_S,
+    LAMP_HIDE,
+    LAMP_SHOW,
     MIN_TIMER_FONT_SIZE,
     OBSERVED,
     PULSE_PERIOD_S,
@@ -45,7 +47,7 @@ class SixthSense(object):
             return None
 
         self.lit_at = None
-        return 'hide'
+        return LAMP_HIDE
 
     def _light(self, now, duration):
         if self.lit or self.over:
@@ -53,12 +55,12 @@ class SixthSense(object):
 
         self.lit_at = now
         self.duration = duration
-        return 'show'
+        return LAMP_SHOW
 
     def vehicle_state(self, state, value, now, duration=LAMP_DURATION_S):
         if state == ENDED:
             self.reset()
-            return 'hide'
+            return LAMP_HIDE
         if state == OBSERVED:
             return self.observed(bool(value), now, duration)
         return None
@@ -122,7 +124,7 @@ def gallery_picture(icon_set):
 
 
 def icon_gallery(icon_sets):
-    return {'icon_set': dict((icon_set, gallery_picture(icon_set)) for icon_set in icon_sets)}
+    return {'icon_set': {icon_set: gallery_picture(icon_set) for icon_set in icon_sets}}
 
 
 def timer_line(state, settings, translate, now):

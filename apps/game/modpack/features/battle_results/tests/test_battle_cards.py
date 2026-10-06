@@ -30,7 +30,7 @@ def translator(language='ru'):
 
 
 def tile_values(view):
-    return dict((tile['label'], tile['value']) for tile in view['tiles'])
+    return {tile['label']: tile['value'] for tile in view['tiles']}
 
 
 class LastViewTest(unittest.TestCase):

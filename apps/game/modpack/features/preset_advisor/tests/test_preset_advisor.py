@@ -10,7 +10,7 @@ import unittest
 import _support
 from otmetki.core.events import EventBus
 from otmetki.core.hud import ComponentConfig
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 from otmetki.features.preset_advisor.i18n import STRINGS
 from otmetki.features.preset_advisor.model import AdviceCache, advice_path, advised_ids, page_payload, parse_advice
 from otmetki.features.preset_advisor.settings import SCHEMA, SETTINGS
@@ -196,7 +196,7 @@ class ModelTest(unittest.TestCase):
 class PresetAdvisorClientTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         self.vehicle = CurrentVehicle(Vehicle(TANK))
         self.stock = stock_model_class()
         sys.modules['BigWorld'] = module('BigWorld')

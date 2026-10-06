@@ -8,10 +8,10 @@ import os
 import BigWorld
 
 from ....core.client.game import service
-from ....core.client.lobby_view import lobby_view
+from ....core.client.lobby_view import hidden_layers, lobby_view
 from ....core.compat import to_native, to_text
 from ....core.log import log, log_exception, safe
-from ....core.storage import replace_file
+from ....core.storage import write_bytes_atomic
 from ..model import (
     PREVIEW_SIZE,
     ThumbnailError,
@@ -22,7 +22,6 @@ from ..model import (
     preview_key_of_file,
 )
 from .constants import (
-    HIDDEN_LAYERS,
     HIDE_SETTLE_S,
     PERSONALITY_CALLBACK,
     PERSONALITY_MODULE,
@@ -33,7 +32,6 @@ from .constants import (
 )
 
 
-# The previews kept on this PC, one PNG per space or look; the page gets them as data URIs, encoded once per file.
 class PreviewStore(object):
 
     def __init__(self, folder):
@@ -47,13 +45,7 @@ class PreviewStore(object):
         return bool(key) and os.path.isfile(self.path(key))
 
     def save(self, key, png):
-        if not os.path.isdir(self.folder):
-            os.makedirs(self.folder)
-        target = self.path(key)
-        partial = target + '.part'
-        with io.open(partial, 'wb') as stream:
-            stream.write(png)
-        replace_file(partial, target)
+        write_bytes_atomic(self.path(key), png)
         self.encoded.pop(key, None)
 
     def data_uri(self, key):
@@ -102,11 +94,10 @@ def _own_shown_windows():
 
 
 def _lobby_layers():
-    from frameworks.wulf import WindowLayer
     from skeletons.gui.app_loader import IAppLoader
     loader = service(IAppLoader)
     lobby = loader.getDefLobbyApp() if loader is not None else None
-    layers = tuple(getattr(WindowLayer, name) for name in HIDDEN_LAYERS if hasattr(WindowLayer, name))
+    layers = hidden_layers()
     return (lobby.containerManager, layers) if lobby is not None else (None, layers)
 
 
@@ -136,9 +127,6 @@ def _stock_notify():
     return getattr(module, PERSONALITY_CALLBACK, None)
 
 
-# One shot at a time: the interface goes, a few frames draw without it, the engine writes the bitmap into our capture
-# folder and reports it; then the interface and the client's own screenshot callback come back, the bitmap becomes
-# the preview PNG and is deleted.
 class SceneShot(object):
 
     def __init__(self, store, on_done):
@@ -193,7 +181,8 @@ class SceneShot(object):
     def _finish(self, generation, path):
         if generation != self.generation or not self.busy:
             return
-        key, self.key = self.key, None
+        key = self.key
+        self.key = None
         stock = _stock_notify()
         if stock is not None:
             BigWorld.setScreenshotNotifyCallback(stock)

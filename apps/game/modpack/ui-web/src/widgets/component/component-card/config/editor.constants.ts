@@ -3,6 +3,8 @@ export const EDITOR = {
   advancedGroup: 'advanced',
   zoomLevels: [1, 2],
   backdrops: ['forest', 'snow'],
+  backdropLabels: { forest: 'backdropForest', snow: 'backdropSnow' },
+  captions: { schematic: 'schematicCaption', preview: 'preview' },
   thumbSize: 40,
   emptyIconSize: 22,
   fallbackIcon: 40,

@@ -16,6 +16,9 @@ PULSE_PERIOD_S = 0.5
 # player set no own time. The value is server-side; RU 1.45 client text menu.po extraParams/name/vehicleOwnSpottingTime
 # names its default: 10 seconds.
 LAMP_DURATION_S = 10.0
+# What a state change does to the lamp.
+LAMP_SHOW = 'show'
+LAMP_HIDE = 'hide'
 # The own vehicle's miscAttrs key the client itself fills (items/vehicles.py VehicleDescriptor._updateAttributes, RU
 # 1.45): the improved radio communication device (optional_devices.xml improvedRadioCommunication) adds 1.5 s, 2.0 s
 # in its specialisation slot (StaticOptionalDevice.updateVehicleDescrAttrs picks the slot's level); the time drops by

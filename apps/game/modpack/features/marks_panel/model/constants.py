@@ -4,12 +4,20 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import re
 
 from ....core.format import COLOR_DOWN, COLOR_NEUTRAL, COLOR_UP
+from ..settings.constants import STYLE_COMPACT, STYLE_MINIMAL
 
 TARGET_SEPARATOR = u'   '
 LINE_SEPARATOR = u'\n'
 TITLE_SIZE_STEP = 2
+# The built-in one-line styles' text; the extended style is built line by line.
+LINE_KEYS = {STYLE_MINIMAL: 'marks_panel_line_minimal', STYLE_COMPACT: 'marks_panel_line_compact'}
+LINE_KEY_COMPACT_UP = 'marks_panel_line_compact_up'
 
-KINDS = ('damage', 'radio', 'track', 'stun')
+KIND_DAMAGE = 'damage'
+KIND_RADIO = 'radio'
+KIND_TRACK = 'track'
+KIND_STUN = 'stun'
+KINDS = (KIND_DAMAGE, KIND_RADIO, KIND_TRACK, KIND_STUN)
 
 # Where the starting percent comes from (see panel_state); an estimate is marked `~` in the built-in lines.
 SOURCE_VERIFIED = 'verified'
@@ -66,7 +74,6 @@ CARD_PREVIEW_RESEARCH = {
         {'id': 2, 'cost': 51600, 'vehicle': True, 'name': u'Т-54', 'tier': 9, 'required': (1,)},
     ),
 }
-PERCENT_SUFFIX = u'%'
 
 METRIC_SEPARATOR = u' · '
 

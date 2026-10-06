@@ -13,3 +13,8 @@ export type VerifySignatureInput = {
   key: string | Buffer;
   body: string | Buffer;
 };
+
+export type MatchSignatureInput = {
+  header: string | undefined;
+  digest: string | undefined;
+};

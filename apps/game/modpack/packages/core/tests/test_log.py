@@ -103,6 +103,30 @@ class LogExceptionTest(unittest.TestCase):
 
         assert self.out.getvalue().count('Traceback') == 1
 
+    def test_a_held_back_repeat_formats_no_traceback(self):
+        handler = log.safe(self.broken)
+        formatted = []
+        original = log.traceback.format_exc
+        log.traceback.format_exc = lambda: formatted.append(1) or original()
+        self.addCleanup(setattr, log.traceback, 'format_exc', original)
+
+        self.fail_repeatedly(handler, 50)
+
+        assert len(formatted) == 1
+
+    def test_the_same_error_from_another_line_is_written_on_its_own(self):
+        try:
+            self.broken()
+        except ZeroDivisionError:
+            log.log_exception('handler')
+
+        try:
+            1 // 0
+        except ZeroDivisionError:
+            log.log_exception('handler')
+
+        assert self.out.getvalue().count('Traceback') == 2
+
     def test_the_next_window_writes_the_traceback_again(self):
         handler = log.safe(self.broken)
         self.fail_repeatedly(handler, 50)
@@ -140,6 +164,47 @@ class SafeTest(unittest.TestCase):
 
     def test_a_function_keeps_its_name(self):
         assert log.safe(add).__name__ == 'add'
+
+
+def broken_read():
+    return 1 // 0
+
+
+class GuardedTest(unittest.TestCase):
+
+    def setUp(self):
+        self.saved = sys.stdout, log._repeats
+        log._repeats = RepeatLimiter(Clock())
+        self.out = io.BytesIO()
+        sys.stdout = self.out
+
+    def tearDown(self):
+        sys.stdout, log._repeats = self.saved
+
+    def test_a_working_read_returns_its_value(self):
+        read = log.guarded('read', fallback=0)(functools.partial(add, 1))
+
+        assert read(2) == 3
+
+    def test_a_failing_read_returns_the_fallback(self):
+        read = log.guarded('read', fallback=[])(broken_read)
+
+        assert read() == []
+
+    def test_a_failing_read_is_logged_under_its_context(self):
+        read = log.guarded('crew xp: crew')(broken_read)
+
+        read()
+
+        assert 'error in crew xp: crew' in self.out.getvalue()
+
+    def test_each_failure_returns_its_own_fallback(self):
+        read = log.guarded('read', fallback=([], {}))(broken_read)
+        read()[0].append(1)
+
+        fallback = read()
+
+        assert fallback == ([], {})
 
 
 class ShellTypesTest(unittest.TestCase):

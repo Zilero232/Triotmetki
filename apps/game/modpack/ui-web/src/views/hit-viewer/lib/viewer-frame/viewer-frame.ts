@@ -1,12 +1,14 @@
 import { clamp } from 'remeda';
 
+import type { ClientSize } from '@/shared/api/gameface';
+
 import { rem } from '@/shared/lib/css-unit';
 
 import type { ViewerFrame, ViewerFrameInput } from './viewer-frame.types';
 
 import { HIT_VIEWER } from '../../config';
 
-const fitScale = (width: number, height: number): number => {
+const fitScale = ({ width, height }: ClientSize): number => {
   const { design, minScale, maxScale } = HIT_VIEWER.frame;
   const fit = Math.min(width / design.width, height / design.height);
 
@@ -21,7 +23,7 @@ export const viewerFrame = ({ screen, view }: ViewerFrameInput): ViewerFrame => 
   const bottom = Math.min(place.height, screen.height - place.y) - HIT_VIEWER.frame.lobbyBar;
   const width = Math.max(right - left, 0);
   const height = Math.max(bottom - top, 0);
-  const scale = fitScale(width, height);
+  const scale = fitScale({ width, height });
 
   return { left, top, width: width / scale, height: height / scale, scale };
 };

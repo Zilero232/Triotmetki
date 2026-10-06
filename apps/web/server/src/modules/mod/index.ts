@@ -1,5 +1,5 @@
 export { BATTLE_EVENTS } from './config/battle-events.constants';
-export { MOD_DEVICE, MOD_DEVICE_LIMITS } from './config/device.constants';
+export { MOD_DEVICE, MOD_DEVICE_LIMITS, MOD_REQUEST } from './config/device.constants';
 export { BATTLE_CORROBORATION } from './config/ingest.constants';
 export { sessionUuid } from './lib/battle/battle';
 export type { BattleResultEvent } from './lib/contract/contract.types';

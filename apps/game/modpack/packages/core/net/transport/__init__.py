@@ -7,7 +7,7 @@ from .body import StoppableBody, TransferStopped
 from .exchange import SyncTransport, ThreadTransport, native_headers, perform
 from .headers import response_headers
 from .runner import BackgroundRunner
-from .tls import is_allowed_url, verified_context
+from .tls import is_allowed_url, tls_available, verified_context
 
 __all__ = (
     'DEFAULT_MAX_RESPONSE_BYTES',
@@ -22,5 +22,6 @@ __all__ = (
     'native_headers',
     'perform',
     'response_headers',
+    'tls_available',
     'verified_context',
 )

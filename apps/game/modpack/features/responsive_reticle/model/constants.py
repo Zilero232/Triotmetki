@@ -1,15 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-REALM_LESTA = 'lesta'
-REALM_WG = 'wg'
-# constants.CURRENT_REALM of the Lesta client (RU 1.45 client source); every other realm is a WG client.
-LESTA_REALMS = ('RU',)
-# The arguments of VehicleGunRotator.__rotate after self, per realm. RU 1.45 client source: (shotPoint, timeDiff).
-# UNVERIFIED on WG: the same two names are expected there; any other signature keeps the component off.
-ROTATE_ARGUMENTS = {
-    REALM_LESTA: ('shotPoint', 'timeDiff'),
-    REALM_WG: ('shotPoint', 'timeDiff'),
-}
+# The arguments of VehicleGunRotator.__rotate after self. RU 1.45 client source: (shotPoint, timeDiff). UNVERIFIED on
+# WG: the same two names are expected there; any other signature keeps the component off.
+ROTATE_ARGUMENTS = ('shotPoint', 'timeDiff')
 
 # constants.SERVER_TICK_LENGTH (RU 1.45 client source): the stock rotator ticks and the server tracks the aim at 10 Hz.
 SERVER_TICK_S = 0.1

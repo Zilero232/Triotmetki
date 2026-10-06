@@ -4,6 +4,7 @@ from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, Markup, font, format_num
 from ....core.hud.icons import CLASS_GLYPHS
 from ....core.templates import render_markup
 from . import detail_mode, section_rows, shown_totals
+from ..settings.constants import STYLE_COMPACT, STYLE_CUSTOM
 from .constants import (
     COLOR_MACROS,
     COMPACT_TOTALS_SEPARATOR,
@@ -79,7 +80,7 @@ def _custom_totals(log, settings):
 
 def _built_in_totals(log, settings, translate):
     totals = shown_totals(log, settings)
-    if settings.get('style') == 'compact':
+    if settings.get('style') == STYLE_COMPACT:
         return COMPACT_TOTALS_SEPARATOR.join(format_number(value) for _, value in totals)
 
     colors = palette_values(settings)
@@ -91,7 +92,7 @@ def _built_in_totals(log, settings, translate):
 
 
 def totals_line(log, settings, translate):
-    if settings.get('style') == 'custom':
+    if settings.get('style') == STYLE_CUSTOM:
         text = _custom_totals(log, settings)
     else:
         text = _built_in_totals(log, settings, translate)

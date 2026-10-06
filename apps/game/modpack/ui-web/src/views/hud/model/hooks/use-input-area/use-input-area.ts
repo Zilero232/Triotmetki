@@ -1,5 +1,5 @@
 import { useInterval } from '@siberiacancode/reactuse';
-import { useEffect, useRef } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 
 import { gameface } from '@/shared/api/gameface';
 import { sendHud } from '@/shared/api/hud-protocol';
@@ -7,23 +7,30 @@ import { sendHud } from '@/shared/api/hud-protocol';
 import type { UseInputAreaInput } from './use-input-area.types';
 
 import { HUD_OVERLAY } from '../../../config';
-import { inputAreaKey, inputAreaOf } from '../../../lib/input-area';
+import { grabbedTarget, inputAreaKey, inputAreaOf } from '../../../lib/input-area';
 
 export const useInputArea = ({ edit, hover, dragging, screen, clickable, targets, hovered, report }: UseInputAreaInput): void => {
-  const tracking = edit && hover;
-  const grabbed = tracking ? targets.find((target) => target.id === hovered && (target.movable || target.pointer)) : undefined;
+  const [isRefused, setIsRefused] = useState(false);
+  const grabbed = grabbedTarget({ tracking: edit && hover, targets, hovered });
   const grabbedId = grabbed?.id ?? null;
   const isWhole = edit && (!hover || dragging);
   const area = inputAreaOf({ whole: isWhole, screen, rects: grabbed ? [...clickable, grabbed.rect] : clickable });
   const areaRef = useRef(area);
-  const appliedRef = useRef<string | null>(null);
   const key = inputAreaKey(area);
+  const isRefreshing = edit || hover || isRefused;
 
   areaRef.current = area;
 
-  const apply = (): void => {
-    appliedRef.current = gameface.setInputArea(areaRef.current) ? inputAreaKey(areaRef.current) : null;
-  };
+  const apply = (): void => setIsRefused(!gameface.setInputArea(areaRef.current));
+  const refresh = useInterval(apply, { interval: HUD_OVERLAY.inputAreaRefreshMs, immediately: false });
+  const applyNow = useEffectEvent(apply);
+  const toggleRefresh = useEffectEvent((isOn: boolean) => {
+    if (isOn) {
+      refresh.resume();
+    } else {
+      refresh.pause();
+    }
+  });
 
   useEffect(() => {
     if (grabbedId !== null) {
@@ -31,13 +38,9 @@ export const useInputArea = ({ edit, hover, dragging, screen, clickable, targets
     }
   }, [grabbedId, report]);
 
-  useEffect(() => {
-    if (appliedRef.current !== key) {
-      apply();
-    }
-  });
+  useEffect(() => applyNow(), [key]);
 
-  useInterval(apply, HUD_OVERLAY.inputAreaRefreshMs);
+  useEffect(() => toggleRefresh(isRefreshing), [isRefreshing]);
 
   useEffect(() => {
     sendHud({ type: 'area', whole: isWhole });

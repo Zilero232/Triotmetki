@@ -8,7 +8,7 @@ use serde::Serialize;
 pub use scan::{id_from_name, package_files, read_package, ModPackage};
 
 use crate::catalog::{wildcard_match, Catalog};
-use crate::components::{is_owned, read_installation, ClientContext, ComponentState};
+use crate::components::{is_owned, read_installation, ClientContext, ComponentState, Installation, InstalledComponent};
 use crate::error::AppResult;
 use crate::fsx::file_sha256;
 use crate::install::ForeignLocation;
@@ -95,7 +95,15 @@ fn is_dependency(catalog: &Catalog, package: &ModPackage) -> bool {
     catalog.dependencies.iter().any(|dependency| dependency.package_id.eq_ignore_ascii_case(&package.package_id))
 }
 
-fn matching_rules(catalog: &Catalog, package: &ModPackage, enabled: &BTreeSet<String>, mods_dir: &Path) -> Vec<ForeignConflict> {
+struct MatchingRulesInput<'a> {
+    catalog: &'a Catalog,
+    package: &'a ModPackage,
+    enabled: &'a BTreeSet<String>,
+    mods_dir: &'a Path,
+}
+
+fn matching_rules(input: MatchingRulesInput) -> Vec<ForeignConflict> {
+    let MatchingRulesInput { catalog, package, enabled, mods_dir } = input;
     let name = package.name.to_lowercase();
 
     catalog
@@ -145,63 +153,84 @@ fn expected_sha256<'a>(catalog: &'a Catalog, id: &str, version: Option<&str>) ->
     component.sha256.as_deref().filter(|_| version == Some(component.version.as_str()))
 }
 
-pub fn scan(context: ClientContext) -> AppResult<ConflictReport> {
-    let catalog = context.catalog;
-    let mods_dir = &context.client.mods_dir;
-    let installation = read_installation(context)?;
-    let enabled: BTreeSet<String> =
-        installation.components.iter().filter(|component| component.state == ComponentState::Enabled).map(|component| component.id.clone()).collect();
-    let prefixes = owned_prefixes(catalog);
-    let mut report = ConflictReport::default();
+fn replaced_component(catalog: &Catalog, component: &InstalledComponent, mods_dir: &Path) -> Option<ReplacedComponent> {
+    let file = component.file.as_deref()?;
+    let expected = expected_sha256(catalog, &component.id, component.version.as_deref())?;
+    let differs = file_sha256(&mods_dir.join(file)).is_ok_and(|actual| !actual.eq_ignore_ascii_case(expected));
 
-    for component in &installation.components {
-        match (component.state, component.file.as_deref()) {
-            (ComponentState::Missing, _) if catalog.component(&component.id).is_some() => {
-                report.missing.push(MissingComponent { id: component.id.clone() })
-            }
-            (ComponentState::Enabled, Some(file)) => {
-                let Some(expected) = expected_sha256(catalog, &component.id, component.version.as_deref()) else {
-                    continue;
-                };
+    differs.then(|| ReplacedComponent { id: component.id.clone(), file: file.to_owned() })
+}
 
-                if file_sha256(&mods_dir.join(file)).is_ok_and(|actual| !actual.eq_ignore_ascii_case(expected)) {
-                    report.replaced.push(ReplacedComponent { id: component.id.clone(), file: file.to_owned() });
-                }
-            }
-            _ => {}
-        }
+fn missing_components(catalog: &Catalog, installation: &Installation) -> Vec<MissingComponent> {
+    installation
+        .components
+        .iter()
+        .filter(|component| component.state == ComponentState::Missing && catalog.component(&component.id).is_some())
+        .map(|component| MissingComponent { id: component.id.clone() })
+        .collect()
+}
+
+fn replaced_components(catalog: &Catalog, installation: &Installation, mods_dir: &Path) -> Vec<ReplacedComponent> {
+    installation
+        .components
+        .iter()
+        .filter(|component| component.state == ComponentState::Enabled)
+        .filter_map(|component| replaced_component(catalog, component, mods_dir))
+        .collect()
+}
+
+type PackagesById = BTreeMap<String, Vec<(String, bool)>>;
+
+struct PackageScan<'a> {
+    catalog: &'a Catalog,
+    enabled: &'a BTreeSet<String>,
+    prefixes: &'a [String],
+    mods_dir: &'a Path,
+}
+
+impl PackageScan<'_> {
+    fn owned_package_id(&self, name: &str) -> String {
+        self.catalog.component_for_file(name).map_or_else(|| id_from_name(name), |component| component.package_id.to_lowercase())
     }
 
-    let mut by_id: BTreeMap<String, Vec<(String, bool)>> = BTreeMap::new();
+    fn check_foreign(&self, path: &Path, report: &mut ConflictReport) -> String {
+        let package = read_package(path);
+        let file = relative_name(self.mods_dir, path);
 
-    for path in package_files(mods_dir) {
-        let name = path.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
+        if !is_dependency(self.catalog, &package) {
+            let input = MatchingRulesInput { catalog: self.catalog, package: &package, enabled: self.enabled, mods_dir: self.mods_dir };
 
-        if is_owned(catalog, &name) {
-            let package_id = catalog.component_for_file(&name).map_or_else(|| id_from_name(&name), |component| component.package_id.to_lowercase());
-
-            by_id.entry(package_id).or_default().push((relative_name(mods_dir, &path), true));
-            continue;
+            report.foreign.extend(matching_rules(input));
         }
 
-        let package = read_package(&path);
-
-        by_id.entry(package.package_id.clone()).or_default().push((relative_name(mods_dir, &path), false));
-
-        if !is_dependency(catalog, &package) {
-            report.foreign.extend(matching_rules(catalog, &package, &enabled, mods_dir));
-        }
-
-        let touched: Vec<String> = package.entries.iter().filter(|entry| touches_owned(&prefixes, entry)).cloned().collect();
+        let touched: Vec<String> = package.entries.iter().filter(|entry| touches_owned(self.prefixes, entry)).cloned().collect();
 
         if !touched.is_empty() {
             let (paths, count) = sample(touched);
 
-            report.overrides.push(OverridingFiles { file: relative_name(mods_dir, &path), location: ForeignLocation::Mods, paths, count });
+            report.overrides.push(OverridingFiles { file, location: ForeignLocation::Mods, paths, count });
         }
+
+        package.package_id
     }
 
-    report.duplicates = by_id
+    fn check_packages(&self, report: &mut ConflictReport) -> PackagesById {
+        let mut by_id = PackagesById::new();
+
+        for path in package_files(self.mods_dir) {
+            let name = path.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
+            let ours = is_owned(self.catalog, &name);
+            let package_id = if ours { self.owned_package_id(&name) } else { self.check_foreign(&path, report) };
+
+            by_id.entry(package_id).or_default().push((relative_name(self.mods_dir, &path), ours));
+        }
+
+        by_id
+    }
+}
+
+fn duplicates(by_id: PackagesById) -> Vec<DuplicatePackage> {
+    by_id
         .into_iter()
         .filter(|(_, files)| files.len() > 1)
         .map(|(package_id, files)| DuplicatePackage {
@@ -209,7 +238,25 @@ pub fn scan(context: ClientContext) -> AppResult<ConflictReport> {
             files: files.into_iter().map(|(file, _)| file).collect(),
             package_id,
         })
-        .collect();
+        .collect()
+}
+
+pub fn scan(context: ClientContext) -> AppResult<ConflictReport> {
+    let catalog = context.catalog;
+    let mods_dir = &context.client.mods_dir;
+    let installation = read_installation(context)?;
+    let enabled: BTreeSet<String> =
+        installation.components.iter().filter(|component| component.state == ComponentState::Enabled).map(|component| component.id.clone()).collect();
+    let prefixes = owned_prefixes(catalog);
+    let mut report = ConflictReport {
+        missing: missing_components(catalog, &installation),
+        replaced: replaced_components(catalog, &installation, mods_dir),
+        ..ConflictReport::default()
+    };
+
+    let by_id = PackageScan { catalog, enabled: &enabled, prefixes: &prefixes, mods_dir }.check_packages(&mut report);
+
+    report.duplicates = duplicates(by_id);
     report.overrides.extend(res_mods_overrides(&context.client.res_mods_dir, &prefixes));
 
     Ok(report)

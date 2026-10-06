@@ -38,14 +38,13 @@ except Exception:
     COMPONENT_EVENT = None
 
 
-# Whether `createComponent` takes the 0.6 `battle`/`lobby` arguments.
 def accepts_spaces(method):
     code = getattr(getattr(method, '__func__', method), '__code__', None)
     return code is not None and SPACE_ARGUMENT in code.co_varnames[:code.co_argcount]
 
 
 def flash_props(props):
-    return dict((key, value) for key, value in (props or {}).items() if key not in GAMEFACE_PROPS)
+    return {key: value for key, value in (props or {}).items() if key not in GAMEFACE_PROPS}
 
 
 class GuiFlashBackend(HudBackend):

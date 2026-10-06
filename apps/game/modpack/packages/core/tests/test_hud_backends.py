@@ -28,7 +28,7 @@ from otmetki.core.hud.surface import (
 )
 from otmetki.core.hud.surface.constants import MOUSE_EVENTS
 from otmetki.core.i18n import Catalog, Translator
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 
 HUD_PROTOCOL_DIR = os.path.join(_support.MODPACK_DIR, 'ui-web', 'src', 'shared', 'api', 'hud-protocol')
 HUD_PROTOCOL_CONSTANTS = os.path.join(HUD_PROTOCOL_DIR, 'hud-protocol.constants.ts')
@@ -374,7 +374,7 @@ class LayerTest(unittest.TestCase):
         assert self.backend.labels[self.alias]['hint'] == u''
 
     def test_the_layer_reports_its_backend_name(self):
-        assert self.layer.backend_name == 'fake'
+        assert self.layer.backend.name == 'fake'
 
 
 class FramePushTest(unittest.TestCase):

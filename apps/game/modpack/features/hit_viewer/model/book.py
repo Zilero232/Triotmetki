@@ -176,7 +176,7 @@ class HitBook(BattleBook):
             'aim': clean_aim(shot.get('aim')),
             'at': at,
         }
-        entry.update(dict((key, None) for key in ANALYSIS_KEYS))
+        entry.update({key: None for key in ANALYSIS_KEYS})
         self.add_hit(entry)
         return True
 

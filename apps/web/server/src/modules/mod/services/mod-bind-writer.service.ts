@@ -1,9 +1,9 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { DEFAULT_IPV6_SUBNET_PREFIX, normalizeIp } from '@nestjs/throttler';
 import { addMinutes } from 'date-fns';
 import { Redis } from 'ioredis';
 import { isObjectType, isString } from 'remeda';
 
+import type { BindAttemptCounter } from '../lib/bind-attempts/bind-attempts.types';
 import type { BindResponse } from '../lib/contract/contract.types';
 import type { BindCode, BindCodeInput, BindInput, BindLinkInput, BindRequest, ClaimedCode, RegisterDeviceInput } from '../mod.types';
 
@@ -15,6 +15,7 @@ import { UserAccountsReaderService } from '../../accounts';
 import { PurgeGuardService } from '../../collector/purge';
 import { BIND_CODE } from '../config/bind-code.constants';
 import { MOD_DEVICE_LIMITS } from '../config/device.constants';
+import { bindAttemptCounters } from '../lib/bind-attempts/bind-attempts';
 import { bindCodePattern, bindRequestSchema } from '../lib/contract/contract.schemas';
 import { deviceSecret, hashSecret, newDeviceId, normalizeBindCode } from '../lib/device-secret/device-secret';
 
@@ -54,13 +55,13 @@ export class ModBindWriterService {
 
   async bind({ body, requester }: BindInput): Promise<BindResponse> {
     const request = this.parseRequest(body);
-    const failureKey = `${BIND_CODE.failurePrefix}${normalizeIp(requester, DEFAULT_IPV6_SUBNET_PREFIX)}`;
+    const counters = bindAttemptCounters({ requester, accountId: request.account_id });
 
-    await this.countAttempt(failureKey);
+    await this.countAttempt(counters);
 
     const { userId, link } = await this.claimCode(request);
 
-    await this.redis.del(failureKey);
+    await this.redis.del(...counters.map(({ key }) => key));
     await this.assertBindable(link.accountId);
 
     const deviceId = newDeviceId();
@@ -92,12 +93,14 @@ export class ModBindWriterService {
     return parsed.data;
   }
 
-  private async countAttempt(failureKey: string): Promise<void> {
-    const results = await this.redis.multi().incr(failureKey).expire(failureKey, BIND_CODE.failureWindowSeconds).exec();
-    const attempts = Number(results?.[0]?.[1] ?? 0);
+  private async countAttempt(counters: BindAttemptCounter[]): Promise<void> {
+    for (const { key, limit } of counters) {
+      const results = await this.redis.multi().incr(key).expire(key, BIND_CODE.failureWindowSeconds).exec();
+      const attempts = Number(results?.[0]?.[1] ?? 0);
 
-    if (attempts > BIND_CODE.maxFailuresPerRequester) {
-      throw new ModException({ status: HttpStatus.TOO_MANY_REQUESTS, error: 'rate_limited' });
+      if (attempts > limit) {
+        throw new ModException({ status: HttpStatus.TOO_MANY_REQUESTS, error: 'rate_limited' });
+      }
     }
   }
 

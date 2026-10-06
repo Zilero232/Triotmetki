@@ -8,19 +8,19 @@ from .constants import DATE_TIME_FORMAT
 
 # The client sets LC_TIME from the system locale (RU 1.45 client/game.py), where Windows' Russian, Ukrainian and
 # Belarusian locales give `%p` no text at all, so the 12-hour clock's AM/PM marker is written here.
-def format_moment(fmt, moment):
+def format_moment(time_format, moment):
     """`time.strftime` as text; '' for an empty format (a switched-off clock or date)."""
-    if not fmt:
+    if not time_format:
         return u''
-    fmt = to_text(fmt).replace(u'%p', u'AM' if moment.tm_hour < 12 else u'PM')
-    return to_text(time.strftime(str(fmt), moment))
+    time_format = to_text(time_format).replace(u'%p', u'AM' if moment.tm_hour < 12 else u'PM')
+    return to_text(time.strftime(str(time_format), moment))
 
 
-def format_epoch(epoch, fmt=DATE_TIME_FORMAT):
+def format_epoch(epoch, time_format=DATE_TIME_FORMAT):
     """Epoch seconds on the local clock (`dd.mm.YYYY HH:MM` by default), or None."""
     if epoch is None:
         return None
-    return format_moment(fmt, time.localtime(epoch))
+    return format_moment(time_format, time.localtime(epoch))
 
 
 def format_timer(seconds):

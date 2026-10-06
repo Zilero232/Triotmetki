@@ -54,5 +54,5 @@ def render(template, values):
 
 
 def render_markup(template, values):
-    escaped = dict((key, escape(format_value(value))) for key, value in values.items())
+    escaped = {key: escape(format_value(value)) for key, value in values.items()}
     return Markup(render(template, escaped))

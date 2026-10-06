@@ -52,7 +52,7 @@ _BLOCKED_FEEDBACK_IDS = {
     'VEHICLE_WHEEL_BLOCKED': 77,
     'VEHICLE_ARMOR_MISSED': 78,
 }
-_FEEDBACK_IDS = dict((name, index + 1) for index, name in enumerate(_FEEDBACK_NAMES))
+_FEEDBACK_IDS = {name: index + 1 for index, name in enumerate(_FEEDBACK_NAMES)}
 _FEEDBACK_IDS.update(_BLOCKED_FEEDBACK_IDS)
 FEEDBACK_EVENT_ID = type('FEEDBACK_EVENT_ID', (object,), _FEEDBACK_IDS)
 
@@ -67,14 +67,14 @@ class PERSONAL_EFFICIENCY_TYPE(object):
 
 
 ATTACK_REASONS = ('shot', 'fire', 'ramming', 'world_collision', 'death_zone', 'drowning')
-REASON = dict((name, index) for index, name in enumerate(ATTACK_REASONS))
+REASON = {name: index for index, name in enumerate(ATTACK_REASONS)}
 
 
 SHELL_NAMES = (
     'HOLLOW_CHARGE', 'ARMOR_PIERCING', 'ARMOR_PIERCING_HE', 'ARMOR_PIERCING_CR', 'SMOKE', 'HE_MODERN',
     'HE_LEGACY_STUN', 'HE_LEGACY_NO_STUN', 'FLAME',
 )
-SHELL = dict((name, index) for index, name in enumerate(SHELL_NAMES))
+SHELL = {name: index for index, name in enumerate(SHELL_NAMES)}
 
 
 class ShellType(int):

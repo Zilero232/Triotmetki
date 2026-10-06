@@ -20,8 +20,6 @@ from .constants import (
 )
 
 
-# What the gallery's tiles show besides the client art: the previews kept on this PC (key -> data URI) and the space
-# folder of the game's default hangar, whose preview the game's own row shows.
 @attr.s(frozen=True)
 class GalleryPictures(object):
 
@@ -81,10 +79,6 @@ class CaptureBook(object):
         self.attempted = set()
         self.clean_key = None
         self.clean_since = None
-
-    @property
-    def is_armed(self):
-        return self.armed_until is not None
 
     def arm(self, now, forced_key=None):
         self.armed_until = now + PREVIEW_ARM_S

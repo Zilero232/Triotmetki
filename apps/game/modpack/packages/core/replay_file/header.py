@@ -1,11 +1,11 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import io
-import json
 import os
 import struct
 import time
 
+from ..codec import decode_json
 from ..compat import is_int, string_types, to_text
 from .constants import (
     ALIVE_DEATH_REASON,
@@ -13,6 +13,7 @@ from .constants import (
     AVATAR_KEY,
     COMMON_STATS,
     DATE_TIME,
+    DRAW_TEAM,
     EXTENSIONS,
     HEAD_FORMAT,
     MAGIC,
@@ -41,10 +42,11 @@ def _block_cap(index):
     return MAX_HEADER_BLOCK_BYTES[min(index, len(MAX_HEADER_BLOCK_BYTES) - 1)]
 
 
-# RuntimeError: Python 2's json raises it ("maximum recursion depth exceeded") on deeply nested arrays or objects.
+# RuntimeError: Python 2's json raises it ("maximum recursion depth exceeded") on deeply nested arrays or objects; a
+# number too long to convert in time is a ValueError (codec.decode_json).
 def _json_block(raw):
     try:
-        return json.loads(to_text(raw, 'utf-8'))
+        return decode_json(to_text(raw, 'utf-8'))
     except (ValueError, UnicodeDecodeError, RuntimeError):
         return None
 
@@ -102,7 +104,7 @@ def _dict_of(value, key):
 
 
 def _ints(source, names):
-    return dict((ours, source[theirs]) for theirs, ours in names if is_int(source.get(theirs)))
+    return {ours: source[theirs] for theirs, ours in names if is_int(source.get(theirs))}
 
 
 # (result, damage) of the recorder from the results block: its own `personal` entry and the winner team only (fair play:
@@ -117,7 +119,13 @@ def own_outcome(results):
     winner = common.get('winnerTeam')
     if not is_int(team) or not is_int(winner):
         return None, damage
-    return (RESULT_DRAW if winner == 0 else RESULT_WIN if winner == team else RESULT_LOSS), damage
+    return _team_result(team, winner), damage
+
+
+def _team_result(team, winner):
+    if winner == DRAW_TEAM:
+        return RESULT_DRAW
+    return RESULT_WIN if winner == team else RESULT_LOSS
 
 
 def own_stats(results):

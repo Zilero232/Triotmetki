@@ -1,7 +1,19 @@
 import { describe, expect, it } from 'vitest';
 
 import { WINDOW_FRAME } from '../../../config';
-import { boundsOf, centredFrame, clampFrame, fitFrame, layoutOf, moveFrame, resizeFrame, zoomStep } from '../frame';
+import {
+  boundsOf,
+  centredFrame,
+  clampFrame,
+  fitFrame,
+  frameStyleOf,
+  innerStyleOf,
+  layoutOf,
+  moveFrame,
+  resizeFrame,
+  zoomLimits,
+  zoomStep
+} from '../frame';
 
 const FULL_HD = { left: 0, top: 0, right: 1920, bottom: 1080 };
 const SMALL = { left: 0, top: 0, right: 1280, bottom: 720 };
@@ -170,5 +182,36 @@ describe(layoutOf, () => {
 
   it('does not scale the content at the default zoom', () => {
     expect(layoutOf({ frame: frameOf(1400, 800), zoom: WINDOW_FRAME.defaultZoom }).scale).toBe(1);
+  });
+});
+
+describe(frameStyleOf, () => {
+  it('places the frame in rem', () => {
+    expect(frameStyleOf({ x: 10, y: 20, width: 300, height: 200 })).toEqual({ left: '10rem', top: '20rem', width: '300rem', height: '200rem' });
+  });
+});
+
+describe(innerStyleOf, () => {
+  it('leaves an unzoomed window untransformed', () => {
+    expect(innerStyleOf(layoutOf({ frame: { x: 0, y: 0, width: 1000, height: 800 }, zoom: 100 }))).toEqual({ width: '1000rem', height: '800rem' });
+  });
+
+  it('scales a zoomed window from its corner', () => {
+    expect(innerStyleOf(layoutOf({ frame: { x: 0, y: 0, width: 1250, height: 1000 }, zoom: 125 }))).toEqual({
+      width: '1000rem',
+      height: '800rem',
+      transform: 'scale(1.25)',
+      transformOrigin: '0 0'
+    });
+  });
+});
+
+describe(zoomLimits, () => {
+  it('stops zooming in at the largest step', () => {
+    expect(zoomLimits(150)).toEqual({ canZoomIn: false, canZoomOut: true });
+  });
+
+  it('stops zooming out at the smallest step', () => {
+    expect(zoomLimits(80)).toEqual({ canZoomIn: true, canZoomOut: false });
   });
 });

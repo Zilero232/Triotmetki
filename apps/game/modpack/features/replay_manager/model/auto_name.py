@@ -31,7 +31,7 @@ def name_values(event, map_label, vehicle_label, result_label):
 
 
 def render_name(template, values, old_name):
-    plain = dict((key, str(value) if is_int(value) else value) for key, value in values.items())
+    plain = {key: str(value) if is_int(value) else value for key, value in values.items()}
     try:
         return rename_target(old_name, render(template, plain))
     except ReplayActionError:

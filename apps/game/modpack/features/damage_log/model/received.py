@@ -7,6 +7,7 @@ from ....core.shot_points import drawn_points
 from .constants import (
     AMMO_RACK_WINDOW_S,
     MAX_ENTRIES,
+    OUTCOME_PEN,
     RECEIVED_MERGE_WINDOW_S,
     RICOCHET_CODES,
     SOURCES,
@@ -135,7 +136,7 @@ class ReceivedLog(object):
 
     def _last_damage(self):
         for entry in reversed(self.entries):
-            if entry['outcome'] == 'pen':
+            if entry['outcome'] == OUTCOME_PEN:
                 return entry
         return None
 

@@ -145,10 +145,10 @@ class Session(object):
 
     def package_names(self, keys):
         packages = layout.split_packages('root_init.py')
-        return dict((package.key, builder.package_file_name(package)) for package in packages if package.key in keys)
+        return {package.key: builder.package_file_name(package) for package in packages if package.key in keys}
 
     def sync(self, chosen, built, third_party):
-        wanted = dict((os.path.basename(path), path) for path in built.values())
+        wanted = {os.path.basename(path): path for path in built.values()}
         wanted.update(third_party)
         plan, files = deploy.sync(self.dev_dir, wanted, self.details(chosen))
         print('Installed into %s: %d written, %d unchanged, %d removed' % (

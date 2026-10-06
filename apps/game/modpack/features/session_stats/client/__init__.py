@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import time
 
-from ....core.client.component import FeatureComponent
+from ....core.client.component import ACTION_REFRESH, FeatureComponent
 from ....core.client.game import vehicle_short_name
 from ....core.client.me import SignedRead, can_read, post_signed, signed_body, signed_read
 from ....core.errors import ReasonError
@@ -25,7 +25,6 @@ from ..model import (
     session_widget,
 )
 from ..model.constants import (
-    ACTION_REFRESH,
     ACTION_RESET,
     ACTION_SHARE,
     ACTION_SITE,
@@ -231,7 +230,7 @@ class SessionStats(FeatureComponent):
         summary = self.current_summary()
         moe = self.moe.rows(summary.get('session_id'), MOE_ROWS) if settings.get('show_moe') else []
         tank_ids = [goal['tank_id'] for goal in goals if goal.get('tank_id')] + [entry['tank_id'] for entry in moe]
-        names = dict((tank_id, vehicle_short_name(tank_id)) for tank_id in tank_ids)
+        names = {tank_id: vehicle_short_name(tank_id) for tank_id in tank_ids}
 
         return SessionView(summary, goals, overview, names, moe)
 

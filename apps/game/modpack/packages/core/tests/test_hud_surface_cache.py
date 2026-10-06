@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import json
 import unittest
 
-import _support  # noqa: F401
+import _support
 from otmetki.core.hud.surface import SPACE_BATTLE, SPACE_LOBBY, HudSurface
 
 DAMAGE_LOG = 'otmetki.hud.damage_log'
@@ -28,6 +28,38 @@ def battle_surface():
     surface.create(DAMAGE_LOG, {'text': u'Журнал боя', 'x': 10, 'widget': WIDGET}, SPACE_BATTLE)
     surface.create(TEAM_HP, {'text': '15 : 15', 'x': 20}, SPACE_BATTLE)
     return surface
+
+
+class BadPanelTest(unittest.TestCase):
+
+    def setUp(self):
+        self.surface = battle_surface()
+        self.surface.update(TEAM_HP, {'widget': {'kind': 'team_hp', 'data': set([1])}})
+
+    def encoded_panels(self):
+        return {panel['id']: panel for panel in json.loads(self.surface.encode(SPACE_BATTLE, False))['panels']}
+
+    def test_a_panel_that_is_not_json_leaves_the_others_drawn(self):
+        self.assertEqual(self.encoded_panels()[DAMAGE_LOG]['widget'], WIDGET)
+
+    def test_a_panel_that_is_not_json_is_sent_hidden(self):
+        self.assertFalse(self.encoded_panels()[TEAM_HP]['visible'])
+
+    def test_a_panel_that_is_not_json_is_logged_once(self):
+        lines = []
+
+        with _support.captured_log(lines):
+            for _ in range(3):
+                self.surface.encode(SPACE_BATTLE, False)
+
+        self.assertEqual(len(lines), 1)
+
+    def test_a_bad_panel_that_is_fixed_is_drawn_again(self):
+        self.surface.encode(SPACE_BATTLE, False)
+
+        self.surface.update(TEAM_HP, {'widget': {'kind': 'team_hp', 'data': [1]}})
+
+        self.assertTrue(self.encoded_panels()[TEAM_HP]['visible'])
 
 
 class HudSurfaceFragmentTest(unittest.TestCase):

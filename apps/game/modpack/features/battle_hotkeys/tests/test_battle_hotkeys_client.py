@@ -8,7 +8,7 @@ import unittest
 import _support
 from otmetki.core.events import EventBus
 from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 from otmetki.features.battle_hotkeys.i18n import STRINGS
 
 CLIENT_PREFIXES = ('otmetki.core.client', 'otmetki.features.battle_hotkeys.client')
@@ -108,7 +108,7 @@ class App(object):
 class BattleHotkeysClientTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         self.purge()
         self.callbacks = []
         self.key_down = Event()
@@ -153,7 +153,8 @@ class BattleHotkeysClientTest(unittest.TestCase):
         self.app.bus.emit('battle_ready', Namespace(arena=Namespace()))
 
     def expire_notice(self):
-        callbacks, self.callbacks = self.callbacks, []
+        callbacks = self.callbacks
+        self.callbacks = []
         for callback in callbacks:
             callback()
 

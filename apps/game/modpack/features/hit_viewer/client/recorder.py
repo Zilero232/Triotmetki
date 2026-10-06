@@ -17,6 +17,7 @@ from ....core.client.battle import (
     vehicle_name,
 )
 from ....core.client.game import values_by_name
+from ....core.client.storage import held_for_hangar
 from ....core.log import log, safe
 from ....core.own_result import own_result
 from ..model import BOOK_FILE, MODULE_KEYS, OWN_TARGET, SIDE_DEALT, SIDE_RECEIVED, HitBook, gun_shell
@@ -97,7 +98,7 @@ class HitRecorder(object):
         if account_id == self.account_id and self.book is not None:
             return
         self.account_id = account_id
-        self.book = HitBook(self.component.account_file(BOOK_FILE, account_id), self._keep())
+        self.book = HitBook(held_for_hangar(self.component.account_file(BOOK_FILE, account_id)), self._keep())
 
     def battles(self):
         return self.book.battles if self.book is not None else []
@@ -105,12 +106,16 @@ class HitRecorder(object):
     def resize(self):
         if self.book is not None:
             self.book.resize(self._keep())
-            self.book.save()
+            self._save_now()
 
     def clear(self):
         if self.book is not None:
             self.book.clear()
-            self.book.save()
+            self._save_now()
+
+    def _save_now(self):
+        self.book.save()
+        self.book.store.flush()
 
     def _on_battle_ready(self, player):
         if self.book is None or not self.component.enabled():

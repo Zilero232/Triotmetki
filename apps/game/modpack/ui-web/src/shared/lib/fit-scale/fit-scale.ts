@@ -1,9 +1,9 @@
-import type { FitPlacement, FitScaleInput } from './fit-scale.types';
+import type { FitPlacement, FitScaleInput, FitSize, RatioInput } from './fit-scale.types';
 
-const ratio = (room: number, size: number): number => (size > 0 && room > 0 ? room / size : 1);
+const ratio = ({ room, size }: RatioInput): number => (size > 0 && room > 0 ? room / size : 1);
 
 export const fitScale = ({ frame, content, max = 1 }: FitScaleInput): number =>
-  Math.min(max, ratio(frame.width, content.width), ratio(frame.height, content.height));
+  Math.min(max, ratio({ room: frame.width, size: content.width }), ratio({ room: frame.height, size: content.height }));
 
 export const fitPlacement = (input: FitScaleInput): FitPlacement => {
   const { frame, content } = input;
@@ -17,3 +17,5 @@ export const fitPlacement = (input: FitScaleInput): FitPlacement => {
     measured
   };
 };
+
+export const elementSize = (element: HTMLElement | null): FitSize => ({ width: element?.offsetWidth ?? 0, height: element?.offsetHeight ?? 0 });

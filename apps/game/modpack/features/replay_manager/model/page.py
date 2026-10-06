@@ -32,7 +32,6 @@ def _int_or_none(value):
     return value if is_int(value) else None
 
 
-# (nation, name) of the header's `playerVehicle` (`ussr-R04_T-34`), or (None, None).
 def vehicle_parts(vehicle):
     if not vehicle or not VEHICLE_NAME.match(vehicle):
         return None, None
@@ -44,7 +43,6 @@ def _is_vehicle_code(prefix):
     return prefix[:1].isalpha() and any(char.isdigit() for char in prefix)
 
 
-# A readable name from the vehicle's code name when the client has no localized one (`R04_T-34` -> `T-34`).
 def vehicle_label(vehicle):
     name = vehicle_parts(vehicle)[1] or vehicle
     if not name:
@@ -93,8 +91,6 @@ def _no_image(path):
     return None
 
 
-# What a page needs beside the replays: the account's index, the client, and the client lookups the glue passes in
-# (`describe_vehicle(tank_id, vehicle)` -> {label, tier, cls}, `image(path)` -> an image string or None).
 @attr.s(eq=False)
 class PageContext(object):
 
@@ -111,7 +107,6 @@ class PageContext(object):
         return self.image(path) if path else None
 
 
-# (favourite, site state) of a replay: what an item shows beside its file and header.
 def marks_of(replay, context):
     header = replay.get('header') or {}
     index = context.index

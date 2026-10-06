@@ -28,7 +28,7 @@ class Command(object):
 class OwnCommandTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         for name in STUBBED:
             stub = types.ModuleType(str(name))
             stub.__path__ = []

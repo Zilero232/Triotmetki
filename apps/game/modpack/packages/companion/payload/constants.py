@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+SCHEMA_VERSION = 1
 REALM = 'RU'
 MAX_PLATOON_SIZE = 3
 MAX_ACHIEVEMENTS = 64

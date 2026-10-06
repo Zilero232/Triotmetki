@@ -173,7 +173,15 @@ pub fn read_recipes(package: &Path) -> AppResult<Vec<u8>> {
     Ok(bytes)
 }
 
-fn is_current(record: Option<&HangarLooksRecord>, plan: &Plan, target: &Path, client_version: &str) -> bool {
+struct CurrentInput<'a> {
+    record: Option<&'a HangarLooksRecord>,
+    plan: &'a Plan,
+    target: &'a Path,
+    client_version: &'a str,
+}
+
+fn is_current(input: CurrentInput) -> bool {
+    let CurrentInput { record, plan, target, client_version } = input;
     let Some(record) = record.filter(|record| record.inputs_sha256 == plan.inputs_sha256 && record.client_version == client_version) else {
         return false;
     };
@@ -209,7 +217,7 @@ pub fn sync(context: ClientContext) -> AppResult<SyncOutcome> {
         generate::plan(PlanInput { files: &files, recipes: &recipes, disabled: &context.catalog.disabled_looks, client_version: &client_version })?;
     let state = read_state(context.client_dir);
 
-    if is_current(state.hangar_looks.as_ref(), &plan, &target, &client_version) {
+    if is_current(CurrentInput { record: state.hangar_looks.as_ref(), plan: &plan, target: &target, client_version: &client_version }) {
         return Ok(SyncOutcome::Unchanged);
     }
 

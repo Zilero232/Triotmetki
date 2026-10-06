@@ -23,11 +23,12 @@ describe('closeDependencies', () => {
 describe('toggleSelection', () => {
   const full = presetSelection({ components, presetId: presets[0]?.id ?? null });
 
-  it('unticks what depends on the unticked component', () => {
-    const selection = toggleSelection({ components, selection: full, id: 'damage_log', checked: false });
+  it('unticks the unticked component', () => {
+    expect(toggleSelection({ components, selection: full, id: 'damage_log', checked: false }).has('damage_log')).toBe(false);
+  });
 
-    expect(selection.has('damage_log')).toBe(false);
-    expect(selection.has('hit_log')).toBe(false);
+  it('unticks what depends on the unticked component', () => {
+    expect(toggleSelection({ components, selection: full, id: 'damage_log', checked: false }).has('hit_log')).toBe(false);
   });
 
   it('never unticks a required component', () => {
@@ -38,15 +39,16 @@ describe('toggleSelection', () => {
 });
 
 describe('matchingPreset', () => {
-  it('names the preset a selection equals and falls back to the custom one', () => {
-    const [first] = presets;
-    const custom = presets.find((preset) => preset.custom);
-    const selection = presetSelection({ components, presetId: first?.id ?? null });
+  const [first] = presets;
+  const presetPicked = presetSelection({ components, presetId: first?.id ?? null });
 
-    expect(matchingPreset({ components, presets, selection })).toBe(first?.id);
+  it('names the preset a selection equals', () => {
+    expect(matchingPreset({ components, presets, selection: presetPicked })).toBe(first?.id);
+  });
 
-    expect(matchingPreset({ components, presets, selection: toggleSelection({ components, selection, id: 'hit_log', checked: false }) })).toBe(
-      custom?.id
-    );
+  it('falls back to the custom preset for a selection no preset equals', () => {
+    const changed = toggleSelection({ components, selection: presetPicked, id: 'hit_log', checked: false });
+
+    expect(matchingPreset({ components, presets, selection: changed })).toBe(presets.find((preset) => preset.custom)?.id);
   });
 });

@@ -6,7 +6,7 @@ import functools
 import BigWorld
 
 from ....hooks import subscribe, unsubscribe
-from ....log import log, log_exception
+from ....log import log, log_exception, safe
 from .constants import ATTEMPTS, RETRY_S
 
 
@@ -40,7 +40,7 @@ class BattleHooks(object):
             return
         if attempt + 1 < self.attempts:
             retry = functools.partial(self._try, generation, resolve, name, handler, attempt + 1, on_result)
-            BigWorld.callback(self.retry_s, retry)
+            BigWorld.callback(self.retry_s, safe(retry))
             return
         log('battle hook %s: no owner after %d tries' % (name, self.attempts))
         self._report(on_result, name, False)
@@ -54,7 +54,7 @@ class BattleHooks(object):
     @staticmethod
     def _report(on_result, name, attached):
         if on_result is not None:
-            on_result(name, attached)
+            safe(on_result)(name, attached)
 
     def clear(self):
         self.generation += 1

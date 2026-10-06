@@ -10,14 +10,16 @@ MAX_HEADER_BLOCK_BYTES = (1024 * 1024, 4 * 1024 * 1024)
 EXTENSIONS = ('.mtreplay', '.wotreplay')
 # The recording in progress (BattleReplay.record, RU 1.45 :339-342): temp.mtreplay, or temp1..temp99 when that one is
 # taken.
-RECORDING_NAME = re.compile(r'^temp\d{0,2}\.(mt|wot)replay$')
+RECORDING_NAME = re.compile(r'^temp\d{0,2}\.(mt|wot)replay\Z')
 HEAD_FORMAT = str('<II')
 SIZE_FORMAT = str('<I')
-DATE_TIME = re.compile(r'^\s*(\d{1,2})\.(\d{1,2})\.(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})\s*$')
+DATE_TIME = re.compile(r'^\s*(\d{1,2})\.(\d{1,2})\.(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})\s*\Z')
 AVATAR_KEY = 'avatar'
 RESULT_WIN = 'win'
 RESULT_LOSS = 'loss'
 RESULT_DRAW = 'draw'
+# The results' `common.winnerTeam` of a draw.
+DRAW_TEAM = 0
 # personal[<vehicle>].deathReason of a vehicle that lived to the end of the battle.
 ALIVE_DEATH_REASON = -1
 

@@ -21,10 +21,10 @@ def parse_words(value):
     return tuple(word for word in words if word)
 
 
-def stamp(text, fmt, now):
-    if not fmt:
+def stamp(text, time_format, now):
+    if not time_format:
         return text
-    moment = format_moment(fmt, time.localtime(now))
+    moment = format_moment(time_format, time.localtime(now))
     return u'%s %s' % (font(u'[%s]' % moment, COLOR_MUTED), to_text(text))
 
 

@@ -7,7 +7,7 @@ import os
 import unittest
 
 import _support
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 from otmetki.features.marks_panel.i18n import STRINGS
 from otmetki.features.marks_panel.model.history import MarksHistory
 from otmetki.features.marks_panel.model.page import build_page

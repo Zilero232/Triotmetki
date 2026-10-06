@@ -201,45 +201,63 @@ fn read_manifest(context: ClientContext) -> AppResult<Manifest> {
     }
 }
 
+#[derive(Default)]
+struct Placement<'a> {
+    placing: Vec<&'a FetchedDependency>,
+    retire: Vec<PathBuf>,
+}
+
+fn user_record(id: &str, status: DependencyStatus) -> DependencyRecord {
+    DependencyRecord { id: id.to_owned(), owner: DependencyOwner::User, file: status.file.unwrap_or_default(), sha256: String::new() }
+}
+
+fn ours_record(dependency: &DependencyComponent) -> DependencyRecord {
+    DependencyRecord {
+        id: dependency.id.clone(),
+        owner: DependencyOwner::Ours,
+        file: dependency.file.clone(),
+        sha256: dependency.sha256.to_lowercase(),
+    }
+}
+
+fn plan_placement<'a>(input: &InstallDependenciesInput<'a>, manifest: &mut Manifest) -> Placement<'a> {
+    let mods_dir = &input.context.client.mods_dir;
+    let mut placement = Placement::default();
+
+    for id in input.wanted {
+        let Some(dependency) = input.context.catalog.dependency(id) else {
+            continue;
+        };
+        let status = inspect(mods_dir, Some(&*manifest), dependency);
+        let fetched = input.fetched.iter().find(|fetched| &fetched.dependency.id == id);
+
+        match (status.state, fetched) {
+            (DependencyState::Missing | DependencyState::Outdated, Some(fetched)) => {
+                if status.state == DependencyState::Outdated {
+                    placement.retire.extend(manifest.dependency(id).and_then(|record| owned_file(mods_dir, record)));
+                }
+
+                placement.placing.push(fetched);
+            }
+            (DependencyState::User, _) => manifest.set_dependency(user_record(id, status)),
+            _ => {}
+        }
+    }
+
+    placement
+}
+
 pub fn install(input: InstallDependenciesInput) -> AppResult<Vec<String>> {
     let context = input.context;
     let mods_dir = &context.client.mods_dir;
     let mut manifest = read_manifest(context)?;
-    let mut placing: Vec<&FetchedDependency> = Vec::new();
-    let mut retire: Vec<PathBuf> = Vec::new();
 
     for fetched in input.fetched {
         verify(fetched)?;
         safe_file_name(&fetched.dependency.file)?;
     }
 
-    for id in input.wanted {
-        let Some(dependency) = context.catalog.dependency(id) else {
-            continue;
-        };
-        let status = inspect(mods_dir, Some(&manifest), dependency);
-        let fetched = input.fetched.iter().find(|fetched| &fetched.dependency.id == id);
-
-        match (status.state, fetched) {
-            (DependencyState::Missing | DependencyState::Outdated, Some(fetched)) => {
-                if status.state == DependencyState::Outdated {
-                    retire.extend(manifest.dependency(id).and_then(|record| owned_file(mods_dir, record)));
-                }
-
-                placing.push(fetched);
-            }
-            (DependencyState::User, _) => {
-                manifest.set_dependency(DependencyRecord {
-                    id: id.clone(),
-                    owner: DependencyOwner::User,
-                    file: status.file.unwrap_or_default(),
-                    sha256: String::new(),
-                });
-            }
-            _ => {}
-        }
-    }
-
+    let Placement { placing, retire } = plan_placement(&input, &mut manifest);
     let files: Vec<StagedFile> = placing
         .iter()
         .map(|fetched| StagedFile { dir: mods_dir, name: &fetched.dependency.file, bytes: &fetched.bytes, sha256: &fetched.dependency.sha256 })
@@ -248,14 +266,7 @@ pub fn install(input: InstallDependenciesInput) -> AppResult<Vec<String>> {
     stage(&files)?.commit(&commit_journal(context.client_dir), &retire)?;
 
     for fetched in &placing {
-        let dependency = &fetched.dependency;
-
-        manifest.set_dependency(DependencyRecord {
-            id: dependency.id.clone(),
-            owner: DependencyOwner::Ours,
-            file: dependency.file.clone(),
-            sha256: dependency.sha256.to_lowercase(),
-        });
+        manifest.set_dependency(ours_record(&fetched.dependency));
     }
 
     manifest.write(context.client_dir)?;

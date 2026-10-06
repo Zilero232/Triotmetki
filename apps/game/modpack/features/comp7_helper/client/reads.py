@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.game import client_attr, selected_vehicle, service
 from ....core.compat import call, to_text
-from ....core.log import log_exception
+from ....core.log import guarded
 
 # RU 1.45 client source: IComp7Controller (gui/game_control/comp7_controller.py) keeps `isComp7PrbActive()` (the
 # hangar is in Onslaught); the ranks config
@@ -47,18 +47,16 @@ def _skill(controller):
     return to_text(name) if name else None
 
 
+@guarded('comp7 helper: read')
 def comp7_state():
-    try:
-        controller = _controller()
-        if controller is None or not call(controller, 'isComp7PrbActive', False):
-            return None
-        qualification = bool(call(controller, 'isQualificationActive', False))
-        return {
-            'division': None if qualification else _player_division(),
-            'divisions': _divisions(),
-            'qualification': qualification,
-            'skill': _skill(controller),
-        }
-    except Exception:
-        log_exception('comp7 helper: read')
+    controller = _controller()
+    if controller is None or not call(controller, 'isComp7PrbActive', False):
         return None
+    qualification = bool(call(controller, 'isQualificationActive', False))
+    return {
+        'division': None if qualification else _player_division(),
+        'divisions': _divisions(),
+        'qualification': qualification,
+        'skill': _skill(controller),
+    }
+

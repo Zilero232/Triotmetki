@@ -16,3 +16,5 @@ export type ViewerMessage =
   | { command: 'ready' }
   | { command: 'select'; index: number }
   | { command: 'tab'; tab: ViewerSide };
+
+export type ParseWithInput<Schema extends z.ZodMiniType> = { schema: Schema; raw: string | null };

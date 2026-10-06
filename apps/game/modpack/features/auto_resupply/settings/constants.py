@@ -8,5 +8,5 @@ GROUP = 'hangar'
 
 FLAGS = ('auto_repair', 'auto_load', 'auto_equip', 'auto_boosters')
 
-DEFAULTS = dict((flag, NATIVE) for flag in FLAGS)
-CHOICES = dict((flag, TRI_STATE) for flag in FLAGS)
+DEFAULTS = {flag: NATIVE for flag in FLAGS}
+CHOICES = {flag: TRI_STATE for flag in FLAGS}

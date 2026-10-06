@@ -1,11 +1,11 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.client.game import service
+from ....core.client.lobby_view import hidden_layers
 from ....core.log import log
 from .constants import (
     CAMERA_SECTION,
     FALLBACK_MODE,
-    HIDDEN_LAYERS,
     INPUT_HANDLER_CFG,
     PREVIOUS_ARGS_ATTR,
     PREVIOUS_MODE_ATTR,
@@ -21,10 +21,9 @@ def _camera_section():
     return section if section is not None else ResMgr.DataSection(CAMERA_SECTION)
 
 
+# The client's VideoCamera over the hangar: it takes over BigWorld.camera() and gets the keys and the mouse the
+# component hands it; `stop()` gives the hangar camera back.
 class HangarFlight(object):
-    """The client's VideoCamera over the hangar: it takes over BigWorld.camera() and gets the keys and the mouse the
-    component hands it; `stop()` gives the hangar camera back."""
-
     def __init__(self):
         self.camera = None
         self.previous = None
@@ -41,7 +40,8 @@ class HangarFlight(object):
 
     def stop(self):
         import BigWorld
-        camera, self.camera = self.camera, None
+        camera = self.camera
+        self.camera = None
         if camera is not None:
             camera.disable()
             camera.destroy()
@@ -52,7 +52,8 @@ class HangarFlight(object):
     # The battle has its own camera by now and the hangar is gone: the video camera is dropped without disable()
     # (it resets the FOV) and the hangar camera is not given back.
     def drop(self):
-        camera, self.camera = self.camera, None
+        camera = self.camera
+        self.camera = None
         if camera is not None:
             camera.destroy()
         self.previous = None
@@ -70,10 +71,9 @@ def _input_handler():
     return getattr(BigWorld.player(), 'inputHandler', None)
 
 
+# The replay's own video control mode (the one Caps+F3 opens in a developer build): the avatar's input handler flies it
+# with its keys; `stop()` goes back to the mode it came from.
 class ReplayFlight(object):
-    """The replay's own video control mode (the one Caps+F3 opens in a developer build): the avatar's input handler
-    flies it with its keys; `stop()` goes back to the mode it came from."""
-
     def start(self):
         import BigWorld
         from aih_constants import CTRL_MODE_NAME
@@ -102,13 +102,12 @@ def toggle_battle_gui():
 
 
 def set_lobby_gui(visible):
-    from frameworks.wulf import WindowLayer
     from skeletons.gui.app_loader import IAppLoader
     loader = service(IAppLoader)
     lobby = loader.getDefLobbyApp() if loader is not None else None
     if lobby is None:
         return False
-    layers = tuple(getattr(WindowLayer, name) for name in HIDDEN_LAYERS if hasattr(WindowLayer, name))
+    layers = hidden_layers()
     if visible:
         lobby.containerManager.showContainers(layers, 0)
     else:

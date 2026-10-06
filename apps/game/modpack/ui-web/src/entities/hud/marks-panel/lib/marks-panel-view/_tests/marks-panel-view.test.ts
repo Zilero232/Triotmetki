@@ -27,11 +27,12 @@ describe(marksPanelView, () => {
     expect(view.percent).toBe('86,30 %');
   });
 
-  it('signs the change and tones a gain as good', () => {
-    const view = marksPanelView(data);
+  it('signs the change', () => {
+    expect(marksPanelView(data).delta).toBe('+0,18');
+  });
 
-    expect(view.delta).toBe('+0,18');
-    expect(view.deltaTone).toBe(MARKS_PANEL.deltaTones.rising);
+  it('tones a gain as good', () => {
+    expect(marksPanelView(data).deltaTone).toBe(MARKS_PANEL.deltaTones.rising);
   });
 
   it('tones a loss as bad', () => {
@@ -52,16 +53,23 @@ describe(marksPanelView, () => {
     expect(view.target).toEqual({ label: 'до 87 %', need: 2107, reached: false });
   });
 
-  it('puts the battle damage and the average that holds the percent on the bar', () => {
-    const view = marksPanelView(data);
-
-    expect(view.bar?.fill).toBeCloseTo(3100 / 5207);
-    expect(view.bar?.hold).toBeCloseTo(2540 / 5207);
-    expect(view.bar?.tone).toBe('good');
+  it('fills the bar up to the battle damage', () => {
+    expect(marksPanelView(data).bar?.fill).toBeCloseTo(3100 / 5207);
   });
 
-  it('tones the bar plain below the average and gold at the goal', () => {
+  it('marks the average that holds the percent on the bar', () => {
+    expect(marksPanelView(data).bar?.hold).toBeCloseTo(2540 / 5207);
+  });
+
+  it('tones the bar good above the average', () => {
+    expect(marksPanelView(data).bar?.tone).toBe('good');
+  });
+
+  it('tones the bar plain below the average', () => {
     expect(marksPanelView({ ...data, bar: { value: 900, hold: 2540, end: 5207 } }).bar?.tone).toBe('text');
+  });
+
+  it('tones the bar gold at the goal', () => {
     expect(marksPanelView({ ...data, bar: { value: 5207, hold: 2540, end: 5207 } }).bar?.tone).toBe('gold');
   });
 
@@ -69,10 +77,15 @@ describe(marksPanelView, () => {
     expect(marksPanelView({ ...data, bar: null }).bar).toBeNull();
   });
 
-  it('counts a new mark or a reached goal as a milestone', () => {
+  it('counts a reached goal as a milestone', () => {
     const base = marksPanelView(data).milestone;
 
     expect(marksPanelView({ ...data, goal: { level: 87, need: 0 } }).milestone).toBe(base + 1);
+  });
+
+  it('counts a new mark as two milestones', () => {
+    const base = marksPanelView(data).milestone;
+
     expect(marksPanelView({ ...data, percent: 95.1 }).milestone).toBe(base + 2);
   });
 
@@ -107,10 +120,11 @@ describe(marksPanelView, () => {
   });
 
   it('writes a dash for an unknown percent', () => {
-    const view = marksPanelView({ ...data, percent: null, mark: null });
+    expect(marksPanelView({ ...data, percent: null }).percent).toBe('—');
+  });
 
-    expect(view.percent).toBe('—');
-    expect(view.mark).toBe(MARKS_PANEL.fallbackMark);
+  it('falls back to the default mark icon', () => {
+    expect(marksPanelView({ ...data, mark: null }).mark).toBe(MARKS_PANEL.fallbackMark);
   });
 
   it('marks an estimated percent as approximate', () => {
@@ -119,8 +133,11 @@ describe(marksPanelView, () => {
     expect(view.approx).toBe(true);
   });
 
-  it('keeps the text only for a custom template', () => {
+  it('keeps the text of a custom template', () => {
     expect(marksPanelView({ ...data, style: 'custom', text: '86' }).text).toBe('86');
+  });
+
+  it('drops the text of any other style', () => {
     expect(marksPanelView({ ...data, text: '86' }).text).toBeNull();
   });
 });

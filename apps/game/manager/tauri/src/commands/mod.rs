@@ -23,7 +23,8 @@ use crate::profiles::ProfilesView;
 use crate::releases::api_url;
 use crate::report::{ReportPart, ReportPreview, ReportReceipt};
 use crate::service::{
-    AccountLink, ClientsView, InstallOutcome, InstallPlan, InstallRequest, Manager, SyncReport, SyncStatus, UninstallRequest, WhatsNew,
+    AccountLink, ClientsView, InstallOutcome, InstallPlan, InstallRequest, Manager, SaveReportInput, SyncReport, SyncStatus, UninstallRequest,
+    WhatsNew,
 };
 use crate::settings::ManagerSettings;
 use crate::sync::Resolution;
@@ -367,7 +368,7 @@ pub async fn save_report(
     let Some(target) = ask_path(&app, dialog).await? else {
         return Ok(None);
     };
-    let path = manager.save_report(&preview_id, &parts, &message, &target)?;
+    let path = manager.save_report(SaveReportInput { preview_id: &preview_id, parts: &parts, message: &message, target: &target })?;
 
     manager.allow_reveal(&path);
 

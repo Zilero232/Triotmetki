@@ -2,19 +2,22 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.format import COLOR_DOWN, COLOR_MUTED, COLOR_UP
+from ....core.own_result import RESULT_DRAW, RESULT_LOSS, RESULT_WIN
 
 REGULAR_BONUS_TYPE = 1
 ACTION_RESET = 'new_session'
-ACTION_REFRESH = 'refresh'
 ACTION_SITE = 'site'
 SITE_PATH = '/me'
 
 # The strip of the last own battles of the session, oldest first: `result` of a battle event (companion/payload), its
 # colour on the card (core/hud/widget TONES) and in the GUIFlash text.
-RESULTS = ('win', 'loss', 'draw')
+RESULTS = (RESULT_WIN, RESULT_LOSS, RESULT_DRAW)
 RECENT_LIMIT = 10
-RESULT_TONES = {'win': 'good', 'loss': 'bad', 'draw': 'muted'}
-RESULT_COLORS = {'win': COLOR_UP, 'loss': COLOR_DOWN, 'draw': COLOR_MUTED}
+RESULT_COLORS = {RESULT_WIN: COLOR_UP, RESULT_LOSS: COLOR_DOWN, RESULT_DRAW: COLOR_MUTED}
+# The colour of a MoE change by its sign.
+CHANGE_COLORS = {1: COLOR_UP, -1: COLOR_DOWN, 0: COLOR_MUTED}
+# The session counter each result raises.
+RESULT_COUNTERS = {RESULT_WIN: 'wins', RESULT_LOSS: 'losses', RESULT_DRAW: 'draws'}
 # An own battle waits for its results from the start until they arrive or this long has passed: a random battle lasts at
 # most 15 minutes, and after a game restart the companion no longer looks for the results of earlier arenas.
 PENDING_RESULTS_TTL_S = 30 * 60

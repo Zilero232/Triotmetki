@@ -4,7 +4,6 @@ from ....core.compat import string_types, to_text
 from .constants import VERSION_PARTS, VERSION_SPLIT
 
 
-# The numeric parts of a client version (`1.45.0.0`, `v.1.45.0.0 #2284`) the play check compares, or None.
 def version_key(text):
     if not isinstance(text, string_types):
         return None

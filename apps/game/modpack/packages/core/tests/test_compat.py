@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 import _support  # noqa: F401
-from otmetki.core.compat import clean_text, int_or_none, number_or_none
+from otmetki.core.compat import clamp, clean_text, fraction, int_or_none, number_or_none
 
 
 class NumberOrNoneTest(unittest.TestCase):
@@ -51,6 +51,30 @@ class CleanTextTest(unittest.TestCase):
     def test_a_non_string_is_the_default(self):
         assert clean_text(42, 10) is None
         assert clean_text(None, 10, '') == ''
+
+
+class ClampTest(unittest.TestCase):
+
+    def test_keeps_a_value_within_the_bounds(self):
+        assert clamp(5, 0, 10) == 5
+
+    def test_raises_a_value_below_the_low_bound(self):
+        assert clamp(-3, 0, 10) == 0
+
+    def test_lowers_a_value_above_the_high_bound(self):
+        assert clamp(12, 0, 10) == 10
+
+
+class FractionTest(unittest.TestCase):
+
+    def test_keeps_a_share_within_zero_and_one(self):
+        assert fraction(0.25) == 0.25
+
+    def test_a_negative_share_is_zero(self):
+        assert fraction(-0.5) == 0.0
+
+    def test_a_share_above_one_is_one(self):
+        assert fraction(1.5) == 1.0
 
 
 if __name__ == '__main__':

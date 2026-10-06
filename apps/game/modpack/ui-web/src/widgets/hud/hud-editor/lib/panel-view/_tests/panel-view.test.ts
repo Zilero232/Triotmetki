@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { panelFit, panelLayer, panelTone, stackOrder, stageFrame, stageWidthFor } from '../panel-view';
+import type { UiPanel } from '@/shared/api/protocol';
+
+import { panelFit, panelLayer, panelLook, panelTone, placedPanels, stackOrder, stageFrame, stageWidthFor } from '../panel-view';
 
 const rect = (width: number, height: number) => ({ left: 0, top: 0, width, height });
 
@@ -113,5 +115,64 @@ describe(panelTone, () => {
 
   it('draws an enabled panel in the text colour', () => {
     expect(panelTone({ active: false, enabled: true })).toBe('text');
+  });
+});
+
+const PANEL: UiPanel = {
+  id: 'clock',
+  title: 'Clock',
+  enabled: true,
+  x: 100,
+  y: 50,
+  align_x: 'left',
+  align_y: 'top',
+  preview: null,
+  width: 120,
+  height: 40
+};
+
+const SCREEN = { width: 1920, height: 1080 };
+
+describe(placedPanels, () => {
+  it('leaves the disabled panels out unless they are shown', () => {
+    const placed = placedPanels({ panels: [PANEL, { ...PANEL, id: 'off', enabled: false }], showDisabled: false, live: null, screen: SCREEN });
+
+    expect(placed.map(({ panel }) => panel.id)).toEqual(['clock']);
+  });
+
+  it('puts the dragged panel where the drag holds it', () => {
+    const live = { id: 'clock', rect: rect(10, 10) };
+
+    const [placed] = placedPanels({ panels: [PANEL], showDisabled: false, live, screen: SCREEN });
+
+    expect(placed?.rect).toBe(live.rect);
+  });
+});
+
+describe(panelLook, () => {
+  it('marks the hovered panel active', () => {
+    const look = panelLook({
+      placed: { panel: PANEL, rect: rect(330, 190) },
+      scale: 0.4,
+      screen: SCREEN,
+      order: new Map(),
+      selected: null,
+      hovered: 'clock'
+    });
+
+    expect(look.active).toBe(true);
+  });
+
+  it('keeps a panel nobody points at quiet', () => {
+    const look = panelLook({
+      placed: { panel: PANEL, rect: rect(330, 190) },
+      scale: 0.4,
+      screen: SCREEN,
+      order: new Map(),
+      selected: null,
+      hovered: null
+    });
+
+    expect(look.tone).toBe('text');
   });
 });

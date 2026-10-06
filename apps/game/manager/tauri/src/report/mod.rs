@@ -109,7 +109,16 @@ pub fn newest_file(dir: &Path) -> Option<PathBuf> {
     list_files(dir).into_iter().max_by_key(|path| fs::metadata(path).and_then(|metadata| metadata.modified()).ok())
 }
 
-pub fn item(part: ReportPart, name: &str, text: &str, truncated: bool, redactor: &Redactor) -> ReportItem {
+pub struct ItemInput<'a> {
+    pub part: ReportPart,
+    pub name: &'a str,
+    pub text: &'a str,
+    pub truncated: bool,
+    pub redactor: &'a Redactor,
+}
+
+pub fn item(input: ItemInput) -> ReportItem {
+    let ItemInput { part, name, text, truncated, redactor } = input;
     let (text, redactions) = redactor.redact(text);
     let text = if truncated { format!("{TRUNCATED_MARK}{text}") } else { text };
 
@@ -134,7 +143,15 @@ pub fn upload<'a>(preview: &'a ReportPreview, parts: &[ReportPart], message: &st
     }
 }
 
-pub fn write_zip(target: &Path, preview: &ReportPreview, parts: &[ReportPart], message: &str) -> AppResult<PathBuf> {
+pub struct WriteZipInput<'a> {
+    pub target: &'a Path,
+    pub preview: &'a ReportPreview,
+    pub parts: &'a [ReportPart],
+    pub message: &'a str,
+}
+
+pub fn write_zip(input: WriteZipInput) -> AppResult<PathBuf> {
+    let WriteZipInput { target, preview, parts, message } = input;
     let target = crate::sets::with_extension(target, ZIP_EXTENSION);
     let parent = target.parent().filter(|parent| !parent.as_os_str().is_empty()).unwrap_or(Path::new("."));
     let mut writer = ZipWriter::new(tempfile::Builder::new().suffix(TEMP_SUFFIX).tempfile_in(parent)?);

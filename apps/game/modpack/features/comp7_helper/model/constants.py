@@ -21,7 +21,10 @@ TITLE_SIZE_STEP = 2
 # The hangar card (model/widget.py), design px: the hangar card width of the HUD design (spec 2026-09-30 section 6.3).
 CARD_WIDTH = 264
 # A threshold row's colour role by its status (the card widget's tones).
-STATUS_TONES = {'active': 'gold', 'done': 'good', 'idle': 'muted'}
+STATUS_ACTIVE = 'active'
+STATUS_DONE = 'done'
+STATUS_IDLE = 'idle'
+STATUS_TONES = {STATUS_ACTIVE: 'gold', STATUS_DONE: 'good', STATUS_IDLE: 'muted'}
 
 # The own Onslaught battles (model/battles.py): how many the account file keeps, how many the card shows, the strip tone
 # of each result and the file per account.
@@ -29,5 +32,4 @@ KEPT_BATTLES = 20
 SHOWN_BATTLES = 5
 # A run of one battle is no streak.
 MIN_STREAK = 2
-RESULT_TONES = {'win': 'good', 'loss': 'bad', 'draw': 'muted'}
 HISTORY_FILE = 'comp7_battles_%d.json'

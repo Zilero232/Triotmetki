@@ -38,7 +38,7 @@ def shipped_binary_assets():
 
 
 def package_paths(key):
-    packages = dict((package.key, package) for package in layout.split_packages('root_init.py'))
+    packages = {package.key: package for package in layout.split_packages('root_init.py')}
     return [path for _, path in packages[key].files]
 
 

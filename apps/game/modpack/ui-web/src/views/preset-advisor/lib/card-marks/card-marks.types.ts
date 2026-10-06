@@ -13,3 +13,8 @@ export type HasMarkInput = {
   element: Element;
   name: string;
 };
+
+export type ShowsImageInput = {
+  url: string;
+  images: readonly string[];
+};

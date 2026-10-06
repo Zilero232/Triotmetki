@@ -10,7 +10,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....hooks import override
 from ....hud.stock import RETICLE_PARTS, StockSuppression, hide_reticle_parts
-from ....log import log, log_exception, safe
+from ....log import guarded, log, log_exception, safe
 
 try:
     from gui.Scaleform.daapi.view.battle.shared.crosshair.container import CrosshairPanelContainer
@@ -82,8 +82,7 @@ class ReticleControl(object):
             self._restore(panel, settings)
 
     @staticmethod
+    @guarded('HUD: restore the stock reticle')
     def _restore(panel, settings):
-        try:
-            panel.as_setSettingsS(settings)
-        except Exception:
-            log_exception('HUD: restore the stock reticle')
+        panel.as_setSettingsS(settings)
+

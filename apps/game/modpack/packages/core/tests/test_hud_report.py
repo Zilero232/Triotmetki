@@ -7,7 +7,7 @@ import _support  # noqa: F401
 from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer, HudSurface, panel_schema
 from otmetki.core.hud.report import PanelReport
 from otmetki.core.hud.widget import widget
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 
 
 class Backend(HudBackend):

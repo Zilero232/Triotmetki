@@ -12,6 +12,7 @@ directly: no DDS or atlas is needed (atlases are only for the vanilla battleAtla
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import argparse
 import io
 import os
 import sys
@@ -69,8 +70,8 @@ def render_all(items):
     drawn = rasterize.svg_pngs([
         rasterize.job(svg_text(source, rendition), rendition['size']) for _, source, rendition in svg_items
     ])
-    svg_pngs = dict((item[0], png) for item, png in zip(svg_items, drawn))
-    return dict((output, render_one(source, rendition, svg_pngs.get(output))) for output, source, rendition in items)
+    svg_pngs = {item[0]: png for item, png in zip(svg_items, drawn)}
+    return {output: render_one(source, rendition, svg_pngs.get(output)) for output, source, rendition in items}
 
 
 def planned(asset_set):
@@ -90,8 +91,14 @@ def planned(asset_set):
     return items
 
 
+def parse_args(argv):
+    parser = argparse.ArgumentParser(description='Render the PNG files of every asset set from its sources')
+    parser.add_argument('--check', action='store_true', help='fail when a rendition is missing')
+    return parser.parse_args(argv)
+
+
 def main(argv):
-    is_check = '--check' in argv
+    is_check = parse_args(argv).check
     items = [item for asset_set in asset_sets.load() for item in planned(asset_set)]
     stale = []
     for output, data in sorted(render_all(items).items()):

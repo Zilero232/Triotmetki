@@ -9,9 +9,11 @@ VIEW_STRATEGIC = 3
 READOUT_VIEWS = (VIEW_ARCADE, VIEW_SNIPER, VIEW_STRATEGIC)
 # VEHICLE_VIEW_STATE names the readouts follow (RU 1.45 battle_constants): HEALTH carries the own HP
 # (Avatar.updateVehicleHealth), DESTROYED the death.
+STATE_HEALTH = 'health'
+STATE_DESTROYED = 'destroyed'
 READOUT_STATES = (
-    ('HEALTH', 'health'),
-    ('DESTROYED', 'destroyed'),
+    ('HEALTH', STATE_HEALTH),
+    ('DESTROYED', STATE_DESTROYED),
 )
 # gun_marker_ctrl._DefaultGunMarkerController (RU 1.45): the arcade and sniper gun markers, client, server and dual
 # accuracy alike. update(markerType, pos, direction, sizeVector, relaxTime, collData) records the size for the replay,

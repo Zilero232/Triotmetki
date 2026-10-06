@@ -35,7 +35,6 @@ def version_key(text):
 
 
 def package_of(file_name):
-    """(package id, version) of one of our package files, or None."""
     if not isinstance(file_name, string_types):
         return None
     name = to_text(file_name)
@@ -59,7 +58,6 @@ def installed_packages(file_names):
 
 
 def game_folder(names):
-    """The newest mods/<client version> folder name: the one the running client loads."""
     folders = [to_text(name) for name in names or () if isinstance(name, string_types) and GAME_FOLDER.match(name)]
     return max(folders, key=version_key) if folders else None
 
@@ -94,7 +92,6 @@ def outdated_count(release, installed):
 
 
 def find_update(release, installed):
-    """{version, outdated} when the release has a newer copy of an installed package, else None."""
     if release is None or not installed:
         return None
     outdated = outdated_count(release, installed)

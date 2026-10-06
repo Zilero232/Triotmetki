@@ -78,6 +78,13 @@ describe(useHudEditor, () => {
     act(() => hook.result.current.panels[0]?.onKeyDown(press));
 
     expect(press.preventDefault).not.toHaveBeenCalled();
+  });
+
+  it('moves nothing on other keys', () => {
+    const hook = mountEditor();
+
+    act(() => hook.result.current.panels[0]?.onKeyDown(key('Tab')));
+
     expect(send).not.toHaveBeenCalled();
   });
 
@@ -96,8 +103,17 @@ describe(useHudEditor, () => {
 
     act(() => hook.result.current.resetSelected());
 
-    expect(hook.result.current.hasSelection).toBe(true);
     expect(send).toHaveBeenCalledWith({ type: 'hud_reset', panel: 'damage_log' });
+  });
+
+  it('keeps the panel selected after a reset', () => {
+    const hook = mountEditor();
+
+    act(() => hook.result.current.panels[0]?.onMouseDown({ clientX: 0, clientY: 0 }));
+
+    act(() => hook.result.current.resetSelected());
+
+    expect(hook.result.current.hasSelection).toBe(true);
   });
 
   it('places each panel on the stage in screen percentages', () => {
@@ -130,7 +146,6 @@ describe(useHudEditor, () => {
     act(() => mouse('mousemove', 160, 100));
     act(() => mouse('mouseup', 160, 100));
 
-    expect(send).toHaveBeenCalledOnce();
-    expect(send).toHaveBeenCalledWith(expect.objectContaining({ type: 'hud_move', panel: 'damage_log', x: 80 }));
+    expect(vi.mocked(send).mock.calls).toEqual([[expect.objectContaining({ type: 'hud_move', panel: 'damage_log', x: 80 })]]);
   });
 });

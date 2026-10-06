@@ -86,11 +86,10 @@ def tab_items(battle, translate):
 
 
 def labels(translate):
-    return dict((key, translate(name)) for key, name in PAGE_LABELS)
+    return {key: translate(name) for key, name in PAGE_LABELS}
 
 
 def viewer_state(battles, selection, translate, stage=None, image=_no_image):
-    """The page's state; `image(path)` turns a client picture path into an image string, None when it is missing."""
     stage = stage or {}
     items = [battle_item(item, translate, image) for item in reversed(battles)]
     state = {'labels': labels(translate), 'battles': items}

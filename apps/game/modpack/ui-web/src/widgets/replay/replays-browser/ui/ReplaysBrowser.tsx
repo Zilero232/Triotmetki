@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import { Button } from '@/ui-kit';
 
 import type { ReplaysBrowserProps } from './ReplaysBrowser.types';
@@ -11,8 +9,7 @@ import s from './ReplaysBrowser.module.scss';
 
 export const ReplaysBrowser = ({ page, enabled, onTurnOn }: ReplaysBrowserProps) => {
   const t = useReplaysT();
-  const [now] = useState(() => Math.floor(Date.now() / 1000));
-  const browser = useReplaysBrowser({ page, enabled, now });
+  const browser = useReplaysBrowser({ page, enabled });
   const { view, selected } = browser;
 
   if (view === 'off') {

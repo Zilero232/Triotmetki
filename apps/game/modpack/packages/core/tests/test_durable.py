@@ -244,7 +244,7 @@ class WipeAndRestoreTest(DurableTestCase):
         self.assertEqual(restored.get(42).device_id, 'device-1')
         self.assertEqual(layout.section('damage_log', schema).get('x'), 250)
         self.assertEqual(_read(self.game_file('credentials.json')), {
-            'accounts': {'42': {'device_id': 'device-1', 'account_id': 42}},
+            'accounts': {'42': {'device_id': 'device-1', 'account_id': 42, 'bound_at': 1700000000}},
         })
 
 

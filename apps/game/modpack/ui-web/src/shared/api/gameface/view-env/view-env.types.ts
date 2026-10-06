@@ -4,3 +4,5 @@ export type ViewEnv = Pick<
   GamefaceBridge,
   'clientSize' | 'clientSizeRem' | 'fitView' | 'mousePosition' | 'onScreenChanged' | 'remScale' | 'resizeView' | 'setInputArea' | 'viewRect'
 >;
+
+export type ViewEnvCallInput = { method: string; args?: unknown[] };

@@ -73,3 +73,5 @@ export type OpeningFrameInput = {
   saved: UiWindow | null;
   bounds: Bounds;
 };
+
+export type ZoomLimits = { canZoomIn: boolean; canZoomOut: boolean };

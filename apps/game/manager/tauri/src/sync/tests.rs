@@ -36,21 +36,64 @@ fn counts_remote_changes_against_the_local_copy() {
     assert_eq!(remote_changes(&local, &local), 0);
 }
 
-#[test]
-fn decides_by_which_side_changed() {
-    let base = SyncBase { synced_at: Some(10.0), revision: Some(3) };
-    let step = |local: usize, remote: usize, revision: u64, resolution: Option<Resolution>| decide(local, remote, &base, revision, resolution);
+const BASE: SyncBase = SyncBase { synced_at: Some(10.0), revision: Some(3) };
 
-    assert_eq!(step(0, 0, 3, None), Decision { step: Step::Nothing, outcome: SyncOutcome::UpToDate });
-    assert_eq!(step(0, 2, 3, None).outcome, SyncOutcome::UpToDate);
-    assert_eq!(step(1, 0, 4, None), Decision { step: Step::Put(PutMode::Merge), outcome: SyncOutcome::Pushed });
-    assert_eq!(step(0, 2, 4, None), Decision { step: Step::TakeRemote, outcome: SyncOutcome::Pulled });
-    assert_eq!(step(1, 2, 4, None), Decision { step: Step::Ask, outcome: SyncOutcome::Conflict });
-    assert_eq!(step(1, 2, 4, Some(Resolution::Merge)), Decision { step: Step::Put(PutMode::Merge), outcome: SyncOutcome::Merged });
-    assert_eq!(step(1, 2, 4, Some(Resolution::KeepLocal)), Decision { step: Step::Put(PutMode::Replace), outcome: SyncOutcome::Pushed });
-    assert_eq!(step(1, 2, 4, Some(Resolution::TakeRemote)), Decision { step: Step::TakeRemote, outcome: SyncOutcome::Pulled });
-    assert_eq!(decide(2, 2, &SyncBase::default(), 1, None).outcome, SyncOutcome::Conflict);
-    assert_eq!(decide(2, 0, &SyncBase::default(), 0, None).outcome, SyncOutcome::Pushed);
+fn decided(local_changes: usize, remote_changes: usize, revision: u64, resolution: Option<Resolution>) -> Decision {
+    decide(DecideInput { local_changes, remote_changes, base: &BASE, revision, resolution })
+}
+
+#[test]
+fn does_nothing_when_neither_side_changed() {
+    assert_eq!(decided(0, 0, 3, None), Decision { step: Step::Nothing, outcome: SyncOutcome::UpToDate });
+}
+
+#[test]
+fn ignores_remote_changes_at_the_revision_already_synced() {
+    assert_eq!(decided(0, 2, 3, None).outcome, SyncOutcome::UpToDate);
+}
+
+#[test]
+fn pushes_when_only_the_local_side_changed() {
+    assert_eq!(decided(1, 0, 4, None), Decision { step: Step::Put(PutMode::Merge), outcome: SyncOutcome::Pushed });
+}
+
+#[test]
+fn pulls_when_only_the_remote_side_changed() {
+    assert_eq!(decided(0, 2, 4, None), Decision { step: Step::TakeRemote, outcome: SyncOutcome::Pulled });
+}
+
+#[test]
+fn asks_when_both_sides_changed() {
+    assert_eq!(decided(1, 2, 4, None), Decision { step: Step::Ask, outcome: SyncOutcome::Conflict });
+}
+
+#[test]
+fn merges_both_sides_when_asked_to() {
+    assert_eq!(decided(1, 2, 4, Some(Resolution::Merge)), Decision { step: Step::Put(PutMode::Merge), outcome: SyncOutcome::Merged });
+}
+
+#[test]
+fn replaces_the_remote_side_when_told_to_keep_the_local_one() {
+    assert_eq!(decided(1, 2, 4, Some(Resolution::KeepLocal)), Decision { step: Step::Put(PutMode::Replace), outcome: SyncOutcome::Pushed });
+}
+
+#[test]
+fn takes_the_remote_side_when_told_to() {
+    assert_eq!(decided(1, 2, 4, Some(Resolution::TakeRemote)), Decision { step: Step::TakeRemote, outcome: SyncOutcome::Pulled });
+}
+
+#[test]
+fn treats_a_first_sync_with_changes_on_both_sides_as_a_conflict() {
+    let decision = decide(DecideInput { local_changes: 2, remote_changes: 2, base: &SyncBase::default(), revision: 1, resolution: None });
+
+    assert_eq!(decision.outcome, SyncOutcome::Conflict);
+}
+
+#[test]
+fn pushes_a_first_sync_with_only_local_changes() {
+    let decision = decide(DecideInput { local_changes: 2, remote_changes: 0, base: &SyncBase::default(), revision: 0, resolution: None });
+
+    assert_eq!(decision.outcome, SyncOutcome::Pushed);
 }
 
 #[test]
@@ -58,7 +101,12 @@ fn merges_any_stamped_items_with_limits() {
     let local_sets: Vec<ComponentSet> = (0..10).map(|index| set(&format!("l{index}"), f64::from(index))).collect();
     let remote_sets: Vec<ComponentSet> = (0..10).map(|index| set(&format!("r{index}"), f64::from(index) + 0.5)).collect();
     let tombstones: Vec<Tombstone> = (0..5).map(|index| tombstone(&format!("t{index}"), f64::from(index))).collect();
-    let merged = merge_items(&Side { items: &local_sets, deleted: &tombstones }, &Side { items: &remote_sets, deleted: &[] }, 12, 3);
+    let merged = merge_items(MergeInput {
+        local: Side { items: &local_sets, deleted: &tombstones },
+        remote: Side { items: &remote_sets, deleted: &[] },
+        max_items: 12,
+        max_tombstones: 3,
+    });
 
     assert_eq!(merged.items.len(), 12);
     assert!(!merged.items.iter().any(|item| item.id == "l0" || item.id == "r0"));

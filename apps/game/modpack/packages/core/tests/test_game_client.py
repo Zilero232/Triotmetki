@@ -31,7 +31,7 @@ def get_vehicle_type(compact_descr):
 class VehicleTypeTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         items = types.ModuleType(str('items'))
         items.__path__ = []
         vehicles = types.ModuleType(str('items.vehicles'))

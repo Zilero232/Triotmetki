@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.compat import is_number
+from ....core.compat import clamp, is_number
 from ....core.hud.icons import mark_icon
 from ....core.hud.widget import widget
-from ....core.moe import MARK_LEVELS, moe_macros
+from ....core.moe import COLOR_MODE_MARK, MARK_LEVELS, moe_macros
 from ....core.templates import render
+from ..settings.constants import STYLE_CUSTOM, STYLE_EXTENDED, STYLE_MINIMAL
 from . import target_levels
 from .constants import (
     BAR_DAMAGE,
@@ -19,14 +20,9 @@ from .constants import (
 
 # Fair play: the player's own marks of excellence, from the own dossier and the own damage and assist of this battle.
 #
-# The plate (docs/specs/2026-09-30-hud-consolidation-and-design.md §8.4) as the gunmarks panels of PROTanki, Near_You
-# and Lebwa lay it out: the percent after the battle with its change, the bar of this battle's damage against the
-# average that holds the percent (the gunmarks «damage progress» bar, or the 0-100 % scale), the damage dealt against
-# that average and the damage for the next goal; in the extended style the thresholds row and the average row under it.
-# The panel never grows on its own (no Alt view), so its box is the one the player places. The page draws the rows it
-# gets; the style only tells it a custom template's text from the plate. The plate marks the gun's marks as stars. The
-# battles to the next mark, the trend and the tank's silhouette are the hangar Tank card's (model/card.py): in battle
-# the panel keeps to this battle.
+# Laid out as the gunmarks panels of PROTanki, Near_You and Lebwa are (docs/specs/2026-09-30-hud-consolidation-and-
+# design.md §8.4). It never grows on its own (no Alt view), so its box is the one the player places; the battles to
+# the next mark and the trend stay on the hangar Tank card, in battle the panel keeps to this battle.
 
 
 def _shown_percent(state):
@@ -39,7 +35,7 @@ def _shown_percent(state):
 # The design brief keeps the big percent white unless it is coloured by the mark: the change mode colours only the
 # change beside it, which the page tones by its own sign.
 def percent_tone(state, mode):
-    if mode != 'mark':
+    if mode != COLOR_MODE_MARK:
         return 'text'
     shown = _shown_percent(state)
     reached = len([level for level in MARK_LEVELS if is_number(shown) and shown >= level])
@@ -55,7 +51,7 @@ def thresholds(state):
 
 
 def _goal(state, settings):
-    if settings.get('style') == 'minimal' or not state['has_curve']:
+    if settings.get('style') == STYLE_MINIMAL or not state['has_curve']:
         return None
     if settings.get('show_up') and state['up_level'] is not None:
         return {'level': state['up_level'], 'need': state['up_need']}
@@ -114,22 +110,25 @@ def _curveless_rows(state, translate):
 def _detail_rows(state, style, settings, translate):
     if not state['has_curve']:
         return _curveless_rows(state, translate)
-    return _rows(state, settings, translate) if style == 'extended' else NO_ROWS
+    if style != STYLE_EXTENDED:
+        return NO_ROWS
+    return _rows(state, settings, translate)
 
 
 def _style(settings):
     style = settings.get('style')
-    if style == 'custom' and not settings.get('template'):
-        return 'extended'
+    if style == STYLE_CUSTOM and not settings.get('template'):
+        return STYLE_EXTENDED
     return style
 
 
 def stars_of(state):
     marks = state['marks'] if state is not None else None
-    return int(max(0, min(MAX_STARS, marks))) if is_number(marks) else 0
+    if not is_number(marks):
+        return 0
+    return int(clamp(marks, 0, MAX_STARS))
 
 
-# The battle's combined damage against the average the percent follows: above it the percent rises.
 def _damage(state, translate):
     if not state['has_curve']:
         return None
@@ -138,6 +137,7 @@ def _damage(state, translate):
 
 def marks_widget(state, settings, translate):
     style = _style(settings)
+    is_custom = style == STYLE_CUSTOM
     goal = _goal(state, settings)
     data = {
         'stars': stars_of(state),
@@ -145,15 +145,15 @@ def marks_widget(state, settings, translate):
         'style': style,
         'has_curve': bool(state['has_curve']),
         'percent': _shown_percent(state),
-        'delta': state['delta'] if style != 'custom' else None,
+        'delta': None if is_custom else state['delta'],
         'estimated': _is_estimate(state),
         'mark': mark_icon(state['marks']),
         'tone': percent_tone(state, settings.get('color_mode')),
         'goal': goal,
-        'bar': _bar(state, goal, settings) if style != 'custom' else None,
+        'bar': None if is_custom else _bar(state, goal, settings),
         'to': translate('marks_panel_to'),
         'note': None,
-        'text': render(settings.get('template'), moe_macros(state)) if style == 'custom' else None,
+        'text': render(settings.get('template'), moe_macros(state)) if is_custom else None,
     }
     data.update(_detail_rows(state, style, settings, translate))
     return widget(KIND, data)

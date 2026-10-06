@@ -5,7 +5,7 @@ from ....core.hud.icons import glyph
 from ....core.hud.widget import card, card_row
 from . import division_name, threshold_value, thresholds
 from .battles import recent_text, streak_text, strip
-from .constants import CARD_WIDTH, STATUS_TONES
+from .constants import CARD_WIDTH, STATUS_IDLE, STATUS_TONES
 
 
 def battle_rows(history, translate):
@@ -25,7 +25,7 @@ def threshold_row(step, status, translate):
         threshold_value(step, translate),
         status=status,
         tone_name=STATUS_TONES[status],
-        text_tone='muted' if status == 'idle' else 'text',
+        text_tone='muted' if status == STATUS_IDLE else 'text',
     )
 
 

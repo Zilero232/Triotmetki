@@ -211,8 +211,8 @@ class SubscriptionsTest(unittest.TestCase):
 class VehicleChangedTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in (
-            'CurrentVehicle', 'PlayerEvents', 'otmetki.core.client.game'))
+        self.saved = {name: sys.modules.get(name) for name in (
+            'CurrentVehicle', 'PlayerEvents', 'otmetki.core.client.game')}
         self.vehicle = event_holder('onChanged')
         self.player_events = event_holder('onAccountShowGUI')
         current_vehicle = types.ModuleType(str('CurrentVehicle'))
@@ -428,17 +428,29 @@ class TickerTest(unittest.TestCase):
 
     def setUp(self):
         self.callbacks = []
-        self.saved = dict((name, sys.modules.get(name)) for name in ('BigWorld', 'otmetki.core.client.timer'))
+        self.saved = {name: sys.modules.get(name) for name in ('BigWorld', 'otmetki.core.client.timer')}
+        self.cancelled = []
         stub = types.ModuleType(str('BigWorld'))
-        stub.callback = lambda delay, fn: self.callbacks.append(fn)
+        stub.callback = self.schedule
+        stub.cancelCallback = self.cancel
         sys.modules['BigWorld'] = stub
         sys.modules.pop('otmetki.core.client.timer', None)
         self.timer = importlib.import_module('otmetki.core.client.timer')
-        self.saved_log = self.timer.log_exception
+        self.saved_log = self.timer.log_exception, self.timer.log
         self.timer.log_exception = lambda context: None
+        self.logged = []
+        self.timer.log = self.logged.append
+
+    def schedule(self, delay, callback):
+        self.callbacks.append(callback)
+        return len(self.callbacks) + len(self.cancelled) * 1000
+
+    def cancel(self, callback_id):
+        self.cancelled.append(callback_id)
+        self.callbacks = []
 
     def tearDown(self):
-        self.timer.log_exception = self.saved_log
+        self.timer.log_exception, self.timer.log = self.saved_log
         for name, module in self.saved.items():
             if module is None:
                 sys.modules.pop(name, None)
@@ -447,7 +459,8 @@ class TickerTest(unittest.TestCase):
 
     def run_callbacks(self, rounds=1):
         for _ in range(rounds):
-            pending, self.callbacks = self.callbacks, []
+            pending = self.callbacks
+            self.callbacks = []
             for callback in pending:
                 callback()
 
@@ -487,13 +500,62 @@ class TickerTest(unittest.TestCase):
 
         self.assertFalse(ticker.running)
 
+    def test_a_tick_failing_every_time_stops_after_the_cap(self):
+        ticker = self.timer.Ticker(1.0, lambda: 1 // 0)
+
+        ticker.start()
+        self.run_callbacks(rounds=self.timer.MAX_FAILURES + 5)
+
+        self.assertFalse(ticker.running)
+
+    def test_a_tick_stopped_for_failing_says_so_once(self):
+        ticker = self.timer.Ticker(1.0, lambda: 1 // 0)
+
+        ticker.start()
+        self.run_callbacks(rounds=self.timer.MAX_FAILURES + 5)
+
+        self.assertEqual(len(self.logged), 1)
+
+    def test_a_success_resets_the_failure_count(self):
+        calls = []
+
+        def on_tick():
+            calls.append(1)
+            if len(calls) % 2:
+                raise RuntimeError('tick')
+
+        ticker = self.timer.Ticker(1.0, on_tick)
+        ticker.start()
+        self.run_callbacks(rounds=self.timer.MAX_FAILURES * 3)
+
+        self.assertTrue(ticker.running)
+
+    def test_stop_cancels_the_pending_callback(self):
+        ticker = self.timer.Ticker(1.0, lambda: None)
+        ticker.start()
+
+        ticker.stop()
+
+        self.assertEqual(len(self.cancelled), 1)
+
+    def test_stop_after_the_last_tick_cancels_nothing(self):
+        ticker = self.timer.Ticker(1.0, lambda: False)
+        ticker.start()
+        self.run_callbacks()
+
+        ticker.stop()
+
+        self.assertEqual(self.cancelled, [])
+
     def test_a_restart_never_runs_two_chains(self):
         ticks = []
         ticker = self.timer.Ticker(1.0, lambda: ticks.append(1))
 
         ticker.start()
+        stale = self.callbacks[0]
         ticker.stop()
         ticker.start()
+        stale()
         self.run_callbacks(rounds=2)
 
         self.assertEqual(len(ticks), 2)
@@ -528,6 +590,71 @@ class TickerTest(unittest.TestCase):
         self.run_callbacks()
 
         self.assertEqual(seen, [0.5])
+
+
+class Owner(object):
+
+    def __init__(self):
+        self.onEvent = Event()
+
+
+class Event(object):
+
+    def __init__(self):
+        self.handlers = []
+
+    def __iadd__(self, handler):
+        self.handlers.append(handler)
+        return self
+
+    def __isub__(self, handler):
+        self.handlers.remove(handler)
+        return self
+
+
+class BattleHooksTest(unittest.TestCase):
+
+    def setUp(self):
+        self.callbacks = []
+        prefix = 'otmetki.core.client.battle'
+        self.saved = {name: module for name, module in sys.modules.items()
+                          if name == 'BigWorld' or name.startswith(prefix)}
+        for name in list(self.saved):
+            sys.modules.pop(name, None)
+        stub = types.ModuleType(str('BigWorld'))
+        stub.callback = lambda delay, callback: self.callbacks.append(callback)
+        sys.modules['BigWorld'] = stub
+        self.hooks_module = importlib.import_module('otmetki.core.client.battle.hooks')
+
+    def tearDown(self):
+        _support.forget_modules(('otmetki.core.client.battle',))
+        sys.modules.pop('BigWorld', None)
+        sys.modules.update(self.saved)
+
+    def run_callbacks(self):
+        pending = self.callbacks
+        self.callbacks = []
+        for callback in pending:
+            callback()
+
+    def broken_report(self, name, attached):
+        raise RuntimeError('report')
+
+    def test_a_failing_report_stays_inside_the_hook(self):
+        hooks = self.hooks_module.BattleHooks()
+
+        hooks.add(Owner, 'onEvent', lambda: None, on_result=self.broken_report)
+
+        self.assertEqual(len(hooks.items), 1)
+
+    def test_a_failing_report_after_a_retry_stays_inside_the_callback(self):
+        owners = [None, Owner()]
+        hooks = self.hooks_module.BattleHooks()
+        hooks.add(lambda: owners.pop(0), 'onEvent', lambda: None, on_result=self.broken_report)
+
+        self.run_callbacks()
+
+        self.assertEqual(len(hooks.items), 1)
 
 
 class CoreHelpersTest(unittest.TestCase):

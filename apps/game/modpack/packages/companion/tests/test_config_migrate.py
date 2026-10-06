@@ -104,7 +104,7 @@ class GuardTest(unittest.TestCase):
 class SectionsTest(unittest.TestCase):
 
     def test_the_sections_of_removed_components_go(self):
-        components = dict((name, {'font_size': 14}) for name in DROPPED_SECTIONS)
+        components = {name: {'font_size': 14} for name in DROPPED_SECTIONS}
 
         _, migrated_components = migrate(stored(), components)
 
@@ -350,7 +350,7 @@ class SectionsTest(unittest.TestCase):
         self.assertEqual(components['marks_panel']['style'], 'extended')
 
     def test_the_battle_type_places_of_removed_panels_go(self):
-        places = {'comp7': dict((name, {'x': 1}) for name in DROPPED_SECTIONS)}
+        places = {'comp7': {name: {'x': 1} for name in DROPPED_SECTIONS}}
 
         _, components = migrate(stored(), {LAYOUT_PLACES_SECTION: places})
 

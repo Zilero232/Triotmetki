@@ -1,21 +1,20 @@
 import { fromUnixTime, isValid, lightFormat } from 'date-fns';
 import { clamp } from 'remeda';
 
-import { formatNumber, formatPercent, NUMBER_FORMAT, trendOf } from '@/shared/lib/format-number';
+import { deltaText, formatNumber, NUMBER_FORMAT, percentText, trendOf } from '@/shared/lib/format-number';
 
 import type { MarksReportView, RecordCardInput, ReportCard, ReportRow, ReportTone, UiMarksReport } from './marks-report.types';
 
-import { MARKS_REPORT } from './marks-report.constants';
+import { MARKS_REPORT } from '../../config';
 
 const plain = (text: string): string =>
   text.replaceAll(NUMBER_FORMAT.minus, MARKS_REPORT.glyphs.minus).replaceAll(NUMBER_FORMAT.thinSpace, MARKS_REPORT.glyphs.space);
 
 const toneOf = (delta: number | null): ReportTone => MARKS_REPORT.trendTones[trendOf(delta)];
 
-const deltaText = (delta: number | null): string =>
-  delta === null ? MARKS_REPORT.dash : plain(formatPercent({ value: delta, digits: 2, signed: true }));
+const reportDelta = (delta: number | null): string => plain(deltaText({ value: delta }) ?? MARKS_REPORT.dash);
 
-const percentText = (value: number | null): string => (value === null ? MARKS_REPORT.dash : plain(formatPercent({ value, digits: 2 })));
+const reportPercent = (value: number | null): string => plain(percentText(value));
 
 const numberText = (value: number | null): string => plain(formatNumber(value ?? 0));
 
@@ -39,18 +38,18 @@ const chartOf = (values: number[]): MarksReportView['chart'] => {
     height: `${Math.round(minBar + ((value - min) / span) * (full - minBar))}%`
   }));
 
-  return { bars, min: percentText(min), max: percentText(max) };
+  return { bars, min: reportPercent(min), max: reportPercent(max) };
 };
 
 const recordCard = ({ label, record }: RecordCardInput): ReportCard[] =>
-  record ? [{ key: label, label, window: null, value: numberText(record.damage), delta: deltaText(record.delta), tone: toneOf(record.delta) }] : [];
+  record ? [{ key: label, label, window: null, value: numberText(record.damage), delta: reportDelta(record.delta), tone: toneOf(record.delta) }] : [];
 
 const trendCard = (trend: UiMarksReport['trends'][number]): ReportCard => ({
   key: `trend-${trend.window}`,
   label: 'trend',
   window: trend.window,
   value: String(trend.battles),
-  delta: deltaText(trend.delta),
+  delta: reportDelta(trend.delta),
   tone: toneOf(trend.delta)
 });
 
@@ -61,15 +60,15 @@ const cardsOf = (report: UiMarksReport): ReportCard[] => [
 ];
 
 export const marksReportView = (report: UiMarksReport): MarksReportView => ({
-  percent: percentText(report.percent),
+  percent: reportPercent(report.percent),
   progress: `${clamp(report.percent ?? 0, { min: 0, max: 100 })}%`,
   cards: cardsOf(report),
   rows: report.battles.map((battle, index): ReportRow => ({
     key: `${battle.t ?? index}-${index}`,
     date: reportDate(battle.t),
     damage: numberText(battle.damage),
-    percent: percentText(battle.percent),
-    delta: deltaText(battle.delta),
+    percent: reportPercent(battle.percent),
+    delta: reportDelta(battle.delta),
     tone: toneOf(battle.delta)
   })),
   chart: chartOf(report.chart)

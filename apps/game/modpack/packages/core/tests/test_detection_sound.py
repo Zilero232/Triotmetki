@@ -69,7 +69,7 @@ def module(name, **attributes):
 class DetectionSoundRepairTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         self.files = set()
         self.core = SettingsCore({'bulbVoices': 2})
         skeleton = type(str('ISettingsCore'), (object,), {})

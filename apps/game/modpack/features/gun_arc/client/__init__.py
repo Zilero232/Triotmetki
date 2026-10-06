@@ -151,4 +151,4 @@ class GunArcPanel(BattlePanel):
         points = sector_points(aim[0], aim[1], aim[2], self.limits)
         if points is None:
             return None
-        return dict((name, screen_offset(project(math, matrix, points[name]), screen)) for name in MARK_NAMES)
+        return {name: screen_offset(project(math, matrix, points[name]), screen) for name in MARK_NAMES}

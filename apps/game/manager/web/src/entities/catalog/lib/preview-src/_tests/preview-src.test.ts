@@ -9,8 +9,11 @@ describe('previewPath', () => {
     );
   });
 
-  it('has no preview without a folder or a file', () => {
+  it('has no preview without a folder', () => {
     expect(previewPath({ previewsDir: null, file: 'previews/core.png' })).toBeNull();
+  });
+
+  it('has no preview without a file', () => {
     expect(previewPath({ previewsDir: 'C:\\x', file: null })).toBeNull();
   });
 

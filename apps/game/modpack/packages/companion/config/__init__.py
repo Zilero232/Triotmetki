@@ -26,8 +26,8 @@ from .user_set import normalize_user_set, user_set_tokens, with_user_set  # noqa
 _urlparse = six.moves.urllib.parse.urlparse
 
 
+# An API base: https without user info, or plain http to the exact local hosts; no query or fragment.
 def is_valid_server_url(url):
-    """An API base: https without user info, or plain http to the exact local hosts; no query or fragment."""
     if not isinstance(url, string_types):
         return False
     try:
@@ -82,9 +82,8 @@ def upgraded(values):
     return upgraded_values
 
 
+# config.json. `server_url` is the production API unless `allow_custom_server` (a development install).
 class Config(Settings):
-    """config.json. `server_url` is the production API unless `allow_custom_server` (a development install)."""
-
     schema = SCHEMA
 
     def __init__(self, values=None, allow_custom_server=False):
@@ -96,7 +95,6 @@ class Config(Settings):
         return self.values['server_url'] if self.allow_custom_server else DEFAULT_SERVER_URL
 
     def custom_server(self):
-        """The API base in use when it is not the production one, else None (the settings window warns about it)."""
         url = self.server_url
         return None if url == DEFAULT_SERVER_URL else url
 

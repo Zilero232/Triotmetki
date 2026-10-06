@@ -270,7 +270,7 @@ HIT_STATES = (
     'VEHICLE_HEALTH', 'VEHICLE_HIT', 'VEHICLE_RICOCHET', 'VEHICLE_ARMOR_PIERCED', 'VEHICLE_CRITICAL_HIT',
     'VEHICLE_DEAD',
 )
-FEEDBACK_IDS = dict((name, index + 100) for index, name in enumerate(HIT_STATES))
+FEEDBACK_IDS = {name: index + 100 for index, name in enumerate(HIT_STATES)}
 
 
 class Extra(object):
@@ -361,7 +361,7 @@ class VehicleInfo(object):
 class ArenaDP(object):
 
     def __init__(self, vehicles):
-        self.vehicles = dict((info.vehicleID, info) for info in vehicles)
+        self.vehicles = {info.vehicleID: info for info in vehicles}
 
     def getVehicleInfo(self, vehicle_id):
         return self.vehicles.get(vehicle_id)
@@ -835,7 +835,7 @@ class Game(object):
             COMPONENT_EVENT=constants('COMPONENT_EVENT', {'UPDATED': self.component_updated}),
         )
         package('gui.battle_control')
-        view_states = dict((name, value) for name, value in VIEW_STATE.items() if name != 'STUN')
+        view_states = {name: value for name, value in VIEW_STATE.items() if name != 'STUN'}
         module(
             'gui.battle_control.battle_constants',
             FEEDBACK_EVENT_ID=constants('FEEDBACK_EVENT_ID', FEEDBACK_IDS),
@@ -904,7 +904,7 @@ class Game(object):
         # RU 1.45 PrebattleSetupsController.__updateGuiVehicle: the GUI vehicle of the own setups installs its setup's
         # device sequence (optDevices.installed.getIntCDs(), 0 for an empty slot) into its descriptor; the arena's
         # descriptor may still hold another setup.
-        by_cd = dict((device.compactDescr, device) for device, _ in setup_devices if device is not None)
+        by_cd = {device.compactDescr: device for device, _ in setup_devices if device is not None}
         slots = [slot for _, slot in setup_devices]
         installed = {'sequence': []}
 
@@ -1161,7 +1161,7 @@ class Game(object):
         for name in entries:
             importlib.import_module('gui.mods.' + name)
         app = sys.modules['gui.mods.otmetki.companion.app.client'].g_app
-        app.config.update(dict((feature, True) for feature in BATTLE_OPT_INS))
+        app.config.update({feature: True for feature in BATTLE_OPT_INS})
         return app
 
     def bind(self, app):
@@ -1259,7 +1259,7 @@ class Game(object):
 
     def hud_components(self):
         hud = [(alias, props) for alias, props in self.components.items() if alias.startswith('otmetki.hud.')]
-        return dict((alias.split('.')[-1], props) for alias, props in hud)
+        return {alias.split('.')[-1]: props for alias, props in hud}
 
     def hud_text(self, panel):
         return self.hud_components()[panel]['text']
@@ -1404,6 +1404,21 @@ class CompanionAloneTest(StoryTest):
         game.play_battle(app)
         cls.battles = copy.deepcopy(game.battle_events(app))
         cls.state = app.state_file.read({})
+        cls.tls_status, cls.tls_expected = cls.status_without_tls(app)
+
+    @staticmethod
+    def status_without_tls(app):
+        tls = sys.modules[sys.modules[type(app).__module__].tls_available.__module__]
+        saved = dict(tls._cache)
+        tls._cache['context'] = None
+        try:
+            return app.status_text(), app.translate('status_tls_unavailable')
+        finally:
+            tls._cache.clear()
+            tls._cache.update(saved)
+
+    def test_a_client_without_tls_says_so_in_the_status(self):
+        self.assertEqual(self.tls_status, self.tls_expected)
 
     def test_the_companion_alone_registers_no_feature(self):
         self.assertEqual(self.instances, {})
@@ -1554,7 +1569,7 @@ class HudSwitchedOffTest(StoryTest):
     def play(cls, game):
         game.install_hud_stubs()
         app = game.load(list(ENTRY_MODULES))
-        app.config.update(dict((key, False) for key in HUD_OFF))
+        app.config.update({key: False for key in HUD_OFF})
         game.enter_battle(1)
         cls.panels = game.hud_components()
 
@@ -1621,7 +1636,7 @@ class HudEditTest(StoryTest):
         self.assertIn('390', self.described['damage_log'][0])
 
     def test_hud_describe_hands_every_panel_s_preview_widget_to_the_settings_window(self):
-        kinds = dict((panel_id, (described[3] or {}).get('kind')) for panel_id, described in self.described.items())
+        kinds = {panel_id: (described[3] or {}).get('kind') for panel_id, described in self.described.items()}
 
         self.assertEqual(kinds['crosshair'], 'crosshair')
         self.assertEqual(kinds['team_hp'], 'team_hp')
@@ -1771,10 +1786,10 @@ class HangarCardsTest(StoryTest):
         game.open_hangar()
         instances = game.instances()
         tank_card = instances['marks_panel'].ui_parts()['hangar_marks']
-        cls.actions = dict(
-            (feature_id, instances[feature_id].ui_actions())
+        cls.actions = {
+            feature_id: instances[feature_id].ui_actions()
             for feature_id in ('battle_results', 'auto_resupply')
-        )
+        }
         cls.actions['hangar_marks'] = tank_card.ui_actions()
         cls.history_rows = tank_card.ui_page()['rows']
         cls.results_rows_before = instances['battle_results'].ui_page()['rows']
@@ -1837,12 +1852,12 @@ class SessionSiteReadsTest(StoryTest):
         game.bind(app)
         game.player = Player(ACCOUNT)
         game.events.onAccountShowGUI()
-        reads = dict(
-            (url.rsplit('/', 1)[-1], (headers, body, callback))
+        reads = {
+            url.rsplit('/', 1)[-1]: (headers, body, callback)
             for method, url, headers, body, callback in game.fetches
             if method == 'POST' and '/mod/me/' in url
-        )
-        cls.reads = dict((name, (headers, body)) for name, (headers, body, _) in reads.items())
+        }
+        cls.reads = {name: (headers, body) for name, (headers, body, _) in reads.items()}
         reads['overview'][2](response_json(contract_example('ratings-overview.example.json')))
         cls.text = game.components['otmetki.session']['text']
         cls.overview_fetches = len(game.fetches_to('/mod/me/overview'))
@@ -2024,6 +2039,9 @@ class LoadoutFromTheSetupsTest(StoryTest):
 
 
 def session_log():
+    log_module = sys.modules.get('gui.mods.otmetki.core.log')
+    if log_module is not None:
+        log_module.flush_file()
     with open(os.path.join('mods', 'configs', 'otmetki', 'otmetki.log'), 'rb') as handle:
         return handle.read().decode('utf-8')
 
@@ -2800,7 +2818,7 @@ class GamefaceBackendTest(StoryTest):
         app = game.open_hangar()
         layer = game.hud_module().hud_layer(app)
         cls.backend_names = list(layer.backend.names)
-        cls.backend_name = layer.backend_name
+        cls.backend_name = layer.backend.name
         app.bus.emit('hud_edit', True)
         cls.labels_in_edit = game.hud_components()
         cls.windows_in_edit = len(game.windows)
@@ -2810,10 +2828,12 @@ class GamefaceBackendTest(StoryTest):
         app.bus.emit('hud_edit', False)
         cls.page_after_edit = game.hud_page_ids()
         game.res_id = -1
+        for backend in layer.backend.backends:
+            backend.layout = None
         app.bus.emit('hud_edit', True)
         cls.windows_without_resource = len(game.windows)
         cls.labels_without_resource = sorted(game.hud_components())
-        cls.fallback_backend = layer.backend_name
+        cls.fallback_backend = layer.backend.name
 
     @classmethod
     def play_page_messages(cls, game, app):
@@ -2840,7 +2860,7 @@ class GamefaceBackendTest(StoryTest):
         self.assertEqual(self.window_layer, 7)
 
     def test_the_hud_page_shows_the_previews_with_the_cursor(self):
-        panels = dict((panel['id'], panel) for panel in self.page['panels'])
+        panels = {panel['id']: panel for panel in self.page['panels']}
 
         self.assertTrue(self.page['cursor'])
         self.assertIn('390', panels['otmetki.hud.damage_log']['text'])
@@ -3031,11 +3051,11 @@ class QuickDemountTest(StoryTest):
             garage_tank(4, 'T-54', 9, [DeviceSetup(RAMMER, None, None)], isInBattle=True),
             garage_tank(5, 'MS-1', 1, [DeviceSetup(None, None, None)]),
         ]
-        by_id = dict((tank.intCD, tank) for tank in tanks)
+        by_id = {tank.intCD: tank for tank in tanks}
         rammer = instance('OptionalDevice', {'intCD': RAMMER})
         by_id[RAMMER] = rammer
         items = instance('Items', {
-            'getVehicles': lambda items, criteria: dict((tank.intCD, tank) for tank in tanks),
+            'getVehicles': lambda items, criteria: {tank.intCD: tank for tank in tanks},
             'getItemByCD': lambda items, item_id: by_id.get(item_id),
         })
         items_cache = constants('IItemsCache', {})
@@ -3182,9 +3202,9 @@ class AccountExtrasTest(StoryTest):
     def play(cls, game):
         game.install_hud_stubs()
         app = game.open_hangar(is_bound=True)
-        app.config.update(dict((switch, True) for switch in (
+        app.config.update({switch: True for switch in (
             'hangar_depot_seller', 'hangar_auto_reserves', 'hangar_space', 'hangar_update_notice',
-        )))
+        )})
         instances = game.instances()
         cls.seller_actions = [action['id'] for action in instances['depot_seller'].ui_actions()]
         cls.seller_empty = instances['depot_seller'].ui_page()['empty']

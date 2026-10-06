@@ -44,9 +44,9 @@ def _best(candidates):
     return min(candidates, key=lambda booster: (-booster['value'], booster['expires'], booster['id']))
 
 
+# ([booster ids to activate], None) or ([], refusal): for every picked kind with no reserve on, its strongest ready
+# reserve (the one that expires first among equals), while a personal slot is free.
 def pick(boosters, values):
-    """([booster ids to activate], None) or ([], refusal): for every picked kind with no reserve on, its strongest ready
-    reserve (the one that expires first among equals), while a personal slot is free."""
     kinds = wanted_kinds(values)
     if not kinds:
         return [], REFUSE_UNSET
@@ -70,7 +70,6 @@ def pick(boosters, values):
 
 
 def is_due(values, now, checked_at, session_done):
-    """Whether the hangar should look for reserves to activate now."""
     if not session_done:
         return True
     return values.get('when') == WHEN_EXPIRY and now - checked_at >= CHECK_EVERY_S

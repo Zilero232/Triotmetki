@@ -11,3 +11,5 @@ export type PanelUnderInput<Target extends HitTarget> = { targets: Target[]; poi
 export type PointerPointInput = { clientX: number; clientY: number; scale: number };
 
 export type TargetAtInput<Target extends HitTarget> = { targets: Target[]; press: Pick<MouseEvent, 'clientX' | 'clientY'>; scale: number };
+
+export type ContainsInput = { target: HitTarget; point: Point };

@@ -82,3 +82,7 @@ STOCK_WAIT_S = 3.0
 UNCLAIMED_AFTER_S = 20.0
 # Results and released arenas kept for the messages still to come.
 NOTICE_ARENAS_LIMIT = 20
+# What StockNotices.results_arrived asks of the client for the results that came.
+APPEND = 'append'
+PUSH = 'push'
+HOLD = 'hold'

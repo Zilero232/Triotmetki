@@ -47,6 +47,11 @@ REACHED = u'✓'
 STAR = u'★'
 UNREACHABLE = u'∞'
 MACRO_MISSING = u'-'
+# How a marks view colours the percent: by the battle's change, by the mark it is at, or not at all.
+COLOR_MODE_DELTA = 'delta'
+COLOR_MODE_MARK = 'mark'
+COLOR_MODE_OFF = 'off'
+COLOR_MODES = (COLOR_MODE_DELTA, COLOR_MODE_MARK, COLOR_MODE_OFF)
 
 # The mastery badges of GET /v1/moe/<tank_id> `mastery` (base XP of one battle per badge), with the dossier's
 # markOfMastery value each one is: 1 third class, 2 second, 3 first, 4 Ace Tanker.

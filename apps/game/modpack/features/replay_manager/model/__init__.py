@@ -8,7 +8,6 @@ from .constants import (  # noqa: F401
     ACTION_FOLDER,
     ACTION_HITS,
     ACTION_PLAY,
-    ACTION_REFRESH,
     ACTION_RENAME,
     ACTION_UPLOAD,
     ERROR_EXISTS,

@@ -31,7 +31,6 @@ def _described(vehicle_type):
     }
 
 
-# The client's localized short name, tier and class of a replay's vehicle, looked up once per vehicle.
 class VehicleNames(object):
 
     def __init__(self):

@@ -14,11 +14,10 @@ from .constants import SEGMENT_MARGIN
 # that segment, turned along it: the segment runs along the shell's path through the plate.
 
 
+# `part` is the hit part's name (its node on the vehicle model), `point` the hit point and `direction` the unit vector
+# of the shell's path, both in the part's coordinates.
 @attr.s(frozen=True)
 class HitGeometry(object):
-    """`part` is the hit part's name (its node on the vehicle model), `point` the hit point and `direction` the unit
-    vector of the shell's path, both in the part's coordinates."""
-
     part = attr.ib()
     point = attr.ib()
     direction = attr.ib()
@@ -48,9 +47,9 @@ def impact_point(segments):
     return known[-1] if known else None
 
 
+# The HitGeometry of the point the hit's outcome belongs to (the last one the client drew), or None when the point's
+# part has no box in `boxes` (part index -> (min, max) corners).
 def hit_geometry(segments, boxes):
-    """The HitGeometry of the point the hit's outcome belongs to (the last one the client drew), or None when the
-    point's part has no box in `boxes` (part index -> (min, max) corners)."""
     point = impact_point(segments)
     if point is None or point.part >= len(PART_NAMES) or point.part not in boxes:
         return None

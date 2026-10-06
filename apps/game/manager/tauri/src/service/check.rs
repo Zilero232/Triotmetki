@@ -25,6 +25,12 @@ pub struct CheckOutcome {
     pub others: Vec<PatchReport>,
 }
 
+struct AutoVersions {
+    game_version: String,
+    from: String,
+    current: Option<String>,
+}
+
 fn checked_at() -> Option<String> {
     Some(chrono::Local::now().to_rfc3339())
 }
@@ -137,25 +143,31 @@ impl Manager {
                 Ok(PatchStatus::UpdateReady { game_version, from, current, latest: release.version, notes: release.notes })
             }
             _ if is_client_running(&client.path) => deferred(from, game_version),
-            PatchAction::Migrate => {
-                let _guard = self.try_write_guard()?;
-                let migrated = self.usable_scope(Some(&client.path)).and_then(|scope| self.migrate_scope(&scope, &manifest.mods_dir));
+            PatchAction::Migrate => self.auto_migrate(client, &manifest.mods_dir, AutoVersions { game_version, from, current }),
+            PatchAction::Install(release) => self.auto_install(client, release, AutoVersions { game_version, from, current }).await,
+        }
+    }
 
-                match migrated {
-                    Err(error) if error.code() == ErrorCode::ClientRunning => deferred(from, game_version),
-                    Err(error) => Err(error),
-                    Ok(_) => Ok(PatchStatus::Migrated { from, to: game_version, modpack_version: current }),
-                }
-            }
-            PatchAction::Install(release) => {
-                let _guard = self.try_write_guard()?;
+    fn auto_migrate(&self, client: &GameClient, from_mods_dir: &Path, versions: AutoVersions) -> AppResult<PatchStatus> {
+        let AutoVersions { game_version, from, current } = versions;
+        let _guard = self.try_write_guard()?;
+        let migrated = self.usable_scope(Some(&client.path)).and_then(|scope| self.migrate_scope(&scope, from_mods_dir));
 
-                match self.install_release(&client.path, &release).await {
-                    Err(error) if error.code() == ErrorCode::ClientRunning => deferred(from, game_version),
-                    Err(error) => Err(error),
-                    Ok(_) => Ok(PatchStatus::Updated { game_version, from: current, to: release.version }),
-                }
-            }
+        match migrated {
+            Err(error) if error.code() == ErrorCode::ClientRunning => Ok(PatchStatus::Deferred { game_version, from }),
+            Err(error) => Err(error),
+            Ok(_) => Ok(PatchStatus::Migrated { from, to: game_version, modpack_version: current }),
+        }
+    }
+
+    async fn auto_install(&self, client: &GameClient, release: Release, versions: AutoVersions) -> AppResult<PatchStatus> {
+        let AutoVersions { game_version, from, current } = versions;
+        let _guard = self.try_write_guard()?;
+
+        match self.install_release(&client.path, &release).await {
+            Err(error) if error.code() == ErrorCode::ClientRunning => Ok(PatchStatus::Deferred { game_version, from }),
+            Err(error) => Err(error),
+            Ok(_) => Ok(PatchStatus::Updated { game_version, from: current, to: release.version }),
         }
     }
 
@@ -283,6 +295,7 @@ impl Manager {
 
         self.sync_res_map(&scope.client);
         self.sync_hangar_looks(scope.context());
+        self.migrate_credentials(&scope.client);
 
         Ok(written)
     }

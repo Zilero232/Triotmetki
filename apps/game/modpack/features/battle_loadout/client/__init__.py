@@ -16,10 +16,6 @@ from .reads import own_loadout
 PANEL_SPEC = PanelSpec.of(settings, STRINGS, preview, PREVIEW_SIZE)
 
 
-# Read again whenever the client reports the descriptor's devices or a device's battle state changed, a setup was
-# switched before the battle, the own vehicle's arena entry changed or the battle period moved on (the entry may come
-# after the avatar is ready). Only the equipment and the directives: the stock panel under the row shows the shells
-# and the consumables.
 class BattleLoadoutPanel(BattlePanel):
 
     def __init__(self, app):

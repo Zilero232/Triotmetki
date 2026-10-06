@@ -246,7 +246,7 @@ class PageTest(unittest.TestCase):
     def rows(self, previews, default=None):
         page = build_page([MAIN, STEEL_HUNTER], u'', MAIN, translator(), looks=[RAIN],
                           pictures=GalleryPictures(previews, default))
-        return dict((row['id'], row) for row in page['rows'])
+        return {row['id']: row for row in page['rows']}
 
     def test_a_space_tile_shows_its_own_preview(self):
         rows = self.rows({MAIN: 'data:main'})

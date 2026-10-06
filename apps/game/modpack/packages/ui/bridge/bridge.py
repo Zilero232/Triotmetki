@@ -208,7 +208,9 @@ class SettingsBridge(object):
 
     def _on_profile_load(self, message):
         context = self.context
-        item = context.profiles.activate(message['id'])
+        item = context.profiles.get(message['id'])
+        if item is None:
+            raise ProfileError('missing')
         changes = apply_snapshot(
             item['data'],
             context.config,
@@ -224,6 +226,8 @@ class SettingsBridge(object):
             context.config_changed(config_changed)
         if 'language' in config_changed:
             context.set_language(context.config.get('language'))
+        context.flush_saves()
+        context.profiles.activate(item['id'])
         self._notice(NOTICE_INFO, 'notice_profile_loaded', name=item['name'])
 
     def _on_profile_rename(self, message):

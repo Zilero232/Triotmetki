@@ -46,10 +46,9 @@ def _payload_model_class(view_model):
     return PayloadModel
 
 
+# Adds OpenWG Gameface's script injection and a payload model to every ammunition setup model the client builds;
+# `push(text)` updates the payload of the ones still alive.
 class SetupInjector(object):
-    """Adds OpenWG Gameface's script injection and a payload model to every ammunition setup model the client builds;
-    `push(text)` updates the payload of the ones still alive."""
-
     def __init__(self, payload):
         self.payload = payload
         self.models = weakref.WeakSet()

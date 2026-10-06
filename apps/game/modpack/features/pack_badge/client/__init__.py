@@ -88,9 +88,14 @@ class PackBadge(FeatureComponent):
         self.hooks.clear()
         self.badges.stop()
 
+    def _can_request(self, arena_id):
+        if self.badges.requested or arena_id != self.badges.arena_id:
+            return False
+        return self.app.is_bound() and not self.app.auth_failed
+
     def request(self, arena_id):
         app = self.app
-        if self.badges.requested or arena_id != self.badges.arena_id or not app.is_bound() or app.auth_failed:
+        if not self._can_request(arena_id):
             return
         asked = asked_account_ids(arena_players(), app.account_id)
         try:

@@ -5,9 +5,9 @@ never the `vehicles`, `players` or `avatars` blocks of the other players."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ..compat import int_or_none
-from .constants import AVATAR_KEY, DRAW_TEAM, RESULT_DRAW, RESULT_LOSS, RESULT_WIN, VEHICLE_MARK
+from .constants import AVATAR_KEY, DRAW_TEAM, RESULT_DRAW, RESULT_LOSS, RESULT_TONES, RESULT_WIN, VEHICLE_MARK
 
-__all__ = ('RESULT_DRAW', 'RESULT_LOSS', 'RESULT_WIN', 'own_result', 'own_vehicle')
+__all__ = ('AVATAR_KEY', 'RESULT_DRAW', 'RESULT_LOSS', 'RESULT_TONES', 'RESULT_WIN', 'own_result', 'own_vehicle')
 
 
 def own_vehicle(personal):

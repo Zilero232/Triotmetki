@@ -6,8 +6,8 @@ import { isRecord } from '@/shared/lib/is-record';
 
 import type { CountRowsInput, ResolvedWidget } from './widget-registry.types';
 
+import { WIDGET_LINES } from '../../config';
 import { WIDGET_ENTRIES } from './widget-entries';
-import { WIDGET_LINES } from './widget-registry.constants';
 
 const byKind = new Map(WIDGET_ENTRIES.map((entry) => [entry.kind, entry]));
 

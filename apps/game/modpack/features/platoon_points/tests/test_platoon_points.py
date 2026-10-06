@@ -40,7 +40,7 @@ def fought_platoon():
 
 
 def preview_data(extended=False):
-    return points_widget(preview_platoon(), Settings({}, SCHEMA), translator(), extended)['data']
+    return points_widget(preview_platoon(translator()), Settings({}, SCHEMA), translator(), extended)['data']
 
 
 class PointsTest(unittest.TestCase):

@@ -106,13 +106,13 @@ def package_entries(package, compile_entries, staging):
 
 def write_packages(packages, args, staging):
     compile_entries = select_compiler(args)
-    out = output_dir(args)
-    fileio.make_dirs(out)
+    out_dir = output_dir(args)
+    fileio.make_dirs(out_dir)
 
     outputs = []
     for index, package in enumerate(packages):
         entries = package_entries(package, compile_entries, os.path.join(staging, 'pkg%d' % index))
-        output = os.path.join(out, archive.file_name(package, platform_of(args), single=args.single))
+        output = os.path.join(out_dir, archive.file_name(package, platform_of(args), single=args.single))
         archive.write_package(output, entries, archive.meta_xml(package))
         print('Built %s (%d files)' % (output, len(entries)))
         outputs.append(output)

@@ -10,7 +10,7 @@ import type { PersistInput } from './use-window-frame.types';
 
 import { WINDOW_FRAME } from '../../../config';
 import { describeFrame, describeViewport } from '../../../lib/describe';
-import { boundsOf, centredFrame, layoutOf, openingFrame, toRem, zoomStep } from '../../../lib/frame';
+import { boundsOf, centredFrame, frameStyleOf, innerStyleOf, layoutOf, openingFrame, zoomLimits, zoomStep } from '../../../lib/frame';
 import { useFrameGesture } from '../use-frame-gesture';
 import { useViewport } from '../use-viewport';
 
@@ -55,14 +55,9 @@ export const useWindowFrame = (saved: UiWindow | null) => {
     zoom,
     layout,
     handles,
-    frameStyle: { left: toRem(frame.x), top: toRem(frame.y), width: toRem(frame.width), height: toRem(frame.height) },
-    innerStyle: {
-      width: toRem(layout.inner.width),
-      height: toRem(layout.inner.height),
-      ...(layout.scale === 1 ? {} : { transform: `scale(${layout.scale})`, transformOrigin: '0 0' })
-    },
-    canZoomIn: zoom < Math.max(...WINDOW_FRAME.zoomSteps),
-    canZoomOut: zoom > Math.min(...WINDOW_FRAME.zoomSteps),
+    frameStyle: frameStyleOf(frame),
+    innerStyle: innerStyleOf(layout),
+    ...zoomLimits(zoom),
     zoomIn: () => changeZoom(1),
     zoomOut: () => changeZoom(-1),
     onRecentre: () => {

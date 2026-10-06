@@ -15,6 +15,7 @@ use std::time::Duration;
 use serde::Serialize;
 
 pub use check::CheckOutcome;
+pub use report::SaveReportInput;
 pub use setup::{InstallOutcome, InstallPlan, InstallRequest, UninstallRequest};
 pub use sync::{AccountLink, SyncReport, SyncStatus};
 pub use whats_new::WhatsNew;

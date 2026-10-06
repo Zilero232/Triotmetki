@@ -16,3 +16,11 @@ export type ChangedPanelsInput = { previous: PanelContent; next: PanelContent };
 export type SameContentInput = ChangedPanelsInput & { id: string };
 
 export type ReadSizeInput = { element: HTMLElement | undefined; lines: number; scale: number };
+
+export type LineCountInput = { id: string; content: PanelContent };
+
+export type ReadCountdownInput = { framesLeft: Map<string, number>; elements: Map<string, HTMLElement>; content: PanelContent };
+
+export type ElementRef = (element: HTMLElement | null) => void;
+
+export type ElementRefInput = { elements: Map<string, HTMLElement>; id: string };

@@ -8,6 +8,7 @@ so tests import the sources exactly as the client does, with their relative impo
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import contextlib
 import io
 import json
 import os
@@ -188,6 +189,61 @@ def translator(strings, language='ru'):
     """A translator over a feature's own STRINGS (the tests' stand-in for app.translate)."""
     from otmetki.core.i18n import Catalog, Translator
     return Translator(Catalog(strings), language)
+
+
+def verify_signature(secret, body, signature):
+    """The server's check of a request signature (`core.net.signing.sign`), for tests only."""
+    import hmac
+    from otmetki.core.compat import to_bytes
+    from otmetki.core.net.signing import sign
+    return hmac.compare_digest(to_bytes(sign(secret, body)), to_bytes(signature))
+
+
+def verify_request(secret, method, url, headers, body, signed_names=()):
+    """Whether `headers` carry a valid v2 signature of the request: the server's check, for tests only."""
+    from otmetki.core.net.signing import (
+        NONCE_HEADER, SIGNATURE_HEADER, TIMESTAMP_HEADER, request_path, signed_message,
+    )
+    extra = [(name, headers[name]) for name in signed_names if name in headers]
+    path = request_path(url)
+    message = signed_message(
+        method, path, headers.get(TIMESTAMP_HEADER, ''), headers.get(NONCE_HEADER, ''), body, extra,
+    )
+    return verify_signature(secret, message, headers.get(SIGNATURE_HEADER, ''))
+
+
+class MemoryFile(object):
+    """A JsonFile stand-in held in memory; every read and write goes through JSON, as the file would."""
+
+    def __init__(self, data=None):
+        self.data = data
+
+    def read(self, default=None):
+        if self.data is None:
+            return default
+        return json.loads(json.dumps(self.data))
+
+    def write(self, data):
+        self.data = json.loads(json.dumps(data))
+
+    def delete(self):
+        self.data = None
+
+
+@contextlib.contextmanager
+def captured_log(lines):
+    """Collects the lines `core.log` writes into `lines` instead of python.log and the log file, with a repeat limiter
+    of its own (an error another test logged is not held back)."""
+    import time
+    from otmetki.core import log as log_module
+    from otmetki.core.log.limiter import RepeatLimiter
+    saved = log_module._emit, log_module._repeats
+    log_module._emit = lines.append
+    log_module._repeats = RepeatLimiter(time.time)
+    try:
+        yield lines
+    finally:
+        log_module._emit, log_module._repeats = saved
 
 
 class FakeTransport(object):

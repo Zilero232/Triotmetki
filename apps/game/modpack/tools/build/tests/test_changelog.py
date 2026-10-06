@@ -40,8 +40,8 @@ def entry_texts(lines):
         else:
             sections.setdefault(language, []).append(line)
     sections.pop(None, None)
-    texts = dict((key, '\n'.join(body).strip()) for key, body in sections.items())
-    return dict((key, text) for key, text in texts.items() if text)
+    texts = {key: '\n'.join(body).strip() for key, body in sections.items()}
+    return {key: text for key, text in texts.items() if text}
 
 
 def parse_changelog(text):
@@ -78,7 +78,7 @@ class ChangelogTest(unittest.TestCase):
     def setUp(self):
         with io.open(CHANGELOG, encoding='utf-8') as handle:
             self.changelog = parse_changelog(handle.read())
-        self.versions = dict((package.key, package.version) for package in layout.split_packages('root_init.py'))
+        self.versions = {package.key: package.version for package in layout.split_packages('root_init.py')}
         self.catalogued = [item['id'] for item in fileio.read_json(CATALOG)['components'] if 'kind' not in item]
 
     def test_every_catalogued_component_has_an_entry_for_its_version(self):

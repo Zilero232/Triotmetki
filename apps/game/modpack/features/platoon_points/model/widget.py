@@ -7,13 +7,12 @@ from .constants import KIND, MEMBER_KEYS
 
 
 def member(row, translate):
-    shown = dict((key, row[key]) for key in MEMBER_KEYS)
+    shown = {key: row[key] for key in MEMBER_KEYS}
     shown['cls'] = class_icon(row['class'], 'green')
     shown['frags_text'] = translate('platoon_points_frags', frags=row['frags'])
     return shown
 
 
-# `extended` (Alt held, and the edit mode's sample) adds the members' HP bars.
 def points_widget(platoon, settings, translate, extended=False):
     rules = rules_of(settings)
     rows = platoon.rows(rules, settings.get('show_platoon'))

@@ -14,7 +14,6 @@ from ..model import (
     TickGate,
     argument_names,
     frame_time_diff,
-    realm_of,
     relax_time,
     server_tick,
     skip_reason,
@@ -106,7 +105,6 @@ class ResponsiveReticle(FeatureComponent):
 
     def __init__(self, app):
         FeatureComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS)
-        self.realm = realm_of(client_attr('constants', 'CURRENT_REALM'))
         self.rotator = None
         self.lock = None
         self.aiming_mode = None
@@ -130,8 +128,8 @@ class ResponsiveReticle(FeatureComponent):
             log('responsive reticle: the client has no gun rotator to follow, off')
             return False
         names = argument_names(rotate)
-        if not supports_rotate(names, self.realm):
-            log('responsive reticle: unknown %s rotate signature %r, off' % (self.realm, names))
+        if not supports_rotate(names):
+            log('responsive reticle: unknown rotate signature %r, off' % (names,))
             return False
         override(rotator_class, STOCK_TURN_METHOD)(self._stock_turn)
         avatar_class = client_attr(AVATAR_MODULE, AVATAR_CLASS)

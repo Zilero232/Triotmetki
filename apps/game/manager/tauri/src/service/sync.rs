@@ -4,7 +4,7 @@ use reqwest::Method;
 use serde::Serialize;
 
 use super::Manager;
-use crate::credentials::{AccountBinding, CredentialStore, Credentials};
+use crate::credentials::{AccountBinding, CredentialStore, Credentials, SecretFormat};
 use crate::detect::GameClient;
 use crate::durable::now_seconds;
 use crate::error::{AppError, AppResult, ErrorCode};
@@ -12,10 +12,11 @@ use crate::paths::configs_dir;
 use crate::process::ensure_closed;
 use crate::profiles::ProfileStore;
 use crate::sets::SetsFile;
-use crate::site::{normalize_code, BindRequest, MOD_VERSION_PREFIX, REALM};
+use crate::site::{normalize_code, BindRequest, SignedRequest, MOD_VERSION_PREFIX, REALM};
+use crate::state::Manifest;
 use crate::sync::{
-    apply_profiles, decide, local_changes, local_profiles, remote_changes, Decision, LibrarySync, ProfileSyncState, PutProfiles, RemoteProfiles,
-    RemoteSets, Resolution, Side, SignedBody, Step, SyncBase, PROFILES_PATH, SETS_PATH,
+    apply_profiles, decide, local_changes, local_profiles, remote_changes, DecideInput, Decision, LibrarySync, ProfileSyncState, PutProfiles,
+    RemoteProfiles, RemoteSets, Resolution, Side, SignedBody, Step, SyncBase, PROFILES_PATH, SETS_PATH,
 };
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -55,9 +56,28 @@ fn base_after_reset(base: SyncBase, revision: u64) -> SyncBase {
 
 impl Manager {
     pub(super) fn credential_store(&self) -> CredentialStore {
-        let configs = self.client(None).map_or_else(|_| self.layout.durable_dir(), |client| configs_dir(&client.path));
+        self.credential_store_of(self.client(None).ok().as_ref())
+    }
 
-        CredentialStore::new(configs, self.layout.durable_dir())
+    fn credential_store_of(&self, client: Option<&GameClient>) -> CredentialStore {
+        let configs = client.map_or_else(|| self.layout.durable_dir(), |client| configs_dir(&client.path));
+        let format = client.map_or(SecretFormat::Plaintext, |client| self.secret_format(client));
+
+        CredentialStore::new(configs, self.layout.durable_dir()).with_format(format)
+    }
+
+    fn secret_format(&self, client: &GameClient) -> SecretFormat {
+        let manifest = Manifest::read(&self.layout.client_dir(&client.path)).ok().flatten();
+
+        manifest.map_or(SecretFormat::Plaintext, |manifest| SecretFormat::for_installed(&manifest.files))
+    }
+
+    pub(super) fn migrate_credentials(&self, client: &GameClient) {
+        match self.credential_store_of(Some(client)).migrate() {
+            Ok(true) => log::info!("moved the device secrets to the protected format"),
+            Ok(false) => {}
+            Err(error) => log::warn!("move the device secrets to the protected format: {error}"),
+        }
     }
 
     pub fn account_link(&self) -> AccountLink {
@@ -135,7 +155,7 @@ impl Manager {
 
     async fn pull_sets(&self, credentials: &Credentials) -> AppResult<()> {
         let signed = SignedBody { device_id: credentials.device_id.clone(), account_id: credentials.account_id };
-        let remote: RemoteSets = self.site.signed(Method::POST, SETS_PATH, credentials, &signed).await?;
+        let remote: RemoteSets = self.site.signed(SignedRequest { method: Method::POST, path: SETS_PATH, credentials, body: &signed }).await?;
 
         self.set_store().absorb(&SetsFile { sets: remote.sets, deleted: remote.deleted, ..SetsFile::default() })
     }
@@ -148,13 +168,15 @@ impl Manager {
         let local = local_profiles(&file);
         let deleted = state.tombstones(&local);
         let signed = SignedBody { device_id: credentials.device_id.clone(), account_id: credentials.account_id };
-        let remote: RemoteProfiles = self.site.signed(Method::POST, PROFILES_PATH, credentials, &signed).await?;
+        let remote: RemoteProfiles =
+            self.site.signed(SignedRequest { method: Method::POST, path: PROFILES_PATH, credentials, body: &signed }).await?;
         let base = base_after_reset(state.base(), remote.revision);
         let local_side = Side { items: &local, deleted: &deleted };
         let remote_side = Side { items: &remote.profiles, deleted: &remote.deleted };
         let local_count = local_changes(&local_side, base.synced_at);
         let remote_count = remote_changes(&local_side, &remote_side);
-        let Decision { step, outcome } = decide(local_count, remote_count, &base, remote.revision, resolution);
+        let Decision { step, outcome } =
+            decide(DecideInput { local_changes: local_count, remote_changes: remote_count, base: &base, revision: remote.revision, resolution });
         let summary =
             LibrarySync { outcome, local: local.len(), remote: remote.profiles.len(), local_changes: local_count, remote_changes: remote_count };
         let answer = match step {
@@ -165,7 +187,7 @@ impl Manager {
                 let body = PutProfiles { signed, profiles: &local, deleted: &deleted, mode };
 
                 ensure_closed(&client.path)?;
-                self.site.signed(Method::PUT, PROFILES_PATH, credentials, &body).await?
+                self.site.signed(SignedRequest { method: Method::PUT, path: PROFILES_PATH, credentials, body: &body }).await?
             }
         };
 

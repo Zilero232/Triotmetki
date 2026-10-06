@@ -4,7 +4,7 @@ import { messageSchema, parseState, PROTOCOL } from '@/shared/api/protocol';
 import sample from '@/shared/api/protocol/_tests/fixtures/state.sample.json';
 
 import type { GamefaceMock } from '../mock';
-import type { DevGamefaceInput, DevReplaysPage } from './dev-bridge.types';
+import type { DevGamefaceInput, ReplaysSnapshotInput } from './dev-bridge.types';
 
 import { createGamefaceMock } from '../mock';
 import { applyMessage } from './apply-message';
@@ -27,7 +27,7 @@ const sampleState = (): UiState => {
   };
 };
 
-const replaysSnapshot = (replaysPage: DevReplaysPage, rev: number): string => {
+const replaysSnapshot = ({ replaysPage, rev }: ReplaysSnapshotInput): string => {
   const { items, ...page } = replaysPage;
 
   return JSON.stringify({ v: PROTOCOL.version, feed: DEV_MOCK.replaysComponent, rev, base: null, page, items });
@@ -52,7 +52,7 @@ export const createDevGameface = ({ replaysPage }: DevGamefaceInput): GamefaceMo
       if (parsed.data.type === 'feed') {
         feedRev += 1;
 
-        return parsed.data.active ? { feed: replaysSnapshot(replaysPage, feedRev) } : null;
+        return parsed.data.active ? { feed: replaysSnapshot({ replaysPage, rev: feedRev }) } : null;
       }
 
       state = applyMessage({ state, message: parsed.data });

@@ -5,7 +5,8 @@ from ....core.compat import is_number
 from ....core.format import counted, format_number, format_percent
 from ....core.hud.icons import glyph
 from ....core.hud.widget import card, card_chip, card_row
-from .constants import CARD_WIDTH, DONE_MARK, RESULT_TONES
+from ....core.own_result import RESULT_TONES
+from .constants import CARD_WIDTH, DONE_MARK
 from .goals import is_done, progress
 from .labels import account_facts, account_wn8, goal_label, goal_value, pending_caption
 from .moe import change_tone, signed_change

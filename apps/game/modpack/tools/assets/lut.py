@@ -11,6 +11,7 @@ blue = x div 16 (in steps of 1/15). An environment names one in `HDR/colorCorrec
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import argparse
 import io
 import json
 import os
@@ -120,8 +121,14 @@ def write(path, data):
         handle.write(data)
 
 
+def parse_args(argv):
+    parser = argparse.ArgumentParser(description='Write the colour-grading tables of the hangar looks')
+    parser.add_argument('--check', action='store_true', help='fail when a table is missing or differs from its grade')
+    return parser.parse_args(argv)
+
+
 def main(argv):
-    is_check = '--check' in argv
+    is_check = parse_args(argv).check
     stale = []
     for look_id, grade in sorted(load_grades().items()):
         data = table(grade)

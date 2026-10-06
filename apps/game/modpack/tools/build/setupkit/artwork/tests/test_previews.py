@@ -111,13 +111,13 @@ class SvgPreviewTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        paths = dict((name, os.path.join(PREVIEWS_DIR, name)) for name in preview_files('.svg'))
-        cls.roots = dict((name, ElementTree.parse(path).getroot()) for name, path in paths.items())
+        paths = {name: os.path.join(PREVIEWS_DIR, name) for name in preview_files('.svg')}
+        cls.roots = {name: ElementTree.parse(path).getroot() for name, path in paths.items()}
 
     def test_every_svg_is_drawn_on_the_preview_canvas(self):
         expected = (str(render.PREVIEW_SIZE[0]), str(render.PREVIEW_SIZE[1]), '0 0 %d %d' % render.PREVIEW_SIZE)
 
-        canvases = dict((name, tuple(root.get(key) for key in CANVAS_KEYS)) for name, root in self.roots.items())
+        canvases = {name: tuple(root.get(key) for key in CANVAS_KEYS) for name, root in self.roots.items()}
 
         wrong = [name for name, canvas in canvases.items() if canvas != expected]
 
@@ -135,9 +135,9 @@ class SvgPreviewTest(unittest.TestCase):
         self.assertTrue([name for name in files if name.endswith('.ttf')])
 
     def test_every_text_is_legible_on_the_card(self):
-        small = dict((name, small_texts(root)) for name, root in self.roots.items())
+        small = {name: small_texts(root) for name, root in self.roots.items()}
 
-        self.assertEqual(dict((name, texts) for name, texts in small.items() if texts), {})
+        self.assertEqual({name: texts for name, texts in small.items() if texts}, {})
 
 
 @unittest.skipUnless(HAVE_LIBRARIES, 'Pillow (tools/requirements.txt) or Node is missing')

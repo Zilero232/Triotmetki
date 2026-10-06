@@ -35,8 +35,6 @@ def _item(row, translate):
 
 
 def demount_menu(vehicles, current_id, settings, translate):
-    """The «Быстрый демонтаж» entry: the other tanks of the garage that carry the device, highest tier first, or
-    None when no other tank carries it."""
     rows = carriers(vehicles, current_id, settings.get('show_locked'))
     if not rows:
         return None

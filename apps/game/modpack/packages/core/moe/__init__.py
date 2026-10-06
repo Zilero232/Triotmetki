@@ -12,7 +12,17 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from .cache import ThresholdCache
-from .constants import EMA_K, EMA_WINDOW, MARK_LEVELS, MASTERY_CLASSES, TARGET_LEVELS
+from .constants import (
+    COLOR_MODE_DELTA,
+    COLOR_MODE_MARK,
+    COLOR_MODE_OFF,
+    COLOR_MODES,
+    EMA_K,
+    EMA_WINDOW,
+    MARK_LEVELS,
+    MASTERY_CLASSES,
+    TARGET_LEVELS,
+)
 from .curve import ThresholdCurve, estimated_curve, next_level, threshold_problem
 from .macros import moe_color, moe_macros
 from .mastery import mastery_from_api, mastery_state
@@ -29,6 +39,10 @@ from .results import exact_moe, implausible_change, is_post_battle_reading, is_r
 from .targets import moe_state, next_whole_percent
 
 __all__ = (
+    'COLOR_MODE_DELTA',
+    'COLOR_MODE_MARK',
+    'COLOR_MODE_OFF',
+    'COLOR_MODES',
     'EMA_K',
     'EMA_WINDOW',
     'MARK_LEVELS',

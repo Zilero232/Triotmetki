@@ -11,7 +11,7 @@ dimmed footer.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ...compat import is_number, keyword_options, string_types, to_text
+from ...compat import clamp, fraction, is_number, keyword_options, string_types, to_text
 from ..panel import hex_color
 from .constants import (
     CARD_KIND,
@@ -64,7 +64,7 @@ def _icon(value):
 def _progress(value):
     if not is_number(value):
         return None
-    return round(max(0.0, min(1.0, float(value))), 3)
+    return round(fraction(float(value)), 3)
 
 
 def color_override(value, default):
@@ -80,7 +80,7 @@ def _width(value):
     if not is_number(value):
         return None
     low, high = CARD_LIMITS['width']
-    return int(max(low, min(high, value)))
+    return int(clamp(value, low, high))
 
 
 def card_row(text=None, value=None, **style):

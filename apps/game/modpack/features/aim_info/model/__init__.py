@@ -13,9 +13,9 @@ def _number(value):
     return value if is_number(value) and value > 0 else None
 
 
+# The numbers of an own shell: `damage` is the descriptor's (armour, devices) pair, `piercing` the gun's piercing power
+# at 100 m, `speed` its shot speed in world units, `speed_factor` the client's projectile speed factor.
 def shell_stats(damage, piercing, speed, speed_factor):
-    """The numbers of an own shell: `damage` is the descriptor's (armour, devices) pair, `piercing` the gun's piercing
-    power at 100 m, `speed` its shot speed in world units, `speed_factor` the client's projectile speed factor."""
     armor, devices = damage if isinstance(damage, (tuple, list)) and len(damage) == 2 else (None, None)
     factor = _number(speed_factor)
     return {
@@ -26,15 +26,14 @@ def shell_stats(damage, piercing, speed, speed_factor):
     }
 
 
+# The tooltip lines of an own shell: every number (`full`, the stock tooltip has no body) or the module damage the stock
+# body leaves out; a number the client did not give is left out.
 def shell_lines(stats, translate, full):
-    """The tooltip lines of an own shell: every number (`full`, the stock tooltip has no body) or the module damage
-    the stock body leaves out; a number the client did not give is left out."""
     keys = FULL_LINES if full else EXTRA_LINES
     return [translate(key, value=format_number(stats[name])) for name, key in keys if stats.get(name) is not None]
 
 
 def with_lines(tooltip, lines):
-    """The stock tooltip with `lines` added at the end of its body (a body is added when it has none)."""
     if not lines:
         return tooltip
     added = LINE_BREAK.join(lines)

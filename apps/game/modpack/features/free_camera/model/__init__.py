@@ -7,7 +7,6 @@ from .constants import PLACE_HANGAR, PLACE_REPLAY, PLACE_SWITCHES, START, STOP  
 
 
 def flight_place(in_battle, is_replay):
-    """Where a flight may start: the hangar, a replay, or None for a live battle."""
     if not in_battle:
         return PLACE_HANGAR
     return PLACE_REPLAY if is_replay else None
@@ -19,8 +18,6 @@ def allowed(place, values):
 
 
 class Flight(object):
-    """The camera's state: `press(place, values)` answers START, STOP or None for the toggle key."""
-
     def __init__(self):
         self.place = None
         self.hid_ui = False

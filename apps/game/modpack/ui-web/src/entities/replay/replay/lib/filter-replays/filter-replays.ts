@@ -3,21 +3,7 @@ import { sortBy } from 'remeda';
 import type { ReplayFilters, ReplayItem } from '../../model/schemas';
 import type { FilterReplaysInput, MatchChoiceInput, MatchReplayInput } from './filter-replays.types';
 
-import { REPLAY_FILTER } from '../../config';
-
-export const DEFAULT_REPLAY_FILTERS: ReplayFilters = {
-  query: '',
-  result: null,
-  map: null,
-  vehicle: null,
-  nation: null,
-  tier: null,
-  type: null,
-  period: REPLAY_FILTER.all,
-  favourites: false,
-  sort: REPLAY_FILTER.defaultSort,
-  descending: true
-};
+import { DEFAULT_REPLAY_FILTERS, REPLAY_FILTER } from '../../config';
 
 const haystack = (item: ReplayItem): string =>
   [item.title, item.map_title, item.map, item.tank, item.vehicle].filter(Boolean).join(' ').toLowerCase();

@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.native import apply_settings, read_settings
 from ....core.codec import decode_json
-from ....core.log import log, log_exception, safe
+from ....core.log import guarded, log, safe
 from ...version import MOD_ID, VERSION
 from .. import (
     POLL_PATH,
@@ -19,32 +19,29 @@ from .. import (
     result_path,
     signed_post,
 )
-from .constants import CORE_NAMES, POLL_EVERY_S
+from .constants import ACTION_EXPORT, CORE_NAMES, POLL_EVERY_S
 
 
 def read_client_settings():
     current = read_settings(CORE_NAMES.values())
     if current is None:
         return None
-    values = dict((key, current[name]) for key, name in CORE_NAMES.items() if name in current)
+    values = {key: current[name] for key, name in CORE_NAMES.items() if name in current}
     return clean_values(values)
 
 
 def write_client_settings(values):
-    writable = dict((key, value) for key, value in clean_values(values).items() if key in CORE_NAMES)
-    return apply_settings(dict((CORE_NAMES[key], value) for key, value in writable.items()))
+    writable = {key: value for key, value in clean_values(values).items() if key in CORE_NAMES}
+    return apply_settings({CORE_NAMES[key]: value for key, value in writable.items()})
 
 
+@guarded('settings confirm dialog', fallback=False)
 def show_confirm(title, message, callback):
-    try:
-        from gui import DialogsInterface
-        from gui.Scaleform.daapi.view.dialogs import I18nConfirmDialogButtons, SimpleDialogMeta
-        meta = SimpleDialogMeta(title=title, message=message, buttons=I18nConfirmDialogButtons())
-        DialogsInterface.showDialog(meta, callback)
-        return True
-    except Exception:
-        log_exception('settings confirm dialog')
-        return False
+    from gui import DialogsInterface
+    from gui.Scaleform.daapi.view.dialogs import I18nConfirmDialogButtons, SimpleDialogMeta
+    meta = SimpleDialogMeta(title=title, message=message, buttons=I18nConfirmDialogButtons())
+    DialogsInterface.showDialog(meta, callback)
+    return True
 
 
 class SettingsShare(object):
@@ -75,7 +72,7 @@ class SettingsShare(object):
             return
         self.app.config.update({'settings_action': ''})
         self.app.save_config()
-        if action == 'export':
+        if action == ACTION_EXPORT:
             self.export()
 
     def export(self):

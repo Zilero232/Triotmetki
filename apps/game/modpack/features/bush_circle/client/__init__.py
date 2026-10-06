@@ -5,13 +5,18 @@ import BigWorld
 from ....core.client.battle import BattleHooks, arena, vehicle_state
 from ....core.client.component import FeatureComponent
 from ....core.client.hotkey import HotkeyChoice
-from ....core.log import log_exception, safe
+from ....core.log import guarded, log_exception, safe
 from .. import FEATURE_ID
 from ..i18n import STRINGS
 from ..model import CircleState, color_of, diameter
-from ..model.constants import HOTKEYS
+from ..model.constants import HOTKEYS, MODE_HOTKEY
 from ..settings import SCHEMA, SWITCH
 from .constants import CIRCLE_VISUAL, CUT_OFF_DISTANCE, ENTITY_ATTEMPTS, ENTITY_RETRY_S, OVER_TERRAIN_HEIGHT
+
+
+@guarded('bush circle: remove')
+def _detach(owner, model):
+    owner.delModel(model)
 
 
 class BushCircle(FeatureComponent):
@@ -59,7 +64,7 @@ class BushCircle(FeatureComponent):
 
     def _install_hotkey(self):
         hotkey = None
-        if self.settings.get('mode') == 'hotkey':
+        if self.settings.get('mode') == MODE_HOTKEY:
             hotkey = self.settings.get('hotkey')
         self.hotkey.set(hotkey)
 
@@ -136,7 +141,4 @@ class BushCircle(FeatureComponent):
         self.owner = None
         if model is None or owner is None:
             return
-        try:
-            owner.delModel(model)
-        except Exception:
-            log_exception('bush circle: remove')
+        _detach(owner, model)

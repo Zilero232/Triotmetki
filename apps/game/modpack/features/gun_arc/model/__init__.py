@@ -36,7 +36,7 @@ def sector_points(pivot, hull_yaw, aim, limits):
     if angles is None or not _is_point(pivot, 3) or not _is_point(aim, 3) or not is_number(hull_yaw):
         return None
     distance = max(MIN_DISTANCE_M, math.hypot(aim[0] - pivot[0], aim[2] - pivot[2]))
-    return dict((name, _ahead(pivot, hull_yaw + angle, distance, aim[1])) for name, angle in zip(MARK_NAMES, angles))
+    return {name: _ahead(pivot, hull_yaw + angle, distance, aim[1]) for name, angle in zip(MARK_NAMES, angles)}
 
 
 # The design-px offset from the screen centre of a clip-space point (x, y, z, w) the client's view-projection matrix
@@ -74,7 +74,6 @@ def _from_reticle(point, reticle):
     return int(round(offset[0])), int(round(offset[1]))
 
 
-# Each marker's offset from the reticle (design px), or None off the canvas or behind the camera.
 def marker_offsets(points, reticle):
     known = points or {}
-    return dict((name, _from_reticle(known.get(name), reticle)) for name in MARK_NAMES)
+    return {name: _from_reticle(known.get(name), reticle) for name in MARK_NAMES}

@@ -19,18 +19,17 @@ def _ids(values):
     return [value for value in values if is_int(value) and value > 0]
 
 
+# The {kind: [intCD]} of the site's answer for `tank_id`, or None for an answer about another tank or a broken one. A
+# tank without enough battles on the site has empty lists.
 def parse_advice(data, tank_id):
-    """The {kind: [intCD]} of the site's answer for `tank_id`, or None for an answer about another tank or a broken
-    one. A tank without enough battles on the site has empty lists."""
     if not isinstance(data, dict) or data.get('tankId') != tank_id:
         return None
     if not data.get('isEnough'):
-        return dict((kind, []) for kind in KINDS)
-    return dict((kind, _ids(data.get(kind))) for kind in KINDS)
+        return {kind: [] for kind in KINDS}
+    return {kind: _ids(data.get(kind)) for kind in KINDS}
 
 
 def advised_ids(advice, values):
-    """The intCD to mark: the kinds switched on in the component's settings, in their order, without repeats."""
     found = []
     for kind in KINDS:
         if advice and values.get(kind):
@@ -39,14 +38,11 @@ def advised_ids(advice, values):
 
 
 def page_payload(tank_id, items, label):
-    """The text the injected script reads from the stock view's model; an empty list marks nothing."""
     body = {'v': PAYLOAD_VERSION, 'tankId': tank_id or 0, 'items': list(items), 'label': label}
     return json.dumps(body, sort_keys=True, separators=(',', ':'), ensure_ascii=False)
 
 
 class AdviceCache(object):
-    """The site's answers per tank: kept for CACHE_TTL_S; a failed read is asked again after RETRY_AFTER_S."""
-
     def __init__(self, ttl=CACHE_TTL_S, retry_after=RETRY_AFTER_S):
         self.ttl = ttl
         self.retry_after = retry_after

@@ -1,9 +1,9 @@
-import type { FreshTimestampInput, SignedMessageInput } from './request-signature.types';
+import type { FreshTimestampInput, SignedMessageInput, SignedPrefixInput } from './request-signature.types';
 
 import { MOD_REQUEST } from '../../config/device.constants';
 import { REQUEST_SIGNATURE } from './request-signature.constants';
 
-export const signedMessage = ({ method, path, timestamp, nonce, headers = [], body }: SignedMessageInput): Buffer => {
+export const signedPrefix = ({ method, path, timestamp, nonce, headers = [] }: SignedPrefixInput): Buffer => {
   const lines = [
     MOD_REQUEST.version,
     method.toUpperCase(),
@@ -13,8 +13,10 @@ export const signedMessage = ({ method, path, timestamp, nonce, headers = [], bo
     ...headers.map(({ name, value }) => `${name.toLowerCase()}:${value}`)
   ];
 
-  return Buffer.concat([Buffer.from(`${lines.join('\n')}\n`), body]);
+  return Buffer.from(`${lines.join('\n')}\n`);
 };
+
+export const signedMessage = ({ body, ...prefix }: SignedMessageInput): Buffer => Buffer.concat([signedPrefix(prefix), body]);
 
 export const isFreshTimestamp = ({ timestamp, now }: FreshTimestampInput): boolean =>
   timestamp !== undefined &&

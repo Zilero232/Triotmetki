@@ -18,7 +18,7 @@ from otmetki.core.events import EventBus
 from otmetki.core.hud import ComponentConfig, HudLayer, NullBackend
 from otmetki.core.i18n import Catalog
 from otmetki.core.settings import Schema
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 from otmetki.features.damage_log.i18n import STRINGS as DAMAGE_LOG_STRINGS
 from otmetki.features.marks_panel.i18n import STRINGS as MARKS_STRINGS
 from otmetki.features.marks_panel.settings import CARD_SCHEMA, PARTS
@@ -213,6 +213,7 @@ class FakeContext(object):
         self.layer = HudLayer(self.backend, self.component_config)
         self.profiles = ProfileStore(MemoryFile(), lambda: 1000.0, new_id=profile_ids())
         self.events = []
+        self.flushes = []
         self.opened = []
         self.bound = []
         self.closed = 0
@@ -246,6 +247,9 @@ class FakeContext(object):
 
     def save_config(self):
         self.saved += 1
+
+    def flush_saves(self):
+        self.flushes.append(self.profiles.active)
 
     def language(self):
         return self.current_language
@@ -1133,6 +1137,27 @@ class BridgeProfilesTest(BridgeTestCase):
         assert self.minimap().get('zoom') == 'native'
         assert self.damage_log().get('x') == 10
         assert sorted(event[0] for event in self.context.events) == ['config', 'damage_log', 'minimap']
+
+    def test_load_writes_the_settings_before_it_marks_the_profile_active(self):
+        self.saved_profile()
+        self.context.profiles.active = None
+
+        send(self.bridge, type='profile_load', id='p1')
+
+        assert self.context.flushes == [None]
+
+    def test_load_marks_the_profile_active(self):
+        self.saved_profile()
+        self.context.profiles.active = None
+
+        send(self.bridge, type='profile_load', id='p1')
+
+        assert self.context.profiles.active == 'p1'
+
+    def test_loading_a_missing_profile_writes_nothing(self):
+        send(self.bridge, type='profile_load', id='missing')
+
+        assert self.context.flushes == []
 
     def test_profile_never_carries_the_install_history(self):
         send(self.bridge, type='set', component='minimap', key='zoom', value='x2')

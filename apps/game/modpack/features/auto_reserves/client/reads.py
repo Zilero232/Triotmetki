@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.client.game import client_attr, service
-from ....core.log import log_exception
+from ....core.log import guarded
 from .constants import RESOURCE_KINDS
 
 # RU 1.45 client source: IGoodiesCache.getBoosters(criteria) (gui/goodies/goodies_cache.py) with
@@ -39,16 +39,14 @@ def _summary(booster, kinds):
     }
 
 
+@guarded('auto reserves: read', fallback=([], {}))
 def personal_reserves():
-    """(summaries for the model, {booster id: the client's Booster}) of the own personal reserves."""
-    try:
-        cache = service(client_attr('skeletons.gui.goodies', 'IGoodiesCache'))
-        criteria = _personal_criteria()
-        if cache is None or criteria is None:
-            return [], {}
-        boosters = list(cache.getBoosters(criteria=criteria).values())
-        kinds = _kinds()
-        return [_summary(booster, kinds) for booster in boosters], dict((b.boosterID, b) for b in boosters)
-    except Exception:
-        log_exception('auto reserves: read')
+    cache = service(client_attr('skeletons.gui.goodies', 'IGoodiesCache'))
+    criteria = _personal_criteria()
+    if cache is None or criteria is None:
         return [], {}
+    boosters = list(cache.getBoosters(criteria=criteria).values())
+    kinds = _kinds()
+    summaries = [_summary(booster, kinds) for booster in boosters]
+    return summaries, {booster.boosterID: booster for booster in boosters}
+

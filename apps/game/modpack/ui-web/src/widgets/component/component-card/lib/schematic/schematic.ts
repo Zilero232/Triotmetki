@@ -1,16 +1,8 @@
-import type { UiField } from '@/shared/api/protocol';
-
+import type { FieldValueInput } from '../field-value';
 import type { CameraSchematicModel, MinimapNames, MinimapSchematicModel, SchematicFieldsInput, SchematicState } from './schematic.types';
 
 import { SCHEMATIC } from '../../config';
-
-type FieldValueInput = { fields: UiField[]; key: string };
-
-const valueOf = ({ fields, key }: FieldValueInput): string | null => {
-  const field = fields.find((item) => item.key === key);
-
-  return field ? String(field.value) : null;
-};
+import { fieldValue } from '../field-value';
 
 const choiceLabel = ({ fields, key }: FieldValueInput): string | null => {
   const field = fields.find((item) => item.key === key);
@@ -49,17 +41,17 @@ const namesOf = (value: string | null): MinimapNames => {
 };
 
 export const minimapSchematic = ({ fields }: SchematicFieldsInput): MinimapSchematicModel => ({
-  scale: sizeScale(valueOf({ fields, key: 'size' })),
-  opacity: opacityOf(valueOf({ fields, key: 'transparency' })),
-  names: namesOf(valueOf({ fields, key: 'vehicle_names' })),
-  viewRange: stateOf(valueOf({ fields, key: 'view_range' })),
-  maxViewRange: stateOf(valueOf({ fields, key: 'max_view_range' })),
-  drawRange: stateOf(valueOf({ fields, key: 'draw_range' }))
+  scale: sizeScale(fieldValue({ fields, key: 'size' })),
+  opacity: opacityOf(fieldValue({ fields, key: 'transparency' })),
+  names: namesOf(fieldValue({ fields, key: 'vehicle_names' })),
+  viewRange: stateOf(fieldValue({ fields, key: 'view_range' })),
+  maxViewRange: stateOf(fieldValue({ fields, key: 'max_view_range' })),
+  drawRange: stateOf(fieldValue({ fields, key: 'draw_range' }))
 });
 
 export const cameraSchematic = ({ fields }: SchematicFieldsInput): CameraSchematicModel => ({
   preset: choiceLabel({ fields, key: 'preset' }),
   zoom: choiceLabel({ fields, key: 'sniper_zoom' }),
-  stabilization: stateOf(valueOf({ fields, key: 'horizontal_stabilization' })),
-  shake: stateOf(valueOf({ fields, key: 'dynamic_camera' }))
+  stabilization: stateOf(fieldValue({ fields, key: 'horizontal_stabilization' })),
+  shake: stateOf(fieldValue({ fields, key: 'dynamic_camera' }))
 });

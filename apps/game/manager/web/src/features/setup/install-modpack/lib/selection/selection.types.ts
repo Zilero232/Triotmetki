@@ -31,3 +31,8 @@ export type DependentsInput = {
   components: SelectionComponents;
   id: string;
 };
+
+export type SameSelectionInput = {
+  left: Selection;
+  right: Selection;
+};

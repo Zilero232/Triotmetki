@@ -135,7 +135,7 @@ class RequiredByFollowsTheCodeTest(unittest.TestCase):
 
     def setUp(self):
         self.catalog = load_catalog()
-        self.by_id = dict((dependency.id, dependency) for dependency in self.catalog.dependencies)
+        self.by_id = {dependency.id: dependency for dependency in self.catalog.dependencies}
         self.order = [entry.id for entry in self.catalog.components]
 
     def assert_required_by(self, dependency_id, expected):
@@ -174,10 +174,10 @@ class RequiredByFollowsTheCodeTest(unittest.TestCase):
         self.assertEqual(optional, [MODS_LIST])
 
     def test_pins_the_reviewed_releases(self):
-        pins = dict(
-            (dependency.id, (dependency.file, dependency.sha256, dependency.size, dependency.licence.name))
+        pins = {
+            dependency.id: (dependency.file, dependency.sha256, dependency.size, dependency.licence.name)
             for dependency in self.catalog.dependencies
-        )
+        }
 
         self.assertEqual(pins, REVIEWED_PINS)
 
@@ -221,7 +221,7 @@ class DependencyManifestTest(unittest.TestCase):
     def setUp(self):
         self.catalog = load_catalog()
         raw_components = fileio.read_json(CATALOG_PATH)['components']
-        self.raw = dict((entry['id'], entry) for entry in raw_components if entry.get('kind') == 'dependency')
+        self.raw = {entry['id']: entry for entry in raw_components if entry.get('kind') == 'dependency'}
 
     def test_passes_the_entries_through_as_the_catalog_pins_them(self):
         manifest, warnings = build_manifest(layout.split_packages('root_init.py'), self.catalog, strict=True)
@@ -240,7 +240,7 @@ class DependencyManifestTest(unittest.TestCase):
 
         manifest, _ = build_manifest(packages, self.catalog)
 
-        required_by = dict((dependency.id, dependency.required_by) for dependency in manifest.dependencies)
+        required_by = {dependency.id: dependency.required_by for dependency in manifest.dependencies}
         self.assertEqual(required_by, {GAMEFACE: ('ui', 'sixth_sense'), GUIFLASH: ('sixth_sense',), MODS_LIST: ('ui',)})
         self.assertEqual(manifest.dependencies_of('sixth_sense'), manifest.dependencies[:2])
 

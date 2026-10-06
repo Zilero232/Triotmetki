@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 import _support
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 from otmetki.features.marks_panel.i18n import STRINGS
 from otmetki.features.marks_panel.model.constants import HISTORY_FILE
 from otmetki.features.marks_panel.model.history import MarksHistory, vehicle_label

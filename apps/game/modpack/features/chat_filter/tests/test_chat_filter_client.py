@@ -8,7 +8,7 @@ import unittest
 import _support
 from otmetki.core.events import EventBus
 from otmetki.core.hud import ComponentConfig
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 from otmetki.features.chat_filter.i18n import STRINGS
 
 CLIENT_PREFIXES = ('otmetki.core.client', 'otmetki.features.chat_filter.client')
@@ -88,7 +88,7 @@ class App(object):
 class ChatFilterClientTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         self.purge()
         for name in STUBBED:
             sys.modules[name] = types.ModuleType(str(name))
@@ -96,7 +96,7 @@ class ChatFilterClientTest(unittest.TestCase):
         controller = type(str('_ChannelController'), (BattleLayout,), dict(ChannelController.__dict__))
         sys.modules[CONTROLLERS_MODULE]._ChannelController = controller
         sys.modules[HELPERS_MODULE].isCurrentPlayer = lambda session_id: session_id == OWN_SESSION
-        self.originals = dict((name, BattleLayout.__dict__[name]) for name in ('addMessage', 'addCommand'))
+        self.originals = {name: BattleLayout.__dict__[name] for name in ('addMessage', 'addCommand')}
         hud = importlib.import_module('otmetki.core.client.hud')
         self.config = ComponentConfig(MemoryFile())
         hud._state['config'] = self.config

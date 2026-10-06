@@ -12,8 +12,6 @@ CLIENT_PREFIXES = ('otmetki.core.client', 'otmetki.features.battle_loadout.clien
 
 
 class Layer(object):
-    """The HUD layer the panel draws on: what it was asked to show and to take off."""
-
     def __init__(self):
         self.calls = []
 
@@ -43,7 +41,7 @@ def device():
 class SettingsChangedTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         forget_client()
         stub_client()
         client = importlib.import_module('otmetki.features.battle_loadout.client')

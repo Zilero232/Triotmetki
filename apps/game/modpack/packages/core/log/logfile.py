@@ -4,7 +4,7 @@ import os
 import time
 
 from ..compat import to_bytes
-from .constants import FILE_KEEP, FILE_MAX_BYTES, FILE_PENDING_LINES
+from .constants import FILE_FLUSH_S, FILE_KEEP, FILE_MAX_BYTES, FILE_PENDING_LINES
 
 
 def _stamp(now):
@@ -27,20 +27,26 @@ def rotate(path, keep=FILE_KEEP):
         os.rename(source, target)
 
 
-# The mod's own log that outlives the client's python.log: every line stamped with the local time, appended and closed
-# at once (a crash loses nothing written), one file per session (`open` starts it and shifts the older ones, `keep` in
-# all), a session past `max_bytes` shifted too. Lines written before `open` are held (up to `pending_lines`) and written
-# after the header; a disk error stops the file, never the caller.
+# The mod's own log that outlives the client's python.log: every line stamped with the local time, one file per session
+# (`open` starts it and shifts the older ones, `keep` in all), a session past `max_bytes` shifted too. The file stays
+# open and buffered: a line reaches the disk at the latest with the first line written `flush_s` after the last flush,
+# at once for an error (`flush()`) and when the client closes; opening and closing it per line stalled the game thread
+# on every HUD notice. Lines written before `open` are held (up to `pending_lines`) and written after the header; a
+# disk error stops the file, never the caller.
 class LogFile(object):
 
-    def __init__(self, clock=time.time, keep=FILE_KEEP, max_bytes=FILE_MAX_BYTES, pending_lines=FILE_PENDING_LINES):
+    def __init__(self, clock=time.time, keep=FILE_KEEP, max_bytes=FILE_MAX_BYTES, pending_lines=FILE_PENDING_LINES,
+                 flush_s=FILE_FLUSH_S):
         self.clock = clock
         self.keep = keep
         self.max_bytes = max_bytes
         self.pending_lines = pending_lines
+        self.flush_s = flush_s
         self.path = None
+        self.handle = None
         self.pending = []
         self.size = 0
+        self.flushed_at = 0.0
         self.failed = False
 
     def open(self, path, header):
@@ -55,8 +61,10 @@ class LogFile(object):
             self.failed = True
             return False
         self.path = path
-        pending, self.pending = self.pending, []
+        pending = self.pending
+        self.pending = []
         self._append([self._stamped(line) for line in header] + pending)
+        self.flush()
         return not self.failed
 
     def write(self, line):
@@ -68,6 +76,27 @@ class LogFile(object):
                 self.pending.append(stamped)
             return
         self._append([stamped])
+        if self.clock() - self.flushed_at >= self.flush_s:
+            self.flush()
+
+    def flush(self):
+        self.flushed_at = self.clock()
+        if self.handle is None:
+            return
+        try:
+            self.handle.flush()
+        except (IOError, OSError, ValueError):
+            self._fail()
+
+    def close(self):
+        handle = self.handle
+        self.handle = None
+        if handle is None:
+            return
+        try:
+            handle.close()
+        except (IOError, OSError):
+            self.failed = True
 
     def _stamped(self, line):
         text = line.decode('utf-8', 'replace') if isinstance(line, bytes) else line
@@ -77,11 +106,17 @@ class LogFile(object):
         data = b''.join(line + b'\n' for line in lines)
         try:
             if self.size and self.size + len(data) > self.max_bytes:
+                self.close()
                 rotate(self.path, self.keep)
                 self.size = 0
-            with open(self.path, 'ab') as handle:
-                handle.write(data)
-        except (IOError, OSError):
-            self.failed = True
+            if self.handle is None:
+                self.handle = open(self.path, 'ab')  # noqa: SIM115
+            self.handle.write(data)
+        except (IOError, OSError, ValueError):
+            self._fail()
             return
         self.size += len(data)
+
+    def _fail(self):
+        self.close()
+        self.failed = True

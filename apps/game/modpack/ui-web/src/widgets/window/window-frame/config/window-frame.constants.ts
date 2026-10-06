@@ -4,6 +4,7 @@ export const WINDOW_FRAME = {
   margin: 24,
   zoomSteps: [80, 90, 100, 110, 125, 150],
   defaultZoom: 100,
+  scaleOrigin: '0 0',
   percent: 100,
   compactNavWidth: 980,
   twoColumnsWidth: 1360,

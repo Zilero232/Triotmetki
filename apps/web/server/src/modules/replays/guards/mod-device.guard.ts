@@ -20,6 +20,7 @@ export class ModDeviceGuard implements CanActivate {
     }
 
     await this.devices.identify({ deviceId: request.header(MOD_DEVICE.header), signature: request.header(MOD_DEVICE.signatureHeader) });
+    this.devices.assertSignable(request);
 
     return true;
   }

@@ -6,12 +6,12 @@ import { ManagerError, toManagerError } from '../manager-error';
 import { MANAGER_ERROR_CODES } from '../manager-error.constants';
 
 describe('toManagerError', () => {
-  it('reads the error shape the Rust commands serialise', () => {
-    const error = toManagerError(errorFixture);
+  it('turns the error the Rust commands serialise into a ManagerError', () => {
+    expect(toManagerError(errorFixture)).toBeInstanceOf(ManagerError);
+  });
 
-    expect(error).toBeInstanceOf(ManagerError);
-    expect(error.code).toBe(errorFixture.code);
-    expect(error.message).toBe(errorFixture.message);
+  it('keeps the code and the message of the serialised error', () => {
+    expect(toManagerError(errorFixture)).toMatchObject({ code: errorFixture.code, message: errorFixture.message });
   });
 
   it('keeps an unknown code readable instead of failing', () => {

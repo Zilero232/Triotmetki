@@ -12,7 +12,6 @@ import { useReplaysBrowser } from '../use-replays-browser';
 vi.mock('@/shared/api/protocol/protocol', () => ({ send: vi.fn(() => true) }));
 
 const PAGE = pageSample();
-const NOW = 1_790_600_000;
 
 const replayAt = (index: number): ReplayItem => {
   const item = PAGE.items[index];
@@ -27,7 +26,7 @@ const replayAt = (index: number): ReplayItem => {
 const FAVOURITE = replayAt(0);
 const OTHER_CLIENT = replayAt(1);
 
-const mount = (page: unknown = PAGE, enabled = true) => renderHook(() => useReplaysBrowser({ page, enabled, now: NOW }));
+const mount = (page: unknown = PAGE, enabled = true) => renderHook(() => useReplaysBrowser({ page, enabled }));
 
 const sent = (): unknown[] => vi.mocked(send).mock.calls.map(([message]) => message);
 
@@ -36,11 +35,12 @@ beforeEach(() => {
 });
 
 describe(useReplaysBrowser, () => {
-  it('lists the whole page', () => {
-    const hook = mount();
+  it('shows the list of a ready page', () => {
+    expect(mount().result.current.view).toBe('list');
+  });
 
-    expect(hook.result.current.view).toBe('list');
-    expect(hook.result.current.visible.map((item) => item.id)).toEqual([FAVOURITE.id, OTHER_CLIENT.id]);
+  it('lists the whole page', () => {
+    expect(mount().result.current.visible.map((item) => item.id)).toEqual([FAVOURITE.id, OTHER_CLIENT.id]);
   });
 
   it('selects the first replay', () => {
@@ -52,7 +52,7 @@ describe(useReplaysBrowser, () => {
   });
 
   it('is indexing before the first page arrives', () => {
-    const hook = renderHook(() => useReplaysBrowser({ page: undefined, enabled: true, now: NOW }));
+    const hook = renderHook(() => useReplaysBrowser({ page: undefined, enabled: true }));
 
     expect(hook.result.current.view).toBe('indexing');
   });
@@ -114,6 +114,13 @@ describe(useReplaysBrowser, () => {
     act(() => hook.result.current.askWatch(FAVOURITE));
 
     expect(hook.result.current.pending).toBe('watch');
+  });
+
+  it('starts nothing before the confirmation', () => {
+    const hook = mount();
+
+    act(() => hook.result.current.askWatch(FAVOURITE));
+
     expect(send).not.toHaveBeenCalled();
   });
 
@@ -125,6 +132,15 @@ describe(useReplaysBrowser, () => {
     act(() => hook.result.current.confirm());
 
     expect(sent()).toEqual([{ type: 'action', component: 'replay_manager', action: 'play', row: FAVOURITE.id }]);
+  });
+
+  it('closes the confirmation once confirmed', () => {
+    const hook = mount();
+
+    act(() => hook.result.current.askWatch(FAVOURITE));
+
+    act(() => hook.result.current.confirm());
+
     expect(hook.result.current.pending).toBeNull();
   });
 
@@ -136,6 +152,15 @@ describe(useReplaysBrowser, () => {
     act(() => hook.result.current.cancel());
 
     expect(hook.result.current.pending).toBeNull();
+  });
+
+  it('deletes nothing on cancel', () => {
+    const hook = mount();
+
+    act(() => hook.result.current.askRemove(FAVOURITE));
+
+    act(() => hook.result.current.cancel());
+
     expect(send).not.toHaveBeenCalled();
   });
 
@@ -147,6 +172,15 @@ describe(useReplaysBrowser, () => {
     act(() => hook.result.current.select(OTHER_CLIENT.id));
 
     expect(hook.result.current.pending).toBeNull();
+  });
+
+  it('deletes nothing when another replay is selected', () => {
+    const hook = mount();
+
+    act(() => hook.result.current.askRemove(FAVOURITE));
+
+    act(() => hook.result.current.select(OTHER_CLIENT.id));
+
     expect(send).not.toHaveBeenCalled();
   });
 
@@ -180,7 +214,7 @@ describe(useReplaysBrowser, () => {
     expect(send).not.toHaveBeenCalled();
   });
 
-  it('renames with the trimmed text and closes the draft', () => {
+  it('renames with the trimmed text', () => {
     const hook = mount();
 
     act(() => hook.result.current.startRename(FAVOURITE));
@@ -189,6 +223,16 @@ describe(useReplaysBrowser, () => {
     act(() => hook.result.current.submitRename());
 
     expect(sent()).toEqual([{ type: 'action', component: 'replay_manager', action: 'rename', row: FAVOURITE.id, value: 'best battle' }]);
+  });
+
+  it('closes the draft after a rename', () => {
+    const hook = mount();
+
+    act(() => hook.result.current.startRename(FAVOURITE));
+    act(() => hook.result.current.editRename('  best battle '));
+
+    act(() => hook.result.current.submitRename());
+
     expect(hook.result.current.draft).toBeNull();
   });
 

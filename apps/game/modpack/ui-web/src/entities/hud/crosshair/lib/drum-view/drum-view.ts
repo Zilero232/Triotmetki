@@ -1,10 +1,10 @@
-import type { DrumCellState, DrumClip, DrumView, ShellMotion, ShellMotionInput } from './drum-view.types';
+import type { CellStateInput, DrumCellState, DrumClip, DrumView, ShellMotion, ShellMotionInput } from './drum-view.types';
 
 import { RETICLE_READOUTS } from '../../config';
 
 const { drum } = RETICLE_READOUTS;
 
-const cellState = (index: number, clip: DrumClip): DrumCellState => {
+const cellState = ({ index, clip }: CellStateInput): DrumCellState => {
   if (index < clip.loaded) {
     return 'loaded';
   }
@@ -20,7 +20,7 @@ export const drumView = (clip: DrumClip): DrumView => {
   return {
     mode: 'row',
     density: clip.style === 'shells' && clip.size > drum.denseAbove ? 'dense' : 'full',
-    cells: Array.from({ length: clip.size }, (_, index) => ({ index, state: cellState(index, clip) }))
+    cells: Array.from({ length: clip.size }, (_, index) => ({ index, state: cellState({ index, clip }) }))
   };
 };
 

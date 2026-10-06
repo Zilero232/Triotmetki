@@ -10,3 +10,6 @@ BLOCKING_LAYERS = ('SUB_VIEW', 'TOP_SUB_VIEW', 'FULLSCREEN_WINDOW', 'OVERLAY')
 HANGAR_ALIAS = 'hangar'
 # frameworks/wulf/gui_constants.WindowStatus names of a window that is on its way out.
 GONE_STATUSES = ('DESTROYING', 'DESTROYED')
+# gui/game_control/overlay.py _LAYERS: what the client hides to show the bare hangar (UNVERIFIED on Lesta 1.45 for the
+# Gameface parts of the hangar).
+HIDDEN_LAYERS = ('MARKER', 'VIEW', 'WINDOW', 'WAITING', 'SYSTEM_MESSAGE', 'FULLSCREEN_WINDOW')

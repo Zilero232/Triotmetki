@@ -1,7 +1,15 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ...core.compat import is_int, is_number, string_types, to_text
-from .constants import APPLICABLE_GROUPS, RESOLUTION_FIELDS, RESOLUTION_RE, TEXT_MAX
+from .constants import (
+    APPLICABLE_GROUPS,
+    GROUP_CONTROLS,
+    GROUP_DISPLAY,
+    RESOLUTION_FIELDS,
+    RESOLUTION_RE,
+    SENSITIVITY_PREFIX,
+    TEXT_MAX,
+)
 from .fields import BY_PATH, BY_RAW, FIELDS, TEXT
 
 
@@ -135,8 +143,8 @@ def flatten_settings(settings):
 
 
 def is_hardware_specific(group, field):
-    is_resolution = group == 'display' and field in RESOLUTION_FIELDS
-    is_sensitivity = group == 'controls' and field.startswith('sensitivity.')
+    is_resolution = group == GROUP_DISPLAY and field in RESOLUTION_FIELDS
+    is_sensitivity = group == GROUP_CONTROLS and field.startswith(SENSITIVITY_PREFIX)
     return is_resolution or is_sensitivity
 
 

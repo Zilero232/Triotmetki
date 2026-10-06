@@ -6,22 +6,32 @@ subclass gives `max_hits`, `clean_stored(battle)` (a stored battle checked, or N
 hit and its damage share)."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ..compat import is_number, string_types, to_text
+from ..compat import clamp, is_number, string_types, to_text
 from .constants import (
     BOOK_VERSION,
     DAMAGE_WINDOW_S,
     DAMAGING,
     MAX_BATTLES,
     OUTCOME_BY_CODE,
+    OUTCOME_CRIT,
     OUTCOMES,
+    PART_CHASSIS,
+    PART_GUN,
+    PART_HULL,
     PART_NAMES,
+    PART_TURRET,
 )
 
 __all__ = (
     'DAMAGING',
     'OUTCOMES',
     'OUTCOME_BY_CODE',
+    'OUTCOME_CRIT',
+    'PART_CHASSIS',
+    'PART_GUN',
+    'PART_HULL',
     'PART_NAMES',
+    'PART_TURRET',
     'BattleBook',
     'is_battle_id',
     'keep_count',
@@ -39,7 +49,7 @@ def near(first, second):
 
 
 def keep_count(keep):
-    return max(1, min(int(keep), MAX_BATTLES))
+    return clamp(int(keep), 1, MAX_BATTLES)
 
 
 def is_battle_id(value):
@@ -127,7 +137,8 @@ class BattleBook(object):
         return current
 
     def finish(self):
-        current, self.current = self.current, None
+        current = self.current
+        self.current = None
         self.pending = []
         if current is None or not current['hits']:
             return None

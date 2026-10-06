@@ -1,5 +1,3 @@
-import type { Request } from 'express';
-
 import { CacheTTL } from '@nestjs/cache-manager';
 import {
   Body,
@@ -23,6 +21,7 @@ import { Throttle } from '@nestjs/throttler';
 import { AllowAnonymous, OptionalAuth } from '@thallesp/nestjs-better-auth';
 import { ZodResponse } from 'nestjs-zod';
 
+import type { ModUploadRequest } from './interceptors/replay-file.interceptor.types';
 import type { UploadedReplayFile } from './replays.types';
 
 import { CACHE_TTL } from '../../common/cache';
@@ -47,6 +46,7 @@ import {
   UploadReplayDto
 } from './dto/replays.dto';
 import { ModDeviceGuard } from './guards/mod-device.guard';
+import { ModReplayFileInterceptor } from './interceptors/mod-replay-file.interceptor';
 import { ReplayFileInterceptor } from './interceptors/replay-file.interceptor';
 import { HeatmapReaderService } from './services/heatmap-reader.service';
 import { ReplayOwnerWriterService } from './services/replay-owner-writer.service';
@@ -76,11 +76,11 @@ export class ReplaysController {
   @Post('mod')
   @Throttle({ default: REPLAY_UPLOAD.modThrottle })
   @UseGuards(ModDeviceGuard)
-  @UseInterceptors(ReplayFileInterceptor)
+  @UseInterceptors(ModReplayFileInterceptor)
   @ApiConsumes('multipart/form-data')
   @ZodResponse({ type: UploadedReplayDto, status: HttpStatus.CREATED })
-  uploadFromMod(@UploadedFile() file: UploadedReplayFile | undefined, @Req() request: Request) {
-    return this.uploads.uploadFromMod({ file, request });
+  uploadFromMod(@UploadedFile() file: UploadedReplayFile | undefined, @Req() request: ModUploadRequest) {
+    return this.uploads.uploadFromMod({ file, device: request.modDevice, visibility: request.header(REPLAY_UPLOAD.visibilityHeader) });
   }
 
   @AllowAnonymous()

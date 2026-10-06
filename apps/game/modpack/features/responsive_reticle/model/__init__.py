@@ -1,17 +1,15 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import inspect
 import math
 
-from ....core.compat import is_number
+from ....core.compat import fraction, is_number
 from .constants import (
     ANGLE_EPS,
     FOLLOW_SMOOTH,
     INSTANT_RELAX_S,
-    LESTA_REALMS,
     MAX_FRAME_DIFF_S,
     MIN_FRAME_DIFF_S,
-    REALM_LESTA,
-    REALM_WG,
     ROTATE_ARGUMENTS,
     SERVER_TICK_S,
     SKIP_ARTILLERY,
@@ -27,21 +25,16 @@ from .constants import (
 # about other vehicles is read, the shot is untouched.
 
 
-def realm_of(current_realm):
-    return REALM_LESTA if current_realm in LESTA_REALMS else REALM_WG
-
-
 def argument_names(function):
-    """The names of a function's (or an unbound method's) arguments after self."""
-    function = getattr(function, '__func__', function)
-    code = getattr(function, '__code__', None)
-    if code is None:
+    try:
+        names = inspect.getargspec(function).args
+    except TypeError:
         return ()
-    return tuple(code.co_varnames[1:code.co_argcount])
+    return tuple(names[1:])
 
 
-def supports_rotate(names, realm):
-    return tuple(names) == ROTATE_ARGUMENTS.get(realm)
+def supports_rotate(names):
+    return tuple(names) == ROTATE_ARGUMENTS
 
 
 def skip_reason(is_replay, class_tags, static_yaw):
@@ -91,11 +84,11 @@ def turned(before, after):
     return not nearly_same(before, after, ANGLE_EPS)
 
 
-def blend(start, target, fraction):
+def blend(start, target, progress):
     if start is None or not isinstance(target, (list, tuple)) or len(start) != len(target):
         return target
-    fraction = min(1.0, max(0.0, fraction))
-    return [a + (b - a) * fraction for a, b in zip(start, target)]
+    share = fraction(progress)
+    return [a + (b - a) * share for a, b in zip(start, target)]
 
 
 # The dispersion is worked out once per server tick, as the stock tick does; the frames in between get the way from
@@ -104,6 +97,9 @@ def blend(start, target, fraction):
 class TickBlend(object):
 
     def __init__(self):
+        self.clear()
+
+    def clear(self):
         self.tick = None
         self.started = None
         self.start = None
@@ -122,15 +118,15 @@ class TickBlend(object):
         self.last = blend(self.start, self.target, (now - self.started) / SERVER_TICK_S)
         return self.last
 
-    def clear(self):
-        self.__init__()
-
 
 # A frame with nothing to do: the same aim as the last frame's (`key`, a flat tuple of numbers) while the last turn
 # moved nothing. Such frames, and the stock ticks among them, are the stock rotator's again.
 class Stillness(object):
 
     def __init__(self):
+        self.clear()
+
+    def clear(self):
         self.key = None
         self.settled = False
         self.idle = False
@@ -143,13 +139,8 @@ class Stillness(object):
     def turned(self, moved):
         self.settled = not moved
 
-    def clear(self):
-        self.__init__()
-
 
 class TickGate(object):
-    """Lets the first call of each key through once per server tick."""
-
     def __init__(self):
         self.ticks = {}
 

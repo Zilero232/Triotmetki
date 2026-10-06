@@ -4,7 +4,7 @@ import time
 
 from ....core.client.game import client_attr, service
 from ....core.compat import call, to_text
-from ....core.log import log_exception
+from ....core.log import guarded
 from ..model.constants import CARAVAN_ENTITLEMENT, CLEAN_XP_OBJECTIVE
 
 # RU 1.45 client source:
@@ -42,15 +42,13 @@ def _competition(event):
     }
 
 
+@guarded('event trackers: competitions')
 def triathlon_event():
-    try:
-        controller = service(client_attr('skeletons.gui.event_boards_controllers', 'IEventBoardController'))
-        settings = call(controller, 'getEventsSettingsData')
-        for event in call(settings, 'getEvents', ()) or ():
-            if _is_running_clean_xp(event):
-                return _competition(event)
-    except Exception:
-        log_exception('event trackers: competitions')
+    controller = service(client_attr('skeletons.gui.event_boards_controllers', 'IEventBoardController'))
+    settings = call(controller, 'getEventsSettingsData')
+    for event in call(settings, 'getEvents', ()) or ():
+        if _is_running_clean_xp(event):
+            return _competition(event)
     return None
 
 
@@ -61,16 +59,14 @@ def _caravan_finish(controller):
     return getattr(controller, 'eventFinishTime', 0)
 
 
+@guarded('event trackers: caravan')
 def caravan():
-    try:
-        controller = service(client_attr('skeletons.gui.game_control', 'IShopSalesEventController'))
-        if controller is None or not call(controller, 'isShopSalesEntryPointAvailable', False):
-            return None
-        items_cache = service(client_attr('skeletons.gui.shared', 'IItemsCache'))
-        stats = getattr(getattr(items_cache, 'items', None), 'stats', None)
-        entitlements = getattr(stats, 'entitlements', None) or {}
-
-        return {'coins': entitlements.get(CARAVAN_ENTITLEMENT, 0), 'finish': _caravan_finish(controller)}
-    except Exception:
-        log_exception('event trackers: caravan')
+    controller = service(client_attr('skeletons.gui.game_control', 'IShopSalesEventController'))
+    if controller is None or not call(controller, 'isShopSalesEntryPointAvailable', False):
         return None
+    items_cache = service(client_attr('skeletons.gui.shared', 'IItemsCache'))
+    stats = getattr(getattr(items_cache, 'items', None), 'stats', None)
+    entitlements = getattr(stats, 'entitlements', None) or {}
+
+    return {'coins': entitlements.get(CARAVAN_ENTITLEMENT, 0), 'finish': _caravan_finish(controller)}
+

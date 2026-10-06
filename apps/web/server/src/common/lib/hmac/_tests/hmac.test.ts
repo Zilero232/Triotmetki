@@ -1,7 +1,7 @@
 import { createHmac } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 
-import { hmacSha256Hex, verifySignatureHeader } from '../hmac';
+import { hmacSha256Hex, matchesSignatureHeader, verifySignatureHeader } from '../hmac';
 import { HMAC } from '../hmac.constants';
 
 const key = 'device-secret-string';
@@ -32,5 +32,23 @@ describe('verifySignatureHeader', () => {
     expect(verifySignatureHeader({ header: undefined, key, body })).toBe(false);
     expect(verifySignatureHeader({ header: hmacSha256Hex({ key, data: body }), key, body })).toBe(false);
     expect(verifySignatureHeader({ header: `${HMAC.headerPrefix}zz`, key, body })).toBe(false);
+  });
+});
+
+describe('matchesSignatureHeader', () => {
+  it('accepts a digest computed elsewhere, such as while the body streamed to disk', () => {
+    expect(matchesSignatureHeader({ header, digest })).toBe(true);
+  });
+
+  it('refuses a digest of other bytes', () => {
+    expect(matchesSignatureHeader({ header, digest: hmacSha256Hex({ key, data: 'other' }) })).toBe(false);
+  });
+
+  it('refuses when no digest was computed', () => {
+    expect(matchesSignatureHeader({ header, digest: undefined })).toBe(false);
+  });
+
+  it('refuses a malformed header even for the right digest', () => {
+    expect(matchesSignatureHeader({ header: digest, digest })).toBe(false);
   });
 });

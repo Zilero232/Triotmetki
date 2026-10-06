@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.compat import is_int, is_number
 from ....core.format import format_epoch, format_number, format_percent, format_timer
+from ....core.own_result import RESULT_WIN
 from .constants import (
     ACTION_CLEAR,
     ACTION_HITS,
@@ -17,7 +18,7 @@ from .text import result_label, signed
 
 
 def compact(summary):
-    return dict((key, summary.get(key)) for key in HISTORY_KEYS)
+    return {key: summary.get(key) for key in HISTORY_KEYS}
 
 
 # 0.7.0 stored the battle results' whole percent as hundredths (0.64 for 64 %): a percent under 1 on a tank with a mark,
@@ -77,7 +78,7 @@ def _average(entries, key):
 def _win_rate(entries):
     if not entries:
         return 0.0
-    wins = len([entry for entry in entries if entry.get('result') == 'win'])
+    wins = len([entry for entry in entries if entry.get('result') == RESULT_WIN])
     return 100.0 * wins / len(entries)
 
 
@@ -191,7 +192,6 @@ def _newest_first(dated):
 
 
 def with_viewer(row, viewer_battles, translate):
-    """`row` with the button that opens the hit viewer at its battle, when the viewer has that battle."""
     if row['id'] not in viewer_battles:
         return row
     action = {'id': ACTION_HITS, 'label': translate('br_open_hits'), 'confirm': None}
@@ -199,7 +199,7 @@ def with_viewer(row, viewer_battles, translate):
 
 
 def _battle_rows(entries, translate, hit_battles, show_attacker):
-    unmatched = dict((battle['id'], battle) for battle in hit_battles)
+    unmatched = {battle['id']: battle for battle in hit_battles}
     dated = []
     for index, entry in reversed(list(enumerate(entries))):
         row = battle_row(index, entry, translate)
@@ -213,8 +213,6 @@ def _battle_rows(entries, translate, hit_battles, show_attacker):
     return _newest_first(dated)
 
 
-# `hit_battles`: the recorded hits on the own tank (HitBook.battles, oldest first), shown when the hits tab is on;
-# `viewer_battles`: the battle ids the hit viewer can open (core.events hit_viewer_battles).
 def build_page(entries, translate, idle_s, hit_battles=(), show_attacker=True, viewer_battles=frozenset()):
     rows = []
 

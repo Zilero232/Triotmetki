@@ -7,7 +7,19 @@ import BigWorld
 from ....core.compat import string_types
 from ....core.events import EVENT_SETTINGS_CLOSE
 from ....core.log import log, log_exception, safe
-from ..model import decode_message, default_index, first_side, viewer_state
+from ..model import (
+    COMMAND_BATTLE,
+    COMMAND_CLOSE,
+    COMMAND_DIAG,
+    COMMAND_MOVE,
+    COMMAND_READY,
+    COMMAND_SELECT,
+    COMMAND_TAB,
+    decode_message,
+    default_index,
+    first_side,
+    viewer_state,
+)
 from .constants import EMPTY_SELECTION, FOCUS_DELAY_S, FOCUS_S, LOGGED_MESSAGE_CHARS, SETTLE_ATTEMPTS, SETTLE_S
 from .stage import HangarStage, is_exact, map_image
 from .window import ViewerWindowHost, move_camera
@@ -148,8 +160,6 @@ class HitViewerScreen(object):
     def _target_hits(self, battle):
         return [(index, hit) for index, hit in enumerate(battle['hits']) if hit['target'] == self.loaded]
 
-    # Places every hit of the loaded vehicle in its part and measures the plate under it, again on the next frames
-    # while the hangar vehicle's collision is not there yet.
     @safe
     def _settle(self, token, attempt):
         battle = self.battle()
@@ -220,7 +230,7 @@ class HitViewerScreen(object):
             return
         translate = self.component.app.translate
         state = viewer_state(self._battles(), self.selection, translate, self.stage_state(), map_image)
-        self.window.push_state(json.dumps(state, sort_keys=True))
+        self.window.push_state(json.dumps(state))
 
     @safe
     def on_message(self, raw):
@@ -231,13 +241,13 @@ class HitViewerScreen(object):
             return
         command, fields = decoded
         handlers = {
-            'ready': lambda: self.push(),
-            'close': lambda: self.close(),
-            'battle': lambda: self._open_battle(fields['id']),
-            'tab': lambda: self._select_tab(fields['tab']),
-            'select': lambda: self._select_hit(fields['index']),
-            'move': lambda: move_camera(fields['dx'], fields['dy'], fields['dz']),
-            'diag': lambda: log('hit viewer: page %s' % fields['text'][:LOGGED_MESSAGE_CHARS]),
+            COMMAND_READY: lambda: self.push(),
+            COMMAND_CLOSE: lambda: self.close(),
+            COMMAND_BATTLE: lambda: self._open_battle(fields['id']),
+            COMMAND_TAB: lambda: self._select_tab(fields['tab']),
+            COMMAND_SELECT: lambda: self._select_hit(fields['index']),
+            COMMAND_MOVE: lambda: move_camera(fields['dx'], fields['dy'], fields['dz']),
+            COMMAND_DIAG: lambda: log('hit viewer: page %s' % fields['text'][:LOGGED_MESSAGE_CHARS]),
         }
         handlers[command]()
 

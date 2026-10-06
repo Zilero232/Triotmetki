@@ -117,7 +117,7 @@ def stub_client():
 class ClientCase(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         _support.forget_modules(CLIENT_PREFIXES)
         self.big_world = stub_client()
         client = importlib.import_module('otmetki.features.hangar_space.client')
@@ -136,7 +136,7 @@ class ClientCase(unittest.TestCase):
         client.hangar_space = lambda: self.hangar
         client.available_paths = lambda: [MAIN_PATH, MUSEUM_PATH]
         client.is_default_scene = lambda switcher: True
-        client.environment_names = lambda names: dict((name, ENVIRONMENTS[name][0]) for name in names)
+        client.environment_names = lambda names: {name: ENVIRONMENTS[name][0] for name in names}
         client.active_environment = lambda path: ENVIRONMENTS[path.split('/')[1]][1]
         client.switch_environment = self.switched.append
         client.default_path = lambda: MAIN_PATH
@@ -175,6 +175,41 @@ class ClientCase(unittest.TestCase):
 
     def config(self):
         return self.switcher._defaultHangarSpaceConfig
+
+
+class WaitTest(ClientCase):
+
+    def setUp(self):
+        ClientCase.setUp(self)
+        self.waits = []
+        self.cancelled = []
+        self.client.once_space_created = self.wait
+
+    def wait(self, hangar, handler):
+        self.waits.append(hangar)
+        return lambda: self.cancelled.append(hangar)
+
+    def test_a_space_still_loading_is_waited_for_once(self):
+        self.component._follow(self.switcher, self.hangar, self.client.PLAN_WAIT)
+        self.component._follow(self.switcher, self.hangar, self.client.PLAN_WAIT)
+
+        assert self.waits == [self.hangar]
+
+    def test_a_battle_entered_while_waiting_drops_the_wait(self):
+        self.component._follow(self.switcher, self.hangar, self.client.PLAN_WAIT)
+
+        self.component._stop_waiting()
+
+        assert self.cancelled == [self.hangar]
+
+    def test_the_next_hangar_after_a_battle_waits_again(self):
+        self.component._follow(self.switcher, self.hangar, self.client.PLAN_WAIT)
+        self.component._stop_waiting()
+        next_hangar = Hangar(MAIN_PATH)
+
+        self.component._follow(self.switcher, next_hangar, self.client.PLAN_WAIT)
+
+        assert self.waits == [self.hangar, next_hangar]
 
 
 class ApplyTest(ClientCase):
@@ -446,12 +481,12 @@ class PreviewTest(ClientCase):
         self.pick_museum()
         self.settle()
 
-        rows = dict((row['id'], row) for row in self.component.ui_page()['rows'])
+        rows = {row['id']: row for row in self.component.ui_page()['rows']}
 
         assert rows[MUSEUM]['image'].startswith('data:image/png;base64,')
 
     def test_a_tile_without_preview_keeps_the_fallback(self):
-        rows = dict((row['id'], row) for row in self.component.ui_page()['rows'])
+        rows = {row['id']: row for row in self.component.ui_page()['rows']}
 
         assert rows[MUSEUM]['image'] is None
 

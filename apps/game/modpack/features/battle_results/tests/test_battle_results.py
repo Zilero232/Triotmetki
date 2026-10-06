@@ -61,7 +61,7 @@ def history():
 
 
 def details_of(row):
-    return dict((item['label'], item['value']) for item in row['details'])
+    return {item['label']: item['value'] for item in row['details']}
 
 
 class BuildSummaryTest(unittest.TestCase):

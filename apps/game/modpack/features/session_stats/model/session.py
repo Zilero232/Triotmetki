@@ -9,6 +9,7 @@ from .constants import (
     PENDING_RESULTS_TTL_S,
     RECENT_LIMIT,
     REGULAR_BONUS_TYPE,
+    RESULT_COUNTERS,
     RESULTS,
     STAT_COUNTERS,
     VEHICLE_COUNTERS,
@@ -89,11 +90,11 @@ class SessionAggregator(object):
 
     def pending_count(self, now):
         oldest_start = now - PENDING_RESULTS_TTL_S
-        self.pending = dict(
-            (arena_id, started_at)
+        self.pending = {
+            arena_id: started_at
             for arena_id, started_at in self.pending.items()
             if started_at >= oldest_start
-        )
+        }
 
         return len(self.pending)
 
@@ -207,12 +208,10 @@ def _battle_increments(battle):
     stats = battle.get('stats') or {}
     result = battle.get('result')
 
-    increments = dict((name, stats.get(name, 0)) for name in STAT_COUNTERS)
+    increments = {name: stats.get(name, 0) for name in STAT_COUNTERS}
+    increments.update({counter: int(result == key) for key, counter in RESULT_COUNTERS.items()})
     increments.update({
         'battles': 1,
-        'wins': 1 if result == 'win' else 0,
-        'losses': 1 if result == 'loss' else 0,
-        'draws': 1 if result == 'draw' else 0,
         'survived': 1 if stats.get('is_alive') else 0,
         'damage_assisted': sum(stats.get(name, 0) for name in ASSISTED_STATS),
     })
@@ -233,7 +232,7 @@ def _is_saved_session(data):
 
 
 def _copy_vehicles(vehicles):
-    return dict((tank_id, dict(entry)) for tank_id, entry in vehicles.items())
+    return {tank_id: dict(entry) for tank_id, entry in vehicles.items()}
 
 
 def _known_totals(totals):

@@ -1,0 +1,34 @@
+@use '@/shared/styles/mixins' as *;
+
+.title {
+  @include label;
+
+  margin: 0;
+}
+
+.changes {
+  @include list-reset;
+}
+
+.change {
+  @include divided-row(44px);
+}
+
+.text {
+  @include stack(var(--space-1));
+
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  gap: var(--space-3);
+}
+
+.notes {
+  @include muted-text;
+
+  white-space: pre-line;
+}

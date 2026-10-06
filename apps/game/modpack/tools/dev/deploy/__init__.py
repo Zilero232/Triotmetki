@@ -191,7 +191,7 @@ def uninstall(folder):
     for name in plan.remove:
         _remove(os.path.join(folder, name))
     if plan.changed:
-        write_manifest(folder, dict((name, manifest['files'][name]) for name in plan.changed), _details(manifest))
+        write_manifest(folder, {name: manifest['files'][name] for name in plan.changed}, _details(manifest))
     else:
         _remove(manifest_file(folder))
     if not os.listdir(folder):
@@ -200,7 +200,7 @@ def uninstall(folder):
 
 
 def _details(manifest):
-    return dict((key, value) for key, value in manifest.items() if key not in ('tool', 'updatedAt', 'files'))
+    return {key: value for key, value in manifest.items() if key not in ('tool', 'updatedAt', 'files')}
 
 
 def details_of(client, keys, third_party_ids):

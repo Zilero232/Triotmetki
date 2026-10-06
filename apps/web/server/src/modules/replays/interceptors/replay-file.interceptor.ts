@@ -2,42 +2,31 @@ import type { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/com
 import type { Observable } from 'rxjs';
 
 import { Inject, Injectable } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { DEFAULT_IPV6_SUBNET_PREFIX, normalizeIp } from '@nestjs/throttler';
 import { Redis } from 'ioredis';
 import { rm } from 'node:fs/promises';
 import { finalize } from 'rxjs';
 
-import type { ReleaseUploadInput, UploadRequest } from './replay-file.interceptor.types';
+import type { ReleaseUploadInput, UploadHandlerInput, UploadRequest } from './replay-file.interceptor.types';
 
 import { AppTooManyRequestsException } from '../../../common/exceptions';
 import { REDIS } from '../../../core';
-import { MOD_DEVICE } from '../../mod';
 import { REPLAY_UPLOAD } from '../config/upload.constants';
-
-const ReplayMulterInterceptor = FileInterceptor(REPLAY_UPLOAD.field, {
-  dest: REPLAY_UPLOAD.tempDir,
-  limits: {
-    fileSize: REPLAY_UPLOAD.maxBytes,
-    files: 1,
-    fields: REPLAY_UPLOAD.maxFields,
-    fieldSize: REPLAY_UPLOAD.maxFieldBytes,
-    parts: REPLAY_UPLOAD.maxFields + 1
-  }
-});
+import { claimUploadSlot, releaseUploadSlot } from '../lib/upload-slot/upload-slot';
+import { ReplayMulterInterceptor } from './replay-multer.interceptor';
 
 @Injectable()
 export class ReplayFileInterceptor implements NestInterceptor {
   private readonly multer: NestInterceptor = new ReplayMulterInterceptor();
 
-  constructor(@Inject(REDIS) private readonly redis: Redis) {}
+  constructor(@Inject(REDIS) protected readonly redis: Redis) {}
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<unknown>> {
     const request = context.switchToHttp().getRequest<UploadRequest>();
-    const slot = await this.claimSlot(request);
+    const slot = await this.claimSlot(this.ownerOf(request));
 
     try {
-      const handled = await this.multer.intercept(context, next);
+      const handled = await this.multer.intercept(context, this.handlerOf({ request, next }));
 
       return handled.pipe(finalize(() => void this.release({ slot, request })));
     } catch (error) {
@@ -47,36 +36,41 @@ export class ReplayFileInterceptor implements NestInterceptor {
     }
   }
 
-  private async claimSlot(request: UploadRequest): Promise<string> {
-    const slot = `${REPLAY_UPLOAD.concurrency.keyPrefix}${this.ownerOf(request)}`;
-    const results = await this.redis.multi().incr(slot).expire(slot, REPLAY_UPLOAD.concurrency.ttlSeconds).exec();
-    const uploading = Number(results?.[0]?.[1] ?? 0);
+  protected handlerOf({ next }: UploadHandlerInput): CallHandler {
+    return next;
+  }
 
-    if (uploading > REPLAY_UPLOAD.concurrency.perOwner) {
-      await this.redis.decr(slot);
+  protected ownerOf(request: UploadRequest): string {
+    const userId = request.session?.user.id;
 
+    return userId ? `user:${userId}` : `ip:${this.networkOf(request)}`;
+  }
+
+  protected networkOf(request: UploadRequest): string {
+    return normalizeIp(request.ip ?? '', DEFAULT_IPV6_SUBNET_PREFIX);
+  }
+
+  protected async claimSlot(owner: string): Promise<string> {
+    const slot = `${REPLAY_UPLOAD.concurrency.keyPrefix}${owner}`;
+    const claimed = await claimUploadSlot({
+      redis: this.redis,
+      key: slot,
+      limit: REPLAY_UPLOAD.concurrency.perOwner,
+      ttlSeconds: REPLAY_UPLOAD.concurrency.ttlSeconds
+    });
+
+    if (!claimed) {
       throw new AppTooManyRequestsException('RATE_LIMITED', 'Another replay upload is still in progress');
     }
 
     return slot;
   }
 
-  private async release({ slot, request }: ReleaseUploadInput): Promise<void> {
-    await Promise.allSettled([this.redis.decr(slot), request.file ? rm(request.file.path, { force: true }) : Promise.resolve()]);
+  protected async releaseSlot(slot: string): Promise<void> {
+    await releaseUploadSlot({ redis: this.redis, key: slot });
   }
 
-  private ownerOf(request: UploadRequest): string {
-    const userId = request.session?.user.id;
-    const device = request.header(MOD_DEVICE.header);
-
-    if (userId) {
-      return `user:${userId}`;
-    }
-
-    if (device) {
-      return `device:${device}`;
-    }
-
-    return `ip:${normalizeIp(request.ip ?? '', DEFAULT_IPV6_SUBNET_PREFIX)}`;
+  private async release({ slot, request }: ReleaseUploadInput): Promise<void> {
+    await Promise.allSettled([this.releaseSlot(slot), request.file ? rm(request.file.path, { force: true }) : Promise.resolve()]);
   }
 }

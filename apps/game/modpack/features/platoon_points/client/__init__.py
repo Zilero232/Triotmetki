@@ -9,7 +9,7 @@ from ....core.log import safe
 from .. import settings
 from ..i18n import STRINGS
 from ..model import Platoon, preview
-from ..model.constants import PREVIEW_SIZE
+from ..model.constants import KIND_DAMAGE, PREVIEW_SIZE
 from ..model.text import points_text
 from ..model.widget import points_widget
 from .constants import KIND_BY_EVENT, NOT_IN_PLATOON
@@ -61,20 +61,30 @@ class PlatoonPointsPanel(BattlePanel):
         self.hooks.add(arena, 'onVehicleUpdated', self._on_arena_entry)
         self.render()
 
-    # A platoon mate whose arena entry comes after the battle loaded (a late connect) joins when it arrives.
-    def _on_arena_entry(self, *args):
+    # A platoon mate whose arena entry comes after the battle loaded (a late connect) joins when it arrives. Each of the
+    # thirty entries updates at the load (arena.onVehicleUpdated(vehicleID)): only that one is looked at.
+    def _on_arena_entry(self, vehicle_id=None, *args):
         if self.platoon is None:
             return
-        self._add_members()
-        self.render()
+        provider = arena_dp()
+        info = call(provider, 'getVehicleInfo', None, vehicle_id) if vehicle_id is not None else None
+        if info is None:
+            self._add_members()
+            self.render()
+        elif self._add_member(provider, info):
+            self.render()
 
     def _add_members(self):
         provider = arena_dp()
         for info in call(provider, 'getVehiclesInfoIterator', []) or []:
-            vehicle_id = getattr(info, 'vehicleID', None)
-            is_own = vehicle_id == self.own_id
-            if is_own or call(provider, 'isSquadMan', False, vehicle_id):
-                self.platoon.add(vehicle_id, _member(info, is_own))
+            self._add_member(provider, info)
+
+    def _add_member(self, provider, info):
+        vehicle_id = getattr(info, 'vehicleID', None)
+        is_own = vehicle_id == self.own_id
+        if not is_own and not call(provider, 'isSquadMan', False, vehicle_id):
+            return False
+        return self.platoon.add(vehicle_id, _member(info, is_own))
 
     def stop(self):
         self.platoon = None
@@ -90,7 +100,7 @@ class PlatoonPointsPanel(BattlePanel):
         kind = self.kinds.get(event.getBattleEventType())
         if kind is None:
             return False
-        if kind == 'damage' and not is_enemy(event.getTargetID()):
+        if kind == KIND_DAMAGE and not is_enemy(event.getTargetID()):
             return False
         return self.platoon.add_own(kind, call(event.getExtra(), 'getDamage', 0))
 

@@ -48,39 +48,41 @@ STOCK_PITCH = 57
 CELL_FRAME = 4
 
 KIND = 'battle_loadout'
+# The sample devices' name and effect are i18n keys (model/preview.py translates them).
 PREVIEW_DEVICES = [
     {
-        'name': u'Турбонагнетатель',
-        'effect': u'+10 % к максимальной скорости и мощности двигателя.',
+        'name': 'battle_loadout_preview_turbocharger',
+        'effect': 'battle_loadout_preview_turbocharger_effect',
         'icon': 'turbocharger',
         'bonus': True,
     },
     {
-        'name': u'Улучшенная вентиляция',
-        'effect': u'+5 % к основным навыкам экипажа.',
+        'name': 'battle_loadout_preview_ventilation',
+        'effect': 'battle_loadout_preview_ventilation_effect',
         'icon': 'improvedVentilation',
         'deluxe': True,
     },
     {
-        'name': u'Досылатель',
-        'effect': u'−10 % к времени перезарядки.',
+        'name': 'battle_loadout_preview_rammer',
+        'effect': 'battle_loadout_preview_rammer_effect',
         'icon': 'rammer',
         'bonus': True,
         'boosted': True,
     },
     {
-        'name': u'Маскировочная сеть',
-        'effect': u'+ к маскировке неподвижной машины.',
+        'name': 'battle_loadout_preview_net',
+        'effect': 'battle_loadout_preview_net_effect',
         'icon': 'camouflageNet',
         'active': True,
     },
     {
-        'name': u'Досылатель: директива',
-        'effect': u'Усиливает досылатель: −2,5 % к времени перезарядки.',
+        'name': 'battle_loadout_preview_directive',
+        'effect': 'battle_loadout_preview_directive_effect',
         'icon': 'rammer',
         'booster': 'boost',
     },
 ]
+PREVIEW_TEXT_KEYS = ('name', 'effect')
 
 # The settings window's editor: the equipment row as the preview, its one option folded under «Дополнительно».
 EDITOR_GROUPS = ()

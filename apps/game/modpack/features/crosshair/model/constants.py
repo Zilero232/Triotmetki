@@ -179,8 +179,21 @@ FINAL_S = 1.0
 READY_HOLD_S = 1.0
 MAX_CLIP_SIZE = 99
 SHELL_ICONS = ('ap', 'apcr', 'heat', 'he')
+DRUM_SHELLS = 'shells'
+DRUM_BARS = 'bars'
+DRUM_OFF = 'off'
 # The magazine style an auto-reloader's box takes when the player left the magazine to the stock reticle.
-AUTOLOADER_DRUM_STYLE = 'shells'
+AUTOLOADER_DRUM_STYLE = DRUM_SHELLS
+# The reload box's state, which the page styles by.
+RELOAD_EMPTY = 'empty'
+RELOAD_READY = 'ready'
+RELOAD_LOADED = 'loaded'
+RELOAD_RELOADING = 'reloading'
+RELOAD_FINAL = 'final'
+COUNTING_STATES = (RELOAD_RELOADING, RELOAD_FINAL)
+NO_RELOAD_VALUE = u'—'
+READY_KEY = 'crosshair_ready'
+READOUT_SWITCHES = ('reload_box', 'reload_arcs', 'show_zoom')
 # The sample the settings previews show: an autoloader between shots, 1.8 s left of a 2.5 s interval, 4 of 6 APCR
 # shells in the drum and 24.6 s for the whole drum, 65 % HP, the sniper reticle at x8.
 SAMPLE_READOUTS = {

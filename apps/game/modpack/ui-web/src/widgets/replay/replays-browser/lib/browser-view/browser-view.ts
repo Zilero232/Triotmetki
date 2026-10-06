@@ -2,6 +2,8 @@ import type { ReplayFilters, ReplaySort } from '@/entities/replay/replay';
 
 import type { BrowserView, ViewOfInput } from './browser-view.types';
 
+import { REPLAYS_BROWSER } from '../../config';
+
 export const viewOf = ({ page, raw, enabled, shown }: ViewOfInput): BrowserView => {
   if (!enabled) {
     return 'off';
@@ -30,3 +32,5 @@ export const sortedBy =
   (sort: ReplaySort) =>
   (current: ReplayFilters): ReplayFilters =>
     current.sort === sort ? { ...current, descending: !current.descending } : { ...current, sort, descending: true };
+
+export const nowSeconds = (): number => Math.floor(Date.now() / REPLAYS_BROWSER.millisecondsPerSecond);

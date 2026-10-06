@@ -8,7 +8,6 @@ from otmetki.core.shot_points import decode_segment, drawn_points
 
 
 def segment(part, code, start, end):
-    """A packed shot point: the effect code, the part index, then a byte per axis for the start and the end."""
     value = code | (part << 8)
     for shift, byte in zip((16, 24, 32, 40, 48, 56), tuple(start) + tuple(end)):
         value |= byte << shift

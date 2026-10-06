@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.client.component import FeatureComponent
+from ....core.client.component import ACTION_REFRESH, FeatureComponent
 from ....core.log import safe
 from .. import FEATURE_ID
 from ..i18n import STRINGS
 from ..model import (
-    ACTION_REFRESH,
     ACTION_SELL,
     REFUSE_CHANGED,
     build_page,

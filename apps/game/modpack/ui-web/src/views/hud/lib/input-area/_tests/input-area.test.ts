@@ -28,7 +28,6 @@ describe(inputAreaOf, () => {
     const area = inputAreaOf({ whole: false, screen, rects: [marks] });
 
     expect(area).toEqual({ left: 1300, top: 1171, width: 250, height: 63 });
-    expect(area.top + area.height).toBeLessThanOrEqual(screen.height);
   });
 
   it('cuts a panel that reaches past the left or top edge', () => {

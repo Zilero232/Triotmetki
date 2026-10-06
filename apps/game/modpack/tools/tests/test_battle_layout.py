@@ -72,7 +72,7 @@ def read_page_constants():
         text = handle.read()
     block = text[text.index('attach:'):]
     block = block[:block.index('\n  }')]
-    return dict((key, int(value)) for key, value in re.findall(r'(\w+): (\d+)', block))
+    return {key: int(value) for key, value in re.findall(r'(\w+): (\d+)', block)}
 
 
 def design_screen(width, height, scale):
@@ -112,7 +112,7 @@ def default_place(feature_id):
 
 
 def battle_places():
-    places = dict((feature_id, default_place(feature_id)) for feature_id in BATTLE_PANELS)
+    places = {feature_id: default_place(feature_id) for feature_id in BATTLE_PANELS}
     for group, anchor in DOCK_ANCHORS.items():
         if group.startswith('battle_'):
             places['dock:' + group] = anchor
@@ -323,7 +323,7 @@ def default_rects(screen, minimap=MINIMAP_DEFAULT):
 def hangar_rects(screen):
     from otmetki.features.hangar_info.settings import SCHEMA
 
-    rects = dict((group, top_column(DOCK_ANCHORS[group], screen)) for group in HANGAR_COLUMNS)
+    rects = {group: top_column(DOCK_ANCHORS[group], screen) for group in HANGAR_COLUMNS}
     rects['hangar_info'] = panel_rect(SCHEMA.defaults, screen, HANGAR_INFO_SIZE)
     return rects
 
@@ -429,7 +429,7 @@ class DefaultPlacesTest(unittest.TestCase):
             'row': BAR_ROW,
             'offset': SCORE_OFFSET, 'top': SCORE_TOP, 'narrow': SCORE_NARROW, 'under': SCORE_UNDER,
         }
-        assert dict((key, page.get(key)) for key in expected) == expected
+        assert {key: page.get(key) for key in expected} == expected
 
 
 if __name__ == '__main__':

@@ -19,7 +19,7 @@ from .constants import (
 
 SETTINGS = (SWITCH,)
 
-NORMALIZERS = dict((key, max_length(MAX_TEMPLATE)) for key in TEMPLATE_KEYS)
+NORMALIZERS = {key: max_length(MAX_TEMPLATE) for key in TEMPLATE_KEYS}
 
 SCHEMA = fix(panel_schema(
     DEFAULTS,

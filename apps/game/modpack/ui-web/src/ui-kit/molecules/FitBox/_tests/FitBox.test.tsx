@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { act, render } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { FitBox } from '../FitBox';
 
@@ -13,7 +13,7 @@ type Size = { width: number; height: number };
 
 const mount = ({ frame, content, minScale }: { frame: Size; content: Size; minScale?: number }) => {
   const html = render(
-    <FitBox fallback={<b>icon</b>} minScale={minScale}>
+    <FitBox contentKey='sample' fallback={<b>icon</b>} minScale={minScale}>
       <span>sample</span>
     </FitBox>
   ).container;
@@ -52,5 +52,23 @@ describe(FitBox, () => {
     const { html } = mount({ frame: { width: 100, height: 50 }, content: { width: 1000, height: 40 }, minScale: 0.3 });
 
     expect(html.querySelector('b')?.textContent).toBe('icon');
+  });
+
+  it('keeps its measure loop when the parent renders the same content again', () => {
+    const view = render(<FitBox contentKey='sample'>sample</FitBox>);
+    const cancel = vi.spyOn(window, 'cancelAnimationFrame');
+
+    view.rerender(<FitBox contentKey='sample'>sample</FitBox>);
+
+    expect(cancel).not.toHaveBeenCalled();
+  });
+
+  it('restarts its measure loop when the content changes', () => {
+    const view = render(<FitBox contentKey='sample'>sample</FitBox>);
+    const cancel = vi.spyOn(window, 'cancelAnimationFrame');
+
+    view.rerender(<FitBox contentKey='other'>other</FitBox>);
+
+    expect(cancel).toHaveBeenCalledOnce();
   });
 });

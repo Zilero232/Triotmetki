@@ -5,7 +5,6 @@ import type { useReplaysBrowser } from './use-replays-browser';
 export type UseReplaysBrowserInput = {
   page: unknown;
   enabled: boolean;
-  now: number;
 };
 
 export type FilterPatch = Partial<ReplayFilters>;

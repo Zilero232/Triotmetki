@@ -114,10 +114,6 @@ class HudLayer(object):
     def has_panels(self):
         return bool(self.backend.available())
 
-    @property
-    def backend_name(self):
-        return self.backend.name
-
     def register(self, panel_id, schema):
         """Declare a panel; returns its settings (a `Settings` over `schema`, stored in components.json). A panel still
         at a default place of an older version moves to today's default (`panel.retired_reset`)."""
@@ -139,7 +135,7 @@ class HudLayer(object):
         """The layout keys of a panel in the current battle type: its settings with the type's own place over them; a
         pinned panel always sits at its default place."""
         settings = self.panels[panel_id]
-        values = dict((key, settings.get(key)) for key in LAYOUT_KEYS)
+        values = {key: settings.get(key) for key in LAYOUT_KEYS}
         if self.own_places:
             values.update(self.mode_places.get(self.mode, panel_id))
         return pinned_values(settings, values)
@@ -173,11 +169,11 @@ class HudLayer(object):
         return True
 
     def _restage(self, change):
-        before = dict((alias, self._stage_props(alias)) for alias in self.shown)
+        before = {alias: self._stage_props(alias) for alias in self.shown}
         change()
         for alias in sorted(self.shown):
             after = self._stage_props(alias)
-            changed = dict((key, value) for key, value in after.items() if before[alias].get(key) != value)
+            changed = {key: value for key, value in after.items() if before[alias].get(key) != value}
             if changed:
                 self.backend.update(alias, changed)
 
@@ -337,12 +333,12 @@ class HudLayer(object):
         if reason not in COVER_EFFECTS:
             return False
         covers = self.covers
-        before = dict((alias, self._cover_props(alias)) for alias in self.shown)
+        before = {alias: self._cover_props(alias) for alias in self.shown}
         self.covers = self.covers | {reason} if on else self.covers - {reason}
         changed = False
         for alias in sorted(self.shown):
             after = self._cover_props(alias)
-            props = dict((key, value) for key, value in after.items() if before[alias][key] != value)
+            props = {key: value for key, value in after.items() if before[alias][key] != value}
             if props:
                 self.backend.update(alias, props)
                 changed = True

@@ -8,7 +8,7 @@ import unittest
 import _support
 from otmetki.core.events import EventBus
 from otmetki.core.hud import ComponentConfig
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 from otmetki.features.responsive_reticle.i18n import STRINGS
 from otmetki.features.responsive_reticle.model.constants import FOLLOW_SMOOTH, INSTANT_RELAX_S, SMOOTH_RELAX_S
 
@@ -54,8 +54,6 @@ def stub(name, **attrs):
 
 
 class Client(object):
-    """The client pieces the component drives: the clock, BigWorld.callback, the own avatar and its gun rotator."""
-
     def __init__(self, realm='RU', replay=False):
         self.now = [100.0]
         self.callbacks = []
@@ -163,7 +161,8 @@ class Client(object):
         self.now[0] += seconds
         if stock_tick:
             self.player.gunRotator.stock_tick()
-        callbacks, self.callbacks = self.callbacks, []
+        callbacks = self.callbacks
+        self.callbacks = []
         for callback in callbacks:
             callback()
 
@@ -208,7 +207,7 @@ class App(object):
 class ResponsiveReticleClientTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         self.purge()
 
     def tearDown(self):

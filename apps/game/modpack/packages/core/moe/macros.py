@@ -3,7 +3,16 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ..compat import is_number
 from ..format import COLOR_DOWN, COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, MARK_COLORS, format_number
-from .constants import MACRO_MISSING, MARK_LEVELS, REACHED, STAR, TARGET_LEVELS, UNREACHABLE
+from .constants import (
+    COLOR_MODE_MARK,
+    COLOR_MODE_OFF,
+    MACRO_MISSING,
+    MARK_LEVELS,
+    REACHED,
+    STAR,
+    TARGET_LEVELS,
+    UNREACHABLE,
+)
 
 
 def _percent(value):
@@ -76,9 +85,9 @@ def _mark_color(state):
 
 def moe_color(state, mode):
     """The colour of a marks view: by the change (`delta`), by the mark the percent is at (`mark`), or none."""
-    if mode == 'off':
+    if mode == COLOR_MODE_OFF:
         return COLOR_NEUTRAL
-    if mode == 'mark':
+    if mode == COLOR_MODE_MARK:
         return _mark_color(state)
     delta = state['delta']
     if not is_number(delta) or delta == 0:

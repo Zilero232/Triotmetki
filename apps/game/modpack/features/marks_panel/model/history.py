@@ -46,7 +46,6 @@ def _is_recordable(tank_id, dossier):
     return bool(dossier.get('moving_avg_damage'))
 
 
-# `dossier` is the moe block of a battle event or a hangar snapshot: both carry the own dossier values.
 def _entry(time_s, dossier, source):
     return {
         't': int(time_s),
@@ -146,7 +145,6 @@ def _is_wrong_scale(entries, index):
 
 
 def repair_entries(entries):
-    """The entries without the wrong-scale battle entries, and how many were dropped."""
     kept = [entry for index, entry in enumerate(entries) if not _is_wrong_scale(entries, index)]
     return kept, len(entries) - len(kept)
 
@@ -158,7 +156,7 @@ class MarksHistory(object):
         self.max_entries = max_entries
         data = store.read({}) or {}
         vehicles = data.get('vehicles') if isinstance(data, dict) else None
-        self.vehicles = dict((key, value) for key, value in (vehicles or {}).items() if isinstance(value, dict))
+        self.vehicles = {key: value for key, value in (vehicles or {}).items() if isinstance(value, dict)}
         self.rejected = None
         self.repaired = self._repair()
 

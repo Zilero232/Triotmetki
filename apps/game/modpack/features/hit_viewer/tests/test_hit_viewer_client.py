@@ -9,7 +9,8 @@ import unittest
 
 import _support
 from otmetki.core.events import EventBus
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
+from otmetki.core.storage import flush_pending
 from otmetki.features.hit_viewer.model import HitBook
 
 STUBBED = ('BigWorld', 'Vehicle', 'BattleFeedbackCommon', 'items', 'items.vehicles', 'Math')
@@ -165,7 +166,7 @@ def forget_client():
 class RecorderTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         forget_client()
         stub_client()
         recorder_module = importlib.import_module('otmetki.features.hit_viewer.client.recorder')
@@ -175,6 +176,7 @@ class RecorderTest(unittest.TestCase):
         self.recorder._on_battle_ready(Avatar())
 
     def tearDown(self):
+        flush_pending()
         forget_client()
         for name, module in self.saved.items():
             if module is None:
@@ -239,6 +241,37 @@ class RecorderTest(unittest.TestCase):
 
         assert self.finish()['hits'][0]['damage'] == 420
 
+    def test_the_end_of_a_battle_leaves_the_book_off_the_disk(self):
+        Vehicle(OWN_ID, own=True).showDamageFromShot(ENEMY_ID, [HULL_PEN], 0, 1.0, False)
+
+        self.finish()
+
+        assert self.component.store.data is None
+
+    def test_the_hangar_writes_the_book(self):
+        Vehicle(OWN_ID, own=True).showDamageFromShot(ENEMY_ID, [HULL_PEN], 0, 1.0, False)
+        self.finish()
+
+        flush_pending()
+
+        assert len(self.component.store.data['battles']) == 1
+
+    def test_the_timed_flush_of_a_battle_leaves_the_book_held(self):
+        Vehicle(OWN_ID, own=True).showDamageFromShot(ENEMY_ID, [HULL_PEN], 0, 1.0, False)
+        self.finish()
+
+        flush_pending(held=False)
+
+        assert self.component.store.data is None
+
+    def test_clearing_the_book_in_the_hangar_writes_it_at_once(self):
+        Vehicle(OWN_ID, own=True).showDamageFromShot(ENEMY_ID, [HULL_PEN], 0, 1.0, False)
+        self.finish()
+
+        self.recorder.clear()
+
+        assert self.component.store.data['battles'] == []
+
     def test_the_same_account_announced_again_keeps_the_battle_being_recorded(self):
         Vehicle(ENEMY_ID).showDamageFromShot(OWN_ID, [HULL_PEN], 0, 1.0, False)
 
@@ -274,7 +307,7 @@ def recorded_battle(battle_id, hits):
 class ScreenTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         forget_client()
         stub_client()
         screen_module = importlib.import_module('otmetki.features.hit_viewer.client.screen')
@@ -473,7 +506,7 @@ class Event(object):
 class StageTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         forget_client()
         stub_client()
         stage_module = importlib.import_module('otmetki.features.hit_viewer.client.stage')

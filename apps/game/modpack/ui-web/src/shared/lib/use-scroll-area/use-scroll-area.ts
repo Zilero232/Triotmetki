@@ -1,13 +1,12 @@
 import { useInterval } from '@siberiacancode/reactuse';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { funnel, isDeepEqual } from 'remeda';
 
 import type { ScrollMetrics } from '@/shared/lib/scroll-metrics';
 
 import { SCROLL_AREA } from '@/shared/config';
-import { scrollMetricsOf } from '@/shared/lib/scroll-metrics';
+import { bindScrollArea, changedMetrics } from '@/shared/lib/scroll-binding';
 import { useThumbDrag } from '@/shared/lib/use-thumb-drag';
-import { bindWheelScroll, thumbOf } from '@/shared/lib/wheel-scroll';
+import { thumbOf } from '@/shared/lib/wheel-scroll';
 
 import type { UseScrollAreaInput } from './use-scroll-area.types';
 
@@ -22,16 +21,12 @@ export const useScrollArea = ({ initialTop = 0, contain = false, onScrollEnd, on
   metricsRef.current = onMetrics;
 
   const measureRef = useRef(() => {
-    const element = viewportRef.current;
+    const next = changedMetrics({ element: viewportRef.current, last: lastRef.current });
 
-    if (element) {
-      const next = scrollMetricsOf(element);
-
-      if (!isDeepEqual(lastRef.current, next)) {
-        lastRef.current = next;
-        setMetrics(next);
-        metricsRef.current?.(next);
-      }
+    if (next) {
+      lastRef.current = next;
+      setMetrics(next);
+      metricsRef.current?.(next);
     }
   });
 
@@ -52,25 +47,17 @@ export const useScrollArea = ({ initialTop = 0, contain = false, onScrollEnd, on
       return undefined;
     }
 
-    element.scrollTop = initialTop;
+    const binding = bindScrollArea({
+      element,
+      initialTop,
+      contain,
+      onScroll: () => measureRef.current(),
+      onSettle: (top) => scrollEndRef.current?.(top)
+    });
 
-    const settled = funnel(() => scrollEndRef.current?.(element.scrollTop), { minQuietPeriodMs: SCROLL_AREA.settleMs, triggerAt: 'end' });
+    scrolledRef.current = binding.scrolled;
 
-    scrolledRef.current = () => {
-      measureRef.current();
-      settled.call();
-    };
-
-    const listener = (): void => scrolledRef.current();
-    const unbindWheel = bindWheelScroll({ element, onScrolled: listener, contain });
-
-    element.addEventListener('scroll', listener);
-
-    return () => {
-      settled.flush();
-      unbindWheel();
-      element.removeEventListener('scroll', listener);
-    };
+    return binding.unbind;
   }, [initialTop, contain]);
 
   return {

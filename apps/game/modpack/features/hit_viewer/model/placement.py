@@ -2,12 +2,14 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import math
 
+from ....core.hit_book import PART_CHASSIS, PART_GUN, PART_HULL, PART_TURRET
+from .constants import NO_AIM
+
 # A hit point in the vehicle's own coordinates, built from the vehicle descriptor's part offsets and the recorded turret
 # yaw and gun pitch, the way poliroid BattleHits (Vehicle.__updateComponents, partWorldMatrix) places it: never from
 # the hangar model's nodes, which a vehicle swap destroys (python.log 2026-10-06: "Usage of dangling
 # PyModelNodeAdapter", the shell left at the world origin and the camera aimed at the floor). The rotations follow
 # BigWorld's Matrix.setRotateYPR: a yaw turns +z towards +x, a positive pitch tips +z down.
-NO_AIM = (0.0, 0.0)
 
 
 def rotate(vector, yaw, pitch):
@@ -21,17 +23,21 @@ def _add(first, second):
     return tuple(a + b for a, b in zip(first, second))
 
 
+def _turned_only(base, value):
+    return value
+
+
+# `offsets` are the descriptor's positions: hull (chassis.hullPosition), turret (hull.turretPositions[0]) and gun
+# (turret.gunPosition). A direction (`is_point` False) only turns, it is never shifted.
 def vehicle_vector(part, vector, offsets, aim=None, is_point=True):
-    """`vector` of the part `part` ('chassis', 'hull', 'turret', 'gun') in the vehicle's coordinates; `offsets` holds
-    the descriptor's 'hull' (chassis.hullPosition), 'turret' (hull.turretPositions[0]) and 'gun' (turret.gunPosition)
-    positions, `aim` the turret yaw and gun pitch; a direction (`is_point` False) only turns."""
     yaw, pitch = aim or NO_AIM
-    shift = (lambda base, value: _add(base, value)) if is_point else (lambda base, value: value)
-    if part == 'chassis':
+    shift = _add if is_point else _turned_only
+    if part == PART_CHASSIS:
         return tuple(vector)
-    if part == 'hull':
-        return shift(offsets['hull'], vector)
-    turret_base = _add(offsets['hull'], offsets['turret'])
-    if part == 'gun':
-        vector = shift(offsets['gun'], rotate(vector, 0.0, pitch))
+    if part == PART_HULL:
+        return shift(offsets[PART_HULL], vector)
+
+    turret_base = _add(offsets[PART_HULL], offsets[PART_TURRET])
+    if part == PART_GUN:
+        vector = shift(offsets[PART_GUN], rotate(vector, 0.0, pitch))
     return shift(turret_base, rotate(vector, yaw, 0.0))

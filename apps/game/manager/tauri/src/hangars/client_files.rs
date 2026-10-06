@@ -95,7 +95,15 @@ fn loose(game_dir: &Path, text: &str) -> Option<Source> {
     Some(Source { kind, path: dir, root: String::new() })
 }
 
-fn mtmod_sources(game_dir: &Path, text: &str, mask: &str, root: &str) -> Vec<Source> {
+struct MtmodSourcesInput<'a> {
+    game_dir: &'a Path,
+    text: &'a str,
+    mask: &'a str,
+    root: &'a str,
+}
+
+fn mtmod_sources(input: MtmodSourcesInput) -> Vec<Source> {
+    let MtmodSourcesInput { game_dir, text, mask, root } = input;
     let Some(dir) = join_relative(game_dir, text) else {
         return Vec::new();
     };
@@ -118,14 +126,20 @@ pub fn read_sources(game_dir: &Path) -> Vec<Source> {
     for node in paths.children().filter(roxmltree::Node::is_element) {
         if node.has_tag_name("Path") {
             match node.attribute("mask") {
-                Some(mask) => sources.extend(mtmod_sources(game_dir, &node_text(node), mask, node.attribute("root").unwrap_or(DEFAULT_PACKAGE_ROOT))),
+                Some(mask) => {
+                    let root = node.attribute("root").unwrap_or(DEFAULT_PACKAGE_ROOT);
+
+                    sources.extend(mtmod_sources(MtmodSourcesInput { game_dir, text: &node_text(node), mask, root }));
+                }
                 None => sources.extend(loose(game_dir, &node_text(node))),
             }
         } else if node.has_tag_name("Packages") {
             let child_text = |tag: &str| node.children().find(|child| child.has_tag_name(tag)).map(node_text).filter(|text| !text.is_empty());
 
             if let Some(root) = child_text("Root") {
-                sources.extend(mtmod_sources(game_dir, &root, &child_text("Mask").unwrap_or_else(|| DEFAULT_MASK.to_owned()), DEFAULT_PACKAGE_ROOT));
+                let mask = child_text("Mask").unwrap_or_else(|| DEFAULT_MASK.to_owned());
+
+                sources.extend(mtmod_sources(MtmodSourcesInput { game_dir, text: &root, mask: &mask, root: DEFAULT_PACKAGE_ROOT }));
             }
 
             for package in node.children().filter(|child| child.has_tag_name("Package")) {

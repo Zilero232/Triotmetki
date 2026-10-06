@@ -51,7 +51,7 @@ def records(value):
     """The career records of a tank ({damage, assist, frags, xp}, each None when unknown), or None."""
     if not isinstance(value, dict):
         return None
-    parsed = dict((key, count(value.get(name))) for key, name in RECORD_FIELDS)
+    parsed = {key: count(value.get(name)) for key, name in RECORD_FIELDS}
     return parsed if any(item is not None for item in parsed.values()) else None
 
 
@@ -59,7 +59,7 @@ def expected(value):
     """The WN8 expected values of a tank ({damage, spot, frag, def, win_rate}), or None unless all are usable."""
     if not isinstance(value, dict):
         return None
-    parsed = dict((key, number(value.get(name), 0)) for key, name in EXPECTED_FIELDS)
+    parsed = {key: number(value.get(name), 0) for key, name in EXPECTED_FIELDS}
     if any(item is None for item in parsed.values()) or not parsed['damage'] or not parsed['win_rate']:
         return None
     return parsed

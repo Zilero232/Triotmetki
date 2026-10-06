@@ -107,7 +107,7 @@ class ReplayLibrary(object):
     def save(self):
         if not self.dirty or self.store is None:
             return False
-        files = dict((name, entry) for name, entry in self.entries.items() if name in self.files)
+        files = {name: entry for name, entry in self.entries.items() if name in self.files}
         self.store.write({'v': LIBRARY_VERSION, 'files': files})
         self.dirty = False
         return True
@@ -125,7 +125,6 @@ class ReplayLibrary(object):
             return None
         return entry['header']
 
-    # The account's own replays that are read, newest first: {name, path, size, mtime, header}.
     def replays(self, account_id):
         if account_id is None:
             return []

@@ -177,8 +177,8 @@ def _component_problems(components, catalog, keys):
 
 def _catalog_order(catalog):
     """Sort key: category order, then the catalog's component order (uncatalogued last), then the id."""
-    category_order = dict((category.id, index) for index, category in enumerate(catalog.categories))
-    catalog_order = dict((entry.id, index) for index, entry in enumerate(catalog.components))
+    category_order = {category.id: index for index, category in enumerate(catalog.categories)}
+    catalog_order = {entry.id: index for index, entry in enumerate(catalog.components)}
 
     def key(component):
         position = catalog_order.get(component.id, len(catalog_order))

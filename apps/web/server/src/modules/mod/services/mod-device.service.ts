@@ -1,3 +1,5 @@
+import type { Hmac } from 'node:crypto';
+
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Redis } from 'ioredis';
 
@@ -5,20 +7,24 @@ import type {
   AuthenticateBodyInput,
   AuthenticatedBody,
   AuthenticatedDevice,
+  AuthenticateDigestInput,
   AuthenticateInput,
   IdentifyDeviceInput,
   ModDeviceView,
+  RequestSignerInput,
   RevokeDeviceInput,
-  SignedDeviceBody
+  SignedDeviceBody,
+  SignedModRequest,
+  VerifyDigestInput
 } from '../mod.types';
 
 import { AppNotFoundException, ModException } from '../../../common/exceptions';
-import { isSignatureHeader, verifySignatureHeader } from '../../../common/lib';
+import { isSignatureHeader, matchesSignatureHeader, sha256Hmac } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { PrismaService, REDIS } from '../../../core';
 import { MOD_DEVICE, MOD_REQUEST } from '../config/device.constants';
 import { deviceSecret, matchesSecretHash } from '../lib/device-secret/device-secret';
-import { isFreshTimestamp, isNonce, requestPath, signedMessage } from '../lib/request-signature/request-signature';
+import { isFreshTimestamp, isNonce, requestPath, signedPrefix } from '../lib/request-signature/request-signature';
 import { toModDeviceView } from '../mappers/device.mappers';
 
 @Injectable()
@@ -63,12 +69,36 @@ export class ModDeviceService {
   }
 
   async authenticate({ request, rawBody, signedHeaders = [] }: AuthenticateInput): Promise<AuthenticatedDevice> {
-    const signature = request.header(MOD_DEVICE.signatureHeader);
-    const device = await this.identify({ deviceId: request.header(MOD_DEVICE.header), signature });
+    const device = await this.identifyRequest(request);
+    const digest = rawBody ? this.signer({ request, signedHeaders }).update(rawBody).digest('hex') : undefined;
+
+    return this.verifyDigest({ request, device, digest });
+  }
+
+  async authenticateDigest({ request, digest }: AuthenticateDigestInput): Promise<AuthenticatedDevice> {
+    const device = await this.identifyRequest(request);
+
+    return this.verifyDigest({ request, device, digest });
+  }
+
+  assertSignable(request: SignedModRequest): void {
+    const timestamp = request.header(MOD_DEVICE.timestampHeader);
+
+    if (timestamp === undefined || !isNonce(request.header(MOD_DEVICE.nonceHeader))) {
+      throw new ModException({ status: HttpStatus.UNAUTHORIZED, error: 'bad_signature' });
+    }
+
+    if (!isFreshTimestamp({ timestamp, now: new Date() })) {
+      throw new ModException({ status: HttpStatus.PRECONDITION_REQUIRED, error: 'stale_request' });
+    }
+  }
+
+  signer({ request, signedHeaders = [] }: RequestSignerInput): Hmac {
+    const deviceId = request.header(MOD_DEVICE.header);
     const timestamp = request.header(MOD_DEVICE.timestampHeader);
     const nonce = request.header(MOD_DEVICE.nonceHeader);
 
-    if (!rawBody || timestamp === undefined || !isNonce(nonce)) {
+    if (deviceId === undefined || timestamp === undefined || !isNonce(nonce)) {
       throw new ModException({ status: HttpStatus.UNAUTHORIZED, error: 'bad_signature' });
     }
 
@@ -78,23 +108,9 @@ export class ModDeviceService {
       return value === undefined ? [] : [{ name, value }];
     });
 
-    const message = signedMessage({ method: request.method, path: requestPath(request.originalUrl), timestamp, nonce, headers, body: rawBody });
+    const prefix = signedPrefix({ method: request.method, path: requestPath(request.originalUrl), timestamp, nonce, headers });
 
-    if (!verifySignatureHeader({ header: signature, key: this.secretOf(device.id), body: message })) {
-      throw new ModException({ status: HttpStatus.UNAUTHORIZED, error: 'bad_signature' });
-    }
-
-    if (!isFreshTimestamp({ timestamp, now: new Date() })) {
-      throw new ModException({ status: HttpStatus.PRECONDITION_REQUIRED, error: 'stale_request' });
-    }
-
-    const fresh = await this.redis.set(`${MOD_REQUEST.noncePrefix}${device.id}:${nonce}`, '1', 'EX', MOD_REQUEST.nonceTtlSeconds, 'NX');
-
-    if (fresh === null) {
-      throw new ModException({ status: HttpStatus.CONFLICT, error: 'replayed_request' });
-    }
-
-    return device;
+    return sha256Hmac(this.secretOf(deviceId)).update(prefix);
   }
 
   async list(userId: string): Promise<ModDeviceView[]> {
@@ -109,6 +125,31 @@ export class ModDeviceService {
     if (revoked.count === 0) {
       throw new AppNotFoundException('MOD_DEVICE_INVALID', 'No such active device');
     }
+  }
+
+  private identifyRequest(request: SignedModRequest): Promise<AuthenticatedDevice> {
+    return this.identify({ deviceId: request.header(MOD_DEVICE.header), signature: request.header(MOD_DEVICE.signatureHeader) });
+  }
+
+  private async verifyDigest({ request, device, digest }: VerifyDigestInput): Promise<AuthenticatedDevice> {
+    const timestamp = request.header(MOD_DEVICE.timestampHeader);
+    const nonce = request.header(MOD_DEVICE.nonceHeader);
+
+    if (!matchesSignatureHeader({ header: request.header(MOD_DEVICE.signatureHeader), digest }) || !isNonce(nonce)) {
+      throw new ModException({ status: HttpStatus.UNAUTHORIZED, error: 'bad_signature' });
+    }
+
+    if (!isFreshTimestamp({ timestamp, now: new Date() })) {
+      throw new ModException({ status: HttpStatus.PRECONDITION_REQUIRED, error: 'stale_request' });
+    }
+
+    const fresh = await this.redis.set(`${MOD_REQUEST.noncePrefix}${device.id}:${nonce}`, '1', 'EX', MOD_REQUEST.nonceTtlSeconds, 'NX');
+
+    if (fresh === null) {
+      throw new ModException({ status: HttpStatus.CONFLICT, error: 'replayed_request' });
+    }
+
+    return device;
   }
 
   private secretOf(deviceId: string): string {

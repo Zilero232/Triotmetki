@@ -32,10 +32,6 @@ def _ignore_key():
     pass
 
 
-# The hangar Tank card of the selected tank, a component of its own: its components.json section (panel
-# `hangar_marks`) holds its place and what it shows, its config.json switch turns it, the marks history it keeps and
-# the carousel percent on and off. Alt is read from the game's own key events, as the HUD edit modifier is, since the
-# hangar has no extended-info key of its own.
 class TankCardPanel(FeatureComponent):
 
     def __init__(self, app):

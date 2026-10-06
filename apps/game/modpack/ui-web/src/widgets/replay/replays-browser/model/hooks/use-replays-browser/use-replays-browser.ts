@@ -15,10 +15,11 @@ import { replayCommands, useReplayPrompts } from '@/features/replay/manage-repla
 
 import type { FilterPatch, UseReplaysBrowserInput } from './use-replays-browser.types';
 
-import { sortedBy, viewOf } from '../../../lib/browser-view';
+import { nowSeconds, sortedBy, viewOf } from '../../../lib/browser-view';
 
-export const useReplaysBrowser = ({ page: raw, enabled, now }: UseReplaysBrowserInput) => {
+export const useReplaysBrowser = ({ page: raw, enabled }: UseReplaysBrowserInput) => {
   const page = useMemo(() => parseReplaysPage(raw), [raw]);
+  const [now] = useState(nowSeconds);
   const [filters, setFilters] = useState<ReplayFilters>(DEFAULT_REPLAY_FILTERS);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const { pendingFor, draftFor, dismiss, ...prompts } = useReplayPrompts();

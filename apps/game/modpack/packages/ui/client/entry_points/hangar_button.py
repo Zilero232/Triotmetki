@@ -72,5 +72,5 @@ class HangarButton(object):
         if config is None or self.settings is None:
             return
         defaults = self.settings.schema.defaults
-        config.update(BUTTON_SECTION, dict((key, defaults[key]) for key in BUTTON_LAYOUT_KEYS))
+        config.update(BUTTON_SECTION, {key: defaults[key] for key in BUTTON_LAYOUT_KEYS})
         self.app.ui.place(BUTTON_ALIAS, self.layout())

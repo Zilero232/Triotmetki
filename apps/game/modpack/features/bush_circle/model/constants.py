@@ -3,7 +3,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # The bush rule: a bush or a tree hides the tank that fired from it once the tank is more than 15 m away from it. The
 # radius is fixed: it is the game's own rule, not a setting.
 RADIUS_M = 15.0
-MODES = ('hotkey', 'always')
+MODE_HOTKEY = 'hotkey'
+MODE_ALWAYS = 'always'
+MODES = (MODE_HOTKEY, MODE_ALWAYS)
 # The hotkey choices: (Keys name, held modifiers). Ctrl+Shift+B by default: no game command uses it.
 HOTKEYS = {
     'none': (None, ()),

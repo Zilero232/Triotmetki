@@ -1,28 +1,29 @@
 import { useWindowEvent } from '@siberiacancode/reactuse';
-import { useEffect, useRef, useState } from 'react';
-import { match } from 'ts-pattern';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 
 import type { LiveRect } from '@/entities/hud/panel-layout';
 
-import { readScreen, screenScale, targetAt } from '@/entities/hud/panel-layout';
+import { readScreen, screenScale } from '@/entities/hud/panel-layout';
 import { sendHud } from '@/shared/api/hud-protocol';
 
 import type { OverlayDrag, PanelPress } from '../../../lib/drag-motion';
 import type { SettleDragInput, UsePanelDragInput } from './use-panel-drag.types';
 
-import { beyondSlop, dragOutcome, liveAt, pressDrag } from '../../../lib/drag-motion';
+import { beyondSlop, dragOutcome, liveAt, pressDrag, pressedTarget } from '../../../lib/drag-motion';
 
 const settleDrag = ({ drag, press, onMoved }: SettleDragInput): void => {
   const outcome = dragOutcome({ drag, press, screen: readScreen() });
 
-  match(outcome)
-    .with({ kind: 'pressed' }, () => sendHud({ type: 'pressed', id: drag.id }))
-    .with({ kind: 'moved' }, ({ placement }) => {
-      onMoved({ id: drag.id, placement });
-      sendHud({ type: 'moved', id: drag.id, ...placement });
-    })
-    .with({ kind: 'still' }, () => undefined)
-    .exhaustive();
+  if (outcome.kind === 'pressed') {
+    sendHud({ type: 'pressed', id: drag.id });
+
+    return;
+  }
+
+  if (outcome.kind === 'moved') {
+    onMoved({ id: drag.id, placement: outcome.placement });
+    sendHud({ type: 'moved', id: drag.id, ...outcome.placement });
+  }
 };
 
 export const usePanelDrag = ({ edit, targets, onMoved, report }: UsePanelDragInput) => {
@@ -44,9 +45,9 @@ export const usePanelDrag = ({ edit, targets, onMoved, report }: UsePanelDragInp
   };
 
   const press = (event: MouseEvent): void => {
-    const target = edit ? targetAt({ targets: targets(), press: event, scale: screenScale() }) : null;
+    const target = pressedTarget({ edit, targets: targets(), press: event });
 
-    if (!target || event.button > 0) {
+    if (!target) {
       return;
     }
 
@@ -78,9 +79,7 @@ export const usePanelDrag = ({ edit, targets, onMoved, report }: UsePanelDragInp
     }
   };
 
-  const finishRef = useRef(finish);
-
-  finishRef.current = finish;
+  const finishLeft = useEffectEvent((drag: OverlayDrag) => finish(lastRef.current ?? { clientX: drag.mouseX, clientY: drag.mouseY }));
 
   useWindowEvent('mousedown', press);
   useWindowEvent('mousemove', follow);
@@ -88,10 +87,8 @@ export const usePanelDrag = ({ edit, targets, onMoved, report }: UsePanelDragInp
   useWindowEvent('dragstart', blockImageDrag);
 
   useEffect(() => {
-    const drag = dragRef.current;
-
-    if (!edit && drag) {
-      finishRef.current(lastRef.current ?? { clientX: drag.mouseX, clientY: drag.mouseY });
+    if (!edit && dragRef.current) {
+      finishLeft(dragRef.current);
     }
   }, [edit]);
 

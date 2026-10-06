@@ -11,6 +11,7 @@ STUBBED = ('BigWorld', 'BattleFeedbackCommon')
 CLIENT_PREFIXES = ('otmetki.core.client', 'otmetki.features.platoon_points.client')
 OWN_ID = 3
 MATE_ID = 4
+ENEMY_ID = 9
 
 
 class Namespace(object):
@@ -32,9 +33,15 @@ class ArenaData(object):
 
     def __init__(self):
         self.infos = [Namespace(vehicleID=OWN_ID)]
+        self.scans = 0
 
     def getVehiclesInfoIterator(self):
+        self.scans += 1
         return list(self.infos)
+
+    def getVehicleInfo(self, vehicle_id):
+        found = [info for info in self.infos if info.vehicleID == vehicle_id]
+        return found[0] if found else None
 
     def isSquadMan(self, vehicle_id):
         return vehicle_id == MATE_ID
@@ -53,7 +60,7 @@ def stub_client():
 class LateArenaEntryTest(unittest.TestCase):
 
     def setUp(self):
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         forget_client()
         stub_client()
         module = importlib.import_module('otmetki.features.platoon_points.client')
@@ -61,8 +68,11 @@ class LateArenaEntryTest(unittest.TestCase):
         module.arena_dp = lambda: self.arena_data
         self.panel = module.PlatoonPointsPanel.__new__(module.PlatoonPointsPanel)
         self.panel.hooks = Hooks()
-        self.panel.render = lambda: None
+        self.renders = []
+        self.panel.render = lambda: self.renders.append(1)
         self.panel.start(Namespace(playerVehicleID=OWN_ID))
+        self.arena_data.scans = 0
+        del self.renders[:]
 
     def tearDown(self):
         forget_client()
@@ -85,6 +95,20 @@ class LateArenaEntryTest(unittest.TestCase):
         self.panel.hooks.handlers['onVehicleUpdated'](MATE_ID)
 
         assert sorted(self.panel.platoon.members) == [OWN_ID, MATE_ID]
+
+    def test_an_update_of_another_vehicle_scans_nothing(self):
+        self.arena_data.infos.append(Namespace(vehicleID=ENEMY_ID))
+
+        self.panel.hooks.handlers['onVehicleUpdated'](ENEMY_ID)
+
+        assert self.arena_data.scans == 0
+
+    def test_an_update_of_another_vehicle_renders_nothing(self):
+        self.arena_data.infos.append(Namespace(vehicleID=ENEMY_ID))
+
+        self.panel.hooks.handlers['onVehicleUpdated'](ENEMY_ID)
+
+        assert self.renders == []
 
 
 if __name__ == '__main__':

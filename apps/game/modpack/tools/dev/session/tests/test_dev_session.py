@@ -19,7 +19,7 @@ class _Builder(object):
     def build(self, keys):
         if self.failing in keys:
             raise SystemExit('syntax error in %s' % self.failing)
-        return dict((key, '%s.mtmod' % key) for key in keys)
+        return {key: '%s.mtmod' % key for key in keys}
 
 
 class BuildEachTest(unittest.TestCase):

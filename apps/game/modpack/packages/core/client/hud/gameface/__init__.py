@@ -193,6 +193,8 @@ class GamefaceBackend(HudBackend):
         self.press_listeners = Listeners('HUD press listener')
         self.drawn_listeners = Listeners('HUD drawn listener')
         self.drawn = None
+        self.drawn_seen = frozenset()
+        self.layout = None
         self.cursor = False
         self.seen_edit = False
         self.seen_mouse = set()
@@ -223,7 +225,13 @@ class GamefaceBackend(HudBackend):
         return 'OpenWG Gameface: %s' % (IMPORT_ERROR or 'not installed')
 
     def available(self):
-        return self.usable() and not self.broken and layout_id() is not None
+        return self.usable() and not self.broken and self.layout_id() is not None
+
+    # The page's resource id never changes once OpenWG Gameface validated its res_map: looked up until then, and kept.
+    def layout_id(self):
+        if self.layout is None:
+            self.layout = layout_id()
+        return self.layout
 
     def create(self, alias, props):
         self.surface.create(alias, self._checked(props), current_space())
@@ -250,12 +258,16 @@ class GamefaceBackend(HudBackend):
     def listen_drawn(self, on_drawn):
         self.drawn_listeners.add(on_drawn)
 
+    # A lamp that blinks or a notice that comes and goes changes the drawn set every few seconds: only a label drawn
+    # for the first time since the window opened is logged.
     def _set_drawn(self, drawn):
         if drawn == self.drawn:
             return
         self.drawn = drawn
-        if drawn is not None:
-            log('HUD: the page draws %s' % (', '.join(sorted(drawn)) or 'nothing'))
+        first = drawn - self.drawn_seen if drawn is not None else frozenset()
+        if first:
+            self.drawn_seen = self.drawn_seen | first
+            log('HUD: the page draws %s for the first time' % ', '.join(sorted(first)))
         self.drawn_listeners.notify()
 
     def delete(self, alias):
@@ -323,7 +335,7 @@ class GamefaceBackend(HudBackend):
         return True
 
     def open(self):
-        layout = layout_id()
+        layout = self.layout_id()
         if layout is None or self.broken:
             return False
         try:
@@ -340,6 +352,7 @@ class GamefaceBackend(HudBackend):
             return False
         self.waiting = False
         self.answered = False
+        self.drawn_seen = frozenset()
         self.seen_edit = False
         self.seen_mouse = set()
         self.whole_area = None
@@ -350,7 +363,9 @@ class GamefaceBackend(HudBackend):
 
     @safe
     def close(self):
-        window, self.window, self.view = self.window, None, None
+        window = self.window
+        self.window = None
+        self.view = None
         self.answered = False
         self._set_drawn(None)
         if window is not None:
@@ -463,7 +478,7 @@ class GamefaceBackend(HudBackend):
         self.press_listeners.notify(fields['id'])
 
     def _on_page_move(self, fields):
-        props = dict((key, value) for key, value in fields.items() if key != 'id')
+        props = {key: value for key, value in fields.items() if key != 'id'}
         self.listeners.notify(fields['id'], props)
 
     def _listen_spaces(self):

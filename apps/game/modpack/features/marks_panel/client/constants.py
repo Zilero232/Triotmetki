@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ..model.constants import KIND_DAMAGE, KIND_RADIO, KIND_STUN, KIND_TRACK
+
 KIND_BY_EVENT = (
-    ('DAMAGE', 'damage'),
-    ('RADIO_ASSIST', 'radio'),
-    ('TRACK_ASSIST', 'track'),
-    ('STUN_ASSIST', 'stun'),
+    ('DAMAGE', KIND_DAMAGE),
+    ('RADIO_ASSIST', KIND_RADIO),
+    ('TRACK_ASSIST', KIND_TRACK),
+    ('STUN_ASSIST', KIND_STUN),
 )
 # The hangar reads the tank's marks from its dossier (companion marks `vehicle_moe`); a tank below the marks tier or
 # without a moving average has none, and the battle panel then stays off.

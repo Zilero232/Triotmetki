@@ -11,7 +11,6 @@ from .constants import MAX_CREW, MAX_LEVEL, MAX_TEXT, TITLE_SIZE_STEP
 
 
 def battles_left(xp_left, avg_xp, factor=1.0):
-    """Battles to earn `xp_left` at the vehicle's average XP times the crew XP factor, rounded up; None unknown."""
     if xp_left <= 0:
         return 0
     per_battle = (avg_xp or 0) * (factor or 0)

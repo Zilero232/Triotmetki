@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
+import { createReadStream } from 'node:fs';
 
-import type { ReplayExtension, ReplayStorageKeyInput } from './replay-file.types';
+import type { FileDigestInput, ReplayExtension, ReplayStorageKeyInput } from './replay-file.types';
 
 import { REPLAY_UPLOAD } from '../../config/upload.constants';
 
@@ -16,3 +17,11 @@ export const replayStorageKey = ({ sha256, extension }: ReplayStorageKeyInput): 
   `${REPLAY_UPLOAD.keyPrefix}/${sha256.slice(0, 2)}/${sha256}${extension}`;
 
 export const tracksStorageKey = (storageKey: string): string => `${storageKey}${REPLAY_UPLOAD.tracksSuffix}`;
+
+export const fileDigest = async ({ hash, path }: FileDigestInput): Promise<string> => {
+  for await (const chunk of createReadStream(path)) {
+    hash.update(chunk);
+  }
+
+  return hash.digest('hex');
+};

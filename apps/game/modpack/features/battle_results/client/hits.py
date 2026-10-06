@@ -7,9 +7,10 @@ from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 
 from ....core.client.battle import SHOT_METHOD, BattleHooks, call, feedback, on_own_shot, vehicle_class, vehicle_name
 from ....core.client.game import values_by_name
+from ....core.client.storage import held_for_hangar
 from ....core.log import log, safe
 from ..model.hits import BOOK_FILE, HitBook
-from .constants import KIND_BY_EVENT
+from .constants import KIND_BY_EVENT, KIND_RECEIVED
 
 
 # Fair play: only the shots the client draws on the player's own tank (Vehicle.showDamageFromShot on the own vehicle)
@@ -32,7 +33,7 @@ class HitRecorder(object):
         return self.component.settings.get('hits_keep_battles')
 
     def _on_account(self, account_id):
-        self.book = HitBook(self.component.account_file(BOOK_FILE, account_id), self._keep())
+        self.book = HitBook(held_for_hangar(self.component.account_file(BOOK_FILE, account_id)), self._keep())
 
     def battles(self):
         return self.book.battles if self.book is not None else []
@@ -41,6 +42,7 @@ class HitRecorder(object):
         if self.book is not None:
             self.book.clear()
             self.book.save()
+            self.book.store.flush()
 
     def _is_recording(self):
         settings = self.component.settings
@@ -71,7 +73,7 @@ class HitRecorder(object):
         now = time.time()
 
         for event in events:
-            if self.kinds.get(event.getBattleEventType()) != 'received':
+            if self.kinds.get(event.getBattleEventType()) != KIND_RECEIVED:
                 continue
             extra = event.getExtra()
             if call(extra, 'isShot', True):

@@ -22,7 +22,8 @@ from otmetki.companion.settings_share import (
     result_path,
     signed_post,
 )
-from otmetki.core.net.signing import DEVICE_HEADER, verify_request
+from _support import verify_request
+from otmetki.core.net.signing import DEVICE_HEADER
 
 SECRET = 'q' * 43
 CREDS = Credentials('dev_1', SECRET, 7, 1)
@@ -309,6 +310,9 @@ class ParsePollResponseTest(unittest.TestCase):
 
     def test_a_profile_slug_too_long_is_absent(self):
         self.assertEqual(profile_slug('a' * 65), '')
+
+    def test_a_profile_slug_with_a_trailing_newline_is_absent(self):
+        self.assertEqual(profile_slug('nidin\n'), '')
 
     def test_a_profile_slug_in_capitals_is_absent(self):
         self.assertEqual(profile_slug('Nidin'), '')

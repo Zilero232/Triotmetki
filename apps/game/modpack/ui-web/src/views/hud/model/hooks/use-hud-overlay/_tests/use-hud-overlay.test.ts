@@ -34,6 +34,8 @@ const withState = ({ patch = {}, panel = {} }: { patch?: Record<string, unknown>
 
 const OUTSIDE_EDIT = withState({ patch: { edit: false } });
 
+const QUIET = withState({ patch: { edit: false, hover: false } });
+
 const start = async ({ state, mouse, tooltips }: { state: string; mouse?: () => Point; tooltips?: boolean }) => {
   const mock = createGamefaceMock({ state, clientSize: () => CLIENT, mouse, tooltips, onSend: () => null });
 
@@ -336,6 +338,33 @@ describe(useHudOverlay, () => {
     expect(mock.inputAreas().slice(before)).toEqual([NO_INPUT]);
   });
 
+  it('leaves its input area alone while nothing is edited or hovered', async () => {
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
+    const { mock } = await mount(QUIET);
+    const before = mock.inputAreas().length;
+
+    act(() => vi.advanceTimersByTime(HUD_OVERLAY.inputAreaRefreshMs * 3));
+
+    expect(mock.inputAreas().length).toBe(before);
+  });
+
+  it('tries its input area again every refresh after the engine refused it', async () => {
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
+    const mock = createGamefaceMock({ state: QUIET, clientSize: () => CLIENT, onSend: () => null });
+    const viewEnv = z.record(z.string(), z.unknown()).parse(mock.scope[GAMEFACE.globals.viewEnv]);
+    const setInputArea = viewEnv[GAMEFACE.viewEnv.inputArea];
+
+    Reflect.deleteProperty(viewEnv, GAMEFACE.viewEnv.inputArea);
+    installGamefaceMock(mock);
+    renderHook(useHudOverlay);
+    await act(async () => {});
+    viewEnv[GAMEFACE.viewEnv.inputArea] = setInputArea;
+
+    act(() => vi.advanceTimersByTime(HUD_OVERLAY.inputAreaRefreshMs));
+
+    expect(mock.inputAreas()).toEqual([NO_INPUT]);
+  });
+
   it('lets the mouse through in battle while the cursor is off every panel', async () => {
     const { mock } = await startInBattle();
 
@@ -373,6 +402,16 @@ describe(useHudOverlay, () => {
     hover(ON_LABEL);
 
     expect(hook.result.current.hint?.text).toBe(PANEL_HINT);
+  });
+
+  it('shows the new hint the game sends after a language switch', async () => {
+    const { hook, hover, mock } = await startInBattle();
+
+    hover(ON_LABEL);
+
+    act(() => mock.push({ state: withState({ panel: { hint: 'Damage dealt and received in the battle.' } }) }));
+
+    expect(hook.result.current.hint?.text).toBe('Damage dealt and received in the battle.');
   });
 
   it('drops the hint once the cursor leaves the panel', async () => {

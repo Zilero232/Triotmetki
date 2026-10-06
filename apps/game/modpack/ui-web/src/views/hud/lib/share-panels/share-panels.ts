@@ -1,8 +1,19 @@
 import { isDeepEqual } from 'remeda';
 
-import type { HudState } from '@/shared/api/hud-protocol';
+import type { HudPanel, HudState } from '@/shared/api/hud-protocol';
 
-import type { RememberInput, SharePanelsInput } from './share-panels.types';
+import type { RememberInput, SharedPanelInput, SharePanelsInput } from './share-panels.types';
+
+const sharedPanel = ({ old, panel }: SharedPanelInput): HudPanel => {
+  if (!old) {
+    return panel;
+  }
+
+  const isSameWidget = isDeepEqual(old.widget, panel.widget);
+  const candidate = isSameWidget && old.widget !== panel.widget ? { ...panel, widget: old.widget } : panel;
+
+  return isDeepEqual(old, candidate) ? old : candidate;
+};
 
 export const sharePanels = ({ previous, next }: SharePanelsInput): HudState => {
   if (previous === null) {
@@ -10,11 +21,7 @@ export const sharePanels = ({ previous, next }: SharePanelsInput): HudState => {
   }
 
   const known = new Map(previous.panels.map((panel) => [panel.id, panel]));
-  const panels = next.panels.map((panel) => {
-    const old = known.get(panel.id);
-
-    return old && isDeepEqual(old, panel) ? old : panel;
-  });
+  const panels = next.panels.map((panel) => sharedPanel({ old: known.get(panel.id), panel }));
 
   const unchanged =
     previous.cursor === next.cursor &&
@@ -28,8 +35,8 @@ export const sharePanels = ({ previous, next }: SharePanelsInput): HudState => {
 export const clearedRecord = <Value>(current: Partial<Record<string, Value>>): Partial<Record<string, Value>> =>
   Object.keys(current).length === 0 ? current : {};
 
-export const remember = <Value>({ cache, panel, build }: RememberInput<Value>): Value => {
-  const known = cache.get(panel);
+export const remember = <Value, Key>({ cache, key, build }: RememberInput<Value, Key>): Value => {
+  const known = cache.get(key);
 
   if (known !== undefined) {
     return known;
@@ -37,7 +44,7 @@ export const remember = <Value>({ cache, panel, build }: RememberInput<Value>): 
 
   const value = build();
 
-  cache.set(panel, value);
+  cache.set(key, value);
 
   return value;
 };

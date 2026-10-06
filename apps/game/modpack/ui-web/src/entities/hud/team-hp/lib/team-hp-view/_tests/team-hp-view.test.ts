@@ -46,8 +46,11 @@ describe(teamHpView, () => {
     expect(view).toMatchObject({ numbers: true, bars: true, strip: false, secondRow: true, score: { allies: '2', enemies: '1' }, diff: '+2 300' });
   });
 
-  it('paints a lead good and a gap bad', () => {
+  it('paints a lead good', () => {
     expect(teamHpView(data('full')).diffTone).toBe('good');
+  });
+
+  it('paints a gap bad', () => {
     expect(teamHpView({ ...data('full'), diff: -400 }).diffTone).toBe('bad');
   });
 
@@ -63,18 +66,20 @@ describe(teamHpView, () => {
     expect(view.hasCenter).toBe(false);
   });
 
-  it('fills the bar by the share of HP left and writes the HP', () => {
-    const view = teamHpView(data('full'));
-
-    expect(view.allies.fill).toBe(Math.round((3200 / 5300) * TEAM_HP.barWidth));
-    expect(view.allies.hp).toBe('3 200');
+  it('fills the bar by the share of HP left', () => {
+    expect(teamHpView(data('full')).allies.fill).toBe(Math.round((3200 / 5300) * TEAM_HP.barWidth));
   });
 
-  it('paints the sides with the tones of the payload', () => {
-    const view = teamHpView(data('full'));
+  it('writes the HP left', () => {
+    expect(teamHpView(data('full')).allies.hp).toBe('3 200');
+  });
 
-    expect(view.allies.paint).toEqual({ tone: 'ally', text: undefined, fill: undefined });
-    expect(view.enemies.paint.tone).toBe('enemy');
+  it('paints the allies with their tone from the payload', () => {
+    expect(teamHpView(data('full')).allies.paint).toEqual({ tone: 'ally', text: undefined, fill: undefined });
+  });
+
+  it('paints the enemies with their tone from the payload', () => {
+    expect(teamHpView(data('full')).enemies.paint.tone).toBe('enemy');
   });
 
   it('paints a side in the colour the player set instead of its tone', () => {
@@ -116,10 +121,15 @@ describe(teamHpView, () => {
     expect(enemies.segments.map((item) => item.kind)).toEqual(['segment', 'gap', 'segment']);
   });
 
-  it('labels each tier group of the strip on its centre side', () => {
-    const { allies, enemies } = teamHpView(tiered('icons'));
+  it('labels each enemy tier group of the strip on its centre side', () => {
+    const { enemies } = teamHpView(tiered('icons'));
 
     expect(stripLabels(enemies.strip)).toEqual(['X', 'vehicle', 'IX', 'vehicle']);
+  });
+
+  it('labels each allied tier group of the strip on its centre side', () => {
+    const { allies } = teamHpView(tiered('icons'));
+
     expect(stripLabels(allies.strip)).toEqual(['vehicle', 'IX', 'vehicle', 'vehicle', 'X']);
   });
 

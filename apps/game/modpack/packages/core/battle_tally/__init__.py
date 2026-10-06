@@ -69,7 +69,7 @@ class Counters(object):
     client's summary total. Both return whether the value changed; `values` is {key: int}."""
 
     def __init__(self, keys):
-        self.values = dict((key, 0) for key in keys)
+        self.values = {key: 0 for key in keys}
 
     def add(self, key, amount=1):
         if key not in self.values or not is_number(amount) or amount <= 0:
@@ -88,8 +88,8 @@ class BattleTally(object):
 
     def __init__(self):
         self.markers = {}
-        self.events = dict((key, 0) for _, key in EVENT_KEYS)
-        self.event_counts = dict((key, 0) for _, key in EVENT_KEYS)
+        self.events = {key: 0 for _, key in EVENT_KEYS}
+        self.event_counts = {key: 0 for _, key in EVENT_KEYS}
         self.vanilla = {}
         self.batches = 0
         self.hooks = []

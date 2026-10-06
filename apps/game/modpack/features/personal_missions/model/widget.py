@@ -7,9 +7,6 @@ from ....core.hud.widget import card, card_chip, card_row
 from . import counts, shown_missions
 from .constants import CARD_WIDTH, STATUS_OF
 
-# The hangar card: the counters as three chips, then the missions in progress as one line each (the short name) with
-# the main condition cut to one dimmed line; the full conditions stay in the mod window's list page.
-
 
 def mission_row(mission, settings):
     detail = mission['main'] if settings.get('show_conditions') else None

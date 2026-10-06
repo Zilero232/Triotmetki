@@ -21,6 +21,8 @@ select = [
   "PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR1702",
   "RET",
   "SIM",
+  # dict((key, value) for ...) -> {key: value for ...}: dict comprehensions are Python 2.7 syntax.
+  "C402",
 ]
 # SIM105 suggests contextlib.suppress, which is Python 3.4+.
 ignore = ["SIM105"]

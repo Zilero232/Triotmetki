@@ -10,7 +10,4 @@ CAMERA_SECTION = 'camera'
 PREVIOUS_MODE_ATTR = '_VideoCameraControlMode__prevModeName'
 PREVIOUS_ARGS_ATTR = '_VideoCameraControlMode__previousArgs'
 FALLBACK_MODE = 'arcade'
-# gui/game_control/overlay.py _LAYERS: what the client hides to show the bare hangar (UNVERIFIED on Lesta 1.45 for the
-# Gameface parts of the hangar).
-HIDDEN_LAYERS = ('MARKER', 'VIEW', 'WINDOW', 'WAITING', 'SYSTEM_MESSAGE', 'FULLSCREEN_WINDOW')
 ESCAPE_KEY = 'KEY_ESCAPE'

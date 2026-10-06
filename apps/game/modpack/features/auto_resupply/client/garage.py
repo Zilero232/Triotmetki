@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.game import service
 from ....core.client.garage import is_locked, run_processor
-from ....core.log import log_exception
+from ....core.log import guarded
 from .constants import PROCESSORS, READERS
 
 # RU 1.45 client source: gui.shared.gui_items.Vehicle (isAutoRepair / isAutoLoad / isAutoEquip properties,
@@ -26,18 +26,15 @@ def summary(vehicle):
     return {
         'inv_id': getattr(vehicle, 'invID', None),
         'locked': is_locked(vehicle),
-        'flags': dict((flag, _flag(vehicle, name)) for flag, name in READERS.items()),
+        'flags': {flag: _flag(vehicle, name) for flag, name in READERS.items()},
     }
 
 
+@guarded('garage vehicles', fallback=[])
 def garage_vehicles():
-    try:
-        from skeletons.gui.shared import IItemsCache
-        from gui.shared.utils.requesters import REQ_CRITERIA
-        return list(service(IItemsCache).items.getVehicles(REQ_CRITERIA.INVENTORY).values())
-    except Exception:
-        log_exception('garage vehicles')
-        return []
+    from skeletons.gui.shared import IItemsCache
+    from gui.shared.utils.requesters import REQ_CRITERIA
+    return list(service(IItemsCache).items.getVehicles(REQ_CRITERIA.INVENTORY).values())
 
 
 def _processor(vehicle, flag, value):

@@ -1,10 +1,11 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ...compat import to_native
+from ...log import log
 from ...vendor import six
 from .constants import DEFAULT_MAX_RESPONSE_BYTES, DEFAULT_TIMEOUT_S, HTTP_WORKER, NETWORK_ERROR, SECURE_SCHEME
 from .runner import BackgroundRunner
-from .tls import is_allowed_url, verified_context
+from .tls import is_allowed_url, tls_available, verified_context
 
 _urlrequest = six.moves.urllib.request
 HTTPError = six.moves.urllib.error.HTTPError
@@ -42,7 +43,7 @@ def read_capped(stream, max_bytes):
 
 def _headers_of(response):
     try:
-        return dict((k, v) for k, v in response.info().items())
+        return {k: v for k, v in response.info().items()}
     except Exception:
         return {}
 
@@ -50,7 +51,7 @@ def _headers_of(response):
 # Header names and values as the interpreter's `str`: Python 2's HTTP code must not mix unicode headers with a binary
 # body.
 def native_headers(headers):
-    return dict((to_native(key), to_native(value)) for key, value in (headers or {}).items())
+    return {to_native(key): to_native(value) for key, value in (headers or {}).items()}
 
 
 def _sized_headers(headers, body):
@@ -62,9 +63,6 @@ def _sized_headers(headers, body):
     return sized
 
 
-# One blocking HTTP exchange: (status, body, headers); status NETWORK_ERROR when nothing came back, when the URL is
-# neither https nor the developer's loopback, when this Python cannot verify TLS, or when the answer is over
-# `max_bytes`. `body` is bytes or a sized file-like object (body.StoppableBody), sent from its start in blocks.
 def perform(method, url, headers, body, timeout, max_bytes=DEFAULT_MAX_RESPONSE_BYTES):
     url = to_native(url)
     opener = _opener(url)
@@ -116,6 +114,7 @@ class ThreadTransport(object):
         self.timeout = timeout
         self.max_bytes = max_bytes
         self.runner = BackgroundRunner(HTTP_WORKER)
+        self.tls_reported = False
 
     def request(self, method, url, headers, body, callback):
         timeout = self.timeout
@@ -125,10 +124,17 @@ class ThreadTransport(object):
             return perform(method, url, headers, body, timeout, max_bytes)
 
         def done(result):
+            self._report_tls()
             if callback is not None:
                 callback(*(result or (NETWORK_ERROR, b'', {})))
 
         self.runner.submit(job, done)
+
+    def _report_tls(self):
+        if self.tls_reported or tls_available() is not False:
+            return
+        self.tls_reported = True
+        log('TLS verification is not available in this client: requests to the site are off')
 
     def poll(self):
         return self.runner.poll()

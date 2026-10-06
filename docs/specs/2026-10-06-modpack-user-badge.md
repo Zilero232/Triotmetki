@@ -101,8 +101,14 @@ does not answer.
 - Nothing is sent before the mod is bound; the request carries only the arena's numeric account ids and the device
   fields, never player names (`features/pack_badge/model.badges_request`, pinned by its test; checked in the
   2026-10-06 security review). The badge stays on by default (owner's decision).
-- The server stores nothing from the read: no table, no cache of the roster, no log line with ids (request logs
+- The server stores no account id from the read: no table, no cache of the roster, no log line with ids (request logs
   carry method and path only, `core/logger/lib/request-log`); the rate limiter keys on the device id.
+- The server cannot check that the asked ids are the caller's arena, so the opt-in model stays and scraping is capped:
+  a device may ask about at most `MOD_BADGES_QUOTA.distinctIdsPerDay` (3000, about 100 battles of 29 other players)
+  distinct accounts per Moscow day, then gets 429 `rate_limited` with Retry-After until midnight. The count lives in a
+  Redis set per device and day whose members are the first 16 hex characters of an HMAC (server secret, day, id), so
+  the ids cannot be read back or linked across days; the set expires after two days
+  (`mod-badges/services/mod-badge-quota-writer.service.ts`).
 - Stored: one nullable boolean per device (`mod_device.badge_visible`). It is deleted with the device (account
   purge, unlinking an account revokes its devices, which stops the mark at once). No table grows with time, so no
   retention rule is added.

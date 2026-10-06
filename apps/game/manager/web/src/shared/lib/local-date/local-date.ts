@@ -1,1 +1,3 @@
-export const fromUnixSeconds = (seconds: number | null): Date | null => (seconds === null ? null : new Date(seconds * 1_000));
+import { fromUnixTime } from 'date-fns';
+
+export const fromUnixSeconds = (seconds: number | null): Date | null => (seconds === null ? null : fromUnixTime(seconds));

@@ -47,34 +47,42 @@ class BattleEventTest(unittest.TestCase):
         self.event = build_battle_event(_support.battle_results(), EXTRAS)
 
     def test_identity_fields(self):
-        event = self.event
+        expected = {
+            'type': 'battle_result',
+            'event_id': 'battle:1152921504606847123',
+            'arena_unique_id': '1152921504606847123',
+            'arena_type_id': 5,
+            'bonus_type': 1,
+            'duration_s': 402,
+            'occurred_at': 1790000402,
+            'vehicle': {'tank_id': 1, 'name': 'ussr:R04_T-34', 'tier': 5},
+            'queue_time_s': 12.5,
+            'session_id': 'abc',
+        }
 
-        self.assertEqual(event['type'], 'battle_result')
-        self.assertEqual(event['event_id'], 'battle:1152921504606847123')
-        self.assertEqual(event['arena_unique_id'], '1152921504606847123')
-        self.assertEqual(event['arena_type_id'], 5)
-        self.assertEqual(event['bonus_type'], 1)
-        self.assertEqual(event['duration_s'], 402)
-        self.assertEqual(event['occurred_at'], 1790000402)
-        self.assertEqual(event['vehicle'], {'tank_id': 1, 'name': 'ussr:R04_T-34', 'tier': 5})
-        self.assertEqual(event['queue_time_s'], 12.5)
-        self.assertEqual(event['session_id'], 'abc')
+        identity = {key: self.event[key] for key in expected}
+
+        self.assertEqual(identity, expected)
 
     def test_stats(self):
-        stats = self.event['stats']
+        expected = {
+            'damage_dealt': 2150,
+            'damage_assisted_radio': 640,
+            'damage_assisted_track': 310,
+            'damage_blocked': 900,
+            'frags': 2,
+            'spotted': 3,
+            'shots': 12,
+            'piercing_enemy_hits': 7,
+            'credits': 48000,
+            'xp': 1150,
+            'is_alive': True,
+            'is_premium': False,
+        }
 
-        self.assertEqual(stats['damage_dealt'], 2150)
-        self.assertEqual(stats['damage_assisted_radio'], 640)
-        self.assertEqual(stats['damage_assisted_track'], 310)
-        self.assertEqual(stats['damage_blocked'], 900)
-        self.assertEqual(stats['frags'], 2)
-        self.assertEqual(stats['spotted'], 3)
-        self.assertEqual(stats['shots'], 12)
-        self.assertEqual(stats['piercing_enemy_hits'], 7)
-        self.assertEqual(stats['credits'], 48000)
-        self.assertEqual(stats['xp'], 1150)
-        self.assertTrue(stats['is_alive'])
-        self.assertFalse(stats['is_premium'])
+        stats = {key: self.event['stats'][key] for key in expected}
+
+        self.assertEqual(stats, expected)
 
     def test_result_is_a_win_for_the_winning_team(self):
         self.assertEqual(self.event['result'], 'win')

@@ -8,7 +8,7 @@ const stringOrNull = (value: unknown): string | null => (typeof value === 'strin
 const numberOrNull = (value: unknown): number | null => (typeof value === 'number' ? value : null);
 
 export const createViewModel = (scope: object): ViewModel => {
-  const model = () => readGlobal(scope, GAMEFACE.globals.model);
+  const model = () => readGlobal({ scope, name: GAMEFACE.globals.model });
   const property = (name: string): unknown => model()?.[name];
 
   const subscribe = (callback: () => void): void => {
@@ -20,11 +20,14 @@ export const createViewModel = (scope: object): ViewModel => {
       }
     };
 
-    const engine = readGlobal(scope, GAMEFACE.globals.engine);
+    const engine = readGlobal({ scope, name: GAMEFACE.globals.engine });
     const { register, path, rootId, trackSubItems } = GAMEFACE.dataChanged;
 
     invoke({ target: engine, method: GAMEFACE.engine.on, args: [GAMEFACE.engine.dataChangedEvent, onChanged] });
-    registered = invoke({ target: readGlobal(scope, GAMEFACE.globals.viewEnv), method: register, args: [path, rootId, trackSubItems] }) ?? null;
+
+    registered =
+      invoke({ target: readGlobal({ scope, name: GAMEFACE.globals.viewEnv }), method: register, args: [path, rootId, trackSubItems] }) ?? null;
+
     callback();
   };
 
@@ -44,7 +47,7 @@ export const createViewModel = (scope: object): ViewModel => {
     escape: () => numberOrNull(property(GAMEFACE.model.escape)),
     send,
     onDataChanged: (callback) => {
-      whenReady({ engine: readGlobal(scope, GAMEFACE.globals.engine), callback: () => subscribe(callback) });
+      whenReady({ engine: readGlobal({ scope, name: GAMEFACE.globals.engine }), callback: () => subscribe(callback) });
     }
   };
 };

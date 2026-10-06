@@ -103,7 +103,7 @@ class HudWindowTest(unittest.TestCase):
 
     def setUp(self):
         self.loaded = set(sys.modules)
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED + (GAMEFACE_MODULE,))
+        self.saved = {name: sys.modules.get(name) for name in STUBBED + (GAMEFACE_MODULE,)}
         install_stubs()
         sys.modules.pop(GAMEFACE_MODULE, None)
         self.gameface = importlib.import_module(GAMEFACE_MODULE)
@@ -366,7 +366,7 @@ class LastFocusTest(unittest.TestCase):
 
     def setUp(self):
         self.loaded = set(sys.modules)
-        self.saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+        self.saved = {name: sys.modules.get(name) for name in STUBBED}
         install_stubs()
         sys.modules.pop(LAST_FOCUS_MODULE, None)
         self.module = importlib.import_module(LAST_FOCUS_MODULE)

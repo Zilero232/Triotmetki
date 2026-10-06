@@ -53,3 +53,5 @@ export type SideViewInput = {
 export type BehindInput = Pick<SideViewInput, 'other' | 'side'>;
 
 export type PaintInput = { tone: HudTone; color: string | null };
+
+export type TierGroupInput = { vehicle: TeamHpVehicle; index: number };

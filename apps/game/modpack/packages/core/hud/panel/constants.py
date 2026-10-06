@@ -21,6 +21,9 @@ PANEL_FIXED = {
     'border': False,
 }
 
+# The fixed text size of the hangar cards drawn as text.
+CARD_FIXED = {'font_size': 14}
+
 PANEL_CHOICES = {
     'align_x': ('left', 'center', 'right'),
     'align_y': ('top', 'center', 'bottom'),
@@ -41,7 +44,7 @@ PLACE_KEYS = ('x', 'y', 'align_x', 'align_y')
 # it is measured from (negative from the left or top, positive from the right or bottom).
 FIT_AXES = (('x', 'align_x', 'left', 'right'), ('y', 'align_y', 'top', 'bottom'))
 
-HEX_COLOR = re.compile(r'^#[0-9A-Fa-f]{6}$')
+HEX_COLOR = re.compile(r'^#[0-9A-Fa-f]{6}\Z')
 
 # The renderer's anchor props after a drag, and the settings keys they are saved to.
 MOVED_ALIGNS = (('alignX', 'align_x'), ('alignY', 'align_y'))

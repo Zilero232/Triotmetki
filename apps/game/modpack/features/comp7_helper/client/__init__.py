@@ -21,9 +21,6 @@ CARD_SPEC = CardSpec(
 )
 
 
-# The Onslaught hangar card: the Champion and Legend thresholds against the own division, the role skill of the
-# selected vehicle and the own streak and last battles (kept per account from the own battle results); read every
-# REFRESH_EVERY_S in the hangar and when the vehicle changes, hidden outside Onslaught.
 class Comp7Helper(PolledHangarCard):
 
     def __init__(self, app):

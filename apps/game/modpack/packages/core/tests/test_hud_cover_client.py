@@ -7,7 +7,7 @@ import unittest
 
 import _support
 from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer, panel_schema
-from otmetki.core.storage import MemoryFile
+from _support import MemoryFile
 
 STUBBED = (
     'BigWorld',
@@ -168,14 +168,15 @@ class Callbacks(object):
         self.pending.append(callback)
 
     def run(self):
-        pending, self.pending = self.pending, []
+        pending = self.pending
+        self.pending = []
         for callback in pending:
             callback()
 
 
 def install_stubs(callbacks, manager):
     forget_client_modules()
-    saved = dict((name, sys.modules.get(name)) for name in STUBBED)
+    saved = {name: sys.modules.get(name) for name in STUBBED}
     for name in STUBBED:
         sys.modules[name] = types.ModuleType(str(name))
     sys.modules['BigWorld'].player = lambda: None
@@ -210,10 +211,10 @@ class CoverWatchTest(unittest.TestCase):
         self.callbacks = Callbacks()
         self.manager = WindowsManager()
         self.saved = install_stubs(self.callbacks, self.manager)
-        self.originals = dict((name, SharedPage.__dict__[name]) for name in HOOKED)
-        self.setups_originals = dict(
-            (name, PrebattleAmmunitionPanelViewMeta.__dict__[name]) for name in SETUPS_HOOKED
-        )
+        self.originals = {name: SharedPage.__dict__[name] for name in HOOKED}
+        self.setups_originals = {
+            name: PrebattleAmmunitionPanelViewMeta.__dict__[name] for name in SETUPS_HOOKED
+        }
         from otmetki.core.client.hud.cover import CoverWatch
         self.layer = HudLayer(Backend(), ComponentConfig(MemoryFile()))
         self.layer.register('panel', panel_schema({}))

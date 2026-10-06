@@ -13,6 +13,6 @@ LIMITS = {
     'skills': 12,
     'gameplay_id': 1023,
 }
-TAG_PATTERN = re.compile(r'^[A-Za-z0-9_.-]{1,64}$')
+TAG_PATTERN = re.compile(r'^[A-Za-z0-9_.-]{1,64}\Z')
 GAMEPLAY_SHIFT = 16
 MAX_TRACKED_ARENAS = 20

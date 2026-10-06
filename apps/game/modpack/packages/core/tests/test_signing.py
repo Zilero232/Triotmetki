@@ -20,7 +20,6 @@ from otmetki.core.net.signing import (
     signed_message,
     signed_request,
     sync_clock,
-    verify,
 )
 
 SERVER_SIGNATURE_VECTOR = '7c6576dee0e349dfbd5997cdc94ebf348ddd00ff669762e869f89074eb845078'
@@ -40,7 +39,7 @@ def server_accepts(url, headers, body, signed_names=()):
         body,
         extra,
     )
-    return verify(SECRET, message, headers[SIGNATURE_HEADER])
+    return _support.verify_signature(SECRET, message, headers[SIGNATURE_HEADER])
 
 
 def ingest_headers():
@@ -80,19 +79,19 @@ class SigningTest(unittest.TestCase):
         body = b'{"events":[]}'
         signature = sign('k' * 32, body)
 
-        self.assertTrue(verify('k' * 32, body, signature))
+        self.assertTrue(_support.verify_signature('k' * 32, body, signature))
 
     def test_verify_rejects_a_changed_body(self):
         body = b'{"events":[]}'
         signature = sign('k' * 32, body)
 
-        self.assertFalse(verify('k' * 32, body + b' ', signature))
+        self.assertFalse(_support.verify_signature('k' * 32, body + b' ', signature))
 
     def test_verify_rejects_another_secret(self):
         body = b'{"events":[]}'
         signature = sign('k' * 32, body)
 
-        self.assertFalse(verify('x' * 32, body, signature))
+        self.assertFalse(_support.verify_signature('x' * 32, body, signature))
 
     def test_signed_headers(self):
         headers = signed_headers(

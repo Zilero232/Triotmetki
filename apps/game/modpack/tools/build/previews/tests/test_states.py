@@ -28,7 +28,7 @@ def image_values(value):
 def catalog_images():
     with io.open(CATALOG_PATH, encoding='utf-8') as handle:
         entries = json.load(handle)['components']
-    return dict((entry['id'], entry.get('preview', {}).get('image')) for entry in entries)
+    return {entry['id']: entry.get('preview', {}).get('image') for entry in entries}
 
 
 class PreviewStateTest(unittest.TestCase):
@@ -37,8 +37,8 @@ class PreviewStateTest(unittest.TestCase):
     def setUpClass(cls):
         images = own_images()
         cls.images = images
-        states = dict((component_id, preview_state(component_id, images)) for component_id in HUD_PREVIEWS)
-        cls.panels = dict((component_id, state['panels'][0]) for component_id, state in states.items())
+        states = {component_id: preview_state(component_id, images) for component_id in HUD_PREVIEWS}
+        cls.panels = {component_id: state['panels'][0] for component_id, state in states.items()}
         with io.open(PAGE_WIDGETS, encoding='utf-8') as handle:
             cls.page_widgets = handle.read()
 
@@ -81,7 +81,7 @@ class PreviewStateTest(unittest.TestCase):
         self.assertEqual(ids, sorted(HUD_PREVIEWS))
 
     def test_the_damage_log_keeps_its_first_column_and_the_rest_their_middle(self):
-        anchors = dict((preview['id'], preview['anchor']) for preview in job(self.images)['previews'])
+        anchors = {preview['id']: preview['anchor'] for preview in job(self.images)['previews']}
 
         self.assertEqual(anchors['damage_log'], 'start')
         self.assertEqual(anchors['team_hp'], 'middle')

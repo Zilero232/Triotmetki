@@ -3,10 +3,11 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os
 import time
 
-from ....core.client.component import FeatureComponent
+from ....core.client.component import ACTION_REFRESH, FeatureComponent
 from ....core.client.game import map_label, vehicle_short_name
 from ....core.client.hud.icons import client_file_exists
 from ....core.client.me import can_read, post_signed, signed_body
+from ....core.client.timer import Ticker
 from ....core.client.replays import replay_dir
 from ....core.compat import to_text
 from ....core.errors import ReasonError
@@ -28,7 +29,6 @@ from ..model import (
     ACTION_FOLDER,
     ACTION_HITS,
     ACTION_PLAY,
-    ACTION_REFRESH,
     ACTION_RENAME,
     ACTION_UPLOAD,
     ERROR_EXISTS,
@@ -59,6 +59,7 @@ from ..model.constants import (
     ANALYSIS_POLL_S,
     AUTO_NAME_CHECK_S,
     AUTO_NAME_INDEX_S,
+    INDEX_FRAME_S,
     INDEX_WANTED_S,
     NOT_SERVED_STATUS,
     PAGE_KIND,
@@ -98,6 +99,7 @@ class ReplayManager(FeatureComponent):
         self.queued = set()
         self.scanned_at = 0.0
         self.wanted_at = 0.0
+        self.index_ticker = Ticker(INDEX_FRAME_S, self._index_frame)
         self.vehicles = VehicleNames()
         self.items = ItemCache()
         self.replay_actions = {
@@ -158,11 +160,15 @@ class ReplayManager(FeatureComponent):
                 log('replay manager: auto name %s -> %s failed' % (replay['name'], name))
 
     def _index(self, now):
-        is_wanted = now - self.wanted_at <= INDEX_WANTED_S
-        if self.library.indexing() and is_wanted and self.enabled_in_hangar():
-            self.library.index(time.time)
         if not self.library.indexing():
             self.library.save()
+
+    def _index_frame(self):
+        is_wanted = time.time() - self.wanted_at <= INDEX_WANTED_S
+        if not self.library.indexing() or not is_wanted or not self.enabled_in_hangar():
+            return False
+        self.library.index(time.time)
+        return True
 
     def _scan(self, now, force=False):
         if force or now - self.scanned_at >= SCAN_EVERY_S:
@@ -231,6 +237,8 @@ class ReplayManager(FeatureComponent):
             self._scan(now)
         if self.library.indexing() and not self.library.entries:
             self.library.index(time.time)
+        if self.library.indexing():
+            self.index_ticker.start()
 
         context = PageContext(
             index=self.index,

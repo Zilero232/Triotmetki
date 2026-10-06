@@ -23,11 +23,11 @@ from otmetki.core.net.signing import (
     SERVER_TIME_HEADER,
     STALE_REQUEST_STATUS,
     TIMESTAMP_HEADER,
-    verify_request,
 )
 from otmetki.core.net.transport import BackgroundRunner
 from otmetki.core.replay_file import EXTENSIONS, MAGIC, is_replay_name, parse_date_time, read_header, read_header_from
-from otmetki.core.storage import JsonFile, MemoryFile
+from _support import MemoryFile, verify_request
+from otmetki.core.storage import JsonFile
 from otmetki.core.vendor import attr
 from otmetki.features.replay_upload.model import (
     Endpoint,
@@ -193,6 +193,16 @@ class ReplayHeaderTest(unittest.TestCase):
         truncated = replay_bytes()[:20]
 
         self.assertIsNone(read_header_from(io.BytesIO(truncated)))
+
+    def test_a_header_with_a_huge_number_is_refused_at_once(self):
+        block = b'{"playerID":' + b'9' * 1000000 + b'}'
+        data = struct.pack(str('<II'), MAGIC, 1) + struct.pack(str('<I'), len(block)) + block
+        started = time.time()
+
+        header = read_header_from(io.BytesIO(data))
+
+        self.assertIsNone(header)
+        self.assertLess(time.time() - started, 0.5)
 
     def test_a_missing_file_has_no_header(self):
         path = os.path.join(tempfile.gettempdir(), 'otmetki-no-such.wotreplay')
@@ -1119,20 +1129,25 @@ def quoted_list(values):
 class ReplayContractTest(unittest.TestCase):
 
     def test_constants_match_the_contract(self):
+        expected = {
+            'path': UPLOAD_PATH,
+            'field': FILE_FIELD,
+            'max_bytes': MAX_BYTES,
+            'extensions': list(EXTENSIONS),
+            'visibility_header': VISIBILITY_HEADER,
+            'visibilities': [VISIBILITY_PRIVATE, VISIBILITY_PUBLIC],
+            'default_visibility': VISIBILITY_PRIVATE,
+        }
         limits = contract_limits()['default']
 
-        self.assertEqual(limits['path'], UPLOAD_PATH)
-        self.assertEqual(limits['field'], FILE_FIELD)
-        self.assertEqual(limits['max_bytes'], MAX_BYTES)
-        self.assertEqual(tuple(limits['extensions']), EXTENSIONS)
-        self.assertEqual(limits['visibility_header'], VISIBILITY_HEADER)
-        self.assertEqual(limits['visibilities'], [VISIBILITY_PRIVATE, VISIBILITY_PUBLIC])
-        self.assertEqual(limits['default_visibility'], VISIBILITY_PRIVATE)
+        contract = {key: limits[key] for key in expected}
+
+        self.assertEqual(contract, expected)
 
     def test_the_contract_defaults_are_its_constants(self):
         limits = contract_limits()
 
-        constants = dict((key, value['const']) for key, value in limits['properties'].items())
+        constants = {key: value['const'] for key, value in limits['properties'].items()}
 
         self.assertEqual(constants, limits['default'])
 

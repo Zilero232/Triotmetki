@@ -15,7 +15,7 @@ RESULTS = (RESULT_WIN, RESULT_LOSS, RESULT_DRAW)
 MAX_TIER = 11
 # The client's small map picture (the replay manager shows the same), by the arena's geometry name.
 MAP_ICON = 'gui/maps/icons/map/small/%s.png'
-MAP_NAME = re.compile(r'^[0-9a-z_]{1,64}$')
+MAP_NAME = re.compile(r'^[0-9a-z_]{1,64}\Z')
 
 SIDE_RECEIVED = 'received'
 SIDE_DEALT = 'dealt'
@@ -62,16 +62,24 @@ DAMAGED_EFFECT = 'penetration'
 DASH = u'—'
 SEPARATOR = u' · '
 
-# What the page asks (protocol.decode_message): the command and the fields it needs.
+COMMAND_READY = 'ready'
+COMMAND_CLOSE = 'close'
+COMMAND_BATTLE = 'battle'
+COMMAND_TAB = 'tab'
+COMMAND_SELECT = 'select'
+COMMAND_MOVE = 'move'
+COMMAND_DIAG = 'diag'
 COMMANDS = {
-    'ready': (),
-    'close': (),
-    'battle': ('id',),
-    'tab': ('tab',),
-    'select': ('index',),
-    'move': ('dx', 'dy', 'dz'),
-    'diag': ('text',),
+    COMMAND_READY: (),
+    COMMAND_CLOSE: (),
+    COMMAND_BATTLE: ('id',),
+    COMMAND_TAB: ('tab',),
+    COMMAND_SELECT: ('index',),
+    COMMAND_MOVE: ('dx', 'dy', 'dz'),
+    COMMAND_DIAG: ('text',),
 }
+MOVE_FIELDS = COMMANDS[COMMAND_MOVE]
+TEXT_FIELDS = {COMMAND_BATTLE: 'id', COMMAND_DIAG: 'text'}
 # A camera drag or wheel step from the page, in screen pixels and wheel units (RU 1.45 maps_training_base_view
 # ._onMoveSpace passes the same dx, dy, dz on); anything larger is clamped.
 MAX_MOVE = 2000
@@ -105,6 +113,8 @@ PAGE_LABELS = (
     ('part', 'hv_col_part'),
     ('pick_battle', 'hv_pick_battle'),
 )
+
+NO_AIM = (0.0, 0.0)
 
 ACTION_OPEN = 'open'
 ACTION_CLEAR = 'clear'

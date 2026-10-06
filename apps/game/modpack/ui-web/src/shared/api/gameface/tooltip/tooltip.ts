@@ -35,7 +35,7 @@ const eventArguments = (text: TooltipText | undefined) =>
     : {};
 
 const createNativeTooltip = (scope: object): NativeTooltip => {
-  const viewEnv = () => readGlobal(scope, GAMEFACE.globals.viewEnv);
+  const viewEnv = () => readGlobal({ scope, name: GAMEFACE.globals.viewEnv });
 
   const ids = () => {
     const resources: unknown = Reflect.get(scope, GAMEFACE.globals.resources);

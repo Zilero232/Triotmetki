@@ -13,9 +13,12 @@ from ..i18n import STRINGS
 from ..model import (
     ACTION_CHOOSE,
     ACTION_LOOK,
-    ACTION_NATIVE,
     ACTION_REFRESH_PREVIEW,
+    ACTIONS,
     CHECK_CAPTURE,
+    NO_ENVIRONMENT,
+    PREMIUM_FLAGS,
+    SLOT_LABELS,
     CHECK_WAIT,
     PLAN_LATER,
     PLAN_LOADED,
@@ -67,16 +70,18 @@ from .space import (
     write_overrides,
 )
 
-ACTIONS = (ACTION_CHOOSE, ACTION_LOOK, ACTION_NATIVE, ACTION_REFRESH_PREVIEW)
+
+def _thumb_key(look, space):
+    if look is not None:
+        return preview_key(look.space, look.id)
+    if space:
+        return preview_key(space)
+    return None
 
 
-# The hangar space the player picked stands in for the game's default one: written into the client's default hangar
-# config the way its server event notifications write theirs, so an event hangar and the hangars of other modes still
-# win, and taken out again when the switch goes off or the choice goes back to the game's own. The default hangar
-# reloads at once when it is the one open; a space still loading is waited for the way the switch controller waits.
-# A look adds a stock environment of its space: written into the same config's environment slot (used when the space
-# loads) and switched live when its space is the one loaded. A pick (or the refresh button) arms one preview shot of the
-# hangar it leads to, taken once the player is back in the plain hangar (README, hangar_space previews).
+# The pick is written into the client's default hangar config the way its server event notifications write theirs, so
+# an event hangar and the hangars of other modes still win; a space still loading is waited for the way the switch
+# controller waits. Previews are shot only after the player's own pick (README, hangar_space previews).
 class HangarSpace(FeatureComponent):
 
     def __init__(self, app):
@@ -85,7 +90,7 @@ class HangarSpace(FeatureComponent):
         self.owned_environment = u''
         self.kept_spaces = {}
         self.kept_environments = {}
-        self.waiting = False
+        self.waiting = None
         self.environment_pending = False
         self.missing_looks = set()
         self.previews = PreviewStore(os.path.join(app.config_dir, PREVIEW_FOLDER))
@@ -93,6 +98,7 @@ class HangarSpace(FeatureComponent):
         self.shot = SceneShot(self.previews, self._preview_done)
         self.preview_ticker = Ticker(PREVIEW_CHECK_S, self._check_preview)
         app.bus.on('hangar', self.apply)
+        app.bus.on('battle_enter', self._stop_waiting)
 
     def settings_changed(self, changed):
         self.apply(force=True)
@@ -109,10 +115,14 @@ class HangarSpace(FeatureComponent):
             log('hangar space: look %s is not in this client, the game\'s own look stays' % look_id)
         return look
 
+    @staticmethod
+    def _space_names():
+        return space_names(available_paths())
+
     def wanted(self):
         if not self.enabled():
             return None, u''
-        names = space_names(available_paths())
+        names = self._space_names()
         return chosen_target(self.settings.get('space'), self.chosen_look(names), names)
 
     def apply(self, force=False):
@@ -156,8 +166,11 @@ class HangarSpace(FeatureComponent):
     def _slots_text(self, switcher):
         current = overrides(switcher)
         environments = environment_slots(switcher) or {}
-        return ', '.join('%s %s/%s' % ('premium' if is_premium else 'basic', current.get(is_premium),
-                                        environments.get(is_premium) or '-') for is_premium in (True, False))
+        slots = []
+        for is_premium in PREMIUM_FLAGS:
+            environment = environments.get(is_premium) or NO_ENVIRONMENT
+            slots.append('%s %s/%s' % (SLOT_LABELS[is_premium], current.get(is_premium), environment))
+        return ', '.join(slots)
 
     @staticmethod
     def _slot_environment(switcher, hangar):
@@ -188,8 +201,14 @@ class HangarSpace(FeatureComponent):
         if plan == PLAN_RELOAD:
             switcher.processPossibleSceneChange()
         elif plan == PLAN_WAIT and not self.waiting:
-            self.waiting = True
-            once_space_created(hangar, self._space_created)
+            self.waiting = once_space_created(hangar, self._space_created)
+
+    # A battle entered before the hangar space was created leaves that hangar object behind: the next hangar waits anew.
+    def _stop_waiting(self):
+        cancel = self.waiting
+        self.waiting = None
+        if cancel:
+            cancel()
 
     # A changed environment of the loaded space is switched live; a reload or a space still loading takes it from the
     # slot, and a space that loaded before the slot was written is switched once it is ready.
@@ -202,7 +221,7 @@ class HangarSpace(FeatureComponent):
             switch_environment(environment or active_environment(loaded))
 
     def _space_created(self):
-        self.waiting = False
+        self.waiting = None
         BigWorld.callback(0, safe(lambda: self.apply(force=True)))
 
     def on_screen_key(self):
@@ -210,7 +229,7 @@ class HangarSpace(FeatureComponent):
         name = current_name()
         if hangar is None or name is None or not space_ready(hangar):
             return None
-        look = self.chosen_look(space_names(available_paths())) if self.enabled() else None
+        look = self.chosen_look(self._space_names()) if self.enabled() else None
         is_live = look is not None and look.space == name and self.owned_environment == look.environment
         return preview_key(name, look.id if is_live else u'')
 
@@ -237,7 +256,7 @@ class HangarSpace(FeatureComponent):
     def ui_page(self):
         if not self.enabled_in_hangar():
             return None
-        names = space_names(available_paths())
+        names = self._space_names()
         looks = self.looks(names)
         return build_page(names, self.settings.get('space'), current_name(), self.app.translate,
                           looks=looks, look=self.settings.get('look'),
@@ -245,9 +264,9 @@ class HangarSpace(FeatureComponent):
 
     def ui_thumb(self):
         look_id = self.settings.get('look')
-        look = self.chosen_look(space_names(available_paths())) if look_id else None
+        look = self.chosen_look(self._space_names()) if look_id else None
         space = self.settings.get('space')
-        key = preview_key(look.space, look.id) if look is not None else preview_key(space) if space else None
+        key = _thumb_key(look, space)
         fallback = look_preview(look_id) if look_id else space_preview(space)
         return self.previews.data_uri(key) or fallback
 
@@ -268,7 +287,7 @@ class HangarSpace(FeatureComponent):
         if action == ACTION_LOOK:
             return self._choose_look(row_look(row))
         chosen = row if action == ACTION_CHOOSE else u''
-        if chosen and chosen not in space_names(available_paths()):
+        if chosen and chosen not in self._space_names():
             return self.notice_error('hangar_space_refused_missing')
         return self._save({'space': chosen, 'look': u''}, 'hangar_space_applied')
 
@@ -280,7 +299,7 @@ class HangarSpace(FeatureComponent):
         return self.notice_info('hangar_space_preview_armed')
 
     def _choose_look(self, look_id):
-        if find_look(self.looks(space_names(available_paths())), look_id) is None:
+        if find_look(self.looks(self._space_names()), look_id) is None:
             return self.notice_error('hangar_space_refused_look')
         return self._save({'look': look_id}, 'hangar_space_look_applied')
 

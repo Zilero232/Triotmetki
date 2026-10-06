@@ -10,8 +10,7 @@ from ..model.history import MarksHistory
 from ..model.page import build_page, page_actions
 
 
-# The per-account marks history file (the former marks_history component's, same name and format): the dossier after
-# each own battle and the hangar snapshots in between, recorded while the component is on.
+# The former marks_history component's file, same name and format, so the history of earlier versions carries on.
 class HistoryBook(object):
 
     def __init__(self, app, settings, is_enabled):
