@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use crate::ini_file::decode_text;
+use crate::text::{decode_text, Fallback};
 
 pub const LGC_PATH_DAT: [&str; 4] = ["Lesta", "GameCenter", "data", "lgc_path.dat"];
 pub const PREFERENCES_XML: &str = "preferences.xml";
@@ -14,7 +14,7 @@ pub struct LgcPreferences {
 
 pub fn lgc_dir(program_data: &Path) -> Option<PathBuf> {
     let dat = LGC_PATH_DAT.iter().fold(program_data.to_path_buf(), |path, part| path.join(part));
-    let text = decode_text(&fs::read(dat).ok()?);
+    let text = decode_text(&fs::read(dat).ok()?, Fallback::Lossy);
     let line = text.lines().map(str::trim).find(|line| !line.is_empty())?;
     let path = PathBuf::from(line.trim_matches('\0'));
     let dir = if path.extension().is_some_and(|ext| ext.eq_ignore_ascii_case("exe")) { path.parent()?.to_path_buf() } else { path };
@@ -23,7 +23,7 @@ pub fn lgc_dir(program_data: &Path) -> Option<PathBuf> {
 }
 
 pub fn read_preferences(lgc: &Path) -> LgcPreferences {
-    fs::read(lgc.join(PREFERENCES_XML)).map(|bytes| parse_preferences(&decode_text(&bytes))).unwrap_or_default()
+    fs::read(lgc.join(PREFERENCES_XML)).map(|bytes| parse_preferences(&decode_text(&bytes, Fallback::Lossy))).unwrap_or_default()
 }
 
 pub fn parse_preferences(xml: &str) -> LgcPreferences {

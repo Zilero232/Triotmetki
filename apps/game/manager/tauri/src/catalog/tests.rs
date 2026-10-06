@@ -121,7 +121,7 @@ fn splits_the_dependency_components_from_our_packages() {
     assert_eq!(gameface.required_by, vec!["marks_panel", "damage_log"]);
     assert!(!gameface.optional);
     assert!(!parsed.is_owned_file(&gameface.file));
-    assert!(parsed.component_for_file("gambiter.guiflash_0.6.6.mtmod").is_none());
+    assert!(parsed.component_for_file("me.poliroid.modslistapi_1.6.01.mtmod").is_none());
 }
 
 #[test]
@@ -141,7 +141,7 @@ fn keeps_the_optional_flag_of_a_dependency() {
 
     let parsed = parse(&optional.to_string()).unwrap();
 
-    assert!(parsed.dependency("guiflash").unwrap().optional);
+    assert!(parsed.dependency("modslist").unwrap().optional);
     assert!(!parsed.dependency("openwg_gameface").unwrap().optional);
     assert_eq!(serde_json::to_value(&parsed).unwrap()["dependencies"][1]["optional"], true);
 }
@@ -161,34 +161,11 @@ fn skips_a_dependency_that_claims_our_names_or_has_no_pinned_hash() {
 }
 
 #[test]
-fn accepts_the_optional_modslist_pin_saved_as_mtmod() {
-    let mut catalog = catalog_json();
-
-    catalog["components"].as_array_mut().unwrap().push(json!({
-        "id": "modslist",
-        "kind": "dependency",
-        "packageId": "me.poliroid.modslistapi",
-        "version": "1.6.01",
-        "file": "me.poliroid.modslistapi_1.6.01.mtmod",
-        "title": { "ru": "ModsList", "en": "ModsList" },
-        "author": { "name": "poliroid (Andrii Andruschyshyn)", "url": "https://gitlab.com/wot-public-mods/mods-list" },
-        "licence": {
-            "name": "MIT",
-            "url": "https://gitlab.com/wot-public-mods/mods-list/-/raw/v1.6.01/LICENSE.md",
-            "sha256": "c67ed29b3f80fa7b99e6fc16490fa1710353fb7ead042c276e8dccd2dbeedb5f"
-        },
-        "sourceUrl": "https://gitlab.com/-/project/26509092/uploads/9705f0b2627e9a074ecac2e84f38c9ca/me.poliroid.modslistapi_1.6.01.wotmod",
-        "sha256": "b312adfcd005405d49b711e79b4032be7d624b6e38d4156364d1c04bc5dba71f",
-        "size": 79776,
-        "requiredBy": ["ui"],
-        "optional": true,
-        "restartRequired": false
-    }));
-
-    let parsed = parse(&catalog.to_string()).unwrap();
+fn accepts_the_modslist_pin_saved_as_mtmod() {
+    let parsed = parse(&catalog_json().to_string()).unwrap();
     let modslist = parsed.dependency("modslist").unwrap();
 
-    assert!(modslist.optional);
+    assert!(!modslist.optional);
     assert!(crate::releases::is_dependency_source(&modslist.source_url));
     assert!(crate::releases::is_dependency_source(&modslist.licence.url));
 }
@@ -207,12 +184,40 @@ fn accepts_the_dependencies_the_modpack_catalogue_pins() {
 
     let ids: Vec<&str> = dependencies.iter().map(|dependency| dependency.id.as_str()).collect();
 
-    assert!(["openwg_gameface", "guiflash"].iter().all(|id| ids.contains(id)), "{ids:?}");
+    assert!(["openwg_gameface", "modslist"].iter().all(|id| ids.contains(id)), "{ids:?}");
 
     for dependency in &dependencies {
         assert!(is_valid_dependency(dependency), "{}", dependency.id);
         assert!(crate::releases::is_dependency_source(&dependency.source_url), "{}", dependency.source_url);
         assert!(crate::releases::is_dependency_source(&dependency.licence.url), "{}", dependency.licence.url);
         assert!(!dependency.required_by.is_empty());
+        assert!(!dependency.optional, "{}", dependency.id);
+    }
+}
+
+#[test]
+fn lets_the_window_open_every_dependency_link() {
+    let capabilities: serde_json::Value = serde_json::from_str(include_str!("../../capabilities/default.json")).unwrap();
+    let allowed: Vec<&str> = capabilities["permissions"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|permission| permission["identifier"] == "opener:allow-open-url")
+        .flat_map(|permission| permission["allow"].as_array().unwrap())
+        .map(|rule| rule["url"].as_str().unwrap())
+        .collect();
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../modpack/catalog/catalog.json");
+    let raw: serde_json::Value = serde_json::from_str(&fs::read_to_string(path).unwrap()).unwrap();
+    let links: Vec<&str> = raw["components"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|entry| entry["kind"] == DEPENDENCY_KIND)
+        .flat_map(|entry| [entry["author"]["url"].as_str().unwrap(), entry["licence"]["url"].as_str().unwrap()])
+        .collect();
+
+    for link in links {
+        let opens = allowed.iter().any(|rule| rule.strip_suffix('*').map_or(*rule == link, |prefix| link.starts_with(prefix)));
+        assert!(opens, "{link}");
     }
 }

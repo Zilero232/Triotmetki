@@ -1,3 +1,4 @@
+mod archive;
 mod background;
 mod cache;
 mod catalog;
@@ -24,6 +25,7 @@ mod paths;
 mod previews;
 mod process;
 mod profiles;
+mod random;
 mod releases;
 mod report;
 mod service;
@@ -32,6 +34,8 @@ mod settings;
 mod site;
 mod state;
 mod sync;
+mod text;
+mod versions;
 
 #[cfg(test)]
 mod contract;
@@ -40,8 +44,9 @@ use tauri::{AppHandle, Emitter, Manager as _, WindowEvent};
 use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_deep_link::DeepLinkExt as _;
 use tauri_plugin_log::{Target, TargetKind};
+use tauri_plugin_window_state::AppHandleExt as _;
 
-use crate::background::{BACKGROUND_ARG, MAIN_WINDOW};
+use crate::background::{BACKGROUND_ARG, MAIN_WINDOW, WINDOW_STATE};
 use crate::deep_link::DeepLink;
 use crate::paths::Layout;
 use crate::releases::{api_url, ReleasesClient, SequenceStore, SEQUENCES_FILE};
@@ -98,6 +103,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_window_state::Builder::new().with_state_flags(WINDOW_STATE).build())
         .setup(move |app| {
             let sequences = SequenceStore::new(layout.manager_dir().join(SEQUENCES_FILE));
             let manager = Manager::new(layout, ReleasesClient::new(api_url())?.with_sequences(sequences))?;
@@ -152,6 +158,10 @@ pub fn run() {
             if let WindowEvent::CloseRequested { api, .. } = event {
                 if window.label() == MAIN_WINDOW {
                     api.prevent_close();
+
+                    if let Err(error) = window.app_handle().save_window_state(WINDOW_STATE) {
+                        log::warn!("window state: {error}");
+                    }
                     let _ = window.hide();
                 }
             }

@@ -17,8 +17,6 @@ const mockBridge = (onSend: (message: string) => string | null = () => null) => 
 
 const emptyBridge = () => createGamefaceBridge({});
 
-const buttonModel = () => ({ [GAMEFACE.button.marker]: GAMEFACE.button.markerValue, [GAMEFACE.button.open]: vi.fn() });
-
 const silenceWarnings = () => vi.spyOn(console, 'warn').mockImplementation(() => undefined);
 
 const engineBridge = () => {
@@ -160,41 +158,6 @@ describe(createGamefaceBridge, () => {
 
     it('refuses when the view cannot be resized', () => {
       expect(emptyBridge().resizeView(SIZE)).toBe(false);
-    });
-  });
-
-  describe('openWindow', () => {
-    it('opens the window through the marked model among the page sub views', () => {
-      const model = buttonModel();
-      const views: Record<string, unknown> = { a: { model: { open: vi.fn() } }, b: { model } };
-      const bridge = createGamefaceBridge({ model: { other: 1 }, subViews: { ids: () => Object.keys(views), get: (id: string) => views[id] } });
-
-      const opened = bridge.openWindow();
-
-      expect(opened).toBe(true);
-      expect(model[GAMEFACE.button.open]).toHaveBeenCalledOnce();
-    });
-
-    it('opens the window through the page model itself', () => {
-      const model = buttonModel();
-      const bridge = createGamefaceBridge({ model });
-
-      const opened = bridge.openWindow();
-
-      expect(opened).toBe(true);
-      expect(model[GAMEFACE.button.open]).toHaveBeenCalledOnce();
-    });
-
-    it.each([
-      ['a model without the marker', { model: { open: vi.fn() } }],
-      ['a marked model without the command', { model: { [GAMEFACE.button.marker]: GAMEFACE.button.markerValue } }],
-      ['no model at all', {}]
-    ])('ignores %s', (_case, scope) => {
-      silenceWarnings();
-
-      const opened = createGamefaceBridge(scope).openWindow();
-
-      expect(opened).toBe(false);
     });
   });
 

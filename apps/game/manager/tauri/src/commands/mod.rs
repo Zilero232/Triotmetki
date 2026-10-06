@@ -347,7 +347,7 @@ pub async fn mark_release_seen(manager: State<'_, Manager>, version: String) -> 
 
 #[tauri::command]
 pub async fn prepare_report(manager: State<'_, Manager>, client_path: Option<PathBuf>) -> AppResult<ReportPreview> {
-    Ok(manager.prepare_report(client_path.as_deref()))
+    manager.prepare_report(client_path.as_deref())
 }
 
 #[tauri::command]

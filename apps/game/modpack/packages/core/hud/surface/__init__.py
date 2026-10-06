@@ -1,9 +1,9 @@
 """The Gameface HUD page's side of the renderer: the labels as one JSON state, the page's messages back.
 
-`HudSurface` keeps every label the layer created (GUIFlash props) with the GUI space it was created in, so a hangar
-label never shows in battle and the other way round, as GUIFlash does. `encode(space, cursor, edit)` is the view model's
-`state` property: `{v, cursor, edit, hover, panels: [{id, text, x, y, align_x, align_y, alpha, drag, border, visible,
-scale, kind, widget, dock, attach, hint, cover}]}`; `widget` is a panel's structured payload (`core.hud.widget`) or
+`HudSurface` keeps every label the layer created (its props) with the GUI space it was created in, so a hangar label
+never shows in battle and the other way round. `encode(space, cursor, edit)` is the view model's `state` property:
+`{v, cursor, edit, hover, panels: [{id, text, x, y, align_x, align_y, alpha, drag, border, visible, scale, widget, dock,
+attach, hint, cover}]}`; `widget` is a panel's structured payload (`core.hud.widget`) or
 None, drawn instead of `text` when the page knows its kind; `dock` (`{group, order}` or None, `core.hud.panel.dock_of`)
 stacks the panels of one column at its anchor; `attach` (`{kind, bar, minimap}` or None, `core.hud.panel.attach_of`)
 places a panel at its default place beside a stock element; `cover` (`COVERS`) is what a covering stock view does to the
@@ -14,11 +14,11 @@ take the mouse only over the panel under the pointer, so the cursor still reache
 hangar the whole screen is taken while editing.
 
 The page sends `{type: 'ready'}` once it can draw, `{type: 'moved', id, x, y, align_x, align_y}` after a drag,
-`{type: 'resized', id, scale}` after a wheel turn, `{type: 'pressed', id}` when the player clicks a button panel, and
+`{type: 'resized', id, scale}` after a wheel turn, and
 `{type: 'mouse', event}` the first time it sees the pointer over a panel, a press or a wheel turn in edit mode, and
 `{type: 'drawn', ids}` whenever the panels it laid out with a size changed (a panel replaces a stock element only while
-the page draws it), and `{type: 'area', whole}` whenever its input area turns into the whole screen or back to its
-buttons and the panel under the pointer.
+the page draws it), and `{type: 'area', whole}` whenever its input area turns into the whole screen or back to the
+panel under the pointer.
 `handle(raw)` decodes one message; the ui-web side is `src/shared/api/hud-protocol` (a test checks both command
 lists).
 """
@@ -44,9 +44,6 @@ from .constants import (
     HUD_RES_MAP_ID,
     HUD_SEND_COMMAND,
     HUD_STATE_PROPERTY,
-    KIND_BUTTON,
-    KIND_LABEL,
-    KINDS,
     MOUSE_EVENTS,
     PANEL_KEYS,
     POSITION_LIMIT,
@@ -69,8 +66,6 @@ __all__ = (
     'HUD_STATE_PROPERTY',
     'FramePush',
     'HudSurface',
-    'KIND_BUTTON',
-    'KIND_LABEL',
     'SPACE_BATTLE',
     'SPACE_LOBBY',
     'decode_hud_message',
@@ -162,7 +157,7 @@ def _drawn(message):
     return {'ids': tuple(to_text(alias) for alias in ids)}
 
 
-_PANEL_FIELDS = {'moved': _moved, 'resized': _resized, 'pressed': lambda message: {}}
+_PANEL_FIELDS = {'moved': _moved, 'resized': _resized}
 _PAGE_FIELDS = {'ready': lambda message: {}, 'mouse': _mouse, 'drawn': _drawn, 'area': _area}
 
 
@@ -281,8 +276,6 @@ class HudSurface(object):
 
         panel['text'] = to_text(panel['text'])
         panel['scale'] = _scale(panel['scale']) or 1.0
-        if panel['kind'] not in KINDS:
-            panel['kind'] = KIND_LABEL
         if not isinstance(panel['widget'], dict):
             panel['widget'] = None
         panel['dock'] = _dock(panel['dock'])

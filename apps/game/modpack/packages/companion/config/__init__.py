@@ -20,7 +20,7 @@ from .constants import (  # noqa: F401
     USER_SET_KEY,
 )
 from .dev import is_dev_install  # noqa: F401
-from .user_set import normalize_user_set, user_set_tokens, with_user_set  # noqa: F401
+from .user_set import normalize_user_set, record_user_set, user_set_tokens, with_user_set  # noqa: F401
 
 
 _urlparse = six.moves.urllib.parse.urlparse

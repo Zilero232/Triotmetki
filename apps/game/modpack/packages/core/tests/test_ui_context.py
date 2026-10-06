@@ -34,14 +34,8 @@ class Backend(object):
     def available(self):
         return True
 
-    def draws_buttons(self):
-        return True
-
     def listen(self, callback):
         self.moved = callback
-
-    def listen_press(self, callback):
-        self.pressed = callback
 
     def create(self, alias, props):
         self.calls.append(('create', alias, dict(props)))
@@ -73,7 +67,7 @@ class Watch(object):
 def hint_translator():
     hints = {
         'component_session_stats_hint': u'Бои и средний урон за сессию.',
-        'component_settings_button_hint': u'Открывает окно настроек.',
+        'component_hangar_info_hint': u'Часы и сервер.',
     }
     return Translator(Catalog({'ru': hints}), 'ru')
 
@@ -89,10 +83,10 @@ class UiHintTest(unittest.TestCase):
 
         assert self.backend.calls[-1][2]['hint'] == u'Бои и средний урон за сессию.'
 
-    def test_the_settings_button_carries_its_hint(self):
-        self.ui.button('otmetki.ui.button', {'x': 1, 'y': 2}, lambda: None)
+    def test_a_label_of_its_own_alias_carries_its_component_hint(self):
+        self.ui.show('otmetki.hangar_info', u'12:00', {'x': 1, 'y': 2})
 
-        assert self.backend.calls[-1][2]['hint'] == u'Открывает окно настроек.'
+        assert self.backend.calls[-1][2]['hint'] == u'Часы и сервер.'
 
 
 class UiContextTest(unittest.TestCase):
@@ -102,38 +96,38 @@ class UiContextTest(unittest.TestCase):
         self.watch = Watch()
         self.ui = load_ui()(self.backend, self.watch)
 
-    def show_session_card_and_button(self):
+    def show_session_card_and_clock(self):
         self.ui.show('otmetki.session', u'text', dock_layout('hangar_right'), widget={'kind': 'card'})
-        self.ui.button('otmetki.ui.button', {'x': 1, 'y': 2}, lambda: None)
+        self.ui.show('otmetki.hangar_info', u'12:00', {'x': 1, 'y': 2})
 
     def aliases_updated_with(self, props, calls=None):
         calls = self.backend.calls if calls is None else calls
         return sorted(call[1] for call in calls if call[0] == 'update' and call[2] == props)
 
-    def test_labels_and_the_button_hide_off_the_plain_hangar(self):
-        self.show_session_card_and_button()
+    def test_labels_hide_off_the_plain_hangar(self):
+        self.show_session_card_and_clock()
 
         self.watch.change(False)
 
-        assert self.aliases_updated_with({'visible': False}) == ['otmetki.session', 'otmetki.ui.button']
+        assert self.aliases_updated_with({'visible': False}) == ['otmetki.hangar_info', 'otmetki.session']
 
     def test_a_label_updated_off_the_hangar_stays_hidden(self):
-        self.show_session_card_and_button()
+        self.show_session_card_and_clock()
         self.watch.change(False)
 
         self.ui.show('otmetki.session', u'new', dock_layout('hangar_right'))
 
         assert self.backend.calls[-1][2]['visible'] is False
 
-    def test_labels_and_the_button_come_back_on_the_plain_hangar(self):
-        self.show_session_card_and_button()
+    def test_labels_come_back_on_the_plain_hangar(self):
+        self.show_session_card_and_clock()
         self.watch.change(False)
         self.ui.show('otmetki.session', u'new', dock_layout('hangar_right'))
 
         self.watch.change(True)
 
         shown = self.aliases_updated_with({'visible': True}, self.backend.calls[-2:])
-        assert shown == ['otmetki.session', 'otmetki.ui.button']
+        assert shown == ['otmetki.hangar_info', 'otmetki.session']
 
     def test_a_new_label_off_the_hangar_is_created_hidden(self):
         self.watch.listen(lambda visible: None)

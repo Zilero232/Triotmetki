@@ -16,9 +16,9 @@ from otmetki.companion.config import (
     Config,
     is_dev_install,
     is_valid_server_url,
+    record_user_set,
 )
 from otmetki.companion.i18n import STRINGS, Translator, resolve_language
-from otmetki.companion.settings_ui import BIND_CODE_VAR, build_template, settings_to_config
 
 RETIRED_VALUES = {key: old for _, key, old, _ in RETIRED_DEFAULTS}
 INVALID_UPDATE = {
@@ -214,35 +214,24 @@ class DevInstallTest(unittest.TestCase):
         self.assertFalse(is_dev_install(environ={}, mods_dir=os.path.join(self.mods, 'missing')))
 
 
-class SettingsTemplateTest(unittest.TestCase):
+class RecordUserSetTest(unittest.TestCase):
 
-    def setUp(self):
-        config = Config({'send_queue_times': False})
-        self.template = build_template(config, Translator('en'), 'status')
+    def test_recorded_keys_join_the_user_set(self):
+        config = Config({})
 
-    def test_template_names_the_mod(self):
-        self.assertEqual(self.template['modDisplayName'], 'Three Marks')
+        record_user_set(config, ['hangar_tweaks', 'minimap.size'])
 
-    def test_first_column_has_a_checkbox_per_feature(self):
-        names = [checkbox['varName'] for checkbox in self.template['column1']]
+        assert config.get('user_set') == 'hangar_tweaks minimap.size'
 
-        self.assertEqual(names, list(FEATURES))
+    def test_a_key_already_recorded_changes_nothing(self):
+        config = Config({'user_set': 'hangar_tweaks'})
 
-    def test_checkboxes_carry_the_config_values(self):
-        by_name = {checkbox['varName']: checkbox for checkbox in self.template['column1']}
+        changed = record_user_set(config, ['hangar_tweaks'])
 
-        self.assertFalse(by_name['send_queue_times']['value'])
+        assert changed is False
 
-    def test_second_column_has_the_bind_code_input(self):
-        bind_input = self.template['column2'][1]
-
-        self.assertEqual(bind_input['type'], 'TextInput')
-        self.assertEqual(bind_input['varName'], BIND_CODE_VAR)
-
-    def test_settings_to_config_keeps_only_config_switches(self):
-        updates = settings_to_config({'enabled': False, 'send_queue_times': False, BIND_CODE_VAR: 'ABCDEF', 'x': 1})
-
-        self.assertEqual(updates, {'enabled': False, 'send_queue_times': False})
+    def test_a_new_key_reports_the_change(self):
+        assert record_user_set(Config({}), ['hangar_tweaks']) is True
 
 
 class I18nTest(unittest.TestCase):

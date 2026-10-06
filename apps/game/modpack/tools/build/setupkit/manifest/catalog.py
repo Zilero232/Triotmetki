@@ -3,7 +3,8 @@
 catalog/catalog.schema.json (JSON Schema, Draft 7) checks the shape: types, required and unknown fields, id,
 version and package id patterns, texts without control characters (they are shown by the manager), https links,
 hashes. This module then checks what a schema cannot: preview files on disk, ids that refer to each other, presets
-and the third-party masks. Every problem is collected, then reported at once as a
+(one custom preset, last; the `everything` preset is never custom and no entry names it or the custom one) and the
+third-party masks. Every problem is collected, then reported at once as a
 CatalogError. Entries with `kind: "dependency"` are third-party runtime mods, passed through to components.json.
 jsonschema comes from tools/requirements.txt; on a bare Python the shape check is skipped and only the rest runs.
 """
@@ -123,7 +124,13 @@ def _category(raw):
 
 
 def _preset(raw):
-    return Preset(raw['id'], _localized(raw['title']), _localized(raw['description']), raw.get('custom', False))
+    return Preset(
+        raw['id'],
+        _localized(raw['title']),
+        _localized(raw['description']),
+        raw.get('custom', False),
+        raw.get('everything', False),
+    )
 
 
 def _dependency(raw):
@@ -204,13 +211,15 @@ def _check_presets(reader, presets):
         reader.fail('presets', 'exactly one preset must be custom, and it must come last')
     elif presets[0].custom:
         reader.fail('presets', 'the first preset is the default one and cannot be custom')
+    if any(preset.custom and preset.everything for preset in presets):
+        reader.fail('presets', 'the custom preset cannot also hold every component')
 
 
 def _check_entry(reader, catalog, entry):
     where = 'components.%s' % entry.id
     category_ids = [category.id for category in catalog.categories]
     preset_ids = [preset.id for preset in catalog.presets]
-    custom = [preset.id for preset in catalog.presets if preset.custom]
+    custom = [preset.id for preset in catalog.presets if preset.custom or preset.everything]
     entry_ids = [component.id for component in catalog.components]
     if entry.category not in category_ids:
         reader.fail(where, "unknown category '%s'" % entry.category)

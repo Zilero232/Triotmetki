@@ -5,7 +5,7 @@ from .constants import ESTIMATE, MAIN_GUN_LOOKS, PAST_THRESHOLD, REACHED, ROWS, 
 from .wn8 import rating_color
 
 # One row per target, as plain data both renderers read: the card row of the Gameface page (model/widget.py) and the
-# GUIFlash line (model/text.py).
+# text line (model/text.py).
 
 
 def _row(kind, text, value, **style):
@@ -40,7 +40,7 @@ def main_gun_row(state, settings, translate, view):
     if main_gun is None:
         return None
     look = MAIN_GUN_LOOKS[main_gun['status']]
-    detail = _share(main_gun, translate) if settings.get('main_gun_share') or view['extended'] else None
+    detail = _share(main_gun, translate) if settings.get('main_gun_share') else None
     text = translate('bp_main_gun')
     if look['word'] is not None:
         return _row('main_gun', text, translate(look['word']), tone=look['tone'], detail=detail)
@@ -74,8 +74,8 @@ def wn8_row(state, settings, translate, view):
 ROW_BUILDERS = {'main_gun': main_gun_row, 'wn8': wn8_row}
 
 
-def progress_rows(state, settings, translate, extended=False):
-    view = {'extended': extended, 'settled': state['settled']}
+def progress_rows(state, settings, translate):
+    view = {'settled': state['settled']}
     rows = []
     for kind in ROWS:
         if settings.get('row_' + kind):

@@ -6,7 +6,6 @@ import types
 import unittest
 
 import _support
-from otmetki.core.events import EventBus
 from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer, alias_of, panel_schema
 from _support import MemoryFile
 
@@ -53,12 +52,6 @@ class ClassicPage(SharedPage):
 
 class EpicPage(SharedPage):
     pass
-
-
-class Event(object):
-
-    def __init__(self, ctx):
-        self.ctx = ctx
 
 
 class Everything(object):
@@ -122,8 +115,7 @@ class StockControlTest(unittest.TestCase):
         self.backend = Backend()
         self.layer = HudLayer(self.backend, ComponentConfig(MemoryFile()))
         self.layer.register('panel', panel_schema({}))
-        self.bus = EventBus()
-        self.control = StockControl(self.layer, self.bus)
+        self.control = StockControl(self.layer)
         assert self.control.install()
 
     def tearDown(self):
@@ -292,14 +284,6 @@ class StockControlTest(unittest.TestCase):
 
         assert page.applied == []
 
-    def test_the_killer_camera_gives_the_stock_element_back(self):
-        page = self.populated_page()
-        self.control.want('panel', ('fragCorrelationBar',))
-
-        self.layer.set_cover('killcam', True)
-
-        assert page.applied[-1] == ({'fragCorrelationBar'}, set())
-
     def test_tab_keeps_the_stock_element_hidden(self):
         self.populated_page()
         self.control.want('panel', ('fragCorrelationBar',))
@@ -320,6 +304,15 @@ class StockControlTest(unittest.TestCase):
         page = self.populated_page()
         self.backend.page_drew(None)
         self.control.want('panel', ('fragCorrelationBar',))
+
+        self.backend.page_drew('panel')
+
+        assert page.applied[-1] == (set(), {'fragCorrelationBar'})
+
+    def test_a_panel_asked_before_the_page_is_up_hides_its_stock_element_once_the_page_draws_it(self):
+        page = self.populated_page()
+        self.control.want('panel', ('fragCorrelationBar',))
+        self.backend.page_drew(None)
 
         self.backend.page_drew('panel')
 
@@ -374,26 +367,6 @@ class StockControlTest(unittest.TestCase):
 
         assert self.control.reticle.hidden == frozenset(['reloaderTimerAlphaValue'])
 
-    def test_alt_down_goes_out_on_the_bus_once(self):
-        held = []
-        self.bus.on('battle_extended_info', held.append)
-        ClassicPage()._populate()
-
-        self.control._on_extended_info(Event({'isDown': True}))
-        self.control._on_extended_info(Event({'isDown': True}))
-
-        assert held == [True]
-
-    def test_alt_ends_with_the_battle_page(self):
-        held = []
-        self.bus.on('battle_extended_info', held.append)
-        page = self.populated_page()
-        self.control._on_extended_info(Event({'isDown': True}))
-
-        page._dispose()
-
-        assert held == [True, False]
-
 
 class CrosshairPanelContainer(object):
 
@@ -431,7 +404,7 @@ class StockControlFirstBattleTest(unittest.TestCase):
         self.backend = Backend()
         self.layer = HudLayer(self.backend, ComponentConfig(MemoryFile()))
         self.layer.register('panel', panel_schema({}))
-        self.control = StockControl(self.layer, EventBus())
+        self.control = StockControl(self.layer)
 
     def tearDown(self):
         for name, value in self.originals.items():

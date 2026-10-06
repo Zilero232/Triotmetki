@@ -10,7 +10,7 @@ use crate::install::{remove_our_files, selection};
 use crate::releases::sha256_hex;
 
 const GAMEFACE: &str = "openwg_gameface";
-const GUIFLASH: &str = "guiflash";
+const MODSLIST: &str = "modslist";
 const LICENCE: &[u8] = b"MIT License\n\nCopyright (c) test";
 
 fn body(id: &str) -> Vec<u8> {
@@ -82,19 +82,19 @@ fn resolves_the_dependencies_of_the_selected_components() {
 
     assert_eq!(resolve_for(&[]), BTreeSet::new());
     assert_eq!(resolve_for(&["marks_panel"]), ids(&[GAMEFACE]));
-    assert_eq!(resolve_for(&["hit_log"]), ids(&[GAMEFACE, GUIFLASH]));
+    assert_eq!(resolve_for(&["hit_log"]), ids(&[GAMEFACE, MODSLIST]));
 }
 
 #[test]
 fn recognises_any_version_of_a_dependency_by_its_package_id() {
     let catalog = test_catalog();
-    let guiflash = catalog.dependency(GUIFLASH).unwrap();
+    let modslist = catalog.dependency(MODSLIST).unwrap();
 
-    assert!(is_copy_of(guiflash, "gambiter.guiflash_0.6.5.mtmod"));
-    assert!(is_copy_of(guiflash, "GAMBITER.GUIFLASH_0.6.6.WOTMOD"));
-    assert!(is_copy_of(guiflash, "gambiter.guiflash.wotmod"));
-    assert!(!is_copy_of(guiflash, "gambiter.guiflashx_0.6.6.mtmod"));
-    assert!(!is_copy_of(guiflash, "gambiter.guiflash_0.6.6.zip"));
+    assert!(is_copy_of(modslist, "me.poliroid.modslistapi_1.6.00.mtmod"));
+    assert!(is_copy_of(modslist, "ME.POLIROID.MODSLISTAPI_1.6.01.WOTMOD"));
+    assert!(is_copy_of(modslist, "me.poliroid.modslistapi.wotmod"));
+    assert!(!is_copy_of(modslist, "me.poliroid.modslistapix_1.6.01.mtmod"));
+    assert!(!is_copy_of(modslist, "me.poliroid.modslistapi_1.6.01.zip"));
 }
 
 #[test]
@@ -113,23 +113,23 @@ fn installs_a_missing_dependency_as_ours_with_its_licence() {
 #[test]
 fn never_takes_over_a_dependency_the_player_installed_first() {
     let setup = Setup::new();
-    let theirs = setup.client.mods_dir.join("gambiter.guiflash_0.6.5.mtmod");
+    let theirs = setup.client.mods_dir.join("me.poliroid.modslistapi_1.6.00.mtmod");
 
     fs::write(&theirs, "their build").unwrap();
 
     let client_dir = setup.client_dir();
     let context = ClientContext { client_dir: &client_dir, client: &setup.client, catalog: &setup.catalog };
-    let downloads = to_download(DownloadPlanInput { context, wanted: &ids(&[GUIFLASH]), removing: &[] }).unwrap();
+    let downloads = to_download(DownloadPlanInput { context, wanted: &ids(&[MODSLIST]), removing: &[] }).unwrap();
 
     assert!(downloads.is_empty());
 
-    setup.install(&[GUIFLASH], &[fetched(&setup.catalog, GUIFLASH)]).unwrap();
+    setup.install(&[MODSLIST], &[fetched(&setup.catalog, MODSLIST)]).unwrap();
 
-    let record = setup.manifest().dependency(GUIFLASH).cloned().unwrap();
+    let record = setup.manifest().dependency(MODSLIST).cloned().unwrap();
 
     assert_eq!(record.owner, DependencyOwner::User);
-    assert_eq!(record.file, "gambiter.guiflash_0.6.5.mtmod");
-    assert!(!setup.client.mods_dir.join("gambiter.guiflash_0.6.6.mtmod").exists());
+    assert_eq!(record.file, "me.poliroid.modslistapi_1.6.00.mtmod");
+    assert!(!setup.client.mods_dir.join("me.poliroid.modslistapi_1.6.01.mtmod").exists());
 
     let removed = remove_owned(context).unwrap();
 
@@ -140,15 +140,15 @@ fn never_takes_over_a_dependency_the_player_installed_first() {
 #[test]
 fn treats_the_same_file_found_before_the_install_as_the_players() {
     let setup = Setup::new();
-    let file = setup.client.mods_dir.join("gambiter.guiflash_0.6.6.mtmod");
+    let file = setup.client.mods_dir.join("me.poliroid.modslistapi_1.6.01.mtmod");
 
-    fs::write(&file, body(GUIFLASH)).unwrap();
-    setup.install(&[GUIFLASH], &[]).unwrap();
+    fs::write(&file, body(MODSLIST)).unwrap();
+    setup.install(&[MODSLIST], &[]).unwrap();
 
     let client_dir = setup.client_dir();
     let context = ClientContext { client_dir: &client_dir, client: &setup.client, catalog: &setup.catalog };
 
-    assert_eq!(statuses(context).unwrap().iter().find(|status| status.id == GUIFLASH).unwrap().state, DependencyState::User);
+    assert_eq!(statuses(context).unwrap().iter().find(|status| status.id == MODSLIST).unwrap().state, DependencyState::User);
 
     remove_our_files(context).unwrap();
 
@@ -158,24 +158,24 @@ fn treats_the_same_file_found_before_the_install_as_the_players() {
 #[test]
 fn downloads_a_dependency_whose_only_copy_the_player_removes() {
     let setup = Setup::new();
-    let theirs = setup.client.mods_dir.join("gambiter.guiflash_0.6.5.mtmod");
+    let theirs = setup.client.mods_dir.join("me.poliroid.modslistapi_1.6.00.mtmod");
 
     fs::write(&theirs, "their build").unwrap();
 
     let client_dir = setup.client_dir();
     let context = ClientContext { client_dir: &client_dir, client: &setup.client, catalog: &setup.catalog };
-    let downloads = to_download(DownloadPlanInput { context, wanted: &ids(&[GUIFLASH]), removing: std::slice::from_ref(&theirs) }).unwrap();
+    let downloads = to_download(DownloadPlanInput { context, wanted: &ids(&[MODSLIST]), removing: std::slice::from_ref(&theirs) }).unwrap();
 
-    assert_eq!(downloads.iter().map(|dependency| dependency.id.as_str()).collect::<Vec<_>>(), vec![GUIFLASH]);
+    assert_eq!(downloads.iter().map(|dependency| dependency.id.as_str()).collect::<Vec<_>>(), vec![MODSLIST]);
 }
 
 #[test]
 fn uninstall_removes_only_the_dependencies_we_own() {
     let setup = Setup::new();
-    let theirs = setup.client.mods_dir.join("gambiter.guiflash_0.6.5.mtmod");
+    let theirs = setup.client.mods_dir.join("me.poliroid.modslistapi_1.6.00.mtmod");
 
     fs::write(&theirs, "their build").unwrap();
-    setup.install(&[GAMEFACE, GUIFLASH], &[fetched(&setup.catalog, GAMEFACE)]).unwrap();
+    setup.install(&[GAMEFACE, MODSLIST], &[fetched(&setup.catalog, GAMEFACE)]).unwrap();
 
     let client_dir = setup.client_dir();
     let context = ClientContext { client_dir: &client_dir, client: &setup.client, catalog: &setup.catalog };
@@ -272,7 +272,7 @@ fn enabling_a_component_needs_the_dependencies_of_everything_it_pulls_in() {
     let catalog = test_catalog();
 
     assert_eq!(needed_to_enable(&catalog, "marks_panel"), ids(&[GAMEFACE]));
-    assert_eq!(needed_to_enable(&catalog, "hit_log"), ids(&[GAMEFACE, GUIFLASH]));
+    assert_eq!(needed_to_enable(&catalog, "hit_log"), ids(&[GAMEFACE, MODSLIST]));
     assert_eq!(needed_to_enable(&catalog, "core"), BTreeSet::new());
 }
 
@@ -280,18 +280,18 @@ fn enabling_a_component_needs_the_dependencies_of_everything_it_pulls_in() {
 fn enabling_a_component_never_pulls_in_an_optional_dependency_the_wizard_installs() {
     let mut catalog = test_catalog();
 
-    catalog.dependencies.iter_mut().filter(|dependency| dependency.id == GUIFLASH).for_each(|dependency| dependency.optional = true);
+    catalog.dependencies.iter_mut().filter(|dependency| dependency.id == MODSLIST).for_each(|dependency| dependency.optional = true);
 
     let components = selection(&catalog, &["hit_log".to_owned()]).unwrap();
 
     assert_eq!(needed_to_enable(&catalog, "hit_log"), ids(&[GAMEFACE]));
-    assert_eq!(resolve(ResolveInput { catalog: &catalog, components: &components }), ids(&[GAMEFACE, GUIFLASH]));
+    assert_eq!(resolve(ResolveInput { catalog: &catalog, components: &components }), ids(&[GAMEFACE, MODSLIST]));
 }
 
 #[test]
 fn an_update_picks_the_owned_dependencies_the_catalog_pins_newer() {
     let setup = Setup::new();
-    let theirs = setup.client.mods_dir.join("gambiter.guiflash_0.6.5.mtmod");
+    let theirs = setup.client.mods_dir.join("me.poliroid.modslistapi_1.6.00.mtmod");
     let mut older = setup.catalog.clone();
     let old_bytes = b"gameface 1.2.1".to_vec();
 
@@ -306,7 +306,7 @@ fn an_update_picks_the_owned_dependencies_the_catalog_pins_newer() {
     let old_context = ClientContext { client_dir: &client_dir, client: &setup.client, catalog: &older };
     let old_fetched = FetchedDependency { dependency: older.dependency(GAMEFACE).unwrap().clone(), bytes: old_bytes, licence: LICENCE.to_vec() };
 
-    install(InstallDependenciesInput { context: old_context, wanted: &ids(&[GAMEFACE, GUIFLASH]), fetched: &[old_fetched] }).unwrap();
+    install(InstallDependenciesInput { context: old_context, wanted: &ids(&[GAMEFACE, MODSLIST]), fetched: &[old_fetched] }).unwrap();
 
     let old_mods_dir = setup.client.mods_dir.clone();
     let patched = patch_client(&setup.client.path, "1.46.0.0");
@@ -328,7 +328,7 @@ fn an_update_picks_the_owned_dependencies_the_catalog_pins_newer() {
     assert!(!patched.mods_dir.join("net.openwg.gameface_1.2.1.mtmod").exists());
     assert_eq!(fs::read(patched.mods_dir.join("net.openwg.gameface_1.2.2.mtmod")).unwrap(), body(GAMEFACE));
     assert_eq!(manifest.dependency(GAMEFACE).unwrap().file, "net.openwg.gameface_1.2.2.mtmod");
-    assert_eq!(manifest.dependency(GUIFLASH).unwrap().owner, DependencyOwner::User);
+    assert_eq!(manifest.dependency(MODSLIST).unwrap().owner, DependencyOwner::User);
     assert_eq!(fs::read_to_string(&theirs).unwrap(), "their build");
     assert_eq!(updates(UpdatesInput { context, from_mods_dir: Some(&old_mods_dir) }).unwrap(), BTreeSet::new());
 }

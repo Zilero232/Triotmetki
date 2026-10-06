@@ -10,9 +10,6 @@ from ..settings.constants import STYLE_MINIMAL
 from .constants import (
     BLOCKED_OUTCOMES,
     COMPACT_STYLES,
-    DETAIL_EXTENDED,
-    DETAIL_FULL,
-    DETAIL_SHORT,
     KIND_CRIT,
     KINDS,
     MAX_ENTRIES,
@@ -115,13 +112,6 @@ class DamageLog(object):
         }
 
 
-def detail_mode(settings, extended):
-    if not settings.get('alt_mode'):
-        return DETAIL_FULL
-
-    return DETAIL_EXTENDED if extended else DETAIL_SHORT
-
-
 def shown_sections(settings):
     return SECTIONS.get(settings.get('sections'), SECTIONS['both'])
 
@@ -141,10 +131,8 @@ def shown_totals(log, settings):
     return counted or shown[:1]
 
 
-# The compact styles show the totals only; holding Alt shows the rows they leave out, as the stock log does in its
-# "show by Alt" mode (damage_log_panel _VIEW_MODE.SHOW_BY_ALT_PRESS, RU 1.45 client source).
-def shows_rows(settings, detail):
-    return settings.get('style') not in COMPACT_STYLES or detail == DETAIL_EXTENDED
+def shows_rows(settings):
+    return settings.get('style') not in COMPACT_STYLES
 
 
 def _with_target(row, targets):
@@ -180,8 +168,8 @@ def received_rows(log, settings):
     return rows[:settings.get('received_lines')]
 
 
-def section_rows(log, settings, detail):
-    shown = shown_sections(settings) if shows_rows(settings, detail) else ()
+def section_rows(log, settings):
+    shown = shown_sections(settings) if shows_rows(settings) else ()
     return {
         'dealt': dealt_rows(log, settings) if 'dealt' in shown else [],
         'received': received_rows(log, settings) if 'received' in shown else [],

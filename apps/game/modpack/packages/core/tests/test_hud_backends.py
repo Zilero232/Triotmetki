@@ -9,7 +9,6 @@ import unittest
 
 import _support
 from otmetki.core.hud import (
-    BackendChain,
     ComponentConfig,
     HudBackend,
     HudLayer,
@@ -45,7 +44,7 @@ MALFORMED_MESSAGES = (
     '{"type": "moved", "id": "x", "x": true, "y": 2}',
     'x' * 5000,
     '{"type": "resized", "id": "x", "scale": "big"}',
-    '{"type": "pressed"}',
+    '{"type": "pressed", "id": "x"}',
 )
 
 
@@ -136,117 +135,16 @@ def read_page_constants():
         return handle.read()
 
 
-class BackendChainTest(unittest.TestCase):
+class NullBackendTest(unittest.TestCase):
 
-    def setUp(self):
-        self.gameface = Recorder('gameface')
-        self.guiflash = Recorder('guiflash')
-        self.chain = BackendChain([self.gameface, self.guiflash])
+    def test_the_null_backend_is_unavailable(self):
+        assert not NullBackend().available()
 
-    def switch_every_backend_off(self):
-        self.gameface.is_available = False
-        self.guiflash.is_available = False
+    def test_the_null_backend_refuses_a_label(self):
+        assert not NullBackend().create('a', {'text': '1'})
 
-    def test_the_first_available_backend_names_the_chain(self):
-        assert self.chain.name == 'gameface'
-
-    def test_create_goes_to_the_first_available_backend(self):
-        created = self.chain.create('a', {'text': '1'})
-
-        assert created
-        assert 'a' in self.gameface.labels
-        assert self.guiflash.labels == {}
-
-    def test_the_next_backend_names_the_chain_when_the_first_is_unavailable(self):
-        self.gameface.is_available = False
-
-        assert self.chain.name == 'guiflash'
-
-    def test_create_falls_through_to_the_next_available_backend(self):
-        self.gameface.is_available = False
-
-        created = self.chain.create('b', {'text': '2'})
-
-        assert created
-        assert 'b' in self.guiflash.labels
-
-    def test_an_update_stays_with_the_backend_of_the_label(self):
-        self.chain.create('a', {'text': '1'})
-        self.gameface.is_available = False
-
-        updated = self.chain.update('a', {'text': '2'})
-
-        assert updated
-        assert self.gameface.labels['a']['text'] == '2'
-
-    def test_a_delete_stays_with_the_backend_of_the_label(self):
-        self.chain.create('a', {'text': '1'})
-        self.gameface.is_available = False
-
-        assert self.chain.delete('a')
-
-    def test_a_deleted_label_cannot_be_deleted_again(self):
-        self.chain.create('a', {'text': '1'})
-        self.chain.delete('a')
-
-        assert not self.chain.delete('a')
-
-    def test_a_deleted_label_cannot_be_updated(self):
-        self.chain.create('a', {'text': '1'})
-        self.chain.delete('a')
-
-        assert not self.chain.update('a', {})
-
-    def test_the_chain_is_unavailable_when_no_backend_is(self):
-        self.switch_every_backend_off()
-
-        assert not self.chain.available()
-
-    def test_the_chain_is_named_after_the_null_backend_when_no_backend_is_available(self):
-        self.switch_every_backend_off()
-
-        assert self.chain.name == NullBackend.name
-
-    def test_create_is_refused_when_no_backend_is_available(self):
-        self.switch_every_backend_off()
-
-        assert not self.chain.create('a', {})
-
-    def test_an_empty_chain_has_no_names(self):
-        assert BackendChain([]).names == []
-
-    def test_an_empty_chain_is_unavailable(self):
-        assert not BackendChain([]).available()
-
-    def test_the_drawn_panels_are_the_active_backends(self):
-        self.gameface.drawn = frozenset(['a'])
-
-        assert self.chain.drawn_aliases() == frozenset(['a'])
-
-    def test_nothing_is_drawn_without_an_available_backend(self):
-        self.gameface.drawn = frozenset(['a'])
-        self.switch_every_backend_off()
-
-        assert self.chain.drawn_aliases() is None
-
-    def test_listen_drawn_reaches_every_backend(self):
-        seen = []
-
-        self.chain.listen_drawn(lambda: seen.append(True))
-
-        assert len(self.gameface.drawn_listeners) == len(self.guiflash.drawn_listeners) == 1
-
-    def test_listen_reaches_every_backend(self):
-        seen = []
-
-        self.chain.listen(lambda alias, props: seen.append(alias))
-        self.gameface.listeners[0]('x', {})
-        self.guiflash.listeners[0]('y', {})
-
-        assert seen == ['x', 'y']
-
-    def test_names_lists_every_backend_in_order(self):
-        assert self.chain.names == ['gameface', 'guiflash']
+    def test_the_null_backend_confirms_nothing_drawn(self):
+        assert NullBackend().drawn_aliases() is None
 
 
 class LayerTest(unittest.TestCase):
@@ -482,7 +380,6 @@ class SurfaceTest(unittest.TestCase):
             'border': False,
             'visible': True,
             'scale': 1.0,
-            'kind': 'label',
             'widget': None,
             'dock': None,
             'attach': None,
@@ -590,11 +487,6 @@ class HudMessageTest(unittest.TestCase):
         self.surface.handle(resized_message())
 
         assert self.surface.panel(DAMAGE_LOG)['scale'] == 3.0
-
-    def test_pressed_names_the_panel(self):
-        pressed = self.surface.handle(json.dumps({'type': 'pressed', 'id': HANGAR_INFO}))
-
-        assert pressed == ('pressed', {'id': 'otmetki.hangar_info'})
 
 
 class HudPageContractTest(unittest.TestCase):

@@ -124,7 +124,7 @@ def team_hp_beside_stock():
     from otmetki.features.team_hp.settings import SCHEMA
 
     settings = Settings({'style': 'numbers'}, SCHEMA)
-    x, y = pinned_place(settings, True)
+    x, y = pinned_place(settings)
     return {'x': x, 'y': y, 'align_x': 'center', 'align_y': 'top'}
 
 

@@ -132,9 +132,6 @@ class PlatoonPointsPanel(BattlePanel):
         if self.platoon.killed(victim_id, killer_id, is_enemy(victim_id)):
             self.render()
 
-    def extended_changed(self, held):
-        self.render()
-
     @safe
     def render(self):
         if self.platoon is None:
@@ -145,4 +142,4 @@ class PlatoonPointsPanel(BattlePanel):
             return
         self.wait(None)
         text = points_text(self.platoon, self.settings, self.app.translate)
-        self.show(text, points_widget(self.platoon, self.settings, self.app.translate, self.extended()))
+        self.show(text, points_widget(self.platoon, self.settings, self.app.translate))

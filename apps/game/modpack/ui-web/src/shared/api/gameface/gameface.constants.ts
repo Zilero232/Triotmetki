@@ -57,13 +57,7 @@ export const GAMEFACE = {
     event: 'PlaySound',
     names: { hover: 'highlight', click: 'play' }
   },
-  button: {
-    marker: 'otmetkiButton',
-    markerValue: 'otmetki',
-    open: 'open'
-  },
   log: {
-    noModel: '[OTMETKI] no Gameface model:',
-    noButtonModel: '[OTMETKI] hangar button: no model to open the window'
+    noModel: '[OTMETKI] no Gameface model:'
   }
 } as const;

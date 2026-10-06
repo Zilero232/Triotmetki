@@ -40,8 +40,12 @@ pub fn rename_file(from: &Path, to: &Path) -> AppResult<()> {
     Ok(())
 }
 
+pub fn parent_dir(path: &Path) -> &Path {
+    path.parent().filter(|parent| !parent.as_os_str().is_empty()).unwrap_or(Path::new("."))
+}
+
 pub fn write_atomic(path: &Path, bytes: &[u8]) -> AppResult<()> {
-    let parent = path.parent().filter(|parent| !parent.as_os_str().is_empty()).unwrap_or(Path::new("."));
+    let parent = parent_dir(path);
 
     fs::create_dir_all(parent)?;
 

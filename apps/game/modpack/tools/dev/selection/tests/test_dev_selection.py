@@ -49,8 +49,8 @@ PACKAGES = [
 CATALOG = FakeCatalog(
     [entry('core', True), entry('companion', True), entry('ui', True), entry('marks_panel'), entry('damage_log'),
      entry('hit_viewer', dependencies=['damage_log'])],
-    [dependency('openwg_gameface', ['ui', 'marks_panel']), dependency('guiflash', ['marks_panel']),
-     dependency('modslist', ['ui'], optional=True)],
+    [dependency('openwg_gameface', ['ui', 'marks_panel']), dependency('modslist', ['ui']),
+     dependency('voice_pack', ['marks_panel'], optional=True)],
 )
 
 
@@ -74,12 +74,12 @@ class SelectTest(unittest.TestCase):
     def test_third_party_mods_join_for_the_components_that_need_them(self):
         chosen = selection.select(PACKAGES, CATALOG, ['marks_panel'])
 
-        self.assertEqual([item.id for item in chosen.dependencies], ['openwg_gameface', 'guiflash'])
+        self.assertEqual([item.id for item in chosen.dependencies], ['openwg_gameface', 'modslist'])
 
     def test_an_optional_third_party_mod_never_joins(self):
         chosen = selection.select(PACKAGES, CATALOG)
 
-        self.assertNotIn('modslist', [item.id for item in chosen.dependencies])
+        self.assertNotIn('voice_pack', [item.id for item in chosen.dependencies])
 
     def test_an_unknown_id_is_an_error(self):
         with self.assertRaises(selection.SelectionError):

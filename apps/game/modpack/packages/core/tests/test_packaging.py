@@ -10,7 +10,7 @@ SPLIT_CORE = 'net.triotmetki.core_0.3.0.mtmod'
 SPLIT_COMPANION = 'otmetki.companion_0.3.0.mtmod'
 SPLIT_UI = 'net.triotmetki.ui_0.1.2.mtmod'
 GAMEFACE = 'net.openwg.gameface_1.2.2.mtmod'
-GUIFLASH = 'gambiter.guiflash_0.6.6.mtmod'
+MODSLIST = 'me.poliroid.modslistapi_1.6.01.mtmod'
 
 
 class MixedInstallTest(unittest.TestCase):
@@ -23,7 +23,7 @@ class MixedInstallTest(unittest.TestCase):
         self.assertIsNone(found)
 
     def test_single_alone_is_fine(self):
-        names = [SINGLE_PACKAGE, GUIFLASH]
+        names = [SINGLE_PACKAGE, MODSLIST]
 
         found = mixed_install(names)
 

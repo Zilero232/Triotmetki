@@ -1,4 +1,4 @@
-"""The third-party runtime mods (OpenWG Gameface, GUIFlash) a dev install needs, from catalog/catalog.json.
+"""The third-party runtime mods (OpenWG Gameface, ModsList) a dev install needs, from catalog/catalog.json.
 
 A player's own copy anywhere in mods/<version>/ (four levels deep, the manager's dependencies::find_copies) is used as
 it is. Otherwise the pinned `sourceUrl` is downloaded once into dist/dev/thirdparty and every use checks its size and

@@ -3,9 +3,10 @@ use std::path::Path;
 use serde::Serialize;
 
 use super::Manager;
-use crate::changelog::{is_newer, Changelog, ChangelogRelease};
+use crate::changelog::{Changelog, ChangelogRelease};
 use crate::error::AppResult;
 use crate::state::Manifest;
+use crate::versions::is_newer;
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]

@@ -69,6 +69,18 @@ class Sink(object):
         pass
 
 
+class EscapeManager(object):
+
+    def __init__(self):
+        self.listeners = []
+
+    def addEscapeListener(self, listener):
+        self.listeners.append(listener)
+
+    def removeEscapeListener(self, listener):
+        self.listeners.remove(listener)
+
+
 class SettingsCore(object):
     # RU 1.45 client source (account_helpers/settings_core/SettingsCore.py): applySettings(diff) returns
     # nothing; applyStorages(restartApproved, force=False) returns (confirmation, revert) pairs that
@@ -397,9 +409,13 @@ class UiSmokeTest(unittest.TestCase):
     def ui_host(self):
         return sys.modules['gui.mods.otmetki.core.registry'].registry().instances['ui']
 
-    def press_hotkey(self):
-        self.pressed.update([KEYS['KEY_LCONTROL'], KEYS['KEY_LSHIFT']])
-        self.input.onKeyDown(Namespace(key=KEYS['KEY_T']))
+    def escape_manager(self):
+        manager = EscapeManager()
+        self.ui_host().edit_escape.input_manager = lambda: manager
+        return manager
+
+    def start_hud_edit(self):
+        self.send(type='hud_edit', active=True)
 
     def test_every_load_order_registers_the_ui_with_its_gameface_view_and_one_mods_list_entry(self):
         for seed in LOAD_ORDER_SEEDS:
@@ -410,7 +426,7 @@ class UiSmokeTest(unittest.TestCase):
             registry = sys.modules['gui.mods.otmetki.core.registry'].registry()
             assert 'ui' in registry.instances
             assert 'minimap' in registry.instances
-            assert [view.name for view in app.settings_ui.views] == ['gameface']
+            assert app.settings_ui.name == 'gameface'
             assert len(self.mods_list) == 1
             assert self.mods_list[0]['id'] == 'otmetki'
 
@@ -586,13 +602,12 @@ class UiSmokeTest(unittest.TestCase):
 
         assert self.state()['revision'] == 4
 
-    def test_modslist_takes_the_place_of_the_hangar_button(self):
+    def test_without_mods_list_the_ui_starts_with_no_entry(self):
+        sys.modules.pop('gui.modsListApi')
+
         self.open_hangar(0)
 
-        button = self.ui_host().button
-
-        assert len(self.mods_list) == 1
-        assert button.settings is None
+        assert self.ui_host().mods_list.added is False
 
     def test_esc_asks_the_page_to_step_back(self):
         self.open_window()
@@ -612,26 +627,35 @@ class UiSmokeTest(unittest.TestCase):
         assert window.watchdog.answered == window.watchdog.asked
         assert len(self.windows) == 1
 
-    def test_the_hotkey_opens_the_window(self):
-        self.open_hangar(0)
+    def test_the_hud_edit_mode_closes_the_window(self):
+        self.open_window()
 
-        self.press_hotkey()
-
-        assert len(self.windows) == 1
-
-    def test_the_hotkey_again_closes_the_window(self):
-        self.open_hangar(0)
-        self.press_hotkey()
-
-        self.press_hotkey()
+        self.start_hud_edit()
 
         assert self.windows == []
+        assert self.ui_host().on_screen_editing is True
+
+    def test_esc_ends_the_hud_edit_mode(self):
+        self.open_window()
+        manager = self.escape_manager()
+        self.start_hud_edit()
+
+        manager.listeners[0]()
+
+        assert self.ui_host().bridge.editor.editing is False
+        assert manager.listeners == []
+
+    def test_the_mods_list_entry_ends_the_hud_edit_mode_and_opens_the_window(self):
+        self.open_window()
+        self.start_hud_edit()
+
+        self.mods_list[0]['callback']()
+
+        assert self.ui_host().bridge.editor.editing is False
+        assert len(self.windows) == 1
 
     def test_entering_a_battle_closes_the_window(self):
-        self.open_hangar(0)
-        self.press_hotkey()
-        self.press_hotkey()
-        self.press_hotkey()
+        self.open_window()
 
         self.events.onAvatarReady()
 

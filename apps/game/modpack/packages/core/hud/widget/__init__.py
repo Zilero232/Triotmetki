@@ -1,8 +1,8 @@
 """Structured panel payloads for the Gameface HUD page (protocol v3).
 
-A panel is `{id, text, widget, ...}`: `text` stays the GUIFlash HTML, `widget` (`{kind, v, data}`, or None) is what the
-Gameface page draws with its own component for `kind`. The page falls back to `text` when it does not know the kind or
-the data fails its schema (`ui-web/src/entities/hud/<kind>`). Icon fields are strings from `core.hud.icons`.
+A panel is `{id, text, widget, ...}`: `text` stays the panels' HTML subset, `widget` (`{kind, v, data}`, or None) is
+what the Gameface page draws with its own component for `kind`. The page falls back to `text` when it does not know the
+kind or the data fails its schema (`ui-web/src/entities/hud/<kind>`). Icon fields are strings from `core.hud.icons`.
 
 `card(...)` is the shared plate of the hangar labels and the smaller battle panels (kind `card`,
 `ui-web/src/entities/hud/card`): a caps header with an icon, an optional big value, rows of icon + text + value

@@ -1,24 +1,22 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ...hud.panel import dock_of, panel_hint
-from ...hud.surface import KIND_BUTTON
 from ...log import log, safe
 from ..hud import create_backend
 from ..lobby_view import lobby_view
 
 
 class Ui(object):
-    """Hangar panels and notifications for the companion and the hangar features: labels drawn through the HUD renderer
-    chain (OpenWG Gameface or GUIFlash 0.6+), each placed by its own layout, and the game's system messages.
+    """Hangar panels and notifications for the companion and the hangar features: labels drawn by the HUD renderer
+    (the OpenWG Gameface HUD page), each placed by its own layout, and the game's system messages.
     `set_muted` and `set_blocked` (the streamer mode) take labels off the screen and bring them back later.
-    Labels and the settings button show only over the plain hangar view (`core.lobby_view`): the battle queue, another
+    Labels show only over the plain hangar view (`core.lobby_view`): the battle queue, another
     lobby view, the settings window or a full-screen window hides them (`set_context`), and they come back after.
     A label is framed only while the player holds the edit modifier; `on_moved(props)` gets the new place
     (x, y, alignX, alignY or scale) after the player moved or resized it. A label may carry a structured `widget`
     (`core.hud.widget`) the Gameface page draws instead of its text; a label at its column's anchor is docked
-    (`core.hud.panel.dock_of`). `button()` puts a clickable button on the Gameface HUD page (only that renderer draws
-    buttons). With the app's `translate` every label and the button carry their component's short description, the
-    tooltip the Gameface page shows over them (`core.hud.panel.panel_hint`)."""
+    (`core.hud.panel.dock_of`). With the app's `translate` every label carries its component's short description, the
+    tooltip the Gameface page shows over it (`core.hud.panel.panel_hint`)."""
 
     def __init__(self, backend=None, watch=None, translate=None):
         self.backend = backend or create_backend()
@@ -27,7 +25,6 @@ class Ui(object):
         self.watching = False
         self.components = set()
         self.moved = {}
-        self.pressed = {}
         self.texts = {}
         self.muted = False
         self.in_view = True
@@ -36,7 +33,6 @@ class Ui(object):
         if not self.has_panels:
             log('no hangar HUD renderer: panels fall back to system messages')
         self.backend.listen(self._on_moved)
-        self.backend.listen_press(self._on_pressed)
 
     @property
     def has_panels(self):
@@ -89,28 +85,8 @@ class Ui(object):
         self.components.add(alias)
         return True
 
-    @safe
-    def button(self, alias, layout, on_press, on_moved=None):
-        """A button panel on the Gameface HUD page; False (nothing drawn) with another renderer."""
-        self._follow_view()
-        if alias in self.components:
-            self.pressed[alias] = on_press
-            return bool(self.backend.update(alias, {'visible': self.in_view}))
-        if not self.has_panels or not self.backend.draws_buttons():
-            return False
-        props = dict(layout)
-        props.update({'text': '', 'kind': KIND_BUTTON, 'drag': True, 'border': False, 'visible': self.in_view})
-        props['hint'] = panel_hint(self.translate, alias)
-        if not self.backend.create(alias, props):
-            return False
-        self.components.add(alias)
-        self.pressed[alias] = on_press
-        if on_moved is not None:
-            self.moved[alias] = on_moved
-        return True
-
     def place(self, alias, layout):
-        """Move a shown label or button to a new layout (a reset)."""
+        """Move a shown label to a new layout (a reset)."""
         if alias in self.components:
             props = dict(layout)
             props['dock'] = dock_of(alias, layout)
@@ -121,7 +97,7 @@ class Ui(object):
 
     @safe
     def set_context(self, visible):
-        """Show the labels and the button (True: the plain hangar view) or hide them without forgetting them (False)."""
+        """Show the labels (True: the plain hangar view) or hide them without forgetting them (False)."""
         visible = bool(visible)
         if visible == self.in_view:
             return
@@ -137,11 +113,6 @@ class Ui(object):
         if alias in self.components and ('x' in props or 'y' in props):
             self.backend.update(alias, {'dock': None})
         return True
-
-    def _on_pressed(self, alias):
-        callback = self.pressed.get(alias)
-        if callback is not None:
-            callback()
 
     @safe
     def hide(self, alias):
@@ -167,7 +138,7 @@ class Ui(object):
 
     def _apply(self):
         for alias in list(self.components):
-            if self.suppressed(alias) and alias not in self.pressed:
+            if self.suppressed(alias):
                 self._hold(alias)
         for alias, (text, layout, widget) in list(self.held.items()):
             if not self.suppressed(alias):

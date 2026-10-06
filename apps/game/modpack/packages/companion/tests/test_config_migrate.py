@@ -174,6 +174,13 @@ class SectionsTest(unittest.TestCase):
 
         self.assertEqual(components['minimap']['vehicle_names'], 'always')
 
+    def test_the_battle_log_loses_its_alt_view(self):
+        stored = {'alt_mode': True, 'alt_entry_template': '#{index}', 'style': 'compact'}
+
+        _, components = migrate({'defaults_revision': 7}, {'damage_log': stored})
+
+        self.assertEqual(components['damage_log'], {'style': 'compact'})
+
     def test_minimap_names_the_player_left_to_the_game_stay(self):
         config = {'defaults_revision': 7, 'user_set': 'minimap.vehicle_names'}
 

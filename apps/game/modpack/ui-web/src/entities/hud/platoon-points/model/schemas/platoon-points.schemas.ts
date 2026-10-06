@@ -20,6 +20,5 @@ export const platoonPointsSchema = z.object({
   title: z.string(),
   rows: z.array(row),
   total: z.number(),
-  rules: z.object({ damage: z.number(), assist: z.number(), frag: z.number(), alive: z.number() }),
-  extended: z.boolean()
+  rules: z.object({ damage: z.number(), assist: z.number(), frag: z.number(), alive: z.number() })
 });

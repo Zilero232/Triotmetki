@@ -10,7 +10,7 @@ REPORT_NONE = '-'
 
 STATUS_OFF = 'off'
 STATUS_SHOWN = 'shown'
-STATUS_INVISIBLE = 'shown, hidden by a covering view (V, killer camera, loading)'
+STATUS_INVISIBLE = 'shown, hidden by a covering view (V, loading, Tab)'
 STATUS_OFF_SCREEN = 'shown off-screen at %s,%s (%s, %s)'
 STATUS_HELD = 'held: %s'
 STATUS_WAITING = 'waiting: %s'

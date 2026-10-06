@@ -1,5 +1,7 @@
 use std::path::{Path, PathBuf};
 
+use sanitize_filename::{is_sanitized_with_options, sanitize_with_options, Options, OptionsForCheck};
+
 use crate::error::{AppError, AppResult, ErrorCode};
 use crate::releases::debug_env;
 use crate::state::client_key;
@@ -103,17 +105,19 @@ pub fn normalized(path: &Path) -> String {
 }
 
 pub const FILE_NAME_MAX_CHARS: usize = 120;
-pub const RESERVED_FILE_CHARS: [char; 9] = ['<', '>', ':', '"', '/', '\\', '|', '?', '*'];
+pub const FILE_NAME_REPLACEMENT: &str = "_";
+pub const WINDOWS_CHECK: OptionsForCheck = OptionsForCheck { windows: true, truncate: true };
 
 pub fn safe_file_name(name: &str, fallback: &str) -> String {
-    let cleaned: String =
-        name.chars().filter(|c| !c.is_control()).map(|c| if RESERVED_FILE_CHARS.contains(&c) { '_' } else { c }).take(FILE_NAME_MAX_CHARS).collect();
-    let trimmed = cleaned.trim().trim_end_matches(['.', ' ']).trim_start_matches('.');
+    let visible: String = name.chars().filter(|c| !c.is_control()).take(FILE_NAME_MAX_CHARS).collect();
+    let trimmed = visible.trim().trim_start_matches('.');
+    let replaced = sanitize_with_options(trimmed, Options { windows: false, truncate: true, replacement: FILE_NAME_REPLACEMENT });
+    let safe = sanitize_with_options(replaced, Options { windows: true, truncate: true, replacement: "" });
 
-    if trimmed.is_empty() {
+    if safe.is_empty() || !is_sanitized_with_options(&safe, WINDOWS_CHECK) {
         fallback.to_owned()
     } else {
-        trimmed.to_owned()
+        safe
     }
 }
 

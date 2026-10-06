@@ -285,35 +285,35 @@
       },
       {
         "author": {
-          "name": "CH4MPi",
-          "url": "https://github.com/CH4MPi/GUIFlash"
+          "name": "poliroid",
+          "url": "https://gitlab.com/wot-public-mods/mods-list"
         },
         "description": {
-          "en": "The fallback HUD",
-          "ru": "Запасной HUD"
+          "en": "The mods button in the hangar",
+          "ru": "Кнопка модов в ангаре"
         },
-        "file": "gambiter.guiflash_0.6.6.mtmod",
-        "id": "guiflash",
+        "file": "me.poliroid.modslistapi_1.6.01.mtmod",
+        "id": "modslist",
         "kind": "dependency",
         "licence": {
           "name": "MIT",
-          "sha256": "516fddc54dc15c2589d40017fc985adc59565ff7fbe8e7bc16851205126dd7fc",
-          "url": "https://raw.githubusercontent.com/CH4MPi/GUIFlash/v0.6.6/LICENSE"
+          "sha256": "c67ed29b3f80fa7b99e6fc16490fa1710353fb7ead042c276e8dccd2dbeedb5f",
+          "url": "https://gitlab.com/wot-public-mods/mods-list/-/raw/v1.6.01/LICENSE.md"
         },
         "optional": false,
-        "packageId": "gambiter.guiflash",
+        "packageId": "me.poliroid.modslistapi",
         "requiredBy": [
           "damage_log"
         ],
         "restartRequired": false,
-        "sha256": "a0b6dc2e75663008a4ced9e0c00449be84b3c3d5d932f8bbcaa2b334ae3d1cb5",
-        "size": 62862,
-        "sourceUrl": "https://github.com/CH4MPi/GUIFlash/releases/download/v0.6.6/gambiter.guiflash_0.6.6.mtmod",
+        "sha256": "b312adfcd005405d49b711e79b4032be7d624b6e38d4156364d1c04bc5dba71f",
+        "size": 79776,
+        "sourceUrl": "https://gitlab.com/-/project/26509092/uploads/9705f0b2627e9a074ecac2e84f38c9ca/me.poliroid.modslistapi_1.6.01.wotmod",
         "title": {
-          "en": "GUIFlash",
-          "ru": "GUIFlash"
+          "en": "ModsList",
+          "ru": "ModsList"
         },
-        "version": "0.6.6"
+        "version": "1.6.01"
       }
     ],
     "disabledLooks": [],

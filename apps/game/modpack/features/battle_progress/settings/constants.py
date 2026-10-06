@@ -6,7 +6,7 @@ GROUP = 'battle'
 
 # Right of the team HP strip, as Battle Observer places its main gun: the page puts the left edge 308 px right of the
 # middle at y 4, and under the team HP strip on a screen narrower than 1700 design px (core/hud/panel ATTACHED
-# score_right); this place (centred 423 px right of the middle) is the one for the GUIFlash renderer.
+# score_right); this place (centred 423 px right of the middle) is the one used until the page measures it.
 DEFAULTS = {
     'x': 423,
     'y': 4,

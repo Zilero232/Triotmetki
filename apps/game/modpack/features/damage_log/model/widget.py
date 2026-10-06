@@ -2,14 +2,13 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.hud.icons import class_icon, efficiency_icon, glyph, outcome_icon
 from ....core.hud.widget import widget
-from . import detail_mode, section_rows, shown_totals
+from . import section_rows, shown_totals
 from .constants import (
     ASSIST_KINDS,
     KIND,
     KIND_DAMAGE,
     KIND_RECEIVED,
     KIND_TONES,
-    NOTED_DETAILS,
     RECEIVED_ICONS,
     SOURCE_ICONS,
     TOTAL_ICONS,
@@ -97,13 +96,13 @@ def row_widget(row, translate, looks):
     }
 
 
-def damage_log_widget(log, settings, translate, extended=False):
-    detail = detail_mode(settings, extended)
-    rows = section_rows(log, settings, detail)
-    looks = {'show_hp': settings.get('show_hp'), 'noted': detail in NOTED_DETAILS}
+def damage_log_widget(log, settings, translate):
+    rows = section_rows(log, settings)
+    noted = bool(settings.get('show_notes'))
+    looks = {'show_hp': settings.get('show_hp'), 'noted': noted}
 
     return widget(KIND, {
-        'wide': detail in NOTED_DETAILS,
+        'wide': noted,
         'totals': totals(log, settings),
         'dealt': [row_widget(row, translate, looks) for row in rows['dealt']],
         'received': [row_widget(row, translate, looks) for row in rows['received']],

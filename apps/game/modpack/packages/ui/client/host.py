@@ -2,27 +2,21 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import time
 
-from ...companion.settings_ui.client import SettingsView, add_settings_view
+from ...companion.settings_ui.client import SettingsView, attach_settings_view
 from ...core.client.storage import flush_all_writes
 from ...core.events import EVENT_MODS_LIST_ALERT, EVENT_SETTINGS_CLOSE
 from ...core.log import log, safe
 from ...core.durable import open_config
 from ..bridge import SettingsBridge
+from ..escape import EscapeGuard
 from ..i18n import STRINGS
 from ..profiles import FILE_NAME, ProfileStore
 from ..protocol import encode_state
 from .constants import MODIFIER_KEY
 from .context import UiContext
-from .entry_points import HangarButton, ModsListButton
+from .entry_points import ModsListButton
 from .window import WindowController
-
-
-def _hotkey(on_press):
-    try:
-        from .entry_points.hotkey import Hotkey
-    except ImportError:
-        return None
-    return Hotkey(on_press)
+from .window.input import game_input_manager
 
 
 class GamefaceSettingsView(SettingsView):
@@ -52,39 +46,29 @@ class UiHost(object):
         self.profiles = ProfileStore(open_config(app.config_dir, FILE_NAME, pretty=True), time.time)
         self.bridge = SettingsBridge(UiContext(app, self))
         self.window = WindowController(self.on_message, self.state_text, self.on_escape)
-        self.button = HangarButton(app, self.open)
         self.mods_list = ModsListButton(self.open)
-        self.hotkey = _hotkey(self.on_hotkey)
-        self.registered = False
+        self.edit_escape = EscapeGuard(game_input_manager, self.on_edit_escape)
         self.on_screen_editing = False
         self.holding = False
         self.held = False
         bus = app.bus
         bus.on('battle_enter', self.on_battle_enter)
         bus.on('battle_leave', self.close)
-        bus.on('hangar', self.on_hangar)
         bus.on('component_settings', self._on_changed)
         bus.on('tick', self._on_tick)
         bus.on(EVENT_SETTINGS_CLOSE, self.close)
         bus.on(EVENT_MODS_LIST_ALERT, self.mods_list.alert)
         if GamefaceSettingsView.available():
-            add_settings_view(app, GamefaceSettingsView(app, self))
+            attach_settings_view(app, GamefaceSettingsView(app, self))
         else:
-            log('ui: OpenWG Gameface not installed, the settings window stays ModsSettingsAPI / config.json')
+            log('ui: OpenWG Gameface not installed, the settings window is off (edit mods/configs/otmetki/config.json)')
 
     def install_entry_points(self):
         translate = self.app.translate
         self.apply_modifier()
-        in_mods_list = self.mods_list.install(translate('mod_name'), translate('component_companion_hint'))
-        if not in_mods_list:
-            self.button.install()
-        self.registered = True
-        self.install_hotkey()
+        if not self.mods_list.install(translate('mod_name'), translate('component_companion_hint')):
+            log('ui: ModsList (gui.modsListApi) not installed, the settings window has no entry')
         return True
-
-    def install_hotkey(self):
-        if self.registered and self.hotkey is not None and not self.app.in_battle:
-            self.hotkey.install()
 
     def state_text(self):
         return encode_state(self.bridge.state())
@@ -113,9 +97,7 @@ class UiHost(object):
             return
         log('ui: open the settings window')
         self.mods_list.alert(False)
-        if self.on_screen_editing:
-            self.bridge.editor.set_editing(False)
-            self.on_screen_editing = False
+        self.end_screen_editing()
         if not self.window.is_open:
             self.bridge.stop_feed()
         if not self.window.open():
@@ -128,18 +110,21 @@ class UiHost(object):
         flush_all_writes()
 
     @safe
-    def on_hotkey(self):
-        if self.on_screen_editing or not self.window.is_open:
-            self.open()
-        else:
-            log('ui: hotkey closes the open settings window')
-            self.close()
-
-    @safe
     def on_escape(self):
         log('ui: Esc closes the settings window')
         self.bridge.editor.set_editing(False)
         self.close()
+
+    @safe
+    def on_edit_escape(self):
+        log('ui: Esc ends the on-screen HUD edit mode')
+        self.end_screen_editing()
+
+    def end_screen_editing(self):
+        self.edit_escape.release()
+        if self.on_screen_editing:
+            self.bridge.editor.set_editing(False)
+            self.on_screen_editing = False
 
     @safe
     def on_message(self, raw):
@@ -158,19 +143,17 @@ class UiHost(object):
 
     def on_hud_editing(self, active):
         self.on_screen_editing = active
-        if active:
-            self.close()
-            self.app.ui.notify(self.app.translate('ui_hud_edit_hint'))
-
-    def on_hangar(self):
-        self.button.show()
-        self.install_hotkey()
+        if not active:
+            self.edit_escape.release()
+            return
+        self.close()
+        held = 'held' if self.edit_escape.hold() else 'not held'
+        log('ui: on-screen HUD edit mode, Esc %s' % held)
+        self.app.ui.notify(self.app.translate('ui_hud_edit_hint'))
 
     def on_battle_enter(self):
-        if self.hotkey is not None:
-            self.hotkey.remove()
+        self.end_screen_editing()
         self.bridge.editor.set_editing(False)
-        self.on_screen_editing = False
         self.close()
 
     def _on_changed(self, component_id, changed):

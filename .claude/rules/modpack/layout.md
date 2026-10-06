@@ -14,7 +14,7 @@ paths:
 packages/core/<concern>/        __init__.py + modules for one concern (events, hooks, settings, hud, net, storage, i18n, log)
 packages/core/vendor/            vendored third-party libs (py2.7-compatible pins)
 packages/companion/<concern>/    site companion logic (binding, battles, marks, outbox, settings_share)
-packages/ui/                     in-game UI (Gameface settings window, profiles, HUD edit); the ModsSettingsAPI fallback is companion/settings_ui
+packages/ui/                     in-game UI (Gameface settings window opened from ModsList, profiles, HUD edit); the app's window interface is companion/settings_ui
 features/<id>/
   model/       pure logic, no client imports
   client/      game glue (BigWorld/gui hooks), thin

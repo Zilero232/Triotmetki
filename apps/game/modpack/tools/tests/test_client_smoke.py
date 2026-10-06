@@ -435,21 +435,6 @@ class Response(object):
         return dict(self._headers)
 
 
-class GuiFlash(object):
-
-    def __init__(self, test):
-        self.test = test
-
-    def createComponent(self, alias, kind, props, battle=True, lobby=False):
-        self.test.components[alias] = dict(props, kind=kind, battle=battle, lobby=lobby)
-
-    def updateComponent(self, alias, props):
-        self.test.components[alias].update(props)
-
-    def deleteComponent(self, alias):
-        del self.test.components[alias]
-
-
 class Device(object):
     # RU 1.45 common/items/artefacts.py OptionalDevice: what the stock battle tooltip of a device reads.
 
@@ -824,16 +809,8 @@ class Game(object):
 
     def install_hud_stubs(self):
         test = self
-        self.components = {}
         self.sounds = []
-        self.component_updated = Event()
-        package('gui.mods.gambiter')
-        sys.modules['gui.mods.gambiter'].g_guiFlash = GuiFlash(self)
-        module(
-            'gui.mods.gambiter.flash',
-            COMPONENT_TYPE=constants('COMPONENT_TYPE', {'LABEL': 'Label'}),
-            COMPONENT_EVENT=constants('COMPONENT_EVENT', {'UPDATED': self.component_updated}),
-        )
+        self.install_gameface_hud_stubs()
         package('gui.battle_control')
         view_states = {name: value for name, value in VIEW_STATE.items() if name != 'STUN'}
         module(
@@ -1257,6 +1234,22 @@ class Game(object):
     def hud_module(self):
         return sys.modules['gui.mods.otmetki.core.client.hud']
 
+    def hud_backend(self):
+        hud = sys.modules.get('gui.mods.otmetki.core.client.hud')
+        return hud._state['backend'] if hud is not None else None
+
+    @property
+    def components(self):
+        """The labels on the Gameface HUD page's surface, each with the GUI space it belongs to."""
+        backend = self.hud_backend()
+        if backend is None:
+            return {}
+        labels = backend.surface.labels
+        return {alias: dict(label['props'], space=label['space']) for alias, label in labels.items()}
+
+    def drag(self, alias, x, y):
+        self.hud_backend().on_message(json.dumps({'type': 'moved', 'id': alias, 'x': x, 'y': y}))
+
     def hud_components(self):
         hud = [(alias, props) for alias, props in self.components.items() if alias.startswith('otmetki.hud.')]
         return {alias.split('.')[-1]: props for alias, props in hud}
@@ -1449,7 +1442,7 @@ class BattleHudTest(StoryTest):
         cls.damage_log_after_summary = game.hud_text('damage_log')
         session.state('OBSERVED_BY_ENEMY', False)
         cls.panels_unspotted = sorted(game.hud_components())
-        game.component_updated('otmetki.hud.damage_log', {'x': 111, 'y': 222})
+        game.drag('otmetki.hud.damage_log', 111, 222)
         cls.saved = game.saved_components(app)
 
         game.events.onAvatarBecomeNonPlayer()
@@ -1486,7 +1479,6 @@ class BattleHudTest(StoryTest):
 
     def test_battle_hud_labels_are_draggable_except_team_hp(self):
         for name, props in self.panels.items():
-            self.assertEqual(props['kind'], 'Label', name)
             self.assertEqual(props['drag'], name != 'team_hp', name)
 
     def test_damage_log_lists_own_and_received_damage_but_not_ally_hits(self):
@@ -1587,7 +1579,7 @@ class EventBattleTest(StoryTest):
         session = game.enter_battle(results['arenaUniqueID'], gui_type=301)
         session.own_feedback(Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)))
         cls.event_panels = sorted(game.hud_components())
-        game.component_updated('otmetki.hud.damage_log', {'x': 333, 'y': 44})
+        game.drag('otmetki.hud.damage_log', 333, 44)
         cls.saved = game.saved_components(app)
         game.events.onAvatarBecomeNonPlayer()
         session = game.enter_battle(results['arenaUniqueID'] + 1, gui_type=30)
@@ -1644,8 +1636,7 @@ class HudEditTest(StoryTest):
     def test_hud_edit_shows_lobby_previews_of_the_enabled_panels(self):
         self.assertEqual(sorted(self.previews), HUD_EDIT_PREVIEWS)
         for name, props in self.previews.items():
-            self.assertTrue(props['lobby'], name)
-            self.assertFalse(props['battle'], name)
+            self.assertEqual(props['space'], 'lobby', name)
         self.assertIn('Pz. IV', self.previews['damage_log']['text'])
 
     def test_leaving_hud_edit_removes_the_previews(self):
@@ -1890,7 +1881,6 @@ class ControllerPanelsTest(StoryTest):
         cls.panels = copy.deepcopy(game.hud_components())
 
         game.hud_module().hud_layer(app).update_settings('battle_progress', {'main_gun_share': True})
-        game.hud_module().hud_layer(app).update_settings('damage_log', {'alt_mode': False})
         session.own_feedback(Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)))
         session.hit('VEHICLE_HEALTH', ENEMY_VEHICLE, (510, None, 0))
         cls.main_gun = game.hud_text('battle_progress')
@@ -2247,7 +2237,6 @@ class RicochetTest(StoryTest):
     @classmethod
     def play(cls, game):
         app, vehicle_class = open_shots_hangar(game)
-        game.hud_module().hud_layer(app).update_settings('damage_log', {'alt_mode': False})
         session = game.enter_battle_with_gun(None)
         vehicle_class(False).showDamageFromShot(ALLY_VEHICLE, [RICOCHET_POINT], 0, 0.0, False)
         game.own_vehicle.showDamageFromShot(ENEMY_VEHICLE, [RICOCHET_POINT], 0, 0.0, False)
@@ -2751,8 +2740,7 @@ class MarksTest(StoryTest):
         self.assertEqual(self.curve_reads, 1)
 
     def test_hangar_marks_show_the_moe_and_the_next_threshold(self):
-        self.assertTrue(self.hangar_marks['lobby'])
-        self.assertFalse(self.hangar_marks['battle'])
+        self.assertEqual(self.hangar_marks['space'], 'lobby')
         self.assertIn('81.50%', self.hangar_marks['text'])
         self.assertIn('2 600', self.hangar_marks['text'])
 
@@ -2760,7 +2748,7 @@ class MarksTest(StoryTest):
         panel = self.battle_panels['marks_panel']
 
         self.assertNotIn('hangar_marks', self.battle_panels)
-        self.assertTrue(panel['battle'])
+        self.assertEqual(panel['space'], 'battle')
         self.assertTrue(panel['drag'])
 
     def test_the_marks_panel_counts_only_the_own_damage(self):
@@ -2814,13 +2802,10 @@ class GamefaceBackendTest(StoryTest):
     @classmethod
     def play(cls, game):
         game.install_hud_stubs()
-        game.install_gameface_hud_stubs()
         app = game.open_hangar()
         layer = game.hud_module().hud_layer(app)
-        cls.backend_names = list(layer.backend.names)
         cls.backend_name = layer.backend.name
         app.bus.emit('hud_edit', True)
-        cls.labels_in_edit = game.hud_components()
         cls.windows_in_edit = len(game.windows)
         cls.window_layer = game.windows[0].layer
         cls.page = game.hud_page()
@@ -2828,12 +2813,10 @@ class GamefaceBackendTest(StoryTest):
         app.bus.emit('hud_edit', False)
         cls.page_after_edit = game.hud_page_ids()
         game.res_id = -1
-        for backend in layer.backend.backends:
-            backend.layout = None
+        layer.backend.layout = None
         app.bus.emit('hud_edit', True)
-        cls.windows_without_resource = len(game.windows)
         cls.labels_without_resource = sorted(game.hud_components())
-        cls.fallback_backend = layer.backend.name
+        cls.has_panels_without_resource = layer.has_panels
 
     @classmethod
     def play_page_messages(cls, game, app):
@@ -2850,12 +2833,10 @@ class GamefaceBackendTest(StoryTest):
         cls.saved = game.saved_components(app)['damage_log']
         send({'message': 'not json'})
 
-    def test_gameface_is_the_preferred_backend_before_guiflash(self):
-        self.assertEqual(self.backend_names, ['gameface', 'guiflash'])
+    def test_gameface_is_the_backend(self):
         self.assertEqual(self.backend_name, 'gameface')
 
-    def test_hud_edit_opens_one_gameface_window_instead_of_labels(self):
-        self.assertEqual(self.labels_in_edit, {})
+    def test_hud_edit_opens_one_gameface_window(self):
         self.assertEqual(self.windows_in_edit, 1)
         self.assertEqual(self.window_layer, 7)
 
@@ -2876,10 +2857,9 @@ class GamefaceBackendTest(StoryTest):
 
         self.assertEqual(previews, [])
 
-    def test_without_the_gameface_resource_the_hud_falls_back_to_guiflash(self):
-        self.assertEqual(self.windows_without_resource, 1)
-        self.assertIn('damage_log', self.labels_without_resource)
-        self.assertEqual(self.fallback_backend, 'guiflash')
+    def test_without_the_gameface_resource_the_panels_stay_hidden(self):
+        self.assertFalse(self.has_panels_without_resource)
+        self.assertEqual(self.labels_without_resource, [])
 
 
 class GamefaceSpacesTest(StoryTest):
@@ -2887,7 +2867,6 @@ class GamefaceSpacesTest(StoryTest):
     @classmethod
     def play(cls, game):
         game.install_hud_stubs()
-        game.install_gameface_hud_stubs()
         app = game.open_hangar()
         app.ui.show('otmetki.hangar_test', 'hangar only', HANGAR_LABEL_PLACE)
         cls.hangar_page = game.hud_page_ids()
@@ -2910,7 +2889,6 @@ class GamefaceWindowFrameTest(StoryTest):
     @classmethod
     def play(cls, game):
         game.install_hud_stubs()
-        game.install_gameface_hud_stubs()
         loader = game.install_app_loader()
         app = game.load(list(ENTRY_MODULES))
         game.player = Player(ACCOUNT)
@@ -2945,7 +2923,6 @@ class SessionLogTest(StoryTest):
     @classmethod
     def play(cls, game):
         game.install_hud_stubs()
-        game.install_gameface_hud_stubs()
         sys.modules['openwg_gameface'].manager = instance('ResMapManager', {'isResMapValidated': False})
         with open('res_map_restart', 'w') as handle:
             handle.write('')
@@ -2956,37 +2933,10 @@ class SessionLogTest(StoryTest):
     def test_session_log_keeps_the_mod_lines_of_the_last_sessions(self):
         self.assertIn('[OTMETKI] session start', self.text)
         self.assertIn(CLIENT_VERSION, self.text)
-        self.assertIn('[OTMETKI] HUD renderers', self.text)
-        self.assertLess(self.text.index('session start'), self.text.index('HUD renderers'))
+        self.assertIn('[OTMETKI] HUD renderer: gameface', self.text)
+        self.assertLess(self.text.index('session start'), self.text.index('HUD renderer'))
         self.assertIn('[OTMETKI] started', self.text)
         self.assertIn('OpenWG Gameface is restarting the client', self.text)
-
-
-class OldGuiFlashTest(StoryTest):
-
-    @classmethod
-    def play(cls, game):
-        game.install_hud_stubs()
-
-        def create_component(alias, kind, props):
-            game.components[alias] = dict(props, kind=kind)
-
-        sys.modules['gui.mods.gambiter'].g_guiFlash.createComponent = create_component
-        app = game.open_hangar()
-        app.bus.emit('hud_edit', True)
-        cls.components_in_edit = dict(game.components)
-        cls.has_panels_in_edit = app.ui.has_panels
-        session = game.enter_battle(1)
-        session.own_feedback(Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)))
-        cls.battle_panels = copy.deepcopy(game.hud_components())
-
-    def test_pre_06_guiflash_draws_nothing_in_the_hangar(self):
-        self.assertEqual(self.components_in_edit, {})
-        self.assertFalse(self.has_panels_in_edit)
-
-    def test_pre_06_guiflash_draws_multiline_labels_in_battle(self):
-        self.assertIn('damage_log', self.battle_panels)
-        self.assertTrue(self.battle_panels['damage_log']['multiline'])
 
 
 RAMMER = 9001

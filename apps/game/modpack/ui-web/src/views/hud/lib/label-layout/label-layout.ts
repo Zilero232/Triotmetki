@@ -88,7 +88,6 @@ export const layoutLabels = (input: LayoutLabelsInput): LabelLayout[] => {
       id: panel.id,
       rect,
       scale,
-      button: takesInput(panel) && panel.kind === 'button',
       movable: isEditable && panel.drag,
       pointer: isEditable && Boolean(widgets.get(panel.id)?.pointer),
       drawn,

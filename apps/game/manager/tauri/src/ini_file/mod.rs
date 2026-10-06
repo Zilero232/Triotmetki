@@ -1,16 +1,12 @@
 use std::fs;
 use std::path::Path;
 
-use encoding_rs::UTF_8;
 use ini::{EscapePolicy, Ini, LineSeparator, ParseOption, WriteOption};
 
 use crate::error::{AppError, AppResult, ErrorCode};
+use crate::text::{decode_text, Fallback};
 
 const UTF16_LE_BOM: [u8; 2] = [0xFF, 0xFE];
-
-pub fn decode_text(bytes: &[u8]) -> String {
-    UTF_8.decode(bytes).0.into_owned()
-}
 
 pub fn parse(text: &str) -> AppResult<Ini> {
     let options = ParseOption { enabled_quote: false, enabled_escape: false, ..ParseOption::default() };
@@ -23,7 +19,7 @@ pub fn read(path: &Path) -> AppResult<Option<Ini>> {
         return Ok(None);
     }
 
-    let text = decode_text(&fs::read(path)?);
+    let text = decode_text(&fs::read(path)?, Fallback::Lossy);
 
     parse(&text).map(Some)
 }

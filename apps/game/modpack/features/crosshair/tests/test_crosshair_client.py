@@ -150,7 +150,6 @@ class Layer(object):
     def __init__(self):
         self.shown = {}
         self.draws = True
-        self.widgets = True
 
     def show(self, panel_id, text, widget=None):
         self.shown[panel_id] = widget
@@ -158,9 +157,6 @@ class Layer(object):
 
     def hide(self, panel_id):
         self.shown.pop(panel_id, None)
-
-    def renders_widgets(self):
-        return self.widgets
 
     def place(self, panel_id, x, y):
         return True
@@ -170,7 +166,6 @@ class Stock(object):
 
     def __init__(self):
         self.wanted = {}
-        self.extended = False
         self.page = None
 
     def want(self, owner, aliases, while_hidden=False):
@@ -300,13 +295,6 @@ class CrosshairStockTest(unittest.TestCase):
 
     def test_the_stock_reload_timer_stays_when_the_page_does_not_take_the_panel(self):
         self.layer.draws = False
-
-        self.reload()
-
-        assert self.hidden() == ()
-
-    def test_the_stock_reload_timer_stays_with_guiflash(self):
-        self.layer.widgets = False
 
         self.reload()
 

@@ -4,7 +4,7 @@ Pure (Python 2/3, no client imports); one concern per subpackage:
 
 - `panel`: the per-panel settings schema (common layout keys + the panel's own) and renderer props;
 - `config`: components.json, one schema-checked section per component;
-- `backend`: the renderer interface (`HudBackend`), `NullBackend` and `BackendChain` (the runtime choice);
+- `backend`: the renderer interface (`HudBackend`) and `NullBackend` (no renderer);
 - `layer`: `HudLayer`, what features call (`register`, `show`, `hide`, `update_settings`);
 - `label`: `HangarLabel`, one hangar label of a feature on `app.ui` (redrawn only when its text changed);
 - `edit`: `HudPreview`, a panel's side of the HUD edit protocol (`hud_edit`, `hud_describe`, `hud_reset_layout`
@@ -15,11 +15,11 @@ Pure (Python 2/3, no client imports); one concern per subpackage:
 
 Panel text templates are `core/templates`.
 
-The client side (the Gameface and GUIFlash backends, the shared layer instance) is `core/client/hud/`.
+The client side (the Gameface backend, the shared layer instance) is `core/client/hud/`.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .backend import BackendChain, HudBackend, NullBackend
+from .backend import HudBackend, NullBackend
 from .config import ComponentConfig
 from .edit import EVENT_DESCRIBE, EVENT_EDIT, EVENT_RESET_LAYOUT, HudPreview
 from .label import HangarLabel
@@ -38,7 +38,6 @@ from .panel import (
 )
 
 __all__ = (
-    'BackendChain',
     'CARD_FIXED',
     'ComponentConfig',
     'EVENT_DESCRIBE',

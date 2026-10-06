@@ -1,18 +1,16 @@
-use std::fs::{self, File};
-use std::io::Write;
+use std::fs;
 use std::path::{Path, PathBuf};
 
 use chrono::{DateTime, Local};
-use encoding_rs::{Encoding, UTF_8};
-use zip::write::SimpleFileOptions;
-use zip::{CompressionMethod, ZipWriter};
 
+use crate::archive::AtomicZip;
 use crate::detect::GameClient;
 use crate::error::AppResult;
 use crate::fsx::list_files;
 use crate::paths::{configs_dir, Layout};
 use crate::report::Redactor;
 use crate::state::{client_key, disabled_dir, CLIENT_INI, MANIFEST_INI};
+use crate::text::{decode_text, Fallback};
 
 pub const ZIP_PREFIX: &str = "otmetki-logs-";
 pub const STAMP_FORMAT: &str = "%Y%m%d-%H%M%S";
@@ -47,29 +45,16 @@ pub struct CollectInput<'a> {
     pub redactor: &'a Redactor,
 }
 
-pub fn decode_text(bytes: &[u8]) -> String {
-    let (text, _) = match Encoding::for_bom(bytes) {
-        Some((encoding, bom_length)) => encoding.decode_without_bom_handling(&bytes[bom_length..]),
-        None => UTF_8.decode_without_bom_handling(bytes),
-    };
-
-    text.into_owned()
-}
-
 struct Bundle<'a> {
-    writer: ZipWriter<File>,
-    options: SimpleFileOptions,
+    zip: AtomicZip,
     redactor: &'a Redactor,
 }
 
 impl Bundle<'_> {
     fn add_bytes(&mut self, name: &str, bytes: &[u8]) -> AppResult<()> {
-        let (redacted, _) = self.redactor.redact(&decode_text(bytes));
+        let (redacted, _) = self.redactor.redact(&decode_text(bytes, Fallback::Windows1251));
 
-        self.writer.start_file(name, self.options)?;
-        self.writer.write_all(redacted.as_bytes())?;
-
-        Ok(())
+        self.zip.add(name, redacted.as_bytes())
     }
 
     fn add_config_files(&mut self, prefix: &str, client: &GameClient) -> AppResult<()> {
@@ -137,13 +122,7 @@ fn listing(dirs: &[(&str, PathBuf)]) -> String {
 pub fn collect(input: CollectInput) -> AppResult<PathBuf> {
     let zip_path = input.output_dir.join(format!("{ZIP_PREFIX}{}.zip", input.now.format(STAMP_FORMAT)));
 
-    fs::create_dir_all(input.output_dir)?;
-
-    let mut bundle = Bundle {
-        writer: ZipWriter::new(File::create(&zip_path)?),
-        options: SimpleFileOptions::default().compression_method(CompressionMethod::Deflated),
-        redactor: input.redactor,
-    };
+    let mut bundle = Bundle { zip: AtomicZip::create(&zip_path)?, redactor: input.redactor };
 
     for log in list_files(&input.layout.logs_dir()) {
         let name = log.file_name().unwrap_or_default().to_string_lossy().into_owned();
@@ -157,9 +136,7 @@ pub fn collect(input: CollectInput) -> AppResult<PathBuf> {
         bundle.add_client(input.layout, client)?;
     }
 
-    bundle.writer.finish()?;
-
-    Ok(zip_path)
+    bundle.zip.finish()
 }
 
 #[cfg(test)]

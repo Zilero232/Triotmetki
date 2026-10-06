@@ -12,8 +12,8 @@ use crate::conflicts::{package_files, read_package};
 use crate::detect::client::{Branch, PATHS_XML};
 use crate::detect::GameClient;
 use crate::fsx::{remove_path, write_atomic};
-use crate::ini_file::decode_text;
 use crate::paths::{join_relative, same_path};
+use crate::text::{decode_text, Fallback};
 
 pub const GAMEFACE_PACKAGE_ID: &str = "net.openwg.gameface";
 pub const SUPPORTED_VERSIONS: [&str; 1] = ["1.2.2"];
@@ -137,7 +137,7 @@ pub fn find_gameface(mods_dir: &Path) -> Result<Option<Gameface>, SkipReason> {
 }
 
 fn path_entries(game_dir: &Path) -> Vec<String> {
-    let text = fs::read(game_dir.join(PATHS_XML)).map(|bytes| decode_text(&bytes)).unwrap_or_default();
+    let text = fs::read(game_dir.join(PATHS_XML)).map(|bytes| decode_text(&bytes, Fallback::Lossy)).unwrap_or_default();
     let Ok(document) = roxmltree::Document::parse(text.trim_start_matches('\u{feff}')) else {
         return Vec::new();
     };

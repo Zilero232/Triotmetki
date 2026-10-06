@@ -15,7 +15,7 @@ from .goals import is_done, progress
 from .labels import account_facts, account_wn8, goal_label, goal_value, pending_caption
 from .moe import signed_change
 
-# The GUIFlash text of the Session card, for a client without the Gameface HUD page.
+# The text of the Session card, for a page that cannot draw the widget.
 
 
 def _recent_line(recent, translate):

@@ -3,17 +3,15 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, Markup, font, format_number
 from ....core.hud.icons import CLASS_GLYPHS
 from ....core.templates import render_markup
-from . import detail_mode, section_rows, shown_totals
+from . import section_rows, shown_totals
 from ..settings.constants import STYLE_COMPACT, STYLE_CUSTOM
 from .constants import (
     COLOR_MACROS,
     COMPACT_TOTALS_SEPARATOR,
-    ENTRY_TEMPLATE_KEYS,
     ICON_RENDITION,
     ICON_ROOT,
     KIND_COLOR,
     MIN_ENTRY_FONT_SIZE,
-    NOTED_DETAILS,
     PALETTES,
     TOTAL_COLORS,
     TOTALS_SEPARATOR,
@@ -44,13 +42,12 @@ def class_icon(vehicle_class, size):
     return kind_icon(glyph, size)
 
 
-def entry_template(settings, translate, detail):
-    return settings.get(ENTRY_TEMPLATE_KEYS[detail]) or translate('dlog_entry_template')
+def entry_template(settings, translate):
+    return settings.get('entry_template') or translate('dlog_entry_template')
 
 
 def entry_values(row, translate, index, looks):
     icon_size = looks['icon_size']
-    noted = looks['detail'] in NOTED_DETAILS
     return {
         'icon': kind_icon(row['kind'], icon_size) if icon_size else '',
         'class': class_icon(row.get('class'), icon_size),
@@ -61,7 +58,7 @@ def entry_values(row, translate, index, looks):
         'vehicle': row.get('vehicle') or '',
         'shell': shell_label(row, translate),
         'source': source_word(row, translate),
-        'note': row_note(row, translate, looks['show_hp']) if noted else '',
+        'note': row_note(row, translate, looks['show_hp']) if looks['noted'] else '',
     }
 
 
@@ -99,13 +96,13 @@ def totals_line(log, settings, translate):
     return font(text, COLOR_NEUTRAL, settings.get('font_size'))
 
 
-def entry_lines(log, settings, translate, detail):
-    rows = section_rows(log, settings, detail)
-    template = entry_template(settings, translate, detail)
+def entry_lines(log, settings, translate):
+    rows = section_rows(log, settings)
+    template = entry_template(settings, translate)
     entry_size = max(MIN_ENTRY_FONT_SIZE, settings.get('font_size') - 2)
     looks = {
         'icon_size': entry_size + 2 if settings.get('kind_icons') else None,
-        'detail': detail,
+        'noted': settings.get('show_notes'),
         'show_hp': settings.get('show_hp'),
     }
 
@@ -117,6 +114,5 @@ def entry_lines(log, settings, translate, detail):
     return lines
 
 
-def format_damage_log(log, settings, translate, extended=False):
-    detail = detail_mode(settings, extended)
-    return '\n'.join([totals_line(log, settings, translate)] + entry_lines(log, settings, translate, detail))
+def format_damage_log(log, settings, translate):
+    return '\n'.join([totals_line(log, settings, translate)] + entry_lines(log, settings, translate))

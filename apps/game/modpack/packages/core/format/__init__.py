@@ -1,4 +1,4 @@
-"""Text for panels and pages: the GUIFlash HTML subset (`font`, the shared colours), numbers, times and plural forms."""
+"""Text for panels and pages: the panels' HTML subset (`font`, the shared colours), numbers, times and plural forms."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from .clock import format_epoch, format_moment, format_timer

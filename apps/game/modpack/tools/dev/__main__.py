@@ -8,7 +8,7 @@ Usage:
     python tools/dev log [--all] [--own] [--no-follow]
 
 IDs are component ids of catalog/catalog.json (package keys: core, companion, ui, marks_panel, ...); none means every
-package. Their dependencies come along, and so do OpenWG Gameface and GUIFlash when a chosen component needs them.
+package. Their dependencies come along, and so do OpenWG Gameface and ModsList when a chosen component needs them.
 The client is OTMETKI_GAME_DIR or the one the manager would pick (Lesta Game Center). Everything goes into
 mods/<version>/otmetki-dev/ with a manifest, and the dev loop refuses to install next to a manager install.
 """

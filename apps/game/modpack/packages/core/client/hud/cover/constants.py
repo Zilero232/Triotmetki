@@ -9,9 +9,6 @@ LOADING_SHOWN = 'isShown'
 # FULL_STATS is Tab, FULL_STATS_QUEST_PROGRESS the personal missions key, FULL_STATS_PERSONAL_RESERVES the reserves key
 # (ClassicPage._handleToggleFullStats*: the full stats on their tab), EVENT_STATS the event modes' Tab.
 OVERLAY_EVENTS = ('FULL_STATS', 'FULL_STATS_QUEST_PROGRESS', 'FULL_STATS_PERSONAL_RESERVES', 'EVENT_STATS')
-# AvatarInputHandler events (RU 1.45 client source: control_modes.PostMortemControlMode): the post-mortem camera moves
-# to the killer and back. (event, shown).
-KILLER_VISION_EVENTS = (('onPostmortemKillerVisionEnter', True), ('onPostmortemKillerVisionExit', False))
 # frameworks/wulf/gui_constants.WindowStatus names of a window that is on its way out.
 GONE_STATUSES = ('DESTROYING', 'DESTROYED')
 # PrebattleAmmunitionPanelViewMeta (gui/Scaleform/daapi/view/meta, RU 1.45): the pre-battle setups panel opens and

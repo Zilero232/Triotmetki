@@ -43,8 +43,3 @@ class WindowLayout(object):
             return []
         return self.component_config.update(SECTION, layout_values(message))
 
-
-def unmoved_layout(stored, old_defaults, new_defaults):
-    if any(stored.get(key) != value for key, value in old_defaults.items()):
-        return {}
-    return {key: new_defaults[key] for key in old_defaults}

@@ -14,7 +14,6 @@ const drag = (overrides: Partial<OverlayDrag> = {}): OverlayDrag => ({
   scale: 1,
   rect: { left: 40, top: 60, width: 200, height: 40 },
   moved: false,
-  button: false,
   ...overrides
 });
 
@@ -33,12 +32,6 @@ describe(beyondSlop, () => {
 });
 
 describe(dragOutcome, () => {
-  it('presses a button released where it was pressed', () => {
-    const outcome = dragOutcome({ drag: drag({ button: true }), press: { clientX: 101, clientY: 101 }, screen: SCREEN });
-
-    expect(outcome).toEqual({ kind: 'pressed' });
-  });
-
   it('leaves a panel released where it was pressed in place', () => {
     const outcome = dragOutcome({ drag: drag(), press: { clientX: 101, clientY: 101 }, screen: SCREEN });
 
@@ -57,14 +50,14 @@ describe(dragOutcome, () => {
     expect(outcome).toEqual({ kind: 'still' });
   });
 
-  it('moves a button that was dragged instead of pressing it', () => {
-    const outcome = dragOutcome({ drag: drag({ button: true, moved: true }), press: { clientX: 101, clientY: 101 }, screen: SCREEN });
+  it('moves a panel that was dragged back to where it was pressed', () => {
+    const outcome = dragOutcome({ drag: drag({ moved: true }), press: { clientX: 101, clientY: 101 }, screen: SCREEN });
 
     expect(outcome.kind).toBe('moved');
   });
 });
 
-const TARGET = { id: 'clock', rect: { left: 40, top: 60, width: 200, height: 40 }, button: false, movable: true, pointer: false, scale: 1 };
+const TARGET = { id: 'clock', rect: { left: 40, top: 60, width: 200, height: 40 }, movable: true, pointer: false, scale: 1 };
 
 describe(pressedTarget, () => {
   it('takes the movable panel under a left press during an edit', () => {

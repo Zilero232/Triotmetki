@@ -39,8 +39,8 @@ def fought_platoon():
     return platoon
 
 
-def preview_data(extended=False):
-    return points_widget(preview_platoon(translator()), Settings({}, SCHEMA), translator(), extended)['data']
+def preview_data():
+    return points_widget(preview_platoon(translator()), Settings({}, SCHEMA), translator())['data']
 
 
 class PointsTest(unittest.TestCase):
@@ -160,12 +160,13 @@ class WidgetTest(unittest.TestCase):
     def test_a_row_carries_its_frags_as_a_caption(self):
         assert preview_data()['rows'][0]['frags_text'] == u'фр. 2'
 
-    def test_the_hp_bars_wait_for_alt(self):
-        assert preview_data()['extended'] is False
-        assert preview_data(extended=True)['extended'] is True
+    def test_the_panel_has_no_alt_state(self):
+        assert 'extended' not in preview_data()
 
-    def test_the_edit_mode_sample_shows_the_alt_state(self):
-        assert preview_widget(Settings({}, SCHEMA), translator())['data']['extended'] is True
+    def test_a_row_carries_its_hp_for_the_bar(self):
+        row = preview_data()['rows'][0]
+
+        assert row['hp'] <= row['max']
 
     def test_fixture_for_the_page(self):
         assert _support.widget_fixture('platoon_points', preview_widget(Settings({}, SCHEMA), translator()))

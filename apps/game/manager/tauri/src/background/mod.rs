@@ -7,6 +7,7 @@ use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}
 use tauri::{AppHandle, Emitter, Manager as _};
 use tauri_plugin_autostart::ManagerExt as _;
 use tauri_plugin_notification::NotificationExt as _;
+use tauri_plugin_window_state::StateFlags;
 
 use crate::error::{AppError, AppResult, ErrorCode};
 use crate::service::{CheckOutcome, Manager};
@@ -15,6 +16,7 @@ use crate::settings::Locale;
 pub const EVENT_REPORT: &str = "patch-report";
 pub const BACKGROUND_ARG: &str = "--background";
 pub const MAIN_WINDOW: &str = "main";
+pub const WINDOW_STATE: StateFlags = StateFlags::SIZE.union(StateFlags::POSITION).union(StateFlags::MAXIMIZED);
 pub const TRAY_ID: &str = "main";
 pub const TICK: Duration = Duration::from_secs(60);
 pub const SECONDS_PER_MINUTE: u64 = 60;

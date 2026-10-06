@@ -74,7 +74,8 @@
         "id": { "$ref": "#/definitions/id" },
         "title": { "$ref": "#/definitions/localized" },
         "description": { "$ref": "#/definitions/localized" },
-        "custom": { "type": "boolean" }
+        "custom": { "type": "boolean" },
+        "everything": { "type": "boolean" }
       }
     },
     "conflict": {

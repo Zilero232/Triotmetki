@@ -19,7 +19,7 @@ BOOSTER_OVERLAYS = {'boost': 'battleBooster_overlay', 'replace': 'battleBooster_
 ICON_FALLBACK = 'module'
 BONUS_MARK = u'★'
 ATTENTION_MARK = u'!'
-# The GUIFlash row draws only images: a device whose icon the client lacks keeps its cell with a mark, not a name.
+# The text row draws only images: a device whose icon the client lacks keeps its cell with a mark, not a name.
 MISSING_ICON_MARK = u'◆'
 # The item marks the widget draws: specialisation slot, boosted by the directive, directive without effect,
 # running, spent.

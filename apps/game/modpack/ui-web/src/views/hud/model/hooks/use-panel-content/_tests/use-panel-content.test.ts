@@ -22,8 +22,7 @@ const stateWith = (patch: Partial<HudPanel>): HudState => {
   return { ...state, panels: state.panels.map((panel) => ({ ...panel, ...patch })) };
 };
 
-const widgetPanel = (patch: Partial<HudPanel> = {}): HudState =>
-  stateWith({ kind: 'label', widget: hudWidgetSchema.parse(JSON.parse(teamHpSample)), ...patch });
+const widgetPanel = (patch: Partial<HudPanel> = {}): HudState => stateWith({ widget: hudWidgetSchema.parse(JSON.parse(teamHpSample)), ...patch });
 
 const rerendered = ({ first, second }: { first: HudState; second: HudState }) => {
   const hook = renderHook(({ state }) => usePanelContent(state), { initialProps: { state: first } });

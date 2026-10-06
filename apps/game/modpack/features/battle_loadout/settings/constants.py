@@ -7,7 +7,7 @@ GROUP = 'battle'
 # Centred right above the stock consumables panel, which the client centres on the screen (RU 1.45 gui_battle
 # ConsumablesPanel.updatePosition: x = (stage width - panel width) / 2; core/hud/panel ATTACHED bar_above), as kurzdor's
 # battleequipment sits: 6 px over the slot number labels the stock panel draws above its slots. Pinned there, the row
-# belongs to the stock panel. This place is the one for the GUIFlash renderer.
+# belongs to the stock panel. This place is the one used until the page measures the stock panel.
 DEFAULTS = {
     'x': 0,
     'y': -70,

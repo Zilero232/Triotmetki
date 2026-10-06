@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ...companion.settings_ui import record_user_set
+from ...companion.config import record_user_set
 from ...core.compat import is_number, string_types, to_text
 from ...core.hud import EVENT_RESET_LAYOUT
 from ...core.log import log, log_exception
@@ -303,7 +303,6 @@ class SettingsBridge(object):
         for panel_id in self.editor.panel_ids():
             self._changed(panel_id, self.editor.reset(panel_id))
         self.context.bus.emit(EVENT_RESET_LAYOUT)
-        self.context.reset_layout()
 
 
 def _chosen_tokens(component_id, keys, kind):

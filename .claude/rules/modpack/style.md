@@ -19,7 +19,7 @@ paths:
   module, the way the repo's `scripts/*.mjs` do, and no `constants.py`. Two kinds stay
   beside their code: the package descriptor and public names (`FEATURE_ID`, `PACKAGE_ID`,
   `VERSION`, `STRINGS`, `SETTINGS`, `SCHEMA`, `GROUP`), and a table built from the module's own code (`FIELDS` of converters,
-  `BACKENDS`, `VIEWS`, `settings_share/fields.py`). Bus event names sent between packages
+  `settings_share/fields.py`). Bus event names sent between packages
   are `core.events` constants; colours come from `core.format`.
 - One public responsibility per module; functions small and pure where possible.
   Side effects (hooks, timers, network, disk) only in `client/` or core services.

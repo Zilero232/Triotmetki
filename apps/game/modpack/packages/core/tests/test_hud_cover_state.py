@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 import _support  # noqa: F401
-from otmetki.core.hud.cover import CoverState, FollowedComponents, PageOverlays, flash_visible, window_reason
+from otmetki.core.hud.cover import CoverState, FollowedComponents, PageOverlays, window_reason
 from otmetki.core.hud.layer.constants import COVER_FULL_STATS, COVER_GUI, COVER_LOADING, COVER_SCREEN
 
 WINDOW = 1
@@ -58,7 +58,7 @@ class CoverStateTest(unittest.TestCase):
 
         assert not state.covered
 
-    def test_the_window_switch_off_leaves_only_v_the_killer_camera_and_the_loading_screen(self):
+    def test_the_window_switch_off_leaves_only_v_and_the_loading_screen(self):
         state = CoverState()
         state.report('gui', (COVER_GUI,))
         state.report('page', (COVER_FULL_STATS,))
@@ -238,43 +238,6 @@ class WindowReasonTest(unittest.TestCase):
 
     def test_a_hidden_window_covers_nothing(self):
         assert window_reason({'flags': DIALOG | FULLSCREEN, 'hidden': True}) is None
-
-
-class FlashVisibleTest(unittest.TestCase):
-
-    def test_a_covered_label_is_hidden(self):
-        state = {}
-
-        props = flash_visible(state, {'cover': 'stats'})
-
-        assert props['visible'] is False
-
-    def test_a_label_shown_while_covered_stays_hidden(self):
-        state = {}
-        flash_visible(state, {'cover': 'modal'})
-
-        props = flash_visible(state, {'visible': True, 'text': 'x'})
-
-        assert props['visible'] is False
-
-    def test_the_label_comes_back_when_the_cover_goes(self):
-        state = {}
-        flash_visible(state, {'visible': True, 'cover': 'stats'})
-
-        props = flash_visible(state, {'cover': ''})
-
-        assert props['visible'] is True
-
-    def test_a_label_hidden_with_v_stays_hidden_when_the_cover_goes(self):
-        state = {}
-        flash_visible(state, {'visible': False, 'cover': 'stats'})
-
-        props = flash_visible(state, {'cover': ''})
-
-        assert props['visible'] is False
-
-    def test_props_without_visibility_pass_unchanged(self):
-        assert flash_visible({}, {'text': 'x'}) == {'text': 'x'}
 
 
 class FollowedComponentsTest(unittest.TestCase):

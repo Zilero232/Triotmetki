@@ -26,8 +26,8 @@ MAX_TEMPLATE = 400
 # percent and its projection after the battle, the damage to the next goal, colour and style; no Alt view, so the panel
 # never outgrows the place the player gives it. Right of the stock consumables panel, its bottom on the panel's bottom,
 # as Lebwa and PROTanki place the marks: the page puts its left edge 12 px right of the panel's live width
-# (core/hud/panel ATTACHED bar_right); this place (centred 330 px right of the middle) is the one for the fallback width
-# and the GUIFlash renderer.
+# (core/hud/panel ATTACHED bar_right); this place (centred 330 px right of the middle) is the one for the fallback
+# width.
 DEFAULTS = {
     'x': 330,
     'y': 0,

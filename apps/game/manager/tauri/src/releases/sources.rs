@@ -5,18 +5,11 @@ pub struct SourceRule {
     pub path: &'static str,
 }
 
-pub const DEPENDENCY_SOURCES: [SourceRule; 6] = [
-    SourceRule { host: "github.com", path: "/CH4MPi/GUIFlash/releases/download/" },
-    SourceRule { host: "raw.githubusercontent.com", path: "/CH4MPi/GUIFlash/" },
+pub const DEPENDENCY_SOURCES: [SourceRule; 4] = [
     SourceRule { host: "gitlab.com", path: "/-/project/68695173/uploads/" },
     SourceRule { host: "gitlab.com", path: "/openwg/wot.gameface/-/raw/" },
     SourceRule { host: "gitlab.com", path: "/-/project/26509092/uploads/" },
     SourceRule { host: "gitlab.com", path: "/wot-public-mods/mods-list/-/raw/" },
-];
-
-pub const DEPENDENCY_REDIRECTS: [SourceRule; 2] = [
-    SourceRule { host: "release-assets.githubusercontent.com", path: "/github-production-release-asset/" },
-    SourceRule { host: "objects.githubusercontent.com", path: "/github-production-release-asset-2e65be/" },
 ];
 
 fn matches(url: &reqwest::Url, rules: &[SourceRule]) -> bool {
@@ -31,5 +24,5 @@ pub fn is_dependency_source(url: &str) -> bool {
 }
 
 pub fn is_dependency_redirect(url: &reqwest::Url) -> bool {
-    matches(url, &DEPENDENCY_SOURCES) || matches(url, &DEPENDENCY_REDIRECTS)
+    matches(url, &DEPENDENCY_SOURCES)
 }

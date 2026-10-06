@@ -34,11 +34,11 @@ describe(PlatoonPointsWidget, () => {
     expect(html.textContent).toContain('фр. 2');
   });
 
-  it('draws the HP bars on Alt only', () => {
-    const extended = render(<PlatoonPointsWidget data={data} />).container;
-    const plain = render(<PlatoonPointsWidget data={{ ...data, extended: false }} />).container;
+  it('draws an HP bar under every member name', () => {
+    const html = render(<PlatoonPointsWidget data={data} />).container;
 
-    expect(extended.querySelectorAll(`.${s.member}`)[0]?.children).toHaveLength(2);
-    expect(plain.querySelectorAll(`.${s.member}`)[0]?.children).toHaveLength(1);
+    const members = [...html.querySelectorAll(`.${s.member}`)];
+
+    expect(members.map((member) => member.children.length)).toEqual(data.rows.map(() => 2));
   });
 });

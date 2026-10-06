@@ -3,8 +3,8 @@
 components.json stores (and a settings window edits) `x`, `y`, `align_x`, `align_y`, `alpha` (0-100), `drag` and
 `scale` (percent, set with the edit modifier + wheel on the Gameface page) for every panel; `font_size` and `border` are
 constants (`PANEL_FIXED`).
-`layout_props` maps them to the renderer props (GUIFlash label names; `scale` and `kind` reach only the Gameface
-page). The panel's on/off switch stays in the companion config.
+`layout_props` maps them to the renderer props (the label names the Gameface page reads). The panel's on/off switch
+stays in the companion config.
 
 components.json keeps every default it was written with, so a panel whose default place changed would keep the old one:
 `panel_schema(..., retired=places)` names the places older versions gave the panel, and `retired_reset` moves a panel
@@ -23,7 +23,6 @@ from .constants import (  # noqa: F401
     DOCKS,
     FIT_AXES,
     FOLLOWS,
-    GAMEFACE_PROPS,
     HEX_COLOR,
     HINT_COMPONENTS,
     HINT_KEY,
@@ -43,7 +42,6 @@ __all__ = (
     'DOCK_ANCHORS',
     'DOCKS',
     'FOLLOWS',
-    'GAMEFACE_PROPS',
     'LAYOUT_KEYS',
     'MOVED_ALIGNS',
     'PANEL_DEFAULTS',

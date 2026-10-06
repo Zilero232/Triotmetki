@@ -7,7 +7,6 @@ type TargetInput = { id: string; left: number; movable?: boolean; pointer?: bool
 const target = ({ id, left, movable = true, pointer = false }: TargetInput) => ({
   id,
   rect: { left, top: 10, width: 100, height: 40 },
-  button: false,
   movable,
   pointer
 });

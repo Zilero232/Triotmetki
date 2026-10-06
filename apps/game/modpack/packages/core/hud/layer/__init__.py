@@ -2,12 +2,12 @@
 
 When the backend reports a drag or a resize (`on_moved`), the new x/y (and the anchor, when the renderer sends one) or
 scale are saved into the panel's section of components.json, so the panel comes back where the player left it. An
-unchanged text is not sent again (a Flash or Gameface re-layout per call is the cost).
+unchanged text is not sent again (a Gameface re-layout per call is the cost).
 
 `set_muted(True)` (the streamer hotkey) and `set_blocked(panel_ids)` (the streamer's private panels) take panels off
 the screen without the features knowing: their texts are held and come back when the panel is allowed again.
-`set_cover(reason, on)` is the one rule for what covers the battle view (`constants.COVER_EFFECTS`): V, the killer
-camera and the loading screen make the shown panels invisible, Tab gives them the `cover` prop `stats` and a modal stock
+`set_cover(reason, on)` is the one rule for what covers the battle view (`constants.COVER_EFFECTS`): V and the
+loading screen make the shown panels invisible, Tab gives them the `cover` prop `stats` and a modal stock
 view (the Esc menu) `modal`: the page fades them and they take no mouse and show no tooltip. The page keeps every panel
 drawn where it was, so nothing moves when they come back. `set_gui_hidden`, `set_full_stats` and `set_menu` are its V,
 Tab and Esc reasons.
@@ -23,8 +23,8 @@ one, and a drag in such a battle is saved for that type (`ModePlaces`), not in t
 back to every panel at its own place (the hangar, the HUD editor).
 
 `show(panel_id, text, widget)` also carries the panel's structured payload (`core.hud.widget`) for the Gameface page;
-`renders_widgets()` says whether the renderer draws it (a feature replaces a stock element only then); `draws(panel_id)`
-whether the renderer confirmed the panel on the screen (the Gameface page reports the panels it laid out with a size).
+`draws(panel_id)` says whether the renderer confirmed the panel on the screen (the Gameface page reports the panels it
+laid out with a size): a feature's stock element is hidden only then.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -56,7 +56,6 @@ from .constants import (
     COVER_HIDE,
     COVER_MENU,
     COVER_NONE,
-    COVER_RELEASES_STOCK,
 )
 
 
@@ -219,8 +218,8 @@ class HudLayer(object):
 
     def releases_stock(self, panel_id):
         """Whether the stock elements this panel replaces must come back: the panel is off the screen for a reason the
-        stock HUD does not share (muted, blocked, left out of the battle type, `COVER_RELEASES_STOCK`)."""
-        return self.suppressed(panel_id) or bool(self.covers & frozenset(COVER_RELEASES_STOCK))
+        stock HUD does not share (muted, blocked, left out of the battle type)."""
+        return self.suppressed(panel_id)
 
     def suppressed(self, panel_id):
         return self.muted or panel_id in self.blocked or not self.allows(panel_id)
@@ -259,10 +258,6 @@ class HudLayer(object):
                 self.places.pop(alias, None)
                 self.backend.update(alias, self.layout(panel_id))
         self._apply()
-
-    def renders_widgets(self):
-        """Whether the renderer in use draws the widget payloads (the Gameface page, once it answered)."""
-        return bool(self.backend.renders_widgets())
 
     def show(self, panel_id, text, widget=None):
         """Show or update the panel; False when it is unknown or no renderer is installed. A muted or blocked panel

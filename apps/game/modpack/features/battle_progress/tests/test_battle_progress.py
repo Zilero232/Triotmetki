@@ -47,8 +47,8 @@ def state(main_gun=None, row=None, settled=False, **counted):
     return progress_state(counts(**counted), main_gun, row, settled)
 
 
-def rows_of(battle, extended=False, language='ru', **values):
-    return progress_rows(battle, settings(**values), translator(language), extended)
+def rows_of(battle, language='ru', **values):
+    return progress_rows(battle, settings(**values), translator(language))
 
 
 def only_row(battle, **values):
@@ -202,10 +202,12 @@ class MainGunRowTest(unittest.TestCase):
 
         assert row['detail'] == u'доля 30% · команда 6 120'
 
-    def test_the_share_shows_while_alt_is_held(self):
-        row = rows_of(state(main_gun_state(1850, 14700, 8580)), extended=True)[0]
+    def test_the_preview_shows_the_share_only_with_its_setting(self):
+        hidden = preview_widget(settings(), translator())['data']['rows'][0]
+        shown = preview_widget(settings(main_gun_share=True), translator())['data']['rows'][0]
 
-        assert row['detail'] == u'доля 30% · команда 6 120'
+        assert hidden['detail'] is None
+        assert shown['detail']
 
 
 class Wn8Test(unittest.TestCase):

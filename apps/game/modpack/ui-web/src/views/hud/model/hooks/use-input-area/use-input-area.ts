@@ -9,12 +9,12 @@ import type { UseInputAreaInput } from './use-input-area.types';
 import { HUD_OVERLAY } from '../../../config';
 import { grabbedTarget, inputAreaKey, inputAreaOf } from '../../../lib/input-area';
 
-export const useInputArea = ({ edit, hover, dragging, screen, clickable, targets, hovered, report }: UseInputAreaInput): void => {
+export const useInputArea = ({ edit, hover, dragging, screen, targets, hovered, report }: UseInputAreaInput): void => {
   const [isRefused, setIsRefused] = useState(false);
   const grabbed = grabbedTarget({ tracking: edit && hover, targets, hovered });
   const grabbedId = grabbed?.id ?? null;
   const isWhole = edit && (!hover || dragging);
-  const area = inputAreaOf({ whole: isWhole, screen, rects: grabbed ? [...clickable, grabbed.rect] : clickable });
+  const area = inputAreaOf({ whole: isWhole, screen, rects: grabbed ? [grabbed.rect] : [] });
   const areaRef = useRef(area);
   const key = inputAreaKey(area);
   const isRefreshing = edit || hover || isRefused;

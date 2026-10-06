@@ -1,4 +1,4 @@
-"""Hides the stock battle HUD elements our Gameface panels replace, and follows Alt (the stock extended info).
+"""Hides the stock battle HUD elements our Gameface panels replace.
 
 RU 1.45 client source (gui/Scaleform/daapi/view/battle/shared/page.py): `SharedPage._setComponentsVisibility(visible,
 hidden)` is how the battle page shows and hides its components, again and again (control mode, full stats, postmortem),
@@ -20,19 +20,16 @@ wanted; leaving the battle page gives every part back.
 
 What covers the battle view (V, the loading screen, Tab and every other stock overlay) is `core.client.hud.cover`.
 The suppression follows the layer (`HudLayer.watch`, `releases_stock`, `draws`): while a panel is muted (streamer mode),
-blocked, left out of the battle type, hidden by a reason the stock HUD does not share (the killer camera) or not
-confirmed on the screen by the Gameface page (it reports the panels it laid out with a size: not yet measured, never
-shown, the page gone), the stock elements it replaces come back, so the player never sees neither. A lamp
+blocked, left out of the battle type or not confirmed on the screen by the Gameface page (it reports the panels it
+laid out with a size: not yet measured, never shown, the page gone), the stock elements it replaces come back, so the
+player never sees neither. A lamp
 (`want(..., while_hidden=True)`) only needs the page up and reporting: its stock lamp lights with it.
-`GameEvent.SHOW_EXTENDED_INFO` (Alt held, the key the stock markers, players panel and damage log expand on) goes out as
-`battle_extended_info(held)` on the app bus for the panels with an alternate mode.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....hooks import override
 from ....hud.stock import RETICLE_PARTS, STOCK_ALIASES, StockSuppression
 from ....log import log, log_exception, safe
-from .constants import EXTENDED_INFO_DOWN, EXTENDED_INFO_EVENT
 from .metrics import StockMetrics
 from .reticle import ReticleControl
 
@@ -46,13 +43,11 @@ except Exception as error:  # the battle page moved: every stock element stays
 
 class StockControl(object):
 
-    def __init__(self, layer, bus):
+    def __init__(self, layer):
         self.layer = layer
-        self.bus = bus
         self.suppression = StockSuppression()
         self.page = None
         self.installed = False
-        self.extended = False
         self.hidden = frozenset()
         self.metrics = StockMetrics(layer)
         self.reticle = ReticleControl()
@@ -101,7 +96,6 @@ class StockControl(object):
                     control.sync('the page registered %s' % alias)
                 return result
 
-        self._listen_gui()
         self.metrics.install()
         self.reticle.install()
         return True
@@ -111,7 +105,6 @@ class StockControl(object):
             return
         self.page = page
         self.hidden = frozenset()
-        self._set_extended(False)
         self.metrics.measure_page(page)
         self.sync()
 
@@ -121,7 +114,6 @@ class StockControl(object):
             self.hidden = frozenset()
             self.reticle.reset()
             self.metrics.forget()
-            self._set_extended(False)
 
     def filter(self, visible, hidden):
         if not self.hidden:
@@ -168,9 +160,8 @@ class StockControl(object):
 
     @safe
     def follow_layer(self):
-        """The layer changed what keeps panels off the screen: a panel muted, blocked, hidden by a reason the stock
-        HUD does not share or not confirmed drawn by the page gives its stock elements back, and takes them again
-        when it is back."""
+        """The layer changed what keeps panels off the screen: a panel muted, blocked, left out of the battle type
+        or not confirmed drawn by the page gives its stock elements back, and takes them again when it is back."""
         for owner in list(self.requested):
             self._apply_want(owner)
         self.sync('the panels shown or held')
@@ -219,26 +210,3 @@ class StockControl(object):
             page.as_setComponentsVisibilityS(set(aliases), set())
         except Exception:
             log_exception('HUD: restore stock %s' % sorted(aliases))
-
-    def _listen_gui(self):
-        try:
-            from gui.shared import EVENT_BUS_SCOPE, events, g_eventBus
-        except ImportError:
-            return
-        event = getattr(getattr(events, 'GameEvent', None), 'SHOW_EXTENDED_INFO', None)
-        if event is not None:
-            g_eventBus.addListener(event, self._on_extended_info, EVENT_BUS_SCOPE.BATTLE)
-
-    @safe
-    def _on_extended_info(self, event):
-        self._set_extended(_event_flag(event, EXTENDED_INFO_DOWN, False))
-
-    def _set_extended(self, held):
-        if held != self.extended:
-            self.extended = held
-            self.bus.emit(EXTENDED_INFO_EVENT, held)
-
-
-def _event_flag(event, key, default):
-    context = getattr(event, 'ctx', None) or {}
-    return bool(context.get(key, default))

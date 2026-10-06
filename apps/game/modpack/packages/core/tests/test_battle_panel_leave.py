@@ -25,9 +25,6 @@ class Recorder(object):
     def hide(self, panel_id):
         self.steps.append('hide')
 
-    def renders_widgets(self):
-        return True
-
     def want(self, panel_id, aliases, while_hidden=False):
         self.steps.append(('stock', tuple(aliases)))
 
@@ -81,6 +78,13 @@ class BattlePanelLeaveTest(unittest.TestCase):
         self.panel._on_leave()
 
         self.assertFalse(self.panel.running)
+
+    def test_a_running_panel_asks_for_its_stock_element_before_the_page_is_up(self):
+        self.panel.stock_aliases = lambda: ('fragCorrelationBar',)
+
+        self.panel.sync_stock()
+
+        self.assertEqual(self.steps[-1], ('stock', ('fragCorrelationBar',)))
 
 
 if __name__ == '__main__':

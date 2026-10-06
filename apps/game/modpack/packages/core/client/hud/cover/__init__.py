@@ -4,7 +4,6 @@ lists each overlay).
 
 Sources (`core.hud.cover.CoverState`, a reason stays on while any source reports it):
 - V: `GameEvent.GUI_VISIBILITY` and the page's `isGuiVisible()`;
-- the post-mortem camera on the killer (`inputHandler.onPostmortemKillerVisionEnter` / `Exit`);
 - the battle loading screen with the team lists (`GameEvent.BATTLE_LOADING`);
 - the battle page: RU 1.45 client source gui/Scaleform/daapi/view/battle/shared/page.py,
   `SharedPage._setComponentsVisibility(visible, hidden)` is how every battle page (random, ranked, Onslaught, Frontline,
@@ -31,22 +30,21 @@ Every battle page starts with nothing covered but the loading screen (it opens b
 covered. While anything is covered the watch checks the client again every `CHECK_INTERVAL_S` (the page's visible
 components, the open windows, whether the page was disposed), so a close event that never came cannot keep the panels
 hidden. A failing update uncovers every panel. The companion switch "hide panels under game windows"
-(`HIDE_UNDER_WINDOWS_KEY`, read on every update) leaves only V, the killer camera and the loading screen.
+(`HIDE_UNDER_WINDOWS_KEY`, read on every update) leaves only V and the loading screen.
+The post-mortem camera on the killer covers nothing: the stock HUD and our panels stay on it.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from functools import partial
-
 import BigWorld
 
-from ....hooks import Subscriptions, override
+from ....hooks import override
 from ....hud.cover import CHECK_INTERVAL_S, REASONS, CoverState, FollowedComponents, PageOverlays
-from ....hud.cover.constants import SOURCE_GUI, SOURCE_KILLCAM, SOURCE_LOADING, SOURCE_PAGE, SOURCE_WINDOWS
-from ....hud.layer.constants import COVER_GUI, COVER_KILLCAM, COVER_LOADING
+from ....hud.cover.constants import SOURCE_GUI, SOURCE_LOADING, SOURCE_PAGE, SOURCE_WINDOWS
+from ....hud.layer.constants import COVER_GUI, COVER_LOADING
 from ....log import log, log_exception, safe
 from ...timer import Ticker
 from ....hud.stock import FOLLOWED_ALIASES
-from .constants import GUI_VISIBLE, KILLER_VISION_EVENTS, LOADING_SHOWN, OVERLAY_EVENTS, SETUPS_METHODS
+from .constants import GUI_VISIBLE, LOADING_SHOWN, OVERLAY_EVENTS, SETUPS_METHODS
 from .windows import WindowWatch
 
 try:
@@ -72,7 +70,6 @@ class CoverWatch(object):
         self.overlays = PageOverlays()
         self.followed = FollowedComponents()
         self.installed = False
-        self.killer_hooks = Subscriptions()
         self.windows = WindowWatch(self._on_windows)
         self.ticker = Ticker(CHECK_INTERVAL_S, self._on_tick)
 
@@ -137,7 +134,6 @@ class CoverWatch(object):
         self.state.reset(keep=(SOURCE_LOADING,))
         self.followed.forget_page()
         self._ask_followed(page)
-        self._follow_killer()
         self.windows.start()
         self.state.report(SOURCE_WINDOWS, self.windows.reasons)
         self.apply()
@@ -146,7 +142,6 @@ class CoverWatch(object):
         if page is None or page is not self.page:
             return
         self.page = None
-        self.killer_hooks.clear()
         self.windows.stop()
         self.state.reset()
         self.followed = FollowedComponents()
@@ -254,17 +249,6 @@ class CoverWatch(object):
     def _on_overlay_key(self, event):
         BigWorld.callback(0, self.check)
 
-    def _follow_killer(self):
-        self.killer_hooks.clear()
-        handler = getattr(_player(), 'inputHandler', None)
-        for name, shown in KILLER_VISION_EVENTS:
-            if getattr(handler, name, None) is not None:
-                self.killer_hooks.add(handler, name, partial(self._on_killer_vision, shown))
-
-    def _on_killer_vision(self, shown, *args):
-        self.state.report(SOURCE_KILLCAM, (COVER_KILLCAM,) if shown else ())
-        self.apply()
-
 
 def _names(aliases):
     try:
@@ -285,13 +269,6 @@ def _page_call(page, name, *args):
 
 def _disposed(page):
     return _page_call(page, 'isDisposed') is True
-
-
-def _player():
-    try:
-        return BigWorld.player()
-    except Exception:  # no avatar outside a battle (or no client in the checks)
-        return None
 
 
 def _event_flag(event, key, default):

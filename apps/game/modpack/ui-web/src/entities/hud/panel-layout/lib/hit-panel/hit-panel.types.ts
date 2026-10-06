@@ -1,6 +1,6 @@
 import type { Point, Rect } from '../..';
 
-export type HitTarget = { id: string; rect: Rect; button: boolean; movable: boolean; pointer: boolean };
+export type HitTarget = { id: string; rect: Rect; movable: boolean; pointer: boolean };
 
 export type DragTarget = HitTarget & { scale: number };
 

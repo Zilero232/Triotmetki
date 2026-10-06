@@ -20,7 +20,6 @@ export const RU = {
   sectionReplaysHint: 'Реплеи ваших боёв: поиск, просмотр и загрузка на сайт.',
   sectionDataHint: 'Привязка к triotmetki.ru и что мод отправляет на сайт.',
   sectionEmpty: 'Компоненты этого раздела не установлены. Добавить их можно в менеджере модпака.',
-  hotkeyHint: 'Ctrl+Shift+T: открыть и закрыть окно',
   searchPlaceholder: 'Поиск по компонентам и настройкам',
   searchClear: 'Очистить поиск',
   searchTitle: 'Поиск',

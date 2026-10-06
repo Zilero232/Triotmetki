@@ -60,7 +60,7 @@ from ...marks.client import MarksCapture
 from ...outbox import Outbox
 from ...sender import INGEST_PATH, IngestEndpoint, IngestSender
 from ...settings_share.client import SettingsShare
-from ...settings_ui.client import create_settings_ui
+from ...settings_ui.client import SettingsView
 from ...version import MOD_ID, VERSION
 from ..constants import CONFIG_DIR, CREDENTIALS_FILE, TICK_S
 
@@ -115,7 +115,7 @@ class OtmetkiApp(object):
         self.binder = Binder(self)
         self.marks = MarksCapture(self)
         self.battles = BattleCapture(self)
-        self.settings_ui = create_settings_ui(self)
+        self.settings_ui = SettingsView(self)
         self.settings_share = SettingsShare(self)
         self.badge_preference = BadgePreference(self)
         self.ticker = Ticker(TICK_S, self._tick)

@@ -1,19 +1,18 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ..layer.constants import COVER_FULL_STATS, COVER_GUI, COVER_KILLCAM, COVER_LOADING, COVER_SCREEN
+from ..layer.constants import COVER_FULL_STATS, COVER_GUI, COVER_LOADING, COVER_SCREEN
 
 # The sources `core.client.hud.cover` reads; each one reports the reasons it sees right now and a reason is on while
 # any source reports it (docs/research/client/2026-10-05-battle-overlays.md).
 SOURCE_GUI = 'gui'
-SOURCE_KILLCAM = 'killcam'
 SOURCE_LOADING = 'loading'
 SOURCE_PAGE = 'page'
 SOURCE_WINDOWS = 'windows'
-SOURCES = (SOURCE_GUI, SOURCE_KILLCAM, SOURCE_LOADING, SOURCE_PAGE, SOURCE_WINDOWS)
+SOURCES = (SOURCE_GUI, SOURCE_LOADING, SOURCE_PAGE, SOURCE_WINDOWS)
 # Every reason the watch drives on the layer, so a reason no source reports any more is switched off.
-REASONS = (COVER_GUI, COVER_KILLCAM, COVER_LOADING, COVER_FULL_STATS, COVER_SCREEN)
+REASONS = (COVER_GUI, COVER_LOADING, COVER_FULL_STATS, COVER_SCREEN)
 # The reasons that are a game window over the battle: the config.json switch HIDE_UNDER_WINDOWS_KEY turns them off.
-# V, the killer camera and the loading screen always hide the panels, as they hide the stock HUD.
+# V and the loading screen always hide the panels, as they hide the stock HUD.
 WINDOW_REASONS = (COVER_FULL_STATS, COVER_SCREEN)
 # The companion config.json switch "hide panels under game windows" (on when the key is missing).
 HIDE_UNDER_WINDOWS_KEY = 'hud_hide_under_windows'

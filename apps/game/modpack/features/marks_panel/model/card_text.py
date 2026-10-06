@@ -10,7 +10,7 @@ from .constants import DELTA_COLORS, LINE_SEPARATOR, METRIC_SEPARATOR, TARGET_SE
 from .page import delta_sign, signed_percent
 from .tank_progress import mastery_line, research_line
 
-# The Tank card as GUIFlash text, for the renderer without the Gameface page: the same parts as the widget
+# The Tank card as text, for a page that cannot draw the widget: the same parts as the widget
 # (model/card.py), one line each.
 
 

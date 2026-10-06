@@ -50,15 +50,11 @@ class Recorder(HudBackend):
 
     name = 'gameface'
 
-    def __init__(self, widgets=True):
+    def __init__(self):
         self.calls = []
-        self.widgets = widgets
 
     def available(self):
         return True
-
-    def renders_widgets(self):
-        return self.widgets
 
     def create(self, alias, props):
         self.calls.append(('create', dict(props)))
@@ -160,11 +156,6 @@ class WidgetPayloadTest(unittest.TestCase):
         assert [call[0] for call in backend.calls] == ['create', 'update']
         assert backend.calls[0][1]['widget'] == payload
         assert backend.calls[1][1]['widget']['data'] == {'n': 2}
-
-    def test_layer_renders_widgets_when_the_backend_does(self):
-        layer = layer_with_a_panel(Recorder())
-
-        assert layer.renders_widgets()
 
     def test_hidden_gui_makes_the_panel_invisible_in_place(self):
         backend = Recorder()

@@ -49,15 +49,12 @@ HEX_COLOR = re.compile(r'^#[0-9A-Fa-f]{6}\Z')
 # The renderer's anchor props after a drag, and the settings keys they are saved to.
 MOVED_ALIGNS = (('alignX', 'align_x'), ('alignY', 'align_y'))
 
-# Renderer props only the Gameface HUD page draws; GUIFlash's Flash labels are never sent them.
-GAMEFACE_PROPS = ('scale', 'kind', 'widget', 'dock', 'attach', 'hint', 'cover')
-
 # A panel's tooltip on the Gameface page is the short description of the component that draws it, its
 # `component_<id>_hint` string: the id follows the alias prefix (`otmetki.hud.<id>`, `otmetki.<id>[.<part>]`) unless the
 # table names it.
 HINT_KEY = 'component_%s_hint'
 HINT_PREFIXES = (ALIAS_PREFIX, 'otmetki.')
-HINT_COMPONENTS = {'otmetki.session': 'session_stats', 'otmetki.ui.button': 'settings_button'}
+HINT_COMPONENTS = {'otmetki.session': 'session_stats'}
 
 # Docked columns: panels at their group's anchor stack one under (or, for a bottom anchor, above) the other with the
 # page's gap between them (ui-web views/hud/lib/dock), in `order`, so default places never overlap whatever
@@ -106,7 +103,7 @@ DOCKS = {
 # Panels whose default place follows a stock battle element (docs/research/competitors/2026-10-05-behavior-parity.md,
 # the places Battle Observer, Lebwa, PROTanki and kurzdor's battleequipment use): while a panel sits at its default
 # place its `attach` prop names the rule, with the measured stock sizes (core.hud.stock.stock_metrics), and the page
-# places it from them (ui-web views/hud/lib/attach); the default place itself is where GUIFlash draws it.
+# places it from them (ui-web views/hud/lib/attach); the default place itself is the fallback until it is measured.
 # `bar_right`: right of the consumables panel, lifted above the equipment row when it would reach the minimap (marks);
 # `bar_above`: centred right above it, over the screen centre the stock panel is centred on (equipment row, as
 # kurzdor's battleequipment); `minimap_above`: right aligned above the minimap (the previous battle's results);

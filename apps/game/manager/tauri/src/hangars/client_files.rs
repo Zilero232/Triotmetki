@@ -13,8 +13,8 @@ use crate::detect::client::PATHS_XML;
 use crate::detect::GameClient;
 use crate::error::{AppError, AppResult, ErrorCode};
 use crate::fsx::file_sha256;
-use crate::ini_file::decode_text;
 use crate::paths::{join_relative, same_path};
+use crate::text::{decode_text, Fallback};
 
 pub const GAME_RES_DIR: &str = "res";
 pub const DEFAULT_PACKAGE_ROOT: &str = "res";
@@ -113,7 +113,7 @@ fn mtmod_sources(input: MtmodSourcesInput) -> Vec<Source> {
 }
 
 pub fn read_sources(game_dir: &Path) -> Vec<Source> {
-    let text = fs::read(game_dir.join(PATHS_XML)).map(|bytes| decode_text(&bytes)).unwrap_or_default();
+    let text = fs::read(game_dir.join(PATHS_XML)).map(|bytes| decode_text(&bytes, Fallback::Lossy)).unwrap_or_default();
     let Ok(document) = roxmltree::Document::parse(text.trim_start_matches('\u{feff}')) else {
         return Vec::new();
     };

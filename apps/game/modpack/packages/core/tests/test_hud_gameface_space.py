@@ -169,22 +169,9 @@ class GamefaceSpaceTest(unittest.TestCase):
 
         self.assertTrue(Window.opened[0].destroyed)
 
-    def test_a_new_window_waits_for_its_page_before_widgets_count(self):
-        self.page_up()
-        self.backend._on_space_left(1)
-
-        self.backend.create(LAMP, {'text': '!'})
-
-        self.assertFalse(self.backend.renders_widgets())
-
-    def test_the_page_that_answered_draws_widgets(self):
-        self.page_up()
-
-        self.assertTrue(self.backend.renders_widgets())
-
-    def test_a_destroyed_page_no_longer_draws_widgets(self):
+    def test_a_destroyed_page_confirms_nothing_drawn(self):
         view = self.page_up()
 
         self.backend.on_destroyed(view)
 
-        self.assertFalse(self.backend.renders_widgets())
+        self.assertIsNone(self.backend.drawn_aliases())

@@ -294,7 +294,7 @@ class CrosshairComponent(BattlePanel):
         self.hide()
         self.sync_stock()
 
-    # The GUIFlash fallback keeps the mark alone so the text never moves it off the reticle centre; without a mark it
+    # The text fallback keeps the mark alone so the text never moves it off the reticle centre; without a mark it
     # shows the readouts as plain text.
     def _text(self, with_mark, drawn):
         return (mark_text(self.settings) if with_mark else '') or readouts_text(drawn)

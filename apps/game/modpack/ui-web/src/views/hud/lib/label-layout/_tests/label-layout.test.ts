@@ -19,7 +19,6 @@ const panel = (overrides: Partial<HudPanel>): HudPanel => ({
   border: false,
   visible: true,
   scale: 1,
-  kind: 'label',
   widget: null,
   ...overrides
 });
@@ -69,10 +68,6 @@ describe(layoutLabels, () => {
     expect(layoutOf(panel({ cover: 'stats', drag: true }), true)).toMatchObject({ movable: false, pointer: false });
   });
 
-  it('takes no click on a covered button', () => {
-    expect(layoutOf(panel({ cover: 'modal', kind: 'button' }))?.button).toBe(false);
-  });
-
   it('keeps a hidden panel laid out in its place, drawn transparent', () => {
     const shown = layoutOf(panel({}));
     const hidden = layoutOf(panel({ visible: false }));
@@ -83,10 +78,6 @@ describe(layoutLabels, () => {
 
   it('takes no drag on a hidden panel', () => {
     expect(layoutOf(panel({ visible: false, drag: true }), true)?.movable).toBe(false);
-  });
-
-  it('takes no click on a hidden button', () => {
-    expect(layoutOf(panel({ visible: false, kind: 'button' }))?.button).toBe(false);
   });
 
   it('counts a measured panel as drawn, hidden with the stock GUI or not', () => {

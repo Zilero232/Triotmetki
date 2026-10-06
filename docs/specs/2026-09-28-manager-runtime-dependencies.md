@@ -2,6 +2,8 @@
 
 Status: implemented. The manager side: `apps/game/manager/tauri/src/dependencies`, `releases/sources.rs`, the install wizard, the «Компоненты» toggle and the update after a patch. The catalogue side: both entries are in `apps/game/modpack/catalog/catalog.json`, setupkit checks them and passes them through, the МОСТ bundler lists them as third-party mods, and `requiredBy` is checked against the code (`apps/game/modpack/tools/build/setupkit/manifest/tests/test_dependencies.py`), which adds `session_stats` (its hangar label) to the proposal below.
 
+Superseded in part (2026-10-06, modpack 0.3.5 follow-up): GUIFlash was dropped, the dependencies are OpenWG Gameface and ModsList (both required).
+
 ## Why
 
 The modpack's in-game window and Gameface HUD need OpenWG Gameface, and the fallback HUD renderer needs GUIFlash 0.6.x (modpack README «Battle HUD», «References and licences», «Install (players)» step 3). Players install both by hand today. Both are MIT, which allows redistribution with the copyright and licence notice, so the manager can fetch the authors' own release files, check them against a pinned sha256 and keep the licence next to the install. We never vendor them into our packages.

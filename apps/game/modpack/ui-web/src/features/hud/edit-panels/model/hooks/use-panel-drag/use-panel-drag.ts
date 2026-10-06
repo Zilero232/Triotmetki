@@ -14,12 +14,6 @@ import { beyondSlop, dragOutcome, liveAt, pressDrag, pressedTarget } from '../..
 const settleDrag = ({ drag, press, onMoved }: SettleDragInput): void => {
   const outcome = dragOutcome({ drag, press, screen: readScreen() });
 
-  if (outcome.kind === 'pressed') {
-    sendHud({ type: 'pressed', id: drag.id });
-
-    return;
-  }
-
   if (outcome.kind === 'moved') {
     onMoved({ id: drag.id, placement: outcome.placement });
     sendHud({ type: 'moved', id: drag.id, ...outcome.placement });

@@ -38,7 +38,6 @@ export const hudPanelSchema = z.object({
   border: z.boolean(),
   visible: z.boolean(),
   scale: z.number(),
-  kind: z.enum(HUD_PROTOCOL.kinds),
   widget: z.nullable(hudWidgetSchema),
   dock: z.optional(z.nullable(hudDockSchema)),
   attach: z.optional(z.nullable(hudAttachSchema)),
@@ -58,7 +57,6 @@ export const hudMessageSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('ready') }),
   z.object({ type: z.literal('moved'), id: z.string(), x: z.number(), y: z.number(), align_x: alignX, align_y: alignY }),
   z.object({ type: z.literal('resized'), id: z.string(), scale: z.number() }),
-  z.object({ type: z.literal('pressed'), id: z.string() }),
   z.object({ type: z.literal('mouse'), event: z.enum(HUD_PROTOCOL.mouseEvents) }),
   z.object({ type: z.literal('drawn'), ids: z.array(z.string()) }),
   z.object({ type: z.literal('area'), whole: z.boolean() })

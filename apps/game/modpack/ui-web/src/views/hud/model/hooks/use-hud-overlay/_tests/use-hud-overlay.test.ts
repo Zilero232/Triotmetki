@@ -256,30 +256,6 @@ describe(useHudOverlay, () => {
     expect(hook.result.current.labels[0]?.style).toMatchObject({ transform: 'scale(1.1)', transformOrigin: '0 0' });
   });
 
-  it('makes the settings button clickable without the modifier and never draggable then', async () => {
-    const { hook } = await mount(withState({ patch: { edit: false }, panel: { kind: 'button' } }));
-
-    expect(hook.result.current.labels[0]).toMatchObject({ button: true, interactive: true, framed: false });
-  });
-
-  it('lets the settings button be pressed', async () => {
-    const { hook } = await mount(withState({ patch: { edit: false }, panel: { kind: 'button' } }));
-
-    expect(hook.result.current.labels[0]?.pressable).toBe(true);
-  });
-
-  it('lets a fixed button be pressed while the battle cursor is out', async () => {
-    const { hook } = await mount(withState({ patch: { edit: true }, panel: { kind: 'button', drag: false } }));
-
-    expect(hook.result.current.labels[0]?.pressable).toBe(true);
-  });
-
-  it('never presses a button that is being moved in an edit', async () => {
-    const { hook } = await mount(withState({ patch: { edit: true }, panel: { kind: 'button', drag: true } }));
-
-    expect(hook.result.current.labels[0]?.pressable).toBe(false);
-  });
-
   it('keeps the same style object for a label whose place did not change', async () => {
     const { mock, hook } = await mount(SAMPLE);
     const before = hook.result.current.labels[0]?.style;

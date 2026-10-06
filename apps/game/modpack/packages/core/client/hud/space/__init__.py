@@ -1,5 +1,5 @@
 """Which GUI space the client is in: a label created in the hangar belongs to the hangar, one created in
-battle to the battle (GUIFlash 0.6 keeps the same split)."""
+battle to the battle."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import BigWorld
@@ -9,7 +9,7 @@ from ...game import client_attr, service
 
 
 def current_space():
-    # GUIFlash's own test: the avatar has an arena, the account does not.
+    # The avatar has an arena, the account does not.
     return SPACE_BATTLE if hasattr(BigWorld.player(), 'arena') else SPACE_LOBBY
 
 

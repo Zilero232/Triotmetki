@@ -21,8 +21,8 @@ def settings(**values):
     return Settings(values, SCHEMA)
 
 
-def data_of(log, extended=False, translate=TRANSLATE, **values):
-    return damage_log_widget(log, settings(**values), translate, extended)['data']
+def data_of(log, translate=TRANSLATE, **values):
+    return damage_log_widget(log, settings(**values), translate)['data']
 
 
 def preview_data(**values):
@@ -148,39 +148,29 @@ class ReceivedRowsTest(unittest.TestCase):
 
 class DetailTest(unittest.TestCase):
 
-    def test_rows_carry_no_notes_while_alt_is_up(self):
+    def test_the_notes_widen_the_log_by_default(self):
         data = preview_data()
+
+        assert data['wide']
+        assert data['received'][0]['note'] == u'боеукладка'
+        assert data['received'][1]['note'] == u'не пробил'
+        assert data['dealt'][1]['note'] == u'+1 крит. · осталось 1 180'
+        assert data['dealt'][2]['note'] == u'рикошет'
+
+    def test_the_notes_setting_keeps_the_rows_short(self):
+        data = preview_data(show_notes=False)
 
         assert not data['wide']
         assert [row['note'] for row in data['dealt'] + data['received']] == [''] * 6
 
-    def test_alt_widens_the_log_and_adds_the_notes(self):
-        data = data_of(preview_log(), extended=True)
-
-        assert data['wide']
-        assert data['received'][0]['note'] == u'боеукладка'
-        assert data['dealt'][1]['note'] == u'+1 крит. · осталось 1 180'
-        assert data['dealt'][2]['note'] == u'рикошет'
-
-    def test_without_the_alt_mode_the_notes_are_always_there(self):
-        data = preview_data(alt_mode=False)
-
-        assert data['wide']
-        assert data['received'][1]['note'] == u'не пробил'
-
-    def test_the_compact_style_has_no_rows_while_alt_is_up(self):
+    def test_the_compact_style_has_no_rows(self):
         data = preview_data(style='compact')
 
         assert data['dealt'] == []
         assert data['received'] == []
 
-    def test_alt_shows_the_rows_the_compact_style_leaves_out(self):
-        data = data_of(preview_log(), extended=True, style='compact')
-
-        assert len(data['dealt']) == 4
-
-    def test_the_edit_preview_is_the_alt_one(self):
-        assert preview_widget(settings(), TRANSLATE)['data']['wide']
+    def test_the_edit_preview_follows_the_notes_setting(self):
+        assert not preview_widget(settings(show_notes=False), TRANSLATE)['data']['wide']
 
     def test_damage_log_fixture_for_the_page(self):
         assert _support.widget_fixture('damage_log', preview_widget(settings(), TRANSLATE))

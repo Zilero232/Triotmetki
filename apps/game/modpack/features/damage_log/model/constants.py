@@ -46,19 +46,6 @@ SOURCES = (SOURCE_SHOT, 'fire', 'ram', 'world', 'other')
 # received hit marks that hit as the one that reached the ammo rack.
 AMMO_RACK_WINDOW_S = 1.5
 
-# How much a row tells: the notes (outcome words, crits, ammo rack, HP left) always (`alt_mode` off), or with
-# `alt_mode` on only while Alt, the stock client's extended-info key, is held (damage_log_panel _RECORD_STYLE and
-# _handleShowExtendedInfo, RU 1.45 client source).
-DETAIL_FULL = 'full'
-DETAIL_SHORT = 'short'
-DETAIL_EXTENDED = 'extended'
-NOTED_DETAILS = (DETAIL_FULL, DETAIL_EXTENDED)
-# The player's own text line template per detail (with Alt held, the Alt one); empty keys fall back to the built-in.
-ENTRY_TEMPLATE_KEYS = {
-    DETAIL_FULL: 'entry_template',
-    DETAIL_SHORT: 'entry_template',
-    DETAIL_EXTENDED: 'alt_entry_template',
-}
 NOTE_SEPARATOR = ' · '
 # The outcomes a note leaves out of its words: a plain penetration and a crit say it with their icon and crits count.
 SILENT_OUTCOMES = (None, 'pen', 'crit')
@@ -71,7 +58,8 @@ SECTIONS = {
     'dealt': ('dealt',),
     'received': ('received',),
 }
-# Styles that show only the totals until Alt is held; `minimal` keeps only the dealt and received totals.
+# Styles that show only the totals, never the rows (the panel never changes while Alt is held, the owner's decision);
+# `minimal` keeps only the dealt and received totals.
 COMPACT_STYLES = (STYLE_COMPACT, STYLE_MINIMAL)
 MINIMAL_TOTALS = ('dealt', 'received')
 # The totals in their order with the section each belongs to (model shown_totals: which are shown).
@@ -157,5 +145,5 @@ KIND = 'damage_log'
 EDITOR_GROUPS = (
     ('look', ('style', 'palette')),
     ('sections', ('sections', 'dealt_lines', 'received_lines')),
-    ('rows', ('group_by_target', 'show_hp', 'show_misses', 'show_received_blocked', 'show_assist_rows', 'alt_mode')),
+    ('rows', ('group_by_target', 'show_hp', 'show_misses', 'show_received_blocked', 'show_assist_rows', 'show_notes')),
 )

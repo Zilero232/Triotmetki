@@ -16,7 +16,6 @@ import _support
 from otmetki.companion.binding import Credentials
 from otmetki.companion.config import FEATURES, OPT_IN_FEATURES, Config
 from otmetki.companion.i18n import Translator
-from otmetki.companion.settings_ui import build_template, settings_to_config
 from otmetki.core.net import signing
 from otmetki.core.net.signing import (
     NONCE_HEADER,
@@ -1054,9 +1053,8 @@ class BackgroundRunnerTest(unittest.TestCase):
         self.assertIsNone(seen['failed'])
 
 
-def settings_checkbox(language, name):
-    template = build_template(Config(), Translator(language), 'status')
-    return [control for control in template['column1'] if control['varName'] == name][0]
+def switch_label(language, name):
+    return Translator(language)(name)
 
 
 class ReplaySettingsTest(unittest.TestCase):
@@ -1077,14 +1075,11 @@ class ReplaySettingsTest(unittest.TestCase):
     def test_upload_switch_takes_only_a_boolean(self):
         self.assertFalse(Config({'upload_replays': 'yes'}).is_enabled('upload_replays'))
 
-    def test_settings_window_switch(self):
-        checkbox = settings_checkbox('ru', 'upload_replays')
+    def test_upload_switch_is_labelled(self):
+        self.assertIn(u'реплеи', switch_label('ru', 'upload_replays'))
 
-        self.assertFalse(checkbox['value'])
-        self.assertIn(u'реплеи', checkbox['text'])
-
-    def test_settings_window_saves_the_upload_switch(self):
-        self.assertEqual(settings_to_config({'upload_replays': True}), {'upload_replays': True})
+    def test_the_upload_switch_is_saved(self):
+        self.assertEqual(Config().update({'upload_replays': True}), ['upload_replays'])
 
     def test_publishing_is_an_opt_in_feature(self):
         self.assertIn('publish_replays', FEATURES)
@@ -1096,18 +1091,15 @@ class ReplaySettingsTest(unittest.TestCase):
     def test_publishing_is_on_when_switched_on(self):
         self.assertTrue(Config({'publish_replays': True}).is_enabled('publish_replays'))
 
-    def test_settings_window_saves_the_publish_switch(self):
-        self.assertEqual(settings_to_config({'publish_replays': True}), {'publish_replays': True})
+    def test_the_publish_switch_is_saved(self):
+        self.assertEqual(Config().update({'publish_replays': True}), ['publish_replays'])
 
     def test_publish_switch_sits_next_to_upload(self):
         self.assertEqual(FEATURES.index('publish_replays'), FEATURES.index('upload_replays') + 1)
 
     def test_publish_switch_is_labelled_in_both_languages(self):
         for language, word in (('ru', u'публичн'), ('en', u'public')):
-            checkbox = settings_checkbox(language, 'publish_replays')
-
-            self.assertFalse(checkbox['value'])
-            self.assertIn(word, checkbox['text'].lower())
+            self.assertIn(word, switch_label(language, 'publish_replays').lower())
 
 
 def contract_limits():

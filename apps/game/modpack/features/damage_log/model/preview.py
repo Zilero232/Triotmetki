@@ -7,8 +7,6 @@ from .constants import PREVIEW_ASSIST, PREVIEW_RECEIVED, PREVIEW_SHOTS, PREVIEW_
 from .text import format_damage_log
 from .widget import damage_log_widget
 
-# The edit mode shows a panel in its Alt state (docs/specs/2026-09-30-hud-consolidation-and-design.md section 6.6).
-
 
 def _add_shot(log, moment, shot):
     target, vehicle, vehicle_class, max_hp, outcome, damage, shell, gold, crits, hp = shot
@@ -44,8 +42,8 @@ def preview_log():
 
 
 def preview_text(settings, translate):
-    return format_damage_log(preview_log(), settings, translate, extended=True)
+    return format_damage_log(preview_log(), settings, translate)
 
 
 def preview_widget(settings, translate):
-    return damage_log_widget(preview_log(), settings, translate, extended=True)
+    return damage_log_widget(preview_log(), settings, translate)

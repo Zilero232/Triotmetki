@@ -13,7 +13,7 @@ def member(row, translate):
     return shown
 
 
-def points_widget(platoon, settings, translate, extended=False):
+def points_widget(platoon, settings, translate):
     rules = rules_of(settings)
     rows = platoon.rows(rules, settings.get('show_platoon'))
     return widget(KIND, {
@@ -21,5 +21,4 @@ def points_widget(platoon, settings, translate, extended=False):
         'rows': [member(row, translate) for row in rows],
         'total': sum(row['points'] for row in rows),
         'rules': rules,
-        'extended': bool(extended),
     })

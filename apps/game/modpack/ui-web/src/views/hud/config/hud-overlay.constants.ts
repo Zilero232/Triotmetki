@@ -1,8 +1,6 @@
 export const HUD_OVERLAY = {
   hoverPollMs: 50,
   measureFrames: 4,
-  buttonSize: 36,
-  buttonIcon: 'icon.png',
   scaleOrigin: '0 0',
   hidden: 0,
   emptyRect: { left: 0, top: 0, width: 0, height: 0 },

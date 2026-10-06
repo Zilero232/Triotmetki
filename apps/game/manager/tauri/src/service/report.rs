@@ -75,7 +75,7 @@ impl Manager {
         format!("{}\n", lines.join("\n"))
     }
 
-    pub fn prepare_report(&self, client_path: Option<&Path>) -> ReportPreview {
+    pub fn prepare_report(&self, client_path: Option<&Path>) -> AppResult<ReportPreview> {
         let redactor = self.redactor();
         let client = self.client(client_path).ok();
         let modpack = self.installed_modpack(client_path);
@@ -100,7 +100,7 @@ impl Manager {
         }
 
         let preview = ReportPreview {
-            id: crate::site::new_nonce(),
+            id: crate::site::new_nonce()?,
             manager_version: env!("MANAGER_VERSION").to_owned(),
             modpack_version: modpack,
             game_version: client.map(|client| client.version.to_string()),
@@ -109,7 +109,7 @@ impl Manager {
 
         self.keep_report_preview(&preview);
 
-        preview
+        Ok(preview)
     }
 
     pub async fn send_report(&self, preview_id: &str, parts: &[ReportPart], message: &str) -> AppResult<ReportReceipt> {

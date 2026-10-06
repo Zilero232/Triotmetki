@@ -157,6 +157,18 @@
       }
     },
     {
+      "id": "all",
+      "everything": true,
+      "title": {
+        "ru": "Все компоненты",
+        "en": "All components"
+      },
+      "description": {
+        "ru": "Весь модпак целиком: каждый компонент каталога.",
+        "en": "The whole modpack: every component of the catalogue."
+      }
+    },
+    {
       "id": "custom",
       "custom": true,
       "title": {
@@ -325,8 +337,8 @@
         "en": "Battle log"
       },
       "description": {
-        "ru": "Итоги боя и два раздела вместо стандартного лога урона: ваши выстрелы с исходом, уроном, снарядом, целью и остатком её прочности плюс помощь; попадания по вам с уроном, снарядом, стрелявшим, пожаром, тараном и боеукладкой плюс попадания, которые выдержала броня. По Alt — пояснения.",
-        "en": "The battle totals and two sections in place of the stock damage log: your shots with the outcome, damage, shell, target and its HP left plus your assist; the hits on you with the damage, shell, shooter, fire, ramming and ammo rack plus the hits your armour stopped. Alt adds the notes."
+        "ru": "Итоги боя и два раздела вместо стандартного лога урона: ваши выстрелы с исходом, уроном, снарядом, целью и остатком её прочности плюс помощь; попадания по вам с уроном, снарядом, стрелявшим, пожаром, тараном и боеукладкой плюс попадания, которые выдержала броня.",
+        "en": "The battle totals and two sections in place of the stock damage log: your shots with the outcome, damage, shell, target and its HP left plus your assist; the hits on you with the damage, shell, shooter, fire, ramming and ammo rack plus the hits your armour stopped."
       },
       "fairPlay": {
         "ru": "Только события, которые игра уже показывает вам.",
@@ -1250,57 +1262,6 @@
       "restartRequired": true
     },
     {
-      "id": "guiflash",
-      "kind": "dependency",
-      "packageId": "gambiter.guiflash",
-      "version": "0.6.6",
-      "file": "gambiter.guiflash_0.6.6.mtmod",
-      "title": {
-        "ru": "GUIFlash",
-        "en": "GUIFlash"
-      },
-      "description": {
-        "ru": "Запасной вывод панелей на экран, если Gameface недоступен",
-        "en": "The fallback renderer for the on-screen panels when Gameface is unavailable"
-      },
-      "author": {
-        "name": "CH4MPi (GambitER, Kurzdor, StranikS_Scan)",
-        "url": "https://github.com/CH4MPi/GUIFlash"
-      },
-      "licence": {
-        "name": "MIT",
-        "url": "https://raw.githubusercontent.com/CH4MPi/GUIFlash/v0.6.6/LICENSE",
-        "sha256": "516fddc54dc15c2589d40017fc985adc59565ff7fbe8e7bc16851205126dd7fc"
-      },
-      "sourceUrl": "https://github.com/CH4MPi/GUIFlash/releases/download/v0.6.6/gambiter.guiflash_0.6.6.mtmod",
-      "sha256": "a0b6dc2e75663008a4ced9e0c00449be84b3c3d5d932f8bbcaa2b334ae3d1cb5",
-      "size": 62862,
-      "requiredBy": [
-        "marks_panel",
-        "damage_log",
-        "battle_progress",
-        "team_hp",
-        "sixth_sense",
-        "gun_arc",
-        "platoon_points",
-        "battle_hotkeys",
-        "hud_layouts",
-        "battle_loadout",
-        "crosshair",
-        "streamer_mode",
-        "session_stats",
-        "battle_results",
-        "personal_missions",
-        "comp7_helper",
-        "event_trackers",
-        "crew_xp",
-        "hangar_info",
-        "free_camera"
-      ],
-      "optional": false,
-      "restartRequired": false
-    },
-    {
       "id": "modslist",
       "kind": "dependency",
       "packageId": "me.poliroid.modslistapi",
@@ -1327,7 +1288,7 @@
       "sha256": "b312adfcd005405d49b711e79b4032be7d624b6e38d4156364d1c04bc5dba71f",
       "size": 79776,
       "requiredBy": ["ui", "hit_viewer"],
-      "optional": true,
+      "optional": false,
       "restartRequired": false
     }
   ]

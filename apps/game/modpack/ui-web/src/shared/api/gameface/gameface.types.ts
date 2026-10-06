@@ -22,7 +22,6 @@ export type GamefaceBridge = {
   escape: () => number | null;
   send: (message: string) => boolean;
   onDataChanged: (callback: () => void) => void;
-  openWindow: () => boolean;
   setInputArea: (area: InputArea) => boolean;
 };
 

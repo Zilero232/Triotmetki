@@ -3,6 +3,8 @@
 Nothing the layout knows is repeated in the catalog: a component's id is its package key, its file name
 comes from archive.file_name and its dependencies start with the package's own `depends`. Third-party
 runtime mods (`kind: "dependency"`) have no package here: they are passed through as the catalog pins them.
+A preset with `everything: true` (`all`, "All components") is appended to every component's presets, so a catalog
+entry never lists it; required components are in every preset anyway.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -88,7 +90,8 @@ def _component(package, catalog, platform, packages_dir, warnings):
     fields = _catalogued_fields(package, entry) if is_catalogued else _uncatalogued_fields(package, catalog, warnings)
     required = fields['required']
     all_presets = tuple(preset.id for preset in catalog.presets)
-    presets = all_presets if required else tuple(fields['presets'])
+    everything = tuple(preset.id for preset in catalog.presets if preset.everything)
+    presets = all_presets if required else tuple(fields['presets']) + everything
 
     file_name = archive.file_name(package, platform)
     sha256, size = _file_stats(file_name, packages_dir)

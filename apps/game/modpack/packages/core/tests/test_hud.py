@@ -45,9 +45,6 @@ class ComponentOfTest(unittest.TestCase):
     def test_the_session_label_belongs_to_the_session_stats(self):
         assert component_of('otmetki.session') == 'session_stats'
 
-    def test_the_settings_button_has_a_name_of_its_own(self):
-        assert component_of('otmetki.ui.button') == 'settings_button'
-
 
 class FakeBackend(HudBackend):
 

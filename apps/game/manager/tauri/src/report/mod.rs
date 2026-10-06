@@ -1,17 +1,17 @@
 mod redact;
 
 use std::fs::{self, File};
-use std::io::{Read, Seek, SeekFrom, Write};
+use std::io::{Read, Seek, SeekFrom};
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
-use zip::write::SimpleFileOptions;
-use zip::{CompressionMethod, ZipWriter};
 
 pub use redact::{RedactContext, Redactor};
 
+use crate::archive::AtomicZip;
 use crate::error::AppResult;
-use crate::fsx::{list_files, TEMP_SUFFIX};
+use crate::fsx::list_files;
+use crate::text::{decode_text, Fallback};
 
 pub const REPORTS_PATH: &str = "/mod/reports";
 pub const PYTHON_LOG: &str = "python.log";
@@ -79,14 +79,6 @@ pub struct ReportReceipt {
     pub expires_at: String,
 }
 
-pub fn decode_text(bytes: &[u8]) -> String {
-    match std::str::from_utf8(bytes) {
-        Ok(text) => text.to_owned(),
-        Err(error) if error.error_len().is_none() => String::from_utf8_lossy(bytes).into_owned(),
-        Err(_) => encoding_rs::WINDOWS_1251.decode(bytes).0.into_owned(),
-    }
-}
-
 pub fn read_tail(path: &Path, max_bytes: u64) -> Option<(String, bool)> {
     let mut file = File::open(path).ok()?;
     let length = file.metadata().ok()?.len();
@@ -97,12 +89,12 @@ pub fn read_tail(path: &Path, max_bytes: u64) -> Option<(String, bool)> {
     file.take(max_bytes).read_to_end(&mut bytes).ok()?;
 
     if start == 0 {
-        return Some((decode_text(&bytes), false));
+        return Some((decode_text(&bytes, Fallback::Windows1251), false));
     }
 
     let first_line = bytes.iter().position(|byte| *byte == b'\n').map_or(0, |index| index + 1);
 
-    Some((decode_text(&bytes[first_line..]), true))
+    Some((decode_text(&bytes[first_line..], Fallback::Windows1251), true))
 }
 
 pub fn newest_file(dir: &Path) -> Option<PathBuf> {
@@ -153,27 +145,18 @@ pub struct WriteZipInput<'a> {
 pub fn write_zip(input: WriteZipInput) -> AppResult<PathBuf> {
     let WriteZipInput { target, preview, parts, message } = input;
     let target = crate::sets::with_extension(target, ZIP_EXTENSION);
-    let parent = target.parent().filter(|parent| !parent.as_os_str().is_empty()).unwrap_or(Path::new("."));
-    let mut writer = ZipWriter::new(tempfile::Builder::new().suffix(TEMP_SUFFIX).tempfile_in(parent)?);
-    let options = SimpleFileOptions::default().compression_method(CompressionMethod::Deflated);
+    let mut zip = AtomicZip::create(&target)?;
     let message = clean_message(message);
 
     if !message.is_empty() {
-        writer.start_file(MESSAGE_FILE, options)?;
-        writer.write_all(message.as_bytes())?;
+        zip.add(MESSAGE_FILE, message.as_bytes())?;
     }
 
     for item in selected(preview, parts) {
-        writer.start_file(&item.name, options)?;
-        writer.write_all(item.text.as_bytes())?;
+        zip.add(&item.name, item.text.as_bytes())?;
     }
 
-    let temp = writer.finish()?;
-
-    temp.as_file().sync_all()?;
-    temp.persist(&target).map_err(|error| error.error)?;
-
-    Ok(target)
+    zip.finish()
 }
 
 #[cfg(test)]

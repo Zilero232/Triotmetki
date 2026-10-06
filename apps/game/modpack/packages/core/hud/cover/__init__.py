@@ -1,9 +1,9 @@
 """What covers the battle view, from every source at once (pure; `core.client.hud.cover` reads the client).
 
-`CoverState` keeps, per source (`constants.SOURCES`: V, the killer camera, the loading screen, the battle page, the
-Gameface windows), the reasons it reports right now; a reason is on while any source reports it, so two overlays that
-overlap (Tab over the overview map, the loading screen and the page's own hiding) never turn the panels on between them,
-and a source that goes quiet takes only its own reasons away. Every source reports its whole current set, never a
+`CoverState` keeps, per source (`constants.SOURCES`: V, the loading screen, the battle page, the Gameface windows), the
+reasons it reports right now; a reason is on while any source reports it, so two overlays that overlap (Tab over the
+overview map, the loading screen and the page's own hiding) never turn the panels on between them, and a source that
+goes quiet takes only its own reasons away. Every source reports its whole current set, never a
 toggle, so a missed close event is put right by the next report. `reasons(windows=False)` leaves out the game windows
 (`constants.WINDOW_REASONS`) for the "hide panels under game windows" switch turned off.
 
@@ -15,8 +15,7 @@ after death), and the pre-battle setups panel takes the consumables panel's plac
 `PageOverlays` follows a battle page from its `_setComponentsVisibility(visible, hidden)` calls and from snapshots of
 the visible components: the panels hide while the page hides its reference component (`REFERENCE_ALIASES`, the XVM
 technique: the page hides it only with its whole HUD) or shows a covering one (`PAGE_ALIAS_REASONS`); a snapshot only
-ever uncovers. `window_reason(window)` decides one Gameface window (`{alive, own, scaleform, hidden, flags}`);
-`flash_visible(state, props)` turns the `cover` prop into GUIFlash's `visible`, which has no fade.
+ever uncovers. `window_reason(window)` decides one Gameface window (`{alive, own, scaleform, hidden, flags}`).
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -44,7 +43,6 @@ __all__ = (
     'FollowedComponents',
     'PageOverlays',
     'covering_aliases',
-    'flash_visible',
     'window_reason',
 )
 
@@ -203,13 +201,3 @@ def window_reason(window):
         return COVER_SCREEN
     return None
 
-
-def flash_visible(state, props):
-    """GUIFlash props for a label whose last `visible` and `cover` are in `state` (updated in place): a covered label
-    is not visible, as GUIFlash cannot fade it. `props` without either key pass unchanged."""
-    if 'visible' not in props and 'cover' not in props:
-        return dict(props)
-    state.update((key, props[key]) for key in ('visible', 'cover') if key in props)
-    result = dict(props)
-    result['visible'] = bool(state.get('visible', True)) and not state.get('cover')
-    return result

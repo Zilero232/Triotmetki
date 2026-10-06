@@ -26,13 +26,6 @@ fn keeps_backslashes_literal() {
 }
 
 #[test]
-fn reads_plain_utf8_with_a_bom() {
-    let text = decode_text(b"\xEF\xBB\xBF[a]\nb=1\n");
-
-    assert_eq!(text, "[a]\nb=1\n");
-}
-
-#[test]
 fn a_missing_file_is_none() {
     let dir = tempfile::tempdir().unwrap();
 

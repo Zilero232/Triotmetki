@@ -30,17 +30,16 @@ DEFAULTS = {
     'show_misses': True,
     'show_received_blocked': True,
     'show_assist_rows': True,
-    'alt_mode': True,
+    'show_notes': True,
     'palette': 'graphite',
     'template': '{dealt} | {blocked} | {assisted} | {received}',
     'entry_template': '',
 }
 # Retired options and the values the code keeps reading: kind icons and kind colours on, the colours of the chosen
-# palette, the built-in Alt row.
+# palette.
 FIXED = {
     'kind_icons': True,
     'kind_colors': True,
-    'alt_entry_template': '',
     'color_damage': '',
     'color_assist': '',
     'color_blocked': '',

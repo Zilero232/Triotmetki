@@ -11,9 +11,7 @@ export type HudLabelModel = {
   lines: RichLine[] | null;
   widget: ResolvedWidget | null;
   style: LabelStyle;
-  button: boolean;
   interactive: boolean;
-  pressable: boolean;
   framed: boolean;
   dragging: boolean;
   measureRef: MeasureRef;

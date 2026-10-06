@@ -25,7 +25,6 @@ const samplePanel = (): HudPanel => {
 const layout = (overrides: Partial<LabelLayout> = {}): LabelLayout => ({
   id: 'clock',
   rect: { left: 10, top: 20, width: 100, height: 30 },
-  button: false,
   movable: false,
   pointer: false,
   scale: 1,
@@ -62,14 +61,6 @@ describe(useLabelModels, () => {
     hook.rerender(input({ layouts: [layout({ style: { left: '40rem', top: '20rem', opacity: 1 } })] }));
 
     expect(hook.result.current[0]?.style.left).toBe('40rem');
-  });
-
-  it('makes a button pressable outside an edit', () => {
-    expect(firstLabel({ layouts: [layout({ button: true })] })?.pressable).toBe(true);
-  });
-
-  it('keeps a button still while it can be moved', () => {
-    expect(firstLabel({ layouts: [layout({ button: true, movable: true })] })?.pressable).toBe(false);
   });
 
   it('frames a movable label', () => {

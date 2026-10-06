@@ -56,6 +56,21 @@ class Client(object):
     def __init__(self, game_value):
         self.values = {VEHICLE_NAMES: game_value}
         self.writes = []
+        self.synced = True
+        self.on_sync = []
+
+    def is_synced(self):
+        return self.synced
+
+    def listen_sync(self, callback):
+        self.on_sync.append(callback)
+        return True
+
+    def sync(self):
+        self.synced = True
+        for callback in self.on_sync:
+            callback()
+        self.on_sync = []
 
     def read(self, names):
         return {name: self.values[name] for name in names if name in self.values}
@@ -76,6 +91,8 @@ def load(client, components):
         defaults = importlib.import_module('otmetki.core.client.native.defaults')
         defaults.read_settings = client.read
         defaults.apply_settings = client.apply
+        defaults.settings_synced = client.is_synced
+        defaults.on_settings_synced = client.listen_sync
         component = importlib.import_module('otmetki.core.client.native.component')
         component.apply_changed = client.apply
         return importlib.import_module(FEATURE_CLIENT).create_minimap, config
@@ -131,7 +148,7 @@ class OnceTest(unittest.TestCase):
 
         self.hangar()
 
-        assert self.app.state[ONCE_STATE_KEY] == ['minimap']
+        assert self.app.state[ONCE_STATE_KEY] == ['minimap@2']
 
     def test_a_later_hangar_writes_nothing_again(self):
         self.start(VEHICLE_NAMES_NEVER)
@@ -143,7 +160,7 @@ class OnceTest(unittest.TestCase):
         assert self.client.writes == [{VEHICLE_NAMES: VEHICLE_MODELS_ALWAYS}]
 
     def test_a_restart_after_the_switch_writes_nothing(self):
-        self.start(VEHICLE_NAMES_NEVER, state={ONCE_STATE_KEY: ['minimap']})
+        self.start(VEHICLE_NAMES_NEVER, state={ONCE_STATE_KEY: ['minimap@2']})
 
         self.hangar()
 
@@ -177,6 +194,47 @@ class OnceTest(unittest.TestCase):
         self.hangar()
 
         assert self.component.settings.get(ONCE['key']) == 'native'
+
+    def test_nothing_is_read_before_the_server_settings_arrive(self):
+        self.start(VEHICLE_NAMES_NEVER)
+        self.client.synced = False
+
+        self.hangar()
+
+        assert self.client.writes == []
+
+    def test_the_switch_runs_when_the_server_settings_arrive(self):
+        self.start(VEHICLE_NAMES_NEVER)
+        self.client.synced = False
+        self.hangar()
+
+        self.client.sync()
+
+        assert self.client.values[VEHICLE_NAMES] == VEHICLE_MODELS_ALWAYS
+
+    def test_a_first_revision_switch_runs_again(self):
+        self.start(VEHICLE_NAMES_NEVER, state={ONCE_STATE_KEY: ['minimap']})
+
+        self.hangar()
+
+        assert self.client.values[VEHICLE_NAMES] == VEHICLE_MODELS_ALWAYS
+
+    def test_a_section_the_first_revision_left_to_the_game_switches_again(self):
+        components = {'minimap': {'vehicle_names': 'native'}}
+        self.start(VEHICLE_NAMES_NEVER, components=components, state={ONCE_STATE_KEY: ['minimap']})
+
+        self.hangar()
+
+        assert self.client.values[VEHICLE_NAMES] == VEHICLE_MODELS_ALWAYS
+
+    def test_a_player_choice_survives_the_second_revision(self):
+        components = {'minimap': {'vehicle_names': 'native'}}
+        state = {ONCE_STATE_KEY: ['minimap']}
+        self.start(VEHICLE_NAMES_NEVER, components=components, state=state, user_set='minimap.vehicle_names')
+
+        self.hangar()
+
+        assert self.client.writes == []
 
     def test_nothing_is_switched_in_battle(self):
         self.start(VEHICLE_NAMES_NEVER)

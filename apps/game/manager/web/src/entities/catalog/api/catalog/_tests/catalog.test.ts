@@ -14,9 +14,9 @@ describe('catalogSchema', () => {
   it('keeps the runtime dependencies apart from our components, with their licence and pinned source', () => {
     const parsed = catalogSchema.parse(catalog);
 
-    expect(parsed.dependencies.map((dependency) => dependency.id)).toEqual(['openwg_gameface', 'guiflash']);
+    expect(parsed.dependencies.map((dependency) => dependency.id)).toEqual(['openwg_gameface', 'modslist']);
     expect(parsed.dependencies.every((dependency) => dependency.licence.name === 'MIT' && dependency.sha256.length === 64)).toBe(true);
-    expect(parsed.components.some((component) => component.id === 'guiflash')).toBe(false);
+    expect(parsed.components.some((component) => component.id === 'modslist')).toBe(false);
   });
 
   it('treats a dependency without the optional flag as required', () => {

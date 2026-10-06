@@ -4,8 +4,8 @@ use std::path::{Path, PathBuf};
 use serde::Serialize;
 
 use super::version::GameVersion;
-use crate::ini_file::decode_text;
 use crate::paths::join_relative;
+use crate::text::{decode_text, Fallback};
 
 pub const VERSION_XML: &str = "version.xml";
 pub const PATHS_XML: &str = "paths.xml";
@@ -59,10 +59,10 @@ pub struct ClientPaths {
 }
 
 pub fn inspect(path: &Path, source: ClientSource) -> Option<GameClient> {
-    let version_xml = decode_text(&fs::read(path.join(VERSION_XML)).ok()?);
+    let version_xml = decode_text(&fs::read(path.join(VERSION_XML)).ok()?, Fallback::Lossy);
     let (version, realm) = parse_version_xml(&version_xml)?;
-    let paths = fs::read(path.join(PATHS_XML)).map(|bytes| parse_paths_xml(&decode_text(&bytes))).unwrap_or_default();
-    let game_id = fs::read(path.join(GAME_INFO_XML)).ok().and_then(|bytes| parse_game_id(&decode_text(&bytes)));
+    let paths = fs::read(path.join(PATHS_XML)).map(|bytes| parse_paths_xml(&decode_text(&bytes, Fallback::Lossy))).unwrap_or_default();
+    let game_id = fs::read(path.join(GAME_INFO_XML)).ok().and_then(|bytes| parse_game_id(&decode_text(&bytes, Fallback::Lossy)));
     let is_lesta = realm.as_deref().is_some_and(|realm| LESTA_REALMS.contains(&realm)) || path.join(LESTA_EXECUTABLE).is_file();
     let is_common_test = realm.as_deref() == Some(LESTA_REALMS[1]) || game_id.is_some_and(|id| id.contains(COMMON_TEST_MARK));
     let problem = match (is_lesta, version.is_supported()) {

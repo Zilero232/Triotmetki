@@ -18,14 +18,13 @@ from setupkit.manifest import catalog as catalog_module  # noqa: E402
 from setupkit.manifest.generate import ManifestError, build_manifest  # noqa: E402
 
 GAMEFACE = 'openwg_gameface'
-GUIFLASH = 'guiflash'
 MODS_LIST = 'modslist'
-# The renderer chain lives in core (core/client/hud: OpenWG Gameface, then GUIFlash); its users are the packages below.
+# The renderer lives in core (core/client/hud: OpenWG Gameface); its users are the packages below.
 RENDERER_HOST = 'core'
 HUD_USE = re.compile(r'\bBattlePanel\b|\bHangarLabel\b|\bPolledHangarCard\b|\bhud_layer\(|\.ui\.show\(')
 GAMEFACE_IMPORT = re.compile(r'^\s*(?:from\s+openwg_gameface\s+import|import\s+openwg_gameface)\b', re.MULTILINE)
 # What reaches Gameface through core without a panel: a stock view's injected page (core/client/hud/gameface/inject)
-# and buttons drawn by the renderer itself (only the Gameface page draws them).
+# and the renderer itself.
 GAMEFACE_USE = re.compile(r'\bcan_inject\(|\bmod_inject\(|\bcreate_backend\(')
 MODS_LIST_IMPORT = re.compile(r'^\s*from\s+gui\.modsListApi\s+import\b', re.MULTILINE)
 SKIPPED_DIRS = ('tests', '__pycache__')
@@ -34,12 +33,6 @@ REVIEWED_PINS = {
         'net.openwg.gameface_1.2.2.mtmod',
         '2bb65f28663e3ab34b5a1102a1bbd1f6e17a65e1f6a898a8645c4ab732b50184',
         48445,
-        'MIT',
-    ),
-    GUIFLASH: (
-        'gambiter.guiflash_0.6.6.mtmod',
-        'a0b6dc2e75663008a4ced9e0c00449be84b3c3d5d932f8bbcaa2b334ae3d1cb5',
-        62862,
         'MIT',
     ),
     MODS_LIST: (
@@ -113,20 +106,20 @@ SCHEMA_PROBLEMS = (
     ("'author' is a required property", drop('author')),
     ("('category' was unexpected)", update(category='battle')),
     ('/requiredBy: []', update(requiredBy=[])),
-    ('has non-unique elements', require_also('marks_panel')),
+    ('has non-unique elements', require_also('ui')),
     ("'restartRequired' is a required property", drop('restartRequired')),
     ("/optional: 'yes' is not of type 'boolean'", update(optional='yes')),
     ("/kind: 'dependency' was expected", update(kind='library')),
     ("/version: '1.x' does not match", update(version='1.x')),
-    ("/packageId: 'guiflash' does not match", update(packageId='guiflash')),
+    ("/packageId: 'modslist' does not match", update(packageId='modslist')),
 )
 CHECK_PROBLEMS = (
-    ('is ours', update(packageId='net.triotmetki.guiflash', file='net.triotmetki.guiflash_0.6.6.mtmod')),
-    ('matches ownedPatterns', update(packageId='otmetki.guiflash', file='otmetki.guiflash_0.6.6.mtmod')),
-    ('file must be gambiter.guiflash_0.6.6.mtmod', update(file='guiflash.mtmod')),
-    ('file must be', update(version='0.6.7')),
+    ('is ours', update(packageId='net.triotmetki.modslistapi', file='net.triotmetki.modslistapi_1.6.01.mtmod')),
+    ('matches ownedPatterns', update(packageId='otmetki.modslistapi', file='otmetki.modslistapi_1.6.01.mtmod')),
+    ('file must be me.poliroid.modslistapi_1.6.01.mtmod', update(file='modslist.mtmod')),
+    ('file must be', update(version='1.6.02')),
     ("unknown component 'nothing'", require_also('nothing')),
-    ("unknown component 'guiflash'", require_also('guiflash')),
+    ("unknown component 'modslist'", require_also('modslist')),
     ('duplicate id', update(id='marks_panel')),
 )
 
@@ -144,12 +137,12 @@ class RequiredByFollowsTheCodeTest(unittest.TestCase):
         in_catalog_order = sorted(required_by, key=self.order.index)
         self.assertEqual(list(required_by), in_catalog_order, 'keep requiredBy in catalog order')
 
-    def test_hud_and_hangar_labels_need_guiflash(self):
+    def test_hud_and_hangar_labels_need_gameface(self):
         labels = keys_using(HUD_USE)
 
         self.assertIn('marks_panel', labels)
         self.assertIn('session_stats', labels)
-        self.assert_required_by(GUIFLASH, labels)
+        self.assertTrue(labels.issubset(self.by_id[GAMEFACE].required_by))
 
     def test_only_the_ui_and_the_hit_viewer_open_gameface_windows(self):
         window = keys_using(GAMEFACE_IMPORT)
@@ -168,10 +161,10 @@ class RequiredByFollowsTheCodeTest(unittest.TestCase):
 
         self.assert_required_by(MODS_LIST, users)
 
-    def test_mods_list_is_the_only_optional_dependency(self):
+    def test_no_dependency_is_optional(self):
         optional = [dependency.id for dependency in self.catalog.dependencies if dependency.optional]
 
-        self.assertEqual(optional, [MODS_LIST])
+        self.assertEqual(optional, [])
 
     def test_pins_the_reviewed_releases(self):
         pins = {
@@ -183,13 +176,12 @@ class RequiredByFollowsTheCodeTest(unittest.TestCase):
 
     def test_only_gameface_needs_a_restart(self):
         self.assertTrue(self.by_id[GAMEFACE].restart_required)
-        self.assertFalse(self.by_id[GUIFLASH].restart_required)
         self.assertFalse(self.by_id[MODS_LIST].restart_required)
 
 
 class DependencyCatalogTest(unittest.TestCase):
 
-    def problems(self, mutate, dependency_id=GUIFLASH):
+    def problems(self, mutate, dependency_id=MODS_LIST):
         raw = copy.deepcopy(fileio.read_json(CATALOG_PATH))
         mutate(next(entry for entry in raw['components'] if entry['id'] == dependency_id))
         with self.assertRaises(catalog_module.CatalogError) as context:
@@ -199,7 +191,7 @@ class DependencyCatalogTest(unittest.TestCase):
     def test_dependencies_are_listed_apart_from_catalogue_entries(self):
         catalog = load_catalog()
 
-        self.assertEqual([dependency.id for dependency in catalog.dependencies], [GAMEFACE, GUIFLASH, MODS_LIST])
+        self.assertEqual([dependency.id for dependency in catalog.dependencies], [GAMEFACE, MODS_LIST])
         self.assertIsNone(catalog.entry(GAMEFACE))
 
     def assert_problems(self, cases):
@@ -230,7 +222,7 @@ class DependencyManifestTest(unittest.TestCase):
 
         entries = [entry for entry in data['components'] if entry.get('kind') == 'dependency']
         ours = data['components'][:len(manifest.components)]
-        self.assertEqual(entries, [self.raw[GAMEFACE], self.raw[GUIFLASH], self.raw[MODS_LIST]])
+        self.assertEqual(entries, [self.raw[GAMEFACE], self.raw[MODS_LIST]])
         self.assertEqual([entry for entry in ours if 'kind' in entry], [])
         self.assertNotIn('dependencies', data)
         self.assertEqual(warnings, [])
@@ -241,15 +233,15 @@ class DependencyManifestTest(unittest.TestCase):
         manifest, _ = build_manifest(packages, self.catalog)
 
         required_by = {dependency.id: dependency.required_by for dependency in manifest.dependencies}
-        self.assertEqual(required_by, {GAMEFACE: ('ui', 'sixth_sense'), GUIFLASH: ('sixth_sense',), MODS_LIST: ('ui',)})
-        self.assertEqual(manifest.dependencies_of('sixth_sense'), manifest.dependencies[:2])
+        self.assertEqual(required_by, {GAMEFACE: ('ui', 'sixth_sense'), MODS_LIST: ('ui',)})
+        self.assertEqual(manifest.dependencies_of('sixth_sense'), manifest.dependencies[:1])
 
     def test_a_left_out_user_of_a_dependency_is_a_warning(self):
         packages = packages_named('core', 'companion', 'ui', 'sixth_sense')
 
         _, warnings = build_manifest(packages, self.catalog)
 
-        expected = 'dependency guiflash is required by marks_panel'
+        expected = 'dependency openwg_gameface is required by marks_panel'
         self.assertTrue([warning for warning in warnings if expected in warning])
 
     def test_strict_turns_a_left_out_user_into_an_error(self):

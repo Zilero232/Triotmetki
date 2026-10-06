@@ -11,7 +11,7 @@ label of a space and stays open for the rest of it, also while no label is up (a
 comes and goes would reload the page every time), is closed when a space is left and opened again when the lobby or
 the battle is entered (a window opened on the login screen, before the lobby app, never showed in the 1.45.0.0 live
 test), and one the client destroyed is replaced on the next sync. Any failure to open marks the backend broken, and
-the chain moves on to GUIFlash.
+the panels stay hidden for the rest of the session.
 
 The window is opened a frame after the space was entered, never from inside the app loader's own space switch
 (onGUISpaceEntered fires while the lobby app is still being shown). On Lesta, OpenWG Gameface restarts the client
@@ -190,7 +190,6 @@ class GamefaceBackend(HudBackend):
         self.view = None
         self.broken = False
         self.listeners = Listeners('HUD move listener')
-        self.press_listeners = Listeners('HUD press listener')
         self.drawn_listeners = Listeners('HUD drawn listener')
         self.drawn = None
         self.drawn_seen = frozenset()
@@ -203,7 +202,6 @@ class GamefaceBackend(HudBackend):
         self.ready_spaces = ()
         self.waiting = False
         self.settling = False
-        self.answered = False
         self.focus = FocusReturn()
         self.last_focus = LastFocus(is_hud_window)
         self.cursor_poll = Ticker(CURSOR_POLL_S, self._poll_cursor)
@@ -249,9 +247,6 @@ class GamefaceBackend(HudBackend):
             props = dict(props, widget=resolve(props['widget'], client_file_exists))
         return props
 
-    def renders_widgets(self):
-        return self.answered and self.available()
-
     def drawn_aliases(self):
         return self.drawn if self.view is not None else None
 
@@ -275,12 +270,6 @@ class GamefaceBackend(HudBackend):
 
     def listen(self, on_moved):
         self.listeners.add(on_moved)
-
-    def draws_buttons(self):
-        return True
-
-    def listen_press(self, on_press):
-        self.press_listeners.add(on_press)
 
     def set_modifier(self, mode):
         self.modifier.set_mode(mode)
@@ -346,12 +335,11 @@ class GamefaceBackend(HudBackend):
             self.window.load()
         except Exception:
             log_exception('HUD: Gameface window')
-            log('HUD: the Gameface HUD window failed to open, falling back to GUIFlash')
+            log('HUD: the Gameface HUD window failed to open, the panels stay hidden')
             self.broken = True
             self.window = None
             return False
         self.waiting = False
-        self.answered = False
         self.drawn_seen = frozenset()
         self.seen_edit = False
         self.seen_mouse = set()
@@ -366,7 +354,6 @@ class GamefaceBackend(HudBackend):
         window = self.window
         self.window = None
         self.view = None
-        self.answered = False
         self._set_drawn(None)
         if window is not None:
             log('HUD: Gameface window %s closed' % window.uniqueID)
@@ -433,7 +420,6 @@ class GamefaceBackend(HudBackend):
         if self.view is view or self.view is None:
             self.view = None
             self.window = None
-            self.answered = False
             self._set_drawn(None)
 
     @safe
@@ -444,7 +430,6 @@ class GamefaceBackend(HudBackend):
         command, fields = decoded
         handlers = {
             'ready': self._on_page_ready,
-            'pressed': self._on_page_press,
             'mouse': self._on_page_mouse,
             'moved': self._on_page_move,
             'resized': self._on_page_move,
@@ -454,7 +439,6 @@ class GamefaceBackend(HudBackend):
         handlers[command](fields)
 
     def _on_page_ready(self, fields):
-        self.answered = True
         labels = self.surface.summary(current_space())
         log('HUD: Gameface page ready (%d labels: %s)' % (len(labels), ', '.join(labels)))
         self.pusher.forget()
@@ -469,13 +453,10 @@ class GamefaceBackend(HudBackend):
         if whole:
             log('HUD: the page takes the mouse over the whole screen (%s, %s)' % (current_space(), editing))
         else:
-            log('HUD: the page takes the mouse only over its buttons (%s, %s)' % (current_space(), editing))
+            log('HUD: the page takes the mouse only over the panel it edits (%s, %s)' % (current_space(), editing))
 
     def _on_page_drawn(self, fields):
         self._set_drawn(frozenset(fields['ids']))
-
-    def _on_page_press(self, fields):
-        self.press_listeners.notify(fields['id'])
 
     def _on_page_move(self, fields):
         props = {key: value for key, value in fields.items() if key != 'id'}

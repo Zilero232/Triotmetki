@@ -75,7 +75,7 @@ MODE_RETICLES = {
 # kenney_crosshair_pack), as the client reads them through Scaleform `img://`. A full-colour mark is rendered at every
 # size of MARK_RENDITIONS; a VECTOR_FOLDER mark at VECTOR_RENDITIONS in every colour of MARK_COLORS, plain and with
 # its dark outline (`<stem>[_o]_<colour>_<size>.png`). The Gameface page draws a vector mark itself (ui-web
-# crosshair `reticle-mark`, the same geometry the PNG sources are written from), so the PNGs serve the GUIFlash
+# crosshair `reticle-mark`, the same geometry the PNG sources are written from), so the PNGs serve the text
 # fallback and the editor thumbnails.
 VECTOR_FOLDER = 'vector'
 OUTLINE_SUFFIX = '_o'

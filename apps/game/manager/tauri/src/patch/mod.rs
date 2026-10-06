@@ -2,6 +2,7 @@ mod install;
 mod migrate;
 mod stage;
 
+use std::cmp::Ordering;
 use std::path::PathBuf;
 
 use serde::Serialize;
@@ -14,6 +15,7 @@ use crate::catalog::Localized;
 use crate::detect::GameVersion;
 use crate::error::ErrorCode;
 use crate::releases::{LatestRelease, Release, ReleaseStatus};
+use crate::versions::compare;
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case", rename_all_fields = "camelCase")]
@@ -91,17 +93,11 @@ pub fn is_newer(candidate: &str, installed: Option<&str>) -> bool {
         return true;
     };
 
-    match (semver::Version::parse(candidate), semver::Version::parse(installed)) {
-        (Ok(candidate), Ok(installed)) => candidate > installed,
-        _ => candidate != installed,
-    }
+    compare(candidate, installed).map_or(candidate != installed, Ordering::is_gt)
 }
 
 pub fn is_downgrade(candidate: &str, installed: Option<&str>) -> bool {
-    installed.is_some_and(|installed| match (semver::Version::parse(candidate), semver::Version::parse(installed)) {
-        (Ok(candidate), Ok(installed)) => candidate < installed,
-        _ => false,
-    })
+    installed.is_some_and(|installed| compare(candidate, installed).is_some_and(Ordering::is_lt))
 }
 
 pub fn plan(input: PlanInput) -> PatchAction {

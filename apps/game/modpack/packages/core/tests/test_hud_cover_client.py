@@ -21,8 +21,6 @@ STUBBED = (
     'gui.Scaleform.daapi.view.meta',
     'gui.Scaleform.daapi.view.meta.PrebattleAmmunitionPanelViewMeta',
     'gui.mods',
-    'gui.mods.gambiter',
-    'gui.mods.gambiter.flash',
     'frameworks',
     'frameworks.wulf',
     'helpers',
@@ -126,19 +124,6 @@ class WindowsManager(object):
     def close(self, window):
         self.windows.remove(window)
         self.onWindowStatusChanged(id(window), 'DESTROYED')
-
-
-class InputHandler(object):
-
-    def __init__(self):
-        self.onPostmortemKillerVisionEnter = ClientEvent()
-        self.onPostmortemKillerVisionExit = ClientEvent()
-
-
-class Avatar(object):
-
-    def __init__(self):
-        self.inputHandler = InputHandler()
 
 
 class Event(object):
@@ -475,25 +460,6 @@ class CoverWatchTest(unittest.TestCase):
 
         assert self.layer.gui_hidden
 
-    def test_panels_hide_while_the_camera_is_on_the_killer(self):
-        avatar = Avatar()
-        sys.modules['BigWorld'].player = lambda: avatar
-        self.battle_page()
-
-        avatar.inputHandler.onPostmortemKillerVisionEnter(42)
-
-        assert self.layer.gui_hidden
-
-    def test_panels_come_back_when_the_camera_leaves_the_killer(self):
-        avatar = Avatar()
-        sys.modules['BigWorld'].player = lambda: avatar
-        self.battle_page()
-        avatar.inputHandler.onPostmortemKillerVisionEnter(42)
-
-        avatar.inputHandler.onPostmortemKillerVisionExit()
-
-        assert not self.layer.gui_hidden
-
     def test_the_switch_off_leaves_the_panels_under_tab(self):
         page = self.battle_page()
         self.switch['value'] = False
@@ -524,15 +490,6 @@ class CoverWatchTest(unittest.TestCase):
         page._dispose()
 
         assert self.manager.onWindowStatusChanged.handlers == []
-
-    def test_the_page_end_stops_following_the_killer_camera(self):
-        avatar = Avatar()
-        sys.modules['BigWorld'].player = lambda: avatar
-        page = self.battle_page()
-
-        page._dispose()
-
-        assert avatar.inputHandler.onPostmortemKillerVisionEnter.handlers == []
 
     def test_a_new_page_starts_uncovered(self):
         page = self.battle_page()
@@ -568,44 +525,6 @@ class CoverWatchTest(unittest.TestCase):
         page._setComponentsVisibility(visible={'epicRespawnView'})
 
         assert self.layer.covers == frozenset()
-
-
-class GuiFlashCoverTest(unittest.TestCase):
-
-    def setUp(self):
-        self.saved = install_stubs(Callbacks(), WindowsManager())
-        self.updates = []
-        flash = Namespace(
-            createComponent=lambda alias, kind, props: self.updates.append(dict(props)),
-            updateComponent=lambda alias, props: self.updates.append(dict(props)),
-            deleteComponent=lambda alias: None,
-        )
-        sys.modules['gui.mods.gambiter'].g_guiFlash = flash
-        sys.modules['gui.mods.gambiter.flash'].COMPONENT_TYPE = Namespace(LABEL='label')
-        from otmetki.core.client.hud.guiflash import GuiFlashBackend
-        self.backend = GuiFlashBackend()
-
-    def tearDown(self):
-        restore_stubs(self.saved)
-
-    def test_a_covered_label_is_hidden(self):
-        self.backend.create('otmetki.hud.panel', {'text': 'x', 'visible': True, 'cover': ''})
-
-        self.backend.update('otmetki.hud.panel', {'cover': 'stats'})
-
-        assert self.updates[-1] == {'visible': False}
-
-    def test_the_label_comes_back_when_the_cover_goes(self):
-        self.backend.create('otmetki.hud.panel', {'text': 'x', 'visible': True, 'cover': 'modal'})
-
-        self.backend.update('otmetki.hud.panel', {'cover': ''})
-
-        assert self.updates[-1] == {'visible': True}
-
-    def test_a_label_created_under_a_cover_starts_hidden(self):
-        self.backend.create('otmetki.hud.panel', {'text': 'x', 'visible': True, 'cover': 'stats'})
-
-        assert self.updates[-1]['visible'] is False
 
 
 if __name__ == '__main__':

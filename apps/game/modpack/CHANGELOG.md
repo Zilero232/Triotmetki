@@ -7,6 +7,28 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Entries are short: one line per change, saying what the player sees or gets — no implementation details.
 - Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## 0.3.6
+
+### ru
+
+- Настройки открываются только из списка модов (ModsList): кнопка «///» и Ctrl+Shift+T убраны, расстановка панелей завершается по Esc.
+- GUIFlash больше не нужен: панели рисуются через OpenWG Gameface.
+- В менеджере появился набор «Все компоненты».
+- Панели больше не раскрываются по Alt: пояснения в журнале боя включаются настройкой.
+- Стандартный журнал боя больше не появляется после гибели.
+- Стандартная панель счёта больше не видна рядом с ХП команд в начале боя.
+- Названия техники и последние места на мини-карте снова включаются, где первое включение не сработало.
+
+### en
+
+- Settings open only from the mods list (ModsList): the «///» button and Ctrl+Shift+T are gone, placing the panels ends with Esc.
+- GUIFlash is no longer needed: the panels are drawn through OpenWG Gameface.
+- The manager has a new «All components» set.
+- No panel expands on Alt any more: the battle log notes are a setting.
+- The stock battle log no longer shows after death.
+- The stock score strip no longer shows next to the team HP strip at the start of a battle.
+- Minimap vehicle names and last-seen spots are switched on again where the first switch misfired.
+
 ## 0.3.5
 
 ### ru
@@ -462,6 +484,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - New component «Hit viewer» (on): after a battle the hits on you and your hits show on the tank model in the hangar.
 - An «On me / On enemies» list with impact angle and effective armour, a battle picker; keeps the last 20 battles.
 - Opens from the component's button, the «Battle results» history and the «Replay manager».
+
+## battle_progress 0.2.3
+
+### ru
+
+- Доля в уроне команды больше не появляется по Alt, только с её настройкой.
+
+### en
+
+- The share of the team damage no longer shows on Alt, only with its setting.
 
 ## battle_progress 0.2.2
 
@@ -1142,6 +1174,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - New component «Event trackers» (off).
 - Triathlon: the current round, best battles, time left and the event's best round.
 - Trading Caravan: your tokens and the time to the end of the event.
+
+## platoon_points 0.2.4
+
+### ru
+
+- Полоски ХП взвода видны всегда, а не только по Alt.
+
+### en
+
+- The platoon HP bars always show, not only on Alt.
 
 ## platoon_points 0.2.3
 
@@ -1827,6 +1869,22 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - Five new one-colour centre marks and a choice of six colours.
 
+## core 0.9.5
+
+### ru
+
+- Панели рисуются только через OpenWG Gameface: запасной вывод через GUIFlash убран.
+- Разовое включение на мини-карте ждёт, пока игра загрузит ваши настройки с сервера.
+- На камере убийцы наши панели остаются на месте, и стандартный журнал боя больше не мелькает после гибели.
+- Стандартная панель счёта больше не видна рядом с ХП команд в начале боя.
+
+### en
+
+- Panels are drawn through OpenWG Gameface only: the GUIFlash fallback is gone.
+- The minimap's one-time switch waits until the game has loaded your settings from the server.
+- On the killer camera our panels stay in place, so the stock battle log no longer flashes after death.
+- The stock score strip no longer shows next to the team HP strip at the start of a battle.
+
 ## core 0.9.4
 
 ### ru
@@ -2105,6 +2163,18 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - The shared base of all mod components and the battle HUD with a layout editor.
 - Settings are mirrored to a backup copy and restored on load.
 
+## companion 0.8.5
+
+### ru
+
+- При обновлении убираются старые настройки «Подробности по Alt» журнала боя.
+- Окно ModsSettingsAPI больше не используется: все настройки — в окне «Три отметки».
+
+### en
+
+- On update the battle log's old «Details on Alt» settings are removed.
+- The ModsSettingsAPI window is no longer used: every setting is in the Three Marks window.
+
 ## companion 0.8.4
 
 ### ru
@@ -2302,6 +2372,18 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Binding to triotmetki.ru with a one-time code from the site; nothing is collected or sent before it.
 - After each of your battles the results, MoE, queue time, loadout and shots go to the site.
 - Data sending can be switched off per component; settings sharing for streamers.
+
+## ui 0.9.5
+
+### ru
+
+- Окно настроек открывается только из списка модов (ModsList): кнопка «///» в ангаре и Ctrl+Shift+T убраны.
+- Расстановка панелей на экране завершается по Esc или по «Три отметки» в списке модов.
+
+### en
+
+- The settings window opens only from the mods list (ModsList): the «///» hangar button and Ctrl+Shift+T are gone.
+- Placing the panels on the screen ends with Esc or «Three Marks» in the mods list.
 
 ## ui 0.9.4
 
@@ -2945,6 +3027,18 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - Opt-in (off): uploads the replays the game recorded of your battles; they stay private until you publish them. Files above 50 MiB are refused.
 
+## damage_log 0.5.4
+
+### ru
+
+- Журнал боя не меняется, пока зажат Alt: пояснения в строках включаются настройкой «Пояснения в строках».
+- Виды «Только итоги» показывают только итоги.
+
+### en
+
+- The battle log no longer changes while Alt is held: the «Notes in the rows» setting turns the notes on.
+- The «Totals only» looks show only the totals.
+
 ## damage_log 0.5.3
 
 ### ru
@@ -3066,6 +3160,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - In battle: damage dealt, blocked, assisted and received with the latest entries; several styles and palettes.
 - Assist after your death still counts.
+
+## team_hp 0.6.4
+
+### ru
+
+- Полоска ХП команд сразу встаёт на место стандартной панели счёта, а не рядом с ней.
+
+### en
+
+- The team HP strip takes the stock score strip's place right away instead of sitting beside it.
 
 ## team_hp 0.6.3
 
@@ -3570,6 +3674,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### en
 
 - Carousel options and quick actions: demount equipment, crew to the barracks, return the previous crew.
+
+## minimap 0.2.5
+
+### ru
+
+- Названия техники и последние места снова включаются там, где первое включение не сработало.
+
+### en
+
+- Vehicle names and last-seen spots are switched on again where the first switch misfired.
 
 ## minimap 0.2.4
 

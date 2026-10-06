@@ -37,7 +37,6 @@ const panelOf = (id: string): HudPanel => ({
   border: false,
   visible: true,
   scale: 1,
-  kind: 'label',
   widget: null
 });
 
@@ -47,9 +46,7 @@ const labelOf = (id: string): HudLabelModel => ({
   lines: [],
   widget: null,
   style: { opacity: 1 },
-  button: false,
   interactive: false,
-  pressable: false,
   framed: false,
   dragging: false,
   measureRef: () => undefined

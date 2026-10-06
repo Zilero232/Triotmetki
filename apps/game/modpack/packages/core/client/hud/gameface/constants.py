@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # unknown or not yet validated key.
 INVALID_RES_ID = -1
 
-# The wulf layer of the HUD window (WindowLayer.WINDOW, 7; the one GUIFlash 0.6 loads its Flash view into). RU 1.45
+# The wulf layer of the HUD window (WindowLayer.WINDOW, 7). RU 1.45
 # client source, frameworks/wulf/gui_constants.py: VIEW 4 < SUB_VIEW 5 < TOP_SUB_VIEW 6 < WINDOW 7 < FULLSCREEN_WINDOW 8
 # < TOP_WINDOW 10 < OVERLAY 11 < TOOLTIP 14. The Scaleform battle page is one SFWindow on VIEW, and the full stats
 # (Tab), the battle loading screen and the post-battle end warning are components of that page

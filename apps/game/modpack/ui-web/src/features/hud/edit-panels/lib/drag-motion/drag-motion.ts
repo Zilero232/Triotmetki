@@ -12,8 +12,7 @@ export const pressDrag = ({ target, press, scale }: PressDragInput): OverlayDrag
   mouseY: press.clientY,
   scale,
   rect: target.rect,
-  moved: false,
-  button: target.button
+  moved: false
 });
 
 export const liveAt = ({ drag, press, screen }: DragMotionInput): LiveRect =>
@@ -26,7 +25,7 @@ export const dragOutcome = ({ drag, press, screen }: DragMotionInput): DragOutco
   const moved = drag.moved || beyondSlop({ drag, press });
 
   if (!moved) {
-    return drag.button ? { kind: 'pressed' } : { kind: 'still' };
+    return { kind: 'still' };
   }
 
   return { kind: 'moved', placement: placementOf({ rect: liveAt({ drag, press, screen }).rect, screen }) };

@@ -151,6 +151,24 @@ class BackupTest(unittest.TestCase):
 
         assert state.dump_once() == ['minimap']
 
+    def test_a_first_revision_once_does_not_count_for_the_second(self):
+        state = NativeState(once=['minimap'])
+
+        assert state.once_done('minimap', 2) is False
+
+    def test_a_second_revision_once_knows_the_first_ran(self):
+        assert NativeState(once=['minimap']).ran_before('minimap', 2) is True
+
+    def test_a_fresh_install_has_no_earlier_once(self):
+        assert NativeState().ran_before('minimap', 2) is False
+
+    def test_a_second_revision_once_reads_back(self):
+        state = NativeState(once=['minimap'])
+
+        state.mark_once('minimap', 2)
+
+        assert state.once_done('minimap', 2) is True
+
     def test_a_damaged_once_starts_empty(self):
         assert NativeState(once={'minimap': 1}).dump_once() == []
 

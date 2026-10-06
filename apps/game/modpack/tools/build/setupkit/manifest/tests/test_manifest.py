@@ -100,6 +100,7 @@ SCHEMA_PROBLEMS = (
 CHECK_PROBLEMS = (
     ('unknown category', update_entry('marks_panel', category='nowhere')),
     ('unknown or custom preset', update_entry('marks_panel', presets=['custom'])),
+    ('unknown or custom preset', update_entry('marks_panel', presets=['all'])),
     ('not found in catalog/', update_entry('marks_panel', preview={'image': 'previews/none.svg'})),
     ('unknown dependency', update_entry('marks_panel', dependencies=['nothing'])),
     ('drop its presets', update_entry('core', presets=['minimal'])),
@@ -124,7 +125,9 @@ class CatalogTest(unittest.TestCase):
         catalog = load_catalog()
 
         self.assertEqual(catalog.default_preset, 'recommended')
-        self.assertEqual([preset.id for preset in catalog.presets], ['recommended', 'minimal', 'streamer', 'custom'])
+        ids = [preset.id for preset in catalog.presets]
+
+        self.assertEqual(ids, ['recommended', 'minimal', 'streamer', 'all', 'custom'])
         self.assertTrue(catalog.presets[-1].custom)
 
     def test_repo_catalog_requires_core_companion_and_ui(self):
@@ -213,7 +216,7 @@ class ManifestTest(unittest.TestCase):
     def test_a_component_takes_presets_preview_and_title_from_the_catalog(self):
         panel = self.component('marks_panel')
 
-        self.assertEqual(panel.presets, ('recommended', 'minimal', 'streamer'))
+        self.assertEqual(panel.presets, ('recommended', 'minimal', 'streamer', 'all'))
         self.assertTrue(panel.default)
         self.assertTrue(panel.catalogued)
         self.assertFalse(panel.required)
@@ -224,7 +227,15 @@ class ManifestTest(unittest.TestCase):
         core = self.component('core')
 
         self.assertTrue(core.required)
-        self.assertEqual(core.presets, ('recommended', 'minimal', 'streamer', 'custom'))
+        self.assertEqual(core.presets, ('recommended', 'minimal', 'streamer', 'all', 'custom'))
+
+    def test_a_component_in_no_preset_is_still_in_the_all_components_preset(self):
+        core, companion = self.packages[:2]
+        self.packages.append(fake_package('gun_arc', [core, companion]))
+
+        gun_arc = self.component('gun_arc')
+
+        self.assertEqual(gun_arc.presets, ('all',))
 
     def test_manifest_keeps_only_the_used_categories(self):
         manifest, _ = build_manifest(self.packages, self.catalog)
@@ -377,7 +388,7 @@ class CliTest(unittest.TestCase):
 
         dependencies = [component['id'] for component in components if component.get('kind') == 'dependency']
 
-        self.assertEqual(dependencies, ['openwg_gameface', 'guiflash', 'modslist'])
+        self.assertEqual(dependencies, ['openwg_gameface', 'modslist'])
 
     def test_components_json_lists_the_preview_hashes(self):
         self.assertEqual(self.data['previewSha256'], {})

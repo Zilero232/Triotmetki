@@ -11,7 +11,7 @@ from .widget import panel_widget
 def preview_rows(settings, translate):
     main_gun = main_gun_state(PREVIEW_COUNTS['damage'], PREVIEW_ENEMY_MAX, PREVIEW_ENEMY_HP)
     state = progress_state(PREVIEW_COUNTS, main_gun, PREVIEW_ROW)
-    return progress_rows(state, settings, translate, extended=True)
+    return progress_rows(state, settings, translate)
 
 
 def preview_text(settings, translate):

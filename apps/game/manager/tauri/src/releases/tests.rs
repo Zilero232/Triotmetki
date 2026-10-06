@@ -268,8 +268,6 @@ fn downloads_only_from_our_https_hosts() {
 
 #[test]
 fn downloads_dependencies_only_from_their_pinned_release_paths() {
-    assert!(is_dependency_source("https://github.com/CH4MPi/GUIFlash/releases/download/v0.6.6/gambiter.guiflash_0.6.6.mtmod"));
-    assert!(is_dependency_source("https://raw.githubusercontent.com/CH4MPi/GUIFlash/v0.6.6/LICENSE"));
     assert!(is_dependency_source("https://gitlab.com/-/project/68695173/uploads/43577d5bab856523c1b7a6dcada27f23/net.openwg.gameface_1.2.2.mtmod"));
     assert!(is_dependency_source("https://gitlab.com/openwg/wot.gameface/-/raw/v1.2.2/LICENSE"));
     assert!(is_dependency_source(
@@ -277,13 +275,14 @@ fn downloads_dependencies_only_from_their_pinned_release_paths() {
     ));
     assert!(is_dependency_source("https://gitlab.com/wot-public-mods/mods-list/-/raw/v1.6.01/LICENSE.md"));
 
-    assert!(!is_dependency_source("http://github.com/CH4MPi/GUIFlash/releases/download/v0.6.6/gambiter.guiflash_0.6.6.mtmod"));
-    assert!(!is_dependency_source("https://github.com/evil/GUIFlash/releases/download/v0.6.6/gambiter.guiflash_0.6.6.mtmod"));
-    assert!(!is_dependency_source("https://github.com/CH4MPi/GUIFlash/archive/refs/tags/v0.6.6.zip"));
-    assert!(!is_dependency_source("https://github.com/CH4MPi/GUIFlash/releases/download/../../../evil/x/releases/download/a.mtmod"));
-    assert!(!is_dependency_source("https://github.com:8443/CH4MPi/GUIFlash/releases/download/v0.6.6/a.mtmod"));
-    assert!(!is_dependency_source("https://user@github.com/CH4MPi/GUIFlash/releases/download/v0.6.6/a.mtmod"));
-    assert!(!is_dependency_source("https://github.com.evil.com/CH4MPi/GUIFlash/releases/download/v0.6.6/a.mtmod"));
+    assert!(!is_dependency_source("http://gitlab.com/-/project/26509092/uploads/9705f0b2627e9a074ecac2e84f38c9ca/a.mtmod"));
+    assert!(!is_dependency_source("https://gitlab.com/evil/wot.gameface/-/raw/v1.2.2/LICENSE"));
+    assert!(!is_dependency_source("https://gitlab.com/wot-public-mods/mods-list/-/archive/v1.6.01/mods-list.zip"));
+    assert!(!is_dependency_source("https://gitlab.com/-/project/26509092/uploads/../../../1/uploads/a.mtmod"));
+    assert!(!is_dependency_source("https://gitlab.com:8443/-/project/26509092/uploads/a/a.mtmod"));
+    assert!(!is_dependency_source("https://user@gitlab.com/-/project/26509092/uploads/a/a.mtmod"));
+    assert!(!is_dependency_source("https://gitlab.com.evil.com/-/project/26509092/uploads/a/a.mtmod"));
+    assert!(!is_dependency_source("https://github.com/CH4MPi/GUIFlash/releases/download/v0.6.6/gambiter.guiflash_0.6.6.mtmod"));
     assert!(!is_dependency_source("https://gitlab.com/-/project/1/uploads/a/b.mtmod"));
     assert!(!is_dependency_source("https://gitlab.com/wot-public-mods/other/-/raw/v1/LICENSE.md"));
     assert!(!is_dependency_source("https://triotmetki.ru/downloads/modpack/0.2.0/a.mtmod"));
@@ -291,15 +290,13 @@ fn downloads_dependencies_only_from_their_pinned_release_paths() {
 }
 
 #[test]
-fn follows_github_asset_redirects_but_no_others() {
+fn follows_redirects_only_within_the_pinned_sources() {
     let parse = |url: &str| reqwest::Url::parse(url).unwrap();
 
-    assert!(is_dependency_redirect(&parse("https://release-assets.githubusercontent.com/github-production-release-asset/278886795/2e0c?sp=r")));
-    assert!(is_dependency_redirect(&parse("https://objects.githubusercontent.com/github-production-release-asset-2e65be/278886795/2e0c")));
-    assert!(is_dependency_redirect(&parse("https://github.com/CH4MPi/GUIFlash/releases/download/v0.6.6/a.mtmod")));
-    assert!(!is_dependency_redirect(&parse("https://release-assets.githubusercontent.com/other/a")));
-    assert!(!is_dependency_redirect(&parse("https://evil.example/github-production-release-asset/a")));
-    assert!(!is_dependency_redirect(&parse("http://release-assets.githubusercontent.com/github-production-release-asset/a")));
+    assert!(is_dependency_redirect(&parse("https://gitlab.com/-/project/26509092/uploads/9705f0b2627e9a074ecac2e84f38c9ca/a.mtmod")));
+    assert!(!is_dependency_redirect(&parse("https://release-assets.githubusercontent.com/github-production-release-asset/278886795/2e0c")));
+    assert!(!is_dependency_redirect(&parse("https://evil.example/-/project/26509092/uploads/a")));
+    assert!(!is_dependency_redirect(&parse("http://gitlab.com/-/project/26509092/uploads/a/a.mtmod")));
 }
 
 #[test]
@@ -310,7 +307,11 @@ fn the_release_client_refuses_a_dependency_from_elsewhere() {
     tauri::async_runtime::block_on(async {
         assert_eq!(client.fetch_dependency("https://evil.example/a.mtmod", limits()).await.unwrap_err().code(), ErrorCode::UntrustedHost);
         assert_eq!(
-            client.fetch("https://github.com/CH4MPi/GUIFlash/releases/download/v0.6.6/a.mtmod", limits()).await.unwrap_err().code(),
+            client
+                .fetch("https://gitlab.com/-/project/26509092/uploads/9705f0b2627e9a074ecac2e84f38c9ca/a.mtmod", limits())
+                .await
+                .unwrap_err()
+                .code(),
             ErrorCode::UntrustedHost
         );
     });

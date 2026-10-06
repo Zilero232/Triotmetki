@@ -25,7 +25,7 @@ from ...native_settings import (
 from ..hud import component_config
 from .account_settings import apply_account_changed, read_account_settings
 from .constants import STATE_ATTR
-from .settings_core import apply_settings, read_settings
+from .settings_core import apply_settings, on_settings_synced, read_settings, settings_synced
 
 
 def native_state(app):
@@ -69,6 +69,7 @@ class ClientDefaults(object):
         self.keys = client_keys(self.schema)
         self.state = native_state(self.app)
         self.once = once
+        self.waiting_for_sync = False
         if is_new_section:
             self._update(native_choices(self.keys, once))
 
@@ -80,16 +81,24 @@ class ClientDefaults(object):
         return isinstance(chosen, string_types) and '%s.%s' % (self.component_id, key) in chosen.split()
 
     def apply_once(self):
-        """Runs the one-time switch of `once` in the hangar; True when it wrote the client setting."""
+        """Runs the one-time switch of `once` in the hangar, after the server settings arrive; True when it wrote the
+        client setting."""
         once = self.once
-        if once is None or self.state.once_done(self.component_id) or not self.component.enabled_in_hangar():
+        revision = once.get('revision', 1) if once is not None else 1
+        if once is None or self.state.once_done(self.component_id, revision) or not self.component.enabled_in_hangar():
+            return False
+        if not settings_synced():
+            self._wait_for_sync()
             return False
         key = once['key']
+        is_chosen = self._is_chosen(key)
+        if self.state.ran_before(self.component_id, revision) and not is_chosen:
+            self._update({key: once['value']})
         settings, _ = self.component.client_values({key: once['value']})
         name, wanted = list(settings.items())[0]
         current = read_settings([name])
         game_value = current.get(name) if current is not None else None
-        step = once_step(once, self.component.settings.to_dict().get(key), self._is_chosen(key), game_value, wanted)
+        step = once_step(once, self.component.settings.to_dict().get(key), is_chosen, game_value, wanted)
         if step == ONCE_WAIT:
             return False
         if step == ONCE_WRITE:
@@ -98,9 +107,17 @@ class ClientDefaults(object):
             log(once['log'])
         elif step == ONCE_NATIVE:
             self._update({key: NATIVE})
-        self.state.mark_once(self.component_id)
+        self.state.mark_once(self.component_id, revision)
         self.app.save_state()
         return step == ONCE_WRITE
+
+    def _wait_for_sync(self):
+        if not self.waiting_for_sync:
+            self.waiting_for_sync = on_settings_synced(self._on_synced)
+
+    def _on_synced(self):
+        self.waiting_for_sync = False
+        self.apply_once()
 
     def _keep_backup(self, values):
         settings, account = self.component.client_values(values)

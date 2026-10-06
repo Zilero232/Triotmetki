@@ -36,7 +36,7 @@ const widgetState = (patch: Partial<HudPanel> = {}): HudState => {
   const state = sampleState();
   const widget = hudWidgetSchema.parse(JSON.parse(teamHpSample));
 
-  return { ...state, panels: state.panels.map((panel) => ({ ...panel, kind: 'label', widget, ...patch })) };
+  return { ...state, panels: state.panels.map((panel) => ({ ...panel, widget, ...patch })) };
 };
 
 describe(sharePanels, () => {

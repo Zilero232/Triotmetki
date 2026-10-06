@@ -64,9 +64,6 @@ class BattleProgressPanel(BattlePanel):
     def settings_changed(self, changed):
         self.render()
 
-    def extended_changed(self, held):
-        self.render()
-
     def start(self, player):
         self.row = self.tanks.row(player_tank_id(player))
         self.has_main_gun = main_gun_applies(getattr(arena(), 'guiType', None))
@@ -141,7 +138,7 @@ class BattleProgressPanel(BattlePanel):
             self.settle.start()
 
         state = progress_state(self.counts.values, main_gun, self.row, self.settled)
-        rows = progress_rows(state, self.settings, self.app.translate, self.extended())
+        rows = progress_rows(state, self.settings, self.app.translate)
         if not rows:
             self.hide()
             return

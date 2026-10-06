@@ -1,10 +1,10 @@
 """Which stock battle HUD elements our panels replace (docs/specs/2026-09-29-hud-visual-redesign.md section 3.2).
 
-`StockSuppression` keeps `{alias: owners}`: a component asks for the stock aliases it replaces with
-`want(owner, aliases)` while its Gameface widget is drawn and passes `()` when it stops (switched off, GUIFlash, battle
-left). `filter(visible, hidden)` is what the wrapped `SharedPage._setComponentsVisibility` passes on: a suppressed alias
-never becomes visible again, however often the page re-shows its components (control mode, Tab, postmortem). The
-same bookkeeping, over `RETICLE_PARTS`, keeps the parts of the stock reticle our crosshair readouts draw:
+`StockSuppression` keeps `{alias: owners}`: a component asks for the stock aliases it replaces with `want(owner,
+aliases)` while its Gameface widget is drawn and passes `()` when it stops (switched off, off the page, battle left).
+`filter(visible, hidden)` is what the wrapped `SharedPage._setComponentsVisibility` passes on: a suppressed alias never
+becomes visible again, however often the page re-shows its components (control mode, Tab, postmortem). The same
+bookkeeping, over `RETICLE_PARTS`, keeps the parts of the stock reticle our crosshair readouts draw:
 `hide_reticle_parts(vo, parts)` is the settings the crosshair panel gets with those parts at opacity 0. The client side
 is `core/client/hud/stock`.
 

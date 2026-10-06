@@ -8,7 +8,6 @@ from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer, panel_schema
 from otmetki.core.hud.layer.constants import (
     COVER_FULL_STATS,
     COVER_GUI,
-    COVER_KILLCAM,
     COVER_LOADING,
     COVER_MENU,
     COVER_SCREEN,
@@ -48,13 +47,6 @@ def shown_layer():
 
 
 class CoverTest(unittest.TestCase):
-
-    def test_the_killer_camera_hides_the_panels(self):
-        layer, backend = shown_layer()
-
-        layer.set_cover(COVER_KILLCAM, True)
-
-        assert backend.calls == [('update', {'visible': False})]
 
     def test_the_loading_screen_hides_the_panels(self):
         layer, backend = shown_layer()
@@ -107,7 +99,7 @@ class CoverTest(unittest.TestCase):
     def test_a_covered_panel_is_never_deleted(self):
         layer, backend = shown_layer()
 
-        for reason in (COVER_GUI, COVER_KILLCAM, COVER_LOADING, COVER_FULL_STATS, COVER_MENU):
+        for reason in (COVER_GUI, COVER_LOADING, COVER_FULL_STATS, COVER_MENU):
             layer.set_cover(reason, True)
             layer.set_cover(reason, False)
 
@@ -117,14 +109,14 @@ class CoverTest(unittest.TestCase):
         layer, backend = shown_layer()
         layer.set_cover(COVER_GUI, True)
 
-        layer.set_cover(COVER_KILLCAM, True)
+        layer.set_cover(COVER_LOADING, True)
 
         assert backend.calls == [('update', {'visible': False})]
 
     def test_panels_stay_hidden_until_every_hiding_reason_is_gone(self):
         layer, _ = shown_layer()
         layer.set_cover(COVER_GUI, True)
-        layer.set_cover(COVER_KILLCAM, True)
+        layer.set_cover(COVER_LOADING, True)
 
         layer.set_cover(COVER_GUI, False)
 
@@ -145,13 +137,6 @@ class CoverTest(unittest.TestCase):
 
         assert backend.calls == [('update', {'visible': False})]
 
-    def test_the_killer_camera_releases_the_stock_elements(self):
-        layer, _ = shown_layer()
-
-        layer.set_cover(COVER_KILLCAM, True)
-
-        assert layer.releases_stock('panel')
-
     def test_tab_keeps_the_stock_elements_suppressed(self):
         layer, _ = shown_layer()
 
@@ -171,7 +156,7 @@ class CoverTest(unittest.TestCase):
         heard = []
         layer.watch(lambda: heard.append(True))
 
-        layer.set_cover(COVER_KILLCAM, True)
+        layer.set_cover(COVER_LOADING, True)
 
         assert heard == [True]
 
@@ -194,7 +179,7 @@ class CoverTest(unittest.TestCase):
         backend = Recorder()
         layer = HudLayer(backend, ComponentConfig(MemoryFile()))
         layer.register('panel', panel_schema({}))
-        layer.set_cover(COVER_KILLCAM, True)
+        layer.set_cover(COVER_LOADING, True)
 
         layer.show('panel', 'text')
 

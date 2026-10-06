@@ -1,7 +1,6 @@
 mod codec;
 
 use std::path::PathBuf;
-use std::time::{SystemTime, UNIX_EPOCH};
 
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
@@ -10,6 +9,7 @@ pub use codec::{decode, encode, Decoded, CODE_PREFIX};
 
 use crate::durable::{now_seconds, MirroredFile};
 use crate::error::{AppError, AppResult, ErrorCode};
+use crate::random::random_hex;
 use crate::sets::{self, normalize_components, ComponentSet};
 
 pub const FILE_NAME: &str = "profiles.json";
@@ -242,16 +242,8 @@ pub fn normalize_name(name: &str) -> AppResult<String> {
     Ok(trimmed.to_owned())
 }
 
-pub fn new_id() -> String {
-    let mut bytes = [0; ID_BYTES];
-
-    if getrandom::fill(&mut bytes).is_err() {
-        let nanos = SystemTime::now().duration_since(UNIX_EPOCH).map(|time| time.as_nanos()).unwrap_or_default();
-
-        bytes.copy_from_slice(&nanos.to_le_bytes()[..ID_BYTES]);
-    }
-
-    hex::encode(bytes)
+pub fn new_id() -> AppResult<String> {
+    random_hex::<ID_BYTES>()
 }
 
 pub struct ProfileStore {
@@ -303,16 +295,26 @@ impl ProfileStore {
         ProfileData { config, components }
     }
 
+    fn unused_id(file: &ProfilesFile) -> AppResult<String> {
+        loop {
+            let id = new_id()?;
+
+            if file.get(&id).is_err() {
+                return Ok(id);
+            }
+        }
+    }
+
     fn add(file: &mut ProfilesFile, draft: Draft) -> AppResult<Profile> {
         if file.profiles.len() >= MAX_PROFILES {
             return Err(AppError::coded(ErrorCode::ProfileLimit, format!("at most {MAX_PROFILES} profiles")));
         }
 
         let now = now_seconds();
-        let id = draft
-            .id
-            .filter(|id| sets::is_set_id(id) && file.get(id).is_err())
-            .unwrap_or_else(|| std::iter::repeat_with(new_id).find(|candidate| file.get(candidate).is_err()).unwrap_or_else(new_id));
+        let id = match draft.id.filter(|id| sets::is_set_id(id) && file.get(id).is_err()) {
+            Some(id) => id,
+            None => Self::unused_id(file)?,
+        };
         let profile = Profile {
             id,
             name: normalize_name(&draft.name)?,

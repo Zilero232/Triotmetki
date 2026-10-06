@@ -19,7 +19,7 @@ export const PlatoonPointsWidget = ({ data }: PlatoonPointsWidgetProps) => (
         <ClientIcon icon={row.cls} size={PLATOON_POINTS.iconSize} />
         <div className={s.member}>
           <span className={clsx(s.name, row.own && s.own)}>{row.name}</span>
-          {data.extended && <MiniBar height={PLATOON_POINTS.bar.height} max={row.max} tone='ally' value={row.hp} width={PLATOON_POINTS.bar.width} />}
+          <MiniBar height={PLATOON_POINTS.bar.height} max={row.max} tone='ally' value={row.hp} width={PLATOON_POINTS.bar.width} />
         </div>
         <span className={s.frags}>{row.frags_text}</span>
         <span className={s.points}>{row.points}</span>

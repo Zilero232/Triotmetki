@@ -71,7 +71,7 @@ KIND_BY_EVENT = (
 # Counted whoever the event names: the target of BASE_CAPTURE_DROPPED is no enemy vehicle.
 ANY_TARGET_KEYS = ('def',)
 
-# The plate: one row per target in this order, each with its glyph; GUIFlash text colours of the row tones. The main
+# The plate: one row per target in this order, each with its glyph; the text colours of the row tones. The main
 # gun row shows the damage still needed, as Battle Observer's main gun does (MainGunUI.as_gunData: the threshold minus
 # the damage, «++» and the done icon past it), never the damage dealt: the battle log already counts it.
 ROWS = ('main_gun', 'wn8')

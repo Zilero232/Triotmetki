@@ -3,6 +3,7 @@ use sha2::Sha256;
 
 use super::{NONCE_BYTES, SIGNATURE_PREFIX, SIGNATURE_VERSION};
 use crate::error::{AppError, AppResult, ErrorCode};
+use crate::random::random_hex;
 
 pub struct SignedMessage<'a> {
     pub method: &'a str,
@@ -28,14 +29,6 @@ pub fn sign(secret: &str, message: &[u8]) -> AppResult<String> {
     Ok(format!("{SIGNATURE_PREFIX}{}", hex::encode(mac.finalize().into_bytes())))
 }
 
-pub fn new_nonce() -> String {
-    let mut bytes = [0; NONCE_BYTES];
-
-    if getrandom::fill(&mut bytes).is_err() {
-        let nanos = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|time| time.as_nanos()).unwrap_or_default();
-
-        bytes.copy_from_slice(&nanos.to_le_bytes()[..NONCE_BYTES]);
-    }
-
-    hex::encode(bytes)
+pub fn new_nonce() -> AppResult<String> {
+    random_hex::<NONCE_BYTES>()
 }

@@ -40,12 +40,11 @@ export const useHudOverlay = () => {
 
   useDrawnReport(layouts);
 
-  targetsRef.current = layouts.map(({ id, rect, button, movable, pointer, scale }) => ({ id, rect, button, movable, pointer, scale }));
+  targetsRef.current = layouts.map(({ id, rect, movable, pointer, scale }) => ({ id, rect, movable, pointer, scale }));
 
-  const clickable = layouts.filter(({ button }) => button).map(({ rect }) => rect);
   const hovered = useHoveredPanel({ active: Boolean(state?.cursor) && !isCovered, targets: targetsRef.current });
 
-  useInputArea({ edit, hover: Boolean(state?.hover), dragging: live !== null, screen, clickable, targets: targetsRef.current, hovered, report });
+  useInputArea({ edit, hover: Boolean(state?.hover), dragging: live !== null, screen, targets: targetsRef.current, hovered, report });
 
   const hint = panelHint(live === null ? layouts.find(({ id, panel }) => id === hovered && panel.visible) : undefined);
 

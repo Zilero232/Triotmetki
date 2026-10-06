@@ -27,7 +27,6 @@ export const Sidebar = ({ compact }: SidebarProps) => {
           <SidebarItem key={item.section} compact={compact} item={item} />
         ))}
       </ScrollArea>
-      {!compact && <span className={s.hotkey}>{t('hotkeyHint')}</span>}
     </nav>
   );
 };

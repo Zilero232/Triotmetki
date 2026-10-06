@@ -7,7 +7,6 @@ from ...battle import BattleHooks
 from ...component import FeatureComponent
 from .. import hud_layer, panel_report, stock_control
 from ..modes import current_mode, mode_details
-from ..stock.constants import EXTENDED_INFO_EVENT
 
 
 @attr.s(frozen=True)
@@ -48,13 +47,10 @@ class BattlePanel(FeatureComponent):
     At the start the layer takes the layout of the battle type (`core.hud.modes`): a panel the type leaves out does not
     start (so it replaces nothing), and the layout ends with the battle.
 
-    `show(text, widget)` sends the GUIFlash text and the Gameface widget payload. A panel that replaces a stock element
+    `show(text, widget)` sends the panel text and the Gameface widget payload. A panel that replaces a stock element
     returns its aliases from `stock_aliases()`: they are hidden while the panel runs and the Gameface page confirms it
-    drawn (core.client.hud.stock), and come back when the panel stops, is switched off, is off the page or the renderer
-    is GUIFlash. A panel that lights with its stock element (`stock_while_hidden`, sixth_sense) needs the page only.
-
-    A panel with an alternate mode reads `extended()` (Alt held, the stock extended-info key) while it builds its
-    payload and re-renders from `extended_changed(held)`, called while it runs."""
+    drawn (core.client.hud.stock), and come back when the panel stops, is switched off or is off the page. A panel that
+    lights with its stock element (`stock_while_hidden`, sixth_sense) needs the page only."""
 
     start_event = 'battle_ready'
     stock_while_hidden = False
@@ -79,7 +75,6 @@ class BattlePanel(FeatureComponent):
         ).attach(app.bus)
         app.bus.on(self.start_event, self._on_start)
         app.bus.on('battle_leave', self._leave_battle)
-        app.bus.on(EXTENDED_INFO_EVENT, self._on_extended_info)
 
     def register(self, schema):
         return self.hud.register(self.component_id, schema)
@@ -116,17 +111,6 @@ class BattlePanel(FeatureComponent):
         self._on_leave()
         self.hud.leave_mode()
 
-    def _on_extended_info(self, held):
-        if self.running:
-            self.extended_changed(held)
-
-    def extended(self):
-        """True while Alt is held in battle."""
-        return self.stock.extended
-
-    def extended_changed(self, held):
-        pass
-
     def _on_component_settings(self, component_id, changed):
         if component_id != self.component_id:
             return
@@ -141,7 +125,7 @@ class BattlePanel(FeatureComponent):
         return ()
 
     def sync_stock(self):
-        replaces = self.running and self.enabled() and self.hud.renders_widgets()
+        replaces = self.running and self.enabled()
         aliases = self.stock_aliases() if replaces else ()
         self.stock.want(self.component_id, aliases, while_hidden=self.stock_while_hidden)
 

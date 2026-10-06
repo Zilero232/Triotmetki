@@ -24,7 +24,7 @@ def _row_line(row, size):
     return u'%s %s' % (font(row['text'], COLOR_MUTED, size), font(value, _color(row['tone']), size))
 
 
-# The GUIFlash lines of a card view: the title and result, the vehicle and map, the tiles on one line, a line per row.
+# The text lines of a card view: the title and result, the vehicle and map, the tiles on one line, a line per row.
 def card_text(view, size):
     lines = [_head(view, size)]
     if view['subtitle']:

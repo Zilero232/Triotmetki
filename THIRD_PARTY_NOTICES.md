@@ -40,11 +40,10 @@ The in-game pages (`packages/ui/gameface`, built from `ui-web`) bundle these npm
 
 Third-party mods our packages need at run time. They are not part of our packages: the manager downloads each pinned release from its author (sha256-checked), downloads its licence and saves it to `clients\<key>\notices\<id>\LICENSE`, and lists the authors and licences on its «О программе» page. Pins live in [apps/game/modpack/catalog/catalog.json](apps/game/modpack/catalog/catalog.json) (`kind: "dependency"`).
 
-| Mod             | Version | Author                                    | Licence | Source                                       |
-| --------------- | ------- | ----------------------------------------- | ------- | -------------------------------------------- |
-| OpenWG Gameface | 1.2.2   | OpenWG                                    | MIT     | https://gitlab.com/openwg/wot.gameface       |
-| GUIFlash        | 0.6.6   | CH4MPi (GambitER, Kurzdor, StranikS_Scan) | MIT     | https://github.com/CH4MPi/GUIFlash           |
-| ModsList        | 1.6.01  | poliroid (Andrii Andruschyshyn)           | MIT     | https://gitlab.com/wot-public-mods/mods-list |
+| Mod             | Version | Author                          | Licence | Source                                       |
+| --------------- | ------- | ------------------------------- | ------- | -------------------------------------------- |
+| OpenWG Gameface | 1.2.2   | OpenWG                          | MIT     | https://gitlab.com/openwg/wot.gameface       |
+| ModsList        | 1.6.01  | poliroid (Andrii Andruschyshyn) | MIT     | https://gitlab.com/wot-public-mods/mods-list |
 
 ## Modpack manager (`apps/game/manager`)
 

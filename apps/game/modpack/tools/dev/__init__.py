@@ -4,7 +4,7 @@
     client/      finds the game client the way the manager does (OTMETKI_GAME_DIR first, then Lesta Game Center)
     manager/     sees a modpack install the manager made in that client (its manifest, our packages in mods/<version>)
     selection/   component ids -> our package keys + the third-party runtime mods they need (catalog/catalog.json)
-    thirdparty/  OpenWG Gameface and GUIFlash from their pinned sourceUrl, checked by sha256, cached under dist/dev
+    thirdparty/  OpenWG Gameface and ModsList from their pinned sourceUrl, checked by sha256, cached under dist/dev
     builder/     builds the chosen packages with tools/build (bytecode when a compiler is found, sources otherwise)
     deploy/      writes them into mods/<version>/otmetki-dev/ with a manifest; uninstall removes exactly that
     watch/       rebuilds and reinstalls the packages whose sources changed (watchdog)

@@ -14,7 +14,7 @@ from otmetki.core.settings import Settings
 from otmetki.features.damage_log.i18n import STRINGS
 from otmetki.features.damage_log.model import DamageLog, Hit, dealt_rows, received_rows, section_rows, shown_totals
 from otmetki.core.hud.icons import CLASS_GLYPHS
-from otmetki.features.damage_log.model.constants import DETAIL_SHORT, KINDS, PALETTES
+from otmetki.features.damage_log.model.constants import KINDS, PALETTES
 from otmetki.features.damage_log.model.preview import preview_log, preview_text
 from otmetki.features.damage_log.model.text import class_icon, format_damage_log, kind_color, kind_icon
 from otmetki.features.damage_log.settings import SCHEMA, SETTINGS, SWITCH
@@ -267,17 +267,17 @@ class SectionsTest(unittest.TestCase):
         assert len(rows) == 1
 
     def test_the_dealt_section_leaves_the_received_rows_out(self):
-        rows = section_rows(filled_log(), settings(sections='dealt'), DETAIL_SHORT)
+        rows = section_rows(filled_log(), settings(sections='dealt'))
 
         assert rows['received'] == []
 
     def test_the_received_section_leaves_the_dealt_rows_out(self):
-        rows = section_rows(filled_log(), settings(sections='received'), DETAIL_SHORT)
+        rows = section_rows(filled_log(), settings(sections='received'))
 
         assert rows['dealt'] == []
 
-    def test_the_compact_style_has_rows_only_on_alt(self):
-        rows = section_rows(filled_log(), settings(style='compact'), DETAIL_SHORT)
+    def test_the_compact_style_has_no_rows(self):
+        rows = section_rows(filled_log(), settings(style='compact'))
 
         assert rows == {'dealt': [], 'received': []}
 
@@ -369,25 +369,20 @@ class FormatTest(unittest.TestCase):
         assert 'D=800 R=1' in text
         assert '#1 40 IS' in text
 
-    def test_notes_wait_for_alt_in_the_alt_mode(self):
+    def test_the_notes_are_there_by_default(self):
         text = format_damage_log(filled_log(), settings(), translator())
 
+        assert u'оглушение' in text
+
+    def test_the_notes_setting_leaves_the_notes_out(self):
+        text = format_damage_log(filled_log(), settings(show_notes=False), translator())
+
         assert u'оглушение' not in text
-
-    def test_alt_adds_the_notes(self):
-        text = format_damage_log(filled_log(), settings(), translator(), extended=True)
-
-        assert u'оглушение' in text
-
-    def test_notes_are_always_there_without_the_alt_mode(self):
-        text = format_damage_log(filled_log(), settings(alt_mode=False), translator())
-
-        assert u'оглушение' in text
 
     def test_the_alt_template_is_retired(self):
         custom = settings(alt_entry_template='#{index} {vehicle}', sections='received')
 
-        text = format_damage_log(filled_log(), custom, translator(), extended=True)
+        text = format_damage_log(filled_log(), custom, translator())
 
         assert '#1 KV-1' not in text
 
@@ -399,11 +394,11 @@ class FormatTest(unittest.TestCase):
     def test_the_dealt_kind_takes_the_palettes_first_colour(self):
         assert kind_color('damage', settings(palette='classic')) == PALETTES['classic'][0]
 
-    def test_an_ammo_rack_hit_says_so_on_alt(self):
+    def test_an_ammo_rack_hit_says_so(self):
         log = filled_log()
         log.received.ammo_rack_hit(20.4)
 
-        text = format_damage_log(log, settings(), translator(), extended=True)
+        text = format_damage_log(log, settings(), translator())
 
         assert u'боеукладка' in text
 

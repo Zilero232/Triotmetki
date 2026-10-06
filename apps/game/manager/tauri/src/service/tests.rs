@@ -18,7 +18,7 @@ const ENABLED: [&str; 4] = [
 ];
 const PARKED: &str = "net.triotmetki.hit_log_0.1.0.mtmod";
 const THEIR_GAMEFACE: &str = "net.openwg.gameface_1.2.0.mtmod";
-const THEIR_GUIFLASH: &str = "gambiter.guiflash_0.6.5.mtmod";
+const THEIR_MODSLIST: &str = "me.poliroid.modslistapi_1.6.00.mtmod";
 
 fn manager(root: &Path) -> Manager {
     let layout = Layout::new(root.join("Local"), root.join("Roaming"));
@@ -123,7 +123,7 @@ fn enabling_a_component_records_the_players_copies_of_its_dependencies() {
     let scope = installed_client(&manager, root.path(), catalog_json());
 
     fs::write(scope.client.mods_dir.join(THEIR_GAMEFACE), "their gameface").unwrap();
-    fs::write(scope.client.mods_dir.join(THEIR_GUIFLASH), "their guiflash").unwrap();
+    fs::write(scope.client.mods_dir.join(THEIR_MODSLIST), "their modslist").unwrap();
 
     let changed = tauri::async_runtime::block_on(manager.set_component_enabled(Some(&scope.client.path), "hit_log", true)).unwrap();
     let manifest = Manifest::read(&scope.client_dir).unwrap().unwrap();
@@ -134,7 +134,7 @@ fn enabling_a_component_records_the_players_copies_of_its_dependencies() {
         manifest.dependency("openwg_gameface").map(|record| (record.owner, record.file.as_str())),
         Some((DependencyOwner::User, THEIR_GAMEFACE))
     );
-    assert_eq!(manifest.dependency("guiflash").map(|record| (record.owner, record.file.as_str())), Some((DependencyOwner::User, THEIR_GUIFLASH)));
+    assert_eq!(manifest.dependency("modslist").map(|record| (record.owner, record.file.as_str())), Some((DependencyOwner::User, THEIR_MODSLIST)));
 }
 
 #[test]
@@ -143,7 +143,7 @@ fn enabling_changes_nothing_when_a_missing_dependency_cannot_be_downloaded() {
     let manager = manager(root.path());
     let mut catalog = catalog_json();
 
-    catalog["components"][6]["sourceUrl"] = "https://example.com/gambiter.guiflash_0.6.6.mtmod".into();
+    catalog["components"][6]["sourceUrl"] = "https://example.com/me.poliroid.modslistapi_1.6.01.mtmod".into();
 
     let scope = installed_client(&manager, root.path(), catalog);
 
@@ -162,7 +162,7 @@ fn disabling_a_component_downloads_nothing() {
     let manager = manager(root.path());
     let mut catalog = catalog_json();
 
-    catalog["components"][6]["sourceUrl"] = "https://example.com/gambiter.guiflash_0.6.6.mtmod".into();
+    catalog["components"][6]["sourceUrl"] = "https://example.com/me.poliroid.modslistapi_1.6.01.mtmod".into();
 
     let scope = installed_client(&manager, root.path(), catalog);
     let changed = tauri::async_runtime::block_on(manager.set_component_enabled(Some(&scope.client.path), "damage_log", false)).unwrap();

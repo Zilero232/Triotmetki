@@ -37,9 +37,9 @@ fn round_trips_the_manifest_with_cyrillic_paths() {
         manager: Some("0.1.0".into()),
         dependencies: vec![
             DependencyRecord {
-                id: "guiflash".into(),
+                id: "modslist".into(),
                 owner: DependencyOwner::User,
-                file: "gambiter.guiflash_0.6.5.mtmod".into(),
+                file: "me.poliroid.modslistapi_1.6.00.mtmod".into(),
                 sha256: String::new(),
             },
             DependencyRecord {

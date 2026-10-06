@@ -10,7 +10,6 @@ from otmetki.features.team_hp.model import TeamHp, bar, format_panel, format_tea
 from otmetki.features.team_hp.model.preview import preview_text
 from otmetki.features.team_hp.model.strip import strip_options
 from otmetki.features.team_hp.settings import SCHEMA
-from otmetki.features.team_hp.settings.constants import BESIDE_STOCK_PLACE
 
 ALL_ON = {'icons': True, 'tiers': True}
 NO_TIERS = {'icons': True, 'tiers': False}
@@ -406,28 +405,21 @@ class PinnedPlaceTest(unittest.TestCase):
     def test_a_strip_that_replaces_the_stock_one_keeps_its_own_place(self):
         settings = Settings({'style': 'full', 'x': 12, 'y': 0}, SCHEMA)
 
-        place = pinned_place(settings, True)
+        place = pinned_place(settings)
 
         assert place == (12, 0)
-
-    def test_a_replacing_strip_sits_right_of_the_stock_one_the_renderer_cannot_hide(self):
-        settings = Settings({'style': 'full', 'x': 12, 'y': 0}, SCHEMA)
-
-        place = pinned_place(settings, False)
-
-        assert place == BESIDE_STOCK_PLACE
 
     def test_the_numbers_style_sits_right_of_the_stock_strip(self):
         settings = Settings({'style': 'numbers'}, SCHEMA)
 
-        place = pinned_place(settings, True)
+        place = pinned_place(settings)
 
         assert place == (443, 4)
 
     def test_a_strip_that_keeps_the_stock_one_sits_right_of_it(self):
         settings = Settings({'style': 'full', 'replace_stock': False}, SCHEMA)
 
-        place = pinned_place(settings, True)
+        place = pinned_place(settings)
 
         assert place == (443, 4)
 

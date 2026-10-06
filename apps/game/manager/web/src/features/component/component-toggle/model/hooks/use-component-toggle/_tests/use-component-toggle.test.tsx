@@ -15,7 +15,7 @@ import { MESSAGES } from '@/shared/i18n';
 
 const CLIENT = 'D:\\Игры\\Мир танков';
 const TITLE = 'Лог попаданий';
-const LIBRARIES = ['OpenWG Gameface', 'GUIFlash'];
+const LIBRARIES = ['OpenWG Gameface', 'ModsList'];
 
 const setup = () => {
   const queryClient = new QueryClient({ defaultOptions: { mutations: { retry: false } } });
@@ -88,7 +88,7 @@ describe('useComponentToggle', () => {
 
     act(() => result.current.onCheckedChange(true));
 
-    await waitFor(() => expect(success).toHaveBeenCalledWith('Лог попаданий: включён, библиотеки на месте (OpenWG Gameface, GUIFlash)'));
+    await waitFor(() => expect(success).toHaveBeenCalledWith('Лог попаданий: включён, библиотеки на месте (OpenWG Gameface, ModsList)'));
   });
 
   it('keeps the plain message for a component without libraries', async () => {

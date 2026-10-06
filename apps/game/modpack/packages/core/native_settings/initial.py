@@ -38,6 +38,14 @@ def once_step(once, section_value, is_chosen, game_value, wanted):
     return ONCE_NATIVE
 
 
+# A one-time switch whose earlier revision ran on a wrong read runs again under a new mark; revision 1 keeps the bare
+# component id that state.json files already hold.
+def once_mark(component_id, revision):
+    if revision <= 1:
+        return component_id
+    return '%s@%d' % (component_id, revision)
+
+
 def recommended(schema, keys):
     """The recommended client values: the schema defaults of `keys`."""
     return {key: schema.defaults[key] for key in keys}
@@ -70,12 +78,17 @@ class NativeState(object):
         self.backups = _dict_of(backups)
         self.once = [name for name in once if isinstance(name, string_types)] if isinstance(once, list) else []
 
-    def once_done(self, component_id):
-        return component_id in self.once
+    def once_done(self, component_id, revision=1):
+        return once_mark(component_id, revision) in self.once
 
-    def mark_once(self, component_id):
-        if component_id not in self.once:
-            self.once.append(component_id)
+    def ran_before(self, component_id, revision):
+        """Whether an earlier revision of the component's one-time switch already ran."""
+        return any(once_mark(component_id, earlier) in self.once for earlier in range(1, revision))
+
+    def mark_once(self, component_id, revision=1):
+        mark = once_mark(component_id, revision)
+        if mark not in self.once:
+            self.once.append(mark)
 
     def dump_once(self):
         return list(self.once)

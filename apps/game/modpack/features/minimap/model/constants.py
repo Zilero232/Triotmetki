@@ -23,7 +23,10 @@ VEHICLE_NAMES_NEVER = 0
 # The owner's one exception to "write only on the player's change" (README "Minimap"): with the game's extended minimap
 # features at 'never' the minimap shows no names and no last-seen spots, so a section the player never set starts at
 # 'always' and, once per install, a game still at 'never' is switched to it (core.client.native.ClientDefaults).
+# Revision 2: revision 1 read the game's value before the server settings arrived (the default, not the player's
+# value), so it may have marked itself done without switching; it runs once more after the settings sync.
 ONCE = {
+    'revision': 2,
     'key': 'vehicle_names',
     'value': 'always',
     'off': VEHICLE_NAMES_NEVER,

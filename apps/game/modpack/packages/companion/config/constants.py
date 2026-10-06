@@ -140,7 +140,6 @@ MERGED_SECTIONS = (
     (('damage_log', 'log_lines', 5), ('damage_log', 'dealt_lines')),
     (('received_hits', 'lines', 5), ('damage_log', 'received_lines')),
     (('hit_log', 'group_by_target', False), ('damage_log', 'group_by_target')),
-    (('hit_log', 'alt_mode', False), ('damage_log', 'alt_mode')),
     (('damage_log', 'log_kinds', 'all'), ('damage_log', 'sections')),
     (('session_goals', 'show_hangar', True), ('session_stats', 'show_goals')),
     (('session_goals', 'max_goals', 3), ('session_stats', 'max_goals')),
@@ -183,7 +182,6 @@ SWITCHED_OFF_PARTS = (
 # the minimap's last-seen spots and names start at 'always', so its one-time switch of a game at 'never' runs for an
 # install that predates it (features/minimap model.constants ONCE).
 RETIRED_VALUES = (
-    (3, 'damage_log', 'alt_mode', False, True),
     (3, 'hangar_info', 'clock_format', '%H:%M:%S', '%H:%M'),
     (3, 'hangar_info', 'date_format', '%d.%m.%Y', '%d.%m'),
     (3, 'marks_panel', 'style', 'extended', 'compact'),
@@ -270,7 +268,8 @@ DROPPED_SECTIONS = (
 # marks panel (SPLIT_KEYS), with the part switches and the battles row the battle panel no longer has. Revision 6: the
 # battle panel's Alt view (alt_detail), so its box is the one the player places, and aim_info's aim circle keys
 # (AIM_CIRCLE_FROM). Revision 7: hangar_info's battle clock switch and its timer replacement. Revision 8: the
-# crosshair's aim circle, now a component of its own (AIM_CIRCLE_PART_TO).
+# crosshair's aim circle, now a component of its own (AIM_CIRCLE_PART_TO), and the battle log's Alt view (alt_mode,
+# alt_entry_template): no battle panel changes while Alt is held, so the notes follow show_notes alone.
 DROPPED_KEYS = (
     ('crosshair', 'repair_timers'),
     ('crosshair', 'aim_circle'),
@@ -302,6 +301,8 @@ DROPPED_KEYS = (
     ('marks_panel', 'alt_detail'),
     ('hangar_info', 'battle_clock'),
     ('hangar_info', 'replace_timer'),
+    ('damage_log', 'alt_mode'),
+    ('damage_log', 'alt_entry_template'),
 )
 # Components that stay but are no HUD panel any more, so their battle-type places go (revision 4: aim_info).
 DROPPED_PANELS = ('aim_info',)

@@ -14,7 +14,6 @@
       "drag": true,
       "hint": "Нанесённый и полученный урон за бой.",
       "id": "otmetki.hud.damage_log",
-      "kind": "label",
       "scale": 1.0,
       "text": "<font color=\"#F2EAD3\">урон 1 200</font>",
       "visible": true,
@@ -23,5 +22,5 @@
       "y": -140
     }
   ],
-  "v": 5
+  "v": 6
 }

@@ -143,7 +143,7 @@ impl SiteClient {
     async fn send_signed<B: Serialize>(&self, request: &SignedRequest<'_, B>, body: &[u8]) -> AppResult<reqwest::Response> {
         let SignedRequest { method, path, credentials, .. } = request;
         let timestamp = self.timestamp();
-        let nonce = new_nonce();
+        let nonce = new_nonce()?;
         let message = signed_message(&SignedMessage { method: method.as_str(), path, timestamp: &timestamp, nonce: &nonce, body });
         let signature = sign(&credentials.secret, &message)?;
 

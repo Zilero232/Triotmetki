@@ -6,7 +6,6 @@ import types
 import unittest
 
 import _support
-from otmetki.core.events import EventBus
 from otmetki.core.hud import ComponentConfig, HudBackend, HudLayer
 from _support import MemoryFile
 
@@ -104,7 +103,7 @@ class StockMetricsTest(unittest.TestCase):
         }
         from otmetki.core.client.hud.stock import StockControl
         self.layer = HudLayer(Backend(), ComponentConfig(MemoryFile()))
-        self.control = StockControl(self.layer, EventBus())
+        self.control = StockControl(self.layer)
         assert self.control.install()
 
     def tearDown(self):

@@ -30,6 +30,7 @@ class Preset(object):
     title = attr.ib()
     description = attr.ib()
     custom = attr.ib(default=False)
+    everything = attr.ib(default=False)
 
 
 @attr.s(frozen=True)

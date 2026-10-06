@@ -4,7 +4,7 @@ from ....core.format import count_phrase, format_number, format_percent
 from .constants import ACCOUNT_FACTS, FACT_SEPARATOR, METRIC_KEY, PERCENT_METRICS
 from .ratings import rating_value
 
-# The words of the card shared by the Gameface card (model/widget.py) and the GUIFlash text (model/text.py).
+# The words of the card shared by the Gameface card (model/widget.py) and the text (model/text.py).
 
 
 def pending_caption(pending, translate):

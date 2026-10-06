@@ -10,7 +10,7 @@ ACTION_SITE = 'site'
 SITE_PATH = '/me'
 
 # The strip of the last own battles of the session, oldest first: `result` of a battle event (companion/payload), its
-# colour on the card (core/hud/widget TONES) and in the GUIFlash text.
+# colour on the card (core/hud/widget TONES) and in the text.
 RESULTS = (RESULT_WIN, RESULT_LOSS, RESULT_DRAW)
 RECENT_LIMIT = 10
 RESULT_COLORS = {RESULT_WIN: COLOR_UP, RESULT_LOSS: COLOR_DOWN, RESULT_DRAW: COLOR_MUTED}
@@ -81,7 +81,7 @@ MOE_ROWS = 3
 # The hangar card (model/widget.py): width in design px, the win rate from which it shows as good.
 CARD_WIDTH = 264
 EVEN_WIN_RATE = 50.0
-# The GUIFlash text's header size (model/text.py).
+# The text's header size (model/text.py).
 TITLE_SIZE = 15
 
 # contract/goals.schema.json: the goals set on the site's «Мой кабинет» page.

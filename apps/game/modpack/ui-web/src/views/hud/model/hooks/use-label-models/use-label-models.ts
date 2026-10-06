@@ -20,7 +20,7 @@ export const useLabelModels = ({ layouts, lines, widgets, liveId, measureRef }: 
   };
 
   const labelOf = (layout: LabelLayout): HudLabelModel => {
-    const { panel, id, button, movable, pointer } = layout;
+    const { panel, id, movable, pointer } = layout;
 
     return {
       id,
@@ -28,9 +28,7 @@ export const useLabelModels = ({ layouts, lines, widgets, liveId, measureRef }: 
       lines: lines.get(id) ?? null,
       widget: widgets.get(id) ?? null,
       style: stableStyle(layout),
-      button,
-      interactive: button || movable || pointer,
-      pressable: button && !movable,
+      interactive: movable || pointer,
       framed: movable,
       dragging: liveId === id,
       measureRef: measureRef(id)

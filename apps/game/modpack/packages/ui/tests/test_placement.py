@@ -9,14 +9,11 @@ import unittest
 
 import _support  # noqa: F401
 from otmetki.ui.components import PANEL_OWNERS, PLACEMENT, SECTIONS, placement_of
-from otmetki.ui.window_layout import unmoved_layout
 
 CATALOG = os.path.join(_support.MODPACK_DIR, 'catalog', 'catalog.json')
 WINDOW_ONLY = ('core', 'ui')
 DATA_PACKAGES = ('hangar_looks',)
-OLD_BUTTON = {'x': -24, 'y': 72, 'align_x': 'right', 'align_y': 'top', 'scale': 100}
 CONTEXTS = ('hangar', 'battle', 'any')
-NEW_BUTTON = {'x': -176, 'y': -4, 'align_x': 'right', 'align_y': 'bottom', 'scale': 90}
 
 
 def catalog_contexts():
@@ -114,15 +111,6 @@ class PlacementTest(unittest.TestCase):
         ]
 
         assert unknown == []
-
-
-class HangarButtonLayoutTest(unittest.TestCase):
-
-    def test_a_button_nobody_moved_takes_the_new_spot(self):
-        assert unmoved_layout(dict(OLD_BUTTON, drag=True), OLD_BUTTON, NEW_BUTTON) == NEW_BUTTON
-
-    def test_a_moved_button_stays(self):
-        assert unmoved_layout(dict(OLD_BUTTON, x=-40), OLD_BUTTON, NEW_BUTTON) == {}
 
 
 if __name__ == '__main__':

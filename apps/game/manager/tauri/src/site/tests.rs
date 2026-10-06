@@ -19,11 +19,11 @@ fn signs_the_v2_message_like_the_mod_and_the_server() {
 
 #[test]
 fn makes_a_fresh_hex_nonce_each_time() {
-    let first = new_nonce();
+    let first = new_nonce().unwrap();
 
     assert_eq!(first.len(), NONCE_BYTES * 2);
     assert!(first.chars().all(|c| c.is_ascii_hexdigit()));
-    assert_ne!(first, new_nonce());
+    assert_ne!(first, new_nonce().unwrap());
 }
 
 #[test]

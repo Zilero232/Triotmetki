@@ -27,7 +27,7 @@ fn component(id: &str, package_id: &str, category: &str, required: bool, depende
 }
 
 pub const GAMEFACE_SHA256: &str = "2bb65f28663e3ab34b5a1102a1bbd1f6e17a65e1f6a898a8645c4ab732b50184";
-pub const GUIFLASH_SHA256: &str = "a0b6dc2e75663008a4ced9e0c00449be84b3c3d5d932f8bbcaa2b334ae3d1cb5";
+pub const MODSLIST_SHA256: &str = "b312adfcd005405d49b711e79b4032be7d624b6e38d4156364d1c04bc5dba71f";
 
 pub fn gameface_json() -> serde_json::Value {
     json!({
@@ -52,24 +52,24 @@ pub fn gameface_json() -> serde_json::Value {
     })
 }
 
-pub fn guiflash_json() -> serde_json::Value {
+pub fn modslist_json() -> serde_json::Value {
     json!({
-        "id": "guiflash",
+        "id": "modslist",
         "kind": "dependency",
-        "packageId": "gambiter.guiflash",
-        "version": "0.6.6",
-        "file": "gambiter.guiflash_0.6.6.mtmod",
-        "title": { "ru": "GUIFlash", "en": "GUIFlash" },
-        "description": { "ru": "Запасной HUD", "en": "The fallback HUD" },
-        "author": { "name": "CH4MPi", "url": "https://github.com/CH4MPi/GUIFlash" },
+        "packageId": "me.poliroid.modslistapi",
+        "version": "1.6.01",
+        "file": "me.poliroid.modslistapi_1.6.01.mtmod",
+        "title": { "ru": "ModsList", "en": "ModsList" },
+        "description": { "ru": "Кнопка модов в ангаре", "en": "The mods button in the hangar" },
+        "author": { "name": "poliroid", "url": "https://gitlab.com/wot-public-mods/mods-list" },
         "licence": {
             "name": "MIT",
-            "url": "https://raw.githubusercontent.com/CH4MPi/GUIFlash/v0.6.6/LICENSE",
-            "sha256": "516fddc54dc15c2589d40017fc985adc59565ff7fbe8e7bc16851205126dd7fc"
+            "url": "https://gitlab.com/wot-public-mods/mods-list/-/raw/v1.6.01/LICENSE.md",
+            "sha256": "c67ed29b3f80fa7b99e6fc16490fa1710353fb7ead042c276e8dccd2dbeedb5f"
         },
-        "sourceUrl": "https://github.com/CH4MPi/GUIFlash/releases/download/v0.6.6/gambiter.guiflash_0.6.6.mtmod",
-        "sha256": GUIFLASH_SHA256,
-        "size": 62862,
+        "sourceUrl": "https://gitlab.com/-/project/26509092/uploads/9705f0b2627e9a074ecac2e84f38c9ca/me.poliroid.modslistapi_1.6.01.wotmod",
+        "sha256": MODSLIST_SHA256,
+        "size": 79776,
         "requiredBy": ["damage_log"],
         "restartRequired": false
     })
@@ -96,7 +96,7 @@ pub fn catalog_json() -> serde_json::Value {
             component("damage_log", "net.triotmetki.damage_log", "battle", false, &["core", "companion"]),
             component("hit_log", "net.triotmetki.hit_log", "battle", false, &["damage_log"]),
             gameface_json(),
-            guiflash_json()
+            modslist_json()
         ],
         "ownedPatterns": ["net.triotmetki.*.mtmod", "otmetki.*.mtmod"],
         "ownedPaths": ["scripts/client/gui/mods/otmetki/", "scripts/client/gui/mods/mod_otmetki", "gui/gameface/mods/triotmetki/"],

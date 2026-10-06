@@ -62,14 +62,6 @@ fn reads_the_tail_of_a_log_from_a_whole_line() {
     assert!(read_tail(&root.path().join("нет.log"), 10).is_none());
 }
 
-#[test]
-fn decodes_a_cp1251_log() {
-    let (bytes, _, _) = encoding_rs::WINDOWS_1251.encode("Путь D:\\Игры");
-
-    assert_eq!(decode_text(&bytes), "Путь D:\\Игры");
-    assert_eq!(decode_text("юникод".as_bytes()), "юникод");
-}
-
 fn preview() -> ReportPreview {
     let redactor = redactor();
 

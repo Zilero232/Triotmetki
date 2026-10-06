@@ -61,12 +61,5 @@ impl Changelog {
     }
 }
 
-pub fn is_newer(version: &str, than: &str) -> bool {
-    match (semver::Version::parse(version), semver::Version::parse(than)) {
-        (Ok(version), Ok(than)) => version > than,
-        _ => false,
-    }
-}
-
 #[cfg(test)]
 mod tests;

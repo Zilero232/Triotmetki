@@ -14,11 +14,12 @@ Design specs, one per initiative, dated.
 - [specs/2026-09-26-plus-subscription.md](specs/2026-09-26-plus-subscription.md) — the Plus subscription.
 - [specs/2026-09-26-streamer-settings.md](specs/2026-09-26-streamer-settings.md) — the streamer directory and streamer settings.
 - [specs/2026-09-28-plus-free-tiers.md](specs/2026-09-28-plus-free-tiers.md) — free tiers and monthly meters for Plus features (3D armor, battle analysis), the before/after feature matrix.
-- [specs/2026-09-28-manager-runtime-dependencies.md](specs/2026-09-28-manager-runtime-dependencies.md) — the manager installs OpenWG Gameface and GUIFlash as pinned runtime dependencies; the catalogue entries requested from the modpack owner.
+- [specs/2026-09-28-manager-runtime-dependencies.md](specs/2026-09-28-manager-runtime-dependencies.md) — the manager installs third-party runtime mods (today OpenWG Gameface and ModsList; GUIFlash was dropped) as pinned dependencies; the catalogue entries requested from the modpack owner.
 - [specs/2026-09-29-derived-data-rules.md](specs/2026-09-29-derived-data-rules.md) — the rules behind automatic replay tags, tank × map win rates and the fine mark curve, and where each hides thin data.
 - [specs/2026-09-29-hud-visual-redesign.md](specs/2026-09-29-hud-visual-redesign.md) — the modpack HUD look: client icons, panel placement, which stock elements each panel replaces.
 - [specs/2026-09-30-hud-consolidation-and-design.md](specs/2026-09-30-hud-consolidation-and-design.md) — merging the duplicate modpack components (47 → 32), defaults and default values, the settings migration, and the HUD design system (plate, type, spacing, tones) with a spec per block.
 - [specs/2026-10-05-server-refactor.md](specs/2026-10-05-server-refactor.md) — the server refactor plan: one way to write queries, simpler structure, the bug and inconsistency items it found.
+- [specs/2026-10-06-gameface-inject-host.md](specs/2026-10-06-gameface-inject-host.md) — the modpack's Gameface pages inside the Scaleform hangar and battle through the client's own GFInjectComponent instead of a HUD window: findings, architecture, migration phases, the dev-only spike and its in-game checklist.
 - [specs/2026-10-05-mod-community-hangar-settings.md](specs/2026-10-05-mod-community-hangar-settings.md) — draft: marking opted-in Три отметки users in the battle team lists, our own hangar options, the settings window's hotkey/group fields; open questions for the user.
 
 ## Architecture

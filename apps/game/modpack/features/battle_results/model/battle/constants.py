@@ -14,7 +14,7 @@ LAST_TILES = (
     ('net_credits', None, 'br_tile_credits', 'gold'),
 )
 
-# GUIFlash text colours of the tones; any other tone is the plain text colour.
+# The text colours of the tones; any other tone is the plain text colour.
 TONE_COLORS = {'good': COLOR_UP, 'bad': COLOR_DOWN, 'muted': COLOR_MUTED}
 ROW_GLYPHS = {'marks': 'wn8'}
 SUBTITLE_SEPARATOR = u' · '

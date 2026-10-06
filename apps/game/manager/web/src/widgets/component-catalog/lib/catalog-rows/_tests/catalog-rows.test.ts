@@ -32,13 +32,13 @@ describe('buildCatalogRows', () => {
     expect(libraries).toMatchObject({
       core: [],
       marks_panel: ['OpenWG Gameface'],
-      damage_log: ['OpenWG Gameface', 'GUIFlash'],
-      hit_log: ['OpenWG Gameface', 'GUIFlash']
+      damage_log: ['OpenWG Gameface', 'ModsList'],
+      hit_log: ['OpenWG Gameface', 'ModsList']
     });
   });
 
   it('leaves out the optional libraries switching a component on never installs', () => {
-    const dependencies = catalog.dependencies.map((dependency) => ({ ...dependency, optional: dependency.id === 'guiflash' }));
+    const dependencies = catalog.dependencies.map((dependency) => ({ ...dependency, optional: dependency.id === 'modslist' }));
     const optionalRows = buildCatalogRows({ catalog: { ...catalog, dependencies }, installation, locale: 'en' });
 
     expect(optionalRows.find((row) => row.id === 'damage_log')?.libraries).toEqual(['OpenWG Gameface']);

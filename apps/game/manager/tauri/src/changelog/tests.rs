@@ -36,10 +36,3 @@ fn keeps_a_copy_for_offline_use() {
 
     assert_eq!(Changelog::load(&path), Some(changelog));
 }
-
-#[test]
-fn compares_versions_by_semver() {
-    assert!(is_newer("0.10.0", "0.9.1"));
-    assert!(!is_newer("0.2.0", "0.2.0"));
-    assert!(!is_newer("garbage", "0.1.0"));
-}

@@ -23,7 +23,6 @@ export const EN: Strings = {
   sectionReplaysHint: 'Replays of your battles: search, watch and upload to the site.',
   sectionDataHint: 'The link to triotmetki.ru and what the mod sends to the site.',
   sectionEmpty: 'No component of this section is installed. Add them in the modpack manager.',
-  hotkeyHint: 'Ctrl+Shift+T: open and close the window',
   searchPlaceholder: 'Search components and settings',
   searchClear: 'Clear the search',
   searchTitle: 'Search',

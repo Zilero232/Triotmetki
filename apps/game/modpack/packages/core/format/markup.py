@@ -5,7 +5,7 @@ from .constants import FONT_COLOR, MARKUP_ESCAPES, SPACES, TAGS
 
 
 class Markup(text_type):
-    """Text already in the GUIFlash HTML subset: `font` and `escape` keep it as it is.
+    """Text already in the panels' HTML subset: `font` and `escape` keep it as it is.
 
     Only for markup the mod builds itself (`font` output, `<img>` tags, the player's own templates);
     joining or formatting it gives plain text again, so a composed line is wrapped once more.
@@ -32,7 +32,7 @@ def font_color(color):
 
 
 def font(text, color, size=None):
-    """`text` in a GUIFlash `<font>` tag (the HTML subset the panels render), escaped unless `Markup`."""
+    """`text` in a `<font>` tag (the HTML subset the panels render), escaped unless `Markup`."""
     attributes = u''
     valid_color = font_color(color)
     if valid_color:
