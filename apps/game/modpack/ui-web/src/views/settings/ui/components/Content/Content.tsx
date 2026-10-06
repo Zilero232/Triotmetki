@@ -40,5 +40,14 @@ export const Content = ({ state, section, searching, editing, columns, compact, 
     return <ReplaysPage key={section} />;
   }
 
-  return <SectionPage key={section} card={ComponentCard} columns={columns} intro={section === SECTION.data && <AccountCard />} section={section} />;
+  return (
+    <SectionPage
+      key={section}
+      card={ComponentCard}
+      columns={columns}
+      intro={section === SECTION.data && <AccountCard />}
+      section={section}
+      strip={section === SECTION.data}
+    />
+  );
 };

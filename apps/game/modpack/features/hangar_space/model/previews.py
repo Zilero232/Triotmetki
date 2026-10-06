@@ -60,7 +60,7 @@ def tile_image(key, previews, fallback=None):
 
 
 # The shot needs the hangar alone on the screen: the plain hangar view with no window of ours over it either (the
-# settings window blurs the scene and covers it); the HUD window of ours is not blocking and is hidden for the shot.
+# settings window blurs the scene and covers it); a window of ours that is not blocking is hidden for the shot.
 def is_clean_hangar(windows):
     alive = [window for window in windows or () if window.get('alive', True)]
     if any(window.get('own') and window.get('blocking') for window in alive):

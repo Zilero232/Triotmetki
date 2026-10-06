@@ -4,6 +4,7 @@
     "dim": false,
     "duration": 10.0,
     "elapsed": 3.0,
+    "held": false,
     "icon": "img://gui/maps/icons/otmetki/sixth_sense/icons/lamp_64.png|otmetki:lamp",
     "size": 56,
     "text": "",

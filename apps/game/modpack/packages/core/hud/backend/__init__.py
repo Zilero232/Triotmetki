@@ -1,8 +1,8 @@
 """The renderer interface of the HUD layer.
 
 `core/client/hud/` implements it with OpenWG Gameface (the ui package's HUD page); `NullBackend` stands in while
-OpenWG Gameface is missing or its page failed. Props are the label names (x, y, alignX, alignY, alpha, drag, border,
-text, visible, scale, widget, dock, attach, hint, cover).
+OpenWG Gameface or the client's inject classes are missing. Props are the label names (x, y, alignX, alignY, alpha,
+drag, border, text, visible, scale, widget, dock, attach, hint).
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -12,7 +12,7 @@ class HudBackend(object):
     name = 'none'
 
     def available(self):
-        """Whether it can draw now (the page may be broken or not registered yet)."""
+        """Whether it can draw now (the page may not be registered yet)."""
         return False
 
     def create(self, alias, props):
@@ -38,10 +38,6 @@ class HudBackend(object):
 
     def set_modifier(self, mode):
         """The key the player holds to move and resize panels (`core.hud.modifier` modes)."""
-
-    def use_hangar_inject(self, switch):
-        """Draw the hangar panels inside the Scaleform hangar view while `switch()` is not False (the `hud_inject`
-        setting), where the renderer can; elsewhere, or after that failed, they stay in its own window."""
 
 
 class NullBackend(HudBackend):

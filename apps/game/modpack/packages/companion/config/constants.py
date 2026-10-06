@@ -376,7 +376,6 @@ DEFAULTS = {
     'settings_include_sensitivity': False,
     'hud_modifier': DEFAULT_MODIFIER,
     'hud_hide_under_windows': True,
-    'hud_inject': True,
     'defaults_revision': DEFAULTS_REVISION,
     USER_SET_KEY: '',
 }

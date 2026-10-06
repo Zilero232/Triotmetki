@@ -12,8 +12,14 @@ Sources (`core.hud.cover.CoverState`, a reason stays on while any source reports
   Frontline overview map. We wrap it (the original always runs); `core.hud.cover.PageOverlays` mirrors the page's
   reference component, as XVM mirrors `teamBasesPanel`, and the covering components. The keys (`OVERLAY_EVENTS`) only
   have the page checked again a frame later: `_toggleFullStats` returns early with a modal view or the radial menu open,
-  so a key press alone never hides anything;
-- the full-screen Gameface windows (`windows.WindowWatch`).
+  so a key press alone never hides anything.
+
+The HUD page sits inside the battle page below the loading screen, the full stats and the radial menu
+(`core.client.hud.inject_page`), so those already cover it and V hides it with the page; the panels are still made
+invisible for every reason, so a page that stays drawn (a battle page without those children, a fade the engine does
+not apply) never shows panels over an overlay, and the stock elements they replace follow the same rule. Wulf windows
+(the full-screen Gameface windows of story mode and the events, the Esc menu, the F1 help, the settings, dialogs) are
+above the whole Scaleform page and cover the HUD page with it, so nothing watches them.
 
 The same `_setComponentsVisibility` calls say which stock components our panels sit beside are off the screen
 (`core.hud.cover.FollowedComponents`, `HudLayer.set_stock_hidden`): the consumables panel on death, in the video camera
@@ -23,12 +29,9 @@ BattlePage.as updateConsumablePanel), back on a respawn; the minimap. A page tha
 `as_isComponentVisibleS` for each (a reconnect after death hides the consumables panel before we follow the page), and
 so is every check.
 
-The Esc menu, the F1 help, the settings and dialogs are left alone: they draw over the battle page and, by their layer,
-over the HUD window, and the stock HUD, Battle Observer and XVM stay drawn under them.
-
 Every battle page starts with nothing covered but the loading screen (it opens before the page) and ends with nothing
 covered. While anything is covered the watch checks the client again every `CHECK_INTERVAL_S` (the page's visible
-components, the open windows, whether the page was disposed), so a close event that never came cannot keep the panels
+components, whether the page was disposed), so a close event that never came cannot keep the panels
 hidden. A failing update uncovers every panel. The companion switch "hide panels under game windows"
 (`HIDE_UNDER_WINDOWS_KEY`, read on every update) leaves only V and the loading screen.
 The post-mortem camera on the killer covers nothing: the stock HUD and our panels stay on it.
@@ -39,13 +42,12 @@ import BigWorld
 
 from ....hooks import override
 from ....hud.cover import CHECK_INTERVAL_S, REASONS, CoverState, FollowedComponents, PageOverlays
-from ....hud.cover.constants import SOURCE_GUI, SOURCE_LOADING, SOURCE_PAGE, SOURCE_WINDOWS
+from ....hud.cover.constants import SOURCE_GUI, SOURCE_LOADING, SOURCE_PAGE
 from ....hud.layer.constants import COVER_GUI, COVER_LOADING
 from ....log import log, log_exception, safe
 from ...timer import Ticker
 from ....hud.stock import FOLLOWED_ALIASES
 from .constants import GUI_VISIBLE, LOADING_SHOWN, OVERLAY_EVENTS, SETUPS_METHODS
-from .windows import WindowWatch
 
 try:
     from gui.Scaleform.daapi.view.battle.shared.page import SharedPage
@@ -70,7 +72,6 @@ class CoverWatch(object):
         self.overlays = PageOverlays()
         self.followed = FollowedComponents()
         self.installed = False
-        self.windows = WindowWatch(self._on_windows)
         self.ticker = Ticker(CHECK_INTERVAL_S, self._on_tick)
 
     @safe
@@ -134,15 +135,12 @@ class CoverWatch(object):
         self.state.reset(keep=(SOURCE_LOADING,))
         self.followed.forget_page()
         self._ask_followed(page)
-        self.windows.start()
-        self.state.report(SOURCE_WINDOWS, self.windows.reasons)
         self.apply()
 
     def detach(self, page):
         if page is None or page is not self.page:
             return
         self.page = None
-        self.windows.stop()
         self.state.reset()
         self.followed = FollowedComponents()
         self.ticker.stop()
@@ -183,8 +181,8 @@ class CoverWatch(object):
 
     @safe
     def check(self):
-        """Ask the client again for everything it can answer now: the page's visible components, the Gameface windows,
-        V, and whether the page is still alive."""
+        """Ask the client again for everything it can answer now: the page's visible components, V, and whether the page
+        is still alive."""
         page = self.page
         if page is None:
             return
@@ -194,8 +192,6 @@ class CoverWatch(object):
         self.overlays.snapshot(_page_call(page, 'as_getComponentsVisibilityS'))
         self.state.report(SOURCE_PAGE, self.overlays.reasons())
         self._ask_followed(page)
-        self.windows.check()
-        self.state.report(SOURCE_WINDOWS, self.windows.reasons)
         visible = _page_call(page, 'isGuiVisible')
         if isinstance(visible, bool):
             self.state.report(SOURCE_GUI, () if visible else (COVER_GUI,))
@@ -215,10 +211,6 @@ class CoverWatch(object):
             self.layer.set_stock_hidden(())
         except Exception:
             log_exception('HUD cover: give the followed stock components back')
-
-    def _on_windows(self):
-        self.state.report(SOURCE_WINDOWS, self.windows.reasons)
-        self.apply()
 
     def _listen_events(self):
         try:

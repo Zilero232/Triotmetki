@@ -55,6 +55,26 @@ class SixthSenseWidgetTest(unittest.TestCase):
 
         assert data['elapsed'] == 8.0
 
+    def test_a_lamp_past_its_time_is_held_while_spotted(self):
+        data = widget_data(lamp_lit_at(100.0), 130.0)
+
+        assert data['held'] is True
+
+    def test_a_held_lamp_shows_no_timer(self):
+        data = widget_data(lamp_lit_at(100.0), 130.0)
+
+        assert data['timer'] is False
+
+    def test_a_held_lamp_does_not_pulse(self):
+        data = widget_data(lamp_lit_at(100.0), 130.6)
+
+        assert data['dim'] is False
+
+    def test_a_counting_lamp_is_not_held(self):
+        data = widget_data(lamp_lit_at(100.0), 103.6)
+
+        assert data['held'] is False
+
     def test_the_preview_ring_drains_as_long_as_the_stock_lamp(self):
         data = preview_widget(Settings({'hide_after_s': 6}, SCHEMA), None)['data']
 

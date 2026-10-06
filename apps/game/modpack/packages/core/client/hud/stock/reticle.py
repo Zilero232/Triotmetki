@@ -9,7 +9,15 @@ at once with the player's own opacity. A failure in the wrapper hands the panel 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....hooks import override
-from ....hud.stock import RETICLE_PARTS, StockSuppression, hide_reticle_parts
+from ....hud.stock import (
+    AUTOLOADER_PERCENT_TIMER,
+    AUTOLOADER_UPDATE_TIMER,
+    RETICLE_PARTS,
+    RETICLE_RELOAD_TIMER,
+    StockSuppression,
+    hide_reticle_parts,
+    without_timer,
+)
 from ....log import guarded, log, log_exception, safe
 
 try:
@@ -45,12 +53,29 @@ class ReticleControl(object):
             control.settings = vo
             return original(panel, hide_reticle_parts(vo, control.hidden))
 
+        # RU 1.45 crosshair/plugins.py AmmoPlugin: an autoloading clip (the Gendarme) draws its own countdown through
+        # these two calls, which the settings' opacity does not reach; the shell count stays.
+        @override(CrosshairPanelContainer, 'as_autoloaderUpdateS')
+        def _autoloader_update(original, panel, *args, **kwargs):
+            if control.hides_timer():
+                args, kwargs = without_timer(args, kwargs, AUTOLOADER_UPDATE_TIMER)
+            return original(panel, *args, **kwargs)
+
+        @override(CrosshairPanelContainer, 'as_setAutoloaderPercentS')
+        def _autoloader_percent(original, panel, *args, **kwargs):
+            if control.hides_timer():
+                args, kwargs = without_timer(args, kwargs, AUTOLOADER_PERCENT_TIMER)
+            return original(panel, *args, **kwargs)
+
         @override(CrosshairPanelContainer, '_dispose')
         def _dispose(original, panel, *args, **kwargs):
             if panel is control.panel:
                 control.panel = None
                 control.settings = None
             return original(panel, *args, **kwargs)
+
+    def hides_timer(self):
+        return RETICLE_RELOAD_TIMER in self.hidden
 
     def want(self, owner, parts):
         self.install()

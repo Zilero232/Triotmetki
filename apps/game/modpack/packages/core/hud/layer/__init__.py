@@ -6,11 +6,10 @@ unchanged text is not sent again (a Gameface re-layout per call is the cost).
 
 `set_muted(True)` (the streamer hotkey) and `set_blocked(panel_ids)` (the streamer's private panels) take panels off
 the screen without the features knowing: their texts are held and come back when the panel is allowed again.
-`set_cover(reason, on)` is the one rule for what covers the battle view (`constants.COVER_EFFECTS`): V and the
-loading screen make the shown panels invisible, Tab gives them the `cover` prop `stats` and a modal stock
-view (the Esc menu) `modal`: the page fades them and they take no mouse and show no tooltip. The page keeps every panel
-drawn where it was, so nothing moves when they come back. `set_gui_hidden`, `set_full_stats` and `set_menu` are its V,
-Tab and Esc reasons.
+`set_cover(reason, on)` is the one rule for what covers the battle view (`constants.COVER_REASONS`): V, the loading
+screen, Tab and a screen that replaces the battle view make the shown panels invisible. The page keeps every panel
+drawn where it was, so nothing moves when they come back. `set_gui_hidden` and `set_full_stats` are its V and Tab
+reasons.
 
 `set_stock_hidden(aliases)` follows the stock components the page has off the screen now (`core.hud.cover`
 FollowedComponents): a panel that goes with one (`panel.FOLLOWS`, the equipment row with the consumables panel) is made
@@ -48,15 +47,7 @@ from ..panel import (
     retired_reset,
 )
 from ..stock import FOLLOWED_ALIASES, followed_metrics, stock_metrics
-from .constants import (
-    COVER_EFFECTS,
-    COVER_FADES,
-    COVER_FULL_STATS,
-    COVER_GUI,
-    COVER_HIDE,
-    COVER_MENU,
-    COVER_NONE,
-)
+from .constants import COVER_FULL_STATS, COVER_GUI, COVER_REASONS
 
 
 class HudLayer(object):
@@ -88,26 +79,7 @@ class HudLayer(object):
 
     @property
     def gui_hidden(self):
-        return self._covered(COVER_HIDE)
-
-    @property
-    def full_stats(self):
-        return COVER_FULL_STATS in self.covers
-
-    @property
-    def menu(self):
-        return COVER_MENU in self.covers
-
-    @property
-    def cover(self):
-        """The page's `cover` prop of the shown panels: the strongest fade a covering view asks for, or ''."""
-        for effect in COVER_FADES:
-            if self._covered(effect):
-                return effect
-        return COVER_NONE
-
-    def _covered(self, effect):
-        return any(COVER_EFFECTS.get(reason) == effect for reason in self.covers)
+        return bool(self.covers)
 
     @property
     def has_panels(self):
@@ -189,7 +161,7 @@ class HudLayer(object):
     def props(self, panel_id, text, widget=None):
         props = self.layout(panel_id)
         visible = self._visible(alias_of(panel_id))
-        props.update({'text': text, 'visible': visible, 'widget': widget, 'cover': self.cover})
+        props.update({'text': text, 'visible': visible, 'widget': widget})
         props['hint'] = panel_hint(self.translate, alias_of(panel_id))
         return props
 
@@ -323,9 +295,9 @@ class HudLayer(object):
         self._apply()
 
     def set_cover(self, reason, on):
-        """A view covers the battle (True) or went (False): the shown panels stay in place, hidden or dimmed as
-        `COVER_EFFECTS` says; only the props that changed are sent."""
-        if reason not in COVER_EFFECTS:
+        """A view covers the battle (True) or went (False): the shown panels stay in place, hidden while any reason is
+        on; only the props that changed are sent."""
+        if reason not in COVER_REASONS:
             return False
         covers = self.covers
         before = {alias: self._cover_props(alias) for alias in self.shown}
@@ -342,19 +314,15 @@ class HudLayer(object):
         return changed
 
     def _cover_props(self, alias):
-        return {'visible': self._visible(alias), 'cover': self.cover}
+        return {'visible': self._visible(alias)}
 
     def set_gui_hidden(self, hidden):
         """Follow the stock battle GUI hidden with V (True) and shown again (False); the panels stay in place."""
         self.set_cover(COVER_GUI, bool(hidden))
 
     def set_full_stats(self, shown):
-        """Follow the full stats held open with Tab: the panels stay, faded where the full stats lie (True), or not."""
+        """Follow the full stats held open with Tab: the panels stay in place, hidden (True) or shown again (False)."""
         self.set_cover(COVER_FULL_STATS, bool(shown))
-
-    def set_menu(self, shown):
-        """Follow a modal stock view over the battle (the Esc menu): every panel stays, faded (True), or not."""
-        self.set_cover(COVER_MENU, bool(shown))
 
     def _apply(self):
         for alias in list(self.shown):

@@ -7,11 +7,16 @@
 - gui/shared: g_eventBus with AppLifeCycleEvent, gui/app_loader/settings.py: APP_NAME_SPACE;
 - an app (AbstractApplication) with its AS3 ClassFactory (utils.classFactory.getObject), loaderManager.onViewLoaded
   and containerManager; a Scaleform view (BaseDAAPIComponent) with its AS3 display list and
-  registerFlashComponent / unregisterFlashComponent.
+  registerFlashComponent / unregisterFlashComponent;
+- gui/Scaleform/daapi/view/battle/shared/page.py: SharedPage, the battle page the stock suppression and the cover watch
+  hook (`_populate`, `_dispose`, `_setComponentsVisibility`), with the components it shows and hides in Flash
+  (`as_setComponentsVisibilityS`); a fresh class per `Scaleform`, so the hooks of one story never reach the next.
 
 `Scaleform(has_factory, loads_page).install()` stubs the modules; `load_view(app, alias, covers)` loads a view the way
-the app's loader does and `destroy_view(app, view)` destroys it with its components; `page(view, alias)` is the
-Gameface view an adaptor put into it. `app_loader` stands in for IAppLoader (getApp, getDefLobbyApp, getDefBattleApp).
+the app's loader does, `load_battle_page(alias, components)` populates and loads a battle page with its stock
+components and the children that cover the HUD, and `destroy_view(app, view)` destroys a view with its components;
+`page(view, alias)` is the Gameface view an adaptor put into it. `app_loader` stands in for IAppLoader (getApp,
+getDefLobbyApp, getDefBattleApp).
 """
 from __future__ import absolute_import, division, print_function
 
@@ -23,6 +28,7 @@ import _support
 GF_INJECT_CLASS = 'net.wg.gui.components.containers.inject.GFInjectComponent'
 APP_NAME_SPACE = {'SF_LOBBY': 'scaleform/lobby', 'SF_BATTLE': 'scaleform/battle'}
 LIFECYCLE = {'INITIALIZED': 'app/initialized', 'DESTROYED': 'app/destroyed'}
+BATTLE_COVERS = ('battleLoading', 'fullStats', 'radialMenu')
 
 
 class Event(object):
@@ -168,6 +174,45 @@ class ScaleformView(object):
             self.unregisterFlashComponent(alias)
 
 
+class StockComponent(object):
+
+    def _dispose(self):
+        pass
+
+
+def shared_page_class():
+    """A fresh SharedPage: `hidden` is what the page has off the screen in Flash."""
+
+    class SharedPage(object):
+
+        def _populate(self):
+            self.hidden = set()
+            self.disposed = False
+
+        def _dispose(self):
+            self.disposed = True
+
+        def _setComponentsVisibility(self, visible=None, hidden=None):
+            self.as_setComponentsVisibilityS(visible or set(), hidden or set())
+
+        def as_setComponentsVisibilityS(self, visible, hidden):
+            self.hidden = (self.hidden | set(hidden)) - set(visible)
+
+        def as_isComponentVisibleS(self, alias):
+            return alias not in self.hidden
+
+        def as_getComponentsVisibilityS(self):
+            return [alias for alias in self.components if alias not in self.hidden]
+
+        def isGuiVisible(self):
+            return True
+
+        def isDisposed(self):
+            return self.disposed
+
+    return SharedPage
+
+
 class ClassFactory(object):
 
     def __init__(self):
@@ -211,6 +256,8 @@ class Scaleform(object):
         self.loads_page = loads_page
         self.lobby = ScaleformApp(has_factory)
         self.battle = ScaleformApp(has_factory)
+        self.shared_page = shared_page_class()
+        self.battle_page = type(str('BattlePage'), (ScaleformView, self.shared_page), {'_fullStatsAlias': 'fullStats'})
         self.app_loader = Namespace(
             getApp=lambda appNS=None: self.lobby,
             getDefLobbyApp=lambda: self.lobby,
@@ -228,6 +275,7 @@ class Scaleform(object):
         _stub('gui.app_loader.settings', APP_NAME_SPACE=Namespace(**APP_NAME_SPACE))
         events = Namespace(AppLifeCycleEvent=Namespace(**LIFECYCLE))
         _stub('gui.shared', True, events=events, g_eventBus=self.bus, EVENT_BUS_SCOPE=Namespace(GLOBAL='global'))
+        _stub('gui.Scaleform.daapi.view.battle.shared.page', SharedPage=self.shared_page)
         return self
 
     def load_view(self, app, alias, covers=()):
@@ -236,8 +284,18 @@ class Scaleform(object):
         app.loaderManager.onViewLoaded(view)
         return view
 
+    def load_battle_page(self, alias='classicBattlePage', components=()):
+        page = self.battle_page(self.battle, self.factories, alias, BATTLE_COVERS)
+        page.components.update((name, StockComponent()) for name in components)
+        page._populate()
+        self.battle.containerManager.views[alias] = page
+        self.battle.loaderManager.onViewLoaded(page)
+        return page
+
     def destroy_view(self, app, view):
         app.containerManager.views.pop(view.alias, None)
+        if isinstance(view, self.shared_page):
+            view._dispose()
         view.destroy()
 
     def create_app(self, namespace):

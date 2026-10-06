@@ -93,8 +93,8 @@ without a badge, then with ours.
 
 ### The own badge
 
-The player's own row is marked from the local binding alone (bound, switch on), so it shows even when the server
-does not answer.
+The player's own row is marked locally, without a binding (switch on; the own account id from the arena data), as
+Near_You marks its users: nothing is sent for it, so it shows unbound and when the server does not answer.
 
 ## 4. Privacy and retention
 
@@ -117,7 +117,7 @@ does not answer.
 
 ## 5. What to verify in game
 
-- Bound account, switch on: the own row shows the icon in the ears, Tab and the loading screen (with a stock badge
+- Switch on, bound or not: the own row shows the icon in the ears, Tab and the loading screen (with a stock badge
   chosen, `replace` shows ours, `keep` the stock one).
 - A second bound account in the same battle (platoon) shows the icon on the first player's screen after a moment.
 - Switching «Показывать мой значок» off hides the own icon at once and, after the next battle start, on the other

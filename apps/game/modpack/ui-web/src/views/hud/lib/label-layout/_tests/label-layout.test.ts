@@ -52,20 +52,8 @@ describe(labelStyle, () => {
 });
 
 describe(layoutLabels, () => {
-  it('fades every panel under the full stats backdrop while Tab is held', () => {
-    expect(opacityOf(panel({ cover: 'stats', align_x: 'left', y: 1000 }))).toBe(HUD_OVERLAY.coverAlpha.stats);
-  });
-
-  it('fades every panel under a modal stock view', () => {
-    expect(opacityOf(panel({ cover: 'modal', align_x: 'left', y: 1000 }))).toBe(HUD_OVERLAY.coverAlpha.modal);
-  });
-
-  it('draws a panel at full opacity once Tab is released', () => {
-    expect(opacityOf(panel({ cover: '' }))).toBe(1);
-  });
-
-  it('takes no drag and no pointer on a covered panel', () => {
-    expect(layoutOf(panel({ cover: 'stats', drag: true }), true)).toMatchObject({ movable: false, pointer: false });
+  it('draws a shown panel at its own opacity', () => {
+    expect(opacityOf(panel({ alpha: 0.6 }))).toBe(0.6);
   });
 
   it('keeps a hidden panel laid out in its place, drawn transparent', () => {

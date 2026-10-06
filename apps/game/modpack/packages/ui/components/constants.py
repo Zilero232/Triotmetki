@@ -21,7 +21,6 @@ COMPANION_KEYS = (
     'settings_include_sensitivity',
     'hud_modifier',
     'hud_hide_under_windows',
-    'hud_inject',
 )
 # Rare data-sharing details, folded under the Advanced fold (docs/specs/2026-09-30-hud-consolidation-and-design.md,
 # section 12).
@@ -36,7 +35,6 @@ COMPANION_ADVANCED = (
     'settings_include_sensitivity',
     'hud_modifier',
     'hud_hide_under_windows',
-    'hud_inject',
 )
 # Never editable in the window: connection, one-shot actions and the language (the header switches it).
 HIDDEN_CONFIG_KEYS = ('server_url', 'bind_code', 'settings_action', 'language', 'user_set', 'defaults_revision')

@@ -384,7 +384,6 @@ class SurfaceTest(unittest.TestCase):
             'dock': None,
             'attach': None,
             'hint': '',
-            'cover': '',
         }
 
     def test_edit_mode_needs_the_cursor(self):

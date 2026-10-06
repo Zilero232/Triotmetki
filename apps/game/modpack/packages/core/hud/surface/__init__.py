@@ -3,11 +3,10 @@
 `HudSurface` keeps every label the layer created (its props) with the GUI space it was created in, so a hangar label
 never shows in battle and the other way round. `encode(space, cursor, edit)` is the view model's `state` property:
 `{v, cursor, edit, hover, panels: [{id, text, x, y, align_x, align_y, alpha, drag, border, visible, scale, widget, dock,
-attach, hint, cover}]}`; `widget` is a panel's structured payload (`core.hud.widget`) or
+attach, hint}]}`; `widget` is a panel's structured payload (`core.hud.widget`) or
 None, drawn instead of `text` when the page knows its kind; `dock` (`{group, order}` or None, `core.hud.panel.dock_of`)
 stacks the panels of one column at its anchor; `attach` (`{kind, bar, minimap}` or None, `core.hud.panel.attach_of`)
-places a panel at its default place beside a stock element; `cover` (`COVERS`) is what a covering stock view does to the
-panel (`stats` under Tab, `modal` under the Esc menu): faded, and no mouse, drag or tooltip while it is set. `edit` is
+places a panel at its default place beside a stock element. `edit` is
 true while panels can be moved (the backend decides: the edit modifier held in the hangar, the cursor shown in battle)
 and a cursor is shown: only then does a panel take the mouse, show its frame and move. `hover` (battle) makes the page
 take the mouse only over the panel under the pointer, so the cursor still reaches the minimap and the team lists; in the
@@ -33,7 +32,6 @@ from .constants import (
     ALIGN_X,
     ALIGN_Y,
     ATTACH_NUMBERS,
-    COVERS,
     DOCK_NUMBERS,
     HUD_COMMANDS,
     HUD_JSON,
@@ -280,8 +278,6 @@ class HudSurface(object):
             panel['widget'] = None
         panel['dock'] = _dock(panel['dock'])
         panel['attach'] = _attach(panel['attach'])
-        if panel['cover'] not in COVERS:
-            panel['cover'] = COVERS[0]
         return panel
 
     @staticmethod

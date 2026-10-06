@@ -1,6 +1,6 @@
 """What covers the battle view, from every source at once (pure; `core.client.hud.cover` reads the client).
 
-`CoverState` keeps, per source (`constants.SOURCES`: V, the loading screen, the battle page, the Gameface windows), the
+`CoverState` keeps, per source (`constants.SOURCES`: V, the loading screen, the battle page), the
 reasons it reports right now; a reason is on while any source reports it, so two overlays that overlap (Tab over the
 overview map, the loading screen and the page's own hiding) never turn the panels on between them, and a source that
 goes quiet takes only its own reasons away. Every source reports its whole current set, never a
@@ -15,11 +15,11 @@ after death), and the pre-battle setups panel takes the consumables panel's plac
 `PageOverlays` follows a battle page from its `_setComponentsVisibility(visible, hidden)` calls and from snapshots of
 the visible components: the panels hide while the page hides its reference component (`REFERENCE_ALIASES`, the XVM
 technique: the page hides it only with its whole HUD) or shows a covering one (`PAGE_ALIAS_REASONS`); a snapshot only
-ever uncovers. `window_reason(window)` decides one Gameface window (`{alive, own, scaleform, hidden, flags}`).
+ever uncovers.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ..layer.constants import COVER_FULL_STATS, COVER_SCREEN
+from ..layer.constants import COVER_FULL_STATS
 from ..stock.constants import CONSUMABLES_PANEL, FOLLOWED_ALIASES
 from .constants import (
     CHECK_INTERVAL_S,
@@ -28,10 +28,7 @@ from .constants import (
     REASONS,
     REFERENCE_ALIASES,
     SOURCES,
-    WINDOW_FULLSCREEN,
     WINDOW_REASONS,
-    WINDOW_TYPE_MASK,
-    WINDOW_TYPES,
 )
 
 __all__ = (
@@ -43,7 +40,6 @@ __all__ = (
     'FollowedComponents',
     'PageOverlays',
     'covering_aliases',
-    'window_reason',
 )
 
 
@@ -188,16 +184,3 @@ def _names(aliases):
         return frozenset(alias for alias in aliases or () if alias)
     except TypeError:
         return frozenset()
-
-
-def window_reason(window):
-    """The reason one Gameface window gives (`COVER_SCREEN`) or None. `window` holds `alive`, `own` (our HUD or settings
-    window), `scaleform` (an SFWindow: a Scaleform view, the battle page decides those), `hidden` and the wulf
-    `flags`."""
-    if not window.get('alive', True) or window.get('own') or window.get('scaleform') or window.get('hidden'):
-        return None
-    flags = window.get('flags') or 0
-    if (flags & WINDOW_TYPE_MASK) in WINDOW_TYPES and flags & WINDOW_FULLSCREEN:
-        return COVER_SCREEN
-    return None
-

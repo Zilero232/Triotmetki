@@ -7,8 +7,7 @@ from ..layer.constants import COVER_FULL_STATS, COVER_GUI, COVER_LOADING, COVER_
 SOURCE_GUI = 'gui'
 SOURCE_LOADING = 'loading'
 SOURCE_PAGE = 'page'
-SOURCE_WINDOWS = 'windows'
-SOURCES = (SOURCE_GUI, SOURCE_LOADING, SOURCE_PAGE, SOURCE_WINDOWS)
+SOURCES = (SOURCE_GUI, SOURCE_LOADING, SOURCE_PAGE)
 # Every reason the watch drives on the layer, so a reason no source reports any more is switched off.
 REASONS = (COVER_GUI, COVER_LOADING, COVER_FULL_STATS, COVER_SCREEN)
 # The reasons that are a game window over the battle: the config.json switch HIDE_UNDER_WINDOWS_KEY turns them off.
@@ -39,14 +38,6 @@ PAGE_ALIAS_REASONS = (
     (STATS_ALIASES, COVER_FULL_STATS),
     (SCREEN_ALIASES, COVER_SCREEN),
 )
-
-# frameworks/wulf/gui_constants.WindowFlags (RU 1.45): a Gameface window covers the battle when it is a plain window or
-# a dialog (pop-overs, tooltips, context menus, drop-downs, service and waiting windows never do) that is full screen
-# (WINDOW_FULLSCREEN). Modal windows and dialogs draw over the HUD window as the Esc menu does; nobody hides for
-# them.
-WINDOW_TYPE_MASK = 255
-WINDOW_TYPES = (1, 17)
-WINDOW_FULLSCREEN = 1024
 
 # How often a covered battle checks the client again (seconds): a close event the client never sent cannot keep the
 # panels covered for longer.

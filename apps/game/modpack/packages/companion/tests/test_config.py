@@ -116,6 +116,11 @@ class ConfigTest(unittest.TestCase):
 
         self.assertNotIn('config_backup', config.to_dict())
 
+    def test_the_retired_hud_window_switch_drops_out_of_the_file(self):
+        config = Config({'defaults_revision': 8, 'hud_inject': False})
+
+        self.assertNotIn('hud_inject', config.to_dict())
+
     def test_a_fresh_config_is_stamped_with_the_current_revision(self):
         self.assertEqual(Config().get('defaults_revision'), DEFAULTS_REVISION)
 

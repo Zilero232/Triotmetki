@@ -53,10 +53,10 @@ const opacityOf = ({ panel, settled }: OpacityOfInput): number => {
     return HUD_OVERLAY.hidden;
   }
 
-  return panel.cover ? panel.alpha * HUD_OVERLAY.coverAlpha[panel.cover] : panel.alpha;
+  return panel.alpha;
 };
 
-const takesInput = (panel: HudPanel): boolean => panel.visible && !panel.cover;
+const takesInput = (panel: HudPanel): boolean => panel.visible;
 
 export const labelStyle = ({ rect, scale, opacity }: LabelStyleInput): LabelStyle => {
   const style = { ...rectStyle({ rect }), opacity };

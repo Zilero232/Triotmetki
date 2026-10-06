@@ -33,6 +33,18 @@ def arena_players():
     return players
 
 
+# The own badge marks this install, as Near_You's does: it needs no binding and nothing is sent, so the own account id
+# comes from the arena data behind the stock panels (RU 1.45 Avatar.playerVehicleID, ArenaDataProvider.getVehicleInfo).
+def own_arena_account_id(player):
+    provider = arena_dp()
+    vehicle_id = getattr(player, 'playerVehicleID', None)
+    if provider is None or vehicle_id is None:
+        return None
+    info = provider.getVehicleInfo(vehicle_id)
+    account_id = getattr(getattr(info, 'player', None), 'accountDBID', 0)
+    return account_id or None
+
+
 class PackBadge(FeatureComponent):
 
     def __init__(self, app):
@@ -41,6 +53,7 @@ class PackBadge(FeatureComponent):
         self.hooks = BattleHooks()
         self.controller = None
         self.clearing = False
+        self.drawn = False
         self._hook_client()
         bus = app.bus
         bus.on('battle_ready', self._on_battle_ready)
@@ -59,7 +72,10 @@ class PackBadge(FeatureComponent):
     def _add_vehicle_info(self, original, component, *args, **kwargs):
         result = original(component, *args, **kwargs)
         if self.enabled() and self.badges.marked:
-            decorate(component.get(), self.badges.marked, self.settings.get('stock_badge'), self.clearing)
+            marked = decorate(component.get(), self.badges.marked, self.settings.get('stock_badge'), self.clearing)
+            if marked and not self.clearing and not self.drawn:
+                self.drawn = True
+                log('pack badge: the badge is in the player rows')
         return result
 
     def _start_control(self, original, controller, *args, **kwargs):
@@ -75,10 +91,11 @@ class PackBadge(FeatureComponent):
     def _on_battle_ready(self, player):
         if not self.enabled():
             return
-        app = self.app
-        own_account_id = app.account_id if app.is_bound() and show_own(app.config) else None
+        own_account_id = own_arena_account_id(player) if show_own(self.app.config) else None
         arena_id = getattr(player, 'arenaUniqueID', None)
         self.badges.start(arena_id, own_account_id)
+        self.drawn = False
+        log('pack badge: own row %s' % ('marked' if own_account_id else 'not marked'))
         self.refresh()
         self.request(arena_id)
         if not self.badges.requested:

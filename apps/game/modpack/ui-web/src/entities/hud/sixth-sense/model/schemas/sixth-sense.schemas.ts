@@ -10,5 +10,6 @@ export const sixthSenseSchema = z.object({
   elapsed: z.number(),
   duration: z.number(),
   timer: z.boolean(),
-  dim: z.boolean()
+  dim: z.boolean(),
+  held: z.boolean()
 });

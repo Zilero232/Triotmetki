@@ -42,7 +42,6 @@ from ....core.client.transport import create_transport
 from ....core.client.ui import Ui
 from ....core.events import EventBus
 from ....core.hooks import Subscriptions
-from ....core.inject.constants import HUD_INJECT_KEY
 from ....core.durable import open_config, open_secret_pair, secret_box
 from ....core.log import flush_file, log, safe
 from ....core.net.transport import tls_available
@@ -112,7 +111,7 @@ class OtmetkiApp(object):
         self.in_battle = False
         self.last_flush = 0.0
         self.flush_requested = False
-        self.ui = Ui(translate=self.translate, hangar_inject=lambda: self.config.get(HUD_INJECT_KEY))
+        self.ui = Ui(translate=self.translate)
         self.binder = Binder(self)
         self.marks = MarksCapture(self)
         self.battles = BattleCapture(self)

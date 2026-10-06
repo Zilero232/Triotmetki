@@ -42,11 +42,7 @@ PANEL_KEYS = (
     ('dock', 'dock', None),
     ('attach', 'attach', None),
     ('hint', 'hint', ''),
-    ('cover', 'cover', ''),
 )
-# A panel's `cover` (core.hud.layer: the stock view over it, the page fades the panel and takes no mouse over it):
-# none, the full stats (Tab), a modal view (the Esc menu).
-COVERS = ('', 'stats', 'modal')
 # The optional int keys of a panel's `dock` (core.hud.panel.dock_of).
 DOCK_NUMBERS = ('reserve', 'ceiling')
 # The int keys of a panel's `attach` (core.hud.panel.attach_of): the measured stock sizes in design px.

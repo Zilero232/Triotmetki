@@ -379,6 +379,12 @@ class CrosshairPanelContainer(object):
     def as_setSettingsS(self, vo):
         self.pushed.append(vo)
 
+    def as_autoloaderUpdateS(self, timeLeft, baseTime, isPause=False, isStun=False, isTimerOn=False, isRedText=False):
+        self.pushed.append(('update', isTimerOn))
+
+    def as_setAutoloaderPercentS(self, percent, sec, isTimerOn, isTimerRed):
+        self.pushed.append(('percent', isTimerOn))
+
     def _dispose(self):
         return 'disposed'
 
@@ -387,7 +393,7 @@ RETICLE_MODULES = (
     'gui.Scaleform.daapi.view.battle.shared.crosshair',
     'gui.Scaleform.daapi.view.battle.shared.crosshair.container',
 )
-RETICLE_HOOKED = ('setSettings', '_dispose')
+RETICLE_HOOKED = ('setSettings', 'as_autoloaderUpdateS', 'as_setAutoloaderPercentS', '_dispose')
 
 
 class StockControlFirstBattleTest(unittest.TestCase):
@@ -429,6 +435,31 @@ class StockControlFirstBattleTest(unittest.TestCase):
         self.control.want('panel', ('reloaderTimerAlphaValue',))
 
         assert panel.pushed[-1] == {1: {'reloaderTimerAlphaValue': 0}}
+
+    def test_an_autoloading_clip_loses_its_countdown_while_ours_draws_it(self):
+        panel = CrosshairPanelContainer()
+        ClassicPage()._populate()
+        self.control.want('panel', ('reloaderTimerAlphaValue',))
+
+        panel.as_autoloaderUpdateS(5.0, 60.0, isStun=False, isTimerOn=True, isRedText=False)
+
+        assert panel.pushed[-1] == ('update', False)
+
+    def test_the_python_clip_ticker_loses_its_countdown_while_ours_draws_it(self):
+        panel = CrosshairPanelContainer()
+        ClassicPage()._populate()
+        self.control.want('panel', ('reloaderTimerAlphaValue',))
+
+        panel.as_setAutoloaderPercentS(0.5, 30.0, True, False)
+
+        assert panel.pushed[-1] == ('percent', False)
+
+    def test_an_autoloading_clip_keeps_its_countdown_without_our_readout(self):
+        panel = CrosshairPanelContainer()
+
+        panel.as_autoloaderUpdateS(5.0, 60.0, isTimerOn=True)
+
+        assert panel.pushed[-1] == ('update', True)
 
 
 if __name__ == '__main__':

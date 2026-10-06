@@ -19,6 +19,7 @@ def sixth_sense_widget(state, settings, translate, now):
         'color': color_override(settings.get('color'), DEFAULTS['color']),
         'elapsed': round(state.duration - seconds_left, 1),
         'duration': state.duration,
-        'timer': bool(settings.get('show_timer')),
+        'timer': bool(settings.get('show_timer')) and not state.expired(now),
         'dim': bool(state.dimmed(now)),
+        'held': state.expired(now),
     })

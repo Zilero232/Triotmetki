@@ -16,13 +16,10 @@ class Ui(object):
     (x, y, alignX, alignY or scale) after the player moved or resized it. A label may carry a structured `widget`
     (`core.hud.widget`) the Gameface page draws instead of its text; a label at its column's anchor is docked
     (`core.hud.panel.dock_of`). With the app's `translate` every label carries its component's short description, the
-    tooltip the Gameface page shows over it (`core.hud.panel.panel_hint`). `hangar_inject()` (the `hud_inject`
-    setting) says whether the renderer draws the labels inside the hangar view (`HudBackend.use_hangar_inject`)."""
+    tooltip the Gameface page shows over it (`core.hud.panel.panel_hint`)."""
 
-    def __init__(self, backend=None, watch=None, translate=None, hangar_inject=None):
+    def __init__(self, backend=None, watch=None, translate=None):
         self.backend = backend or create_backend()
-        if hangar_inject is not None:
-            self.backend.use_hangar_inject(hangar_inject)
         self.watch = watch
         self.translate = translate
         self.watching = False

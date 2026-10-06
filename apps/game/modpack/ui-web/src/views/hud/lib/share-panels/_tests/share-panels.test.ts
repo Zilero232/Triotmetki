@@ -84,10 +84,10 @@ describe(sharePanels, () => {
     expect(next.panels[0]?.widget).toBe(previous.panels[0]?.widget);
   });
 
-  it('keeps the widget object of a panel the cover hides', () => {
+  it('keeps the widget object of a panel a cover hides', () => {
     const previous = widgetState();
 
-    const next = sharePanels({ previous, next: widgetState({ cover: 'stats' }) });
+    const next = sharePanels({ previous, next: widgetState({ visible: false }) });
 
     expect(next.panels[0]?.widget).toBe(previous.panels[0]?.widget);
   });

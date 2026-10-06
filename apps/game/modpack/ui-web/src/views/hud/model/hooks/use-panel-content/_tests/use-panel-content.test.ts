@@ -46,7 +46,7 @@ describe(usePanelContent, () => {
   it('keeps the parsed lines of a panel whose text is the same', () => {
     const first = stateWith({ text: 'урон <b>1 200</b>' });
 
-    const { before, after } = rerendered({ first, second: stateWith({ text: 'урон <b>1 200</b>', y: 10, cover: 'stats' }) });
+    const { before, after } = rerendered({ first, second: stateWith({ text: 'урон <b>1 200</b>', y: 10, visible: false }) });
 
     expect(after.lines.get(PANEL_ID)).toBe(before.lines.get(PANEL_ID));
   });

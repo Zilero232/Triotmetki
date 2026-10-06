@@ -128,12 +128,8 @@ class SixthSenseAlert(BattlePanel):
         if lamp is None or not lamp.lit:
             return False
 
-        if lamp.expired(time.time()):
-            self.hide()
-            return False
-
         self.render()
-        return True
+        return not lamp.expired(time.time())
 
     @safe
     def render(self):
@@ -142,10 +138,6 @@ class SixthSenseAlert(BattlePanel):
             return
 
         now = time.time()
-        if lamp.expired(now):
-            self.hide()
-            return
-
         text = format_sixth_sense(lamp, self.settings, self.app.translate, now)
         payload = sixth_sense_widget(lamp, self.settings, self.app.translate, now)
         self.show(text, payload)

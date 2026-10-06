@@ -17,6 +17,10 @@ RETICLE_CASSETTE = 'cassetteAlphaValue'
 RETICLE_ZOOM = 'zoomIndicatorAlphaValue'
 RETICLE_PARTS = (RETICLE_RELOAD_TIMER, RETICLE_RELOAD, RETICLE_CONDITION, RETICLE_CASSETTE, RETICLE_ZOOM)
 HIDDEN_ALPHA = 0.0
+# The countdown switch of an autoloading clip's own reload calls (CrosshairPanelContainerMeta, RU 1.45 client source),
+# which the opacity keys above do not reach: (keyword, positional index after the panel).
+AUTOLOADER_UPDATE_TIMER = ('isTimerOn', 4)
+AUTOLOADER_PERCENT_TIMER = ('isTimerOn', 2)
 
 # The stock battle elements some default places follow, in design px (RU 1.45 gui_battle AS3).
 # MinimapSizeConst.MAP_SIZE: the minimap square by the `minimapSize` account setting (index 0-5,

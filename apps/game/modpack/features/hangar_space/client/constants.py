@@ -45,10 +45,11 @@ SHOT_NAME = 'shot'
 PERSONALITY_MODULE = 'gui.shared.personality'
 PERSONALITY_CALLBACK = 'onScreenShotMade'
 # The interface is taken off the screen the way the client's overlay controller does it (gui/game_control/overlay.py
-# _LAYERS, hideContainers / showContainers on the lobby app's containerManager), with no animation; the windows of
-# ours that are not blocking (the HUD page: hangar labels, the settings button) are hidden through the wulf window's
-# hide() / show(focus=False). The shot waits HIDE_SETTLE_S for the next frames to draw without them and gives the
-# interface back when the engine reports the file, or after SHOT_TIMEOUT_S at the latest.
+# _LAYERS, hideContainers / showContainers on the lobby app's containerManager), with no animation; a window of ours
+# that is not blocking is hidden through the wulf window's hide() / show(focus=False). The HUD page is no window: it
+# sits inside the hangar view (core.client.hud.inject_page). UNVERIFIED on Lesta 1.45: that it leaves the shot. The
+# shot waits HIDE_SETTLE_S for the next frames to draw without them and gives the interface back when the engine
+# reports the file, or after SHOT_TIMEOUT_S at the latest.
 HIDE_SETTLE_S = 0.4
 SHOT_TIMEOUT_S = 3.0
 PREVIEW_CHECK_S = 0.5

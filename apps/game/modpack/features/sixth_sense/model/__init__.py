@@ -92,7 +92,7 @@ class SixthSense(object):
         return now - self.lit_at >= self.duration
 
     def dimmed(self, now):
-        if not self.lit:
+        if not self.lit or self.expired(now):
             return False
 
         pulse_frame = int(max(0, now - self.lit_at) / PULSE_PERIOD_S)

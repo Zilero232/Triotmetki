@@ -130,14 +130,6 @@ describe(useHudOverlay, () => {
     expect(hook.result.current.labels[0]?.style).toEqual(before);
   });
 
-  it('keeps a label on the screen while Tab is held', async () => {
-    const { hook, mock } = await mount(SAMPLE);
-
-    act(() => mock.push({ state: withState({ panel: { cover: 'stats' } }) }));
-
-    expect(hook.result.current.labels.map((label) => label.panel.id)).toEqual([LABEL_ID]);
-  });
-
   it('turns the label text into styled runs', async () => {
     const { hook } = await mount(SAMPLE);
 
@@ -408,40 +400,6 @@ describe(useHudOverlay, () => {
     act(() => mock.push({ state: withState({ patch: { cursor: false, edit: false } }) }));
 
     expect(hook.result.current.hint).toBeNull();
-  });
-
-  it('shows no hint while a stock view covers the panels', async () => {
-    const { hook, hover } = await startInBattle({ state: withState({ panel: { cover: 'stats' } }) });
-
-    hover(ON_LABEL);
-
-    expect(hook.result.current.hint).toBeNull();
-  });
-
-  it('drops the hint when the full stats open over the panels', async () => {
-    const { hook, hover, mock } = await startInBattle();
-
-    hover(ON_LABEL);
-
-    act(() => mock.push({ state: withState({ panel: { cover: 'stats' } }) }));
-
-    expect(hook.result.current.hint).toBeNull();
-  });
-
-  it('asks the client for no tooltip while a modal stock view is up', async () => {
-    const { hover, mock } = await startInBattle({ state: withState({ panel: { cover: 'modal' } }), tooltips: true });
-
-    hover(ON_LABEL);
-
-    expect(mock.viewEvents()).toEqual([]);
-  });
-
-  it('lets the mouse through while a stock view covers the panels', async () => {
-    const { hover, mock } = await startInBattle({ state: withState({ panel: { cover: 'stats' } }) });
-
-    hover(ON_LABEL);
-
-    expect(mock.inputAreas().at(-1)).toEqual(NO_INPUT);
   });
 
   it('describes a pinned panel without taking the mouse over it', async () => {

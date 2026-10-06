@@ -41,8 +41,7 @@ export const hudPanelSchema = z.object({
   widget: z.nullable(hudWidgetSchema),
   dock: z.optional(z.nullable(hudDockSchema)),
   attach: z.optional(z.nullable(hudAttachSchema)),
-  hint: z.optional(z.string()),
-  cover: z.optional(z.enum(HUD_PROTOCOL.covers))
+  hint: z.optional(z.string())
 });
 
 export const hudStateSchema = z.object({

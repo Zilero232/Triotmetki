@@ -20,8 +20,7 @@ import { usePanelSizes } from '../use-panel-sizes';
 export const useHudOverlay = () => {
   const { state, overrides, scales, onMoved, onScaled } = useHudState();
   const screen = useHudScreen();
-  const isCovered = Boolean(state?.panels.some(({ cover }) => cover));
-  const edit = Boolean(state?.edit) && !isCovered;
+  const edit = Boolean(state?.edit);
   const targetsRef = useRef<DragTarget[]>([]);
   const [report] = useState(createMouseReport);
   const pointerInput = { edit, report, targets: () => targetsRef.current, onMoved, onScaled };
@@ -42,7 +41,7 @@ export const useHudOverlay = () => {
 
   targetsRef.current = layouts.map(({ id, rect, movable, pointer, scale }) => ({ id, rect, movable, pointer, scale }));
 
-  const hovered = useHoveredPanel({ active: Boolean(state?.cursor) && !isCovered, targets: targetsRef.current });
+  const hovered = useHoveredPanel({ active: Boolean(state?.cursor), targets: targetsRef.current });
 
   useInputArea({ edit, hover: Boolean(state?.hover), dragging: live !== null, screen, targets: targetsRef.current, hovered, report });
 

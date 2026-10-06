@@ -433,9 +433,6 @@ class UiSmokeTest(unittest.TestCase):
         sys.modules['openwg_gameface'].res_id_by_key = lambda key: 7 if key == HUD_PAGE_KEY else -1
         return scaleform
 
-    def hud_windows(self):
-        return [window for window in self.windows if type(window.content).__name__ == 'HudView']
-
     def test_every_load_order_registers_the_ui_with_its_gameface_view_and_one_mods_list_entry(self):
         for seed in LOAD_ORDER_SEEDS:
             self.restart()
@@ -721,20 +718,6 @@ class UiSmokeTest(unittest.TestCase):
         page = scaleform.page(view, INJECT_ALIAS)
         state = json.loads(page.getViewModel().strings[0][1])
         assert [panel['id'] for panel in state['panels']] == [HANGAR_LABEL]
-        assert self.hud_windows() == []
-
-    def test_the_window_switch_hands_the_hangar_labels_to_the_hud_window(self):
-        scaleform = self.install_scaleform()
-        app = self.open_window(0)
-        self.send(type='set', component='companion', key='hud_inject', value=False)
-        self.send(type='close')
-
-        app.ui.show(HANGAR_LABEL, 'hangar only', HANGAR_LABEL_PLACE)
-        view = scaleform.load_view(scaleform.lobby, 'hangar')
-
-        assert app.config.get('hud_inject') is False
-        assert len(self.hud_windows()) == 1
-        assert scaleform.page(view, INJECT_ALIAS) is None
 
     def test_the_page_closes_the_window(self):
         self.open_window(1)

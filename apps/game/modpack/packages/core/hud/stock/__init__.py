@@ -14,6 +14,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ...compat import is_number
 from .constants import (
+    AUTOLOADER_PERCENT_TIMER,
+    AUTOLOADER_UPDATE_TIMER,
     BAR_FALLBACK_SLOTS,
     BAR_PITCH,
     BATTLE_DAMAGE_LOG_PANEL,
@@ -38,6 +40,8 @@ from .constants import (
 )
 
 __all__ = (
+    'AUTOLOADER_PERCENT_TIMER',
+    'AUTOLOADER_UPDATE_TIMER',
     'BATTLE_DAMAGE_LOG_PANEL',
     'BATTLE_TIMER',
     'CONSUMABLES_PANEL',
@@ -57,6 +61,7 @@ __all__ = (
     'followed_metrics',
     'hide_reticle_parts',
     'stock_metrics',
+    'without_timer',
 )
 
 
@@ -87,6 +92,18 @@ def followed_metrics(metrics, hidden):
         if alias in hidden:
             result[key] = MISSING_SIZE
     return result
+
+
+def without_timer(args, kwargs, switch):
+    """(args, kwargs) of a client call with its countdown switch (switch: keyword, positional index) off, wherever
+    the caller passed it; a call that left it out keeps the client's default."""
+    name, index = switch
+    args, kwargs = list(args), dict(kwargs)
+    if name in kwargs:
+        kwargs[name] = False
+    elif len(args) > index:
+        args[index] = False
+    return tuple(args), kwargs
 
 
 def hide_reticle_parts(vo, parts):
