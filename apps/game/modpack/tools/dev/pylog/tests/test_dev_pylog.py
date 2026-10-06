@@ -84,6 +84,20 @@ class SafeOutputTest(unittest.TestCase):
 
         self.assertEqual(buffer.getvalue(), b'? ?\n')
 
+    def test_the_utf8_code_page_writes_utf8(self):
+        buffer = io.BytesIO()
+
+        pylog.safe_output(buffer, 'cp65001').write(u'танк\n')
+
+        self.assertEqual(buffer.getvalue(), u'танк\n'.encode('utf-8'))
+
+    def test_an_unknown_console_encoding_falls_back_to_ascii(self):
+        buffer = io.BytesIO()
+
+        pylog.safe_output(buffer, 'no-such-codec').write(u'тank\n')
+
+        self.assertEqual(buffer.getvalue(), b'?ank\n')
+
 
 if __name__ == '__main__':
     unittest.main()

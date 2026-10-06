@@ -18,6 +18,8 @@ OUR_MARKS = ('[otmetki]', 'otmetki')
 CONTINUATION = re.compile(r'^(\s|Traceback \(most recent call last\)|\w+(\.\w+)*(Error|Exception|Warning)\b)')
 POLL_S = 0.5
 TAIL_LINES = 40
+# Windows names UTF-8 code page 65001; Python 2 has no codec of that name (3.3+ added it).
+CODE_PAGE_ALIASES = {'cp65001': 'utf-8'}
 
 
 def log_path(client):
@@ -51,7 +53,12 @@ def safe_output(stream, encoding=None):
     """A writer over `stream` that prints what its code page lacks as '?': through bun stdout is a pipe in the ANSI
     code page (Python 2 then assumes ASCII), which lacks Cyrillic, U+FFFD (an undecodable byte of the log) or arrows."""
     encoding = encoding or getattr(stream, 'encoding', None) or locale.getpreferredencoding() or 'ascii'
-    return codecs.getwriter(encoding)(stream, 'replace')
+    encoding = CODE_PAGE_ALIASES.get(encoding.lower(), encoding)
+    try:
+        writer = codecs.getwriter(encoding)
+    except LookupError:
+        writer = codecs.getwriter('ascii')
+    return writer(stream, 'replace')
 
 
 class LogReader(object):
