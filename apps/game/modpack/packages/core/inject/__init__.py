@@ -1,11 +1,14 @@
-"""Gameface pages inside the client's Scaleform views (pure): the rules of the inject host and its dev spike.
+"""Gameface pages inside the client's Scaleform views (pure): the rules of the inject host, the hangar HUD page and the
+dev spikes.
 
 The client draws a Gameface `ViewImpl` inside a Scaleform view through the stock `GFInjectComponent` and an
 `InjectComponentAdaptor` (core/client/inject); docs/specs/2026-10-06-gameface-inject-host.md. This half decides
-what needs no client: whether the dev spike runs, its input modes and its label text.
+what needs no client: whether the hangar page and the dev spikes run, where a page goes in a battle page's display
+list, the spikes' input modes and their label text.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ..compat import is_number
 from .constants import (
     GF_INJECT_CLASS,
     INVALID_RES_ID,
@@ -26,6 +29,8 @@ __all__ = (
     'PAGE_SEND_COMMAND',
     'PAGE_STATE_PROPERTY',
     'SpikeMode',
+    'below_covers',
+    'inject_wanted',
     'message_of',
     'spike_enabled',
     'spike_text',
@@ -36,6 +41,19 @@ __all__ = (
 def spike_enabled(environ, flag_exists, dev):
     """Whether the inject spike runs: only in a dev install, and only when asked for by the environment or the flag."""
     return bool(dev) and (environ.get(SPIKE_ENV) == SPIKE_ENV_ON or bool(flag_exists))
+
+
+def inject_wanted(switch, broken):
+    """Whether the hangar panels go into the hangar view: unless the player switched it off (`hud_inject` False; a
+    missing value counts as on) or the hangar page failed this session (`broken`)."""
+    return switch is not False and not broken
+
+
+def below_covers(indices):
+    """The display-list index that puts a page below every covering child (their `indices`, None for a child the page
+    lacks; the GFx bridge may hand an AS3 int over as a float), or None when the page has none of them."""
+    found = [int(index) for index in indices if is_number(index)]
+    return min(found) if found else None
 
 
 def valid_layout(found):
@@ -76,6 +94,7 @@ class SpikeMode(object):
         return SpikeMode(self.index + 1)
 
 
-def spike_text(mode_name, moment):
-    """The spike label: the mode and the time of `moment` (a datetime), ASCII only."""
-    return SPIKE_TEXT % (mode_name, moment.strftime(str(SPIKE_CLOCK)))
+def spike_text(mode_name, moment, template=SPIKE_TEXT):
+    """A spike label (`template`: the hangar's by default): the mode and the time of `moment` (a datetime), ASCII
+    only."""
+    return template % (mode_name, moment.strftime(str(SPIKE_CLOCK)))

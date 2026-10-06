@@ -1,5 +1,8 @@
-"""OpenWG Gameface as a HUD backend: one transparent Gameface window, the ui package's HUD page
-(`packages/ui/gameface/hud.html`, registered as `otmetki/ui/hud` in its res_map), draws every label.
+"""OpenWG Gameface as a HUD backend: the ui package's HUD page (`packages/ui/gameface/hud.html`, registered as
+`otmetki/ui/hud` in its res_map) draws every label, in the battle from one transparent Gameface window and in the lobby
+from inside the Scaleform hangar view (`hangar_page`, docs/specs/2026-10-06-gameface-inject-host.md phase 1) while the
+`hud_inject` setting is on and that page works; otherwise the window draws the hangar labels too. Both get the same
+state and send the same messages.
 
 OpenWG Gameface (openwg_gameface, MIT) only registers resources and injects scripts; the window itself is the
 client's wulf `WindowImpl` + `ViewImpl`, the same classes the settings window uses. The client opens Gameface
@@ -27,6 +30,7 @@ from ....events import Listeners
 from ....hud import HudBackend
 from ....hud.focus import FOCUS_GIVE_UP, FOCUS_HAND_ON, FocusReturn, WindowInfo, focus_target
 from ....hud.icons import resolve
+from ....inject import inject_wanted
 from ....hud.surface import (
     HUD_MESSAGE_ARG,
     HUD_RES_MAP_ID,
@@ -40,6 +44,7 @@ from ....hud.surface import (
 from ....log import log, log_exception, safe
 from ...game import client_windows, main_window
 from ...timer import Ticker, game_time
+from ..hangar_page import HangarPage
 from ..icons import client_file_exists
 from ..modifier import ModifierWatch
 from ..space import current_space, cursor_events, cursor_visible, gui_spaces
@@ -206,6 +211,8 @@ class GamefaceBackend(HudBackend):
         self.last_focus = LastFocus(is_hud_window)
         self.cursor_poll = Ticker(CURSOR_POLL_S, self._poll_cursor)
         self.whole_area = None
+        self.hangar = None
+        self.inject_switch = None
         self._listen_cursor()
         self._listen_spaces()
         if self.usable() and restart_pending():
@@ -248,7 +255,7 @@ class GamefaceBackend(HudBackend):
         return props
 
     def drawn_aliases(self):
-        return self.drawn if self.view is not None else None
+        return self.drawn if self._page() is not None else None
 
     def listen_drawn(self, on_drawn):
         self.drawn_listeners.add(on_drawn)
@@ -274,6 +281,41 @@ class GamefaceBackend(HudBackend):
     def set_modifier(self, mode):
         self.modifier.set_mode(mode)
 
+    def use_hangar_inject(self, switch):
+        if not self.usable():
+            return
+        if not HangarPage.usable():
+            log('HUD: the client has no inject adaptor, the hangar panels use the HUD window')
+            return
+        self.inject_switch = switch
+        if self.hangar is None:
+            self.hangar = HangarPage(self)
+
+    # The page on the screen: the one in the hangar view while the lobby draws there, else the HUD window's.
+    def _page(self):
+        hangar = self.hangar
+        if hangar is not None and hangar.view is not None and current_space() == SPACE_LOBBY:
+            return hangar.view
+        return self.view
+
+    # The hangar panels go into the hangar view unless the player switched it off or it failed this session; the HUD
+    # window then draws them, as it always draws the battle.
+    def _hangar_route(self):
+        hangar = self.hangar
+        if hangar is None or current_space() != SPACE_LOBBY:
+            return False
+        if not inject_wanted(self.inject_switch(), hangar.broken):
+            if hangar.started:
+                log('HUD: the hangar panels are drawn in the HUD window again')
+                hangar.stop()
+            return False
+        if not hangar.started:
+            self.close()
+            self.modifier.install()
+            log('HUD: the hangar panels are drawn inside the hangar view')
+            hangar.start()
+        return not hangar.broken
+
     # Panels move while the edit modifier is held in the hangar, where the cursor is always shown, and whenever the
     # battle cursor is shown (Ctrl): in battle the cursor key alone is the edit key.
     def state_text(self):
@@ -285,14 +327,14 @@ class GamefaceBackend(HudBackend):
     # Every label change of a frame (a 10 Hz gun traverse scale next to the clock and the logs) becomes one push of the
     # whole state on the next frame, and an unchanged state is not pushed again.
     def push_state(self):
-        if self.view is not None:
+        if self._page() is not None:
             self.pusher.request()
 
     def _view_state(self):
-        return self.state_text() if self.view is not None else None
+        return self.state_text() if self._page() is not None else None
 
     def _set_view_state(self, text):
-        self.view.viewModel.set_state(text)
+        self._page().viewModel.set_state(text)
 
     @safe
     def sync(self):
@@ -303,6 +345,9 @@ class GamefaceBackend(HudBackend):
             if not self.waiting:
                 self.waiting = True
                 log('HUD: Gameface window waits for the hangar or the battle (GUI space %s)' % self.loader.getSpaceID())
+            return True
+        if self._hangar_route():
+            self.push_state()
             return True
         if not self.window_alive() and not self.open():
             return False
@@ -354,7 +399,8 @@ class GamefaceBackend(HudBackend):
         window = self.window
         self.window = None
         self.view = None
-        self._set_drawn(None)
+        if self._page() is None:
+            self._set_drawn(None)
         if window is not None:
             log('HUD: Gameface window %s closed' % window.uniqueID)
             window.destroy()
@@ -420,7 +466,29 @@ class GamefaceBackend(HudBackend):
         if self.view is view or self.view is None:
             self.view = None
             self.window = None
+            if self._page() is None:
+                self._set_drawn(None)
+
+    @safe
+    def on_hangar_page(self, view):
+        self._set_drawn(None)
+        self._hangar_mouse()
+        self.pusher.forget()
+        self.pusher.flush()
+
+    @safe
+    def on_hangar_gone(self):
+        if self._page() is None:
             self._set_drawn(None)
+
+    @safe
+    def on_hangar_failed(self):
+        _next_frame(self.sync)
+
+    # The page in the hangar view takes the mouse only while the player edits; every other click reaches the hangar.
+    def _hangar_mouse(self):
+        if self.hangar is not None and self.hangar.view is not None:
+            self.hangar.set_mouse(self.editing())
 
     @safe
     def on_message(self, raw):
@@ -440,7 +508,8 @@ class GamefaceBackend(HudBackend):
 
     def _on_page_ready(self, fields):
         labels = self.surface.summary(current_space())
-        log('HUD: Gameface page ready (%d labels: %s)' % (len(labels), ', '.join(labels)))
+        where = 'in the HUD window' if self._page() is self.view else 'in the hangar view'
+        log('HUD: Gameface page ready %s (%d labels: %s)' % (where, len(labels), ', '.join(labels)))
         self.pusher.forget()
         self.push_state()
 
@@ -509,6 +578,7 @@ class GamefaceBackend(HudBackend):
 
     @safe
     def _on_modifier(self, held):
+        self._hangar_mouse()
         self.push_state()
         self._settle_focus()
 

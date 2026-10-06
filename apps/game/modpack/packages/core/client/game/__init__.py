@@ -54,6 +54,13 @@ def lobby_app():
     return loader.getApp() if loader is not None else None
 
 
+def battle_app():
+    """The client's Scaleform battle app (IAppLoader.getDefBattleApp, RU 1.45 client source), or None."""
+    loader = service(client_attr('skeletons.gui.app_loader', 'IAppLoader'))
+    getter = getattr(loader, 'getDefBattleApp', None)
+    return getter() if getter is not None else None
+
+
 def values_by_name(holder, pairs):
     """{holder.<name>: value} for the (name, value) pairs whose name the client's enum class has."""
     table = {}

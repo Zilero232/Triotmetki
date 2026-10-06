@@ -16,6 +16,17 @@ PAGE_MESSAGE_ARG = 'message'
 # validated res_map key.
 INVALID_RES_ID = -1
 
+# The HUD page inside the Scaleform hangar view (docs/specs/2026-10-06-gameface-inject-host.md, phase 1): the lobby's
+# renderer of core/client/hud, ahead of the HUD window, switched by `hud_inject` in config.json (on by default).
+# gui/app_loader/settings.py APP_NAME_SPACE names (RU 1.45 client source) of the Scaleform apps a page goes into.
+LOBBY_APP = 'SF_LOBBY'
+BATTLE_APP = 'SF_BATTLE'
+HUD_INJECT_ALIAS = 'otmetkiHudInject'
+HUD_INJECT_KEY = 'hud_inject'
+# A page placed in the hangar view that has not loaded this long after is given up for the session, and the hangar
+# panels go back to the HUD window. The spike's page loaded within a frame on RU 1.45.
+HUD_INJECT_LOAD_TIMEOUT_S = 10.0
+
 # The dev-only spike (docs/specs/2026-10-06-gameface-inject-host.md): the hud.html page, already registered in the
 # ui package's res_map, drawn inside the Scaleform hangar view. It runs only in a dev install (README "Dev loop") with
 # OTMETKI_INJECT_SPIKE=1 in the environment or the flag file next to the other settings files.
@@ -40,3 +51,22 @@ SPIKE_MODES = (
     ('edit', True, True),
     ('locked', True, False),
 )
+
+# The dev-only battle spike: the same page inside the Scaleform battle page, below the page children that cover the HUD
+# (RU 1.45 client source, AS3 gui_battle: BaseBattlePage.battleLoading, random BattlePage.fullStats and radialMenu; the
+# client puts its own GF inject, battleNotifier, under radialMenu the same way, random/views/BattlePage.as:153).
+BATTLE_SPIKE_ALIAS = 'otmetkiInjectBattleSpike'
+BATTLE_SPIKE_LABEL = 'otmetki.inject_battle_spike'
+BATTLE_SPIKE_LABEL_PROPS = {'x': 40, 'y': 240, 'alignX': 'left', 'alignY': 'top', 'drag': True}
+BATTLE_SPIKE_TEXT = 'Tri otmetki battle inject spike | %s | %s'
+# gui/Scaleform/daapi/settings/views.py VIEW_ALIAS (RU 1.45 client source): the battle pages of the battle types the
+# HUD layouts know.
+BATTLE_PAGES = (
+    'classicBattlePage',
+    'comp7BattlePage',
+    'epicBattlePage',
+    'rankedBattlePage',
+    'strongholdBattlePage',
+    'eventBattlePage',
+)
+BATTLE_COVERS = ('battleLoading', 'fullStats', 'radialMenu')

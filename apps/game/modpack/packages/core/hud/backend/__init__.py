@@ -39,6 +39,10 @@ class HudBackend(object):
     def set_modifier(self, mode):
         """The key the player holds to move and resize panels (`core.hud.modifier` modes)."""
 
+    def use_hangar_inject(self, switch):
+        """Draw the hangar panels inside the Scaleform hangar view while `switch()` is not False (the `hud_inject`
+        setting), where the renderer can; elsewhere, or after that failed, they stay in its own window."""
+
 
 class NullBackend(HudBackend):
     """No renderer installed: every panel stays hidden, features fall back to notifications."""

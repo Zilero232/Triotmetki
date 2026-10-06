@@ -2,8 +2,8 @@
 
 The renderer is OpenWG Gameface (the ui package's HUD page); without it, or while its page cannot open, panels stay
 hidden and features fall back to system messages. The layer and the hangar labels (`core.client.ui`) share one
-backend, so there is one Gameface window. The layer comes with its `cover.CoverWatch`: the stock overlays over the
-battle cover its panels.
+backend, so there is one Gameface page on the screen: in the hangar view in the lobby, in a window in battle. The
+layer comes with its `cover.CoverWatch`: the stock overlays over the battle cover its panels.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 

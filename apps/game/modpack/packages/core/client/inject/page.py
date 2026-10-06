@@ -32,6 +32,12 @@ def page_layout(key):
         return None
 
 
+def page_usable():
+    """Whether the client has the classes an injected page needs (InjectComponentAdaptor, ViewImpl, the entities
+    factory)."""
+    return IMPORT_ERROR is None
+
+
 def bind(alias, host):
     """Route the stock component registered under `alias` to `host` (an InjectHost); registers its ComponentSettings
     with the client's entities factory once per alias. False when the client lacks the classes."""

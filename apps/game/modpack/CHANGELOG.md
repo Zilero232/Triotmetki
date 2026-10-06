@@ -18,6 +18,7 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Стандартный журнал боя больше не появляется после гибели.
 - Стандартная панель счёта больше не видна рядом с ХП команд в начале боя.
 - Названия техники и последние места на мини-карте снова включаются, где первое включение не сработало.
+- Карточки ангара рисуются прямо в экране ангара, а не отдельным окном: клики, чат и Alt+Tab под ними работают как обычно.
 
 ### en
 
@@ -28,6 +29,7 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - The stock battle log no longer shows after death.
 - The stock score strip no longer shows next to the team HP strip at the start of a battle.
 - Minimap vehicle names and last-seen spots are switched on again where the first switch misfired.
+- Hangar cards are drawn right in the hangar screen, not in a window of their own: clicks, the chat and Alt+Tab work under them as usual.
 
 ## 0.3.5
 
@@ -1877,6 +1879,7 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Разовое включение на мини-карте ждёт, пока игра загрузит ваши настройки с сервера.
 - На камере убийцы наши панели остаются на месте, и стандартный журнал боя больше не мелькает после гибели.
 - Стандартная панель счёта больше не видна рядом с ХП команд в начале боя.
+- Карточки ангара рисуются прямо в экране ангара, а не отдельным окном: клики, чат и Alt+Tab под ними работают как обычно.
 
 ### en
 
@@ -1884,6 +1887,7 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - The minimap's one-time switch waits until the game has loaded your settings from the server.
 - On the killer camera our panels stay in place, so the stock battle log no longer flashes after death.
 - The stock score strip no longer shows next to the team HP strip at the start of a battle.
+- Hangar cards are drawn right in the hangar screen, not in a window of their own: clicks, the chat and Alt+Tab work under them as usual.
 
 ## core 0.9.4
 
@@ -2169,11 +2173,13 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - При обновлении убираются старые настройки «Подробности по Alt» журнала боя.
 - Окно ModsSettingsAPI больше не используется: все настройки — в окне «Три отметки».
+- Карточки ангара по умолчанию рисуются прямо в экране ангара.
 
 ### en
 
 - On update the battle log's old «Details on Alt» settings are removed.
 - The ModsSettingsAPI window is no longer used: every setting is in the Three Marks window.
+- Hangar cards are drawn right in the hangar screen by default.
 
 ## companion 0.8.4
 
@@ -2379,11 +2385,13 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - Окно настроек открывается только из списка модов (ModsList): кнопка «///» в ангаре и Ctrl+Shift+T убраны.
 - Расстановка панелей на экране завершается по Esc или по «Три отметки» в списке модов.
+- Новая настройка «Рисовать панели прямо в ангаре» в «Дополнительно»: выключите, если карточки в ангаре пропали.
 
 ### en
 
 - The settings window opens only from the mods list (ModsList): the «///» hangar button and Ctrl+Shift+T are gone.
 - Placing the panels on the screen ends with Esc or «Three Marks» in the mods list.
+- New setting «Draw the panels right in the hangar» under «Advanced»: switch it off if the hangar cards went missing.
 
 ## ui 0.9.4
 

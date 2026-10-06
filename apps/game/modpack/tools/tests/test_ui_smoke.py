@@ -11,6 +11,7 @@ import tempfile
 import types
 import unittest
 
+import _scaleform
 import _support
 
 ACCOUNT = 12345678
@@ -34,6 +35,11 @@ WINDOW_LAYERS = {'WINDOW': 7, 'OVERLAY': 11}
 WINDOW_STATUSES = {'LOADED': 3, 'DESTROYING': 4, 'DESTROYED': 5}
 SETTINGS_CORE_APPLY = ['applySettings', 'applyStorages', 'confirmChanges', 'clearStorages']
 SITE_MOD_PAGE = 'https://triotmetki.ru/mod'
+# The HUD page's res_map key and the alias it is injected into the hangar view under (core.inject.constants).
+HUD_PAGE_KEY = 'otmetki/ui/hud'
+INJECT_ALIAS = 'otmetkiHudInject'
+HANGAR_LABEL = 'otmetki.hangar_test'
+HANGAR_LABEL_PLACE = {'x': 1, 'y': 2, 'alignX': 'left', 'alignY': 'top'}
 
 
 class Event(object):
@@ -301,6 +307,7 @@ class UiSmokeTest(unittest.TestCase):
         self.pressed = set()
         self.opened = []
         self.core = SettingsCore()
+        self.services = {}
         self.player = constants('Player', {'databaseID': ACCOUNT, 'arenaUniqueID': None})()
         self.events = constants('PlayerEvents', {})()
         for name in PLAYER_EVENTS:
@@ -341,7 +348,7 @@ class UiSmokeTest(unittest.TestCase):
 
     def install_settings_stubs(self):
         test = self
-        module('helpers', dependency=Namespace(instance=lambda interface: test.core))
+        module('helpers', dependency=Namespace(instance=lambda interface: test.services.get(interface, test.core)))
         package('skeletons')
         package('skeletons.account_helpers')
         module('skeletons.account_helpers.settings_core', ISettingsCore=object)
@@ -416,6 +423,18 @@ class UiSmokeTest(unittest.TestCase):
 
     def start_hud_edit(self):
         self.send(type='hud_edit', active=True)
+
+    def install_scaleform(self):
+        scaleform = _scaleform.Scaleform().install()
+        app_loader = constants('IAppLoader', {})
+        self.services[app_loader] = scaleform.app_loader
+        package('skeletons.gui')
+        module('skeletons.gui.app_loader', IAppLoader=app_loader)
+        sys.modules['openwg_gameface'].res_id_by_key = lambda key: 7 if key == HUD_PAGE_KEY else -1
+        return scaleform
+
+    def hud_windows(self):
+        return [window for window in self.windows if type(window.content).__name__ == 'HudView']
 
     def test_every_load_order_registers_the_ui_with_its_gameface_view_and_one_mods_list_entry(self):
         for seed in LOAD_ORDER_SEEDS:
@@ -691,6 +710,31 @@ class UiSmokeTest(unittest.TestCase):
         assert app.config.get('hud_modifier') == 'alt'
         with open(os.path.join('mods', 'configs', 'otmetki', 'profiles.json')) as handle:
             assert json.load(handle)['profiles'][0]['name'] == 'Streamer'
+
+    def test_hangar_labels_are_drawn_inside_the_hangar_view(self):
+        scaleform = self.install_scaleform()
+        app = self.open_hangar(0)
+        app.ui.show(HANGAR_LABEL, 'hangar only', HANGAR_LABEL_PLACE)
+
+        view = scaleform.load_view(scaleform.lobby, 'hangar')
+
+        page = scaleform.page(view, INJECT_ALIAS)
+        state = json.loads(page.getViewModel().strings[0][1])
+        assert [panel['id'] for panel in state['panels']] == [HANGAR_LABEL]
+        assert self.hud_windows() == []
+
+    def test_the_window_switch_hands_the_hangar_labels_to_the_hud_window(self):
+        scaleform = self.install_scaleform()
+        app = self.open_window(0)
+        self.send(type='set', component='companion', key='hud_inject', value=False)
+        self.send(type='close')
+
+        app.ui.show(HANGAR_LABEL, 'hangar only', HANGAR_LABEL_PLACE)
+        view = scaleform.load_view(scaleform.lobby, 'hangar')
+
+        assert app.config.get('hud_inject') is False
+        assert len(self.hud_windows()) == 1
+        assert scaleform.page(view, INJECT_ALIAS) is None
 
     def test_the_page_closes_the_window(self):
         self.open_window(1)

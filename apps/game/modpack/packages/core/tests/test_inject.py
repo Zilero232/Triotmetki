@@ -4,7 +4,16 @@ import datetime
 import unittest
 
 import _support  # noqa: F401
-from otmetki.core.inject import SpikeMode, message_of, spike_enabled, spike_text, valid_layout
+from otmetki.core.inject import (
+    SpikeMode,
+    below_covers,
+    inject_wanted,
+    message_of,
+    spike_enabled,
+    spike_text,
+    valid_layout,
+)
+from otmetki.core.inject.constants import BATTLE_SPIKE_TEXT
 
 
 class SpikeEnabledTest(unittest.TestCase):
@@ -85,6 +94,44 @@ class SpikeTextTest(unittest.TestCase):
         text = spike_text('edit', datetime.datetime(2026, 10, 6, 9, 5, 7))
 
         assert text == 'Tri otmetki inject spike | edit | 09:05:07'
+
+    def test_the_battle_spike_names_itself(self):
+        text = spike_text('view', datetime.datetime(2026, 10, 6, 9, 5, 7), BATTLE_SPIKE_TEXT)
+
+        assert text == 'Tri otmetki battle inject spike | view | 09:05:07'
+
+
+class InjectWantedTest(unittest.TestCase):
+
+    def test_on_by_default(self):
+        assert inject_wanted(True, False) is True
+
+    def test_a_missing_setting_counts_as_on(self):
+        assert inject_wanted(None, False) is True
+
+    def test_the_player_switches_it_off(self):
+        assert inject_wanted(False, False) is False
+
+    def test_a_page_that_failed_this_session_stays_off(self):
+        assert inject_wanted(True, True) is False
+
+
+class BelowCoversTest(unittest.TestCase):
+
+    def test_goes_below_the_lowest_cover(self):
+        assert below_covers([7, 3, 9]) == 3
+
+    def test_skips_a_cover_the_page_lacks(self):
+        assert below_covers([None, 5]) == 5
+
+    def test_takes_an_index_the_bridge_handed_over_as_a_float(self):
+        assert below_covers([4.0, 6]) == 4
+
+    def test_a_bool_is_no_index(self):
+        assert below_covers([True]) is None
+
+    def test_none_without_any_cover(self):
+        assert below_covers([None, None]) is None
 
 
 if __name__ == '__main__':

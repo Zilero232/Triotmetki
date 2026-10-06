@@ -1,6 +1,9 @@
 # Gameface pages inside the Scaleform lobby and battle (inject host)
 
-Status: research done and spike built 2026-10-06. The spike is dev-only and does not change what players get. Phases 1-3 are not started.
+Status: the hangar spike was verified in game on RU 1.45 on 2026-10-06 (section 6). Phase 1 (hangar labels) is built
+(2026-10-07) and on for players by default, with the HUD window as the fallback; it waits for the owner's in-game check
+(section 6.2). The battle spike is built, dev-only, and waits for the same check (section 6.3). Phases 2-4 are not
+started.
 
 ## 1. Problem
 
@@ -97,8 +100,8 @@ changes).
   `updateHitArea`). `BaseWrapper.hitTest(x, y)` tests that sprite's bounds. The texture's transparency plays no part.
 - The page can shrink that rectangle: `viewEnv.setInputArea(left, top, width, height)` (ui-web
   `shared/api/gameface/view-env`). `hud.html` already uses it, giving only its buttons outside edit mode
-  (`views/hud/model/hooks/use-input-area`). **UNVERIFIED:** that for an injected view the engine applies it as the
-  wrapper's hit-area paddings. The spike's `view` mode checks it.
+  (`views/hud/model/hooks/use-input-area`). **Verified on RU 1.45 (the spike, 2026-10-06):** for an injected view the engine applies it as the
+  wrapper's hit area: in `view` mode, with the Scaleform mouse on, the hangar took clicks under the label.
 - The authoritative lever is on the Scaleform side. With `mouseEnabled = false` and `mouseChildren = false` on the
   `GFInjectComponent`, Flash never picks the wrapper as the hit target, so a click goes to the view below. This is
   standard `InteractiveObject` semantics and does not depend on Gameface. The spike's `locked` mode checks it.
@@ -155,10 +158,17 @@ changes).
 
 ## 4. Migration plan
 
-1. **Phase 0, spike (done here):** `hud.html` with one label inside the hangar view, dev-only (section 7).
-2. **Phase 1, hangar labels:** a `HudBackend` named `inject` over `InjectHost`, first in the chain, with `HudWindow`
-   kept as the fallback. In the lobby it attaches to the hangar view on `loaderManager.onViewLoaded`. The labels'
-   `plain_hangar` gating becomes "the hangar view exists". The settings window moves to `LobbyWindow`.
+1. **Phase 0, spike (done, verified in game 2026-10-06):** `hud.html` with one label inside the hangar view, dev-only (section 7).
+2. **Phase 1, hangar labels (done 2026-10-07, waiting for the in-game check):** the Gameface backend draws the lobby's
+   labels into `hud.html` inside the hangar view (`core/client/hud/hangar_page`, over `InjectHost`), ahead of the
+   `HudWindow`, which stays the fallback and still draws the battle. The page attaches to the hangar view on
+   `loaderManager.onViewLoaded` (`core/client/inject/watch.ViewWatch`); a re-attach to the same view does nothing and one
+   to a reloaded view moves the page. The state and messages are the window's, edit mode included (the edit modifier;
+   the settings window's on-screen edit mode and Esc are unchanged). The GFInjectComponent takes the mouse only while
+   the player edits. A page that cannot be placed or does not load in 10 s hands the labels to the window for the
+   session; the companion switch `hud_inject` («Дополнительно», on) turns it off. Kept for now: the labels'
+   `plain_hangar` gating (still needed by the window fallback, harmless inside the hangar view), the window's focus
+   machinery (battle and fallback). Not done in this phase: the settings window's move to `LobbyWindow`.
 3. **Phase 2, battle panels:** the host attaches to the battle page (`VIEW_ALIAS.CLASSIC_BATTLE_PAGE` and the other
    page aliases `hud_layouts` knows). It is inserted below `battleLoading`, `fullStats` and `radialMenu`. The mouse
    lever follows the cursor events the backend already hears. The fades of `core.hud.cover` are retired where the
@@ -182,22 +192,32 @@ changes).
 
 ## 6. Owner test checklist (in game)
 
+### 6.1 Hangar spike (done 2026-10-06)
+
+The owner ran this list on RU 1.45: every item passed (view mode click-through through the page's own input area,
+drag in edit, locked click-through, chat and Alt+Tab, leaving and coming back with the hangar view). The log showed
+`GFInjectComponent placed (layout 114245)` → `page loaded` → `ready` → drawn, and on leaving the hangar `page destroyed`
+→ `adaptor disposed with its parent view`; the page was sometimes placed twice within 3 s as the hangar view reloaded.
+
+The log lines below are the 2026-10-06 build's; the spike now logs `inject spike: lobby view hangar loaded` and
+`inject spike: lobby mode ...`, and the watch line is `inject: watching the SF_LOBBY app for hangar`.
+
 Setup:
 
-- [ ] Uninstall the modpack in the manager. The dev loop refuses to install next to it.
-- [ ] `cd apps/game/modpack && bun run dev:install`.
-- [ ] Create the empty file `<client>\mods\configs\otmetki\inject_spike.flag`.
-- [ ] Start the game and run `bun run dev:log` in a terminal.
+- [x] Uninstall the modpack in the manager. The dev loop refuses to install next to it.
+- [x] `cd apps/game/modpack && bun run dev:install`.
+- [x] Create the empty file `<client>\mods\configs\otmetki\inject_spike.flag`.
+- [x] Start the game and run `bun run dev:log` in a terminal.
 
 python.log, in order:
 
-- [ ] `inject spike: on`
-- [ ] `inject spike: watching the lobby app for the hangar view`
-- [ ] `inject spike: hangar view loaded`
-- [ ] `inject otmetkiInjectSpike: GFInjectComponent placed in hangar (layout N)`
-- [ ] `inject otmetkiInjectSpike: page loaded`
-- [ ] `inject spike: page says {"type":"ready"}`
-- [ ] `inject spike: mode view ...`
+- [x] `inject spike: on`
+- [x] `inject spike: watching the lobby app for the hangar view`
+- [x] `inject spike: hangar view loaded`
+- [x] `inject otmetkiInjectSpike: GFInjectComponent placed in hangar (layout N)`
+- [x] `inject otmetkiInjectSpike: page loaded`
+- [x] `inject spike: page says {"type":"ready"}`
+- [x] `inject spike: mode view ...`
 
 Failure lines to copy back if they appear:
 
@@ -207,31 +227,106 @@ Failure lines to copy back if they appear:
 
 In the hangar:
 
-- [ ] The label `Tri otmetki inject spike | view | HH:MM:SS` is drawn at top left (about 40, 160) and its clock ticks
+- [x] The label `Tri otmetki inject spike | view | HH:MM:SS` is drawn at top left (about 40, 160) and its clock ticks
   every second. This checks the state path.
-- [ ] `view` mode: everything under and around the label takes clicks: the carousel, the buttons, rotating the tank
+- [x] `view` mode: everything under and around the label takes clicks: the carousel, the buttons, rotating the tank
   with the mouse. This checks that `setInputArea` reaches the wrapper.
-- [ ] Ctrl+Alt+I → `edit`: the label shows a frame and drags with the mouse. On release, a `moved` line is logged and
+- [x] Ctrl+Alt+I → `edit`: the label shows a frame and drags with the mouse. On release, a `moved` line is logged and
   the label stays in place. The rest of the hangar no longer takes clicks: expected, the page takes its whole area.
-- [ ] Ctrl+Alt+I → `locked`: the label can no longer be dragged and the hangar takes clicks again. This checks the
+- [x] Ctrl+Alt+I → `locked`: the label can no longer be dragged and the hangar takes clicks again. This checks the
   Scaleform lever.
-- [ ] Ctrl+Alt+I → back to `view`.
-- [ ] Focus: open the lobby chat or a text field, type, and click the label area. Typing still goes to the field.
+- [x] Ctrl+Alt+I → back to `view`.
+- [x] Focus: open the lobby chat or a text field, type, and click the label area. Typing still goes to the field.
   Alt+Tab out and back: the hangar still takes clicks and keys.
-- [ ] Open research or the store: `adaptor disposed with its parent view` and `the page is gone` are logged and the
+- [x] Open research or the store: `adaptor disposed with its parent view` and `the page is gone` are logged and the
   label is gone. Back in the hangar, `hangar view loaded` and `placed` are logged again and the label is back.
-- [ ] Enter a battle and come back: no errors, and the label returns in the hangar.
-- [ ] Cleanup: delete the flag file, run `bun run dev:uninstall`, and reinstall through the manager.
+- [x] Enter a battle and come back: no errors, and the label returns in the hangar.
+- [x] Cleanup: delete the flag file, run `bun run dev:uninstall`, and reinstall through the manager.
+
+### 6.2 Phase 1: the players' hangar page (no flag)
+
+Setup: uninstall the modpack in the manager, `cd apps/game/modpack && bun run dev:install`, make sure
+`mods/configs/otmetki/inject_spike.flag` does not exist, start the game, `bun run dev:log`.
+
+python.log, in order:
+
+- [ ] `HUD renderer: gameface`
+- [ ] `HUD: the hangar panels are drawn inside the hangar view`
+- [ ] `inject: watching the SF_LOBBY app for hangar`
+- [ ] `inject otmetkiHudInject: GFInjectComponent placed in hangar (layout N)`
+- [ ] `inject otmetkiHudInject: page loaded`
+- [ ] `HUD: Gameface page ready in the hangar view (N labels: ...)`
+- [ ] no `HUD: Gameface window N opened in the lobby`.
+
+Failure lines to copy back: `HUD: ... the hangar panels go back to the HUD window` (with the line before it),
+`error in inject otmetkiHudInject` and its traceback, `the client has no inject adaptor`.
+
+In the hangar:
+
+- [ ] Every hangar card is where it was: Tank card, Session card, the clock and server line, the other hangar cards.
+- [ ] Without the edit modifier: the carousel, the buttons, rotating the tank and the chat all work, also right over a
+  card.
+- [ ] Hold Alt (or the key set in «Клавиша перемещения панелей в ангаре»): the cards are framed and drag; the wheel
+  resizes. Release: the new place stays after a hangar reload and a client restart.
+- [ ] Settings window → «Расположение панелей» → «На экране»: the previews show in the hangar and drag with Alt; Esc
+  ends it, the previews go.
+- [ ] Open research or the store and come back: the cards go and come back (`page destroyed`, `adaptor disposed`,
+  `placed`, `page loaded` in the log), no error.
+- [ ] Alt+Tab out and back, type in the lobby chat: keys and clicks still reach the hangar.
+- [ ] Battle and back: the battle panels draw as before (`HUD: Gameface window N opened in the battle`), the hangar
+  cards come back in the hangar view and no window opens in the lobby.
+- [ ] Settings window → «Данные» → «Дополнительно» → switch «Рисовать панели прямо в ангаре» off, close the window: the
+  cards are drawn by the HUD window again (`HUD: the hangar panels are drawn in the HUD window again`, `Gameface window
+  N opened in the lobby`). Switch it back on: the window closes and the cards are in the hangar view again.
+
+### 6.3 Battle spike (dev install + flag)
+
+Setup: the dev install of 6.2, plus the empty file `<client>\mods\configs\otmetki\inject_spike.flag`. Restart the game.
+
+python.log:
+
+- [ ] `inject spike: on (mods/configs/otmetki/inject_spike.flag), hangar and battle`
+- [ ] in battle: `inject: watching the SF_BATTLE app for classicBattlePage, ...`
+- [ ] `inject spike: battle view classicBattlePage loaded`
+- [ ] `inject otmetkiInjectBattleSpike: GFInjectComponent placed in classicBattlePage (layout N)`
+- [ ] `inject spike: battle page placed below battleLoading/fullStats/radialMenu (index N)` (N a number, not None)
+- [ ] `inject otmetkiInjectBattleSpike: page loaded`, `inject spike: battle page says {"type":"ready"}`,
+  `inject spike: battle mode view ...`
+
+Failure lines to copy back: `the app ... has no AS3 ClassFactory`, `error in inject otmetkiInjectBattleSpike` with its
+traceback, `index None`.
+
+In battle (the label `Tri otmetki battle inject spike | view | HH:MM:SS` at about 40, 240, its clock ticking):
+
+- [ ] During the loading screen the label is under it (covered), not over it.
+- [ ] Tab: the statistics cover the label. Release Tab: it is back.
+- [ ] The radial menu (Z by default) draws over the label.
+- [ ] V hides the label with the rest of the HUD, V again brings it back.
+- [ ] `view` mode: WASD, the mouse aim and shooting are unaffected; with Ctrl the cursor clicks the minimap and the
+  team lists right next to the label.
+- [ ] Ctrl+Alt+I → `edit`, hold Ctrl: the label is framed and drags; a `moved` line is logged.
+- [ ] Ctrl+Alt+I → `locked`: with Ctrl the label no longer drags and clicks pass through it.
+- [ ] The battle chat (Enter) types normally in every mode. Alt+Tab out and back: controls still work.
+- [ ] The Esc menu draws over the label.
+- [ ] After the battle, back in the hangar: no error in the log.
+- [ ] Cleanup: delete the flag file.
 
 ## 7. Spike
 
-- `packages/core/inject/` (pure): `GF_INJECT_CLASS`, the page protocol names, `spike_enabled`, `valid_layout`,
-  `message_of`, `SpikeMode`, `spike_text`. Tests in `packages/core/tests/test_inject.py`.
-- `packages/core/client/inject/`: `InjectHost` (`__init__`), `page.py` (`PageViewModel`, `PageView`,
-  `PageInjectAdaptor`, `bind`, `page_layout`), `spike.py` (`InjectSpike`, `start(dev)`).
+- `packages/core/inject/` (pure): `GF_INJECT_CLASS`, the page protocol names, `spike_enabled`, `inject_wanted`,
+  `below_covers`, `valid_layout`, `message_of`, `SpikeMode`, `spike_text`. Tests in
+  `packages/core/tests/test_inject.py`.
+- `packages/core/client/inject/`: `InjectHost` (`__init__`: `attach`, `detach`, `push`, `set_mouse`, `move`,
+  `place_below`), `page.py` (`PageViewModel`, `PageView`, `PageInjectAdaptor`, `bind`, `page_layout`, `page_usable`),
+  `watch.py` (`ViewWatch`: an app's views by alias), `spike.py` (`InjectSpike` over a `SpikePlace`: the hangar and the
+  battle spikes, `start(dev)`).
+- `packages/core/client/hud/hangar_page/`: `HangarPage`, the players' phase 1 page the Gameface backend draws into.
+- Smoke: `tools/testing/_scaleform.py` stubs the Scaleform side (app, ClassFactory, views, adaptor);
+  `tools/tests/test_client_smoke.py` (`Inject*Test`) and `test_ui_smoke.py` play the hangar page, its fallbacks, the
+  switch and the battle spike.
 - Start: `packages/ui/entry/mod_otmetki_ui.py` calls `core.client.inject.spike.start(is_dev_install())` in its own
   `try`. It runs only in a dev install (the `otmetki-dev` manifest, or `OTMETKI_DEV=1`) **and** with
   `OTMETKI_INJECT_SPIKE=1` or `mods/configs/otmetki/inject_spike.flag`. A player's install never starts it.
-- The spike embeds `hud.html` (`otmetki/ui/hud`, already registered), so there is no new page, res_map entry or
-  ui-web build. Its state is a `HudSurface` with one lobby label: `edit` follows the mode, and `cursor` is always true
-  in the hangar.
+- The spikes embed `hud.html` (`otmetki/ui/hud`, already registered), so there is no new page, res_map entry or
+  ui-web build. Each state is a `HudSurface` with one label: `edit` follows the mode; `cursor` is always true in the
+  hangar and follows `edit` in battle.
