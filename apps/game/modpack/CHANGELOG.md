@@ -12,10 +12,30 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### ru
 
 - Панели боя снова в отдельном окне: встраивание в экран боя могло ронять игру.
+- Окно настроек в стиле клиента: цвета и кнопки лобби, кнопки действий справа внизу, сброс отдельно.
+- Значок «Три отметки» стоит после ника и не закрывает значок достижения.
+- Автосообщения в чат боя: арта по мне, урон от союзника, засвет и ещё десяток событий на выбор.
 
 ### en
 
 - Battle panels are back in their own window: building them into the battle screen could crash the game.
+- The settings window in the client's style: the lobby's colours and buttons, actions at the bottom right, reset set apart.
+- The Three Marks badge sits after the name and no longer covers the achievement badge.
+- Battle chat auto messages: artillery on me, ally damage, spotted and a dozen more events to pick.
+
+## ui 0.9.7
+
+### ru
+
+- Окно в стиле клиента: тёмные панели, текст и кнопки лобби 1.45, оранжевая главная кнопка.
+- Кнопки действий справа внизу, «Сбросить» слева; профили: создание сверху, «Загрузить» последней.
+- В меню слева: Редактор HUD, Профили, Данные и сайт.
+
+### en
+
+- The window in the client's style: dark panels, the 1.45 lobby's text and buttons, an orange primary button.
+- Actions at the bottom right, «Reset» on the left; profiles: creating on top, «Load» last.
+- Left menu order: HUD editor, Profiles, Data and site.
 
 ## 0.3.7
 

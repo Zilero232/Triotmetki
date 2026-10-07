@@ -4,22 +4,24 @@
   flex-shrink: 0;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-end;
   margin-top: 4px;
 }
 
 .actionsCompact {
   flex-direction: column;
   align-items: flex-start;
+  margin-left: -8px;
 }
 
 .action {
   flex: 0 0 auto;
-  margin: 8px 8px 0 0;
+  margin: 8px 0 0 8px;
 }
 
 .reset {
-  margin-right: 0;
-  margin-left: auto;
+  margin-right: auto;
+  margin-left: 0;
 }
 
 .resetLabel {

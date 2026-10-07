@@ -5,5 +5,6 @@ export const DEV_MOCK = {
   replaysComponent: 'replay_manager',
   replaysPageKind: 'replays',
   quietMessages: ['diag', 'escape', 'scroll'],
-  escapeKey: 'Escape'
+  escapeKey: 'Escape',
+  rootFontSize: '1px'
 } as const;

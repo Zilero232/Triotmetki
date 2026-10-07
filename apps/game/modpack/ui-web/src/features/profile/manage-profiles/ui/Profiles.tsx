@@ -26,6 +26,15 @@ export const Profiles = ({ profiles }: ProfilesProps) => {
         onSubmit={model.saveNew}
         onValue={model.setName}
       />
+      <InlineForm
+        label={t('profileImport')}
+        placeholder={t('profileImportPlaceholder')}
+        submitLabel={t('profileImport')}
+        value={model.importCode}
+        onKey={model.onImportKey}
+        onSubmit={model.importProfile}
+        onValue={model.setImportCode}
+      />
       {model.rows.length === 0 ? (
         <Empty>{t('profilesEmpty')}</Empty>
       ) : (
@@ -44,15 +53,6 @@ export const Profiles = ({ profiles }: ProfilesProps) => {
           onConfirm={model.confirmDelete}
         />
       )}
-      <InlineForm
-        label={t('profileImport')}
-        placeholder={t('profileImportPlaceholder')}
-        submitLabel={t('profileImport')}
-        value={model.importCode}
-        onKey={model.onImportKey}
-        onSubmit={model.importProfile}
-        onValue={model.setImportCode}
-      />
     </div>
   );
 };

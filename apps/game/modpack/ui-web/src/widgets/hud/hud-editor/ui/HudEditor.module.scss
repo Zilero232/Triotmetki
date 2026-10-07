@@ -9,14 +9,8 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-bottom: 4px;
-}
-
-.legend {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
 }
 
 .legendLabel {
@@ -35,4 +29,20 @@
   margin-top: 8px;
   background-color: token(color-bg-deep);
   background-image: token(win-stage);
+}
+
+.footer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.reset {
+  margin-right: 8px;
+}
+
+.spacer {
+  flex: 1 1 auto;
 }

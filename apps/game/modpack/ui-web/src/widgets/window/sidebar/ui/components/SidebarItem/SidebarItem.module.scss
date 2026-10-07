@@ -23,6 +23,7 @@
 
 .itemOn {
   background-color: token(win-item-on);
+  background-image: token(win-nav-on);
   color: token(color-text);
 
   &:hover {
@@ -50,6 +51,8 @@
   margin-left: 12px;
   font-size: 13px;
   font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
 
   @include ellipsis;
 }
@@ -62,5 +65,5 @@
 }
 
 .countOn {
-  color: token(win-index);
+  color: token(color-accent-hover);
 }

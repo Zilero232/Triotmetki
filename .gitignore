@@ -47,3 +47,6 @@ playwright-report/
 .data/
 apps/web/server/downloads/
 /downloads/
+
+# Redesign screenshots and scripts (local only)
+apps/game/modpack/ui-web/.redesign/

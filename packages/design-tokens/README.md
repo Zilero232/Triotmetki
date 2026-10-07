@@ -21,20 +21,20 @@ Three Marks' design tokens, framework-agnostic: SCSS maps and a few mixins, one 
 
 ## Layout
 
-| File                    | What                                                                                                      |
-| ----------------------- | --------------------------------------------------------------------------------------------------------- |
-| `scss/_colors.scss`     | `$dark` / `$light` colour maps (surfaces, text, accent, game colours per theme) and the chart aliases     |
-| `scss/_scale.scss`      | `$typography`, `$spacing`, `$radii`                                                                       |
-| `scss/_motion.scss`     | `$motion` (durations, easing) and `@mixin reduced-motion`                                                 |
-| `scss/_palette.scss`    | Theme-independent colours: shades, nations, classes, tiers, equipment, icon and rating-tier aliases       |
-| `scss/_surfaces.scss`   | Elevation, sheen, glow and panel tokens per theme                                                         |
-| `scss/_textures.scss`   | Rating patterns, SVG textures per theme and `@mixin texture($kind)`                                       |
-| `scss/_hud.scss`        | The in-game HUD's tones, plates and type steps (`hud-*` tokens, px) and `@mixin hud-type($step)`          |
-| `scss/_window.scss`     | The in-game settings window's layered surfaces, controls and preview stage (`win-*` tokens, dark only)    |
-| `scss/_ratings.scss`    | The default rating colours and the `xvm` / `wotlife` palettes                                             |
-| `scss/_properties.scss` | The merged `$root` / `$themes`, `token($name, $theme)` and the `*-properties` mixins                      |
-| `_index.scss`           | Public surface (`@use '@otmetki/design-tokens'`)                                                          |
-| `src/`                  | `readDesignTokens()`: compiles the maps with sass-embedded and returns their CSS text, for Node consumers |
+| File                    | What                                                                                                                                                                                       |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `scss/_colors.scss`     | `$dark` / `$light` colour maps (surfaces, text, accent, game colours per theme) and the chart aliases                                                                                      |
+| `scss/_scale.scss`      | `$typography`, `$spacing`, `$radii`                                                                                                                                                        |
+| `scss/_motion.scss`     | `$motion` (durations, easing) and `@mixin reduced-motion`                                                                                                                                  |
+| `scss/_palette.scss`    | Theme-independent colours: shades, nations, classes, tiers, equipment, icon and rating-tier aliases                                                                                        |
+| `scss/_surfaces.scss`   | Elevation, sheen, glow and panel tokens per theme                                                                                                                                          |
+| `scss/_textures.scss`   | Rating patterns, SVG textures per theme and `@mixin texture($kind)`                                                                                                                        |
+| `scss/_hud.scss`        | The in-game HUD's tones, plates and type steps (`hud-*` tokens, px) and `@mixin hud-type($step)`                                                                                           |
+| `scss/_window.scss`     | The in-game settings window: `win-*` surfaces, controls and preview stage, and `$window-palette`, the RU 1.45 client colours its Gameface pages use in place of the site's `color-*` roles |
+| `scss/_ratings.scss`    | The default rating colours and the `xvm` / `wotlife` palettes                                                                                                                              |
+| `scss/_properties.scss` | The merged `$root` / `$themes`, `token($name, $theme)` and the `*-properties` mixins                                                                                                       |
+| `_index.scss`           | Public surface (`@use '@otmetki/design-tokens'`)                                                                                                                                           |
+| `src/`                  | `readDesignTokens()`: compiles the maps with sass-embedded and returns their CSS text, for Node consumers                                                                                  |
 
 ## Rules
 

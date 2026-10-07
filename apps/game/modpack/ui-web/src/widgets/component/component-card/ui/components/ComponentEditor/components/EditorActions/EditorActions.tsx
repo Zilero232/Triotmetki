@@ -16,6 +16,14 @@ export const EditorActions = ({ component, model, compact }: EditorActionsProps)
   return (
     <>
       <div className={clsx(s.actions, compact && s.actionsCompact)}>
+        {hasReset && (
+          <Button className={clsx(s.action, !compact && s.reset)} disabled={isUnchanged} size='small' variant='ghost' onClick={card.reset}>
+            <span className={s.resetLabel}>
+              <Icon className={s.resetIcon} name='rotate-ccw' size={14} tone={isUnchanged ? 'muted' : 'accent'} />
+              {t('resetDefaults')}
+            </span>
+          </Button>
+        )}
         {component.panel && (
           <Button className={s.action} size='small' onClick={card.moveOnScreen}>
             {t('moveOnScreen')}
@@ -26,14 +34,6 @@ export const EditorActions = ({ component, model, compact }: EditorActionsProps)
             {item.label}
           </Button>
         ))}
-        {hasReset && (
-          <Button className={clsx(s.action, !compact && s.reset)} disabled={isUnchanged} size='small' variant='ghost' onClick={card.reset}>
-            <span className={s.resetLabel}>
-              <Icon className={s.resetIcon} name='rotate-ccw' size={14} tone={isUnchanged ? 'muted' : 'accent'} />
-              {t('resetDefaults')}
-            </span>
-          </Button>
-        )}
       </div>
       {card.confirmText !== null && (
         <Confirm cancelLabel={t('cancel')} confirmLabel={t('confirm')} text={card.confirmText} onCancel={card.cancel} onConfirm={card.confirm} />

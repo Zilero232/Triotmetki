@@ -9,6 +9,6 @@ export const SECTION = {
 
 export const SECTION_NAV = {
   components: [SECTION.battle, SECTION.hangar, SECTION.replays],
-  tools: [SECTION.profiles, SECTION.hud, SECTION.data],
+  tools: [SECTION.hud, SECTION.profiles, SECTION.data],
   first: SECTION.battle
 } as const;

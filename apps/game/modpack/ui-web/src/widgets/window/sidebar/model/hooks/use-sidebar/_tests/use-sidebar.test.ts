@@ -32,7 +32,7 @@ describe(useSidebar, () => {
   it('lists the tools after the component pages', () => {
     const { tools } = renderHook(useSidebar).result.current;
 
-    expect(tools.map(({ section }) => section)).toEqual([SECTION.profiles, SECTION.hud, SECTION.data]);
+    expect(tools.map(({ section }) => section)).toEqual([SECTION.hud, SECTION.profiles, SECTION.data]);
   });
 
   it('marks the current page active', () => {
@@ -47,7 +47,7 @@ describe(useSidebar, () => {
     act(() => hook.result.current.tools[0]?.open());
     await act(async () => {});
 
-    expect($view.get().section).toBe(SECTION.profiles);
+    expect($view.get().section).toBe(SECTION.hud);
     expect(hook.result.current.tools[0]?.active).toBe(true);
   });
 

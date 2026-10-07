@@ -1,9 +1,23 @@
 @use 'sass:list';
+@use 'sass:map';
+@use 'sass:meta';
+@use 'sass:string';
 @use '@otmetki/design-tokens' as tokens;
 
 $font-family: warhelios, 'Arial Narrow', arial, sans-serif;
 
+// The window palette (the client's colours) wins over the site's colour roles of the same name.
 @function token($name) {
+  @if map.has-key(tokens.$window-palette, $name) {
+    $value: map.get(tokens.$window-palette, $name);
+
+    @if meta.type-of($value) == string {
+      @return string.unquote($value);
+    }
+
+    @return $value;
+  }
+
   @return tokens.token($name, dark);
 }
 

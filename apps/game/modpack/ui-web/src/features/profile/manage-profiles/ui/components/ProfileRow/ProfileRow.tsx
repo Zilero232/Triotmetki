@@ -1,5 +1,5 @@
 import { useT } from '@/entities/window/window-state';
-import { Badge, ListItem, ListItemActions, ListItemButton, ListItemInput, ListItemMain } from '@/ui-kit';
+import { Badge, ListItem, ListItemActions, ListItemButton, ListItemDivider, ListItemInput, ListItemMain } from '@/ui-kit';
 
 import type { ProfileRowProps } from './ProfileRow.types';
 
@@ -14,20 +14,21 @@ export const ProfileRow = ({ row }: ProfileRowProps) => {
         <>
           <ListItemMain badge={row.active && <Badge tone='gold'>{t('profileActive')}</Badge>} title={row.profile.name} />
           <ListItemActions>
-            <ListItemButton size='small' variant='accent' onClick={row.load}>
-              {t('profileLoad')}
+            <ListItemButton size='small' variant='danger' onClick={row.askDelete}>
+              {t('profileDelete')}
             </ListItemButton>
-            <ListItemButton size='small' onClick={row.overwrite}>
-              {t('profileOverwrite')}
+            <ListItemDivider />
+            <ListItemButton size='small' onClick={row.exportCode}>
+              {t('profileExport')}
             </ListItemButton>
             <ListItemButton size='small' onClick={row.startRename}>
               {t('profileRename')}
             </ListItemButton>
-            <ListItemButton size='small' onClick={row.exportCode}>
-              {t('profileExport')}
+            <ListItemButton size='small' onClick={row.overwrite}>
+              {t('profileOverwrite')}
             </ListItemButton>
-            <ListItemButton size='small' variant='danger' onClick={row.askDelete}>
-              {t('profileDelete')}
+            <ListItemButton size='small' variant={row.active ? 'default' : 'accent'} onClick={row.load}>
+              {t('profileLoad')}
             </ListItemButton>
           </ListItemActions>
         </>

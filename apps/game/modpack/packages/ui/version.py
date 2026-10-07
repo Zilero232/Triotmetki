@@ -2,4 +2,4 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 PACKAGE_ID = 'net.triotmetki.ui'
 PACKAGE_NAME = 'Three Marks: in-game UI'
-VERSION = '0.9.6'
+VERSION = '0.9.7'

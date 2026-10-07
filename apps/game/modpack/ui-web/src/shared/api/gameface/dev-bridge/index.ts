@@ -1,1 +1,1 @@
-export { createDevGameface, relayEscape } from './dev-bridge';
+export { applyDesignRem, createDevGameface, relayEscape } from './dev-bridge';

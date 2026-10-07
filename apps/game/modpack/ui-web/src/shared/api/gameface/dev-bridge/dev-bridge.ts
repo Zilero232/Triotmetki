@@ -72,3 +72,7 @@ export const relayEscape = (mock: GamefaceMock): void => {
     }
   });
 };
+
+export const applyDesignRem = (): void => {
+  document.documentElement.style.fontSize = DEV_MOCK.rootFontSize;
+};

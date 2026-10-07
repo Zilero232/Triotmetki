@@ -5,7 +5,10 @@
   padding: 0 14px;
   font-size: 13px;
   font-weight: 700;
+  letter-spacing: 0.4px;
   line-height: 30px;
+  text-shadow: token(win-text-shadow);
+  text-transform: uppercase;
   white-space: nowrap;
 
   @include control;
