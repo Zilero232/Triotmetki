@@ -37,8 +37,7 @@ from .constants import (
     ROW_ALIGN_BYTES,
 )
 
-# The client embeds no image library (no PIL), so the capture is read as an uncompressed bitmap and written back as
-# a small PNG with the standard library alone: struct for the headers, zlib for the PNG stream.
+# The client embeds no image library (no PIL): the bitmap is re-encoded with the standard library.
 
 
 class ThumbnailError(ValueError):

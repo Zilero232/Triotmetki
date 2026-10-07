@@ -3,9 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.garage import run_in_order
 
-# The depot's own requests, RU 1.45 client source: gui.shared.gui_items.processors.module.MultipleModulesSeller(specs)
-# with items_actions.actions.ItemSellSpec(typeIdx, intCD, count) (what the «Можно продать» tab's «Продать» sends through
-# SellMultipleItems), and processors.tankman.TankmanDismiss(tankmen) (the barracks' «Демобилизовать»).
+# RU 1.45 client source: processors.module.MultipleModulesSeller and processors.tankman.TankmanDismiss.
 
 
 def _seller(items):

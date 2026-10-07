@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'auto_messages'
 PACKAGE_ID = 'net.triotmetki.auto_messages'
 PACKAGE_NAME = 'Three Marks: auto messages'
-VERSION = '0.1.0'
+VERSION = '0.1.1'
 
 
 def create(app):

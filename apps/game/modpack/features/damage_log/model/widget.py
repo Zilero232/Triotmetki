@@ -14,11 +14,9 @@ from .constants import (
     TOTAL_ICONS,
     TOTAL_TONES,
 )
-from .words import row_note, shell_label
+from .words import shell_label, widget_note
 
-# Fair play: the player's own shots with their hit markers, damage, crits and the target's HP after the own shot (as
-# its marker shows it), the own assist, and the hits on the player with the attacker's name and class as the stock
-# damage log names them.
+# Fair play: own shots and assist, hits on the player named as the stock damage log names them.
 
 ICON_SETS = {'efficiency': efficiency_icon, 'glyph': glyph, 'outcome': outcome_icon}
 
@@ -92,7 +90,7 @@ def row_widget(row, translate, looks):
         'hp': hp,
         'max': max_hp,
         'ammo_rack': glyph('ammo_rack') if row.get('ammo_rack') else None,
-        'note': row_note(row, translate, looks['show_hp']) if looks['noted'] else '',
+        'note': widget_note(row, translate) if looks['noted'] else '',
     }
 
 

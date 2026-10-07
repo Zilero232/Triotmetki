@@ -106,7 +106,6 @@ class SettingsBridge(object):
         if not feed.due(now, force):
             return None
 
-        # A forced read follows the player's own message; only the tick's reads of a synced feed are polls.
         is_poll = not force and feed.synced
         message = feed.message(instance.ui_feed(poll=is_poll), now)
         return encode_feed(message) if message is not None else None

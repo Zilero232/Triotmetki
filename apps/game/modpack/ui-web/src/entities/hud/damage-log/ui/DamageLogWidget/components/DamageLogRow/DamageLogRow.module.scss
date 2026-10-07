@@ -4,7 +4,7 @@
 @keyframes row-in {
   from {
     opacity: 0;
-    transform: translateX(-8px);
+    transform: translateX(-6px);
   }
 
   to {
@@ -23,16 +23,14 @@
   }
 }
 
-// One row: a side accent and a band in the row's kind colour (dealt orange, received red, blocked steel, assist blue),
-// then fixed columns: amount, outcome, shell, class, name, the target's HP bar (or the ammo rack), the note.
 .row {
   position: relative;
   display: flex;
-  height: 20px;
+  height: 16px;
   box-sizing: border-box;
   flex-direction: row;
   align-items: center;
-  padding-right: 4px;
+  padding-right: 3px;
   border-left: 2px solid token(hud-muted);
   margin-top: 1px;
 }
@@ -88,50 +86,52 @@
 }
 
 .amount {
-  @include hud-type(value);
-
-  width: 52px;
+  width: 42px;
   justify-content: flex-end;
-  margin-right: 6px;
+  margin-right: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 16px;
 }
 
 .outcome {
   display: flex;
-  width: 16px;
+  width: 14px;
   flex-shrink: 0;
   justify-content: center;
-  margin-right: 5px;
+  margin-right: 3px;
 }
 
 .shell {
   display: flex;
-  width: 30px;
+  width: 24px;
   flex-shrink: 0;
-  margin-right: 6px;
+  margin-right: 4px;
 }
 
 .cls {
   display: flex;
-  width: 13px;
+  width: 11px;
   flex-shrink: 0;
-  margin-right: 5px;
+  margin-right: 3px;
 }
 
 .who {
   display: flex;
-  width: 112px;
+  width: 96px;
   flex-direction: row;
   flex-shrink: 0;
   align-items: center;
 }
 
 .name {
-  @include hud-type(body);
   @include ellipsis;
 
   min-width: 0;
   flex: 0 1 auto;
   color: token(hud-text);
+  font-size: 12px;
+  line-height: 16px;
 }
 
 .muted-name {
@@ -142,7 +142,7 @@
   @include hud-type(caption);
 
   flex-shrink: 0;
-  margin-left: 4px;
+  margin-left: 3px;
   color: token(hud-muted);
 }
 
@@ -153,18 +153,18 @@
   flex-direction: row;
   flex-shrink: 0;
   align-items: center;
-  margin-left: 4px;
+  margin-left: 3px;
   color: token(hud-warn);
   font-weight: 700;
 }
 
 .side {
   display: flex;
-  width: 38px;
+  width: 30px;
   flex-direction: row;
   flex-shrink: 0;
   align-items: center;
-  margin-left: 6px;
+  margin-left: 4px;
 }
 
 .note {
@@ -173,6 +173,6 @@
 
   min-width: 0;
   flex: 0 1 auto;
-  margin-left: 6px;
+  margin-left: 4px;
   color: token(hud-muted);
 }

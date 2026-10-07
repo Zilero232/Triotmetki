@@ -3,13 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.compat import is_int, is_number
 from .constants import MAX_BATTLE_DELTA
 
-# The MoE change of each tank played in the session, exact: the sum of the battles' own changes, each the battle
-# results' damageRating against the dossier read on the way into that battle (companion before_battle), never a
-# projection. Kept per session id, so a new session starts empty.
 
-
-# 0.7.0 counted the battle results' whole percent as hundredths (a change of -65.80 for one battle): a change no run of
-# battles can make is dropped.
 def _is_possible(data):
     battles = data.get('battles') if is_int(data.get('battles')) else 1
     return abs(data['change']) <= MAX_BATTLE_DELTA * max(1, battles)

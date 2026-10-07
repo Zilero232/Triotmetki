@@ -4,9 +4,6 @@ from ....core.format import format_number
 from .constants import ESTIMATE, MAIN_GUN_LOOKS, PAST_THRESHOLD, REACHED, ROWS, STILL_NEEDED
 from .wn8 import rating_color
 
-# One row per target, as plain data both renderers read: the card row of the Gameface page (model/widget.py) and the
-# text line (model/text.py).
-
 
 def _row(kind, text, value, **style):
     row = {

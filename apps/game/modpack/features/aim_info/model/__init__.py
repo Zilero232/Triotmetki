@@ -4,17 +4,13 @@ from ....core.compat import is_number
 from ....core.format import format_number
 from .constants import BODY_CLOSE, BODY_OPEN, EXTRA_LINES, FULL_LINES, LINE_BREAK
 
-# Fair play: only the player's own shells (their descriptor and the own gun's settings) and the reticle the client
-# already draws for the player; nothing about other vehicles beyond the distance the client measures to the vehicle
-# under the reticle, which its markers can already show.
+# Fair play: only the own shells and the distance the client already measures under the reticle.
 
 
 def _number(value):
     return value if is_number(value) and value > 0 else None
 
 
-# The numbers of an own shell: `damage` is the descriptor's (armour, devices) pair, `piercing` the gun's piercing power
-# at 100 m, `speed` its shot speed in world units, `speed_factor` the client's projectile speed factor.
 def shell_stats(damage, piercing, speed, speed_factor):
     armor, devices = damage if isinstance(damage, (tuple, list)) and len(damage) == 2 else (None, None)
     factor = _number(speed_factor)
@@ -26,8 +22,6 @@ def shell_stats(damage, piercing, speed, speed_factor):
     }
 
 
-# The tooltip lines of an own shell: every number (`full`, the stock tooltip has no body) or the module damage the stock
-# body leaves out; a number the client did not give is left out.
 def shell_lines(stats, translate, full):
     keys = FULL_LINES if full else EXTRA_LINES
     return [translate(key, value=format_number(stats[name])) for name, key in keys if stats.get(name) is not None]

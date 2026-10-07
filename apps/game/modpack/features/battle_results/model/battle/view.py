@@ -6,8 +6,7 @@ from .....core.own_result import RESULT_TONES
 from ..text import percent_text, result_label, signed
 from .constants import LAST_TILES, SUBTITLE_SEPARATOR
 
-# What the previous battle's card shows, as plain data both renderers read: the Gameface widget (widget.py) and the
-# text (text.py). Fair play: the own numbers of the own battle results only.
+# Fair play: the own numbers of the own battle results only.
 
 
 def _row(kind, text, value, **style):

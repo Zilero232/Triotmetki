@@ -3,9 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.client.game import service
 from ....core.client.garage import is_locked
 
-# RU 1.45 client source (gui_items/Vehicle.py optDevices / crew / lastCrew, vehicle_equipment.installed,
-# artefacts.OptionalDevice.isRemovable, all properties; crew is [(slotIdx, tankman or None)]): anything missing
-# reads as "nothing to do".
+# RU 1.45 client source: gui_items/Vehicle.py optDevices / crew / lastCrew; missing reads as nothing.
 
 
 def _installed(vehicle):
@@ -36,8 +34,7 @@ def device_in(vehicle, slot):
 
 
 def free_berths():
-    # RU 1.45 client source: ItemsRequester.freeTankmenBerthsCount(), what the barracks validator
-    # (gui/shared/gui_items/processors/plugins.py BarracksSlotsValidator) checks.
+    # RU 1.45 client source: ItemsRequester.freeTankmenBerthsCount() (BarracksSlotsValidator).
     try:
         from skeletons.gui.shared import IItemsCache
         return int(service(IItemsCache).items.freeTankmenBerthsCount())

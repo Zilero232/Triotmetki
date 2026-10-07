@@ -1,1 +1,1 @@
-export { parseIcon } from './client-icon';
+export { parseIcon, renditionBox } from './client-icon';

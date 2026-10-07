@@ -10,7 +10,8 @@ In the client every package lands in the same tree, res/scripts/client/gui/mods/
 plus, for the ui, res/gui/gameface/mods/triotmetki/ui/* (the built ui-web page) and
 res/mods/configs/res_map/*.json (its OpenWG Gameface resource registration); and, for a feature with
 asset sets in assets/assets.json (images, sounds), their files, licences and THIRD_PARTY_NOTICES.md
-(asset_sets.py).
+(asset_sets.py); a feature with a built AS3 library (features/<id>/flash/*.swf, from as3/ by tools/build/swf.mjs)
+ships it in res/gui/flash/, where the battle app loads its BATTLE_REQUIRED_LIBRARIES.
 
 A data package has no code: hangars/ (package.json) is net.triotmetki.hangar_looks, the hangar look recipes
 bundled into res/mods/configs/otmetki/hangar_looks/recipes.json plus its asset sets (our colour tables);
@@ -42,6 +43,10 @@ CORE_PACKAGES = ('core', 'companion')
 GAMEFACE_ROOT = 'res/gui/gameface/mods/triotmetki'
 RES_MAP_ROOT = 'res/mods/configs/res_map'
 ASSET_DIRS = ('gameface', 'res_map')
+# A feature's built AS3 library SWFs (features/<id>/flash/*.swf, committed): RU 1.45 battle_entry loads the
+# BATTLE_REQUIRED_LIBRARIES names from gui/flash/, where Battle Observer's package puts its modBattleObserver.swf.
+FLASH_DIR = 'flash'
+FLASH_ROOT = 'res/gui/flash'
 # The vendored third-party libraries ship their licence texts next to them (packages/core/vendor/licenses).
 VENDOR_LICENCES = 'vendor/licenses'
 ROOT_INIT = '"""Three Marks: the core, companion and features/<id> packages share this namespace."""\n'
@@ -147,6 +152,15 @@ def asset_files(base, name):
     return files
 
 
+def flash_files(base):
+    """(source path, archive path) of a feature's built AS3 library SWFs."""
+    root = os.path.join(base, FLASH_DIR)
+    if not os.path.isdir(root):
+        return []
+    names = [name for name in sorted(os.listdir(root)) if name.endswith('.swf')]
+    return [(os.path.join(root, name), FLASH_ROOT + '/' + name) for name in names]
+
+
 def extension_ids():
     """packages/<name> with a version.py, besides the core and the companion (today: ui)."""
     return sorted(
@@ -169,6 +183,7 @@ def feature_package(feature_id, core, companion):
     files = entries(base)
     files += list(tree(base, PACKAGE_ROOT + '/features/' + feature_id))
     files += asset_sets.feature_files(feature_id)
+    files += flash_files(base)
     description = name + ' (triotmetki.ru)'
     return Package(feature_id, package_id, name, version, description, files, [core, companion])
 

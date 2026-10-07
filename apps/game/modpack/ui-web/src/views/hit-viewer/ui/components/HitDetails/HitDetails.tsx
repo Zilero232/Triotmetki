@@ -19,7 +19,7 @@ export const HitDetails = ({ row, labels }: HitDetailsProps) => {
           <span className={s.vehicle}>{row.vehicle}</span>
           <span className={s.sub}>
             <span className={clsx(s.result, s[row.tone])}>{row.result}</span>
-            <span className={s.part}>{row.part}</span>
+            <span className={s.part}>{row.zone === row.part ? row.part : `${row.part} · ${row.zone}`}</span>
           </span>
         </div>
         <div className={s.damage}>

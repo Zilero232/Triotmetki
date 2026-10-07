@@ -10,7 +10,6 @@ from ..model.history import MarksHistory
 from ..model.page import build_page, page_actions
 
 
-# The former marks_history component's file, same name and format, so the history of earlier versions carries on.
 class HistoryBook(object):
 
     def __init__(self, app, settings, is_enabled):

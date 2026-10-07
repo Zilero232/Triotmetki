@@ -1,6 +1,5 @@
 @use '@/shared/styles/gameface' as *;
 
-// A new mark or the goal reached in this battle: the percent flashes gold once (design B.1 rule 6, one 400 ms flash).
 @keyframes mark-reached {
   0% {
     color: token(hud-gold);

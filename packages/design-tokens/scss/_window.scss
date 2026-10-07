@@ -1,7 +1,3 @@
-// The in-game settings window (the modpack's Gameface page): dark only, design px. It draws with the RU 1.45 client's
-// own palette: tanki.su's neutral #0f0f0f / #121212 / #1c1c1e planes under the lobby's text styles (html_templates.xml
-// lobby/textStyle), the lobby CButton (2px radius, black ring, warm hover overlay), its back_secondary plate for
-// buttons, the back_main orange for primary actions and the tab separator orange #f50 for selection.
 $root: (
   'win-frame': 'linear-gradient(180deg, #1c1c1e 0%, #121212 100%)',
   'win-frame-line': 'rgb(255 255 255 / 6%)',
@@ -50,8 +46,6 @@ $root: (
   'win-radius-control': 2px,
   'win-divider': 'rgb(255 255 255 / 6%)'
 );
-
-// The client palette replaces the site's colour roles inside the window (the Gameface pages resolve these first).
 $palette: (
   'color-bg': #1c1c1e,
   'color-bg-deep': #0f0f0f,

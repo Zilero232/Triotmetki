@@ -44,7 +44,23 @@ convention is the stock indicator, a pack's own one opt-in, right of the reticle
 - **Timers**: the value counts the next shell (the client's reload is the interval between shells while the drum has
   any); under it the **whole drum's reload** (`getShellChangeTime`, the reload before the client cuts it to the
   interval), never repeating the value. An auto-reloader (Swedish and Chinese per-shell reload,
-  `onGunAutoReloadTimeSet`) fills its next empty shell from the bottom in `hud-index`, with its seconds left of the row.
+  `onGunAutoReloadTimeSet`) fills its next empty shell from the bottom in `hud-index`, with its seconds left of the row
+  and the refilling shell's own time under the value.
+- **Loaded value** (gun ready, not counting): the next shot's reload, by the rule of RU 1.45
+  `ammo_ctrl.setGunReloadTime` but read from the magazine (`getClipInterval`, `getLastAmmoCount`) rather than the
+  snapshot's base: the interval while a shot leaves shells (an auto-reloader's last shell too), the whole magazine's
+  reload for the last shot (or last burst). The snapshot's base is the uncut magazine reload when the reload came before
+  the shells (the battle start), which put the whole reload in the value with the clip full. A counted reload whose
+  base is shorter than its time left (cut against a stale shell count) takes the whole magazine's reload as its base.
+
+| State                               | Value                          | Under it                  |
+| ----------------------------------- | ------------------------------ | ------------------------- |
+| Clip full or partial, ready         | interval, static               | whole magazine, static    |
+| Last shell (last burst) ready       | whole magazine, static         | —                         |
+| After a shot, shells left           | interval, counting             | whole magazine            |
+| Clip empty                          | whole magazine, counting       | whole magazine            |
+| Auto-reloader refilling             | next shot's reload             | refilling shell's time    |
+| Single-shot gun                     | reload counting / full, static | full while counting       |
 - **Motion** (Gameface-safe, transform and opacity only): a shot lifts the spent shell's bright copy 4 px and fades it
   over the dimmed slot in 220 ms ease-out; a refill raises the returned shells 2 px into place in 180 ms; in the count
   the figure ticks 2 px. Nothing animates on the first draw, colours never animate, so a quick drum never queues

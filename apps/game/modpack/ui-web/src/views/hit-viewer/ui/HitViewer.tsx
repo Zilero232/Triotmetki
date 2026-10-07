@@ -1,13 +1,13 @@
-import { IconButton } from '@/ui-kit';
-
+import { HIT_VIEWER } from '../config';
+import { useArmorProfile } from '../model/hooks/use-armor-profile';
 import { useCameraDrag } from '../model/hooks/use-camera-drag';
+import { useHitFilter } from '../model/hooks/use-hit-filter';
 import { useHitViewer } from '../model/hooks/use-hit-viewer';
 import { useViewerFrame } from '../model/hooks/use-viewer-frame';
 import { useViewerKeys } from '../model/hooks/use-viewer-keys';
-import { BattlePicker } from './components/BattlePicker';
-import { HitDetails } from './components/HitDetails';
-import { HitTable } from './components/HitTable';
-import { SideTabs } from './components/SideTabs';
+import { ArmorProfile } from './components/ArmorProfile';
+import { HitColumn } from './components/HitColumn';
+import { ViewerBar } from './components/ViewerBar';
 import { ViewerEmpty } from './components/ViewerEmpty';
 
 import s from './HitViewer.module.scss';
@@ -16,8 +16,10 @@ export const HitViewer = () => {
   const viewer = useHitViewer();
   const surfaceRef = useCameraDrag(viewer.move);
   const frame = useViewerFrame();
+  const filter = useHitFilter({ state: viewer.state, onPick: viewer.pickHit });
+  const armor = useArmorProfile();
 
-  useViewerKeys({ onStep: viewer.stepHit, onSwitchTab: viewer.switchTab });
+  useViewerKeys({ onStep: filter.step, onSwitchTab: viewer.switchTab });
 
   const { state, selectedRow, sideLabels } = viewer;
 
@@ -26,46 +28,21 @@ export const HitViewer = () => {
   }
 
   const { labels, battle } = state;
+  const profile = state.tab === HIT_VIEWER.profileSide ? state.profile : null;
 
   return (
     <div className={s.viewer}>
       <div ref={surfaceRef} className={s.surface} />
       <div className={s.frame} style={frame}>
-        <div className={s.bar}>
-          <div className={s.title}>
-            <IconButton icon='x' label={labels.close ?? ''} variant='ghost' onClick={viewer.close} />
-            <span className={s.titleText}>{labels.title}</span>
+        {battle && profile && (
+          <div className={s.side}>
+            <ArmorProfile isOpen={armor.isOpen} labels={labels} profile={profile} onToggle={armor.toggle} />
           </div>
-          {state.tab && (
-            <div className={s.tabs}>
-              <SideTabs label={labels.title ?? ''} tabs={state.tabs} value={state.tab} onSelect={viewer.pickTab} />
-            </div>
-          )}
-          {battle && (
-            <div className={s.battle}>
-              <BattlePicker
-                battles={state.battles}
-                current={battle}
-                label={labels.pick_battle ?? labels.battles ?? ''}
-                labels={labels}
-                sideLabels={sideLabels}
-                onPick={viewer.pickBattle}
-              />
-            </div>
-          )}
-        </div>
+        )}
+        <ViewerBar sideLabels={sideLabels} state={state} onBattle={viewer.pickBattle} onClose={viewer.close} onTab={viewer.pickTab} />
         {battle ? (
           <>
-            <div className={s.column}>
-              <div className={s.list}>
-                <HitTable labels={labels} rows={state.rows} selected={state.selected} onPick={viewer.pickHit} />
-              </div>
-              {selectedRow && (
-                <div className={s.details}>
-                  <HitDetails labels={labels} row={selectedRow} />
-                </div>
-              )}
-            </div>
+            <HitColumn filter={filter} selectedRow={selectedRow} state={state} onPick={viewer.pickHit} />
             <div className={s.footer}>
               <span className={s.hint}>{viewer.footer}</span>
             </div>

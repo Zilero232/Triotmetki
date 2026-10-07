@@ -31,8 +31,8 @@ def state(pace=3000, curve=True, snapshot=SNAPSHOT):
     return hangar_state(snapshot, thresholds, pace)
 
 
-def tank_data(summary=None, tank=None, held=False, **state_values):
-    return TankCard(state(**state_values), u'T-34', summary, tank, held, class_tag='mediumTank', tier=7)
+def tank_data(summary=None, tank=None, **state_values):
+    return TankCard(state(**state_values), u'T-34', summary, tank, class_tag='mediumTank', tier=7)
 
 
 def payload(data, **values):
@@ -156,48 +156,41 @@ class GoalTest(unittest.TestCase):
 
 class GridTest(unittest.TestCase):
 
-    def test_compact_keeps_the_grid_for_alt(self):
+    def test_compact_hides_the_grid(self):
         assert widget(tank_data(SUMMARY, TANK))['sections'] == []
 
-    def test_compact_hints_at_alt(self):
-        assert widget(tank_data(tank=TANK))['hint'] == u'Alt: more'
+    def test_the_card_carries_no_key_hint(self):
+        assert 'hint' not in widget(tank_data(tank=TANK))
 
-    def test_no_hint_when_alt_shows_nothing(self):
-        assert widget(tank_data(tank=TANK), alt_detail=False)['hint'] is None
-
-    def test_alt_shows_the_grid(self):
-        assert cell_labels(tank_data(SUMMARY, held=True), u'Mark') == [
+    def test_the_extended_style_shows_the_grid(self):
+        assert cell_labels(tank_data(SUMMARY), u'Mark', style='extended') == [
             u'Average damage', u'Pace', u'To 82 %', u'Over 3 battles',
         ]
 
-    def test_the_extended_style_shows_the_grid_without_alt(self):
-        assert section(tank_data(), u'Mark', style='extended') is not None
-
-    def test_no_hint_while_the_grid_shows(self):
-        assert widget(tank_data(held=True))['hint'] is None
-
     def test_the_average_names_what_the_next_mark_needs(self):
-        average = section(tank_data(held=True), u'Mark')['cells'][0]
+        average = section(tank_data(), u'Mark', style='extended')['cells'][0]
 
         assert (average['value'], average['note']) == (u'2 500', u'needs 2 600')
 
     def test_the_trend_is_toned_by_its_sign(self):
-        trend = section(tank_data(SUMMARY, held=True), u'Mark')['cells'][-1]
+        trend = section(tank_data(SUMMARY), u'Mark', style='extended')['cells'][-1]
 
         assert (trend['value'], trend['tone']) == (u'-0,30 %', 'bad')
 
     def test_the_tank_wn8_in_its_rating_colour(self):
-        rating = section(tank_data(tank=TANK, held=True), u'Tank')['cells'][0]
+        rating = section(tank_data(tank=TANK), u'Tank', style='extended')['cells'][0]
 
         assert (rating['value'], rating['color']) == (u'2 310', TIER_COLORS['very_good'])
 
     def test_the_wins_note_the_battles(self):
-        wins = section(tank_data(tank=TANK, held=True), u'Tank')['cells'][1]
+        wins = section(tank_data(tank=TANK), u'Tank', style='extended')['cells'][1]
 
         assert (wins['value'], wins['note']) == (u'56,25 %', u'213 battles')
 
     def test_the_ratings_switch_off(self):
-        assert section(tank_data(tank=TANK, held=True), u'Tank', show_tank_ratings=False, show_mastery=False) is None
+        hidden = {'style': 'extended', 'show_tank_ratings': False, 'show_mastery': False}
+
+        assert section(tank_data(tank=TANK), u'Tank', **hidden) is None
 
 
 class WithoutMarksTest(unittest.TestCase):
@@ -231,10 +224,10 @@ class TextTest(unittest.TestCase):
     def test_trend_line_follows_the_head(self):
         assert text_lines(tank_data(SUMMARY))[1] == u'Last battle +0.40% · Over 3 battles -0.30%'
 
-    def test_ratings_line_on_alt(self):
-        assert text_lines(tank_data(tank=TANK, held=True))[-1] == u'Tank WN8 2 310 · wins 56.25% · 213 battles'
+    def test_ratings_line_in_the_extended_style(self):
+        assert text_lines(tank_data(tank=TANK), style='extended')[-1] == u'Tank WN8 2 310 · wins 56.25% · 213 battles'
 
-    def test_compact_text_keeps_the_ratings_for_alt(self):
+    def test_compact_text_has_no_ratings(self):
         assert u'Tank WN8' not in u' '.join(text_lines(tank_data(tank=TANK)))
 
 
@@ -253,7 +246,9 @@ class SettingsTest(unittest.TestCase):
 
         assert settings.get('show_trend') is True
         assert settings.get('show_tank_ratings') is True
-        assert settings.get('alt_detail') is True
+
+    def test_the_card_has_no_alt_view(self):
+        assert 'alt_detail' not in CARD_SCHEMA.defaults
 
     def test_the_card_style_is_compact_or_extended(self):
         assert Settings({'style': 'custom'}, CARD_SCHEMA).get('style') == 'compact'
@@ -290,10 +285,10 @@ class PreviewTest(unittest.TestCase):
 
         assert text.startswith(u'MoE 86.12%')
 
-    def test_the_compact_preview_hints_at_alt(self):
+    def test_the_compact_preview_has_no_grid(self):
         card = card_preview_widget(Settings({}, CARD_SCHEMA), translator())['data']
 
-        assert card['hint'] == u'Alt: more'
+        assert card['sections'] == []
 
     def test_the_extended_preview_shows_every_section(self):
         card = card_preview_widget(Settings({'style': 'extended'}, CARD_SCHEMA), translator())['data']

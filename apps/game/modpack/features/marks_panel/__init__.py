@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'marks_panel'
 PACKAGE_ID = 'net.triotmetki.marks_panel'
 PACKAGE_NAME = 'Three Marks: marks of excellence'
-VERSION = '0.8.4'
+VERSION = '0.8.5'
 
 
 def create(app):

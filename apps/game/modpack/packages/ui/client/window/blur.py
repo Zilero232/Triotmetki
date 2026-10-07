@@ -1,7 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-# RU 1.45 client source (gui/shared/view_helpers/blur_manager.py): the blur the client's own windows put behind
-# themselves, created with `ownLayer=self.layer - 1` so the layers under the window blur and the window stays sharp.
+# RU 1.45 client source (gui/shared/view_helpers/blur_manager.py), `ownLayer=self.layer - 1`.
 try:
     from gui.shared.view_helpers.blur_manager import CachedBlur
 except ImportError:

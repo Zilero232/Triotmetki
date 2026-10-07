@@ -7,7 +7,6 @@ from ....core.vendor import six
 from .constants import APPEND, HOLD, NOTICE_ARENAS_LIMIT, PUSH, STOCK_WAIT_S, UNCLAIMED_AFTER_S
 
 
-# The stock message names its arena by the results' int arenaUniqueID, a battle event by its text (companion payload).
 def arena_key(arena):
     return None if arena is None else six.text_type(arena)
 
@@ -17,12 +16,6 @@ def _bounded(items):
         items.popitem(last=False)
 
 
-# PMOD's «подменить после-боевые сообщения»: one message per battle, the stock one, with the mod's lines added. The
-# battle's results and its stock message meet here by arena whichever comes first; a message waits STOCK_WAIT_S for
-# its results, results wait for their message until UNCLAIMED_AFTER_S after the hangar opened. `stock_arrived` gives
-# the held results the message takes (None: it waits); `results_arrived` says whether to APPEND them to the waiting
-# message (with its deliver), PUSH a message of their own (the stock one went without them) or HOLD them; `expired`
-# gives the delivers of the messages that waited long enough and the held results no message took.
 class StockNotices(object):
 
     def __init__(self):
@@ -74,8 +67,7 @@ class StockNotices(object):
         return results
 
 
-# The template's own lines are plain newlines, and the client formats the message as a Python 2 byte string (UTF-8),
-# so the lines join it as bytes then.
+# The client formats the message as a Python 2 UTF-8 byte string.
 def with_lines(message, lines):
     if not lines:
         return message

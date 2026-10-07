@@ -8,8 +8,7 @@ from ..i18n import STRINGS
 from ..model import hidden_names, hides, type_table_of
 from ..settings import SCHEMA, SWITCH
 
-# RU 1.45: notification.NotificationsModel.addNotification lists and counts an entry of the notification
-# centre; a hidden one is neither.
+# RU 1.45 notification.NotificationsModel.addNotification lists and counts an entry.
 
 
 def _client_classes():

@@ -40,8 +40,7 @@ def server_to_local(server_time):
     return convert(server_time)
 
 
-# Never turns replay recording on: it uploads files the client already wrote, for battles of the bound
-# account, in the hangar, while the opt-in `upload_replays` switch is on.
+# Never turns replay recording on: only files the client already wrote, opt-in, in the hangar.
 class ReplayAutoUpload(object):
 
     def __init__(self, app):
@@ -96,8 +95,6 @@ class ReplayAutoUpload(object):
         if self.queue is not None:
             self.queue.unblock()
 
-    # Nothing of the upload runs in battle: its bandwidth and the worker's share of the interpreter would cost
-    # ping and frames. A running upload stops at its next block and is sent again from the hangar.
     def on_battle_enter(self):
         self.in_battle = True
         if self.uploader is not None:
@@ -144,7 +141,6 @@ class ReplayAutoUpload(object):
         )
 
     def _find(self, item):
-        # Runs on the worker thread: plain file access in the folder the main thread resolved.
         return find_replay(self.folder, item['account_id'], item['arena_unique_id'], item.get('started_at'))
 
     def on_auth_failed(self):

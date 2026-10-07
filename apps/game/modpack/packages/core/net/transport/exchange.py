@@ -15,8 +15,7 @@ class ResponseTooLarge(IOError):
     pass
 
 
-# A redirect would carry the signed X-Otmetki-* headers to another URL (even from https to http); the API never
-# redirects, so a 3xx comes back as its own status instead of being followed.
+# A redirect would carry the signed X-Otmetki-* headers to another URL.
 class _RefuseRedirects(_urlrequest.HTTPRedirectHandler):
 
     def redirect_request(self, req, fp, code, msg, headers, newurl):
@@ -48,8 +47,7 @@ def _headers_of(response):
         return {}
 
 
-# Header names and values as the interpreter's `str`: Python 2's HTTP code must not mix unicode headers with a binary
-# body.
+# Python 2's HTTP code must not mix unicode headers with a binary body.
 def native_headers(headers):
     return {to_native(key): to_native(value) for key, value in (headers or {}).items()}
 
@@ -107,7 +105,6 @@ class SyncTransport(object):
         return 0
 
 
-# Requests on a BackgroundRunner thread; callbacks run on the thread that calls poll() (the game's).
 class ThreadTransport(object):
 
     def __init__(self, timeout=DEFAULT_TIMEOUT_S, max_bytes=DEFAULT_MAX_RESPONSE_BYTES):

@@ -10,9 +10,6 @@ from .constants import DELTA_COLORS, LINE_SEPARATOR, METRIC_SEPARATOR, TARGET_SE
 from .page import delta_sign, signed_percent
 from .tank_progress import mastery_line, research_line
 
-# The Tank card as text, for a page that cannot draw the widget: the same parts as the widget
-# (model/card.py), one line each.
-
 
 def _labelled_delta(label, value):
     return u'%s %s' % (font(label, COLOR_MUTED), font(signed_percent(value), DELTA_COLORS[delta_sign(value)]))

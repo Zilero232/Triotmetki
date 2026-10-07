@@ -56,7 +56,6 @@ class Schema(object):
         return value
 
 
-# `revision` counts the changes, so a reader on the game thread can keep what it read until it moves.
 class Settings(object):
 
     schema = None

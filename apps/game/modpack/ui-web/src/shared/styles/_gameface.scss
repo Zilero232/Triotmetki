@@ -6,7 +6,6 @@
 
 $font-family: warhelios, 'Arial Narrow', arial, sans-serif;
 
-// The window palette (the client's colours) wins over the site's colour roles of the same name.
 @function token($name) {
   @if map.has-key(tokens.$window-palette, $name) {
     $value: map.get(tokens.$window-palette, $name);
@@ -32,13 +31,10 @@ $font-family: warhelios, 'Arial Narrow', arial, sans-serif;
   text-shadow: token(hud-text-shadow);
 }
 
-// One of the HUD type steps (caption, body, value, key, hero): size, line height and weight.
 @mixin hud-type($step) {
   @include tokens.hud-type($step);
 }
 
-// A plate's padding: solid battle plates 4/8, hangar cards 8/12 (10 at the bottom), edge-fade plates 4/24/4/8 with
-// the fade side taking the 24.
 @mixin hud-plate-padding($kind: solid) {
   @if $kind == card {
     padding: 8px 12px 10px;
@@ -59,6 +55,12 @@ $font-family: warhelios, 'Arial Narrow', arial, sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+@mixin svg-canvas {
+  font-size: 0;
+  letter-spacing: normal;
+  line-height: 0;
 }
 
 @mixin ellipsis {
@@ -83,7 +85,6 @@ $font-family: warhelios, 'Arial Narrow', arial, sans-serif;
   @include ease(border-color, box-shadow);
 }
 
-// Short hover and press feedback: the listed properties ease over the base duration.
 @mixin ease($properties...) {
   $list: ();
 
@@ -94,7 +95,6 @@ $font-family: warhelios, 'Arial Narrow', arial, sans-serif;
   transition: $list;
 }
 
-// A raised plate of the settings window: layered gradient, inner top highlight, soft drop shadow.
 @mixin raised($radius: radius-lg) {
   border: 1px solid token(win-frame-line);
   border-radius: token($radius);
@@ -103,7 +103,6 @@ $font-family: warhelios, 'Arial Narrow', arial, sans-serif;
   box-shadow: token(win-card-shadow);
 }
 
-// A sunken well for inputs and control groups.
 @mixin well {
   border: 1px solid token(color-border);
   border-radius: token(radius-md);
@@ -112,7 +111,6 @@ $font-family: warhelios, 'Arial Narrow', arial, sans-serif;
   box-shadow: token(win-well-shadow);
 }
 
-// A pressable control surface (buttons, segments, steppers).
 @mixin control {
   border: 1px solid token(color-border-strong);
   border-radius: token(radius-md);
@@ -130,7 +128,6 @@ $font-family: warhelios, 'Arial Narrow', arial, sans-serif;
   }
 }
 
-// The selected or primary state: the orange gradient with its glow.
 @mixin accent-fill {
   border-color: token(color-accent);
   background-color: token(color-accent);

@@ -8,8 +8,6 @@ FILE_VERSION = 1
 MAX_PROFILES = 12
 NAME_MAX_LENGTH = 40
 
-# user_set and defaults_revision describe this install's history of choices and default upgrades: a profile loaded
-# later must not roll them back. `enabled` is the whole mod's switch (data sending included): only the player turns it.
 EXCLUDED_CONFIG_KEYS = (
     'enabled',
     'user_set',
@@ -26,12 +24,9 @@ EXCLUDED_CONFIG_KEYS = (
     'show_pack_badge',
 )
 EXCLUDED_CONFIG_PREFIXES = ('send_', 'settings_include_')
-# Where the settings window sits depends on the player's screen, so it never travels in a profile or its code.
 EXCLUDED_SECTIONS = (WINDOW_SECTION,)
 
-# A code may come from a stranger, so it never switches on what sends client requests or hides client views (CLAUDE.md
-# "Hangar actions only on the player's request"); the player's own saved profiles keep them. The names are the
-# features' switches and sections, spelled here because the ui package must not import a feature that may be missing.
+# A code may come from a stranger: it never switches on client requests or hides client views.
 CODE_EXCLUDED_CONFIG_KEYS = (
     'hangar_auto_reserves',
     'hangar_auto_resupply',
@@ -51,13 +46,10 @@ CODE_EXCLUDED_SECTIONS = (
     'auto_messages',
 )
 CODE_EXCLUDED_SECTION_KEYS = {'hangar_tweaks': ('quick_actions',)}
-# Plain-data sections a code may carry besides the schema sections of the installed components: the HUD places per
-# battle type, which the layer cleans on every read.
 CODE_RAW_SECTIONS = (PLACES_SECTION,)
 
 CODE_PREFIX = 'TM1.'
 CODE_MAX_CHARS = 48 * 1024
-# A real profile unpacks to a few kilobytes; a code that unpacks past this is refused before it is parsed.
 UNPACKED_MAX_BYTES = 1024 * 1024
 
 ERROR_LIMIT = 'limit'

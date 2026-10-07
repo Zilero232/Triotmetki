@@ -1,4 +1,10 @@
+@use '@/shared/styles/gameface' as *;
+
 .arcs {
   position: absolute;
   display: flex;
+}
+
+.svg {
+  @include svg-canvas;
 }

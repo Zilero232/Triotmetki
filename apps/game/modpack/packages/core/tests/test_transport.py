@@ -25,7 +25,6 @@ from otmetki.core.net.transport import (
 from otmetki.core.net.transport import tls
 from otmetki.core.net.transport.constants import TRUSTED_ROOTS
 
-# https://letsencrypt.org/certificates/: ISRG Root X1 and ISRG Root X2.
 ISRG_FINGERPRINTS = [
     '96bcec06264976f37460779acf28c5a7cfe8a3c0aae11a8ffcee05c0bddf08c6',
     '69729b8e15a86efc177a57afb7171dfc64add28c2fca8cf1507e34453ccb1470',
@@ -94,7 +93,6 @@ def fake_ssl(verify_mode=2, check_hostname=True, create=True):
     return type(str('FakeSsl'), (object,), attrs)()
 
 
-# Nothing listens on port 1; Windows retries a refused connect until the timeout, so it stays short.
 UNREACHABLE_TIMEOUT_S = 0.2
 
 

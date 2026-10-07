@@ -5,8 +5,7 @@ from ....core.compat import string_types, to_text
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, font, single_spaces, strip_tags
 from .constants import MARK_OF, MAX_MISSIONS, MAX_TEXT, STATE_IN_PROGRESS, STATES, TITLE_SIZE_STEP
 
-# Fair play: the player's own personal missions as the client's missions screen holds them (names, conditions, the
-# own progress state). Nothing about other players.
+# Fair play: the own personal missions as the client's missions screen holds them.
 
 
 def clean_text(value):
@@ -35,8 +34,6 @@ def by_state(missions):
     return sorted(missions, key=lambda item: order[item['state']])
 
 
-# The client lists the finished missions of every campaign too: the cap keeps the ones in progress, the totals count
-# all.
 def clean_missions(items):
     cleaned = [mission for mission in map(clean_mission, list(items or [])) if mission is not None]
     missions = by_state(cleaned)

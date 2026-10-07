@@ -85,8 +85,6 @@ class StreamerMode(FeatureComponent):
     def _hides_chat(self):
         return self.enabled() and hides_chat(self.settings, self.app.in_battle)
 
-    # The own lines and commands are never touched (a command that cannot tell counts as own); a hidden line skips the
-    # client's addMessage like chat_filter's.
     def _add_message(self, original, layout, message, *args, **kwargs):
         session_id = getattr(message, 'avatarSessionID', None)
         if self._hides_chat() and is_player_line(session_id, is_own(session_id)):

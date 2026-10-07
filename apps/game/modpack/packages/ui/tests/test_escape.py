@@ -7,7 +7,6 @@ import _support  # noqa: F401
 from otmetki.ui.escape import EscapeGuard, EscapeWatchdog
 
 
-# The client's GameInputMgr: listeners on its onEscape event, the key held while any is registered.
 class FakeInputManager(object):
 
     def __init__(self):
@@ -24,7 +23,6 @@ class FakeInputManager(object):
             listener()
 
 
-# BigWorld.callback: the scheduled calls run when the test lets the time pass.
 class FakeClock(object):
 
     def __init__(self):

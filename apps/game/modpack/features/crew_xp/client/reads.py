@@ -4,11 +4,7 @@ from ....core.client.game import client_attr, selected_vehicle, service
 from ....core.compat import to_text
 from ....core.log import guarded
 
-# RU 1.45 client source: Vehicle.crew is [(slot, Tankman or None)]; Tankman.getNextSkillXpCost() is the XP to finish the
-# skill (or the role) in training, 0 once a new skill is ready to pick; roleLevel under 100, else
-# descriptor.lastSkillLevel; roleUserName, fullUserName. IItemsCache.items.getTankmanDossier(invID).getAvgXP() is the
-# average the crew screens divide by (the vehicle's own for a crew member in a tank); VehicleType.crewXpFactor the
-# vehicle's crew XP multiplier.
+# RU 1.45 client source: Vehicle.crew, Tankman.getNextSkillXpCost(), getTankmanDossier().getAvgXP().
 
 
 def _items():

@@ -103,7 +103,7 @@
     {
       "id": "otmetki_pack_badge",
       "feature": "pack_badge",
-      "title": "Modpack user badge",
+      "title": "Modpack user plate",
       "origin": "original",
       "author": "Три отметки",
       "copyright": "Copyright (c) 2026 Три отметки",
@@ -112,10 +112,10 @@
       "url": "https://triotmetki.ru",
       "sources": "otmetki/pack_badge/src",
       "files": "otmetki/pack_badge/png",
-      "renditions": [{ "size": 16 }],
+      "renditions": [{ "size": 36 }, { "size": 54 }, { "size": 72 }],
       "target": "res/gui/maps/icons/otmetki/pack_badge",
-      "contents": "1 badge (three marks on a shield): SVG source, RGBA PNG 16 px drawn after the name in the player panels, the Tab stats and the loading screen",
-      "fair_play": "Drawn next to the names of players who use the bound modpack and chose to show it; carries no battle information."
+      "contents": "1 plate (the «///» mark and the «ТРИ ОТМЕТКИ» wordmark, 2:1): SVG source, RGBA PNG 36x18, 54x27 and 72x36 (interface scale 1x, 1.5x, 2x), embedded in the pack_badge SWF (as3/) that draws it after the vehicle icon in the players panel rows",
+      "fair_play": "Drawn in the rows of players who use the bound modpack and chose to show it; carries no battle information."
     },
     {
       "id": "battlehits_models",

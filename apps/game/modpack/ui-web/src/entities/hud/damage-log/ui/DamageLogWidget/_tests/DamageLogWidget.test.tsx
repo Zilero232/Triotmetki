@@ -36,13 +36,13 @@ describe(DamageLogWidget, () => {
   it('adds the notes the Python side sends', () => {
     const html = render(<DamageLogWidget data={fixture} />).container;
 
-    expect(html.textContent).toContain('боеукладка');
+    expect(html.textContent).toContain('не пробил');
   });
 
   it('draws the target HP bar on the own shots only', () => {
     const html = render(<DamageLogWidget data={fixture} />).container;
 
-    expect(html.querySelectorAll('[style*="width: 36rem"]')).toHaveLength(2);
+    expect(html.querySelectorAll('[style*="width: 26rem"]')).toHaveLength(2);
   });
 
   it('is wider with the notes than without them', () => {

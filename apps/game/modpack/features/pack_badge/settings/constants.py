@@ -4,6 +4,6 @@ SWITCH = 'battle_pack_badge'
 SECTION = 'pack_badge'
 GROUP = 'battle'
 
-# The badge sits after the name and never covers the player's own badge, so the component has no options (the old
-# stock_badge choice leaves the stored file through companion.config DROPPED_KEYS).
+# The plate sits after the vehicle icon and never covers the player's own badge, so the component has no options (the
+# old stock_badge choice leaves the stored file through companion.config DROPPED_KEYS).
 DEFAULTS = {}

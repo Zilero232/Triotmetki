@@ -67,8 +67,6 @@ def _remembered_ids(data):
     return [to_text(item) for item in data if isinstance(item, string_types)]
 
 
-# The goals whose completion was already announced (so the sound plays once). Goals already done when the
-# account is first read are remembered silently.
 class Announced(object):
 
     def __init__(self, data=None):

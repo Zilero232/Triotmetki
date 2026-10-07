@@ -32,8 +32,7 @@ except ImportError:
     ARENA_PERIOD = VEHICLE_VIEW_STATE = g_playerEvents = None
 
 
-# RU 1.45 client source: PlayerAvatar.getVehicleDescriptor() is the own vehicle's descriptor, whose miscAttrs the client
-# fills with the installed devices at their slot's level (VehicleDescriptor._updateAttributes).
+# RU 1.45 client source: PlayerAvatar.getVehicleDescriptor().miscAttrs (_updateAttributes).
 def own_spotting_decrease():
     descriptor = call(player(), 'getVehicleDescriptor')
     attributes = getattr(descriptor, 'miscAttrs', None) or {}
@@ -43,9 +42,6 @@ def own_spotting_decrease():
 PANEL_SPEC = PanelSpec.of(settings, STRINGS, preview, PREVIEW_SIZE)
 
 
-# The lamp lights and goes out with the stock one (the same OBSERVED_BY_ENEMY state), so it replaces the stock lamp
-# while it runs, lit or not (`stock_while_hidden`); a client without the spotting state starts no lamp and replaces
-# nothing.
 class SixthSenseAlert(BattlePanel):
 
     stock_while_hidden = True
@@ -89,9 +85,7 @@ class SixthSenseAlert(BattlePanel):
             return
         self._apply_state(name, value)
 
-    # A tank spotted before the panel started (or before the controlled vehicle was ready) has no OBSERVED_BY_ENEMY
-    # update to come: the stock SixthSenseIndicator reads the controlled vehicle's sixthSenseState then (RU 1.45
-    # gui/Scaleform/daapi/view/battle/shared/indicators.py __onVehicleChanged / __onControlModeChanged).
+    # RU 1.45 battle/shared/indicators.py SixthSenseIndicator reads sixthSenseState on a vehicle change.
     def _read_spotted(self, vehicle):
         if self.lamp is None or vehicle is None or not controls_own_vehicle():
             return
@@ -128,8 +122,9 @@ class SixthSenseAlert(BattlePanel):
         if lamp is None or not lamp.lit:
             return False
 
+        was_expired = lamp.expired(time.time())
         self.render()
-        return not lamp.expired(time.time())
+        return not was_expired
 
     @safe
     def render(self):

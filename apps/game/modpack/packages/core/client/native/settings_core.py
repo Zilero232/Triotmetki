@@ -21,8 +21,7 @@ def settings_cache():
     return service(ISettingsCache)
 
 
-# RU 1.45 gui/shared/utils/requesters/IntSettingsRequester.py requireSync: before the server settings arrive the
-# core answers every read with the option's default (logging an error), which looks like a real value.
+# RU 1.45 IntSettingsRequester.py requireSync: reads before the server settings give the default.
 def settings_synced():
     """Whether the player's server settings have arrived; True when the client has no settings cache to ask."""
     cache = settings_cache()

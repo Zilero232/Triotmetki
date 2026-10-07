@@ -12,11 +12,6 @@ from .constants import MAX_BYTES, SETTLE_S, VISIBILITY_HEADER, VISIBILITY_PRIVAT
 from .files import build_multipart
 from .queue import uploaded_replay_id
 
-# upload_job runs on the worker thread: its transport must answer inside request() (transport.SyncTransport), so
-# the 428 clock-skew retry of signing.signed_request happens there too. ReplayUploader drives it from the main
-# thread, one upload in flight. Entering a battle pauses it: the running upload stops at its next block
-# (StoppableBody) and is retried as it was, without a backoff, once the player is back in the hangar.
-
 
 def _read_file(path, limit):
     with io.open(path, 'rb') as handle:
@@ -49,8 +44,6 @@ def _refusal(result):
 
 
 def _read_found(item, files, now):
-    # A replay renamed between the search and the read (the replay manager's auto-rename) is looked up again
-    # once: the search goes by the file's header, not its name.
     for _ in range(2):
         found = files.find(item)
         if not found:

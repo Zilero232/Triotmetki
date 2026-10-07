@@ -6,8 +6,7 @@ from ....core.compat import clean_text, number_or_none
 from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, counted, font, format_number
 from .constants import MAX_CREW, MAX_LEVEL, MAX_TEXT, TITLE_SIZE_STEP
 
-# Only the own crew and the own vehicle's average XP, the same figures the client's crew screens and battle results
-# use (TankmanDossier: next skill cost over the average XP); nothing about other players.
+# Fair play: only the own crew and vehicle (TankmanDossier figures), nothing about other players.
 
 
 def battles_left(xp_left, avg_xp, factor=1.0):

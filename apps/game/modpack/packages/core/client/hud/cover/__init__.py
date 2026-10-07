@@ -50,13 +50,13 @@ from .windows import WindowWatch
 try:
     from gui.Scaleform.daapi.view.battle.shared.page import SharedPage
     IMPORT_ERROR = None
-except Exception as error:  # the battle page moved: nothing covers the panels
+except Exception as error:
     SharedPage = None
     IMPORT_ERROR = error
 
 try:
     from gui.Scaleform.daapi.view.meta.PrebattleAmmunitionPanelViewMeta import PrebattleAmmunitionPanelViewMeta
-except Exception:  # no pre-battle setups panel: the consumables panel follows the page alone
+except Exception:
     PrebattleAmmunitionPanelViewMeta = None
 
 
@@ -263,7 +263,7 @@ def _page_call(page, name, *args):
         return None
     try:
         return method(*args)
-    except Exception:  # the page's Flash object is gone
+    except Exception:
         return None
 
 

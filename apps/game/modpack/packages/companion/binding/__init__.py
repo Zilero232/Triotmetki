@@ -102,12 +102,6 @@ def _has_legacy_fields(entry):
     return isinstance(entry, dict) and bool(set(entry) - set(PUBLIC_FIELDS))
 
 
-# The bindings per account, split in two (README "Durable settings"): the game-folder `credentials.json` holds only
-# `{device_id, account_id}`, the %APPDATA% copy adds `secret_dpapi`, the secret sealed for this Windows user. A
-# plaintext `secret` of an older version is taken once and both halves are rewritten at once (so is a game-folder copy
-# that is missing or carries other fields); plaintext is never written. A sealed secret that does not open (a roaming
-# profile not synced yet, a DPAPI failure) is no binding for now, but both its halves are kept as they are and it is
-# tried again on the next start. Without DPAPI or a durable folder a new binding lasts for the session only.
 class CredentialStore(object):
     def __init__(self, pair, box):
         self.public = pair.public

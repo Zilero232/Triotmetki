@@ -27,7 +27,6 @@ class GalleryPictures(object):
     default = attr.ib(default=None)
 
 
-# The key is a file name: only a space folder and a look id the settings accept make one.
 def preview_key(space, look_id=u''):
     if not isinstance(space, string_types) or not SPACE_NAME.match(to_text(space)):
         return None
@@ -59,8 +58,6 @@ def tile_image(key, previews, fallback=None):
     return previews.get(key) or fallback
 
 
-# The shot needs the hangar alone on the screen: the plain hangar view with no window of ours over it either (the
-# settings window blurs the scene and covers it); a window of ours that is not blocking is hidden for the shot.
 def is_clean_hangar(windows):
     alive = [window for window in windows or () if window.get('alive', True)]
     if any(window.get('own') and window.get('blocking') for window in alive):
@@ -68,9 +65,6 @@ def is_clean_hangar(windows):
     return plain_hangar(alive)
 
 
-# Only on the player's use of the picker: a pick or the refresh button arms the book for PREVIEW_ARM_S; the hangar on
-# screen is shot once it stayed clean for PREVIEW_SETTLE_S and has no preview yet (nor was tried this session), or is
-# the one the refresh button asked for. One shot disarms it, so a space or look is never shot again on its own.
 class CaptureBook(object):
 
     def __init__(self):

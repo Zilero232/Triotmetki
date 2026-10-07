@@ -9,9 +9,7 @@ FIELDS = {
     'horizontal_stabilization': (HORIZONTAL_STABILIZATION, tri_state),
 }
 
-# Left out (README "Camera"): extra zoom steps or camera distance
-# beyond the client's own options, free-look / pitch limits and the commander camera. All of them need
-# overriding the camera configuration (PMOD-style), which is not a setting the game exposes.
+# Left out (README "Camera"): extra zoom or distance, free-look and pitch limits, the commander camera.
 
 
 def resolve(values):
@@ -22,8 +20,6 @@ def resolve(values):
     return resolved
 
 
-# A preset is chosen to take over its fields: the ones the same change did not set go back to the game's value, so the
-# preset fills them (resolve) instead of the recommended values a fresh install starts with.
 def preset_reset(values, changed):
     if 'preset' not in changed:
         return {}

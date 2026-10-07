@@ -17,11 +17,9 @@ from .constants import (  # noqa: F401
     VERSION_NUMBERS,
 )
 
-# Nothing about the player leaves the client: the request names only the game version, the answer is the public
-# release index the site and the manager read.
+# Nothing about the player leaves the client: the request names only the game version.
 
 
-# Trailing zeros are dropped so versions of different lengths compare as the numbers they are: 1.2 == 1.2.0.
 def version_key(text):
     if not isinstance(text, string_types):
         return None

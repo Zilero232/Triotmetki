@@ -186,6 +186,11 @@ class SectionsTest(unittest.TestCase):
 
         self.assertEqual(components['pack_badge'], {})
 
+    def test_the_tank_card_loses_its_alt_detail(self):
+        _, components = migrate({'defaults_revision': 9}, {'hangar_marks': {'alt_detail': True, 'style': 'compact'}})
+
+        self.assertEqual(components['hangar_marks'], {'style': 'compact'})
+
     def test_minimap_names_the_player_left_to_the_game_stay(self):
         config = {'defaults_revision': 7, 'user_set': 'minimap.vehicle_names'}
 
@@ -456,19 +461,22 @@ class MarksSplitTest(unittest.TestCase):
             'carousel_percent': True,
         })
 
-    def test_the_alt_detail_joins_the_card_and_leaves_the_battle_panel(self):
+    def test_the_alt_detail_leaves_the_battle_panel(self):
         _, components = migrate(before_split(), {'marks_panel': {'alt_detail': False, 'style': 'minimal'}})
 
         self.assertEqual(components['marks_panel'], {'style': 'minimal'})
-        self.assertFalse(components['hangar_marks']['alt_detail'])
 
-    def test_a_split_file_loses_the_battle_alt_detail_and_keeps_the_cards(self):
+    def test_the_alt_detail_does_not_join_the_card(self):
+        _, components = migrate(before_split(), {'marks_panel': {'alt_detail': False, 'style': 'minimal'}})
+
+        self.assertNotIn('hangar_marks', components)
+
+    def test_a_split_file_loses_both_alt_details(self):
         components = {'marks_panel': {'alt_detail': False, 'bar': 'percent'}, 'hangar_marks': {'alt_detail': False}}
 
         _, migrated_components = migrate({'defaults_revision': SPLIT_REVISION}, components)
 
-        expected = {'marks_panel': {'bar': 'percent'}, 'hangar_marks': {'alt_detail': False}}
-        self.assertEqual(migrated_components, expected)
+        self.assertEqual(migrated_components, {'marks_panel': {'bar': 'percent'}, 'hangar_marks': {}})
 
     def test_the_battle_panel_keeps_only_its_own_options(self):
         stored_marks = {

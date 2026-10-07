@@ -1,0 +1,31 @@
+@use '@/shared/styles/gameface' as *;
+@use '../../styles/tones' as *;
+
+.column {
+  position: absolute;
+  top: 90px;
+  bottom: 20px;
+  left: 24px;
+  display: flex;
+  width: 620px;
+  flex-direction: column;
+}
+
+.list {
+  display: flex;
+  min-height: 0;
+  flex: 0 1 auto;
+  flex-direction: column;
+  padding: 4px;
+  pointer-events: auto;
+
+  @include panel;
+}
+
+.details {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: row;
+  margin-top: 16px;
+  pointer-events: auto;
+}

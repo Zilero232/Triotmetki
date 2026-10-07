@@ -9,8 +9,7 @@ except Exception:
     print(str('[OTMETKI] failed to start\n') + traceback.format_exc())
 
 
-# The client's mod loader (gui/mods/__init__.py) calls each mod_*'s fini() while the game shuts down (UNVERIFIED on
-# Lesta 1.45); onDisconnected and every space change flush the held saves as well.
+# UNVERIFIED on Lesta 1.45: the mod loader (gui/mods/__init__.py) calls fini() at shutdown.
 def fini():
     try:
         from gui.mods.otmetki.companion.app.client import stop

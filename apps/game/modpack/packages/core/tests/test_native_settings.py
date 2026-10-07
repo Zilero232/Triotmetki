@@ -138,7 +138,6 @@ class ReplayNameTest(unittest.TestCase):
     def test_the_recording_temp_file_is_not_a_replay(self):
         assert not is_replay_name('temp.mtreplay')
 
-    # BattleReplay.record (RU 1.45) falls back to temp1..temp99 while temp.mtreplay is taken.
     def test_numbered_temp_files_are_not_replays(self):
         assert not is_replay_name('temp1.mtreplay')
         assert not is_replay_name('TEMP99.wotreplay')

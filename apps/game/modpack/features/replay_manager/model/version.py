@@ -13,7 +13,6 @@ def version_key(text):
     return tuple(int(part) for part in parts[:VERSION_PARTS])
 
 
-# Whether the running client can play a replay recorded by `replay_version`; unknown on either side is no.
 def compatible(replay_version, client_version):
     replay_key = version_key(replay_version)
     return replay_key is not None and replay_key == version_key(client_version)

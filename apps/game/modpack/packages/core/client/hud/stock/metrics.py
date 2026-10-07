@@ -7,12 +7,12 @@ from .constants import BAR_METHODS, MINIMAP_RESIZE_METHOD, MINIMAP_SIZE_SETTING
 
 try:
     from gui.Scaleform.daapi.view.battle.shared.consumables_panel import ConsumablesPanel
-except Exception:  # the panel moved: the attached panels keep the fallback width
+except Exception:
     ConsumablesPanel = None
 
 try:
     from gui.Scaleform.daapi.view.battle.shared.minimap.component import MinimapComponent
-except Exception:  # the minimap moved: the attached panels keep the size from the setting
+except Exception:
     MinimapComponent = None
 
 
@@ -25,7 +25,7 @@ def _minimap_index():
     try:
         from account_helpers.AccountSettings import AccountSettings
         return AccountSettings.getSettings(MINIMAP_SIZE_SETTING)
-    except Exception:  # no account settings outside the client: the fallback size
+    except Exception:
         return None
 
 

@@ -62,9 +62,6 @@ class BattleTotals(object):
         return combined_damage(self.get('damage'), self.get('radio'), self.get('track'), self.get('stun'))
 
 
-# `verified` when the starting percent is the client's own damageRating (the dossier read when the tank was selected,
-# updated from the own battle results since): the server's value, not ours. `estimated` when the dossier has none
-# (missing or 0) and the percent is the site curve at the dossier's EMA.
 def percent_source(snapshot, curve):
     rating = snapshot.get('damage_rating')
     if is_number(rating) and rating > 0:
@@ -74,8 +71,6 @@ def percent_source(snapshot, curve):
     return SOURCE_ESTIMATED
 
 
-# Until the site serves the tank's thresholds the curve is the estimate through the dossier's own point
-# (core.moe estimated_curve): the panel projects and counts the damage from the first battle, marked as an estimate.
 def _battle_curve(snapshot, curve, percent):
     if curve is not None:
         return curve, CURVE_SITE
@@ -118,7 +113,6 @@ def _shows_up(state, settings):
     return state['up_level'] is not None
 
 
-# 100% is listed only once it is the next mark.
 def target_levels(state):
     return [level for level in sorted(state['need']) if level != 100 or state['next_level'] == 100]
 

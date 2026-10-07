@@ -3,12 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.client.game import service
 from ....core.client.garage import is_locked
 
-# RU 1.45 client source: IItemsCache.items.getVehicles(REQ_CRITERIA.INVENTORY) is the garage
-# (gui/shared/utils/requesters/ItemsRequester.py); a vehicle's optDevices.setupLayouts.setups maps each setup
-# (preset) index to its layout, whose getIntCDs() lists the device of every slot (gui_items/vehicle_equipment.py).
-# The stock action ActionsFactory.REMOVE_OPT_DEVICE (items_actions/actions.RemoveOptionalDevice) with everywhere=True
-# asks the stock demount dialog when the device is not free to take off, then sends OptDeviceInstaller with
-# allSetups=True, which finds the setup holding the device itself: no preset has to be switched first.
+# RU 1.45 client source: IItemsCache.items.getVehicles(REQ_CRITERIA.INVENTORY), optDevices.setupLayouts.
 
 
 def _items():

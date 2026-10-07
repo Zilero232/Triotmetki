@@ -94,8 +94,6 @@ class BattlePanel(FeatureComponent):
             self.start(*args)
             self.sync_stock()
 
-    # Each step on its own: a failing stop() must still hide the panel and give the stock element back, or the label
-    # would show in the next battle with this one's data.
     def _on_leave(self):
         self.running = False
         for step in (self.preview.end, self.hooks.clear, self.stop, self.hide, self.sync_stock):

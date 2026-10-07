@@ -7,9 +7,7 @@ from ....core.hud.modes import MODE_COMP7, battle_mode
 from ....core.own_result import RESULT_DRAW, RESULT_TONES, own_result
 from .constants import KEPT_BATTLES, MIN_STREAK, SHOWN_BATTLES
 
-# Fair play: only the player's own Onslaught battles, from the own battle results the client already shows (the
-# `personal` block: the own vehicle's team and the rating change of the post-battle screen). Nothing about other
-# players is read or kept.
+# Fair play: only the own Onslaught battles from the own battle results.
 
 
 def own_battle(arena_id, results):
@@ -43,7 +41,6 @@ def record(history, battle):
     return (history + [battle])[-KEPT_BATTLES:]
 
 
-# (result, length) of the run of equal results the newest battle ends; a draw ends every run.
 def streak(history):
     if not history or history[-1]['result'] == RESULT_DRAW:
         return None, 0

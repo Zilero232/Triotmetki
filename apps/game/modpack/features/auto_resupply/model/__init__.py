@@ -4,8 +4,7 @@ from ....core.native_settings import tri_state
 from ..settings.constants import FLAGS
 from .constants import ACTION_ALL, ACTION_SELECTED, REFUSE_LOCKED, REFUSE_NOTHING, REFUSE_UNSET  # noqa: F401
 
-# Left out: an automatic crew return. RU 1.45 has no such vehicle flag; the crew's return is a one-off request
-# (the hangar tweaks' quick action).
+# Left out: an automatic crew return, RU 1.45 has no such vehicle flag.
 
 
 def wanted(values):

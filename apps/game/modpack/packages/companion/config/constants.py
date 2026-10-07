@@ -60,9 +60,6 @@ FEATURES = (
     'publish_replays',
     'share_session_report',
 )
-# Off until the player turns them on (docs/specs/2026-09-30-hud-consolidation-and-design.md section 0): the uploads
-# (privacy), what needs a site binding before it shows anything, the niche panels, and whatever overrides a client
-# view or sends client requests without a preset the leading packs agree on.
 OPT_IN_FEATURES = (
     'upload_replays',
     'publish_replays',
@@ -85,13 +82,10 @@ OPT_IN_FEATURES = (
     'hangar_space',
     'hangar_quick_demount',
     'free_camera',
+    'battle_pack_badge',
 )
 SHARE_CHANNELS = ('telegram', 'discord', 'both')
-# config.json keeps every default it was written with: a switch whose default changed is moved to the new
-# one when it still holds the old default and the file predates the change (`defaults_revision`).
-# (revision, key, old default, new default). A switch of a removed component is left out of DEFAULTS: Settings ignores
-# a key its schema does not know, so the leftover drops out of the file on the next save.
-DEFAULTS_REVISION = 9
+DEFAULTS_REVISION = 10
 RETIRED_DEFAULTS = (
     (1, 'battle_loadout', False, True),
     (3, 'hangar_tweaks', True, False),
@@ -101,22 +95,17 @@ RETIRED_DEFAULTS = (
     (3, 'hangar_cleaner', True, False),
     (3, 'streamer_mode', True, False),
     (3, 'battle_bush_circle', True, False),
+    # UNVERIFIED on Lesta 1.45: suspected of native battle crashes after its image entered the player rows.
+    (10, 'battle_pack_badge', True, False),
 )
-# Switches set once for every file older than the revision, whatever they hold: revision 1 missed the files already
-# stamped with it, so the equipment row stayed off. The stamp records it, and a switch the player turns off
-# afterwards is kept. (revision, key, value).
 ONE_TIME_SWITCHES = (
     (2, 'battle_loadout', True),
+    # UNVERIFIED on Lesta 1.45: native crashes followed the badge image in the battle UI.
+    (10, 'battle_pack_badge', False),
 )
-# Revision 3 (docs/specs/2026-09-30-hud-consolidation-and-design.md section 0): the components merged into one another
-# and the ones removed. It runs on the stored config.json and components.json before any feature reads them; the later
-# revisions (RETIRED_VALUES, DROPPED_SECTIONS) run on every file older than DEFAULTS_REVISION.
 MIGRATION_REVISION = 3
 COMPONENTS_FILE = 'components.json'
-# The features' package next to the companion's (`gui.mods.otmetki` in the client), whose settings give the schema
-# defaults.
 FEATURES_PACKAGE = 'features'
-# A switch whose default turned off stays on for a player who set its component up: (switch, components.json section).
 GUARDED_SWITCHES = (
     ('hangar_tweaks', 'hangar_tweaks'),
     ('battle_chat_filter', 'chat_filter'),
@@ -126,7 +115,6 @@ GUARDED_SWITCHES = (
     ('battle_bush_circle', 'bush_circle'),
     ('streamer_mode', 'streamer_mode'),
 )
-# (surviving switch, the switches of the components merged into it): on when any of them was on.
 MERGED_SWITCHES = (
     ('battle_damage_log', ('battle_hit_log', 'battle_received_hits')),
     ('battle_moe_panel', ('hangar_marks', 'hangar_marks_history')),
@@ -135,7 +123,6 @@ MERGED_SWITCHES = (
     ('hangar_battle_results', ('hangar_battle_hits',)),
     ('hangar_info', ('battle_clock',)),
 )
-# ((old section, old key, old default), (new section, new key)): copied only when the player changed it.
 MERGED_SECTIONS = (
     (('hit_log', 'lines', 6), ('damage_log', 'dealt_lines')),
     (('damage_log', 'log_lines', 5), ('damage_log', 'dealt_lines')),
@@ -160,16 +147,12 @@ MERGED_SECTIONS = (
     (('marks_history', 'trend_battles', 5), ('marks_panel', 'trend_battles')),
     (('hangar_ratings', 'show_tank', True), ('marks_panel', 'show_tank_ratings')),
 )
-# (section, ((merged switch, key), ...)): when any merged switch was on, each key takes its switch's value, so the
-# survivor shows the parts the player had on.
 SWITCHED_PARTS = (
     ('battle_progress', (
         ('battle_main_gun', 'row_main_gun'),
         ('battle_efficiency', 'row_wn8'),
     )),
 )
-# (switches of the merged components, section, key): what the player had switched off (every one of the switches) stays
-# off as the part of its survivor that shows it. Read from the switches as stored, before the merge.
 SWITCHED_OFF_PARTS = (
     (('hangar_session_goals',), 'session_stats', 'show_goals'),
     (('hangar_ratings',), 'session_stats', 'show_account'),
@@ -177,11 +160,6 @@ SWITCHED_OFF_PARTS = (
     (('battle_moe_panel',), 'marks_panel', 'show_battle_panel'),
     (('hangar_marks', 'hangar_marks_history'), 'marks_panel', 'hangar_card'),
 )
-# (revision, section, key, old default, new default): moved in a file older than the revision, only while the key still
-# holds the old default and the player never set it in the window. Revision 4: the crosshair keeps the game's own
-# centre unless the player picks a mark (docs/research/competitors/2026-10-05-behavior-parity.md section 2). Revision 8:
-# the minimap's last-seen spots and names start at 'always', so its one-time switch of a game at 'never' runs for an
-# install that predates it (features/minimap model.constants ONCE).
 RETIRED_VALUES = (
     (3, 'hangar_info', 'clock_format', '%H:%M:%S', '%H:%M'),
     (3, 'hangar_info', 'date_format', '%d.%m.%Y', '%d.%m'),
@@ -192,29 +170,17 @@ RETIRED_VALUES = (
     (8, 'team_hp', 'style', 'full', 'icons'),
     (8, 'minimap', 'vehicle_names', 'native', 'always'),
 )
-# (revision, section, old default place, new default place) as (x, y, align_x, align_y): a component that is not a HUD
-# panel (no RETIRED_PLACES of its own) moves in a file older than the revision only while it still sits at the old
-# default; the rows apply in order, so an older file walks through every move. Revision 4: the clock strip goes top left
-# under the header, where Battle Observer keeps its hangar clock.
 MOVED_PLACES = (
     (3, 'hangar_info', (-16, 76, 'right', 'top'), (0, -196, 'left', 'bottom')),
     (4, 'hangar_info', (0, -196, 'left', 'bottom'), (50, 83, 'left', 'top')),
 )
-# Revision 5: the marks split into two components with their own options and settings page, as the packs keep the battle
-# marks panel apart from the hangar marks info: the battle panel (section marks_panel, switch battle_moe_panel) and the
-# hangar Tank card (section hangar_marks, switch hangar_tank_card). It runs on every file older than the revision.
 SPLIT_REVISION = 5
-# (switch, the switch it was under, (section, key) of its part's own switch): on only while both were on.
 SPLIT_SWITCHES = (
     ('battle_moe_panel', 'battle_moe_panel', ('marks_panel', 'show_battle_panel')),
     ('hangar_tank_card', 'battle_moe_panel', ('marks_panel', 'hangar_card')),
 )
-# ((old section, old key), (new section, new key)): the stored value goes to its new section as it was (the defaults
-# are the same); a key the old section does not hold leaves the new one at its default. The moved keys leave
-# marks_panel through DROPPED_KEYS; the battle panel's own alt_detail goes there too in revision 6.
 SPLIT_KEYS = (
     (('marks_panel', 'hangar_style'), ('hangar_marks', 'style')),
-    (('marks_panel', 'alt_detail'), ('hangar_marks', 'alt_detail')),
     (('marks_panel', 'show_trend'), ('hangar_marks', 'show_trend')),
     (('marks_panel', 'trend_battles'), ('hangar_marks', 'trend_battles')),
     (('marks_panel', 'show_tank_ratings'), ('hangar_marks', 'show_tank_ratings')),
@@ -222,23 +188,13 @@ SPLIT_KEYS = (
     (('marks_panel', 'show_research'), ('hangar_marks', 'show_research')),
     (('marks_panel', 'carousel_percent'), ('hangar_marks', 'carousel_percent')),
 )
-# Revision 6: the smaller aim circle moved from aim_info (a switch and a percentage) to the crosshair (a choice), where
-# the packs keep it with the reticle. A circle the player had on takes the first choice whose lowest percentage its
-# percentage reaches; one that was off stays at the game's size. The old keys leave aim_info through DROPPED_KEYS.
 AIM_CIRCLE_REVISION = 6
 AIM_CIRCLE_FROM = ('aim_info', 'aim_circle', 'aim_circle_scale', 70)
 AIM_CIRCLE_TO = ('crosshair', 'aim_circle')
 AIM_CIRCLE_CHOICES = ((95, 'stock'), (75, 'p80'), (65, 'p70'), (0, 'p60'))
-# Revision 8: the smaller aim circle became a component of its own (the crosshair's settings PARTS), as the packs list
-# it: a circle the player had smaller than the game's turns its switch on with the same size; one at the game's size
-# leaves the switch off. It runs after revision 6's move, and the crosshair's key leaves through DROPPED_KEYS.
 AIM_CIRCLE_PART_REVISION = 8
 AIM_CIRCLE_PART_STOCK = 'stock'
 AIM_CIRCLE_PART_TO = ('battle_aim_circle', 'aim_circle', 'size')
-# The sections of the removed components and panels (ComponentConfig keeps unknown sections, so they go here), dropped
-# from every file older than DEFAULTS_REVISION. Revision 4: battle_summary (the card of the battle being played) and
-# config_backup (the settings copy beside preferences.xml; core.durable keeps the files a wipe would lose). Revision 7:
-# the battle clock's panel and battle_menu (the settings button under the Esc menu), both taken out of the battle.
 DROPPED_SECTIONS = (
     'hit_log',
     'received_hits',
@@ -261,17 +217,6 @@ DROPPED_SECTIONS = (
     'battle_clock',
     'battle_menu',
 )
-# (section, key) of the removed options of components that stay, dropped from every file older than DEFAULTS_REVISION
-# (a section of an installed component loses them on its next save anyway; this covers a component not installed).
-# Revision 4: the crosshair's repair timers (the stock damage panel shows them), the update notice's hangar card
-# (the ModsList badge and one message took its place) and aim_info's armour readout with the HUD panel only it drew
-# (fair play: Lesta forbids in-battle armour analysis). Revision 5: the Tank card's options moved out of the battle
-# marks panel (SPLIT_KEYS), with the part switches and the battles row the battle panel no longer has. Revision 6: the
-# battle panel's Alt view (alt_detail), so its box is the one the player places, and aim_info's aim circle keys
-# (AIM_CIRCLE_FROM). Revision 7: hangar_info's battle clock switch and its timer replacement. Revision 8: the
-# crosshair's aim circle, now a component of its own (AIM_CIRCLE_PART_TO), and the battle log's Alt view (alt_mode,
-# alt_entry_template): no battle panel changes while Alt is held, so the notes follow show_notes alone. Revision 9:
-# pack_badge's stock_badge choice: the badge sits after the name and never covers the player's own badge.
 DROPPED_KEYS = (
     ('crosshair', 'repair_timers'),
     ('crosshair', 'aim_circle'),
@@ -306,11 +251,9 @@ DROPPED_KEYS = (
     ('damage_log', 'alt_mode'),
     ('damage_log', 'alt_entry_template'),
     ('pack_badge', 'stock_badge'),
+    ('hangar_marks', 'alt_detail'),
 )
-# Components that stay but are no HUD panel any more, so their battle-type places go (revision 4: aim_info).
 DROPPED_PANELS = ('aim_info',)
-# The keys the player set in the settings window (config switches by name, component values as `<section>.<key>`),
-# space-separated: a later default change never moves them.
 USER_SET_KEY = 'user_set'
 MAX_USER_SET = 8000
 DEFAULTS = {
@@ -355,7 +298,7 @@ DEFAULTS = {
     'battle_hotkeys': False,
     'battle_hud_layouts': True,
     'battle_aim_info': True,
-    'battle_pack_badge': True,
+    'battle_pack_badge': False,
     'hangar_comp7_helper': True,
     'hangar_event_trackers': False,
     'hangar_depot_seller': False,
@@ -392,9 +335,6 @@ CHOICES = {
 LIMITS = {
     'session_idle_minutes': (10, 24 * 60),
 }
-# server_url other than DEFAULT_SERVER_URL is honoured only in a development install (the dev loop's manifest
-# mods/<version>/otmetki-dev/otmetki-dev.json, or OTMETKI_DEV=1 in the client's environment); plain http only to these
-# exact hosts. A release build always talks to the production API, whatever config.json says.
 LOCAL_HOSTS = ('localhost', '127.0.0.1')
 SECURE_SCHEME = 'https'
 PLAIN_SCHEME = 'http'
@@ -403,6 +343,4 @@ DEV_ENV_ON = '1'
 DEV_FOLDER = 'otmetki-dev'
 DEV_MANIFEST = 'otmetki-dev.json'
 MODS_DIR = 'mods'
-# Settings that are no longer choices (docs/specs/2026-09-30-hud-consolidation-and-design.md section 12): the
-# outbox sends every 15 s.
 FIXED = {'flush_interval_seconds': 15}

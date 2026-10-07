@@ -372,6 +372,14 @@ describe(useHudOverlay, () => {
     expect(hook.result.current.hint?.text).toBe(PANEL_HINT);
   });
 
+  it('describes no panel outside the edit mode', async () => {
+    const { hook, hover } = await startInBattle({ state: withState({ patch: { edit: false } }) });
+
+    hover(ON_LABEL);
+
+    expect(hook.result.current.hint).toBeNull();
+  });
+
   it('shows the new hint the game sends after a language switch', async () => {
     const { hook, hover, mock } = await startInBattle();
 

@@ -43,9 +43,6 @@ def new_nonce():
     return str(binascii.hexlify(os.urandom(NONCE_BYTES)).decode('ascii'))
 
 
-# v2 message: version, method, path, timestamp and nonce lines, then one `name:value` line per signed header (lower-case
-# name, in the order sent), then the raw body. Mirrors signedMessage in
-# apps/web/server/src/modules/mod/lib/request-signature.
 def signed_message(method, path, timestamp, nonce, body, extra_headers=()):
     lines = [SIGNATURE_VERSION, method.upper(), path, str(timestamp), nonce]
     lines.extend(to_text(name).lower() + ':' + to_text(value) for name, value in extra_headers)

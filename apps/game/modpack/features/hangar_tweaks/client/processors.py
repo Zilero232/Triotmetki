@@ -2,9 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.garage import fresh_vehicle, run_in_order, run_processor
 
-# The requests the hangar's own buttons send, RU 1.45 client source: gui.shared.gui_items.processors
-# module.getInstallerProcessor(vehicle, item, slotIdx, install=False), tankman.TankmanUnload(vehicleInvID),
-# tankman.TankmanReturn(vehicle).
+# RU 1.45 client source: processors module.getInstallerProcessor, tankman.TankmanUnload / TankmanReturn.
 
 
 def _installer(vehicle, device, slot):
@@ -23,9 +21,7 @@ def _return(vehicle):
 
 
 def _style_remover(vehicle):
-    # The customization window's own way to take a style off (styled_mode._sellItem, RU 1.45 :317-323): an empty outfit
-    # for every season through OutfitApplier puts the style back in the depot. The CustomizationsSeller that follows it
-    # there sells the style for credits, so it is left out on purpose.
+    # RU 1.45 styled_mode._sellItem :317-323; its CustomizationsSeller is left out (it sells the style).
     from gui.shared.gui_items.processors.common import OutfitApplier
     from items.components.c11n_constants import SeasonType
     from items.customizations import CustomizationOutfit
@@ -43,8 +39,6 @@ def _demount_step(vehicle, slot, device_in):
 
 
 def demount(vehicle, slots, device_in, done):
-    # One slot at a time, each built from the vehicle as the items cache holds it after the previous
-    # answer: the hangar's own demount never sends overlapping inventory requests.
     run_in_order([_demount_step(vehicle, slot, device_in) for slot in slots], done, 'demount')
 
 

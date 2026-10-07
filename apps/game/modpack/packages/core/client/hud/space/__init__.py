@@ -9,7 +9,6 @@ from ...game import client_attr, service
 
 
 def current_space():
-    # The avatar has an arena, the account does not.
     return SPACE_BATTLE if hasattr(BigWorld.player(), 'arena') else SPACE_LOBBY
 
 
@@ -26,8 +25,7 @@ def cursor_events():
     return g_eventBus, EVENT_BUS_SCOPE.GLOBAL, show, hide
 
 
-# Whether the client shows the mouse cursor (RU 1.45 client source: CursorManager.show/hide set `GUI.mcursor().visible`
-# and fire SHOW_CURSOR/HIDE_CURSOR; Ctrl in battle, Tab, the chat), or None when it cannot be read.
+# RU 1.45 client source: CursorManager.show/hide set `GUI.mcursor().visible`.
 def cursor_visible():
     try:
         import GUI

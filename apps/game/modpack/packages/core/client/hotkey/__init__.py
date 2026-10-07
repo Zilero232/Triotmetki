@@ -24,7 +24,7 @@ def _chat_focused():
     try:
         from messenger import MessengerEntry
         return bool(MessengerEntry.g_instance.gui.isFocused())
-    except Exception:  # no messenger yet (the login screen) or its API moved
+    except Exception:
         return False
 
 

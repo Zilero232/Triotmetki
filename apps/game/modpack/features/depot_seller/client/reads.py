@@ -7,13 +7,7 @@ from ....core.log import guarded
 from ..model.constants import KIND_SHELLS
 from .constants import KIND_TYPES, SPECIAL_DEVICE_FLAGS
 
-# RU 1.45 client source: IItemsCache.items.getItems(itemTypeID, criteria) and getVehicles(REQ_CRITERIA.INVENTORY);
-# REQ_CRITERIA.INVENTORY is the depot stock (inventoryCount > 0: installed copies are not counted), and
-# REQ_CRITERIA.VEHICLE.SUITABLE(vehicles, types) what fits an owned vehicle, the criterion the depot's «Можно продать»
-# tab negates (storage/forsell/for_sell_view._getRequestCriteria). Shells fit when a gun of an own vehicle or an own
-# gun in the depot fires them (storage_helpers.getStorageShellsCriteria). FittingItem.getSellPrice().price.credits,
-# isForSale, isHidden, isBoughtForAltPrice; Tankman (invID, isInTank, earnedSkillsCount, descriptor.isPremium /
-# isFemale, isLockedByVehicle()) from getInventoryTankmen().
+# RU 1.45 client source: IItemsCache.items.getItems(itemTypeID, criteria), REQ_CRITERIA.INVENTORY.
 
 
 def _items_cache():

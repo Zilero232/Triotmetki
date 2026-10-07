@@ -17,9 +17,6 @@ RESERVED_NAMES = (
     + tuple('lpt%d' % number for number in range(1, 10))
 )
 
-# The folder is listed again at most this often while the window reads the page; headers are read in slices of the
-# main thread's time, one slice a frame while the window wants them, so a first look at a large folder never stalls
-# the hangar (one 40 ms slice a second was a visible hitch every second).
 SCAN_EVERY_S = 3.0
 INDEX_BUDGET_S = 0.008
 INDEX_FRAME_S = 0.0
@@ -31,7 +28,6 @@ ACTION_DELETE = 'delete'
 ACTION_FAVOURITE = 'favourite'
 ACTION_PLAY = 'play'
 ACTION_UPLOAD = 'upload'
-# Opens the hit viewer at the replay's battle (core.events hit_viewer_open).
 ACTION_HITS = 'hits'
 
 PAGE_KIND = 'replays'
@@ -58,19 +54,14 @@ ERROR_UNAVAILABLE = 'unavailable'
 ERROR_NO_ARENA = 'no_arena'
 ERROR_PATH = 'path'
 
-# BattleReplay (RU 1.45 client source, :235 and :1030) hands the engine BigWorld.getProductVersion(); a replay whose
-# clientVersionFromExe differs pops the client's own 'version differs' dialog, and its 'no' calls stop() on a replay
-# that never started, which has no way back to the hangar. The mod starts only replays of the exact running version.
+# RU 1.45 client source: BattleReplay :235 and :1030 compare clientVersionFromExe.
 VERSION_PARTS = 4
 VERSION_SPLIT = re.compile(r'[^0-9]+')
 
-# The client may still be writing a replay: wait before naming it, give up on a battle without one.
 AUTO_NAME_SETTLE_S = 10
 AUTO_NAME_GIVE_UP_S = 30 * 60
 AUTO_NAME_MATCH_S = 5 * 60
 AUTO_NAME_CHECK_S = 15
-# The library reads headers in the background only while the window shows the list; a battle waiting for its name reads
-# the newest unread headers itself, this long per check (at least one file: the replay just written comes first).
 AUTO_NAME_INDEX_S = 0.02
 
 RESULTS = ('win', 'loss', 'draw')
@@ -111,8 +102,7 @@ BATTLE_TYPES = {
 }
 OTHER_BATTLE_TYPE = 'other'
 
-# Client images by path (RU 1.45 gui-part1/2.pkg): the map's post-battle picture (500x235) with the list's small one
-# (100x60) behind it, the hangar vehicle icon (160x100) and the mastery badges of the results screen.
+# Client images, RU 1.45 gui-part1/2.pkg.
 MAP_STATS_ICON = 'gui/maps/icons/map/stats/%s.png'
 MAP_SMALL_ICON = 'gui/maps/icons/map/small/%s.png'
 VEHICLE_ICON = 'gui/maps/icons/vehicle/%s.png'
@@ -138,24 +128,17 @@ STAT_KEYS = (
     'life_time',
 )
 
-# contract/replay-analysis.schema.json: the site's analysis of an uploaded replay.
 ANALYSIS_PATH = '/mod/me/replays'
 ANALYSIS_POLL_S = 60
 ANALYSIS_WATCH_S = 6 * 3600
 ANALYSIS_IDS_PER_READ = 20
 PARSED = 'parsed'
 ANALYSIS_FINAL = (PARSED, 'failed')
-# A server without the endpoint answers 404: stop asking for this game session.
 NOT_SERVED_STATUS = 404
 
-# 'Watch': the client plays a replay only from a fresh start (BattleReplay.autoStartBattleReplay, RU 1.45 client source
-# :458), so the hangar writes the request and restarts the client; the next start plays it once. A request older than
-# this is dropped, so a crash or a manual restart never plays a replay the player no longer asked for.
+# RU 1.45 client source :458: BattleReplay.autoStartBattleReplay plays only from a fresh start.
 LAUNCH_FILE = 'replay_manager_play.json'
 LAUNCH_TTL_S = 180
-# BattleReplay.stop(self, rewindToTime=None, delete=False, isDestroyed=False) (RU 1.45 client source :403): game.fini
-# and BattleReplay.destroy stop a playing replay with isDestroyed=True while the client is closing; that stop still
-# calls BigWorld.quit(), which must stay a quit (turned into a restart it would relaunch a client the player just
-# closed).
+# RU 1.45 client source :403: BattleReplay.stop(self, rewindToTime=None, delete=False, isDestroyed=False).
 STOP_DESTROYED_ARG = 'isDestroyed'
 STOP_DESTROYED_INDEX = 2

@@ -5,9 +5,7 @@ from ....core.client.garage import is_locked, run_processor
 from ....core.log import guarded
 from .constants import PROCESSORS, READERS
 
-# RU 1.45 client source: gui.shared.gui_items.Vehicle (isAutoRepair / isAutoLoad / isAutoEquip properties,
-# isAutoBattleBoosterEquip()), gui.shared.gui_items.processors.vehicle (VehicleAuto*Processor(vehicle, value)),
-# IItemsCache.items.getVehicles(REQ_CRITERIA.INVENTORY).
+# RU 1.45 client source: gui.shared.gui_items.Vehicle isAuto* and processors.vehicle VehicleAuto*Processor.
 
 
 def _flag(vehicle, name):

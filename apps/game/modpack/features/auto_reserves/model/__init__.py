@@ -12,9 +12,6 @@ from .constants import (  # noqa: F401
     REFUSE_UNSET,
 )
 
-# Only the player's own personal reserves, activated with the client's own request. Clan and event reserves are left
-# out (the reader keeps the personal category only).
-
 KINDS = tuple(kind for kind, _key in RESERVES)
 
 
@@ -44,8 +41,6 @@ def _best(candidates):
     return min(candidates, key=lambda booster: (-booster['value'], booster['expires'], booster['id']))
 
 
-# ([booster ids to activate], None) or ([], refusal): for every picked kind with no reserve on, its strongest ready
-# reserve (the one that expires first among equals), while a personal slot is free.
 def pick(boosters, values):
     kinds = wanted_kinds(values)
     if not kinds:

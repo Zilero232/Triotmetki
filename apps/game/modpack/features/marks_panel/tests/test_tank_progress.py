@@ -28,13 +28,16 @@ def translator(language='en'):
     return _support.translator(STRINGS, language)
 
 
-def tank(held=True, mastery=MASTERY, own_mastery=2, research=RESEARCH):
+EXTENDED = {'style': 'extended'}
+
+
+def tank(mastery=MASTERY, own_mastery=2, research=RESEARCH):
     state = hangar_state(SNAPSHOT, ThresholdCurve.from_api(CURVE), 3000)
-    return TankCard(state, u'T-44', None, None, held, mastery, own_mastery, research_state(research))
+    return TankCard(state, u'T-44', None, None, mastery, own_mastery, research_state(research))
 
 
 def card(data, **values):
-    return tank_card(data, Settings(values, CARD_SCHEMA), translator())['data']
+    return tank_card(data, Settings(dict(EXTENDED, **values), CARD_SCHEMA), translator())['data']
 
 
 def cells(data, **values):
@@ -84,7 +87,7 @@ class ResearchTest(unittest.TestCase):
 class CardTest(unittest.TestCase):
 
     def test_the_bar_lists_the_100_percent_too(self):
-        levels = [item['level'] for item in card(tank(held=False))['thresholds']]
+        levels = [item['level'] for item in card(tank(), style='compact')['thresholds']]
 
         assert levels == [65, 85, 95, 100]
 
@@ -107,11 +110,8 @@ class CardTest(unittest.TestCase):
             (u'Research T-54', u'65 000', u'~65 battles'),
         ]
 
-    def test_the_progress_cells_wait_for_alt(self):
-        assert card(tank(held=False))['sections'] == []
-
-    def test_the_alt_hint_shows_while_the_grid_is_hidden(self):
-        assert card(tank(held=False))['hint'] == u'Alt: more'
+    def test_the_compact_style_hides_the_progress_cells(self):
+        assert card(tank(), style='compact')['sections'] == []
 
     def test_the_switches_hide_the_progress_cells(self):
         shown = labels(tank(), show_mastery=False, show_research=False)
@@ -123,7 +123,7 @@ class CardTest(unittest.TestCase):
         assert u'Badge 1st' not in labels(tank(mastery=None))
 
     def test_the_text_card_carries_the_same_lines(self):
-        text = strip_tags(card_text(tank(), Settings({}, CARD_SCHEMA), translator()))
+        text = strip_tags(card_text(tank(), Settings(EXTENDED, CARD_SCHEMA), translator()))
 
         assert u'Mastery badges, XP per battle: 3rd 540' in text
         assert u'To elite 110 000 (~110 battles)' in text

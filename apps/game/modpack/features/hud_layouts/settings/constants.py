@@ -6,8 +6,6 @@ SWITCH = 'battle_hud_layouts'
 SECTION = 'hud_layouts'
 GROUP = 'battle'
 
-# One layout per battle type (core.hud.modes.MODES): random and Onslaught keep every panel, the pages built for other
-# modes get the essentials, Steel Hunter (a HUD of its own) none.
 DEFAULTS = {
     'random': LAYOUT_FULL,
     'comp7': LAYOUT_FULL,

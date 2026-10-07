@@ -9,12 +9,12 @@ try:
     from gui.Scaleform.framework import ComponentSettings, ScopeTemplates, g_entitiesFactories
     from gui.Scaleform.framework.entities.inject_component_adaptor import InjectComponentAdaptor
     IMPORT_ERROR = None
-except Exception as error:  # a client without these classes keeps the core importable
+except Exception as error:
     IMPORT_ERROR = error
 
 try:
     import openwg_gameface
-except Exception:  # any failure inside a third-party import must not stop the core
+except Exception:
     openwg_gameface = None
 
 _hosts = {}
@@ -66,8 +66,7 @@ if IMPORT_ERROR is None:
         def set_state(self, text):
             self._setString(0, text)
 
-    # RU 1.45 client source: inject_component_adaptor.py accepts only ViewFlags.VIEW content and adds it as a child of
-    # the main window's view, so the page is a wulf child view, never a window of its own (no focus of its own).
+    # RU 1.45 client source: inject_component_adaptor.py accepts only ViewFlags.VIEW content.
     class PageView(ViewImpl):
 
         def __init__(self, layout, host):

@@ -68,7 +68,6 @@ def layout_of(settings):
     }
 
 
-# None with a custom template: the player's own text is drawn as is.
 def format_widget(info, settings, translate, now):
     if settings.get('template'):
         return None

@@ -40,7 +40,6 @@ class App(object):
         pass
 
 
-# CROSSHAIR_VIEW_ID, RU 1.45 battle_constants.
 ARCADE, SNIPER, STRATEGIC, POSTMORTEM = 1, 2, 3, 4
 
 
@@ -77,6 +76,12 @@ class GunSettings(object):
     def hasAutoReload(self):
         return False
 
+    def getClipInterval(self):
+        return 2.5
+
+    def getLastAmmoCount(self):
+        return 1
+
 
 class Ammo(object):
 
@@ -93,8 +98,6 @@ class Ammo(object):
         return 24.6
 
 
-# RU 1.45 ammo_ctrl: getCurrentShellCD() is None until the client sets the shells; GunSettings.getShellDescriptor(intCD)
-# looks an unknown intCD up with items.vehicles.getItemByCompactDescr, which logs an exception for None.
 class RecordingGunSettings(GunSettings):
 
     def __init__(self):
@@ -135,7 +138,6 @@ class AutoReloadAmmo(Ammo):
         return AutoReloadSettings()
 
 
-# RU 1.45 ammo_ctrl.getCurrentShells: (SHELL_QUANTITY_UNKNOWN,) * 2 while no current shell is set (a setup change).
 class UnknownShellsAmmo(Ammo):
 
     def getCurrentShells(self):
@@ -344,6 +346,14 @@ class CrosshairStockTest(unittest.TestCase):
         assert self.drawn_readouts()['reload']['full'] == '24.6'
         assert self.hidden() == (RETICLE_RELOAD_TIMER, RETICLE_CASSETTE)
 
+    def test_a_loaded_drum_shows_the_clients_interval_over_the_drum_reload(self):
+        self.module.ammo = Ammo
+        self.component._on_clip()
+
+        self.reload(0.0, 24.6)
+
+        assert (self.drawn_readouts()['reload']['value'], self.drawn_readouts()['reload']['full']) == ('2.5', '24.6')
+
     def test_no_current_shell_never_asks_the_client_for_a_descriptor(self):
         settings = RecordingGunSettings()
         self.module.ammo = lambda: NoShellAmmo(settings)
@@ -429,7 +439,6 @@ class Provider(object):
         self.sizes.append((size, relax_time))
 
 
-# RU 1.45 gun_marker_ctrl._DefaultGunMarkerController.update ends with `_dataProvider.updateSize(size, relaxTime)`.
 class GunMarkerController(object):
 
     def __init__(self):

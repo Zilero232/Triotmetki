@@ -42,13 +42,13 @@ describe(damageLogView, () => {
   it('splits the HP bar into what is left and what the own shots took, when the HP left and the max are known', () => {
     const rows = damageLogView(fixture).sections[0]?.rows ?? [];
 
-    expect(rows.map((row) => row.bar)).toEqual([null, { kept: 28, took: 8 }, null, { kept: 20, took: 16 }]);
+    expect(rows.map((row) => row.bar)).toEqual([null, { kept: 20, took: 6 }, null, { kept: 15, took: 11 }]);
   });
 
   it('keeps the HP bar inside its width when the damage is more than the HP lost', () => {
     const row = { ...fixture.dealt[3]!, amount: 5000, hp: 0, max: 900 };
 
-    expect(damageLogView({ ...fixture, dealt: [row] }).sections[0]?.rows[0]?.bar).toEqual({ kept: 0, took: 36 });
+    expect(damageLogView({ ...fixture, dealt: [row] }).sections[0]?.rows[0]?.bar).toEqual({ kept: 0, took: 26 });
   });
 
   it('draws no HP bar on the hits on the player', () => {

@@ -1,8 +1,6 @@
 @use 'sass:color';
 @use '@/shared/styles/gameface' as *;
 
-// The target's HP after the own shots: what is left in the enemy red, what the own shots took in the dealt orange, the
-// rest (lost before) an empty track.
 .track {
   display: flex;
   flex-direction: row;

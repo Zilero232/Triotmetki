@@ -116,8 +116,6 @@ class InjectSpike(object):
     def _text(self):
         return spike_text(self.mode.name, datetime.datetime.now(), self.place.template)
 
-    # The hangar always shows the cursor; in battle the page is told the cursor is shown only while editing, the way
-    # the battle HUD is (the player holds Ctrl for it).
     def _push(self):
         mode = self.mode
         cursor = True if self.place.space == SPACE_LOBBY else mode.edit

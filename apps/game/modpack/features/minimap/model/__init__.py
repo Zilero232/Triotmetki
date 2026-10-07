@@ -12,8 +12,7 @@ from .constants import (
     VIEW_RANGE,
 )
 
-# Deliberately absent (Lesta fair play): lost-enemy markers, gun directions, arty tracers, destroyed objects,
-# ally-spot markers, and zoom beyond the client's own size range (that needs patching the Flash minimap).
+# Fair play: no lost-enemy markers, gun directions, arty tracers, ally-spot markers or extra zoom.
 
 
 def _number(value):

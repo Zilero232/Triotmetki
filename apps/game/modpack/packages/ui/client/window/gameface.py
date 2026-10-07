@@ -5,8 +5,7 @@ from ....core.log import safe
 from ...protocol import ESCAPE_PROPERTY, FEED_PROPERTY, MESSAGE_ARG, RES_MAP_WINDOW, SEND_COMMAND, STATE_PROPERTY
 from .constants import WINDOW_LAYER
 
-# OpenWG Gameface (openwg_gameface) is a runtime dependency we do not bundle; Lesta needs its Lesta-compatible
-# build. API names follow docs.wotstat.info (Gameface theory) and are UNVERIFIED on Lesta 1.45.
+# UNVERIFIED on Lesta 1.45: OpenWG Gameface API names follow docs.wotstat.info.
 try:
     from frameworks.wulf import ViewFlags, ViewModel, ViewSettings, WindowFlags, WindowLayer, WindowStatus
     from gui.impl.pub import ViewImpl, WindowImpl

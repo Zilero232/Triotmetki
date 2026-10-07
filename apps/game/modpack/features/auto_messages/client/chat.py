@@ -48,9 +48,7 @@ def battle_channel(channel):
     return None
 
 
-# The chat input's own path (RU 1.45 BattleLayout.sendMessage): canSendMessage() is the channel's own gate (the
-# player's battle chat setting, teammates, Battle Royale, the 0.5 s broadcast cooldown); asked first, so a refused line
-# is dropped without the stock error line.
+# RU 1.45 BattleLayout.sendMessage: canSendMessage() is the channel's own gate, asked first.
 @guarded('auto messages: send', False)
 def send_line(channel, text):
     controller = battle_channel(channel)

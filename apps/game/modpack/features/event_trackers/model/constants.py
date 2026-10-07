@@ -3,10 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.hud.panel import dock_layout
 
-# Triathlon (tanki.su/ru/news/game-events/triatlon, update 1.45): a round is 60 minutes of Random Battles on tier VI
-# and up, scored by the sum of the three best battles by clean XP (all of them while there are fewer). UNVERIFIED: the
-# game starts the round when the player joins through the hangar flag; the mod has no read of that moment, so its round
-# starts with the first battle that counts.
+# UNVERIFIED: the Triathlon round starts when the player joins through the event page (update 1.45).
 ROUND_S = 60 * 60
 BEST_BATTLES = 3
 MIN_TIER = 6
@@ -14,7 +11,6 @@ RANDOM_BONUS_TYPE = 1
 MAX_ROUNDS = 30
 MAX_ROUND_BATTLES = 40
 MAX_NAME = 32
-# The (low, high) bounds a listed competition's values are trusted within; outside them the defaults above apply.
 CARDINALITY_RANGE = (1, 10)
 TIER_RANGE = (1, 11)
 # RU 1.45 gui/event_boards/event_boards_items.OBJECTIVE_PARAMETERS.ORIGINALXP: the objective of a clean-XP competition.
@@ -34,7 +30,6 @@ CARAVAN_PANEL = 'otmetki.event_trackers.caravan'
 HANGAR_LAYOUT = dock_layout('hangar_right')
 TITLE_SIZE_STEP = 2
 
-# The hangar cards (model/widget.py), design px: the hangar card width of the HUD design (spec 2026-09-30 section 6.3).
 CARD_WIDTH = 264
 TIER_NUMERALS = {
     1: u'I',

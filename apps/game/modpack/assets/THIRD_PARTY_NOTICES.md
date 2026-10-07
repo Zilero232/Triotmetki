@@ -13,7 +13,7 @@ under licences that allow redistribution in a paid product; each licence text sh
 | Crosshair vector centre marks in eight colours | Три отметки | LicenseRef-TriOtmetki-Artwork | crosshair | `res/gui/maps/icons/otmetki/crosshair/vector` |
 | Sixth-sense icons | Три отметки | LicenseRef-TriOtmetki-Artwork | sixth_sense | `res/gui/maps/icons/otmetki/sixth_sense/icons` |
 | Damage-log kind glyphs | Три отметки | LicenseRef-TriOtmetki-Artwork | damage_log | `res/gui/maps/icons/otmetki/damage_log/icons` |
-| Modpack user badge | Три отметки | LicenseRef-TriOtmetki-Artwork | pack_badge | `res/gui/maps/icons/otmetki/pack_badge` |
+| Modpack user plate | Три отметки | LicenseRef-TriOtmetki-Artwork | pack_badge | `res/gui/maps/icons/otmetki/pack_badge` |
 | Hangar look colour grading tables | Три отметки | LicenseRef-TriOtmetki-Artwork | hangar_looks | `res/system/maps/post_processing/cube/otmetki` |
 
 ## Third-party assets
@@ -83,15 +83,15 @@ visual reference only (layout, sizes, readability, colour conventions); nothing 
 - Ships in: `res/gui/maps/icons/otmetki/damage_log/icons` (component `damage_log`)
 - Fair play: Decorates the player's own damage-log lines; the class glyph shows the vehicle class the player panels already show.
 
-### Modpack user badge
+### Modpack user plate
 
 - Author: Три отметки
 - Copyright: Copyright (c) 2026 Три отметки
 - Licence: LicenseRef-TriOtmetki-Artwork (`assets/otmetki/LICENSE.md`)
 - Source: https://triotmetki.ru
-- Contents: 1 badge (three marks on a shield): SVG source, RGBA PNG 16 px drawn after the name in the player panels, the Tab stats and the loading screen
+- Contents: 1 plate (the «///» mark and the «ТРИ ОТМЕТКИ» wordmark, 2:1): SVG source, RGBA PNG 36x18, 54x27 and 72x36 (interface scale 1x, 1.5x, 2x), embedded in the pack_badge SWF (as3/) that draws it after the vehicle icon in the players panel rows
 - Ships in: `res/gui/maps/icons/otmetki/pack_badge` (component `pack_badge`)
-- Fair play: Drawn next to the names of players who use the bound modpack and chose to show it; carries no battle information.
+- Fair play: Drawn in the rows of players who use the bound modpack and chose to show it; carries no battle information.
 
 ### Hangar look colour grading tables
 

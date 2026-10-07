@@ -10,8 +10,6 @@ MIN_SECRET_LENGTH = 32
 CODE_PATTERN = re.compile('^[' + CODE_ALPHABET + ']{' + str(CODE_LENGTH) + r'}\Z')
 # re.UNICODE: Python 2's \s alone misses a no-break space pasted with the code.
 CODE_SEPARATORS = re.compile(r'[\s\-_]+', re.UNICODE)
-# The bind refusals the server and the response check name (contract/bind.schema.json), each with its own string; any
-# other reason shows the generic one, so no server text ever reaches the player's notifications.
 FAILURE_KEYS = {
     'invalid_code': 'bind_failed_code',
     'code_not_found': 'bind_failed_code',
@@ -22,8 +20,5 @@ FAILURE_KEYS = {
     'bad_response': 'bind_failed_response',
 }
 FAILURE_KEY = 'bind_failed'
-# credentials.json: the game-folder copy keeps only these fields of an account, the %APPDATA% copy adds the sealed
-# secret (core.durable.SecretBox). The manager reads and writes the same format; `bound_at` is not secret, and the
-# manager picks the most recently bound account by it.
 PUBLIC_FIELDS = ('device_id', 'account_id', 'bound_at')
 SEALED_FIELD = 'secret_dpapi'

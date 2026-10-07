@@ -7,6 +7,24 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Entries are short: one line per change, saying what the player sees or gets — no implementation details.
 - Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## 0.3.9
+
+### ru
+
+- Значок модпака в бою выключен: похоже, именно он ронял игру. Новая плашка после иконки танка — по включению в настройках.
+- Журнал боя вдвое компактнее; панели боя чётче, ХП команд без «мыла».
+- Прицел с барабаном: в центре сразу пауза между выстрелами.
+- Лампа без хвостика таймера, карточка танка не раскрывается по Alt, подсказки панелей только в редакторе HUD.
+- Просмотр попаданий: зоны, фильтр по исходу и «Броня танка» по всем вашим боям.
+
+### en
+
+- The modpack badge in battle is off: it looks like the cause of the game crashes. A new plate after the tank icon is opt-in in the settings.
+- A battle log half the size; sharper battle panels, crisp team HP.
+- Clip reticle: the time between shots in the centre from the start.
+- No timer sliver on the lamp, the Tank card no longer expands on Alt, panel hints only in the HUD editor.
+- Hit viewer: zones, an outcome filter and «Tank armour» across all your battles.
+
 ## 0.3.8
 
 ### ru
@@ -22,6 +40,28 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - The settings window in the client's style: the lobby's colours and buttons, actions at the bottom right, reset set apart.
 - The Three Marks badge sits after the name and no longer covers the achievement badge.
 - Battle chat auto messages: artillery on me, ally damage, spotted and a dozen more events to pick.
+
+## ui 0.9.8
+
+### ru
+
+- Метка снаряда в журнале боя меньше.
+- Панели боя чётче при масштабе интерфейса 125% и 150%: встают ровно по пикселям, обводка текста резкая.
+- ХП команд: цифры не размыты; значки классов здесь и в очках взвода в родном размере клиента.
+- В python.log больше нет тысяч предупреждений Gameface о rem в SVG за бой.
+- Подсказка с описанием панели — только в режиме редактирования HUD, в бою и ангаре не всплывает.
+- Редактор HUD: переключатель «Раскладка по типу боя» справа от заголовка.
+- Просмотр попаданий: фильтр по исходу, итог вкладки, панель «Броня танка» со слабым местом, зона попадания в списке.
+
+### en
+
+- A smaller shell label in the battle log.
+- Sharper battle panels at 125% and 150% interface scale: they sit on whole pixels and the text outline is crisp.
+- Team HP: crisp numbers; class icons here and in platoon points at the client's own size.
+- python.log no longer fills with thousands of Gameface warnings about rem in SVG each battle.
+- A panel's description tooltip shows only in the HUD edit mode, never in battle or the hangar.
+- HUD editor: the «Layout per battle type» switch sits right of the title.
+- Hit viewer: a result filter, tab totals, the «Tank armour» panel with the weak spot, the hit zone in the list.
 
 ## ui 0.9.7
 
@@ -393,6 +433,20 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Hangar components: battle summary, marks history, ratings, replay manager, quick actions and more.
 - A settings window with profiles and a HUD editor; settings survive a wiped mods folder.
 
+## pack_badge 0.1.3
+
+### ru
+
+- Значок в бою выключен по умолчанию: проверяем, не он ли ронял игру.
+- Вместо значка у ника — плашка «Три отметки» после иконки танка в ушах и оранжевая подсветка строки (тестовая, включается вручную).
+- По Tab и на экране загрузки значка больше нет.
+
+### en
+
+- The battle badge is off by default while we check whether it crashed the game.
+- Instead of the badge by the name: a Three Marks plate after the vehicle icon in the player panels and an orange row highlight (experimental, switch it on yourself).
+- The Tab stats and the loading screen no longer show the badge.
+
 ## pack_badge 0.1.2
 
 ### ru
@@ -444,6 +498,22 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - New component «Three Marks hangar looks» (off): «Night», «Sunset», «Steel» and «Studio» for the main hangar.
 - The manager builds the looks on your PC from your game's own files and rebuilds them after a client update.
+
+## hit_viewer 0.3.5
+
+### ru
+
+- Зона попадания вместо детали: ВЛД, НЛД, борт, корма, лоб, борт и корма башни.
+- Фильтр по исходу над списком: только пробития, рикошеты, непробития…; стрелки идут по отфильтрованным.
+- Итог вкладки: урон и доля попаданий, которые выдержала броня (по врагам — доля пробитий).
+- «Броня танка»: где пробивают ваш танк по всем сохранённым боям, слабое место и совет, как его прикрыть.
+
+### en
+
+- The hit zone instead of the part: upper and lower plate, side, rear, turret front, side and rear.
+- A result filter over the list: only penetrations, ricochets, blocks…; the arrows step through the filtered ones.
+- Tab totals: the damage and the share of hits the armour held (on enemies, the share that penetrated).
+- «Tank armour»: where your tank is penetrated over every kept battle, its weak spot and a tip to cover it.
 
 ## hit_viewer 0.3.4
 
@@ -1797,6 +1867,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - A key (Ctrl+Shift+H by default) hides and restores all mod panels; they can stay hidden in the next battle too.
 - Private mode hides other players' chat and the hangar labels with your numbers. Your name and clan stay.
 
+## crosshair 0.6.5
+
+### ru
+
+- У барабанной пушки в готовности таймер прицела показывает время между выстрелами, под ним — перезарядку барабана.
+
+### en
+
+- A loaded magazine gun's reticle timer shows the time between shots, the whole magazine's reload under it.
+
 ## crosshair 0.6.4
 
 ### ru
@@ -2250,6 +2330,18 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - The shared base of all mod components and the battle HUD with a layout editor.
 - Settings are mirrored to a backup copy and restored on load.
+
+## companion 0.8.8
+
+### ru
+
+- При обновлении убирается старая настройка «Подробности по Alt» карточки танка.
+- Значок «Три отметки» в бою выключается при обновлении и по умолчанию.
+
+### en
+
+- On update the Tank card's old «Details on Alt» setting is removed.
+- The Three Marks battle badge is switched off on update and by default.
 
 ## companion 0.8.7
 
@@ -2819,6 +2911,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - The settings window: a card per component, profiles (save, load, share as a code) and the on-screen HUD editor.
 - Opens from the «///» hangar button, ModsList or Ctrl+Shift+T.
 
+## marks_panel 0.8.5
+
+### ru
+
+- Карточка танка в ангаре не раскрывается по Alt: подробности — в виде «Подробный».
+
+### en
+
+- The hangar Tank card no longer expands on Alt: the details are in the «Extended» style.
+
 ## marks_panel 0.8.4
 
 ### ru
@@ -3161,6 +3263,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - Opt-in (off): uploads the replays the game recorded of your battles; they stay private until you publish them. Files above 50 MiB are refused.
 
+## damage_log 0.5.6
+
+### ru
+
+- Журнал боя компактнее: ниже строки, мельче шрифт, короче пояснения.
+
+### en
+
+- A more compact battle log: lower rows, a smaller font, shorter notes.
+
 ## damage_log 0.5.5
 
 ### ru
@@ -3423,6 +3535,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - In battle: team HP as bars and/or numbers, the frag score and the HP difference.
 
+## sixth_sense 0.5.4
+
+### ru
+
+- После отсчёта на кольце лампы не остаётся хвостика таймера.
+
+### en
+
+- No sliver of the timer stays on the lamp's ring after the countdown.
+
 ## sixth_sense 0.5.3
 
 ### ru
@@ -3612,6 +3734,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### en
 
 - A notification after each battle with result, XP, credits, stats and the MoE change; the session's battles in the mod window.
+
+## auto_messages 0.1.1
+
+### ru
+
+- «Долгая перезарядка» не пишет в начале боя: только после вашего выстрела.
+
+### en
+
+- «Long reload» no longer posts at the battle start: only after your own shot.
 
 ## auto_messages 0.1.0
 

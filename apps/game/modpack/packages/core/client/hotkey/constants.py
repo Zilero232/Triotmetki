@@ -1,7 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-# A modifier named by its left-hand key is held on either side, as the client's own checks read Shift and Ctrl
-# (BigWorld.isKeyDown(Keys.KEY_LSHIFT) or BigWorld.isKeyDown(Keys.KEY_RSHIFT), RU 1.45 source).
+# RU 1.45 client source: the client reads Shift and Ctrl on either side (KEY_LSHIFT or KEY_RSHIFT).
 EITHER_SIDE = {
     'KEY_LCONTROL': 'KEY_RCONTROL',
     'KEY_LSHIFT': 'KEY_RSHIFT',

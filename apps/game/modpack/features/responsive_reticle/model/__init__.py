@@ -20,9 +20,7 @@ from .constants import (
     STILL_EPS,
 )
 
-# Fair play: only the own gun marker is drawn more often, from the client's own prediction of the own gun. The aim sent
-# to the server, the dispersion and the stock shot-result colour stay at the server tick; nothing is aimed, nothing
-# about other vehicles is read, the shot is untouched.
+# Fair play: only the own marker is drawn more often; aim, dispersion and shot stay at the server tick.
 
 
 def argument_names(function):
@@ -68,8 +66,6 @@ def relax_time(follow, time_diff):
     return INSTANT_RELAX_S
 
 
-# The stock rotator glides the own turret and gun models over a server tick to where it turned them. Turned every
-# frame, they glide over the frame instead (or the smooth marker's relax), so the barrel keeps up with the marker.
 def turn_time(follow, time_diff):
     return max(time_diff, relax_time(follow, time_diff))
 
@@ -91,9 +87,6 @@ def blend(start, target, progress):
     return [a + (b - a) * share for a, b in zip(start, target)]
 
 
-# The dispersion is worked out once per server tick, as the stock tick does; the frames in between get the way from
-# the value handed out last to the new one over the tick, the way the stock marker glides its size, so the circle
-# shrinks smoothly instead of in ten steps a second. A tick that does not follow the last one starts at the new value.
 class TickBlend(object):
 
     def __init__(self):
@@ -119,8 +112,6 @@ class TickBlend(object):
         return self.last
 
 
-# A frame with nothing to do: the same aim as the last frame's (`key`, a flat tuple of numbers) while the last turn
-# moved nothing. Such frames, and the stock ticks among them, are the stock rotator's again.
 class Stillness(object):
 
     def __init__(self):

@@ -217,7 +217,6 @@ def _summary_entry(panel):
 _MISSING = object()
 
 
-# A dict sent again as the same object may have changed inside, so it always counts as a change.
 def _changes(props, update):
     for key, value in update.items():
         old = props.get(key, _MISSING)
@@ -226,7 +225,6 @@ def _changes(props, update):
     return False
 
 
-# A push happens up to once a frame: each panel's JSON is kept until its props change and the state joins the kept ones.
 class HudSurface(object):
 
     def __init__(self):
@@ -309,8 +307,6 @@ class HudSurface(object):
             self.fragments[alias] = text
         return text
 
-    # A feature that puts a value JSON cannot hold into its widget (a Math.Vector3, a set) hides its own panel, logged
-    # once until its props change, instead of blanking the whole HUD on every push.
     def _encoded(self, alias):
         panel = self.panel(alias)
         try:

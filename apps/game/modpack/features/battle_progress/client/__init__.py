@@ -25,8 +25,7 @@ def battle_messages():
     return shared('messages')
 
 
-# RU 1.45 client source: the extra of BASE_CAPTURE_DROPPED is the plain points count
-# (feedback_events._unpackInteger), which the defence ribbon shows (ribbons_aggregator._BaseCaptureRibbon).
+# RU 1.45 client source: BASE_CAPTURE_DROPPED's extra is the plain points count (_unpackInteger).
 def defence_points(event):
     extra = call(event, 'getExtra')
     if is_number(extra):
@@ -37,8 +36,6 @@ def defence_points(event):
 PANEL_SPEC = PanelSpec.of(settings, STRINGS, preview, PREVIEW_SIZE)
 
 
-# One plate for this battle's targets. The tank's site row (WN8, expected values) is read in the hangar when the vehicle
-# is selected and kept for the battle.
 class BattleProgressPanel(BattlePanel):
 
     def __init__(self, app):

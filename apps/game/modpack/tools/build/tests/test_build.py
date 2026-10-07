@@ -157,6 +157,14 @@ class LayoutTest(unittest.TestCase):
         ui_assets = [path for path in self.paths('ui') if not path.endswith('.py')]
         self.assertEqual(gameface, ui_assets)
 
+    def test_pack_badge_ships_its_library_swf_where_the_battle_app_loads_it(self):
+        self.assertIn(layout.FLASH_ROOT + '/otmetki_pack_badge.swf', self.paths('pack_badge'))
+
+    def test_only_pack_badge_ships_flash_files(self):
+        flash = [path for path in every_path(self.packages) if path.startswith(layout.FLASH_ROOT + '/')]
+
+        self.assertEqual(flash, [layout.FLASH_ROOT + '/otmetki_pack_badge.swf'])
+
     def test_single_package_is_the_union_under_the_companion_id(self):
         single = layout.single_package('root_init.py')
 

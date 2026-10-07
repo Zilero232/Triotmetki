@@ -8,9 +8,6 @@ from .constants import AUTO_NAME_GIVE_UP_S, AUTO_NAME_MATCH_S, AUTO_NAME_SETTLE_
 from .errors import ReplayActionError
 from .names import rename_target
 
-# A replay is matched to its battle by its header, never by its file name; a file still being written, missing,
-# or whose target name exists is left as it is.
-
 
 def name_values(event, map_label, vehicle_label, result_label):
     moment = time.localtime(event.get('arena_created_at') or event.get('occurred_at') or 0)

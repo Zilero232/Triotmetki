@@ -48,8 +48,6 @@ def _is_own(header, account_id):
     return int(header['player_id']) == int(account_id)
 
 
-# The headers of the replays in the client's folder, read once per file version and kept on disk, so the list
-# opens at once; new or changed files are read a slice of time at a time.
 class ReplayLibrary(object):
 
     def __init__(self, store, read=None):

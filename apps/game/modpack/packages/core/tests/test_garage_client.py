@@ -8,7 +8,6 @@ from otmetki.core.client.garage import run_in_order, run_processor
 
 
 def adisp_async(func):
-    # The client's decorator (client_common/adisp.py, RU 1.45): the call returns a caller that takes the callback.
     def wrapper(*args, **kwargs):
         def caller(callback):
             kwargs['callback'] = callback
@@ -25,7 +24,6 @@ class Result(object):
 
 
 class Processor(object):
-    # Processor.request as the client declares it: @adisp_async over request(self, callback=None).
 
     def __init__(self, success=True):
         self.success = success

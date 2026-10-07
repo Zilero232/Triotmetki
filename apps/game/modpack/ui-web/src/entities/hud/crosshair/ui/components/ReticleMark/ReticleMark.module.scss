@@ -1,5 +1,11 @@
+@use '@/shared/styles/gameface' as *;
+
 .mark {
   position: relative;
   display: flex;
   flex-shrink: 0;
+}
+
+.svg {
+  @include svg-canvas;
 }

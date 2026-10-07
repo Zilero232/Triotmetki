@@ -10,5 +10,4 @@ DEFAULTS = {
     'show_card': False,
     'show_tooltip': True,
 }
-# The card's type size follows the design scale (docs/specs/2026-09-30-hud-consolidation-and-design.md section 12).
 FIXED = CARD_FIXED

@@ -1,9 +1,3 @@
-// Draws each HUD component's preview with the built HUD page in Chromium and saves it as a 16:9 catalog preview.
-// The panel is scaled to fit the frame, but never below minScale for its height or minWidthScale for its width, so its
-// body text stays legible in the manager's card: a taller panel shows its top rows, a wider one (team_hp's full-width
-// bars) its middle, faded out at the cut edges; a preview anchored at its start (states.py PREVIEW_ANCHORS) keeps its left
-// edge and fades out on the right only.
-// usage: node render.mjs <hud.html> <job.json> <out dir>   (job.json: tools/build/previews/states.py `job()`)
 import { chromium } from '@playwright/test';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';

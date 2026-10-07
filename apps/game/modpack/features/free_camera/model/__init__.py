@@ -2,8 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from .constants import PLACE_HANGAR, PLACE_REPLAY, PLACE_SWITCHES, START, STOP  # noqa: F401
 
-# Fair play: the client's own video camera (AvatarInputHandler.VideoCamera), flown only over a replay being watched and
-# over the hangar. A live battle never gets it: there a free camera would show what the tank cannot see.
+# Fair play: the client's own video camera, only over a replay and the hangar, never a live battle.
 
 
 def flight_place(in_battle, is_replay):

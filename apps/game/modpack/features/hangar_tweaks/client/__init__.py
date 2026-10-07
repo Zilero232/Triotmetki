@@ -49,15 +49,11 @@ class HangarTweaks(NativeSettingsComponent):
         self.apply_exact_scale()
         self.carousel_rows.resend()
 
-    # Three to five rows ride on the game's two-row carousel: a single row the player picked in the game's own
-    # carousel filter stays a single row.
     def row_count(self, stock):
         if not self.enabled_in_hangar():
             return stock
         return carousel_row_count(self.settings.get('carousel_rows'), stock)
 
-    # The exact scale is put back after anything that set another one (the game's own option, a resolution change), in
-    # the hangar only; switched off, the scale saved in the game's preferences returns.
     def apply_exact_scale(self, *args):
         if self.app.in_battle:
             return

@@ -169,8 +169,6 @@ def format_summary(summary, settings, translate):
     return '\n'.join(lines)
 
 
-# The lines added to the stock post-battle message: it already names the result, the map, the tank, the XP and the
-# credits, so only the combat numbers and the MoE change are added (or the player's own template).
 def stock_lines(summary, settings, translate):
     if settings.get('template'):
         return [render(settings.get('template'), macro_values(summary, translate))]

@@ -23,6 +23,5 @@ export const tankCardSchema = z.object({
   thresholds: z.array(tankCardThresholdSchema),
   goal: z.nullable(tankCardGoalSchema),
   note: text,
-  sections: z.array(tankCardSectionSchema),
-  hint: text
+  sections: z.array(tankCardSectionSchema)
 });

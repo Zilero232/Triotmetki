@@ -12,13 +12,19 @@ from otmetki.features.pack_badge.model import (
     BattleBadges,
     asked_account_ids,
     badges_request,
-    decorate,
     is_anonymised,
+    library_action,
+    marked_vehicle_ids,
     parse_badges,
     show_own,
-    with_badge,
 )
-from otmetki.features.pack_badge.model.constants import BADGE_TAG, MAX_ACCOUNT_IDS
+from otmetki.features.pack_badge.model.constants import (
+    FLASH_MARK,
+    LIBRARY_ADD,
+    LIBRARY_REMOVE,
+    LIBRARY_SWF,
+    MAX_ACCOUNT_IDS,
+)
 
 OWN = 1000
 CREDENTIALS = Credentials('dev_badge', 'q' * 43, OWN)
@@ -27,13 +33,6 @@ ARENA = 4242
 
 def player(account_id, name='Tanker', fake_name='', is_bot=False):
     return ArenaPlayer(account_id=account_id, name=name, fake_name=fake_name, is_bot=is_bot)
-
-
-STOCK_BADGE = {'icon': 'badge_5', 'isAtlasSource': True}
-
-
-def row(account_id, region=None):
-    return {'accountDBID': account_id, 'region': region, 'hasSelectedBadge': True, 'badge': dict(STOCK_BADGE)}
 
 
 class IsAnonymisedTest(unittest.TestCase):
@@ -124,59 +123,63 @@ class ShowOwnTest(unittest.TestCase):
         self.assertFalse(show_own(dict(COMPANION_DEFAULTS, show_pack_badge=False)))
 
 
-class WithBadgeTest(unittest.TestCase):
+class MarkedVehicleIdsTest(unittest.TestCase):
 
-    def test_no_region_is_the_badge_alone(self):
-        self.assertEqual(with_badge(None), BADGE_TAG)
+    def test_names_the_vehicles_of_marked_accounts(self):
+        vehicles = [(11, OWN), (12, 2), (13, 3)]
 
-    def test_an_empty_region_is_the_badge_alone(self):
-        self.assertEqual(with_badge(''), BADGE_TAG)
+        self.assertEqual(marked_vehicle_ids(vehicles, frozenset([OWN, 3])), [11, 13])
 
-    def test_a_region_keeps_its_text_before_the_badge(self):
-        self.assertEqual(with_badge('EU'), 'EU ' + BADGE_TAG)
+    def test_is_sorted_and_has_each_vehicle_once(self):
+        vehicles = [(14, 2), (12, 2), (14, 2)]
 
-    def test_a_region_with_the_badge_takes_no_second_one(self):
-        self.assertEqual(with_badge(with_badge('EU')), 'EU ' + BADGE_TAG)
+        self.assertEqual(marked_vehicle_ids(vehicles, frozenset([2])), [12, 14])
+
+    def test_leaves_out_ids_that_are_no_vehicles(self):
+        vehicles = [(0, 2), (None, 2), ('15', 2), (16, 2)]
+
+        self.assertEqual(marked_vehicle_ids(vehicles, frozenset([2])), [16])
+
+    def test_marks_nothing_without_marked_accounts(self):
+        self.assertEqual(marked_vehicle_ids([(11, OWN)], frozenset()), [])
 
 
-class DecorateTest(unittest.TestCase):
+class LibraryActionTest(unittest.TestCase):
 
-    def test_puts_the_badge_after_the_name_of_a_marked_row(self):
-        data = row(2)
+    def test_the_switch_on_adds_a_missing_library(self):
+        self.assertEqual(library_action(['windows.swf'], 'ours.swf', True), LIBRARY_ADD)
 
-        decorate(data, frozenset([2]))
+    def test_the_switch_on_never_adds_it_twice(self):
+        self.assertIsNone(library_action(['ours.swf'], 'ours.swf', True))
 
-        self.assertEqual(data['region'], BADGE_TAG)
+    def test_the_switch_off_removes_it(self):
+        self.assertEqual(library_action(['ours.swf'], 'ours.swf', False), LIBRARY_REMOVE)
 
-    def test_the_badge_is_an_image_tag_of_the_name_field(self):
-        self.assertTrue(BADGE_TAG.startswith('<IMG SRC="img://gui/maps/icons/otmetki/pack_badge/'))
+    def test_the_switch_off_leaves_the_stock_list(self):
+        self.assertIsNone(library_action(['windows.swf'], 'ours.swf', False))
 
-    def test_keeps_the_stock_badge_of_a_marked_row(self):
-        data = row(2)
 
-        decorate(data, frozenset([2]))
+class ShippingTest(unittest.TestCase):
 
-        self.assertEqual(data['badge'], STOCK_BADGE)
+    def test_the_battle_drawing_is_off_by_default(self):
+        self.assertFalse(COMPANION_DEFAULTS['battle_pack_badge'])
 
-    def test_keeps_the_stock_badge_flag_of_a_marked_row(self):
-        data = row(2)
+    def test_the_library_swf_ships_in_the_package(self):
+        path = os.path.join(_support.MODPACK_DIR, 'features', 'pack_badge', 'flash', LIBRARY_SWF)
 
-        decorate(data, frozenset([2]))
+        self.assertTrue(os.path.isfile(path))
 
-        self.assertTrue(data['hasSelectedBadge'])
+    def test_the_library_swf_is_uncompressed(self):
+        path = os.path.join(_support.MODPACK_DIR, 'features', 'pack_badge', 'flash', LIBRARY_SWF)
 
-    def test_leaves_a_row_that_is_not_marked(self):
-        data = row(3)
+        with open(path, 'rb') as handle:
+            self.assertEqual(handle.read(3), b'FWS')
 
-        decorate(data, frozenset([2]))
+    def test_the_library_defines_the_page_function_python_calls(self):
+        path = os.path.join(_support.MODPACK_DIR, 'as3', 'src', 'net', 'triotmetki', 'packbadge', 'PackBadgeLibrary.as')
 
-        self.assertIsNone(data['region'])
-
-    def test_reports_a_row_that_is_not_marked(self):
-        self.assertFalse(decorate(row(3), frozenset([2])))
-
-    def test_reports_a_marked_row(self):
-        self.assertTrue(decorate(row(2), frozenset([2])))
+        with open(path, 'rb') as handle:
+            self.assertIn(('prototype.%s = ' % FLASH_MARK).encode('ascii'), handle.read())
 
 
 class BattleBadgesTest(unittest.TestCase):

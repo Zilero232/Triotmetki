@@ -23,7 +23,6 @@ def _positive_damage(value):
     return 0
 
 
-# The book file may be damaged or edited by hand: what is read back is checked like what the book writes.
 def clean_hit(entry):
     if not isinstance(entry, dict):
         return None

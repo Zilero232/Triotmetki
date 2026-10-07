@@ -20,7 +20,6 @@ class VehicleType(object):
 
 
 def get_vehicle_type(compact_descr):
-    # RU 1.45 items.vehicles.getVehicleType: an int or a long is a type id, anything else a packed descriptor.
     if type(compact_descr) not in (int, type(10 ** 20)):
         raise TypeError('parsed as a packed descriptor')
     if compact_descr != 1:

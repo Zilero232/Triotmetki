@@ -12,8 +12,6 @@ DATE_FORMATS = ('', '%d.%m', '%d.%m.%Y', '%Y-%m-%d')
 ALIGN_X = ('left', 'center', 'right')
 ALIGN_Y = ('top', 'center', 'bottom')
 
-# Battle Observer's hangar clock (res/gui/gameface/.../hangar/clock/clock.css: left 2.6vw, top 83px): top left, under
-# the hangar's header; 2.6 % of a 1920 px wide screen is 50 px.
 DEFAULTS = {
     'clock_format': '%H:%M',
     'date_format': '%d.%m',
@@ -28,7 +26,6 @@ DEFAULTS = {
     'scale': 100,
 }
 
-# The type size follows the design scale.
 FIXED = CARD_FIXED
 ADVANCED = ('template',)
 

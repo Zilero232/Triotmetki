@@ -34,7 +34,6 @@ def delta_sign(value):
     return 0
 
 
-# The marks on the gun in words: the window's font has no star glyph.
 def marks_text(marks, translate):
     if not marks:
         return translate('marks_panel_history_no_marks')

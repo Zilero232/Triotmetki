@@ -16,7 +16,7 @@ export const PlatoonPointsWidget = ({ data }: PlatoonPointsWidgetProps) => (
     </div>
     {data.rows.map((row) => (
       <div key={row.name} className={clsx(s.row, !row.alive && s.dead)}>
-        <ClientIcon icon={row.cls} size={PLATOON_POINTS.iconSize} />
+        <ClientIcon native icon={row.cls} size={PLATOON_POINTS.iconSize} />
         <div className={s.member}>
           <span className={clsx(s.name, row.own && s.own)}>{row.name}</span>
           <MiniBar height={PLATOON_POINTS.bar.height} max={row.max} tone='ally' value={row.hp} width={PLATOON_POINTS.bar.width} />

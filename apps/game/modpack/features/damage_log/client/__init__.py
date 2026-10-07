@@ -103,9 +103,7 @@ class DamageLogPanel(BattlePanel):
     def stock_aliases(self):
         return () if self.settings.get('keep_stock') else (BATTLE_DAMAGE_LOG_PANEL,)
 
-    # No controls_own_vehicle() guard: Avatar.onBattleEvents hands the events to the feedback only while the camera
-    # follows the own vehicle (RU 1.45 Avatar.py:1623-1627), so onPlayerFeedbackReceived carries the player's own events
-    # and nothing while an ally is followed after death, as in the stock damage log.
+    # RU 1.45 Avatar.py:1623-1627: feedback carries only the own events while the camera follows them.
     def _on_feedback(self, events):
         if self.log is None:
             return
@@ -134,7 +132,7 @@ class DamageLogPanel(BattlePanel):
             self._describe(vehicle_id)
         return added
 
-    # The class and max HP the enemy's marker and the player panels already show.
+    # Fair play: only the class and max HP the enemy marker and the player panels already show.
     def _describe(self, vehicle_id):
         if vehicle_id in self.log.shots.targets:
             return
@@ -168,8 +166,7 @@ class DamageLogPanel(BattlePanel):
             self._describe(vehicle_id)
         return added
 
-    # The feedback does not tell a ricochet on the own tank apart, so the hit effect of the shot the client drew on the
-    # own vehicle (Vehicle.showDamageFromShot) marks it.
+    # The feedback has no own-tank ricochet: the client's Vehicle.showDamageFromShot effect marks it.
     @safe
     def on_own_shot(self, attacker_id, points):
         if self.log is None or not is_ricochet(points):
@@ -182,8 +179,7 @@ class DamageLogPanel(BattlePanel):
         if self.log.received.ricochet(hit):
             self.render()
 
-    # DEVICES follows the controlled vehicle: after death it reports the ally the camera follows
-    # (Avatar.showVehicleDamageInfo, RU 1.45), so only the own vehicle's ammo rack counts.
+    # RU 1.45 Avatar.showVehicleDamageInfo: DEVICES follows the ally the camera follows after death.
     def _on_vehicle_state(self, state, value):
         if self.log is None or self.devices_state is None or state != self.devices_state:
             return
@@ -201,8 +197,7 @@ class DamageLogPanel(BattlePanel):
             call(event, 'getTotalStunDamage'),
         )
 
-    # The stock damage log's own totals (personal_efficiency_ctrl, RU 1.45 client source): the same numbers the
-    # game shows, kept as a floor under the sums of the events.
+    # RU 1.45 client source: personal_efficiency_ctrl, the stock damage log's own totals.
     def _on_efficiency(self, totals):
         picked = efficiency_totals(totals, self.efficiency)
         self._apply_summary(picked.get('dealt'), picked.get('assist'), picked.get('blocked'), picked.get('stun'))

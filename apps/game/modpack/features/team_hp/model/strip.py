@@ -3,8 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from .constants import ENABLE_TIER_GROUPING, SHOW_VEHICLES_COUNTER, TIER_NUMERALS
 
 
-# RU 1.45 frag_correlation_bar.py __initializeSettings: the vehicle icons follow showVehiclesCounter and the tier
-# grouping needs them on too; an option the settings core does not answer keeps its default (on).
+# RU 1.45 frag_correlation_bar.py __initializeSettings.
 def strip_options(client_settings):
     values = client_settings or {}
     icons = bool(values.get(SHOW_VEHICLES_COUNTER, True))
@@ -22,14 +21,13 @@ def tier_levels(vehicles):
     return set(vehicle['level'] for vehicle in vehicles if vehicle['level'] is not None)
 
 
-# gui_battle VehicleMarkersList.sort: both sides show their tier labels once either side has more than one tier
-# (FragCorrelationBar.setVehiclesData forces the grouping on both lists).
+# gui_battle VehicleMarkersList.sort: tier labels on both sides once either side has more than one tier.
 def shows_tier_labels(teams):
     return any(len(tier_levels(teams.team(allies))) > 1 for allies in (True, False))
 
 
 def tier_order(vehicles):
-    # VehicleMarkersList.compareWithTierGroup: the higher tier first, the arena order within a tier (sorted is stable).
+    # gui_battle VehicleMarkersList.compareWithTierGroup: higher tier first, arena order within a tier.
     return sorted(vehicles, key=lambda vehicle: -(vehicle['level'] or 0))
 
 

@@ -22,10 +22,6 @@ from ..settings import SCHEMA, SECTION, SWITCH
 from .reads import installed
 
 
-# A newer modpack in the site's release index: the badge on the mod's ModsList entry and one notification per version
-# (the way ModsList's alertModification and Battle Observer's service messages announce one, docs/research/competitors/
-# 2026-10-05-modpacks-deep-dive.md item 15), until the player updates or picks «Пропустить эту версию» (kept in
-# state.json). The index is asked once per game session.
 class UpdateNotice(FeatureComponent):
 
     def __init__(self, app):

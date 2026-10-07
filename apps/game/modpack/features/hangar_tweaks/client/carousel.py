@@ -14,8 +14,6 @@ def stock_row_count():
     return settings_core().options.getSetting(CAROUSEL_TYPE).getRowCount()
 
 
-# The row count `row_count(stock)` gives goes to every hangar carousel in place of the game's own; the carousels seen
-# are kept (weakly) so a settings change lays them out again without reopening the hangar.
 class CarouselRows(object):
 
     def __init__(self, row_count):

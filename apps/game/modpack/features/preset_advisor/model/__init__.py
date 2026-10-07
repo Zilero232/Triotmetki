@@ -5,8 +5,7 @@ import json
 from ....core.compat import is_int
 from .constants import ADVICE_PATH, CACHE_TTL_S, KINDS, PAYLOAD_VERSION, RETRY_AFTER_S
 
-# Fair play: the site's public build of the player's own tank, read in the hangar and marked in the stock ammunition
-# setup. Nothing is read or shown in battle, and nothing about the player is sent: the request names only the tank.
+# Fair play: the site's public build of the own tank, hangar only; the request names only the tank.
 
 
 def advice_path(tank_id):
@@ -19,8 +18,6 @@ def _ids(values):
     return [value for value in values if is_int(value) and value > 0]
 
 
-# The {kind: [intCD]} of the site's answer for `tank_id`, or None for an answer about another tank or a broken one. A
-# tank without enough battles on the site has empty lists.
 def parse_advice(data, tank_id):
     if not isinstance(data, dict) or data.get('tankId') != tank_id:
         return None

@@ -94,13 +94,7 @@ def _gun_angles(rotator):
     return (getattr(rotator, 'turretYaw', None) or 0.0, getattr(rotator, 'gunPitch', None) or 0.0)
 
 
-# The stock rotator turns the own gun and moves its marker once per server tick. This component runs the same
-# client-side prediction every frame between them and stamps the rotator's clock, so the stock tick still sends the
-# aim to the server at 10 Hz and skips the turning it no longer needs; a stock tick that still turns (after a frame
-# longer than its 20 ms minimum) turns through this component, so the marker has one writer and one relax time. The
-# dispersion is worked out once per server tick and blended over it, the shot-result colour once per tick. A frame
-# with nothing to turn (the aim, the own vehicle and the gun all still) does no work and leaves the stock tick to glide
-# the marker as before, and so does a frame it skips (the auto-aim lock, a stopped rotator).
+# Fair play: the stock tick still sends the aim to the server at 10 Hz; only the drawing runs every frame.
 class ResponsiveReticle(FeatureComponent):
 
     def __init__(self, app):
@@ -181,8 +175,6 @@ class ResponsiveReticle(FeatureComponent):
             self.aiming_mode = _aiming_mode()
         return self.aiming_mode is not None and bool(self.aiming_mode(self.lock))
 
-    # The switch and the follow mode are read again only after a change of config.json or of the component's section,
-    # not on every frame.
     def _settings_current(self):
         revisions = (self.app.config.revision, self.settings.revision)
         if revisions != self.revisions:

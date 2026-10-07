@@ -34,6 +34,7 @@ export const UI_BUILD = {
   style: {
     target: 'chrome58',
     pixelsPerRem: 1,
+    remProperties: ['*', '!text-shadow'],
     classPrefix: 'otmetki'
   },
   icon: {

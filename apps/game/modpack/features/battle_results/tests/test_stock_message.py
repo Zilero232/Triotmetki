@@ -27,7 +27,6 @@ class BattleResultsFormatter(object):
         return caller
 
 
-# The client package's __init__ needs the game; the hook module itself does not, so it loads under a bare package.
 def load_hook():
     package = types.ModuleType(str(CLIENT_PACKAGE))
     package.__path__ = [CLIENT_DIR]

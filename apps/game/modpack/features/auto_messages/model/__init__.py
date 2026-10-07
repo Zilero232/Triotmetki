@@ -35,9 +35,7 @@ from .constants import (
     WIN,
 )
 
-# Fair play: every trigger is one of the player's own events the client already shows (the stock damage log's line
-# about a hit on the own tank, the damage panel, the sixth sense lamp, the own reload, kills and dealt damage, the
-# alive counts of the team lists); nothing about enemy positions, reloads, aim or spotting.
+# Fair play: only own events the client already shows; no enemy positions, reloads, aim or spotting.
 
 
 def variants(text):
@@ -96,6 +94,12 @@ def reload_seconds(actual, base, minimum):
     if base and base - actual > FRESH_RELOAD_S:
         return None
     return int(round(actual))
+
+
+def is_shot(before, after):
+    if before is None or after is None:
+        return False
+    return after[0] < before[0] or after[1] < before[1]
 
 
 def crossed(previous, total, threshold):

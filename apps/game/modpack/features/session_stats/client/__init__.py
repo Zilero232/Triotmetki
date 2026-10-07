@@ -282,7 +282,6 @@ class SessionStats(FeatureComponent):
 
         post_signed(self.app, SHARE_PATH, payload, done)
 
-    # A never-synced "off" is the server's default: nothing is posted before the player turned sharing on once.
     def _needs_sync(self, wanted):
         if self.share_sending:
             return False

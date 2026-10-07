@@ -6,7 +6,6 @@ from ...core.events import EVENT_COMPONENT_SETTINGS  # noqa: F401
 
 EVENT_LANGUAGE = 'language'
 CONFIG_COMPONENT = 'config'
-# The `kind` of a component's config.json source (components.sources.ConfigSource).
 CONFIG_KIND = 'config'
 
 LANGUAGES = ('ru', 'en')
@@ -16,7 +15,6 @@ NOTICE_INFO = 'info'
 NOTICE_ERROR = 'error'
 NOTICE_CODE = 'code'
 
-# The window's pages besides the component sections: the two tools.
 TOOL_PAGES = ('profiles', 'hud')
 
 SITE_URL = 'https://triotmetki.ru'

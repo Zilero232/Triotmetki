@@ -3,7 +3,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 REPORT_PREFIX = 'HUD report (%s): '
 REPORT_SEPARATOR = '; '
 REPORT_ENTRY = '%s %s'
-# The battle page and the stock elements we may replace: the ones it has, and the ones hidden for our panels.
 REPORT_STOCK = '; stock on %s: found %s, hidden %s'
 REPORT_NO_STOCK = '; stock: no battle page'
 REPORT_NONE = '-'

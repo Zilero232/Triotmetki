@@ -4,10 +4,7 @@ from ..compat import is_int, is_number
 from .constants import MAX_BATTLE_CHANGE, MAX_RATING, RATING_SCALE, RESULTS_ROUNDING
 
 
-# RU 1.45 client source: the battle results carry `damageRating` as a whole percent (common/battle_results/
-# battle_results_common.py: VEHICLE_SELF 'damageRating', int), and the dossier updater stores it times 100
-# (common/dossiers2/custom/battle_results_processors.py __updateMarksOnGun: int(results['damageRating'] * 100)); the
-# dossier's own damageRating is hundredths of a percent (6647 = 66.47 %). Read raw, 67 would be 0.67 %.
+# RU 1.45 client source: results carry a whole-percent damageRating, the dossier stores it times 100.
 def results_rating(value):
     if not is_number(value) or value <= 0:
         return None
@@ -18,8 +15,6 @@ def is_rating(value):
     return is_int(value) and 0 < value <= MAX_RATING
 
 
-# The hangar's dossier read after the battle: the same moving average as the results and a rating the results' whole
-# percent rounds to. It holds the exact hundredths the results lack.
 def is_post_battle_reading(moe, snapshot):
     if not isinstance(moe, dict) or not isinstance(snapshot, dict):
         return False

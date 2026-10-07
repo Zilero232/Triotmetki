@@ -8,8 +8,6 @@ import { flatPagesPlugin } from '../flat-pages';
 import { sharedConfig } from '../shared';
 import { UI_BUILD } from '../vite.constants';
 
-// The battle HUD page (core/client/hud/gameface opens it as a transparent window): one self-contained
-// hud.html like the settings window, built after it into the same folder.
 export const hudConfig = (): UserConfig =>
   mergeConfig(sharedConfig(), {
     base: './',

@@ -2,13 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.game import client_attr, selected_vehicle, service
 
-# RU 1.45 client source: Vehicle.getUnlocksDescrs() yields (index, xpCost, nodeCD, required set) of the tank's unlock
-# table (gui/shared/gui_items/Vehicle.py); IItemsCache.items.stats.unlocks holds what the account has researched;
-# g_techTreeDP.getBlueprintDiscountData(nodeCD, level, xpCost) gives the blueprint price of a next tank, as the tech
-# tree shows it (gui/techtree/techtree_dp.py); the random-battle average XP is getAvgXP() of the vehicle dossier
-# IItemsCache.items.getVehicleDossier(intCD) (CurrentVehicle.getDossier, gui/shared/gui_items/dossier/stats.py).
-# The stock parameters panel is left alone: it is a Scaleform view the mod would have to patch. A client without any
-# of these reads as nothing to research.
+# RU 1.45 client source: Vehicle.getUnlocksDescrs(), stats.unlocks, g_techTreeDP.getBlueprintDiscountData.
 
 
 def _items():

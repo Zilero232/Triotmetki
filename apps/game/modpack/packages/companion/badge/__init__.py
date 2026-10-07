@@ -38,7 +38,6 @@ def restore_synced(stored):
     return stored if isinstance(stored, bool) else None
 
 
-# A never-reported «hidden» is the server's default (an unreported device is never marked), so it is not sent.
 class PreferenceSync(object):
 
     def __init__(self):

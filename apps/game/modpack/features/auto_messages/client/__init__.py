@@ -33,6 +33,7 @@ from ..model import (
     is_low_hp,
     is_spotted_alert,
     received_trigger,
+    is_shot,
     reload_seconds,
     round_result,
 )
@@ -93,8 +94,7 @@ def _team_counts(own_team):
     return allies, enemies, size
 
 
-# Fair play: only the player's own feedback, the own vehicle's states and gun, the sixth sense lamp and the team lists'
-# alive counts; every line goes out through the client's own chat call (client/chat.py) with its own limits.
+# Fair play: only the own feedback, vehicle and lamp; lines go out through the client's own chat call.
 class AutoMessagesFeature(FeatureComponent):
 
     def __init__(self, app):
@@ -136,10 +136,13 @@ class AutoMessagesFeature(FeatureComponent):
             'damage': 0,
             'frags': 0,
             'on_fire': False,
+            'shells': {},
+            'fired': False,
         }
         self.hooks.add(feedback, 'onPlayerFeedbackReceived', self._on_feedback)
         self.hooks.add(vehicle_state, 'onVehicleStateUpdated', self._on_vehicle_state)
         self.hooks.add(ammo, 'onGunReloadTimeSet', self._on_reload)
+        self.hooks.add(ammo, 'onShellsUpdated', self._on_shells)
         self.hooks.add(arena, 'onPeriodChange', self._on_period)
         self.hooks.add(arena, 'onVehicleKilled', self._on_vehicle_killed)
         self.hooks.add(lambda: g_playerEvents, 'onRoundFinished', self._on_round_finished)
@@ -194,7 +197,7 @@ class AutoMessagesFeature(FeatureComponent):
         elif kind == RECEIVED:
             self._on_received(target, event.getExtra())
 
-    # The attacker is the one the stock damage log names for this hit (its class too): nothing else about it.
+    # Fair play: only the attacker the stock damage log names for this hit, nothing else about it.
     def _on_received(self, attacker, extra):
         if extra is None or not attacker or attacker == _own_id():
             return
@@ -250,12 +253,19 @@ class AutoMessagesFeature(FeatureComponent):
         if is_low_hp(health, max_hp, self.settings.get('low_hp_percent')):
             self._say(LOW_HP, {'percent': hp_percent(health, max_hp)})
 
+    def _on_shells(self, shell, quantity, in_clip, *args):
+        shells = self.battle.get('shells', {})
+        if is_shot(shells.get(shell), (quantity, in_clip)):
+            self.battle['fired'] = True
+        shells[shell] = (quantity, in_clip)
+
     def _on_reload(self, shell, snapshot, *args):
-        if self.messages is None or not controls_own_vehicle():
+        if self.messages is None or not controls_own_vehicle() or not self.battle.get('fired'):
             return
         actual, base = call(snapshot, 'getActualValue'), call(snapshot, 'getBaseValue')
         seconds = reload_seconds(actual, base, self.settings.get('reload_min_s'))
         if seconds is not None:
+            self.battle['fired'] = False
             self._say(RELOAD, {'seconds': seconds})
 
     def _on_period(self, period, *args):

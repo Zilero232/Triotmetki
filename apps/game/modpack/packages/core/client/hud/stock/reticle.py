@@ -23,7 +23,7 @@ from ....log import guarded, log, log_exception, safe
 try:
     from gui.Scaleform.daapi.view.battle.shared.crosshair.container import CrosshairPanelContainer
     IMPORT_ERROR = None
-except Exception as error:  # the crosshair panel moved: the stock reticle stays whole
+except Exception as error:
     CrosshairPanelContainer = None
     IMPORT_ERROR = error
 
@@ -51,8 +51,7 @@ class ReticleControl(object):
             control.panels[id(panel)] = (panel, vo)
             return original(panel, hide_reticle_parts(vo, control.hidden))
 
-        # RU 1.45 crosshair/plugins.py AmmoPlugin: an autoloading clip (the Gendarme) draws its own countdown through
-        # these two calls, which the settings' opacity does not reach; the shell count stays.
+        # RU 1.45 crosshair/plugins.py AmmoPlugin: an autoloading clip draws its own countdown.
         @override(CrosshairPanelContainer, 'as_autoloaderUpdateS')
         def _autoloader_update(original, panel, *args, **kwargs):
             if control.hides_timer():
@@ -92,8 +91,7 @@ class ReticleControl(object):
         self.suppression = StockSuppression(RETICLE_PARTS)
         self.sync('the battle page left')
 
-    # A battle may create the crosshair panel more than once (python.log: battleCrosshairsApp twice at the battle's
-    # start), and the one on screen may be any of them, so every live panel gets the parts.
+    # The client may create the crosshair panel twice (python.log: battleCrosshairsApp twice at the start).
     def _push(self):
         for panel, settings in list(self.panels.values()):
             if settings is None:

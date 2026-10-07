@@ -23,8 +23,7 @@ from .received import ReceivedLog
 from .shots import ShotLog, positive_int
 
 
-# `vehicle_id`, `vehicle` and `vehicle_class` are the target of the player's own damage and assist, the attacker of a
-# hit on the player (the target id of the stock feedback events, RU 1.45 feedback_adaptor).
+# RU 1.45 feedback_adaptor: the target id of a received event is the attacker.
 @attr.s
 class Hit(object):
 
@@ -123,9 +122,6 @@ def _is_shown_total(key, section, settings):
     return settings.get('style') != STYLE_MINIMAL or key in MINIMAL_TOTALS
 
 
-# Every total the settings show stands from the start, at zero until something counts, as the stock damage log's
-# totals do: the strip keeps its width and nothing jumps when the first damage comes. The stun total only counts for
-# artillery, so it waits for its first stun.
 def shown_totals(log, settings):
     values = log.values()
     shown = [(key, values[key]) for key, section in TOTALS if _is_shown_total(key, section, settings)]

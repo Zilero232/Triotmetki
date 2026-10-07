@@ -19,7 +19,6 @@ CARD_SPEC = CardSpec(
 )
 
 
-# Hangar only: in battle the stock quest progress panel under the capture bars already shows the conditions.
 class PersonalMissionsPanel(PolledHangarCard):
 
     def __init__(self, app):

@@ -11,5 +11,5 @@ def os_key_down(name):
     try:
         import ctypes
         return bool(ctypes.windll.user32.GetAsyncKeyState(code) & OS_KEY_DOWN_MASK)
-    except Exception:  # no ctypes or no windll: not Windows, the client's own key state is all there is
+    except Exception:
         return None

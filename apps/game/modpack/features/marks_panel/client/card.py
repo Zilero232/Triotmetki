@@ -9,7 +9,6 @@ from ....core.client.game import (
     vehicle_short_name,
 )
 from ....core.client.hud import hud_layer
-from ....core.client.hud.modifier import ModifierWatch
 from ....core.client.lobby_view import lobby_view
 from ....core.client.me import tank_ratings
 from ....core.client.moe import moe_service
@@ -28,10 +27,6 @@ from .history import HistoryBook
 from .research import selected_research
 
 
-def _ignore_key():
-    pass
-
-
 class TankCardPanel(FeatureComponent):
 
     def __init__(self, app):
@@ -40,7 +35,6 @@ class TankCardPanel(FeatureComponent):
         self.tanks = tank_ratings(app)
         self.selected = None
         self.in_view = True
-        self.alt = ModifierWatch(self._on_alt, _ignore_key)
         FeatureComponent.__init__(self, app, CARD_PANEL_ID, CARD_SCHEMA, CARD_SWITCH, STRINGS)
         self.history = HistoryBook(app, self.settings, self.enabled)
         self.carousel = CarouselPercent(self._shows_carousel_percent)
@@ -80,7 +74,6 @@ class TankCardPanel(FeatureComponent):
         self.render()
 
     def _on_hangar(self):
-        self.alt.install()
         self.render()
 
     def _on_vehicle_moe(self, snapshot):
@@ -99,9 +92,6 @@ class TankCardPanel(FeatureComponent):
     def _on_tank(self, tank_id):
         if tank_id == self.selected:
             self.render()
-
-    def _on_alt(self, held):
-        self.render()
 
     def settings_changed(self, changed):
         self._select(self.selected)
@@ -144,7 +134,6 @@ class TankCardPanel(FeatureComponent):
             vehicle_short_name(self.selected),
             self.history.summary(self.selected),
             tank,
-            self.alt.held and bool(self.settings.get('alt_detail')),
             mastery=mastery,
             own_mastery=(snapshot or {}).get('mastery'),
             research=research,

@@ -208,7 +208,6 @@ class GuardedTest(unittest.TestCase):
 
 
 class ShellTypesTest(unittest.TestCase):
-    # RU 1.45 client source, common/constants.py BATTLE_LOG_SHELL_TYPES: 0..14.
 
     def test_the_last_client_shell_type_has_a_name(self):
         assert shell_name(14) == 'HE_MODERN_DF'

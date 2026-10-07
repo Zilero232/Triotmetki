@@ -8,15 +8,11 @@ SECTION = 'auto_messages'
 GROUP = 'battle'
 
 CHANNELS = ('team', 'squad')
-# kurzdor «AutoBattleMessages» spotted extra: none, «Нужна помощь!» (the stock HELPME command), «Внимание на точку» (the
-# stock ATTENTION_TO_POSITION ping on the player's own tank).
 SPOTTED_EXTRAS = ('', 'help', 'attention')
 
-# An empty text means the built-in variants in the client's language (i18n auto_messages_default_<trigger>).
 DEFAULTS = {
     'channel': 'team',
     'min_interval_s': 10,
-    # kurzdor: the spotted line only while 5 or fewer allies are alive.
     'spotted_allies': 5,
     'spotted_extra': '',
     'low_hp_percent': 25,

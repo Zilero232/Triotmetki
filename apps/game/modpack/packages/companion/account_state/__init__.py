@@ -10,8 +10,6 @@ def _accounts(state):
     return accounts if isinstance(accounts, dict) else {}
 
 
-# Kept per account so nothing of one account shows for, or is sent as, another's; a part an older version stored at the
-# top level goes to the first account that loads it.
 class AccountState(object):
 
     def __init__(self):

@@ -24,78 +24,13 @@
   transform-origin: 0 0;
 }
 
-.bar {
-  position: absolute;
-  top: 20px;
-  right: 24px;
-  left: 24px;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.title {
-  display: flex;
-  width: 380px;
-  height: 50px;
-  box-sizing: border-box;
-  flex-direction: row;
-  align-items: center;
-  padding: 0 16px 0 6px;
-  pointer-events: auto;
-
-  @include panel;
-}
-
-.titleText {
-  margin-left: 8px;
-  color: token(color-text);
-  font-size: 17px;
-
-  @include caps(2px);
-}
-
-.tabs {
-  display: flex;
-  flex-direction: row;
-  pointer-events: auto;
-}
-
-.battle {
-  display: flex;
-  width: 380px;
-  flex-direction: column;
-  align-items: flex-end;
-  pointer-events: auto;
-}
-
-.column {
+.side {
   position: absolute;
   top: 90px;
-  bottom: 20px;
-  left: 24px;
+  right: 24px;
   display: flex;
-  width: 620px;
+  width: 380px;
   flex-direction: column;
-}
-
-.list {
-  display: flex;
-  min-height: 0;
-  flex: 0 1 auto;
-  flex-direction: column;
-  padding: 4px;
-  pointer-events: auto;
-
-  @include panel;
-}
-
-.details {
-  display: flex;
-  flex: 0 0 auto;
-  flex-direction: row;
-  margin-top: 16px;
   pointer-events: auto;
 }
 

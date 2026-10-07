@@ -3,8 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.compat import is_number
 from .constants import AIM_CIRCLE_SCALES, PERCENT
 
-# Visual only: the gun marker the client already draws, at a share of the size it computed. The dispersion, the aim
-# sent to the server, the shot and the replay's recorded size stay the client's.
+# Fair play: visual only; dispersion, the aim sent to the server and the replay's size stay the client's.
 
 
 def circle_percent(choice):

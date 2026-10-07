@@ -5,11 +5,6 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { Client } from 'pg';
 
-// Builds a throwaway database for the server-db project from the Prisma schema and
-// the Timescale layer, so the tests never depend on the state of the dev database.
-// Without a reachable server the suites skip; SERVER_DB_REQUIRED=true (the deploy
-// checks) turns that into a failure instead.
-
 declare module 'vitest' {
   // eslint-disable-next-line ts/consistent-type-definitions -- module augmentation needs an interface
   export interface ProvidedContext {

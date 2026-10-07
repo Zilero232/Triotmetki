@@ -57,13 +57,12 @@ try:
     from gui.impl.pub import ViewImpl, WindowImpl
     import openwg_gameface
     IMPORT_ERROR = None
-except Exception as error:  # any failure inside a third-party import must not stop the core
+except Exception as error:
     openwg_gameface = None
     IMPORT_ERROR = error
 
 
-# True while OpenWG Gameface restarts the client to apply a new res_map (it writes RESTART_FLAG_FILE, then
-# BigWorld.restartGame(), and deletes the flag once the restarted client validated the res_map).
+# OpenWG Gameface writes RESTART_FLAG_FILE, calls BigWorld.restartGame() and deletes the flag after.
 def restart_pending():
     manager = getattr(openwg_gameface, 'manager', None)
     if manager is None or getattr(manager, 'isResMapValidated', True) is not False:
@@ -115,20 +114,11 @@ if IMPORT_ERROR is None:
             super(HudWindow, self).__init__(wndFlags=WindowFlags.WINDOW, content=HudView(layout, backend),
                                             layer=getattr(WindowLayer, WINDOW_LAYER), parent=main_window())
 
-        # RU 1.45 client source: frameworks/wulf/windows_system/window.py `_onReady` calls `self.show()`, whose `focus`
-        # defaults to True. The HUD window took the keyboard from the battle page (chat no longer opened).
+        # RU 1.45 client source: wulf window.py `_onReady` calls `self.show()`, whose `focus` defaults to True.
         def _onReady(self):
             self.show(focus=False)
 
-        # The engine owns the wulf focus: window.py (RU 1.45 client source) only forwards `show(focus)` and `tryFocus()`
-        # to the C++ proxy and hears back through `_cFocusChanged`; no window flag or layer the Python side sees opts a
-        # window out of it. The engine gave the HUD window the focus unasked when the focused window went away (1.45
-        # live log: the lobby's windows destroyed, "focus: HudWindow 9" alone), and from then on the hangar took no
-        # click and the chat no key until the game was minimised. The client corrects the engine's pick the same way,
-        # with `tryFocus()` on the window that should have it (gui/impl/common/fade_manager.py `_bringToFront`,
-        # gui/impl/lobby/crew/base_crew_view.py `bringToFront`), so the backend hands every focus back to the window
-        # that had it (`last_focus`: the chat types into the Scaleform page's window, not the main window) or on
-        # (`core.hud.focus`).
+        # RU 1.45 client source: wulf window.py only forwards show(focus) and tryFocus() to the C++ proxy.
         def _onFocus(self, focused):
             super(HudWindow, self)._onFocus(focused)
             self.backend.on_window_focus(self, focused)
@@ -216,7 +206,6 @@ class GamefaceBackend(HudBackend):
     def available(self):
         return self.usable() and self.layout_id() is not None
 
-    # The page's resource id never changes once OpenWG Gameface validated its res_map: looked up until then, and kept.
     def layout_id(self):
         if self.layout is None:
             self.layout = page_layout(HUD_RES_MAP_ID)
@@ -244,8 +233,6 @@ class GamefaceBackend(HudBackend):
     def listen_drawn(self, on_drawn):
         self.drawn_listeners.add(on_drawn)
 
-    # A lamp that blinks or a notice that comes and goes changes the drawn set every few seconds: only a label drawn
-    # for the first time since its page loaded is logged.
     def _set_drawn(self, drawn):
         if drawn == self.drawn:
             return
@@ -265,23 +252,18 @@ class GamefaceBackend(HudBackend):
     def set_modifier(self, mode):
         self.modifier.set_mode(mode)
 
-    # The page on the screen: the hangar view's in the lobby, the HUD window's in battle.
     def _page(self):
         space = current_space()
         if space == SPACE_LOBBY:
             return self.hangar.view if self.hangar is not None else None
         return self.view if space == SPACE_BATTLE else None
 
-    # Panels move while the edit modifier is held in the hangar, where the cursor is always shown, and whenever the
-    # battle cursor is shown (Ctrl): in battle the cursor key alone is the edit key.
     def state_text(self):
         space = current_space()
         if space == SPACE_LOBBY:
             return self.surface.encode(space, True, self.modifier.held)
         return self.surface.encode(space, self.cursor, self.cursor)
 
-    # Every label change of a frame (a 10 Hz gun traverse scale next to the clock and the logs) becomes one push of the
-    # whole state on the next frame, and an unchanged state is not pushed again.
     def push_state(self):
         if self._page() is not None:
             self.pusher.request()
@@ -435,8 +417,6 @@ class GamefaceBackend(HudBackend):
             if self._page() is None:
                 self._set_drawn(None)
 
-    # The hangar page takes the mouse only while the player edits: every other click reaches the hangar, its camera
-    # drag included.
     def _hangar_mouse(self):
         if self.hangar is not None:
             self.hangar.set_mouse(self.modifier.held)
@@ -554,8 +534,7 @@ class GamefaceBackend(HudBackend):
         self.push_state()
         self._settle_focus()
 
-    # The client shows or hides the battle cursor after the key event (Ctrl), and no event is fired when another view
-    # already holds the cursor: read it on the next frame.
+    # The client toggles the battle cursor after the key event and fires no event: read it next frame.
     def _on_key(self):
         if current_space() == SPACE_BATTLE:
             _next_frame(self._check_cursor)

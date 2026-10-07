@@ -1,10 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-# 'Watch': the client cannot play a replay inside a hangar session, so the hangar stores the request and restarts the
-# client; on the next start, before the gameplay machine runs, the mod puts the client's own replay machine in its
-# place (the path the client takes for a replay opened from Windows) and, when the replay ends, restarts into the
-# login screen instead of quitting. RU 1.45 client source: BattleReplay.py :363-466, gameplay/machine.py :30-46,
-# gameplay/delegator.py, game.py :90-205 (mods load in gui_personality.init, before ServiceLocator.gameplay.start).
+# The client cannot play a replay inside a hangar session: the request survives a client restart.
 
 import os
 import sys
@@ -102,7 +98,6 @@ def _replay_machine(previous):
     return machine
 
 
-# The overrides are registered by the decorator: the client calls them, nothing here does.
 def _override_replay_controller():
     import BattleReplay
     controller = BattleReplay.BattleReplay
@@ -122,8 +117,7 @@ def _override_replay_controller():
         return _restart_instead_of_quit(call, self, *args, **kwargs)
 
 
-# The client quits after a replay it was started with; ours goes back to the login screen instead (not while the
-# client is closing: `stop_on_teardown`).
+# The client quits after a replay it was started with; ours goes back to the login screen instead.
 def _restart_instead_of_quit(call, *args, **kwargs):
     import BigWorld
     if _Session.path is None:

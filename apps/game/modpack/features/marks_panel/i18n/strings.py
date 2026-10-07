@@ -44,7 +44,6 @@ STRINGS = {
         'marks_panel_card_trend': u'За {battles}',
         'marks_panel_card_ratings': u'WN8 на танке',
         'marks_panel_card_win_rate': u'побед {value}',
-        'marks_panel_card_alt_hint': u'Alt — подробнее',
         'marks_panel_card_badge': u'Знак {badge}',
         'marks_panel_card_mastery_xp': u'Знаки классности, опыт за бой',
         'marks_panel_card_mastery_1': u'3 ст.',
@@ -91,7 +90,7 @@ STRINGS = {
         'component_hangar_marks': u'Карточка танка',
         'component_hangar_marks_hint': u'Карточка выбранного танка в ангаре: отметки на стволе, процент с изменением за прошлый '
                                        u'бой и тренд последних боёв, шкала 65/85/95 % и урон за бой до следующей отметки; в '
-                                       u'«Подробном» виде или по Alt — средний урон и темп, WN8 танка с сайта, знаки классности '
+                                       u'«Подробном» виде — средний урон и темп, WN8 танка с сайта, знаки классности '
                                        u'и опыт до исследования. В окне мода — история отметки по танкам; по желанию — процент '
                                        u'отметки в карусели.',
         'marks_panel_style': u'Вид',
@@ -100,9 +99,6 @@ STRINGS = {
         'hangar_marks_style_extended': u'Подробный',
         'hangar_marks_style_hint': u'«Компактный» — процент и шкала отметок, «Подробный» добавляет средний урон, темп, WN8, '
                                    u'знаки классности и опыт до исследования.',
-        'hangar_marks_alt_detail': u'Подробности по Alt',
-        'hangar_marks_alt_detail_hint': u'Пока зажат Alt, карточка показывает WN8 танка, опыт на знаки классности и до '
-                                        u'исследования.',
         'hangar_marks_show_trend': u'Тренд последних боёв',
         'hangar_marks_show_trend_hint': u'Как менялся процент за последние бои.',
         'hangar_marks_trend_battles': u'Боёв в тренде',
@@ -159,7 +155,6 @@ STRINGS = {
         'marks_panel_card_trend': u'Over {battles}',
         'marks_panel_card_ratings': u'Tank WN8',
         'marks_panel_card_win_rate': u'wins {value}',
-        'marks_panel_card_alt_hint': u'Alt: more',
         'marks_panel_card_badge': u'Badge {badge}',
         'marks_panel_card_mastery_xp': u'Mastery badges, XP per battle',
         'marks_panel_card_mastery_1': u'3rd',
@@ -207,7 +202,7 @@ STRINGS = {
         'component_hangar_marks': u'Tank card',
         'component_hangar_marks_hint': u'The selected tank\'s card in the hangar: the marks on the gun, the percent with the last '
                                        u'battle\'s change and the trend of the last battles, the 65/85/95% scale and the damage '
-                                       u'per battle to the next mark; in the «Extended» style or on Alt the average and the pace, '
+                                       u'per battle to the next mark; in the «Extended» style the average and the pace, '
                                        u'the tank\'s WN8 from the site, the mastery badges and the XP to research. In the mod '
                                        u'window the marks history per tank; optionally the MoE percent on the carousel.',
         'marks_panel_style': u'Style',
@@ -216,9 +211,6 @@ STRINGS = {
         'hangar_marks_style_extended': u'Extended',
         'hangar_marks_style_hint': u'«Compact»: the percent and the marks scale; «Extended» adds the average, the pace, the WN8, '
                                    u'the mastery badges and the XP to research.',
-        'hangar_marks_alt_detail': u'Details on Alt',
-        'hangar_marks_alt_detail_hint': u'While Alt is held the card shows the tank\'s WN8, the XP for the mastery badges and '
-                                        u'to research.',
         'hangar_marks_show_trend': u'Trend of the last battles',
         'hangar_marks_show_trend_hint': u'How the percent moved over the last battles.',
         'hangar_marks_trend_battles': u'Battles in the trend',

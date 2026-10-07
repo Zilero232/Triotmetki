@@ -9,10 +9,7 @@ except ImportError:
     g_modsListApi = None
 
 
-# ModsList (poliroid, MIT): 1.6.01 is the last release that runs on Lesta (1.7+ hooks WG's lobby footer, 1.8 needs
-# WG's R.mods); the manager installs it as an optional dependency. Lobby only: the window's pages and actions need
-# the hangar. The entry's badge (alertModification / clearModificationAlert) is the one-off notice other packages ask
-# for (core.events mods_list_alert); one asked before the entry exists is put on when it is added.
+# ModsList (poliroid, MIT) 1.6.01 is the last release that runs on Lesta.
 class ModsListButton(object):
 
     def __init__(self, on_open):

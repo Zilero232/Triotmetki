@@ -43,7 +43,7 @@ export const HitTable = ({ rows, labels, selected, onPick }: HitTableProps) => (
                     <span className={clsx(s.chipText, s[row.tone])}>{row.result}</span>
                   </span>
                 </span>
-                <span className={clsx(s.cell, s.part)}>{row.part}</span>
+                <span className={clsx(s.cell, s.zone)}>{row.zone}</span>
                 <span className={clsx(s.cell, s.shell)}>{row.shell}</span>
                 <span className={clsx(s.cell, s.angle)}>{row.angle}</span>
                 <span className={clsx(s.cell, s.armor)}>{row.armor}</span>

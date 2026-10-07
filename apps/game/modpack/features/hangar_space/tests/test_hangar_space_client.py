@@ -27,7 +27,6 @@ ENVIRONMENTS = {
 
 
 class DefaultConfig(object):
-    # RU 1.45 gui/game_control/hangar_switch_controller.py DefaultHangarSpaceConfig, the slots the feature writes.
 
     def __init__(self):
         self._spaceIdOverride = {}
@@ -88,7 +87,6 @@ class App(object):
 
 
 class Store(object):
-    # core.client.hud.component_config: update() merges into the component's settings section.
 
     def __init__(self, component):
         self.component = component

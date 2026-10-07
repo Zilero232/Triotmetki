@@ -1,7 +1,5 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-# The settings window's own section of components.json: where the player left it and how big, in design pixels
-# (1 = 1px at interface scale 1.0, the page's rem), plus its zoom in percent. `placed` false: the page centres it.
 SECTION = 'settings_window'
 DEFAULTS = {
     'placed': False,

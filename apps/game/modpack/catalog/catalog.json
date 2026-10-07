@@ -315,8 +315,8 @@
         "en": "Marks of Excellence"
       },
       "description": {
-        "ru": "Два компонента со своими настройками. «Отметки в бою» — панель справа от расходников: процент и прогноз после боя, полоса урона за бой и урон до следующей цели; панель не раздвигается и стоит вровень с расходниками. «Карточка танка» в ангаре — уровень, класс и отметки на стволе, крупный процент с изменением за прошлый бой и тренд последних боёв, шкала 65/85/95/100 % со средним уроном для каждой отметки, урон за бой и боёв до следующей, а в «Подробном» виде или по Alt — сетка: средний урон и темп, WN8 танка с сайта и победы, опыт на знак классности, опыт до элиты и следующих танков; в окне мода — история по каждому танку и расчёт отметок; по желанию — процент отметки в строке статистики под танками карусели, как в XVM.",
-        "en": "Two components with their own settings. «Marks in battle»: a panel right of the consumables with the percent and its projection after the battle and the battle damage bar and the damage to the next goal; the panel never grows and sits level with the consumables. The hangar «Tank card»: the tier, class and marks on the gun, the big percent with the last battle’s change and the trend of the last battles, the 65/85/95/100% scale with the average each mark needs, the damage per battle and battles to the next, and in the «Extended» style or on Alt a grid: the average and the pace, the tank’s WN8 from the site and wins, the XP for the next mastery badge, the XP to elite and to the next tanks; in the mod window the history per tank and the marks report; optionally the MoE percent in the stats row under the carousel tanks, as in XVM."
+        "ru": "Два компонента со своими настройками. «Отметки в бою» — панель справа от расходников: процент и прогноз после боя, полоса урона за бой и урон до следующей цели; панель не раздвигается и стоит вровень с расходниками. «Карточка танка» в ангаре — уровень, класс и отметки на стволе, крупный процент с изменением за прошлый бой и тренд последних боёв, шкала 65/85/95/100 % со средним уроном для каждой отметки, урон за бой и боёв до следующей, а в «Подробном» виде — сетка: средний урон и темп, WN8 танка с сайта и победы, опыт на знак классности, опыт до элиты и следующих танков; в окне мода — история по каждому танку и расчёт отметок; по желанию — процент отметки в строке статистики под танками карусели, как в XVM.",
+        "en": "Two components with their own settings. «Marks in battle»: a panel right of the consumables with the percent and its projection after the battle and the battle damage bar and the damage to the next goal; the panel never grows and sits level with the consumables. The hangar «Tank card»: the tier, class and marks on the gun, the big percent with the last battle’s change and the trend of the last battles, the 65/85/95/100% scale with the average each mark needs, the damage per battle and battles to the next, and in the «Extended» style a grid: the average and the pace, the tank’s WN8 from the site and wins, the XP for the next mastery badge, the XP to elite and to the next tanks; in the mod window the history per tank and the marks report; optionally the MoE percent in the stats row under the carousel tanks, as in XVM."
       },
       "fairPlay": {
         "ru": "Считается по вашему урону и помощи, как в итогах боя.",
@@ -421,12 +421,12 @@
       "context": "battle",
       "presets": ["recommended", "streamer"],
       "title": {
-        "ru": "Значок «Три отметки» у ников",
-        "en": "Three Marks badge by names"
+        "ru": "Плашка «Три отметки» в ушах",
+        "en": "Three Marks plate in the player panels"
       },
       "description": {
-        "ru": "Значок модпака у ника в ушах, в статистике по Tab и на экране загрузки: у вас и у игроков, которые привязали мод и не выключили свой значок.",
-        "en": "The modpack's badge by the name in the player panels, the Tab stats and the loading screen: on you and on players who bound the mod and left their badge on."
+        "ru": "Плашка модпака после иконки танка в ушах и оранжевая подсветка строки: у вас и у игроков, которые привязали мод и не выключили свой значок. Тестовая, по умолчанию выключена.",
+        "en": "The modpack's plate after the vehicle icon in the player panels and an orange row highlight: on you and on players who bound the mod and left their badge on. Experimental, off by default."
       },
       "fairPlay": {
         "ru": "Не боевая информация: сайт получает только номера аккаунтов игроков боя и ничего не хранит. Свой значок выключается в «Данные и сайт».",
@@ -1021,12 +1021,12 @@
         "en": "Hit viewer"
       },
       "description": {
-        "ru": "Где вас пробили и куда попали вы, как в «Боевых ранах»: после боя отдельный ангар с моделью танка — снаряд вдоль траектории попадания и метка исхода, башня и орудие в положении на момент выстрела, камера облетает попадание. Сбоку компактный список «По мне / По врагам» с типом и калибром снаряда, исходом, углом встречи, номинальной и приведённой бронёй и уроном; ваши попадания показаны на модели врага; выбор из последних боёв, ←/→ и Tab. Открывается своей кнопкой в списке модов ModsList (неактивна в очереди на бой) и из окна мода.",
-        "en": "Where you were penetrated and where you hit, as BattleHits shows it: after the battle a separate hangar view with the tank model, the shell along the hit's path and an outcome marker, the turret and gun as the shot found them, and the camera flies to the hit. A compact «On me / On enemies» list at the side with the shell type and calibre, the result, the impact angle, the nominal and effective armour and the damage; your hits are shown on the enemy's model; pick from the last battles, ←/→ and Tab. Opens from its own ModsList entry (greyed out in the battle queue) and from the mod window."
+        "ru": "Где вас пробили и куда попали вы, как в «Боевых ранах»: после боя отдельный ангар с моделью танка — снаряд вдоль траектории попадания и метка исхода, башня и орудие в положении на момент выстрела, камера облетает попадание. Сбоку компактный список «По мне / По врагам» с типом и калибром снаряда, исходом, углом встречи, номинальной и приведённой бронёй и уроном, зона попадания (ВЛД, НЛД, борт, корма, башня), фильтр по исходу и итог вкладки; панель «Броня танка» — где пробивают ваш танк по всем сохранённым боям, слабое место и совет; ваши попадания показаны на модели врага; выбор из последних боёв, ←/→ и Tab. Открывается своей кнопкой в списке модов ModsList (неактивна в очереди на бой) и из окна мода.",
+        "en": "Where you were penetrated and where you hit, as BattleHits shows it: after the battle a separate hangar view with the tank model, the shell along the hit's path and an outcome marker, the turret and gun as the shot found them, and the camera flies to the hit. A compact «On me / On enemies» list at the side with the shell type and calibre, the result, the impact angle, the nominal and effective armour and the damage, the hit zone (upper and lower plate, side, rear, turret), a result filter and tab totals; the «Tank armour» panel shows where your tank is penetrated over every kept battle, its weak spot and a tip; your hits are shown on the enemy's model; pick from the last battles, ←/→ and Tab. Opens from its own ModsList entry (greyed out in the battle queue) and from the mod window."
       },
       "fairPlay": {
-        "ru": "Только выстрелы между вашим танком и одной другой машиной, как их рисует клиент; брызги арты и авиаудары не пишутся. В бою ничего не анализируется и не показывается: угол и броню ангар меряет на модели после боя.",
-        "en": "Only the shots between your tank and one other vehicle, as the client draws them; artillery splash and air strikes are not recorded. Nothing is analysed or shown in battle: the hangar measures the angle and armour on the model after it."
+        "ru": "Только выстрелы между вашим танком и одной другой машиной, как их рисует клиент; брызги арты и авиаудары не пишутся. В бою ничего не анализируется и не показывается: угол и броню ангар меряет на модели после боя; «Броня танка» считает только попадания по вашему танку из ваших сохранённых боёв.",
+        "en": "Only the shots between your tank and one other vehicle, as the client draws them; artillery splash and air strikes are not recorded. Nothing is analysed or shown in battle: the hangar measures the angle and armour on the model after it; «Tank armour» counts only the hits on your tank from your own kept battles."
       },
       "perf": "low",
       "preview": {

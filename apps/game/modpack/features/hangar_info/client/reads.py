@@ -4,8 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.client.game import service
 from .constants import STATS_UNAVAILABLE
 
-# What the lobby already shows, names from the RU 1.45 client source: the server name (connection manager),
-# the ping the server selector measured (predefined hosts), the online counter of the lobby header.
+# RU 1.45 client source: connection manager, predefined hosts and the lobby header's online counter.
 
 
 def connection():

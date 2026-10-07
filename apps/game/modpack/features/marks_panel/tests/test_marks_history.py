@@ -182,8 +182,6 @@ class SummaryTest(unittest.TestCase):
         assert history.summary(1, 5) is None
 
 
-# The Firebird entries of a player's file written by 0.7.0, which stored the battle results' whole percent (64, 65,
-# 67) among the dossier's hundredths (6311, 6647).
 FIREBIRD = [
     {'arena': None, 'avg': 2605, 'marks': 0, 'rating': 6311, 'source': 'hangar', 't': 1790685912},
     {'arena': '29106557069013812', 'avg': 2668, 'marks': 0, 'rating': 64, 'source': 'battle', 't': 1790686301},

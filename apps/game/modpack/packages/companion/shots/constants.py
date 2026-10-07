@@ -5,7 +5,6 @@ MAX_DAMAGE = 10000
 MAX_DISTANCE_M = 1500
 
 UNKNOWN_SHELL = 'unknown'
-# core.shells code -> the contract's shell kind (contract/ingest.schema.json, shots[].shell).
 KIND_BY_CODE = {
     'ap': 'armor_piercing',
     'apcr': 'armor_piercing_cr',

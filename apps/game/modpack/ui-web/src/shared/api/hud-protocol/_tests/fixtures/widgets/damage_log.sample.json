@@ -27,7 +27,7 @@
         "id": "t3-1",
         "max": 1500,
         "name": "IS",
-        "note": "+1 крит. · осталось 1 180",
+        "note": "",
         "shell": {
           "code": "apcr",
           "gold": true,
@@ -61,7 +61,7 @@
         "id": "t1-1",
         "max": 900,
         "name": "Pz. IV",
-        "note": "осталось 510",
+        "note": "",
         "shell": {
           "code": "ap",
           "gold": false,
@@ -82,7 +82,7 @@
         "id": "r7",
         "max": null,
         "name": "KV-1",
-        "note": "боеукладка",
+        "note": "",
         "shell": {
           "code": "he",
           "gold": false,

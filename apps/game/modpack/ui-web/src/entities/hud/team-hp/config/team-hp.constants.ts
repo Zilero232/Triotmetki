@@ -7,6 +7,7 @@ export const TEAM_HP = {
   segmentStyles: ['full', 'segments', 'icons'],
   behindShare: 0.7,
   iconSize: 16,
+  digitWidth: { hp: 9, score: 12 },
   segmentGap: 1,
   tierGap: 4
 } as const;

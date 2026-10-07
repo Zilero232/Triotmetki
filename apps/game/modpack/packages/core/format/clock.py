@@ -6,8 +6,7 @@ from ..compat import to_text
 from .constants import DATE_TIME_FORMAT
 
 
-# The client sets LC_TIME from the system locale (RU 1.45 client/game.py), where Windows' Russian, Ukrainian and
-# Belarusian locales give `%p` no text at all, so the 12-hour clock's AM/PM marker is written here.
+# RU 1.45 client/game.py sets LC_TIME, where Windows' Russian locales give `%p` no text.
 def format_moment(time_format, moment):
     """`time.strftime` as text; '' for an empty format (a switched-off clock or date)."""
     if not time_format:

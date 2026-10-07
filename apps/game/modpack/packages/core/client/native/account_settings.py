@@ -4,8 +4,7 @@ from ...log import log_exception
 
 
 def _account_settings():
-    # RU 1.45 client source: account_helpers/AccountSettings.py, AccountSettings.getSettings(name) /
-    # setSettings(name, value) over the KEY_SETTINGS section (the battle minimap reads its size from there).
+    # RU 1.45 client source: account_helpers/AccountSettings.py getSettings / setSettings.
     try:
         from account_helpers.AccountSettings import AccountSettings
     except ImportError:

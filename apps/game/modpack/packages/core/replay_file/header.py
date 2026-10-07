@@ -42,8 +42,7 @@ def _block_cap(index):
     return MAX_HEADER_BLOCK_BYTES[min(index, len(MAX_HEADER_BLOCK_BYTES) - 1)]
 
 
-# RuntimeError: Python 2's json raises it ("maximum recursion depth exceeded") on deeply nested arrays or objects; a
-# number too long to convert in time is a ValueError (codec.decode_json).
+# Python 2's json raises RuntimeError on deeply nested arrays or objects.
 def _json_block(raw):
     try:
         return decode_json(to_text(raw, 'utf-8'))
@@ -107,8 +106,7 @@ def _ints(source, names):
     return {ours: source[theirs] for theirs, ours in names if is_int(source.get(theirs))}
 
 
-# (result, damage) of the recorder from the results block: its own `personal` entry and the winner team only (fair play:
-# the vehicles and players blocks are never read); (None, None) when unknown.
+# Fair play: the recorder's own personal entry and the winner team only.
 def own_outcome(results):
     own = _own_vehicle(_dict_of(results, 'personal'))
     common = _dict_of(results, 'common')

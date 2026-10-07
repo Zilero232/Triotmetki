@@ -8,8 +8,6 @@ GROUP = 'battle'
 SNIPER_ZOOMS = (NATIVE, 'remember', 'x2', 'x4', 'x8')
 CAMERA_PRESETS = (NATIVE, 'sniper', 'balanced', 'dynamic')
 
-# The recommended client values (core.client.native.RecommendedSettingsComponent): no camera shake, a steady sniper
-# view, the game's own "remember the last zoom".
 DEFAULTS = {
     'preset': NATIVE,
     'sniper_zoom': 'remember',

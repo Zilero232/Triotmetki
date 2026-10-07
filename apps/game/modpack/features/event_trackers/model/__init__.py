@@ -6,8 +6,7 @@ from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, counted, font,
 from .constants import DAY_S, HOUR_S, MINUTE_S, TIER_NUMERALS, TITLE_SIZE_STEP
 from .triathlon import best_battles, left_s, score
 
-# Fair play: the Trading Caravan card shows the own token count the client keeps for the caravan page and the event's
-# end the hangar entry point shows; the Triathlon card only the player's own battles.
+# Fair play: the own token count and own battles only.
 
 
 def remaining(seconds, translate):

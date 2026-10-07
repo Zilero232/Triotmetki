@@ -4,8 +4,6 @@ import re
 
 from ....core.vendor.enum34 import Enum
 
-# The limits mirror contract/replay-upload.schema.json (#/definitions/limits).
-
 UPLOAD_PATH = '/replays/mod'
 FILE_FIELD = 'file'
 UNSAFE_NAME_CHARS = re.compile(r'[^A-Za-z0-9._-]+')
@@ -32,12 +30,9 @@ MAX_AGE_S = 7 * 24 * 3600.0
 JITTER = 0.2
 
 QUOTA_CODE = 'SUBSCRIPTION_REQUIRED'
-# 409: the server already has this replay.
 DONE_STATUSES = (409,)
 DROP_STATUSES = (400, 404, 413, 415, 422)
 
-# The answers to core.events.EVENT_REPLAY_UPLOAD_REQUEST: the replay manager shows them as
-# `replay_manager_upload_<state>`.
 REQUEST_READY = 'ready'
 REQUEST_OFF = 'off'
 REQUEST_UNBOUND = 'unbound'
@@ -71,7 +66,6 @@ OUTCOME_BY_RESULT = {
     JobResult.MISSING: Outcome.WAIT,
 }
 
-# A stopped upload is sent again as soon as the player is back in the hangar.
 WAIT_BY_RESULT = {
     JobResult.BUSY: BUSY_RETRY_S,
     JobResult.STOPPED: 0.0,

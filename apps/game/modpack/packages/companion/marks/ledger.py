@@ -3,11 +3,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ...core.compat import is_int
 from .constants import BATTLE_SNAPSHOTS
 
-# The PMOD technique, exact: the tank's own dossier read before the battle against the battle results' post-battle
-# damageRating. A snapshot taken on the way into the battle, not the one the hangar holds when the results arrive:
-# the client refreshes the dossier after the battle, often before its results come, and that read already holds the
-# new percent. Arenas are keyed as text: the battle event carries `arena_unique_id` as a string.
-
 
 class BattleSnapshots(object):
 

@@ -136,6 +136,10 @@
         "title": "Layout per battle type",
         "text": "Its own panels for random battles, Onslaught, Frontline and events. Switches by itself."
       },
+      "auto_messages": {
+        "title": "Chat auto messages",
+        "text": "Tells your allies about your own events: artillery hit you, ally damage, being spotted; your own texts and a pause."
+      },
       "chat_filter": {
         "title": "Chat filter",
         "text": "Timestamps on messages; hides repeats, flood, command spam and the words you pick."

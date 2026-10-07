@@ -64,3 +64,11 @@ def row_note(row, translate, show_hp):
         _hp_word(row, translate, show_hp),
     )
     return NOTE_SEPARATOR.join(word for word in words if word)
+
+
+def widget_note(row, translate):
+    if row['kind'] in ASSIST_KINDS:
+        return translate('dlog_kind_' + row['kind'])
+
+    words = (_outcome_word(row, translate), source_word(row, translate))
+    return NOTE_SEPARATOR.join(word for word in words if word)

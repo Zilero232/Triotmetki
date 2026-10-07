@@ -46,8 +46,6 @@ def _is_configured(section, defaults):
     return any(key not in PLACE_KEYS and section.get(key, value) != value for key, value in defaults.items())
 
 
-# A player who set up a component keeps its switch: the guard records the switch as the player's own choice, so
-# `upgraded` leaves it where it is when its default moves.
 def _guarded(config, components, schema_defaults):
     kept = []
     for switch, section_name in GUARDED_SWITCHES:
@@ -175,7 +173,6 @@ def _move_aim_circle(components):
     _apply(components, {target_section: {target_key: _aim_circle_choice(percent)}})
 
 
-# The crosshair's aim circle choice becomes the switch and size of its own component; the key itself is dropped later.
 def _aim_circle_part(config, components):
     section_name, key = AIM_CIRCLE_TO
     choice = (_section(components, section_name) or {}).get(key)
@@ -189,8 +186,6 @@ def _aim_circle_part(config, components):
     return config
 
 
-# The marks split into the battle panel and the Tank card: each switch is on while the player had its part on, an off
-# one is recorded as the player's choice, and the card's options move to its own section.
 def _split(config, components):
     config = dict(config)
     switches = _split_switches(config, components)
@@ -212,14 +207,6 @@ def _merged(config, components, schema_defaults):
     return config
 
 
-# (config, components) of a stored install moved to the current revision. Below MIGRATION_REVISION merged switches turn
-# on when any of theirs was on and the merged values move; below SPLIT_REVISION the marks part switches and the Tank
-# card's options move to the card's own switch and section; below AIM_CIRCLE_REVISION an aim circle the player had on in
-# aim_info becomes the crosshair's choice; below AIM_CIRCLE_PART_REVISION a crosshair aim circle smaller than the game's
-# turns on its own component with the same size; below DEFAULTS_REVISION a changed default moves only when the player
-# never changed it, and the sections of removed components go. `schema_defaults(section)` gives a component's schema
-# defaults, or None when it is not installed. A fresh install (no stored config) and a file already at the revision come
-# back unchanged.
 def migrated(config, components, schema_defaults):
     if not isinstance(config, dict) or not config:
         return config, components

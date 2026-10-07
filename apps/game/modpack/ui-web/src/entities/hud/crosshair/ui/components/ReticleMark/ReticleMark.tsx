@@ -13,7 +13,14 @@ export const ReticleMark = ({ shape, size, color, outline }: ReticleMarkProps) =
 
   return (
     <span className={s.mark} style={remSquare(size)}>
-      <svg aria-hidden='true' height='100%' viewBox={`0 0 ${String(size)} ${String(size)}`} width='100%' xmlns='http://www.w3.org/2000/svg'>
+      <svg
+        aria-hidden='true'
+        className={s.svg}
+        height='100%'
+        viewBox={`0 0 ${String(size)} ${String(size)}`}
+        width='100%'
+        xmlns='http://www.w3.org/2000/svg'
+      >
         {reticleMarkPrimitives({ shape, size, outline }).map((primitive, index) =>
           primitive.stroke === null ? (
             <path

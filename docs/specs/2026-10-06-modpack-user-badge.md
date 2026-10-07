@@ -1,6 +1,9 @@
 # Modpack user badge (`pack_badge`)
 
-Status: implemented 2026-10-06 (server `mod-badges`, companion 0.8.4, ui 0.9.4, new component `pack_badge` 0.1.0).
+Status: implemented 2026-10-06 (server `mod-badges`, companion 0.8.4, ui 0.9.4, new component `pack_badge` 0.1.0); the
+battle drawing is off by default since `pack_badge` 0.1.3 (2026-10-07): suspected of native client crashes, see the
+modpack README «pack_badge». The same 0.1.3 replaces the name-field `<IMG>` with our own AS3 library SWF in the
+players panel (section «Drawing», revision 2026-10-07 b), still behind the off-by-default switch.
 
 The owner asked for what Near_You's pack has: players who use the modpack carry its icon next to their name in the
 battle player panels («уши»), in the full stats (Tab) and on the loading screen, the player himself included.
@@ -67,6 +70,36 @@ replay) from the `pack_badge` component:
 
 ### Drawing (Lesta 1.45)
 
+Revised again 2026-10-07 (pack_badge 0.1.3, «b»): both stock-data paths below (the prefix badge slot, then the
+`region` `<IMG>`) are the prime suspects of the owner's native crashes (0xC0000005) 0.5-3 minutes after the badge
+entered the rows, so the data path is dropped for the way Near_You and Battle Observer draw: a display object of our
+own in the stock rows.
+
+- **Evidence.** Battle Observer appends `modBattleObserver.swf` to `BATTLE_REQUIRED_LIBRARIES`
+  (`refs/mods/Armagomen__battle_observer/mod/res/scripts/client/armagomen/battle_observer/__init__.py:79`), its
+  library's document class puts `as_BattleObserverCreate` on `BaseBattlePage.prototype`
+  (`as/src/net/armagomen/battle_observer/BattleObserverLibraryMain.as`), Python calls it on the page's `flashObject`
+  (`battle_observer/battle/__init__.py` `onViewFounded`), and `PlayersPanelsUI.as:115-128` walks
+  `panels.listLeft/listRight._items` and `addChild`s its sprite to each holder's list item. RU 1.45: the battle app
+  loads the list into its own application domain (`battle_entry._getRequiredLibraries`, AS3 `LibrariesLoader`); the
+  row is `BasePlayersPanelListItem` (public `vehicleIcon`, `hit`, `bg`/`selfBg`/`deadBg`/`normAltBg`/`deadAltBg`,
+  25 px rows, 339 px wide, the icon on the screen-centre side), its holder `BasePlayersListItemHolder` (public
+  `getListItem()`, `vehicleID`); the panel dispatches `change` on new data, `onItemsCountChange` and `stateChanged` on
+  a mode switch, the lists `itemsCountChange` (`PlayersPanelBase.as`, `PlayersPanel.as`, `BasePlayersPanelList.as`).
+- **What we draw.** A 36x18 plate (the «///» mark and the «ТРИ ОТМЕТКИ» wordmark, our art in
+  `assets/otmetki/pack_badge`, renditions for 1x, 1.5x and 2x) right after the vehicle icon, and a 240 px
+  orange-to-transparent strip above the row backgrounds and below the text. Python sends only the vehicle ids of
+  marked accounts; the library repaints on the panel's own events, removes itself with the page and does no
+  per-frame work.
+- **Toolchain.** Apache Royale `mxmlc` from npm on Java (mise); playerglobal generated from Royale's Apache-licensed
+  typedefs; no Lesta SWC (the client's classes are reached by name). The SWF is committed (`bun run swf:build`).
+- **Left out.** The Tab stats and the loading screen: their rows are rebound through non-display table controllers
+  (`StatsTableControllerBase`), not worth the risk for a test build. The players panel is where Near_You draws.
+- UNVERIFIED on Lesta 1.45: the library loading from a mod package, the status string coming back through the GFx
+  bridge, Scaleform decoding the embedded PNG (a vector copy is drawn otherwise) and the private `_items` lookup.
+
+The history below is kept for the record.
+
 Revised 2026-10-07 (pack_badge 0.1.2): the first build used the stock prefix badge slot, and in game our icon showed
 instead of the player's own achievement badge. The owner wants it as Near_You shows it: a separate small mark that
 leaves the player's badge alone. Near_You's pack is closed (no source to read); XVM puts its user mark as an
@@ -127,6 +160,11 @@ Near_You marks its users: nothing is sent for it, so it shows unbound and when t
 - Viewer side: the answer is kept in memory for the battle only.
 
 ## 5. What to verify in game
+
+0.1.3 (SWF path): switch «Плашка «Три отметки» в ушах» on; in a random battle the own row shows the plate after the
+tank icon and the gradient; it follows the panel modes; python.log has the `pack badge swf:` lines listed in the
+modpack README test step 17. Play several battles and watch for the 0xC0000005 crash. The checks below are for the
+earlier paths.
 
 - Switch on, bound or not: the own row shows the icon in the ears, Tab and the loading screen (with a stock badge
   chosen, `replace` shows ours, `keep` the stock one).

@@ -20,7 +20,6 @@ export const TankCardWidget = ({ data }: TankCardWidgetProps) => {
         {data.sections.map((section) => (
           <TankSection key={section.title} section={section} />
         ))}
-        <HudText className={s.hint} text={data.hint} />
       </div>
     </HudPlate>
   );

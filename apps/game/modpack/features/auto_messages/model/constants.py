@@ -24,11 +24,8 @@ TRIGGERS = (
     ARTY_HIT, TEAM_DAMAGE, SPOTTED, AMMO_RACK, CREW, TRACKS, FIRE, FIRE_OUT, LOW_HP, RAMMED, FRAG, DAMAGE_MILESTONE,
     LAST_ALIVE, RELOAD, GREETING, GG,
 )
-# kurzdor «AutoBattleMessages» (the player's MSA template, docs/specs/2026-10-07-auto-messages.md section 1): these
-# three, all on; every other trigger is ours and stays off until the player turns it on.
 DEFAULT_ON = (ARTY_HIT, TEAM_DAMAGE, SPOTTED)
 
-# Seconds between two lines of one trigger; None: once per battle.
 ONCE = None
 COOLDOWNS = {
     ARTY_HIT: 30,
@@ -48,7 +45,6 @@ COOLDOWNS = {
     GREETING: ONCE,
     GG: ONCE,
 }
-# Every line of ours, whatever its trigger: no more than this many within the window.
 RATE_WINDOW_S = 60
 RATE_MAX_LINES = 4
 
@@ -61,28 +57,24 @@ PLACEHOLDER = re.compile(r'\{([a-z_]+)\}')
 MAX_LINE_CHARS = 140
 MAX_TEMPLATE_CHARS = 600
 
-# core.client.battle.damage_source values.
 SOURCE_SHOT = 'shot'
 SOURCE_RAM = 'ram'
 ATTACKER_SOURCES = ('shot', 'fire', 'ram')
 ARTY_CLASS = 'SPG'
 
-# RU 1.45 VEHICLE_VIEW_STATE.DEVICES (device or crew name, state, actual state) and gui.battle_control.battle_constants
-# VEHICLE_DEVICES / DEVICE_STATES_RANGE; a crew member's name is its role with an index (gunner1, loader2).
+# RU 1.45 VEHICLE_VIEW_STATE.DEVICES (name, state, actual state); crew names carry an index (gunner1).
 AMMO_RACK_DEVICE = 'ammoBay'
 HIT_STATES = ('critical', 'destroyed')
 DESTROYED = 'destroyed'
 CREW_ROLES = ('commander', 'driver', 'gunner', 'loader', 'radioman')
 TRACK_PREFIXES = ('leftTrack', 'rightTrack')
 
-# A reload counts as started when the time left is still within this of the full time.
 FRESH_RELOAD_S = 1.0
 
 WIN = 'win'
 DEFEAT = 'defeat'
 DRAW = 'draw'
 
-# The settings window editor: one group per trigger (switch, text, its threshold).
 EDITOR_GROUPS = (
     ('general', ('channel',)),
     (ARTY_HIT, (ARTY_HIT, ARTY_HIT + TEXT_SUFFIX)),

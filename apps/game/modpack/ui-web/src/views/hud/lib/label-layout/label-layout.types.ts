@@ -22,6 +22,7 @@ export type LayoutLabelsInput = {
   scales: Scales;
   overrides: Overrides;
   screen: ClientSize;
+  ratio: number;
   live: LiveRect | null;
   edit: boolean;
   widgets: Map<string, ResolvedWidget | null>;
@@ -33,6 +34,6 @@ export type DockItemInput = Pick<LayoutLabelsInput, 'overrides' | 'screen' | 'si
 
 export type OpacityOfInput = { panel: HudPanel; settled: boolean };
 
-export type LabelStyleInput = { rect: Rect; scale: number; opacity: number };
+export type LabelStyleInput = { rect: Rect; scale: number; ratio: number; opacity: number };
 
 export type ObstaclesInput = Pick<LayoutLabelsInput, 'overrides' | 'panels' | 'screen'> & { items: DockItem[] };

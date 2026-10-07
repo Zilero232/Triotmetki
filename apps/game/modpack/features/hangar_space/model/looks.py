@@ -54,8 +54,6 @@ def generated_looks(spaces, environments):
     return looks
 
 
-# A look shows only where its space is a hangar the client lists and that space ships its environment: a look a patch
-# renamed or removed drops out of the gallery by itself, and a chosen one falls back to the game's own.
 def available_looks(spaces, environments):
     listed = set(spaces)
     stock = [look for look in stock_looks()

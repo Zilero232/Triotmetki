@@ -12,9 +12,6 @@ import { sharedConfig } from '../shared';
 import { shellSpritePlugin } from '../shell-sprite';
 import { UI_BUILD } from '../vite.constants';
 
-// The settings window ships as one self-contained index.html: styles inlined in the head and the
-// script inlined as a classic IIFE at the end of the body, the way the client's own Gameface pages
-// load theirs (no ES module loader).
 export const settingsConfig = (): UserConfig =>
   mergeConfig(sharedConfig(), {
     base: './',

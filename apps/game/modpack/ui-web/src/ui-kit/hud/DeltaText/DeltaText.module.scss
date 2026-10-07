@@ -16,3 +16,7 @@
   height: 6px;
   margin-right: 3px;
 }
+
+.svg {
+  @include svg-canvas;
+}

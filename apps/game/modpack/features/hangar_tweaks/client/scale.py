@@ -5,10 +5,7 @@ from ....core.hooks import subscribe
 from ....core.log import guarded
 from ..model.constants import INTERFACE_SCALE
 
-# RU 1.45 client source: account_helpers/settings_core/options.InterfaceScaleSetting.setSystemValue(scale) resizes the
-# stage (event_dispatcher.changeAppResolution) and the glyph cache; InterfaceScaleManager.changeScale(scale) sends
-# onScaleChanged and BigWorld's own scale; scaleChanged() puts the scale saved in the preferences back (what a
-# resolution change runs through g_guiResetters). Nothing here writes the preferences.
+# RU 1.45 client source: options.InterfaceScaleSetting.setSystemValue, InterfaceScaleManager.changeScale.
 
 
 def current_scale():

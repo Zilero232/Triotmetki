@@ -12,8 +12,6 @@ from otmetki.features.minimap.model.constants import VEHICLE_NAMES
 from otmetki.features.minimap.i18n import STRINGS
 from otmetki.features.minimap.settings import SCHEMA, SETTINGS
 
-# RU 1.45 account_helpers/settings_core/options.py MinimapVehModelsSetting: VEHICLE_MODELS_TYPES index of 'never', and
-# getDefaultValue (the index of 'always').
 VEHICLE_MODELS_NEVER = 0
 VEHICLE_MODELS_DEFAULT = 2
 FORBIDDEN = re.compile(r'enemy|lost|direction|barrel|gun|tracer|arty|destroy|spot|transparen(?!cy$)', re.I)

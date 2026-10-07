@@ -63,8 +63,6 @@ class SettingsChangedTest(unittest.TestCase):
             else:
                 sys.modules[name] = module
 
-    # The HUD edit mode's preview of the panel is on the same layer: a drag or a reset in the hangar changes the
-    # settings, and the panel must not take that preview off.
     def test_a_settings_change_in_the_hangar_leaves_the_hud_edit_preview(self):
         self.panel.settings_changed(['x', 'y'])
 

@@ -18,14 +18,9 @@ from .page import delta_sign
 from .tank_progress import mastery_cell, research_cells
 from .widget import stars_of
 
-# Fair play: the player's own marks of the selected tank (own dossier, own average and pace, own battles kept on this
-# computer) and the bound account's own ratings of that tank from the site.
-#
-# Laid out as the packs' hangar marks cards are (Jove's and Lebwa's marks info, Battle Observer's hangar widget, XVM's
-# hangar macros).
+# Fair play: the own marks of the selected tank and the bound account's own ratings from the site.
 
 
-# `state` is None for a tank without marks (below tier 5): its card keeps the tank's grid.
 @attr.s(frozen=True)
 class TankCard(object):
 
@@ -33,7 +28,6 @@ class TankCard(object):
     vehicle = attr.ib(default=None)
     summary = attr.ib(default=None)
     tank = attr.ib(default=None)
-    held = attr.ib(default=False)
     mastery = attr.ib(default=None)
     own_mastery = attr.ib(default=None)
     research = attr.ib(default=None)
@@ -41,9 +35,8 @@ class TankCard(object):
     tier = attr.ib(default=None)
 
 
-# A tank without marks has only the grid, so it shows at rest.
 def shows_detail(data, settings):
-    return data.held or data.state is None or settings.get('style') == STYLE_EXTENDED
+    return data.state is None or settings.get('style') == STYLE_EXTENDED
 
 
 def shows_ratings(data, settings):
@@ -89,7 +82,6 @@ def _thresholds(state):
     return levels
 
 
-# 100% is the goal once the three marks are on the gun.
 def _goal_level(state):
     if state['next_level'] is not None:
         return state['next_level']
@@ -199,18 +191,11 @@ def card_sections(data, settings, translate):
     return [section for section in sections if section]
 
 
-def _hint(sections, settings, translate):
-    if not sections or not settings.get('alt_detail'):
-        return None
-    return translate('marks_panel_card_alt_hint')
-
-
 def _tier(tier):
     return int(tier) if is_int(tier) and tier > 0 else None
 
 
 def tank_card(data, settings, translate):
-    sections = card_sections(data, settings, translate)
     detail = shows_detail(data, settings)
     return widget(TANK_CARD_KIND, {
         'vehicle': data.vehicle,
@@ -223,6 +208,5 @@ def tank_card(data, settings, translate):
         'thresholds': _thresholds(data.state),
         'goal': _goal(data.state, translate),
         'note': _note(data.state, translate),
-        'sections': sections if detail else [],
-        'hint': None if detail else _hint(sections, settings, translate),
+        'sections': card_sections(data, settings, translate) if detail else [],
     })

@@ -21,8 +21,7 @@ from .constants import (  # noqa: F401
     SALE_TOKEN_SEPARATOR,
 )
 
-# Fair play: only the player's own depot and barracks. Nothing is sold without the confirmation that names the items
-# and the credits; the request is the one the depot's own «Продать» sends.
+# Fair play: only the own depot and barracks, sold with the depot's own request after a confirmation.
 
 KINDS = dict(KIND_SWITCHES)
 
@@ -72,7 +71,7 @@ def item_wanted(item, values):
 
 
 def member_wanted(member, values):
-    # Premium and unique crew (descriptor.isPremium / isFemale) are never dismissed: they cannot be hired again.
+    # Premium and unique crew (descriptor.isPremium / isFemale) cannot be hired again: never dismissed.
     if not values.get(CREW_SWITCH) or member['premium'] or member['locked']:
         return False
     return member['skills'] == 0 or bool(values.get('crew_with_skills'))
@@ -94,8 +93,6 @@ def plan(items, crew, values):
     return {'items': chosen, 'crew': members, 'credits': sum(_worth(item) for item in chosen)}, None
 
 
-# What the player confirmed, carried in the action the dialog sends: the same items, counts, prices and crew must still
-# be on sale when the request goes.
 def sale_token(sale):
     if sale is None:
         return None

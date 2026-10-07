@@ -20,8 +20,6 @@ def appended(messages, arena, lines):
     return messages
 
 
-# The stock post-battle message, held until `on_message(arena, messages, callback)` calls `callback(messages)`: the
-# formatter's caller hands the list to the service channel only then. A failing handler still lets the message out.
 class StockMessageHook(object):
 
     def __init__(self, on_message):

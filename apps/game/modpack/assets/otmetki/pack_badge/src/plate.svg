@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="36" viewBox="0 0 72 36">
+<!-- (c) 2026 Три отметки. Original artwork: the modpack user plate, the «///» mark and the «ТРИ ОТМЕТКИ» wordmark. -->
+<rect x="1" y="1" width="70" height="34" rx="5" fill="#0e0e10" fill-opacity="0.82" stroke="#ff5500" stroke-opacity="0.9" stroke-width="2"/>
+<path d="M6,28H10L16,8H12Z" fill="#ff5500"/>
+<path d="M12.5,28H16.5L22.5,8H18.5Z" fill="#ff7f00"/>
+<path d="M19,28H23L29,8H25Z" fill="#ffb000"/>
+<path d="M33,7.5H36.6M34.8,7.5V15.5M38,15.5V7.5H41.6V11.9H38M43,7.5V15.5L46.6,7.5V15.5" fill="none" stroke="#ffb000" stroke-width="1.6"/>
+<path d="M33,20.5H36.6V28.5H33ZM38,20.5H41.6M39.8,20.5V28.5M43,28.5V20.5L44.8,25.3L46.6,20.5V28.5M51.6,20.5H48V28.5H51.6M48,24.5H50.88M53,20.5H56.6M54.8,20.5V28.5M58,20.5V28.5M61.6,20.5L58,24.5L61.6,28.5M63,20.5V28.5L66.6,20.5V28.5" fill="none" stroke="#ffb000" stroke-width="1.6"/>
+</svg>

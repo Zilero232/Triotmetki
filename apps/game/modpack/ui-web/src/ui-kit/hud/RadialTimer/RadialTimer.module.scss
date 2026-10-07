@@ -1,3 +1,5 @@
+@use '@/shared/styles/gameface' as *;
+
 .radial {
   position: relative;
   display: flex;
@@ -14,4 +16,8 @@
 .content {
   position: absolute;
   display: flex;
+}
+
+.svg {
+  @include svg-canvas;
 }

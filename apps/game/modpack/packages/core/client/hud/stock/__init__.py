@@ -36,7 +36,7 @@ from .reticle import ReticleControl
 try:
     from gui.Scaleform.daapi.view.battle.shared.page import SharedPage
     IMPORT_ERROR = None
-except Exception as error:  # the battle page moved: every stock element stays
+except Exception as error:
     SharedPage = None
     IMPORT_ERROR = error
 

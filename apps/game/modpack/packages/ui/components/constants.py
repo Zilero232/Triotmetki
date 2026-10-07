@@ -22,8 +22,6 @@ COMPANION_KEYS = (
     'hud_modifier',
     'hud_hide_under_windows',
 )
-# Rare data-sharing details, folded under the Advanced fold (docs/specs/2026-09-30-hud-consolidation-and-design.md,
-# section 12).
 COMPANION_ADVANCED = (
     'send_moe_snapshots',
     'send_queue_times',
@@ -36,35 +34,23 @@ COMPANION_ADVANCED = (
     'hud_modifier',
     'hud_hide_under_windows',
 )
-# Never editable in the window: connection, one-shot actions and the language (the header switches it).
 HIDDEN_CONFIG_KEYS = ('server_url', 'bind_code', 'settings_action', 'language', 'user_set', 'defaults_revision')
 
 ACTION_SETTINGS_EXPORT = 'settings_export'
 COMPANION_ACTIONS = (ACTION_SETTINGS_EXPORT,)
 
 PANEL_POSITION_KEYS = ('x', 'y', 'align_x', 'align_y', 'drag', 'scale')
-# The opacity of a panel is a rare choice.
 PANEL_ADVANCED_KEYS = ('alpha',)
 
-# Card keys sent only when the feature instance has the hook: the full-window editor, the card's thumbnail
-# (img:// path or None) and the per-choice pictures ({field key: {choice value: img:// path or None}}).
 OPTIONAL_HOOKS = (('editor', 'ui_editor'), ('thumb', 'ui_thumb'), ('gallery', 'ui_gallery'))
 
-# The settings window's navigation: every component card sits on one section page. Profiles and the HUD editor are
-# pages of their own (the page's SECTION constants), not component sections. Component pages follow where a component
-# shows (battle or hangar, the way the packs' configurators split them); the replays page is the replay browser with
-# its components, the data page the site binding.
 SECTION_BATTLE = 'battle'
 SECTION_HANGAR = 'hangar'
 SECTION_REPLAYS = 'replays'
 SECTION_DATA = 'data'
-# The HUD editor's page also lists the components that shape the whole battle HUD (the layout per battle type).
 SECTION_HUD = 'hud'
 SECTIONS = (SECTION_BATTLE, SECTION_HANGAR, SECTION_REPLAYS, SECTION_DATA, SECTION_HUD)
 
-# Where a component shows anything: only in the hangar, only in battle, or in both. catalog/catalog.json carries the
-# `context` of each package for the manager: its component's, or `any` when its components (the feature's settings
-# PARTS) show in the hangar and in battle (packages/ui/tests/test_placement.py keeps both in step).
 CONTEXT_HANGAR = 'hangar'
 CONTEXT_BATTLE = 'battle'
 CONTEXT_ANY = 'any'
@@ -117,8 +103,6 @@ PLACEMENT = {
     'quick_demount': (SECTION_HANGAR, CONTEXT_HANGAR),
 }
 
-# HUD panels a feature draws besides its own card, with no switch of their own: the owner's card switches them, and
-# their row points there.
 PANEL_OWNERS = {
     'last_battle': 'battle_results',
 }

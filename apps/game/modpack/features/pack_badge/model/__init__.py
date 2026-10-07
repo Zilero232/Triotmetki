@@ -4,7 +4,7 @@ from ....core.compat import is_int
 from ....core.errors import ReasonError
 from ....core.me import device_body
 from ....core.vendor import attr
-from .constants import ACCOUNT_KEY, BADGE_TAG, ENABLED_KEY, MAX_ACCOUNT_IDS, REGION_KEY, SHOW_OWN_KEY
+from .constants import ENABLED_KEY, LIBRARY_ADD, LIBRARY_REMOVE, MAX_ACCOUNT_IDS, SHOW_OWN_KEY
 
 # Not combat information (docs/specs/2026-10-06-modpack-user-badge.md): the request carries only the account ids of the
 # arena data behind the stock player panels, never vehicles, teams, HP or positions; an anonymised player's real id
@@ -55,17 +55,20 @@ def show_own(config):
     return bool(config.get(ENABLED_KEY)) and bool(config.get(SHOW_OWN_KEY))
 
 
-def with_badge(region):
-    if region and BADGE_TAG in region:
-        return region
-    return '%s %s' % (region, BADGE_TAG) if region else BADGE_TAG
+def marked_vehicle_ids(vehicles, marked):
+    ids = set()
+    for vehicle_id, account_id in vehicles:
+        if is_int(vehicle_id) and vehicle_id > 0 and account_id in marked:
+            ids.add(int(vehicle_id))
+    return sorted(ids)
 
 
-def decorate(data, marked):
-    if data.get(ACCOUNT_KEY) not in marked:
-        return False
-    data[REGION_KEY] = with_badge(data.get(REGION_KEY))
-    return True
+def library_action(libraries, name, is_on):
+    if is_on and name not in libraries:
+        return LIBRARY_ADD
+    if not is_on and name in libraries:
+        return LIBRARY_REMOVE
+    return None
 
 
 class BattleBadges(object):

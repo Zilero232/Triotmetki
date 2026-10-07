@@ -16,6 +16,7 @@ const STATE = {
       class: 'heavy',
       result: 'Пробитие',
       part: 'Корпус',
+      zone: 'ВЛД',
       tone: 'pen',
       shell: 'ББ 128',
       damage: '490',

@@ -24,12 +24,27 @@ const rowSchema = z.object({
   class: z.nullable(z.string()),
   result: z.string(),
   part: z.string(),
+  zone: z.string(),
   tone,
   shell: z.string(),
   damage: z.string(),
   angle: z.string(),
   armor: z.string(),
   nominal: z.string()
+});
+
+const summarySchema = z.object({
+  damage: z.string(),
+  share: z.nullable(z.number()),
+  share_label: z.string()
+});
+
+const profileSchema = z.object({
+  vehicle: z.string(),
+  meta: z.string(),
+  zones: z.array(z.object({ id: z.string(), label: z.string(), hits: z.number(), pens: z.number(), share: z.nullable(z.number()) })),
+  weak: z.nullable(z.string()),
+  advice: z.nullable(z.string())
 });
 
 export const viewerStateSchema = z.object({
@@ -41,5 +56,7 @@ export const viewerStateSchema = z.object({
   rows: z.array(rowSchema),
   selected: z.nullable(z.number()),
   loading: z.optional(z.boolean()),
-  approx: z.optional(z.boolean())
+  approx: z.optional(z.boolean()),
+  summary: z.optional(z.nullable(summarySchema)),
+  profile: z.optional(z.nullable(profileSchema))
 });

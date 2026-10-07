@@ -3,8 +3,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.compat import is_number
 
 
-# When the battle started on this computer's clock: the moment the client saw it start, else the results'
-# arenaCreateTime (a server time) through `to_local`, the client's conversion (helpers.time_utils.makeLocalServerTime).
 def battle_started_at(seen_at, results, to_local):
     if seen_at is not None:
         return seen_at

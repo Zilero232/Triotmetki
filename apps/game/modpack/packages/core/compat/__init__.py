@@ -75,8 +75,7 @@ def clean_text(value, limit, default=None):
     return to_text(value).strip()[:limit] or default
 
 
-# `defaults` updated with the `**options` a function got: the keyword-only arguments Python 2 has no syntax for. An
-# unknown name raises TypeError, as a misspelt keyword argument would.
+# The keyword-only arguments Python 2 has no syntax for.
 def keyword_options(given, defaults):
     unknown = set(given) - set(defaults)
     if unknown:

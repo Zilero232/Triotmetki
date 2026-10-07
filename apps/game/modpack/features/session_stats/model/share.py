@@ -12,9 +12,6 @@ from .constants import (
     SHARE_SYNCED,
 )
 
-# Opt-in (share_session_report, off by default): the server builds and posts the card from the account's own
-# battles; the mod only switches the server flag and asks for a card of its own session id.
-
 
 def channels_of(choice):
     if choice == BOTH_CHANNELS:

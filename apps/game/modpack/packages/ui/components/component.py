@@ -7,7 +7,6 @@ from .constants import OPTIONAL_HOOKS, PANEL_ADVANCED_KEYS, PANEL_OWNERS, PANEL_
 from .placement import placement_of
 
 
-# A feature's card hook that fails costs only what it describes: the rest of the card and every other card still draw.
 def _hook(instance, name, default=None):
     try:
         return getattr(instance, name)()

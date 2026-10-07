@@ -7,10 +7,7 @@ from ...payload import build_moe_snapshot_event
 from ..ledger import BattleSnapshots
 from .dossier import current_vehicle_moe
 
-# The MoE thresholds come from public data only: the player's own dossier (damageRating, movingAvgDamage,
-# marksOnGun: moe_snapshot events) and own battle results, aggregated on the site. The account command
-# CMD_GET_VEHICLE_DAMAGE_DISTRIBUTION is not asked: no RU 1.45 client code sends it (common/AccountCommands.py
-# defines it, nothing calls it), so its answer is unverifiable and sending it is a private-API call.
+# No RU 1.45 client code sends CMD_GET_VEHICLE_DAMAGE_DISTRIBUTION: thresholds come from public data.
 
 
 class MarksCapture(object):
@@ -41,13 +38,9 @@ class MarksCapture(object):
     def before_battle(self, arena_id, tank_id):
         return self.battles.before(arena_id, tank_id)
 
-    # The battle results' MoE block with the exact rating of the hangar's post-battle dossier read, when the client
-    # refreshed the dossier before the results came.
     def exact_moe(self, tank_id, moe):
         return exact_moe(moe, self.hangar_moe.get(tank_id))
 
-    # The results' reading goes into the hangar snapshot unless the hangar already holds the post-battle dossier read,
-    # whose rating is exact where the results' is a whole percent.
     def after_battle(self, tank_id, moe, arena_id=None):
         self.battles.finished(arena_id)
         snapshot = self.hangar_moe.get(tank_id)

@@ -1,11 +1,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-# While the modifier is held its release is also polled: Alt+Tab or a client dialog can swallow the key-up.
+# Alt+Tab or a client dialog can swallow the key-up.
 RELEASE_POLL_S = 0.25
 
-# Key names -> Windows virtual-key codes (WinUser.h VK_LSHIFT 0xA0 ... VK_RMENU 0xA5). BigWorld keeps a key down that
-# was released while the game was in the background (Alt+Tab: the Alt key-up goes to the other window) and drops every
-# key when its window loses the focus, so a started hold lasts while Windows reports the physical key down.
+# Windows virtual-key codes (WinUser.h VK_LSHIFT 0xA0 ... VK_RMENU 0xA5).
 OS_VIRTUAL_KEYS = {
     'KEY_LSHIFT': 0xA0,
     'KEY_RSHIFT': 0xA1,

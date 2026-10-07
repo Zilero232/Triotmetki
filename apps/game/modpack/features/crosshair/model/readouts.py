@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import math
 
-from ....core.compat import fraction
+from ....core.compat import fraction, is_int
 from ....core.hud.stock import (
     RETICLE_CASSETTE,
     RETICLE_CONDITION,
@@ -30,12 +30,7 @@ from .constants import (
     SHELL_ICONS,
 )
 
-# Fair play: the own vehicle only. The reload and the magazine are the own gun's (the stock reticle's reload indicator
-# reads the same ammo controller), the HP is the own damage panel's (VEHICLE_VIEW_STATE.HEALTH); nothing here reads
-# another vehicle, and the client glue drops every update while the camera follows an ally. The magazine is the own
-# gun's too (ammo_ctrl getCurrentShells, the auto-reload snapshot, the shell change time) and the zoom the own sniper
-# camera's (CrosshairDataProxy.getZoomFactor). The repair timers of the own modules are left out: the stock damage
-# panel shows them.
+# Fair play: the own vehicle only; updates are dropped while the camera follows an ally.
 
 
 def _seconds(value):
@@ -55,9 +50,7 @@ def _tenths(seconds):
     return u'%.1f' % (math.ceil(round(seconds * 10, 6)) / 10.0)
 
 
-# RU 1.45 ammo_ctrl.ReloadingTimeSnapshot: getActualValue() is the time left when the client last set it, getTimeLeft()
-# the time left now; a snapshot read later than its update (the one taken when the readouts start) counts from now.
-# A finished reload (0) and the client's "no shells" (-1) are kept as they are.
+# RU 1.45 ammo_ctrl.ReloadingTimeSnapshot: getActualValue() at the last set, getTimeLeft() now.
 def reload_left(actual, time_left):
     actual = _seconds(actual)
     if actual is None or actual <= 0 or _seconds(time_left) is None:
@@ -76,6 +69,8 @@ class Readouts(object):
         self.gold = False
         self.autoloader = False
         self.drum_base = None
+        self.interval = None
+        self.last_shots = 1
         self.auto_left = None
         self.auto_base = None
         self.health = None
@@ -92,9 +87,7 @@ class Readouts(object):
         self.ready_left = READY_HOLD_S if was_reloading and self.reload_left == 0 else 0.0
         return True
 
-    # A magazine read the client cannot answer yet (no current shell after a setup change or a shell switch: loaded
-    # None or ammo_ctrl's SHELL_QUANTITY_UNKNOWN -1) keeps the magazine last drawn while the gun's clip is the same
-    # size; only a gun without a magazine clears it.
+    # ammo_ctrl gives no current shell or SHELL_QUANTITY_UNKNOWN (-1) right after a setup or shell change.
     def set_clip(self, size, loaded, shell=None, gold=False):
         if not size or size < 2:
             changed = self.clip is not None
@@ -115,13 +108,17 @@ class Readouts(object):
         self.clip = None
         return True
 
-    # RU 1.45 ammo_ctrl GunSettings.hasAutoReload: an auto-reloader's stock magazine indicator
-    # (CrosshairBase.autoloaderComponent) carries its own reload timer.
+    # RU 1.45 ammo_ctrl GunSettings.hasAutoReload: the autoloader indicator carries its own timer.
     def set_autoloader(self, is_autoloader):
         self.autoloader = bool(is_autoloader)
 
-    # ammo_ctrl.getShellChangeTime: the whole magazine's reload (the gun reload before the client cuts it to the
-    # interval between shells), the first shell's auto-reload on an auto-reloader.
+    # RU 1.45 ammo_ctrl GunSettings.getClipInterval, getLastAmmoCount.
+    def set_interval(self, seconds, last_shots=1):
+        seconds = _seconds(seconds)
+        self.interval = seconds if seconds is not None and seconds > 0 else None
+        self.last_shots = last_shots if is_int(last_shots) and last_shots > 0 else 1
+
+    # ammo_ctrl.getShellChangeTime: the whole magazine's reload, or the first shell's on an auto-reloader.
     def set_drum_reload(self, seconds):
         seconds = _seconds(seconds)
         self.drum_base = seconds if seconds is not None and seconds > 0 else None
@@ -145,6 +142,24 @@ class Readouts(object):
             return False
         self.health = max(0, health)
         return True
+
+    # RU 1.45 ammo_ctrl.setGunReloadTime: the interval cut, read from the magazine, not the snapshot's base.
+    def loaded_reload(self):
+        if self.clip is None or self.interval is None:
+            return self.reload_base
+        loaded = self.clip[1]
+        if loaded > self.last_shots or (self.autoloader and loaded > 0):
+            return self.interval
+        return self.drum_base or self.reload_base
+
+    # RU 1.45 ammo_ctrl.setGunReloadTime cuts to the interval when the shells arrive after the reload.
+    def counting_base(self):
+        base = self.reload_base
+        if base is None or not self.is_reloading() or base >= self.reload_left:
+            return base
+        if self.drum_base and self.drum_base >= self.reload_left:
+            return self.drum_base
+        return self.reload_left
 
     def is_counting(self):
         return self.is_reloading() or self.ready_left > 0 or self.auto_left is not None
@@ -173,7 +188,7 @@ class Readouts(object):
             return RELOAD_FINAL if self.reload_left < FINAL_S else RELOAD_RELOADING
         if self.ready_left > 0:
             return RELOAD_READY
-        if self.reload_left is not None and self.reload_base:
+        if self.reload_left is not None and self.loaded_reload():
             return RELOAD_LOADED
         return None
 
@@ -182,9 +197,10 @@ class Readouts(object):
             return None
         if not self.is_reloading():
             return 0.0 if self.reload_left == NO_SHELLS else 1.0
-        if not self.reload_base:
+        base = self.counting_base()
+        if not base:
             return 0.0
-        return round(1.0 - _ratio(self.reload_left, self.reload_base), 3)
+        return round(1.0 - _ratio(self.reload_left, base), 3)
 
     def health_progress(self):
         return _ratio(self.health, self.max_health)
@@ -199,7 +215,7 @@ def _ready_value(readouts, translate):
 
 
 def _loaded_value(readouts, translate):
-    return _tenths(readouts.reload_base)
+    return _tenths(readouts.loaded_reload())
 
 
 def _counted_value(readouts, translate):
@@ -221,8 +237,6 @@ def _refill(readouts):
     return {'value': _tenths(readouts.auto_left), 'progress': None if left is None else round(1.0 - left, 3)}
 
 
-# On an auto-reloader the stock magazine indicator is also its reload timer, so the box draws the magazine itself
-# whatever the style, and the stock one goes with the stock timer.
 def _clip(readouts, style):
     if style == DRUM_OFF and readouts.autoloader:
         style = AUTOLOADER_DRUM_STYLE
@@ -239,13 +253,14 @@ def _clip(readouts, style):
     }
 
 
-# Under the value: the whole magazine's reload for a magazine gun (the value counts the next shell), else the full
-# time of the reload being counted; never the same figure twice.
 def _full(readouts, value, is_counting, clip):
-    if clip is not None and readouts.drum_base:
+    refill = None if clip is None else clip['refill']
+    if refill is not None and readouts.auto_base:
+        full = _tenths(readouts.auto_base)
+    elif clip is not None and readouts.drum_base:
         full = _tenths(readouts.drum_base)
-    elif is_counting and readouts.reload_base:
-        full = _tenths(readouts.reload_base)
+    elif is_counting and readouts.counting_base():
+        full = _tenths(readouts.counting_base())
     else:
         return None
     return None if full == value else full
@@ -299,8 +314,6 @@ def wants_readouts(settings):
     return any(settings.get(key) for key in READOUT_SWITCHES)
 
 
-# Read from what the page drew, so the player never sees a stock part and ours both, or neither: a box or an arc with
-# nothing to show replaces nothing.
 def replaced_reticle_parts(drawn):
     if drawn is None:
         return ()

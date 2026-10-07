@@ -152,10 +152,16 @@ class DetailTest(unittest.TestCase):
         data = preview_data()
 
         assert data['wide']
-        assert data['received'][0]['note'] == u'боеукладка'
         assert data['received'][1]['note'] == u'не пробил'
-        assert data['dealt'][1]['note'] == u'+1 крит. · осталось 1 180'
         assert data['dealt'][2]['note'] == u'рикошет'
+
+    def test_the_notes_leave_out_what_the_icons_and_the_bar_show(self):
+        data = preview_data()
+
+        assert data['received'][0]['note'] == ''
+        assert data['dealt'][1]['note'] == ''
+        assert data['dealt'][1]['crits'] == 1
+        assert data['dealt'][1]['hp'] == 1180
 
     def test_the_notes_setting_keeps_the_rows_short(self):
         data = preview_data(show_notes=False)

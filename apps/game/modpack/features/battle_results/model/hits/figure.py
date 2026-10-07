@@ -11,7 +11,6 @@ def _fraction(value):
     return fraction(float(value))
 
 
-# The schematic draws each track as its own rectangle: a chassis hit's x picks the track and spans half the width.
 def _shape_and_across(part, x):
     if part != PART_CHASSIS:
         return (part if part in FIGURE else PART_HULL), x

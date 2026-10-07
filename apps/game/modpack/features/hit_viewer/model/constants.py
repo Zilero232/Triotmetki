@@ -112,9 +112,48 @@ PAGE_LABELS = (
     ('draw', 'hv_battle_draw'),
     ('part', 'hv_col_part'),
     ('pick_battle', 'hv_pick_battle'),
+    ('zone', 'hv_col_zone'),
+    ('filter', 'hv_filter'),
+    ('filter_all', 'hv_filter_all'),
+    ('profile', 'hv_profile'),
+    ('profile_pens', 'hv_profile_pens'),
+    ('profile_weak', 'hv_profile_weak'),
+    ('profile_few', 'hv_profile_few'),
+    ('profile_note', 'hv_profile_note'),
+    ('profile_show', 'hv_profile_show'),
+    ('profile_hide', 'hv_profile_hide'),
 )
 
 NO_AIM = (0.0, 0.0)
 
 ACTION_OPEN = 'open'
 ACTION_CLEAR = 'clear'
+
+# Zones from the hit point's fractions of its part's box (+z front, +y up): a rough split, not a given tank's plates.
+ZONE_HULL_UPPER = 'hull_upper'
+ZONE_HULL_LOWER = 'hull_lower'
+ZONE_HULL_SIDE = 'hull_side'
+ZONE_HULL_REAR = 'hull_rear'
+ZONE_TURRET_FRONT = 'turret_front'
+ZONE_TURRET_SIDE = 'turret_side'
+ZONE_TURRET_REAR = 'turret_rear'
+ZONE_CHASSIS = 'chassis'
+ZONE_GUN = 'gun'
+ZONES = (
+    ZONE_HULL_UPPER,
+    ZONE_HULL_LOWER,
+    ZONE_HULL_SIDE,
+    ZONE_HULL_REAR,
+    ZONE_TURRET_FRONT,
+    ZONE_TURRET_SIDE,
+    ZONE_TURRET_REAR,
+    ZONE_GUN,
+    ZONE_CHASSIS,
+)
+# (rear below, front above) along z; the hull front splits into its upper and lower plate at HULL_UPPER_FROM.
+ZONE_BANDS = {'hull': (0.22, 0.75), 'turret': (0.3, 0.6)}
+HULL_UPPER_FROM = 0.5
+
+# A weak zone is named only past this many hits on the own tank and penetrations in the zone.
+PROFILE_MIN_HITS = 5
+WEAK_MIN_PENS = 2

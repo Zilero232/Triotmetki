@@ -1,4 +1,10 @@
+@use '@/shared/styles/gameface' as *;
+
 .spark {
   display: flex;
   flex-shrink: 0;
+}
+
+.svg {
+  @include svg-canvas;
 }

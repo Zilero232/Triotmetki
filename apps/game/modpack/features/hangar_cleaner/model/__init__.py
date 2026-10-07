@@ -2,8 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from .constants import CLIENT_VERSION, EVENT_ENTRIES, OFFER_BANNERS, SWITCHES, TEASER, VERIFIED_CLIENTS  # noqa: F401
 
-# Fair play: hangar only and cosmetic. Left out: CSS injection into Gameface hangar views (selectors change
-# every patch and cannot be verified without the live client).
+# Fair play: hangar only and cosmetic; Gameface hangar CSS injection is left out.
 
 
 def hides(element, values, enabled):

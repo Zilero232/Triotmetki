@@ -3,9 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.compat import clamp, is_int, is_number, string_types, to_text
 from .constants import MAX_NAME, OWN_KINDS
 
-# Fair play: the player's own damage and assist; for platoon mates only what the stock UI shows every player in
-# battle: frags (the kill feed and Tab), alive state and HP (team panels, markers). The mates' damage is not known to
-# the client in battle and is never estimated.
+# Fair play: mates' frags, alive state and HP as the stock UI shows; their damage is never estimated.
 
 
 def rules_of(settings):
@@ -23,7 +21,7 @@ def _steps(amount, step):
     return int(amount) // step
 
 
-# A member row's damage and assist are None for a mate: only the own ones are known.
+# Fair play: a mate's damage and assist are unknown, only the own ones.
 def points(rules, row):
     total = row['frags'] * rules['frag']
     if row['alive']:

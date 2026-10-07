@@ -21,8 +21,6 @@ def _camera_section():
     return section if section is not None else ResMgr.DataSection(CAMERA_SECTION)
 
 
-# The client's VideoCamera over the hangar: it takes over BigWorld.camera() and gets the keys and the mouse the
-# component hands it; `stop()` gives the hangar camera back.
 class HangarFlight(object):
     def __init__(self):
         self.camera = None
@@ -49,8 +47,7 @@ class HangarFlight(object):
             BigWorld.camera(self.previous)
         self.previous = None
 
-    # The battle has its own camera by now and the hangar is gone: the video camera is dropped without disable()
-    # (it resets the FOV) and the hangar camera is not given back.
+    # disable() resets the FOV, so the video camera is dropped without it once the battle has its own.
     def drop(self):
         camera = self.camera
         self.camera = None
@@ -71,8 +68,6 @@ def _input_handler():
     return getattr(BigWorld.player(), 'inputHandler', None)
 
 
-# The replay's own video control mode (the one Caps+F3 opens in a developer build): the avatar's input handler flies it
-# with its keys; `stop()` goes back to the mode it came from.
 class ReplayFlight(object):
     def start(self):
         import BigWorld

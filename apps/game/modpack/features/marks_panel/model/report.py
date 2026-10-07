@@ -14,8 +14,7 @@ from .constants import (
 )
 from .history import percent, rating_delta, start_of
 
-# The «Расчёт отметок» page of one tank: everything comes from the player's own marks history (own dossier values after
-# each own battle); nothing is read about anyone else.
+# Fair play: only the player's own marks history, nothing is read about anyone else.
 
 
 # The nation of a vehicle compact descriptor (items.parseIntCompactDescr, RU 1.45: bits 4-7).

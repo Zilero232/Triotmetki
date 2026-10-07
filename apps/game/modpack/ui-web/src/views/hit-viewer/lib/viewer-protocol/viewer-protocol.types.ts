@@ -5,6 +5,9 @@ import type { viewerStateSchema } from './viewer-protocol.schemas';
 
 export type ViewerState = z.infer<typeof viewerStateSchema>;
 export type ViewerRow = ViewerState['rows'][number];
+export type ViewerTone = ViewerRow['tone'];
+export type ViewerSummary = NonNullable<ViewerState['summary']>;
+export type ViewerProfile = NonNullable<ViewerState['profile']>;
 export type ViewerBattle = NonNullable<ViewerState['battle']>;
 export type ViewerSide = (typeof HIT_VIEWER.sides)[number];
 

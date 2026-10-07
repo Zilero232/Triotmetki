@@ -35,6 +35,5 @@ MARKER_FIELDS = ('icon', 'tier', 'vehicleName', 'playerName', 'hpBar', 'hpValue'
 TEXT_MAX = 120
 
 RESOLUTION_RE = re.compile(r'^\d{3,5}x\d{3,5}\Z')
-# The site's profile slug; anything else is treated as absent, so a server string never reaches a dialog unchecked.
 PROFILE_SLUG_RE = re.compile(r'^[a-z0-9-]{1,64}\Z')
 UUID_RE = re.compile(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\Z')

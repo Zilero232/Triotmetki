@@ -6,15 +6,7 @@ from ....core.client.battle import arena, controls_own_vehicle, optional_devices
 from ....core.log import guarded, log_exception
 from .constants import NO_VEHICLE, NOTHING_INSTALLED, SOURCE_ARENA, SOURCE_SETUPS
 
-# RU 1.45 client source: the own vehicle's descriptor in the arena's vehicle list (ClientArena
-# vehicles[id]['vehicleType'], what OptionalDevicesController reads through
-# vehicle_getter.getOptionalDevicesByVehID), not PlayerAvatar.getVehicleDescriptor(): that is the Vehicle entity's
-# descriptor, built from publicInfo.compDescr (entity_defs/Vehicle.def PUBLIC_VEHICLE_INFO, ALL_CLIENTS), which every
-# client gets alike and so carries no equipment. VehicleDescriptor.iterOptDevsWithSlots() gives each installed device
-# with its slot, in slot order (a device in a slot of one of its categories gets the slot's bonus, SupplySlotFilter's
-# plain set intersection), and the stock battle tooltip of a device (gui/shared/tooltips/battle_opt_devices.py) names
-# it from artefacts/<tierlessName>/name, its effect from artefacts/<groupName>/battle_descr or the device's
-# shortDescriptionSpecial.
+# RU 1.45 client source: ClientArena vehicles[id]['vehicleType'], not PlayerAvatar.getVehicleDescriptor().
 
 
 def _string(resource):
@@ -39,10 +31,7 @@ def _trophy(device):
     return 'basic' if getattr(device, 'isUpgradable', False) else None
 
 
-# The stock consumables panel draws a device the server reports a state for (the camouflage net and the binoculars on,
-# the improved configuration spent) from OptionalDevicesController.getOptDeviceInBattle: running while getStatus() is
-# set, dimmed when isUsed() (gui/Scaleform/daapi/view/battle/shared/consumables_panel.py _updateOptionalDeviceSlot).
-# The controller follows the attached vehicle, so the states are read only while that is the own one.
+# RU 1.45 client source: OptionalDevicesController.getOptDeviceInBattle, as consumables_panel.py draws it.
 def _state(device):
     if not controls_own_vehicle():
         return False, False
@@ -77,12 +66,7 @@ def _device(device, slot, boosted):
     }
 
 
-# The own vehicle the way the battle builds it for its own ammunition panel (RU 1.45
-# gui/impl/battle/battle_page/ammunition_panel/respawn_ammunition_panel_inject.py _updateGuiVehicle with
-# gui/battle_control/gui_vehicle_builder.py VehicleBuilder) from the own Vehicle entity's MY_VEHICLE properties
-# (entity_defs/Vehicle.def: setups, setupsIndexes, crewCompactDescrs, customRoleSlotTypeId, vehPostProgression,
-# disabledSwitches). Vehicle.__init__ reads the role slot from the extra data (veh_post_progression_controller
-# processVehExtData), so the builder needs it, and the arena's modifiers the way PrebattleSetupsController passes them.
+# RU 1.45 respawn_ammunition_panel_inject.py _updateGuiVehicle with gui_vehicle_builder.VehicleBuilder.
 def _gui_vehicle(descriptor):
     from gui.battle_control.gui_vehicle_builder import VehicleBuilder
 
@@ -118,11 +102,7 @@ def _booster_attention(booster, vehicle):
     return not booster.isAffectsOnVehicle(vehicle)
 
 
-# A directive the way the garage ammunition panel shows it (gui/impl/common/ammunition_panel/ammunition_panel_blocks.py
-# BattleBoostersBlock._updateOverlayAspects): its frame, the replace frame for a crew directive standing in for a skill
-# the crew has not learnt, and the attention mark when it does not affect the vehicle (BattleBooster.isAffectsOnVehicle)
-# or is an economic directive in a battle without them (tank_setup_helper.isEconomicDirBattleEnabled). Its effect is the
-# text the garage tooltip builds (gui/shared/gui_items/artefacts.py BattleBooster descriptions).
+# RU 1.45 ammunition_panel_blocks.py BattleBoostersBlock._updateOverlayAspects.
 def _booster(booster, vehicle):
     is_unlearnt_skill = booster.isCrewBooster() and not booster.isAffectedSkillLearnt(vehicle)
     is_replace = is_unlearnt_skill and not booster.isBuiltinPerkBooster()
@@ -144,7 +124,6 @@ def _boosted(boosters, vehicle):
     return set(device.intCD for device in devices if _is_boosted(device, boosters))
 
 
-# Every directive slot of the setup, None where it is empty (vehicle_equipment EMPTY_ITEM), so the row keeps its cells.
 def _directives(vehicle):
     installed = vehicle.battleBoosters.installed
     boosters = installed.getItems()
@@ -152,18 +131,13 @@ def _directives(vehicle):
     return _boosted(boosters, vehicle), directives
 
 
-# The devices of the setup the player took into the battle, the way PrebattleSetupsController.__updateGuiVehicle syncs
-# its own vehicle (RU 1.45 gui/battle_control/controllers/prebattle_setups_ctrl.py): the descriptor gets the installed
-# sequence of the GUI vehicle's setup (optDevices.installed.getIntCDs(), 0 for an empty slot). The arena's descriptor
-# can lag behind a setup switch.
+# RU 1.45 gui/battle_control/controllers/prebattle_setups_ctrl.py __updateGuiVehicle.
 def _setup_descriptor(vehicle):
     descriptor = vehicle.descriptor
     descriptor.installOptDevsSequence(vehicle.optDevices.installed.getIntCDs())
     return descriptor
 
 
-# The descriptor's own device alone (its name and icon), for when the stock texts or the battle state cannot be read:
-# the row still shows every installed device.
 def _plain_device(device):
     return {'name': device.userString, 'effect': u'', 'icon': getattr(device, 'icon', None)}
 
@@ -192,8 +166,7 @@ def _empty(reason):
     return {'devices': [], 'directives': [], 'reason': reason, 'source': None, 'slots': []}
 
 
-# The directive slots of the vehicle, empty, while its setups cannot be read: the descriptor's supply slots hold them
-# (RU 1.45 items/vehicles.py VehicleType supply slots, what vehicle_equipment's collectors size their layouts by).
+# RU 1.45 items/vehicles.py VehicleType supply slots hold the directive slots.
 def _directive_slots(descriptor):
     return set(), [None] * _directive_amount(descriptor)
 

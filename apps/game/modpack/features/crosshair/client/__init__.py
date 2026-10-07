@@ -44,7 +44,7 @@ except ImportError:
 
 try:
     from AvatarInputHandler.gun_marker_ctrl import _DefaultGunMarkerController
-except Exception:  # the controller moved: the aim circle stays the client's size
+except Exception:
     _DefaultGunMarkerController = None
 
 
@@ -56,10 +56,7 @@ def own_max_health():
     return getattr(vehicle_type, 'maxHealth', None)
 
 
-# RU 1.45 ammo_ctrl: the gun settings' clip (size, interval), getCurrentShells() (quantity, quantity in clip) and the
-# current shell's descriptor (`kind` of common/constants SHELL_TYPES, `isGold` for premium and improved shells).
-# getCurrentShellCD() is None until the client sets the shells, and GunSettings.getShellDescriptor looks a shell it
-# does not hold up with items.vehicles.getItemByCompactDescr, which logs an exception for None: asked only for a shell.
+# RU 1.45 ammo_ctrl: getCurrentShellCD() is None until the client sets the shells.
 def own_clip():
     settings = call(ammo(), 'getGunSettings')
     shells = call(ammo(), 'getCurrentShells', (None, None))
@@ -74,13 +71,7 @@ def own_health():
     return getattr(vehicle, 'health', None)
 
 
-# The presets are the player's client settings, written by the core's NativeSettingsComponent on the panel's own section
-# (only what a change moves; a change made in battle on the next hangar); the centre mark
-# and the readouts follow the client's own reticle position (CrosshairDataProxy). Fair play: the readouts are the own
-# gun's reload (the ammo controller the stock reticle's reload indicator reads) and the own damage panel's HP; every
-# update is dropped while the camera follows an ally (controls_own_vehicle). The stock reticle parts the readouts stand
-# in for are hidden (core.hud.stock reticle parts) only while the payload the page got draws them: `drawn_readouts` is
-# that payload's readouts, None whenever the panel is off the screen.
+# Fair play: the readouts are the own vehicle's; the mark follows CrosshairDataProxy.
 class CrosshairComponent(BattlePanel):
 
     def __init__(self, app):
@@ -102,10 +93,7 @@ class CrosshairComponent(BattlePanel):
     def ui_actions(self):
         return self.client_defaults.ui_actions()
 
-    # The smaller aim circle, a component of its own with its switch and section: the marker override is installed for a
-    # battle only while the switch is on and the circle is smaller (every marker update would run through it), and
-    # taken out at its end unless another mod wrapped the method since. Fair play: the gun marker the client draws,
-    # smaller; nothing else is read or changed (README, crosshair).
+    # Fair play: the gun marker the client computed, drawn at a share of its size.
     @safe
     def install_circle(self):
         if self.circle_installed or not self._wants_circle():
@@ -201,7 +189,6 @@ class CrosshairComponent(BattlePanel):
         if self.readouts is not None and self.readouts.set_zoom(self._zoom(factor)):
             self.render()
 
-    # The own sniper camera's multiplier, None in every other view (the stock zoom indicator's rule).
     def _zoom(self, factor=None):
         if self.view != VIEW_SNIPER:
             return None
@@ -221,7 +208,9 @@ class CrosshairComponent(BattlePanel):
             self.render()
 
     def _read_clip(self):
-        self.readouts.set_autoloader(call(call(ammo(), 'getGunSettings'), 'hasAutoReload', False))
+        gun = call(ammo(), 'getGunSettings')
+        self.readouts.set_autoloader(call(gun, 'hasAutoReload', False))
+        self.readouts.set_interval(call(gun, 'getClipInterval'), call(gun, 'getLastAmmoCount', 1))
         changed = self.readouts.set_clip(*own_clip())
         self.readouts.set_drum_reload(call(ammo(), 'getShellChangeTime'))
         return changed
@@ -294,8 +283,6 @@ class CrosshairComponent(BattlePanel):
         self.hide()
         self.sync_stock()
 
-    # The text fallback keeps the mark alone so the text never moves it off the reticle centre; without a mark it
-    # shows the readouts as plain text.
     def _text(self, with_mark, drawn):
         return (mark_text(self.settings) if with_mark else '') or readouts_text(drawn)
 

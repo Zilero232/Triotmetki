@@ -8,8 +8,6 @@ STYLE_MINIMAL = 'minimal'
 STYLE_CUSTOM = 'custom'
 STYLES = (STYLE_FULL, STYLE_COMPACT, STYLE_MINIMAL, STYLE_CUSTOM)
 SECTIONS = ('both', 'dealt', 'received')
-# Colour sets of the text lines (model PALETTES): the classic one, our graphite and gold, high contrast, colour-blind
-# safe.
 PALETTES = ('classic', 'graphite', 'contrast', 'colorblind')
 MAX_TEMPLATE = 600
 TEMPLATE_KEYS = ('template', 'entry_template')
@@ -35,8 +33,6 @@ DEFAULTS = {
     'template': '{dealt} | {blocked} | {assisted} | {received}',
     'entry_template': '',
 }
-# Retired options and the values the code keeps reading: kind icons and kind colours on, the colours of the chosen
-# palette.
 FIXED = {
     'kind_icons': True,
     'kind_colors': True,
@@ -46,7 +42,6 @@ FIXED = {
     'color_received': '',
 }
 ADVANCED = ('keep_stock', 'template', 'entry_template')
-# The default places of older versions (x, y, align_x, align_y): a panel still at one moves to today's default.
 RETIRED_PLACES = (
     (250, -260, 'left', 'bottom'),
 )

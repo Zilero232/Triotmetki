@@ -13,6 +13,7 @@ import { UI_BUILD } from '../vite.constants';
 const BUNDLE_FILES = ['hud.html', 'icon.png', 'icons.png', 'index.html', 'preset_advisor.js', 'shells.png', 'viewer.html'];
 const CLASSIC_SCRIPT_AT_BODY_END = /<script>\(function\(\)\{[\s\S]*\}\)\(\);<\/script>\s*<\/body>\s*<\/html>\s*$/;
 const SPACE_SEPARATED_COLOUR = /rgba?\(\s*[\d.]+%?\s+[\d.]+%?\s+[\d.]+%?\s*\//;
+const TEXT_SHADOW_IN_REM = /text-shadow:[^;}]*\drem/;
 const POLYFILLED_ELEMENTS = /\.jsxs?\)\([`'"](?:ul|ol|li|dl|dt|dd|select|option)[`'"],/;
 
 let outDir = '';
@@ -68,6 +69,13 @@ describe('committed Gameface bundle', () => {
     const files = await Promise.all(['index.html', 'hud.html', 'viewer.html'].map((file) => read(outDir, file)));
 
     files.forEach((source) => expect(source).not.toMatch(SPACE_SEPARATED_COLOUR));
+  });
+
+  it('keeps text shadow offsets in device pixels, so the HUD outline stays crisp at a fractional interface scale', async () => {
+    const page = await read(outDir, 'hud.html');
+
+    expect(page).toContain('text-shadow:');
+    expect(page).not.toMatch(TEXT_SHADOW_IN_REM);
   });
 
   it('ships the preset advisor script as one classic IIFE without React', async () => {

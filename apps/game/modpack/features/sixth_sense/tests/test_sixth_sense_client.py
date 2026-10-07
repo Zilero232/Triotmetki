@@ -78,6 +78,14 @@ class StartSpottedTest(unittest.TestCase):
 
         assert self.panel.lamp.lit
 
+    def test_a_tick_whose_render_crosses_the_lamp_time_ticks_once_more(self):
+        expired = iter([False, True])
+        self.panel.lamp = Namespace(lit=True, expired=lambda now: next(expired))
+
+        keeps_ticking = self.panel._tick()
+
+        assert keeps_ticking is True
+
     def test_a_tank_not_spotted_when_the_panel_starts_keeps_the_lamp_off(self):
         self.panel.start(Namespace())
 

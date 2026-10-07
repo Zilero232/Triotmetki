@@ -12,7 +12,6 @@ STUBBED = ('messenger', 'messenger.ext', 'messenger.ext.player_helpers')
 
 
 class Command(object):
-    # RU 1.45 messenger/proto/entities.py: isSender() is False when the sender is missing from the battle user storage.
 
     def __init__(self, sender, is_sender):
         self.sender = sender

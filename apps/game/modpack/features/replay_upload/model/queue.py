@@ -124,7 +124,6 @@ class ReplayQueue(object):
         self._append(key, account_id, started_at, now, float(now) + FIRST_DELAY_S)
         return True
 
-    # A replay the player asked for in the replay manager: sent next, even one an earlier try gave up on.
     def request(self, arena_unique_id, account_id, started_at, now):
         if not arena_unique_id or not account_id:
             return REQUEST_INVALID

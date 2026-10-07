@@ -6,8 +6,7 @@ from ..settings.constants import FIXED
 from .constants import KIND, SIDE_COLOR_KEYS, SIDE_TINTS, SIDE_TONES, STRIP_STYLES
 from .strip import strip_rows
 
-# Fair play: the class icons, tiers, alive state and HP the stock score strip, player panels and markers already show;
-# an unseen enemy keeps its last known HP, as on its marker.
+# Fair play: what the stock strip, panels and markers show; an unseen enemy keeps its last known HP.
 
 
 def side(health, totals, frags):

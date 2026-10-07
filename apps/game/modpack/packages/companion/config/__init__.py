@@ -26,7 +26,6 @@ from .user_set import normalize_user_set, record_user_set, user_set_tokens, with
 _urlparse = six.moves.urllib.parse.urlparse
 
 
-# An API base: https without user info, or plain http to the exact local hosts; no query or fragment.
 def is_valid_server_url(url):
     if not isinstance(url, string_types):
         return False
@@ -65,7 +64,6 @@ def _stored_revision(values):
     return revision if is_int(revision) else 0
 
 
-# A fresh config (None) stays None: it takes today's defaults, so only a stored one is upgraded.
 def upgraded(values):
     if not isinstance(values, dict):
         return values
@@ -82,7 +80,6 @@ def upgraded(values):
     return upgraded_values
 
 
-# config.json. `server_url` is the production API unless `allow_custom_server` (a development install).
 class Config(Settings):
     schema = SCHEMA
 

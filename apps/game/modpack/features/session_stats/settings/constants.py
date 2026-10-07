@@ -10,7 +10,6 @@ SHARE_CHANNEL = 'share_session_channel'
 
 DEFAULTS = {
     'show_moe': True,
-    # PMOD's «сессионная статистика в системном канале»: a line in the stock post-battle message, off as there.
     'notice_line': False,
     'show_goals': True,
     'max_goals': 3,
@@ -22,5 +21,4 @@ DEFAULTS = {
 }
 LIMITS = {'max_goals': (1, 5)}
 
-# The goals count, the idle timeout and the session report are rare choices: the window folds them away.
 ADVANCED = ('max_goals', IDLE_MINUTES, SHARE, SHARE_CHANNEL)

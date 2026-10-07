@@ -42,7 +42,6 @@ class QuickDemount(FeatureComponent):
         return None
 
 
-# RU 1.45 AbstractContextMenuHandler._makeItem(optId, optLabel, optInitData, optSubMenu): a submenu is a list of the
-# same items; the client sends the id of the picked one to onOptionSelect like any other option.
+# RU 1.45 AbstractContextMenuHandler._makeItem(optId, optLabel, optInitData, optSubMenu).
 def _menu_item(handler, item):
     return handler._makeItem(item['id'], item['label'], optInitData={'enabled': item['enabled']})

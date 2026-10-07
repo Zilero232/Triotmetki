@@ -79,9 +79,6 @@ def _thumb_key(look, space):
     return None
 
 
-# The pick is written into the client's default hangar config the way its server event notifications write theirs, so
-# an event hangar and the hangars of other modes still win; a space still loading is waited for the way the switch
-# controller waits. Previews are shot only after the player's own pick (README, hangar_space previews).
 class HangarSpace(FeatureComponent):
 
     def __init__(self, app):
@@ -203,15 +200,12 @@ class HangarSpace(FeatureComponent):
         elif plan == PLAN_WAIT and not self.waiting:
             self.waiting = once_space_created(hangar, self._space_created)
 
-    # A battle entered before the hangar space was created leaves that hangar object behind: the next hangar waits anew.
     def _stop_waiting(self):
         cancel = self.waiting
         self.waiting = None
         if cancel:
             cancel()
 
-    # A changed environment of the loaded space is switched live; a reload or a space still loading takes it from the
-    # slot, and a space that loaded before the slot was written is switched once it is ready.
     def _follow_environment(self, plan, loaded, environment, changed):
         self.environment_pending = self.environment_pending or changed
         if plan == PLAN_RELOAD:

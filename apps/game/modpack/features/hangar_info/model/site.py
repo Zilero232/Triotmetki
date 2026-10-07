@@ -3,8 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.compat import string_types, to_text
 from .constants import ACTION_ARMOR, ARMOR_PATH, SLUG_DROPPED, SLUG_SEPARATORS
 
-# Fair play: a link to the site's armour page of the tank selected in the hangar. Nothing is analysed in the client and
-# nothing is shown in battle (Lesta's support article 15152 names armour analysis in battle).
+# Fair play: only a link to the site; nothing analysed in the client or shown in battle (Lesta 15152).
 
 
 def tank_slug(vehicle_name):

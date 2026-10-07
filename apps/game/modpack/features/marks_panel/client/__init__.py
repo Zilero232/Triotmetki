@@ -21,12 +21,7 @@ from .constants import KIND_BY_EVENT, NO_SNAPSHOT
 PANEL_SPEC = PanelSpec.of(settings, STRINGS, preview, PREVIEW_SIZE)
 
 
-# The «Отметки» feature: this battle panel and the hangar Tank card (`card`, a component of its own with the marks
-# history page of the window).
-#
-# Fair play: `onPlayerFeedbackReceived` carries only the player's own events. Avatar.onBattleEvents and
-# battleEventsSummary reach the feedback only while the camera follows the own vehicle (RU 1.45 Avatar.py:1623-1642),
-# as in the vanilla damage log; the summary raises the totals.
+# Fair play: onPlayerFeedbackReceived carries only the player's own events.
 class MarksPanel(BattlePanel):
 
     def __init__(self, app):

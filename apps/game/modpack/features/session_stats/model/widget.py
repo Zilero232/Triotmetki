@@ -12,9 +12,6 @@ from .labels import account_facts, account_wn8, goal_label, goal_value, pending_
 from .moe import change_tone, signed_change
 from .ratings import tier_color, win_rate_tone, wn8_tier
 
-# The Session card (docs/specs/2026-09-30-hud-consolidation-and-design.md 9.2): the battles count in the header, the
-# session numbers, the strip of the last results, the site goals and the account line.
-
 
 def session_chips(summary, translate):
     win_rate = summary.get('win_rate')

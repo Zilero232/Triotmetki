@@ -14,8 +14,7 @@ from .constants import (
     TIER_RANGE,
 )
 
-# Fair play: only the player's own battle results (clean XP of their own battles); nothing about the other players of
-# the competition group, whose places only the game's own event page shows.
+# Fair play: only the own battle results; nothing about the competition group.
 
 
 def _in_range(value, bounds, default):
@@ -70,7 +69,6 @@ def _starts_a_round(last, at):
     return at < last['start'] or at >= last['start'] + ROUND_S
 
 
-# The own rounds: a round starts with a battle that counts and takes every battle that started within ROUND_S of it.
 class TriathlonRounds(object):
 
     def __init__(self, data=None):

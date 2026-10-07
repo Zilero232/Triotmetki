@@ -77,8 +77,6 @@ def _credential_store():
     return store
 
 
-# A capture step of the host runs before the bus event features hear: its failure is logged and the event still goes
-# out, so a feature never misses `battle_leave`, `hangar` or `tick` (and keeps a battle ticker running in the hangar).
 def _step(action, *args):
     safe(action)(*args)
 
@@ -296,8 +294,7 @@ class OtmetkiApp(object):
         _step(self.battles.on_battle_ready, player)
         self.bus.emit('battle_ready', player)
 
-    # A client that crashed reconnects straight into the running battle, with no hangar to name the account: the arena
-    # data does, so the account's own files (marks history, outbox) open in that battle too.
+    # A crashed client reconnects straight into the battle with no hangar: the arena data names the account.
     def _account_from_arena(self, player):
         if self.account_id is not None:
             return

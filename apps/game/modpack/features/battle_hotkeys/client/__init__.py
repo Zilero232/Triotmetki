@@ -18,8 +18,6 @@ def _option_hotkey(option, on_toggle):
     return HotkeyChoice(HOTKEYS, lambda: on_toggle(option))
 
 
-# A key press is the player's own change of a game option, written the way the game's settings window writes it; the
-# hotkeys live only while the player's own battle runs, and the notice panel shows the option's new state for a moment.
 class BattleHotkeys(BattlePanel):
 
     def __init__(self, app):

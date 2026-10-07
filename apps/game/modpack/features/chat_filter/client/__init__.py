@@ -52,10 +52,7 @@ class ChatFilterFeature(FeatureComponent):
             log('chat filter: %d lines hidden' % self.filter.hidden)
         self.filter = None
 
-    # A line with no sender (a system line) is a plain message: never hidden. A hidden line skips the client's own
-    # addMessage, so the channel history and the replay's chat
-    # (g_replayCtrl.onBattleChatMessage, RU 1.45 messenger/gui/Scaleform/channels/layout.py) leave it out too:
-    # the replay shows the chat as the player saw it.
+    # RU 1.45 messenger/gui/Scaleform/channels/layout.py: a skipped addMessage also leaves the replay chat.
     def _add_message(self, original, layout, message, *args, **kwargs):
         if self._hides_message(message):
             return True
@@ -73,8 +70,7 @@ class ChatFilterFeature(FeatureComponent):
             return None
         return original(layout, command, *args, **kwargs)
 
-    # RU 1.45 BattleLayout.addCommand: a command without a chat line (a reply, a map point) shows nothing, so it is
-    # neither hidden nor counted against the sender's limit.
+    # RU 1.45 BattleLayout.addCommand: a command without a chat line shows nothing.
     def _hides_command(self, command):
         if self.filter is None or is_own_command(command) or call(command, 'hasNoChatMessage'):
             return False

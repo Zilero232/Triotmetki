@@ -15,9 +15,12 @@ from ..model import (
     COMMAND_READY,
     COMMAND_SELECT,
     COMMAND_TAB,
+    armor_profile,
     decode_message,
     default_index,
     first_side,
+    own_cd,
+    profile_key,
     viewer_state,
 )
 from .constants import EMPTY_SELECTION, FOCUS_DELAY_S, FOCUS_S, LOGGED_MESSAGE_CHARS, SETTLE_ATTEMPTS, SETTLE_S
@@ -41,6 +44,7 @@ class HitViewerScreen(object):
         self.wanted = None
         self.decoded = {}
         self.settling = 0
+        self.profile = (None, None)
 
     @property
     def is_open(self):
@@ -224,12 +228,24 @@ class HitViewerScreen(object):
         is_loading = self.loaded is None and self.wanted is not None
         return {'loading': is_loading, 'approx': bool(target) and not is_exact(target)}
 
+    # Rebuilt only when the own tank or the kept hits change: the settle loop pushes up to 20 times.
+    def armor_profile(self):
+        cd = own_cd(self.battle())
+        if cd is None:
+            return None
+        battles = self._battles()
+        key = profile_key(battles, cd)
+        if self.profile[0] != key:
+            self.profile = (key, armor_profile(battles, cd))
+        return self.profile[1]
+
     @safe
     def push(self):
         if not self.is_open:
             return
         translate = self.component.app.translate
-        state = viewer_state(self._battles(), self.selection, translate, self.stage_state(), map_image)
+        state = viewer_state(
+            self._battles(), self.selection, translate, self.stage_state(), map_image, self.armor_profile())
         self.window.push_state(json.dumps(state))
 
     @safe

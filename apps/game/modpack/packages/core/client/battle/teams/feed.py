@@ -98,6 +98,6 @@ def _link(page, feed):
         return
     try:
         provider.registerViewComponents((BATTLE_CTRL_ID.BATTLE_FIELD_CTRL, (FEED_ALIAS,)))
-    except Exception as error:  # a page reload: the bridge already links our alias
+    except Exception as error:
         log('team HP: %s' % error)
     provider.addViewComponent(FEED_ALIAS, feed, rule=VIEW_COMPONENT_RULE.NONE)

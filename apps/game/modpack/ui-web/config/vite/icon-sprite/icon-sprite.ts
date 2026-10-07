@@ -16,9 +16,6 @@ const LOGO_NODE: IconNode = LOGO_SHAPES.marks.map((d) => ['path', { d }]);
 
 const LUCIDE_ICONS = path.join(path.dirname(createRequire(import.meta.url).resolve('lucide-react/package.json')), 'dist', 'esm', 'icons');
 
-// lucide-react keeps each icon's geometry as `__iconData.node` in its own ES module: `["path", { d: "...", key: "..." }]`
-// entries with string attributes. The file is read as text, since the Vite config runner is closed by the time the
-// plugin runs and cannot import it.
 export const parseIconModule = (source: string): IconNode =>
   [...source.matchAll(/\[\s*"([a-z]+)",\s*\{([^}]*)\}\s*\]/g)].map(([, tag = '', body = '']) => [
     tag,

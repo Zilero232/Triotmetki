@@ -15,9 +15,6 @@ def _has_id(item):
     return isinstance(item, dict) and item.get(ITEM_ID) is not None
 
 
-# A large page goes apart from the settings state: a snapshot first, then only what changed (the page's own keys and
-# the items added, changed or removed, by `id`). Every message carries its revision and the one it builds on (`base`,
-# None for a snapshot), so the page asks for a new snapshot when it does not hold that base.
 class Feed(object):
 
     def __init__(self, component_id, interval_s=FEED_INTERVAL_S):

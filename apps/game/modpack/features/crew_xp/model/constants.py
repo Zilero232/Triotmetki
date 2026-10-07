@@ -4,7 +4,6 @@ from ....core.hud.panel import dock_layout
 
 HANGAR_PANEL = 'otmetki.crew_xp'
 HANGAR_LAYOUT = dock_layout('hangar_left')
-# The crew and the vehicle's average change with the vehicle and after battles: the card is read again this often.
 REFRESH_EVERY_S = 5.0
 MAX_CREW = 8
 MAX_TEXT = 40

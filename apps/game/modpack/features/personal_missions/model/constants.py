@@ -7,19 +7,15 @@ STATE_IN_PROGRESS = 'in_progress'
 STATES = (STATE_IN_PROGRESS, 'done', 'honors')
 MAX_MISSIONS = 60
 MAX_TEXT = 200
-# The page row badge of a finished mission.
 MARK_OF = {'done': u'✓', 'honors': u'✓✓'}
 TITLE_SIZE_STEP = 2
-# The card (model/widget.py): its width in design px and the row status mark of each mission state.
 CARD_WIDTH = 260
 STATUS_OF = {'in_progress': 'active', 'done': 'done', 'honors': 'honors'}
-# The missions screen changes the missions in the hangar: the label re-reads them this often.
 REFRESH_EVERY_S = 10.0
 
 HANGAR_PANEL = 'otmetki.personal_missions'
 HANGAR_LAYOUT = dock_layout('hangar_right')
 
-# The sample missions' texts are i18n keys (model/preview.py translates them).
 PREVIEW_MISSIONS = (
     {
         'id': 1,

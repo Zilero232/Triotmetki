@@ -35,9 +35,7 @@ def _member(info, is_own):
 PANEL_SPEC = PanelSpec.of(settings, STRINGS, preview, PREVIEW_SIZE)
 
 
-# Tournament-style points. The own damage and assist from the own feedback (raised to the client's summary); the
-# platoon from the arena data (arena_dp.isSquadMan), its frags from the arena's kills (the kill feed), HP from the
-# health updates the client receives for the team panels and markers.
+# Platoon from arena_dp.isSquadMan; frags from the kill feed, HP from the updates the team panels get.
 class PlatoonPointsPanel(BattlePanel):
 
     def __init__(self, app):
@@ -61,8 +59,6 @@ class PlatoonPointsPanel(BattlePanel):
         self.hooks.add(arena, 'onVehicleUpdated', self._on_arena_entry)
         self.render()
 
-    # A platoon mate whose arena entry comes after the battle loaded (a late connect) joins when it arrives. Each of the
-    # thirty entries updates at the load (arena.onVehicleUpdated(vehicleID)): only that one is looked at.
     def _on_arena_entry(self, vehicle_id=None, *args):
         if self.platoon is None:
             return
@@ -118,8 +114,7 @@ class PlatoonPointsPanel(BattlePanel):
         if self.platoon.set_health(vehicle_id, value[0]):
             self.render()
 
-    # HEALTH follows the controlled vehicle: after death it is the health of the ally the camera follows (RU 1.45
-    # vehicle_state_ctrl), so it goes to that vehicle, as the team HP panel does.
+    # RU 1.45 vehicle_state_ctrl: HEALTH follows the ally the camera follows after death.
     def _on_vehicle_state(self, state, value):
         if self.platoon is None or self.health_state is None or state != self.health_state:
             return

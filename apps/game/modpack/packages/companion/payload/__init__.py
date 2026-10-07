@@ -74,7 +74,6 @@ def battle_outcome(winner_team, team):
     return 'win' if winner_team == team else 'loss'
 
 
-# The results' damageRating is a whole percent; the event carries it in the dossier's hundredths (core.moe.results).
 def extract_moe(vehicle):
     rating = results_rating(vehicle.get('damageRating'))
     moving_avg = vehicle.get('movingAvgDamage')
@@ -95,8 +94,7 @@ def _player_key(value):
     return None
 
 
-# Fair play / privacy: the players block is read only to count the own platoon (same prebattleID on the
-# own team); the size is all that leaves the client, never another player's account id or name.
+# Fair play: only the own platoon's size leaves the client, never another player's id or name.
 def _players_by_id(players):
     by_id = {}
     for key, value in players.items():

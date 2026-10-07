@@ -13,6 +13,7 @@ from otmetki.features.auto_messages.model import (
     hp_percent,
     is_last_alive,
     is_low_hp,
+    is_shot,
     is_spotted_alert,
     received_trigger,
     reload_seconds,
@@ -261,6 +262,21 @@ class DefaultsTest(unittest.TestCase):
     def test_every_setting_has_a_label(self):
         for key in SCHEMA.defaults:
             assert 'auto_messages_' + key in STRINGS['ru'], key
+
+
+class ShotTest(unittest.TestCase):
+
+    def test_fewer_shells_in_the_clip_is_a_shot(self):
+        assert is_shot((30, 4), (30, 3)) is True
+
+    def test_fewer_shells_in_total_is_a_shot(self):
+        assert is_shot((30, 1), (29, 1)) is True
+
+    def test_the_first_count_of_the_battle_is_no_shot(self):
+        assert is_shot(None, (30, 4)) is False
+
+    def test_a_refilled_clip_is_no_shot(self):
+        assert is_shot((30, 0), (30, 4)) is False
 
 
 if __name__ == '__main__':

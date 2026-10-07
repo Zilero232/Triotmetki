@@ -29,8 +29,7 @@ def pending_launch(data, now, exists):
     return path
 
 
-# Whether a `BattleReplay.stop(rewindToTime, delete, isDestroyed)` call (its arguments after `self`) comes from the
-# client shutting down or destroying the controller (`isDestroyed`): the client then really quits.
+# BattleReplay.stop(rewindToTime, delete, isDestroyed): isDestroyed means the client really quits.
 def stop_on_teardown(args, kwargs):
     if STOP_DESTROYED_ARG in kwargs:
         return bool(kwargs[STOP_DESTROYED_ARG])

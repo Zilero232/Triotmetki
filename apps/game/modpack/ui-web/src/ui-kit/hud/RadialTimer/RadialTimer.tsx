@@ -18,7 +18,14 @@ export const RadialTimer = ({ progress, size, stroke, inner, tone = 'accent', ch
   return (
     <div className={s.radial} style={box}>
       <span className={s.layer} style={box}>
-        <svg aria-hidden='true' height='100%' viewBox={`0 0 ${String(size)} ${String(size)}`} width='100%' xmlns='http://www.w3.org/2000/svg'>
+        <svg
+          aria-hidden='true'
+          className={s.svg}
+          height='100%'
+          viewBox={`0 0 ${String(size)} ${String(size)}`}
+          width='100%'
+          xmlns='http://www.w3.org/2000/svg'
+        >
           <path d={track} fill='none' stroke={HUD_FIGURE.empty.color} strokeOpacity={HUD_FIGURE.empty.opacity} strokeWidth={stroke} />
           {arc && <path d={arc} fill='none' stroke={HUD_TONE_COLORS[tone].hex} strokeWidth={stroke} />}
         </svg>

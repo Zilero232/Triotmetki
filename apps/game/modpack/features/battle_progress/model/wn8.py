@@ -22,8 +22,7 @@ from .constants import (
     WN8_SCALE,
 )
 
-# Fair play: this battle's own damage, spotting, frags and capture points reset (the player's feedback events) against
-# the tank's expected values and the player's own WN8 on it from the site.
+# Fair play: this battle's own feedback against the tank's expected values from the site.
 
 
 def _ratio(value, expected):

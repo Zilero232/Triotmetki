@@ -14,8 +14,7 @@ from .constants import (
 )
 from .shots import positive_int
 
-# Fair play: the hits on the player's own tank from the player's own feedback, as the stock damage log shows them. The
-# attacker is the one the stock log names; nothing about positions or aim.
+# Fair play: hits on the own tank from the own feedback; nothing about positions or aim.
 
 
 def _near(earlier, later, window):
@@ -25,7 +24,6 @@ def _near(earlier, later, window):
     return abs(later - earlier) <= window
 
 
-# The shot's last drawn point is the one the client plays the hit effect for.
 def is_ricochet(points):
     drawn = drawn_points(points)
     if not drawn:
@@ -73,8 +71,6 @@ class ReceivedLog(object):
             self.ammo_rack_at = None
         return True
 
-    # The drawn ricochet and the feedback's TANKING arrive in either order: TANKING fills a pending ricochet row of
-    # the same attacker, or stands as a blocked row that a later ricochet turns.
     def add_blocked(self, amount, hit):
         damage = positive_int(amount)
         if damage is None:
@@ -113,7 +109,6 @@ class ReceivedLog(object):
                 return entry
         return None
 
-    # A hit's crits join its damage row; crits without damage (a module or crew hit alone) are a row of their own.
     def add_crits(self, hit, count):
         crits = count if is_int(count) and count > 0 else 1
         entry = self._recent(hit.vehicle_id, 'pen', hit.at)
@@ -124,7 +119,6 @@ class ReceivedLog(object):
         entry['crits'] += crits
         return True
 
-    # The damage event may come before or after the ammo rack device state.
     def ammo_rack_hit(self, at):
         received = self._last_damage()
         if received is not None and _near(received['at'], at, AMMO_RACK_WINDOW_S) and not received['ammo_rack']:

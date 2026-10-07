@@ -11,7 +11,7 @@ import { TankCardWidget } from '../TankCardWidget';
 
 const extended = tankCardSchema.parse(readWidgetFixture('tank_card'));
 
-const compact = { ...extended, sections: [], hint: 'Alt — подробнее' };
+const compact = { ...extended, sections: [] };
 
 const withoutMarks = { ...extended, percent: null, delta: null, points: [], thresholds: [], goal: null, note: null, marks: 0 };
 
@@ -48,11 +48,10 @@ describe(TankCardWidget, () => {
     expect(html.querySelectorAll('[class*="section"]')).toHaveLength(extended.sections.length);
   });
 
-  it('keeps the compact card to the header, the bar and the hint', () => {
+  it('keeps the compact card to the header and the bar', () => {
     const html = render(<TankCardWidget data={compact} />).container;
 
     expect(html.querySelectorAll('[class*="section"]')).toHaveLength(0);
-    expect(text(html)).toContain(compact.hint);
   });
 
   it('draws no bar for a tank without marks', () => {

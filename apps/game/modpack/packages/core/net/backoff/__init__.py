@@ -5,7 +5,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 def backoff_delay(attempt, base_s, max_s, jitter, rng, retry_after=None):
     """Seconds to wait before retry number `attempt` (1-based): base * 2^(attempt-1) capped at `max_s`,
     spread by +-`jitter` with `rng()` in [0, 1); a longer Retry-After wins (still capped)."""
-    # The doubling stops once it passes max_s: 2 ** 1024 as a float overflows (a replay queued for days keeps counting).
+    # 2 ** 1024 as a float overflows.
     doublings = 0
     while doublings < attempt - 1 and base_s * (2 ** doublings) < max_s:
         doublings += 1

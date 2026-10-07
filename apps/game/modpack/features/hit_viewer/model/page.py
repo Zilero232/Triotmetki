@@ -2,9 +2,10 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import is_number
-from ....core.format import format_epoch, format_number
+from ....core.format import counted, format_epoch, format_number
 from ....core.hit_book import DAMAGING
 from .constants import ACTION_OPEN, DASH, MAP_ICON, PAGE_LABELS, SEPARATOR, SIDE_DEALT, SIDE_RECEIVED, SIDES
+from .zones import zone_of
 
 
 def side_hits(battle, side):
@@ -38,6 +39,11 @@ def angle_text(hit):
     return u'%d°' % int(round(angle)) if is_number(angle) else DASH
 
 
+def zone_text(hit, translate):
+    zone = zone_of(hit.get('segments'))
+    return translate('hv_zone_' + zone) if zone else translate('hv_part_' + hit['part'])
+
+
 def hit_row(number, index, hit, translate):
     return {
         'n': number,
@@ -46,6 +52,7 @@ def hit_row(number, index, hit, translate):
         'class': hit.get('class'),
         'result': result_text(hit, translate),
         'part': translate('hv_part_' + hit['part']),
+        'zone': zone_text(hit, translate),
         'tone': hit['outcome'],
         'shell': shell_text(hit, translate),
         'damage': _number_or_dash(hit.get('damage')) if hit['outcome'] in DAMAGING else DASH,
@@ -85,17 +92,55 @@ def tab_items(battle, translate):
     ]
 
 
+def _share(part, whole):
+    return int(round(100.0 * part / whole)) if whole else None
+
+
+# On the own tank the share its armour held, on the enemies the share of the own hits that penetrated.
+def tab_summary(hits, tab, translate):
+    damaging = [hit for _, hit in hits if hit['outcome'] in DAMAGING]
+    held = len(hits) - len(damaging)
+    is_received = tab == SIDE_RECEIVED
+    return {
+        'damage': format_number(sum(hit.get('damage') or 0 for hit in damaging)),
+        'share': _share(held if is_received else len(damaging), len(hits)),
+        'share_label': translate('hv_share_held' if is_received else 'hv_share_pen'),
+    }
+
+
+def profile_view(profile, vehicle, translate):
+    if not profile or not profile['hits']:
+        return None
+    weak = profile['weak']
+    zones = [
+        dict(zone, label=translate('hv_zone_' + zone['id']), share=_share(zone['pens'], zone['hits']))
+        for zone in profile['zones']
+    ]
+    return {
+        'vehicle': vehicle or u'?',
+        'meta': SEPARATOR.join([
+            counted(profile['battles'], 'battles', translate),
+            counted(profile['hits'], 'hits', translate),
+            translate('hv_profile_held', share=_share(profile['held'], profile['hits'])),
+        ]),
+        'zones': zones,
+        'weak': weak,
+        'advice': translate('hv_advice_' + weak) if weak else None,
+    }
+
+
 def labels(translate):
     return {key: translate(name) for key, name in PAGE_LABELS}
 
 
-def viewer_state(battles, selection, translate, stage=None, image=_no_image):
+def viewer_state(battles, selection, translate, stage=None, image=_no_image, profile=None):
     stage = stage or {}
     items = [battle_item(item, translate, image) for item in reversed(battles)]
     state = {'labels': labels(translate), 'battles': items}
     battle = _selected_battle(battles, selection.get('battle'))
     if battle is None:
-        state.update({'battle': None, 'tabs': [], 'tab': None, 'rows': [], 'selected': None})
+        state.update({'battle': None, 'tabs': [], 'tab': None, 'rows': [], 'selected': None, 'summary': None,
+                      'profile': None})
         return state
     tab = selection.get('tab') if selection.get('tab') in SIDES else first_side(battle)
     hits = side_hits(battle, tab)
@@ -108,6 +153,8 @@ def viewer_state(battles, selection, translate, stage=None, image=_no_image):
         'selected': selection.get('index'),
         'loading': bool(stage.get('loading')),
         'approx': bool(stage.get('approx')),
+        'summary': tab_summary(hits, tab, translate) if hits else None,
+        'profile': profile_view(profile, battle.get('vehicle'), translate),
     })
     return state
 

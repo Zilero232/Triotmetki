@@ -19,10 +19,7 @@ from .constants import (
     VECTOR_RENDITIONS,
 )
 
-# Visual only: a preset sets the opacity and style of reticle parts the game's settings already offer, and a centre
-# mark is a static image drawn where the client already draws its own reticle centre. Nothing here computes anything
-# (no lead, no penetration, no aim assist, no enemy data). The vanilla reticle art (Scaleform crosshairPanel,
-# battleAtlas) is never replaced (README "Crosshair").
+# Fair play: visual only, no lead, penetration, aim assist or enemy data; stock reticle art is never replaced.
 
 
 def to_native(values):
@@ -101,8 +98,7 @@ def screen_centre(size, scale):
     return int(0.5 * width / factor), int(0.5 * height / factor)
 
 
-# The panel is centre-aligned, so the mark's x/y is the reticle's scaled position (CrosshairDataProxy
-# .getScaledPosition) relative to the screen centre, plus the player's own offset.
+# The mark sits at CrosshairDataProxy.getScaledPosition relative to the screen centre.
 def mark_offset(position, size, scale, settings):
     centre_x, centre_y = screen_centre(size, scale)
     reticle_x, reticle_y = position

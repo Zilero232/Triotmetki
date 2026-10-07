@@ -51,8 +51,6 @@ from otmetki.features.crosshair.settings.constants import MARKS
 
 ASSETS_DIR = os.path.join(_support.MODPACK_DIR, 'assets')
 
-# The parts of the game's own "Reticle" settings tab, RU 1.45 client source (options.AimSetting): an opacity 0-100,
-# or a style index below the number of styles the settings window offers (AimSetting.VIRTUAL_OPTIONS).
 OPACITY_PARTS = (
     'net',
     'centralTag',
@@ -64,7 +62,6 @@ OPACITY_PARTS = (
     'cassette',
     'zoomIndicator',
 )
-# The fields the settings window shows: the schema without the panel position keys (packages/ui PANEL_POSITION_KEYS).
 FIELD_KEYS = (
     'preset',
     'modes',
@@ -320,6 +317,19 @@ class CentreMarkSettingsTest(unittest.TestCase):
         assert 'brackets_o_red_64.png' in preview_text(settings, None)
 
 
+def clip_readouts(loaded):
+    readouts = Readouts()
+    readouts.set_clip(4, loaded)
+    readouts.set_interval(1.5)
+    readouts.set_drum_reload(24.0)
+    return readouts
+
+
+def reload_box(readouts):
+    data = readouts_data(readouts, Settings(None, SCHEMA), str)['reload']
+    return data['value'], data['full'], data['state']
+
+
 class ReadoutsTest(unittest.TestCase):
 
     def test_a_reload_counts_down_in_tenths(self):
@@ -504,6 +514,86 @@ class ReadoutsTest(unittest.TestCase):
         readouts.set_auto_reload(6.0, 8.0)
 
         assert readouts_data(readouts, Settings(None, SCHEMA), str)['reload']['clip']['refill'] is None
+
+    def test_a_full_clip_at_the_start_shows_the_interval_and_the_clip_reload(self):
+        readouts = clip_readouts(loaded=4)
+        readouts.set_reload(0.0, 24.0)
+
+        assert reload_box(readouts) == ('1.5', '24.0', 'loaded')
+        assert readouts.is_counting() is False
+
+    def test_a_loaded_clip_stays_put(self):
+        readouts = clip_readouts(loaded=4)
+        readouts.set_reload(0.0, 1.5)
+
+        readouts.tick(5.0)
+
+        assert reload_box(readouts) == ('1.5', '24.0', 'loaded')
+
+    def test_a_shot_with_shells_left_counts_the_interval(self):
+        readouts = clip_readouts(loaded=3)
+        readouts.set_reload(1.5, 1.5)
+
+        readouts.tick(0.4)
+
+        assert reload_box(readouts) == ('1.1', '24.0', 'reloading')
+        assert readouts.reload_progress() == round(0.4 / 1.5, 3)
+
+    def test_the_last_shell_loaded_shows_the_clip_reload_once(self):
+        readouts = clip_readouts(loaded=1)
+        readouts.set_reload(0.0, 24.0)
+
+        assert reload_box(readouts) == ('24.0', None, 'loaded')
+
+    def test_an_empty_clip_counts_the_clip_reload(self):
+        readouts = clip_readouts(loaded=0)
+        readouts.set_reload(24.0, 24.0)
+
+        readouts.tick(6.0)
+
+        assert reload_box(readouts)[0] == '18.0'
+        assert readouts.reload_progress() == 0.25
+
+    def test_a_clip_reload_cut_to_the_interval_still_counts_the_whole_clip(self):
+        readouts = clip_readouts(loaded=0)
+        readouts.set_reload(24.0, 1.5)
+
+        readouts.tick(6.0)
+
+        assert readouts.reload_progress() == 0.25
+
+    def test_a_burst_gun_shows_the_clip_reload_before_its_last_burst(self):
+        readouts = clip_readouts(loaded=2)
+        readouts.set_interval(1.5, 2)
+        readouts.set_reload(0.0, 1.5)
+
+        assert reload_box(readouts)[0] == '24.0'
+
+    def test_an_auto_reloader_shows_the_interval_down_to_its_last_shell(self):
+        readouts = clip_readouts(loaded=1)
+        readouts.set_autoloader(True)
+        readouts.set_reload(0.0, 6.0)
+
+        assert reload_box(readouts)[0] == '1.5'
+
+    def test_an_auto_reloader_shows_the_refilling_shells_time_under_the_value(self):
+        readouts = clip_readouts(loaded=2)
+        readouts.set_autoloader(True)
+        readouts.set_reload(0.0, 1.5)
+        readouts.set_auto_reload(6.0, 8.0)
+
+        readouts.tick(1.0)
+
+        data = readouts_data(readouts, Settings(None, SCHEMA), str)['reload']
+        assert (data['value'], data['full'], data['clip']['refill']['value']) == ('1.5', '8.0', '5.0')
+
+    def test_a_single_shot_gun_ignores_a_clip_interval(self):
+        readouts = Readouts()
+        readouts.set_clip(1, 1)
+        readouts.set_interval(1.5)
+        readouts.set_reload(0.0, 9.4)
+
+        assert reload_box(readouts) == ('9.4', None, 'loaded')
 
     def test_the_zoom_is_on_by_default(self):
         assert readouts_data(sample_readouts(), Settings(None, SCHEMA), str)['zoom'] == '8.0'

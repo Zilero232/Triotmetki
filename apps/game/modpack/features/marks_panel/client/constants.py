@@ -9,12 +9,8 @@ KIND_BY_EVENT = (
     ('TRACK_ASSIST', KIND_TRACK),
     ('STUN_ASSIST', KIND_STUN),
 )
-# The hangar reads the tank's marks from its dossier (companion marks `vehicle_moe`); a tank below the marks tier or
-# without a moving average has none, and the battle panel then stays off.
 NO_SNAPSHOT = 'no hangar marks snapshot of tank %s (below tier 5 or no damage average yet)'
-# RU 1.45 gui/Scaleform/daapi/view/common/vehicle_carousel/carousel_data_provider.py: CarouselDataProvider
-# ._getVehicleStats(vehicle) gives a tile's stats row ({'statsText', 'visibleStats'}) from the vehicle's own dossier;
-# the row shows while the carousel filter's «show statistics» is on (every hangar carousel derives from this provider).
+# RU 1.45 vehicle_carousel/carousel_data_provider.py CarouselDataProvider._getVehicleStats.
 CAROUSEL_MODULE = 'gui.Scaleform.daapi.view.common.vehicle_carousel.carousel_data_provider'
 CAROUSEL_CLASS = 'CarouselDataProvider'
 STATS_METHOD = '_getVehicleStats'

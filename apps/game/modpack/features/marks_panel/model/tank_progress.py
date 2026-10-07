@@ -6,9 +6,6 @@ from ....core.moe import mastery_state
 from .cells import cell
 from .constants import ACE_LEVEL, APPROX, METRIC_SEPARATOR, RESEARCH_ROWS
 
-# The XP to the next mastery badge is the protanki idea (from the site's thresholds), the XP still to research
-# izeberg's «vehicle_exp».
-
 
 def _badge(level, translate):
     return translate('marks_panel_card_mastery_%d' % level)

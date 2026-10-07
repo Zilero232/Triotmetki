@@ -8,10 +8,7 @@ from .constants import (ATTENTION_MARK, BONUS_MARK, BOOSTER_OVERLAY_PATH, BOOSTE
                         MISSING_ICON_MARK, OVERLAY_DELUXE, OVERLAY_MODERNIZED, OVERLAY_PATH, OVERLAY_TROPHIES,
                         SLOT_EMPTY, SLOT_ENTRY, SLOTS, STOCK_ICON, SUMMARY, SUMMARY_EMPTY)
 
-# Fair play: the player's own tank only, the equipment and directives its setups carry (what the stock equipment
-# tooltips and ammunition panels read) and the device states the client reports for the own vehicle. The client tells
-# nothing about other vehicles' equipment and nothing is inferred. The shells and consumables are left to the stock
-# panel under the row, which already shows them.
+# Fair play: the own tank only; the client tells nothing about other vehicles' equipment.
 
 
 def _device_overlay(raw):
@@ -63,8 +60,6 @@ def clean_devices(raw):
     return [device for device in cleaned if device is not None]
 
 
-# The row of a read: the installed devices, then the installed directives, as kurzdor's battleequipment (Lebwa, Jove)
-# draws them; an empty slot gets no cell.
 def slot_items(devices, directives):
     cleaned = (clean_device(raw) for raw in list(devices or []) + list(directives or []))
     return [item for item in cleaned if item is not None][:MAX_ITEMS]

@@ -9,8 +9,6 @@ from .constants import STAMPS_NAME, STAMPS_VERSION
 _shared = {}
 
 
-# One folder's saved_at.json, read once and kept: every file of the folder shares it (`stamps_in`), so a save writes
-# the stamps without reading them back; `reload()` (before a sync) picks up what another program wrote there.
 class Stamps(object):
 
     def __init__(self, directory):

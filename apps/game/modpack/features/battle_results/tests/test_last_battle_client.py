@@ -21,7 +21,6 @@ class Avatar(object):
     arenaUniqueID = ARENA
 
 
-# The client package's __init__ needs the game; the panel module loads under a bare package with BigWorld stubbed.
 def load_panel_module():
     big_world = types.ModuleType(str('BigWorld'))
     big_world.player = Avatar

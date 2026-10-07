@@ -6,10 +6,7 @@ from ....core.format import COLOR_MUTED, COLOR_NEUTRAL, COLOR_UP, font, format_n
 from .battles import battle_lines
 from .constants import DIVISION_LETTERS, LEGEND_RANK, MAX_SKILL, RANK_IDS, STATUS_IDLE, THRESHOLD_RANKS, TITLE_SIZE_STEP
 
-# Fair play: only what the Onslaught hangar already shows the player: their own division, the division ranges of the
-# client's rank tooltips and the role skill chosen for the selected vehicle. Nothing about other players. The own rating
-# and division are left to the stock Onslaught header, which shows them (docs/research/competitors/
-# 2026-10-05-stock-replacement.md).
+# Fair play: only what the Onslaught hangar already shows the player; nothing about other players.
 
 
 def clean_division(item):

@@ -22,8 +22,6 @@ def replaces_stock(settings):
     return bool(settings.get('replace_stock')) and settings.get('style') not in OVERLAY_STYLES
 
 
-# The strip takes the stock one's place only when it replaces it (core.client.hud.stock hides the stock strip once the
-# HUD page draws ours); otherwise it sits beside the stock strip.
 def pinned_place(settings):
     if replaces_stock(settings):
         return settings.get('x'), settings.get('y')

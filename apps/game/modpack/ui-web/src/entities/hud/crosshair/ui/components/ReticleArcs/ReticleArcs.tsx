@@ -21,6 +21,7 @@ export const ReticleArcs = ({ arcs }: ReticleArcsProps) => {
     <span className={s.arcs} style={place}>
       <svg
         aria-hidden='true'
+        className={s.svg}
         height='100%'
         viewBox={`0 0 ${String(canvas.height)} ${String(canvas.height)}`}
         width='100%'

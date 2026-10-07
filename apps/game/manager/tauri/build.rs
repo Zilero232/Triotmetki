@@ -1,8 +1,5 @@
 use std::{env, fs, path::PathBuf};
 
-/// The manager version has one source, `apps/game/manager/package.json`: tauri.conf.json points at
-/// it (`"version": "../package.json"`) and this exposes the same value to the code as
-/// `env!("MANAGER_VERSION")`, so Cargo.toml carries no version of its own.
 fn manager_version() -> String {
     let path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR")).join("../package.json");
     println!("cargo:rerun-if-changed={}", path.display());

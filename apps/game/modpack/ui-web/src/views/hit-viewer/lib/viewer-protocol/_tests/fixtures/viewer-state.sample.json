@@ -1,0 +1,356 @@
+{
+  "dealt": {
+    "rows": [
+      {
+        "angle": "31°",
+        "armor": "405",
+        "class": "heavy",
+        "damage": "560",
+        "index": 9,
+        "n": 1,
+        "nominal": "195",
+        "part": "Корпус",
+        "result": "Пробитие",
+        "shell": "ББ 130",
+        "tone": "pen",
+        "vehicle": "Maus",
+        "zone": "ВЛД"
+      },
+      {
+        "angle": "38°",
+        "armor": "430",
+        "class": "heavy",
+        "damage": "—",
+        "index": 10,
+        "n": 2,
+        "nominal": "200",
+        "part": "Башня",
+        "result": "Рикошет",
+        "shell": "ББ 130",
+        "tone": "ricochet",
+        "vehicle": "Maus",
+        "zone": "Лоб башни"
+      },
+      {
+        "angle": "45°",
+        "armor": "455",
+        "class": "heavy",
+        "damage": "560",
+        "index": 11,
+        "n": 3,
+        "nominal": "205",
+        "part": "Башня",
+        "result": "Пробитие",
+        "shell": "ББ 130",
+        "tone": "pen",
+        "vehicle": "Maus",
+        "zone": "Борт башни"
+      }
+    ],
+    "summary": {
+      "damage": "1 120",
+      "share": 67,
+      "share_label": "Пробито"
+    }
+  },
+  "state": {
+    "approx": false,
+    "battle": {
+      "date": "07.10.2026 21:00",
+      "dealt": 3,
+      "id": "1000",
+      "image": null,
+      "map": "Химмельсдорф",
+      "received": 9,
+      "result": "win",
+      "tier": 10,
+      "vehicle": "ИС-7"
+    },
+    "battles": [
+      {
+        "date": "07.10.2026 21:30",
+        "dealt": 3,
+        "id": "1002",
+        "image": null,
+        "map": "Энск",
+        "received": 7,
+        "result": "win",
+        "tier": 10,
+        "vehicle": "ИС-7"
+      },
+      {
+        "date": "07.10.2026 21:15",
+        "dealt": 3,
+        "id": "1001",
+        "image": null,
+        "map": "Прохоровка",
+        "received": 8,
+        "result": "loss",
+        "tier": 10,
+        "vehicle": "ИС-7"
+      },
+      {
+        "date": "07.10.2026 21:00",
+        "dealt": 3,
+        "id": "1000",
+        "image": null,
+        "map": "Химмельсдорф",
+        "received": 9,
+        "result": "win",
+        "tier": 10,
+        "vehicle": "ИС-7"
+      }
+    ],
+    "labels": {
+      "angle": "Угол",
+      "approx": "Модули машины неизвестны: точки показаны на стоковой модели",
+      "armor": "Броня",
+      "battles": "Бой",
+      "close": "Закрыть",
+      "damage": "Урон",
+      "details": "Попадание",
+      "draw": "Ничья",
+      "effective": "Приведённая",
+      "empty": "В этом бою таких попаданий нет",
+      "filter": "Исход попадания",
+      "filter_all": "Все",
+      "hint": "Тяните мышью — вращение, колесо — приближение; строка или стрелки наводят камеру на попадание",
+      "loading": "Загрузка модели…",
+      "loss": "Поражение",
+      "no_angle": "Угол и броня ещё не измерены на модели",
+      "no_battles": "Сыграйте бой — попадания по вашему танку появятся здесь",
+      "no_battles_title": "Записанных боёв пока нет",
+      "nominal": "Номинал",
+      "number": "№",
+      "part": "Деталь",
+      "pick_battle": "Выбрать бой",
+      "profile": "Броня танка",
+      "profile_few": "Слабое место появится, когда наберётся больше пробитий по этому танку",
+      "profile_hide": "Скрыть",
+      "profile_note": "По всем сохранённым боям на этом танке. Зоны приблизительные: по положению точки в габаритах детали.",
+      "profile_pens": "Пробили",
+      "profile_show": "Броня танка",
+      "profile_weak": "Слабое место",
+      "result": "Результат",
+      "shell": "Снаряд",
+      "title": "Просмотр попаданий",
+      "vehicle": "Танк",
+      "win": "Победа",
+      "zone": "Зона"
+    },
+    "loading": false,
+    "profile": {
+      "advice": "Чаще всего пробивают ВЛД: доворачивайте корпус ромбом, чтобы приведённая броня росла, и не стойте к врагу ровно лбом.",
+      "meta": "3 боя · 24 попадания · броня держит 58%",
+      "vehicle": "ИС-7",
+      "weak": "hull_upper",
+      "zones": [
+        {
+          "hits": 6,
+          "id": "hull_upper",
+          "label": "ВЛД",
+          "pens": 4,
+          "share": 67
+        },
+        {
+          "hits": 3,
+          "id": "hull_lower",
+          "label": "НЛД",
+          "pens": 3,
+          "share": 100
+        },
+        {
+          "hits": 3,
+          "id": "hull_side",
+          "label": "Борт",
+          "pens": 3,
+          "share": 100
+        },
+        {
+          "hits": 3,
+          "id": "turret_front",
+          "label": "Лоб башни",
+          "pens": 0,
+          "share": 0
+        },
+        {
+          "hits": 3,
+          "id": "turret_side",
+          "label": "Борт башни",
+          "pens": 0,
+          "share": 0
+        },
+        {
+          "hits": 3,
+          "id": "gun",
+          "label": "Орудие",
+          "pens": 0,
+          "share": 0
+        },
+        {
+          "hits": 3,
+          "id": "chassis",
+          "label": "Ходовая",
+          "pens": 0,
+          "share": 0
+        }
+      ]
+    },
+    "rows": [
+      {
+        "angle": "18°",
+        "armor": "180",
+        "class": "heavy",
+        "damage": "490",
+        "index": 0,
+        "n": 1,
+        "nominal": "150",
+        "part": "Корпус",
+        "result": "Пробитие",
+        "shell": "ББ 128",
+        "tone": "pen",
+        "vehicle": "Maus",
+        "zone": "ВЛД"
+      },
+      {
+        "angle": "25°",
+        "armor": "205",
+        "class": "td",
+        "damage": "—",
+        "index": 1,
+        "n": 2,
+        "nominal": "155",
+        "part": "Корпус",
+        "result": "Не пробито",
+        "shell": "БП 152",
+        "tone": "blocked",
+        "vehicle": "Объект 268",
+        "zone": "ВЛД"
+      },
+      {
+        "angle": "32°",
+        "armor": "230",
+        "class": "medium",
+        "damage": "—",
+        "index": 2,
+        "n": 3,
+        "nominal": "160",
+        "part": "Башня",
+        "result": "Рикошет",
+        "shell": "КС 100",
+        "tone": "ricochet",
+        "vehicle": "T-62A",
+        "zone": "Лоб башни"
+      },
+      {
+        "angle": "39°",
+        "armor": "255",
+        "class": "medium",
+        "damage": "390",
+        "index": 3,
+        "n": 4,
+        "nominal": "165",
+        "part": "Корпус",
+        "result": "Пробитие",
+        "shell": "БП 105",
+        "tone": "pen",
+        "vehicle": "Leopard 1",
+        "zone": "НЛД"
+      },
+      {
+        "angle": "46°",
+        "armor": "280",
+        "class": "heavy",
+        "damage": "490",
+        "index": 4,
+        "n": 5,
+        "nominal": "170",
+        "part": "Корпус",
+        "result": "Пробитие",
+        "shell": "ББ 128",
+        "tone": "pen",
+        "vehicle": "Maus",
+        "zone": "Борт"
+      },
+      {
+        "angle": "53°",
+        "armor": "305",
+        "class": "td",
+        "damage": "—",
+        "index": 5,
+        "n": 6,
+        "nominal": "175",
+        "part": "Башня",
+        "result": "Рикошет",
+        "shell": "БП 152",
+        "tone": "ricochet",
+        "vehicle": "Объект 268",
+        "zone": "Борт башни"
+      },
+      {
+        "angle": "60°",
+        "armor": "330",
+        "class": "medium",
+        "damage": "—",
+        "index": 6,
+        "n": 7,
+        "nominal": "180",
+        "part": "Орудие",
+        "result": "Не пробито",
+        "shell": "КС 100",
+        "tone": "blocked",
+        "vehicle": "T-62A",
+        "zone": "Орудие"
+      },
+      {
+        "angle": "—",
+        "armor": "—",
+        "class": "medium",
+        "damage": "—",
+        "index": 7,
+        "n": 8,
+        "nominal": "—",
+        "part": "Ходовая",
+        "result": "Без урона",
+        "shell": "БП 105",
+        "tone": "nodamage",
+        "vehicle": "Leopard 1",
+        "zone": "Ходовая"
+      },
+      {
+        "angle": "24°",
+        "armor": "380",
+        "class": "heavy",
+        "damage": "490",
+        "index": 8,
+        "n": 9,
+        "nominal": "190",
+        "part": "Корпус",
+        "result": "Крит",
+        "shell": "ББ 128",
+        "tone": "crit",
+        "vehicle": "Maus",
+        "zone": "ВЛД"
+      }
+    ],
+    "selected": 0,
+    "summary": {
+      "damage": "1 860",
+      "share": 56,
+      "share_label": "Броня держит"
+    },
+    "tab": "received",
+    "tabs": [
+      {
+        "count": 9,
+        "id": "received",
+        "label": "По мне"
+      },
+      {
+        "count": 3,
+        "id": "dealt",
+        "label": "По врагам"
+      }
+    ]
+  }
+}

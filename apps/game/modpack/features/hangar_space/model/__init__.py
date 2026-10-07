@@ -59,9 +59,6 @@ from .previews import (  # noqa: F401
 )
 from .thumbnail import ThumbnailError, bitmap_thumbnail  # noqa: F401
 
-# Only the look of the own hangar, from the spaces the client already has. A server event hangar (the client's
-# cmd_change_hangar notifications) and the hangars of other modes win over the choice.
-
 
 def normalize_space(value):
     text = to_text(value).strip().lower() if isinstance(value, string_types) else u''
@@ -89,14 +86,12 @@ def space_names(paths):
     return sorted({name for name in names if name})
 
 
-# A folder typed into the advanced field that the client has no hangar config of would break the hangar load
-# (gui.ClientHangarSpace reads _HANGAR_CFGS[path] for the space it loads): only a space the client lists is written.
+# gui.ClientHangarSpace reads _HANGAR_CFGS[path]: a space the client does not list breaks the hangar load.
 def available_space(name, names):
     return name if name and name in names else None
 
 
-# A space path the way the client's HangarSpaceReloader.buildHangarSpacePath builds it, lower-cased: a server
-# notification may name `h08_mt_hangar` or `spaces/h08_mt_hangar`.
+# As the client's HangarSpaceReloader.buildHangarSpacePath builds it, lower-cased.
 def normalized_space(value):
     if not isinstance(value, string_types) or not to_text(value).strip():
         return None
@@ -108,9 +103,7 @@ def is_default_override(value, default_path):
     return value is not None and default_path is not None and normalized_space(value) == normalized_space(default_path)
 
 
-# A server notification (cmd_change_hangar) that names the game's own default hangar is no event hangar: it re-states
-# the regular hangar, often only for an environment of it. The choice stands in for such a slot and gives it back when
-# it goes; a slot naming any other space (an event hangar) is never touched.
+# A cmd_change_hangar notification naming the default hangar only re-states it: no event hangar.
 def taken_slots(current, owned, wanted, default_path):
     if wanted is None:
         return {}
@@ -120,8 +113,6 @@ def taken_slots(current, owned, wanted, default_path):
     }
 
 
-# Ours is written or dropped only where the slot is empty, holds ours or re-states the default hangar (`taken_slots`);
-# dropping ours puts back what it stood in for (`kept`). An override naming an event hangar stays.
 def override_changes(current, owned, wanted, default_path=None, kept=None):
     kept = kept or {}
     changes = {}
@@ -136,8 +127,6 @@ def override_changes(current, owned, wanted, default_path=None, kept=None):
     return changes
 
 
-# The environment slot follows the space slot of the same premium flag: an environment is a name inside one space, so
-# ours goes only where that flag's hangar is the look's space; elsewhere (an event hangar, the other flag) it is empty.
 def wanted_environments(targets, path, environment):
     wanted = {}
     for is_premium in PREMIUM_FLAGS:
@@ -146,9 +135,6 @@ def wanted_environments(targets, path, environment):
     return wanted
 
 
-# Like the space slot, an environment the server set (an event's environment) stays; ours is written or emptied only
-# where the slot is empty or holds ours, or where the choice stands in for a server slot of the default hangar
-# (`taken`), whose environment (`kept`) comes back with it.
 def environment_changes(current, owned, wanted, taken=(), kept=None):
     kept = kept or {}
     changes = {}
@@ -164,8 +150,6 @@ def environment_changes(current, owned, wanted, taken=(), kept=None):
     return changes
 
 
-# A look chosen wins over the chosen space (picking a space clears the look); a look this client lacks (a patch
-# renamed or dropped its environment) leaves the chosen space, or the game's own hangar.
 def chosen_target(space, look, names):
     if look is not None:
         return space_path(look.space), look.environment

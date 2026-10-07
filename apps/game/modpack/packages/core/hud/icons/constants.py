@@ -3,13 +3,11 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import re
 
 IMAGE_SCHEME = 'img://'
-# Our own glyph drawn by the page (ui-web ui-kit/hud/Glyph); after `|` in an image string it is the fallback.
 GLYPH_SCHEME = 'otmetki:'
 FALLBACK_SEPARATOR = '|'
 
 # Client images, RU 1.45 (checked in gui-part1/2.pkg of the installed client).
 ICONS_ROOT = 'gui/maps/icons'
-# The shell icon sets: the battle ammo panel's own pictures, else the small shell icons.
 SHELL_KIND_BATTLE_AMMO = 'battle_ammo'
 SHELL_FOLDERS = {SHELL_KIND_BATTLE_AMMO: 'ammopanel/battle_ammo'}
 SHELL_FOLDER_SMALL = 'shell/small'
@@ -26,7 +24,7 @@ CLASS_GLYPHS = {
     'SPG': 'class_spg',
 }
 
-# BATTLE_LOG_SHELL_TYPES name -> the shell/small file stem (ammopanel names); premium adds _PREMIUM where it exists.
+# BATTLE_LOG_SHELL_TYPES name -> the shell/small file stem (ammopanel names).
 SHELL_FILES = {
     'ARMOR_PIERCING': 'ARMOR_PIERCING',
     'ARMOR_PIERCING_HE': 'ARMOR_PIERCING',
@@ -53,11 +51,9 @@ PREMIUM_SHELLS = (
     'HIGH_EXPLOSIVE_MODERN',
 )
 PREMIUM_SUFFIX = '_PREMIUM'
-# The stem of a shell descriptor icon (`descriptor.icon[0]`, e.g. ARMOR_PIERCING_CR_PREMIUM.png), the ammopanel file
-# name.
+# The stem of a shell descriptor icon (`descriptor.icon[0]`), the ammopanel file name.
 SHELL_STEM = re.compile(r'^[A-Z0-9_]{2,60}(\.png)?\Z')
 
-# Efficiency kinds of the post-battle screen, 48x48 (library/efficiency).
 EFFICIENCY = (
     'damage',
     'armor',
@@ -73,7 +69,6 @@ EFFICIENCY = (
     'defence',
 )
 
-# Hit outcomes (damage_log, battle_hits) -> library/critical_damage files; a plain penetration has none (our glyph).
 OUTCOME_FILES = {
     'crit': 'hit_critical',
     'no_pen': 'hit_blocked',

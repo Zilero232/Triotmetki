@@ -21,8 +21,6 @@ def compact(summary):
     return {key: summary.get(key) for key in HISTORY_KEYS}
 
 
-# 0.7.0 stored the battle results' whole percent as hundredths (0.64 for 64 %): a percent under 1 on a tank with a mark,
-# or with a change no battle makes, is that percent (rounded to a whole one) and its change is dropped.
 def _is_wrong_scale(entry):
     percent = entry.get('moe_percent')
     if not is_number(percent) or percent > WRONG_SCALE_PERCENT:

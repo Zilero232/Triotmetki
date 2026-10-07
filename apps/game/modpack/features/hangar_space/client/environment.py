@@ -16,7 +16,6 @@ from .constants import (
 )
 from ..model.constants import PREMIUM_FLAGS
 
-# A space's files do not change while the client runs: each space's environments are read once.
 _tables = {}
 
 
@@ -39,7 +38,6 @@ def _read_table(path):
     return environment_table(entries, root.readString(ACTIVE_ENVIRONMENT))
 
 
-# A space whose files the client refuses to read has no looks: the gallery and the hangar stay as the game has them.
 def environment_table_of(path):
     key = path.lower()
     if key not in _tables:
@@ -59,8 +57,7 @@ def active_environment(path):
     return environment_table_of(path)[1] if path else u''
 
 
-# UNVERIFIED on Lesta 1.45: DefaultHangarSpaceConfig keeps getEnvironment / setEnvironment / discardEnvironment; a
-# config without them has no environment slot, and the looks then do nothing.
+# UNVERIFIED on Lesta 1.45: DefaultHangarSpaceConfig keeps the environment slot methods.
 def environment_slots(switcher):
     config = getattr(switcher, DEFAULT_CONFIG_ATTR, None)
     read = getattr(config, 'getEnvironment', None)
@@ -83,8 +80,7 @@ def write_environments(switcher, changes):
             config.discardEnvironment(is_premium)
 
 
-# UNVERIFIED on Lesta 1.45 outside a server event: that setMainEnvironment on the loaded hangar keeps the vehicle and
-# the camera (the client calls it the same way when an event changes only the environment).
+# UNVERIFIED on Lesta 1.45 outside a server event: setMainEnvironment keeps the vehicle and camera.
 def switch_environment(name):
     switcher = getattr(BigWorld, ENVIRONMENT_SWITCHER, None)
     if switcher is None:

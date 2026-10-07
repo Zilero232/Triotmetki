@@ -20,8 +20,7 @@ def play_refusal(replay, client_version, in_battle, playing, available):
     return None
 
 
-# The path as the client's own `str` in the file system encoding (the client opens the replay with it), or None when
-# that encoding cannot hold it. Python 2's mbcs swaps what it cannot hold for '?', so the encoded path must decode back.
+# Python 2's mbcs swaps what it cannot hold for '?', so the encoded path must decode back.
 def native_path(path, encoding):
     text = to_text(path)
     try:

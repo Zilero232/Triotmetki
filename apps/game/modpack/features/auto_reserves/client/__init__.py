@@ -14,15 +14,11 @@ from .reads import personal_reserves
 
 
 def _activator(booster):
-    # RU 1.45 client source: gui.shared.gui_items.processors.goodies.BoosterActivator(booster), the reserves
-    # window's «Активировать».
+    # RU 1.45 client source: gui.shared.gui_items.processors.goodies.BoosterActivator(booster).
     from gui.shared.gui_items.processors.goodies import BoosterActivator
     return lambda: BoosterActivator(booster)
 
 
-# The personal reserves the player picked stay on: in the first hangar of the game session and, when chosen, whenever
-# one of them runs out. The switch and every reserve are off until the player turns them on; a reserve the game refused
-# is not tried again in the same session.
 class AutoReserves(FeatureComponent):
 
     def __init__(self, app):
@@ -38,7 +34,6 @@ class AutoReserves(FeatureComponent):
         app.bus.on('tick', self._on_tick)
         self.follow_account(self._on_account)
 
-    # The session and the refused reserves are one account's: another account gets its own first hangar.
     def _on_account(self, account_id):
         if self.account is not None and account_id != self.account:
             self.session_done = False
@@ -47,8 +42,6 @@ class AutoReserves(FeatureComponent):
             self.hangar_seen = False
         self.account = account_id
 
-    # The app ticks from the login screen on, where the reserves cache is still empty: nothing is read before the
-    # account's hangar.
     def _on_hangar(self):
         self.hangar_seen = True
         self._check(time.time())
@@ -84,7 +77,6 @@ class AutoReserves(FeatureComponent):
         run_in_order(steps, self._done, 'reserve activation')
         return None
 
-    # run_in_order builds a step only once the one before it was answered, so the last built is the one that failed.
     def _step(self, booster_id, booster):
         make_processor = _activator(booster)
 

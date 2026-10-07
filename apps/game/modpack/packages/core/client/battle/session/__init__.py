@@ -114,8 +114,7 @@ def is_enemy(vehicle_id):
     return bool(provider.isEnemyTeam(team))
 
 
-# The damage one onPlayerFeedbackReceived batch reports the player dealt to enemies (that event carries only the
-# player's own events: feedback_adaptor, RU 1.45).
+# RU 1.45 feedback_adaptor: onPlayerFeedbackReceived carries only the player's own events.
 def dealt_damage(events):
     return own_damage(events, getattr(BATTLE_EVENT_TYPE, 'DAMAGE', None), is_enemy)
 

@@ -12,6 +12,10 @@ node = "22"
 "conda:python" = { version = "2.7.18", channel = "anaconda" }
 # The modpack's linter (apps/game/modpack/ruff.toml), the standalone binary: no Python 3 needed.
 ruff = "0.16.9"
+# The modpack's AS3 compiler (bun run swf:build: Apache Royale mxmlc from npm) runs on Java. Temurin through the
+# github backend: the java backend's metadata host (mise-java.jdx.dev) is unreachable from some networks. CI never
+# builds the SWF (it is committed), so no job asks for it.
+"github:adoptium/temurin21-binaries" = "jdk-21.0.12.1+1"
 # The manager's Rust core; tauri/Cargo.toml needs at least rust-version 1.85. CI lints it with rustfmt and clippy.
 rust = { version = "stable", components = "rustfmt,clippy" }
 

@@ -1,10 +1,6 @@
 @use 'sass:list';
 @use 'sass:map';
 
-// The in-game HUD (the modpack's Gameface page): dark only, battle design px (1 rem = 1 px there, so no rem here).
-// Colours are legacy rgba(r, g, b, a): Gameface ignores rgb(r g b / a), and these land inside text-shadow and border
-// values the build's colour lowering may not reach.
-// docs/specs/2026-09-30-hud-consolidation-and-design.md section 6.
 $tones: (
   'hud-text': #f4f1ea,
   'hud-muted': #a8a49a,
@@ -22,8 +18,6 @@ $tones: (
   'hud-good': #4cc36b,
   'hud-bad': #eb7276,
   'hud-warn': #d9b23c,
-  // The HUD accent («Планшет наводчика», docs/research/design/2026-10-03-competitor-ui.md B.1): the scale cursor, the own
-  // row, the `///` index. One per block.
   'hud-index': #ff8a2a
 );
 $surfaces: (
@@ -50,8 +44,6 @@ $surfaces: (
   'hud-radius': 0,
   'hud-slot-radius': 2px
 );
-
-// Five type steps: (size, line height, weight).
 $type-steps: (
   caption: (
     11px,
@@ -86,10 +78,6 @@ $type: (
   'hud-key': 20px,
   'hud-hero': 28px
 );
-
-// The crosshair's centre marks and the readouts by the reticle (modpack features/crosshair, ui-web crosshair widget):
-// the 1 px dark outline that keeps a mark visible on the sky, the dark fill of a filled ring and the sky-over-field
-// backdrop the mark gallery is judged on.
 $reticle: (
   'hud-reticle-outline': 'rgba(11, 12, 14, 0.9)',
   'hud-reticle-shade': 'rgba(11, 12, 14, 0.55)',

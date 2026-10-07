@@ -18,11 +18,7 @@ from .constants import (
     SOURCE_ESTIMATED,
 )
 
-# Fair play: the player's own marks of excellence, from the own dossier and the own damage and assist of this battle.
-#
-# Laid out as the gunmarks panels of PROTanki, Near_You and Lebwa are (docs/specs/2026-09-30-hud-consolidation-and-
-# design.md §8.4). It never grows on its own (no Alt view), so its box is the one the player places; the battles to
-# the next mark and the trend stay on the hangar Tank card, in battle the panel keeps to this battle.
+# Fair play: the own marks from the own dossier and this battle's own damage and assist.
 
 
 def _shown_percent(state):
@@ -32,8 +28,6 @@ def _shown_percent(state):
     return round(shown, 2)
 
 
-# The design brief keeps the big percent white unless it is coloured by the mark: the change mode colours only the
-# change beside it, which the page tones by its own sign.
 def percent_tone(state, mode):
     if mode != COLOR_MODE_MARK:
         return 'text'
@@ -60,8 +54,6 @@ def _goal(state, settings):
     return {'level': state['next_level'], 'need': state['need_next']}
 
 
-# The battle's damage on a bar that ends at the damage the goal needs, with a tick where it holds the percent (the
-# average): it moves with every own hit, as the gunmarks bar does, where the 0-100 % scale moves a pixel at most.
 def _bar(state, goal, settings):
     if settings.get('bar') != BAR_DAMAGE or not state['has_curve']:
         return None
@@ -99,8 +91,6 @@ def _rows(state, settings, translate):
     }
 
 
-# Without the site's thresholds the percent cannot be projected, but the average the percent follows can: the row of the
-# damage average moving with the battle is the plate's live part then, and no thresholds row is drawn.
 def _curveless_rows(state, translate):
     rows = dict(NO_ROWS)
     rows['average'] = _average_row(state, translate)

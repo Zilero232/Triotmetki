@@ -32,7 +32,6 @@ def preview_state(settings):
     return panel_state(PREVIEW_SNAPSHOT, PREVIEW_COMBINED, _curve(), PREVIEW_PACE, settings)
 
 
-# The HUD editor shows the panel as it is in battle: its box is the one the player places.
 def preview_text(settings, translate):
     return format_panel(preview_state(settings), settings, translate)
 
@@ -41,8 +40,6 @@ def preview_widget(settings, translate):
     return marks_widget(preview_state(settings), settings, translate)
 
 
-# The card as the style draws it at rest: the window's editor shows what the style changes, and the compact card its
-# Alt hint.
 def card_preview():
     state = hangar_state(PREVIEW_SNAPSHOT, _curve(), PREVIEW_PACE)
     return TankCard(

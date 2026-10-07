@@ -36,7 +36,6 @@ class BattleLoadoutPanel(BattlePanel):
         self.devices = []
         self.summary = None
 
-    # Outside the battle the layer holds the HUD edit mode's preview of the panel, which a drag or a reset changes.
     def settings_changed(self, changed):
         if self.running:
             self.render()
@@ -45,8 +44,6 @@ class BattleLoadoutPanel(BattlePanel):
         if vehicle_id == getattr(player(), 'playerVehicleID', None):
             self._on_loadout()
 
-    # A read that finds nothing while the row already shows the own tank's devices (the arena entry or the setups being
-    # rebuilt) keeps the last row: the row never blinks for a transient read.
     def _on_loadout(self, *args):
         loadout = own_loadout()
         items = slot_items(loadout['devices'], loadout['directives'])

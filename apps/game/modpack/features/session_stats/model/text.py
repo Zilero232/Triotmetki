@@ -15,8 +15,6 @@ from .goals import is_done, progress
 from .labels import account_facts, account_wn8, goal_label, goal_value, pending_caption
 from .moe import signed_change
 
-# The text of the Session card, for a page that cannot draw the widget.
-
 
 def _recent_line(recent, translate):
     marks = [font(translate('session_result_' + result), RESULT_COLORS[result]) for result in recent]

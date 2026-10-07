@@ -74,7 +74,6 @@ class BattleResultsSummary(FeatureComponent):
     def _remember(self, summary):
         self.history = trimmed(self.history + [compact(summary)], self.settings.get('history_size'))
 
-    # After every package took the battle (bus battle_recorded), so the session line counts it too.
     def _on_battle_recorded(self):
         while self.recorded:
             self._offer_notice(self.recorded.pop(0))

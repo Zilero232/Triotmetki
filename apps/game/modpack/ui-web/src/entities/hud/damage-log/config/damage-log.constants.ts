@@ -1,10 +1,10 @@
 export const DAMAGE_LOG = {
-  iconSize: 16,
-  classIcon: { width: 13, height: 16 },
-  totalIconSize: 14,
-  critIconSize: 12,
+  iconSize: 14,
+  classIcon: { width: 11, height: 13 },
+  totalIconSize: 12,
+  critIconSize: 10,
   hitsPrefix: '×',
-  bar: { width: 36, height: 4, minTook: 1 },
+  bar: { width: 26, height: 3, minTook: 1 },
   shellKinds: ['ap', 'apcr', 'heat', 'he'],
   otherShell: 'other',
   sections: ['dealt', 'received']

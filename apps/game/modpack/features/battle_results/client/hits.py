@@ -13,8 +13,7 @@ from ..model.hits import BOOK_FILE, HitBook
 from .constants import KIND_BY_EVENT, KIND_RECEIVED
 
 
-# Fair play: only the shots the client draws on the player's own tank (Vehicle.showDamageFromShot on the own vehicle)
-# and the damage the own feedback reported.
+# Fair play: only shots the client draws on the own tank (Vehicle.showDamageFromShot).
 class HitRecorder(object):
 
     def __init__(self, component):

@@ -4,8 +4,7 @@ from ....core.compat import is_int, is_number, to_text
 from ....core.shells import SHELL_CODES
 from .constants import DAMAGE_OUTCOMES, MAX_ENTRIES, MERGE_WINDOW_S, OUTCOMES, SOURCE_SHOT, SOURCES
 
-# Fair play: the player's own shots, their outcome (the own hit markers), damage and crits, and the HP left after the
-# player's own shot as the target's marker shows it; class and max HP as the player panels show them.
+# Fair play: own shots and their outcome; class and max HP as the player panels show them.
 
 
 def positive_int(value):
@@ -114,8 +113,6 @@ class ShotLog(object):
         del self.entries[:-MAX_ENTRIES]
         return entry
 
-    # The battle event with the damage may come before the hit marker of the same shot: the marker then only names
-    # the outcome of that entry.
     def add_result(self, target_id, outcome, at, vehicle=None):
         if outcome not in OUTCOMES or not is_int(target_id):
             return False
@@ -142,7 +139,6 @@ class ShotLog(object):
         _name_once(entry, hit.vehicle)
         return True
 
-    # Fire and ramming damage is a row of its own: no hit marker belongs to it.
     def _damage_entry(self, hit):
         source = hit.source if hit.source in SOURCES else SOURCE_SHOT
         if source != SOURCE_SHOT:
@@ -190,8 +186,7 @@ class ShotLog(object):
         return [_grouped_row(group) for group in latest_first]
 
 
-# VEHICLE_HEALTH fires for any health change of a visible vehicle; its payload is (newHealth, attackerInfo,
-# attackReasonID) (RU 1.45 feedback_adaptor._setVehicleHealthChanged). Only the player's own hit may set "HP left".
+# RU 1.45 feedback_adaptor._setVehicleHealthChanged: (newHealth, attackerInfo, attackReasonID).
 def own_shot_health(value, own_vehicle_id):
     if not isinstance(value, (list, tuple)) or len(value) < 2 or own_vehicle_id is None:
         return None

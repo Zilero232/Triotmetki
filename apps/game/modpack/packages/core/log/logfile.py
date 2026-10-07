@@ -27,12 +27,6 @@ def rotate(path, keep=FILE_KEEP):
         os.rename(source, target)
 
 
-# The mod's own log that outlives the client's python.log: every line stamped with the local time, one file per session
-# (`open` starts it and shifts the older ones, `keep` in all), a session past `max_bytes` shifted too. The file stays
-# open and buffered: a line reaches the disk at the latest with the first line written `flush_s` after the last flush,
-# at once for an error (`flush()`) and when the client closes; opening and closing it per line stalled the game thread
-# on every HUD notice. Lines written before `open` are held (up to `pending_lines`) and written after the header; a
-# disk error stops the file, never the caller.
 class LogFile(object):
 
     def __init__(self, clock=time.time, keep=FILE_KEEP, max_bytes=FILE_MAX_BYTES, pending_lines=FILE_PENDING_LINES,

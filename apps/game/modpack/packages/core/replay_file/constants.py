@@ -4,12 +4,10 @@ import re
 
 MAGIC = 0x11343212
 MAX_BLOCKS = 16
-# Byte caps of the header blocks by index (the last one covers any later block): the arena block, then the battle
-# results. 169 RU 1.45 replays peak at 47 KB and 163 KB (15 vs 15); 1 and 4 MiB leave room for 30 vs 30 modes.
+# 169 RU 1.45 replays peak at 47 KB and 163 KB per block.
 MAX_HEADER_BLOCK_BYTES = (1024 * 1024, 4 * 1024 * 1024)
 EXTENSIONS = ('.mtreplay', '.wotreplay')
-# The recording in progress (BattleReplay.record, RU 1.45 :339-342): temp.mtreplay, or temp1..temp99 when that one is
-# taken.
+# RU 1.45 BattleReplay.record :339-342: temp.mtreplay, or temp1..temp99 when it is taken.
 RECORDING_NAME = re.compile(r'^temp\d{0,2}\.(mt|wot)replay\Z')
 HEAD_FORMAT = str('<II')
 SIZE_FORMAT = str('<I')
@@ -18,13 +16,10 @@ AVATAR_KEY = 'avatar'
 RESULT_WIN = 'win'
 RESULT_LOSS = 'loss'
 RESULT_DRAW = 'draw'
-# The results' `common.winnerTeam` of a draw.
 DRAW_TEAM = 0
-# personal[<vehicle>].deathReason of a vehicle that lived to the end of the battle.
 ALIVE_DEATH_REASON = -1
 
-# The recorder's own entry of the results block (personal[<vehicle>], RU 1.45 battle results) -> our stat names.
-# Nothing is read from the vehicles, players or avatars blocks (fair play).
+# Fair play: only the recorder's own personal entry; vehicles, players and avatars are never read.
 OWN_STATS = (
     ('damageAssistedRadio', 'assist_radio'),
     ('damageAssistedTrack', 'assist_track'),

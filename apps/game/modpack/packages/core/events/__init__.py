@@ -46,7 +46,7 @@ __all__ = (
 )
 
 
-# A blinker signal whose receivers keep their connection order (2.7's dict does not).
+# Python 2.7's dict keeps no order, so receivers are kept in connection order here.
 class OrderedSignal(NamedSignal):
 
     def __init__(self, name, doc=None):

@@ -58,8 +58,8 @@ const opacityOf = ({ panel, settled }: OpacityOfInput): number => {
 
 const takesInput = (panel: HudPanel): boolean => panel.visible;
 
-export const labelStyle = ({ rect, scale, opacity }: LabelStyleInput): LabelStyle => {
-  const style = { ...rectStyle({ rect }), opacity };
+export const labelStyle = ({ rect, scale, ratio, opacity }: LabelStyleInput): LabelStyle => {
+  const style = { ...rectStyle({ rect, ratio }), opacity };
 
   if (scale === 1) {
     return style;
@@ -69,7 +69,7 @@ export const labelStyle = ({ rect, scale, opacity }: LabelStyleInput): LabelStyl
 };
 
 export const layoutLabels = (input: LayoutLabelsInput): LabelLayout[] => {
-  const { panels, sizes, scales, screen, live, edit, widgets } = input;
+  const { panels, sizes, scales, screen, ratio, live, edit, widgets } = input;
   const items = panels.map((panel) => dockItem({ ...input, panel, scale: scaleOf({ panel, scales }) }));
   const obstacles = obstaclesOf({ panels, items, overrides: input.overrides, screen });
   const stacked = stackDocks({ items, obstacles, screen, ...HUD_OVERLAY.dock });
@@ -91,7 +91,7 @@ export const layoutLabels = (input: LayoutLabelsInput): LabelLayout[] => {
       movable: isEditable && panel.drag,
       pointer: isEditable && Boolean(widgets.get(panel.id)?.pointer),
       drawn,
-      style: labelStyle({ rect, scale, opacity })
+      style: labelStyle({ rect, scale, ratio, opacity })
     };
   };
 

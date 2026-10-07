@@ -5,12 +5,7 @@ import math
 
 from ....core.compat import is_int, is_number
 
-# Fair play: the selected tank's own research tree and its own dossier average XP; the izeberg «vehicle_exp» idea,
-# counted from the client's unlock table instead of the stock parameters panel.
-#
-# `info` is what client/research.py reads: the tank's `xp`, whether it is `elite`, its random-battle `avg_xp`, and the
-# `nodes` of its unlock table still locked, each {id, cost (XP, the blueprint discount applied), vehicle, name, tier,
-# required (the ids it needs first)}.
+# Fair play: the selected tank's own research tree and own dossier average XP.
 
 
 def _locked(info):

@@ -11,12 +11,12 @@ from .constants import SHELL_TOOLTIP_METHOD, TRACK_METHOD
 
 try:
     from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import TargetDistancePlugin
-except Exception:  # the plugin moved: the stock distance rule stays
+except Exception:
     TargetDistancePlugin = None
 
 try:
     from gui.Scaleform.daapi.view.battle.shared.consumables_panel import ConsumablesPanel
-except Exception:  # the panel moved: the stock tooltips stay
+except Exception:
     ConsumablesPanel = None
 
 
@@ -24,7 +24,7 @@ def _speed_factor():
     try:
         from items import vehicles
         return vehicles.g_cache.commonConfig['miscParams']['projectileSpeedFactor']
-    except Exception:  # no vehicle cache (the checks): the speed line is left out
+    except Exception:
         return None
 
 
@@ -33,8 +33,7 @@ def _gun_number(gun_settings, method, int_cd):
     return read(int_cd) if read is not None else None
 
 
-# The overrides (the reticle distance, the shell tooltips) are installed once and read their switch
-# on every call. Fair play: no armour readout under the reticle, Lesta forbids in-battle armour analysis.
+# Fair play: no armour readout under the reticle, Lesta forbids in-battle armour analysis.
 class AimInfo(FeatureComponent):
 
     def __init__(self, app):

@@ -1,4 +1,4 @@
-import type { ParsedIcon } from './client-icon.types';
+import type { IconBox, ParsedIcon } from './client-icon.types';
 
 import { HUD_ICON } from './client-icon.constants';
 
@@ -18,3 +18,6 @@ export const parseIcon = (value: string | null | undefined): ParsedIcon => {
 
   return { image: null, glyph: glyphOf(head) };
 };
+
+export const renditionBox = (image: string | null): IconBox | null =>
+  image === null ? null : (HUD_ICON.renditions.find(({ pattern }) => pattern.test(image))?.box ?? null);

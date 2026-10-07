@@ -23,12 +23,7 @@ PANEL_SPEC = PanelSpec(
 )
 
 
-# The results of an earlier battle that reach the client during the next one (RU 1.45 Avatar.receiveBattleResults fires
-# g_playerEvents.onBattleResultsReceived in battle): they show by themselves, one card at a time for LAST_SHOW_S above
-# the minimap, the others queued; nothing to click. The results of this very battle are left to the hangar
-# notification (no pack shows a summary of the battle being played). The stock battle notifier shows the same results
-# where the battle type, the server and the game option have it: the card shows only where it does not, decided once
-# per battle (docs/research/competitors/2026-10-05-modpacks-deep-dive.md F1).
+# RU 1.45 Avatar.receiveBattleResults fires g_playerEvents.onBattleResultsReceived in battle.
 class LastBattlePanel(BattlePanel):
 
     def __init__(self, app):

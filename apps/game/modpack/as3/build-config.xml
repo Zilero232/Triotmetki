@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<royale-config>
+  <target-player>17.0</target-player>
+  <swf-version>17</swf-version>
+  <compiler>
+    <targets>
+      <target>SWF</target>
+    </targets>
+    <external-library-path append="false">
+      <path-element>.cache/playerglobal.swc</path-element>
+    </external-library-path>
+    <library-path append="false"/>
+    <source-path append="false">
+      <path-element>src</path-element>
+    </source-path>
+    <as3>true</as3>
+    <es>false</es>
+    <strict>true</strict>
+    <optimize>true</optimize>
+    <debug>false</debug>
+    <verbose-stacktraces>false</verbose-stacktraces>
+    <!-- The battle page functions the library adds read the page they are called on through this. -->
+    <warn-this-within-closure>false</warn-this-within-closure>
+    <!-- Scaleform reads plain and zlib SWFs; for this swf-version the compiler would write LZMA (ZWS). Battle Observer ships its library uncompressed too. -->
+    <compress>false</compress>
+    <theme/>
+  </compiler>
+  <metadata>
+    <date>2026</date>
+  </metadata>
+  <use-network>false</use-network>
+  <default-frame-rate>30</default-frame-rate>
+  <default-background-color>0x000000</default-background-color>
+</royale-config>

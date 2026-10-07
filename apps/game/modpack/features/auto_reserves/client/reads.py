@@ -4,10 +4,7 @@ from ....core.client.game import client_attr, service
 from ....core.log import guarded
 from .constants import RESOURCE_KINDS
 
-# RU 1.45 client source: IGoodiesCache.getBoosters(criteria) (gui/goodies/goodies_cache.py) with
-# REQ_CRITERIA.BOOSTER.BOOSTER_CATEGORIES([BoosterCategory.PERSONAL]) (clan and event reserves left out); a Booster
-# (gui/goodies/goodie_items.py) has boosterID, boosterType (GOODIE_RESOURCE_TYPE), effectValue, expiryTime (0: none),
-# inCooldown (it is on) and isReadyToUse (in stock, off, a free slot of its category, no reserve of its type on).
+# RU 1.45 client source: IGoodiesCache.getBoosters(criteria), gui/goodies/goodies_cache.py.
 
 
 def _kinds():

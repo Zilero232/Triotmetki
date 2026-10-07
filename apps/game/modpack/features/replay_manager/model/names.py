@@ -22,6 +22,5 @@ def rename_target(old_name, title):
     return stem + extension
 
 
-# Windows names are case-insensitive: the target of a rename that only changes the case "exists" as the file itself.
 def is_taken(source, target, exists=os.path.exists, normcase=os.path.normcase):
     return exists(target) and normcase(target) != normcase(source)

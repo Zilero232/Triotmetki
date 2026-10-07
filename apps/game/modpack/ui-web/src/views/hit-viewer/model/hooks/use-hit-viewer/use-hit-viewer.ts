@@ -4,10 +4,8 @@ import { gameface } from '@/shared/api/gameface';
 import { onDistinct } from '@/shared/lib/on-distinct';
 
 import type { CameraMove } from '../../../lib/camera-move';
-import type { HitStep } from '../../../lib/hit-step';
 import type { ViewerSide, ViewerState } from '../../../lib/viewer-protocol';
 
-import { hitStep } from '../../../lib/hit-step';
 import { footerOf, parseViewerState, sendViewer, sideLabelsOf } from '../../../lib/viewer-protocol';
 
 export const useHitViewer = () => {
@@ -34,14 +32,6 @@ export const useHitViewer = () => {
   const pickHit = (index: number) => sendViewer({ command: 'select', index });
   const pickTab = (tab: ViewerSide) => sendViewer({ command: 'tab', tab });
 
-  const stepHit = (step: HitStep) => {
-    const next = state ? hitStep({ indexes: state.rows.map((row) => row.index), selected: state.selected, step }) : null;
-
-    if (next !== null) {
-      pickHit(next);
-    }
-  };
-
   const switchTab = () => {
     const other = state?.tabs.find((tab) => tab.id !== state.tab && tab.count > 0);
 
@@ -60,7 +50,6 @@ export const useHitViewer = () => {
     pickBattle: (id: string) => sendViewer({ command: 'battle', id }),
     pickTab,
     pickHit,
-    stepHit,
     switchTab
   };
 };

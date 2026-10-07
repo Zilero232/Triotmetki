@@ -16,6 +16,7 @@ export const Glyph = ({ name, size, tone, className }: GlyphProps) => {
     <span className={clsx(s.glyph, className)} style={remSquare(size)}>
       <svg
         aria-hidden='true'
+        className={s.svg}
         height='100%'
         viewBox={`0 0 ${HUD_GLYPHS.viewBox} ${HUD_GLYPHS.viewBox}`}
         width='100%'

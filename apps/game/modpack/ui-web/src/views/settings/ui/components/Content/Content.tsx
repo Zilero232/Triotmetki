@@ -2,7 +2,7 @@ import { SECTION } from '@/entities/window/window-state';
 import { Profiles } from '@/features/profile/manage-profiles';
 import { AccountCard } from '@/widgets/account/account-card';
 import { ComponentCard, ComponentEditor } from '@/widgets/component/component-card';
-import { SearchPage, SectionCards, SectionPage } from '@/widgets/component/component-list';
+import { SearchPage, SectionPage } from '@/widgets/component/component-list';
 import { HudEditor } from '@/widgets/hud/hud-editor';
 
 import type { ContentProps } from './Content.types';
@@ -29,9 +29,8 @@ export const Content = ({ state, section, searching, editing, columns, compact, 
 
   if (section === SECTION.hud) {
     return (
-      <ToolPage key={section} section={section}>
+      <ToolPage key={section} section={section} strip={SECTION.hud}>
         <HudEditor panels={state.hud.panels} />
-        <SectionCards card={ComponentCard} columns={columns} section={section} />
       </ToolPage>
     );
   }

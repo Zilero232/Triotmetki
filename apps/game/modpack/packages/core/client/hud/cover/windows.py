@@ -23,7 +23,7 @@ def _hidden(window):
     is_hidden = getattr(window, 'isHidden', None)
     try:
         return bool(is_hidden()) if is_hidden is not None else False
-    except Exception:  # a window without its C++ proxy any more
+    except Exception:
         return False
 
 

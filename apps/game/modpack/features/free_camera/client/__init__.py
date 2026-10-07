@@ -51,8 +51,6 @@ class FreeCamera(FeatureComponent):
         if self.flight.active and not self.enabled():
             self.stop()
 
-    # The client's key and mouse handlers are taken only while a flight is on: every event of the session would run
-    # through them otherwise. Another mod that wrapped them after us keeps them wrapped (ours only passes through).
     def _hook_input(self):
         game = _game_module()
         if self.input_hooked or game is None:
@@ -169,8 +167,6 @@ class FreeCamera(FeatureComponent):
         key_name = HOTKEYS.get(self.hotkey_choice, (None, ()))[0]
         return key_name is not None and event.key == getattr(Keys, key_name, None)
 
-    # While the hangar camera flies it gets every key but the toggle key (which reaches the hotkey through the client)
-    # and Esc; in a replay the video mode reads its keys itself, only Esc is taken to land.
     def _handle_key(self, original, event, *args, **kwargs):
         place = self.flight.place
         if place is None:

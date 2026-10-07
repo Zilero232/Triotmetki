@@ -4,6 +4,7 @@ import { TabularText, toneClass } from '@/ui-kit';
 
 import type { TeamSideProps } from './TeamSide.types';
 
+import { TEAM_HP } from '../../../config';
 import { TeamBar } from '../TeamBar';
 import { TeamStrip } from '../TeamStrip';
 
@@ -11,7 +12,12 @@ import s from './TeamSide.module.scss';
 
 export const TeamSide = ({ view, side, mirrored = false }: TeamSideProps) => {
   const hp = view.numbers && (
-    <TabularText className={clsx(s.hp, mirrored && s.hpMirrored, toneClass(side.hpTone))} style={side.hpStyle} text={side.hp} />
+    <TabularText
+      className={clsx(s.hp, mirrored && s.hpMirrored, toneClass(side.hpTone))}
+      digitWidth={TEAM_HP.digitWidth.hp}
+      style={side.hpStyle}
+      text={side.hp}
+    />
   );
 
   return (

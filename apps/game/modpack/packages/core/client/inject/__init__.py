@@ -100,7 +100,7 @@ class InjectHost(object):
             if parent.isFlashComponentRegistered(self.alias):
                 parent.unregisterFlashComponent(self.alias)
             parent.flashObject.removeChild(component)
-        except Exception:  # a parent being destroyed may have no display list left; the page is gone either way
+        except Exception:
             log_exception('inject %s: removing the GFInjectComponent' % self.alias)
         self._gone()
 

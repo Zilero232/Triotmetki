@@ -19,8 +19,6 @@ from .reads import depot_items, reserve_crew, tankmen_by_id
 from .sell import sell
 
 
-# The depot sale: the window page lists what the settings put on sale, «Продать» asks with the items and the credits
-# and sends the depot's own request only when the stock is still what the player confirmed.
 class DepotSeller(FeatureComponent):
 
     def __init__(self, app):

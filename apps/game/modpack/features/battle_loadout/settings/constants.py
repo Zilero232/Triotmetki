@@ -4,10 +4,7 @@ SWITCH = 'battle_loadout'
 PANEL_ID = 'battle_loadout'
 GROUP = 'battle'
 
-# Centred right above the stock consumables panel, which the client centres on the screen (RU 1.45 gui_battle
-# ConsumablesPanel.updatePosition: x = (stage width - panel width) / 2; core/hud/panel ATTACHED bar_above), as kurzdor's
-# battleequipment sits: 6 px over the slot number labels the stock panel draws above its slots. Pinned there, the row
-# belongs to the stock panel. This place is the one used until the page measures the stock panel.
+# RU 1.45 gui_battle ConsumablesPanel.updatePosition centres the stock panel on the screen.
 DEFAULTS = {
     'x': 0,
     'y': -70,
@@ -15,13 +12,11 @@ DEFAULTS = {
     'align_y': 'bottom',
     'pinned': True,
 }
-# Retired options and the values the code keeps reading: the cells always take the stock slot size.
 FIXED = {
     'stock_size': True,
     'icon_size': 40,
 }
 ADVANCED = ('pinned',)
-# The default places of older versions (x, y, align_x, align_y): a panel still at one moves to today's default.
 RETIRED_PLACES = (
     (-200, -66, 'center', 'bottom'),
     (-480, -14, 'center', 'bottom'),

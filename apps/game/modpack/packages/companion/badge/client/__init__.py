@@ -34,7 +34,6 @@ class BadgePreference(object):
     def _load(self, stored):
         self.sync.reset(restore_synced(stored))
 
-    # A new device (rebind) has no stored switch on the site yet.
     def _on_rebind(self):
         self.sync.reset()
         self.report(time.time())

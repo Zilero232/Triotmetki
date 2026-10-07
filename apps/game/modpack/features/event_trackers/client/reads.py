@@ -7,16 +7,7 @@ from ....core.compat import call, to_text
 from ....core.log import guarded
 from ..model.constants import CARAVAN_ENTITLEMENT, CLEAN_XP_OBJECTIVE
 
-# RU 1.45 client source:
-# - gui/event_boards (IEventBoardController, skeletons/gui/event_boards_controllers.py): the competitions the missions
-#   page lists, loaded at login (gui/shared/personality.py: getEvents(onlySettings=True)); an EventSettings gives
-#   getName, getObjectiveParameter ('originalXP' for a clean-XP one), getCardinality (the best battles counted),
-#   isStarted, isFinished, getStartDateTs, getEndDateTs and getLimits().getVehiclesLevels(). UNVERIFIED on Lesta 1.45:
-#   that Triathlon is listed there (its entry point is a hangar flag, as the event boards' HangarFlagData).
-# - gui/game_control/shop_sales_event_controller.py (IShopSalesEventController): the Trading Caravan's hangar entry
-#   point, isShopSalesEntryPointAvailable() while the event runs, activePhaseFinishTime / eventFinishTime; the token
-#   count is the account entitlement the caravan page reads (web/web_client_api/trading_caravan:
-#   itemsCache.items.stats.entitlements).
+# RU 1.45 client source: gui/event_boards IEventBoardController, getEvents(onlySettings=True).
 
 
 def _min_tier(event):

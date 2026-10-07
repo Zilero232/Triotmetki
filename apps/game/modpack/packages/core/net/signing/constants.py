@@ -11,7 +11,6 @@ SERVER_TIME_HEADER = 'X-Otmetki-Server-Time'
 STALE_REQUEST_STATUS = 428
 JSON_CONTENT_TYPE = 'application/json'
 
-# The optional keywords of `signed_headers` with their defaults.
 HEADER_OPTIONS = {
     'now': None,
     'nonce': None,

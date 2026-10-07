@@ -116,7 +116,11 @@ describe(placeRect, () => {
 });
 
 describe(rectStyle, () => {
-  it('rounds a rect to whole rem', () => {
-    expect(rectStyle({ rect: { left: 1.4, top: 2.6, width: 3, height: 4 } })).toEqual({ left: '1rem', top: '3rem' });
+  it('rounds a rect to whole rem at an interface scale of 1', () => {
+    expect(rectStyle({ rect: { left: 1.4, top: 2.6, width: 3, height: 4 }, ratio: 1 })).toEqual({ left: '1rem', top: '3rem' });
+  });
+
+  it('snaps a rect to whole device pixels at a fractional interface scale', () => {
+    expect(rectStyle({ rect: { left: 101, top: 4, width: 3, height: 4 }, ratio: 1.25 })).toEqual({ left: '100.8rem', top: '4rem' });
   });
 });

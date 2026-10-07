@@ -28,7 +28,6 @@ def available_paths():
     return list(configs.keys()) if isinstance(configs, dict) else []
 
 
-# Before the lobby read the hangar configs the client's table is still an empty HangarConfig: no default yet.
 def default_path():
     read = client_attr(*DEFAULT_HANGAR_PATH)
     try:

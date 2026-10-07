@@ -14,12 +14,7 @@ from .constants import (
 )
 from ..model.constants import STATE_IN_PROGRESS
 
-# RU 1.45 client source: IEventsCache.getPersonalMissions().getAllQuests() -> {id: PersonalMission}
-# (gui/server_events/event_items.py) with getUserName(), getUserDescription() (a #personal_missions_details key, the
-# mission's flavour text), isInProgress(), isCompleted(), isMainCompleted(), isFullCompleted(). The main and 'with
-# honours' conditions are the lines the missions map tooltip shows:
-# gui/server_events/personal_progress/formatters.PMTooltipConditionsFormatters().format(quest, isMain)
-# -> [(icon, title, isInOrGroup)].
+# RU 1.45 client source: IEventsCache.getPersonalMissions().getAllQuests() (event_items.py).
 
 
 def _state(quest):
@@ -58,7 +53,6 @@ def _mission(quest_id, quest, state, formatter):
         'extra': None,
         'state': state,
     }
-    # The conditions are built per mission from its config, so only for the missions the labels show.
     if state == STATE_IN_PROGRESS:
         main = _conditions(formatter, quest, True)
         mission['main'] = main or _text(call(quest, 'getUserDescription', None))

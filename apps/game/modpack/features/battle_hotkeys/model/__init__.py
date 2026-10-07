@@ -3,8 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.format import COLOR_DOWN, COLOR_NEUTRAL, COLOR_UP, font
 from .constants import TOGGLES
 
-# Fair play: only the game's own options, switched by the player's own key press; the notice says what the option is
-# now. Nothing is read about the battle.
+# Fair play: only the game's own options, switched by the player's own key press.
 
 
 def toggled(value):

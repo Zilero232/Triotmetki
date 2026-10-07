@@ -22,6 +22,7 @@ import {
   MapIcon,
   Medal,
   MessageSquareOff,
+  MessageSquareText,
   MoveHorizontal,
   PackageMinus,
   RefreshCw,
@@ -60,7 +61,8 @@ export const MOD_SHOWCASE = [
       { id: 'camera', icon: ZoomIn, context: 'battle', isDefault: true },
       { id: 'minimap', icon: MapIcon, context: 'battle', isDefault: true },
       { id: 'hud_layouts', icon: LayoutDashboard, context: 'battle', isDefault: true },
-      { id: 'chat_filter', icon: MessageSquareOff, context: 'battle', isDefault: false }
+      { id: 'chat_filter', icon: MessageSquareOff, context: 'battle', isDefault: false },
+      { id: 'auto_messages', icon: MessageSquareText, context: 'battle', isDefault: true }
     ]
   },
   {

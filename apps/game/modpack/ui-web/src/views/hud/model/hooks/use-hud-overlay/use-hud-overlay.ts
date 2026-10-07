@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 
 import type { DragTarget } from '@/entities/hud/panel-layout';
 
+import { screenScale } from '@/entities/hud/panel-layout';
 import { usePanelDrag, useWheelResize } from '@/features/hud/edit-panels';
 import { remBox } from '@/shared/lib/css-unit';
 
@@ -20,6 +21,7 @@ import { usePanelSizes } from '../use-panel-sizes';
 export const useHudOverlay = () => {
   const { state, overrides, scales, onMoved, onScaled } = useHudState();
   const screen = useHudScreen();
+  const ratio = screenScale();
   const edit = Boolean(state?.edit);
   const targetsRef = useRef<DragTarget[]>([]);
   const [report] = useState(createMouseReport);
@@ -31,8 +33,8 @@ export const useHudOverlay = () => {
   const { panels, lines, widgets } = usePanelContent(state);
   const { sizes, measureRef } = usePanelSizes({ panels, lines, widgets });
   const layouts = useMemo(
-    () => layoutLabels({ panels, sizes, scales, overrides, screen, live, edit, widgets }),
-    [panels, sizes, scales, overrides, screen, live, edit, widgets]
+    () => layoutLabels({ panels, sizes, scales, overrides, screen, ratio, live, edit, widgets }),
+    [panels, sizes, scales, overrides, screen, ratio, live, edit, widgets]
   );
 
   const labels = useLabelModels({ layouts, lines, widgets, liveId: live?.id ?? null, measureRef });
@@ -45,7 +47,7 @@ export const useHudOverlay = () => {
 
   useInputArea({ edit, hover: Boolean(state?.hover), dragging: live !== null, screen, targets: targetsRef.current, hovered, report });
 
-  const hint = panelHint(live === null ? layouts.find(({ id, panel }) => id === hovered && panel.visible) : undefined);
+  const hint = panelHint(edit && live === null ? layouts.find(({ id, panel }) => id === hovered && panel.visible) : undefined);
 
   return {
     labels,

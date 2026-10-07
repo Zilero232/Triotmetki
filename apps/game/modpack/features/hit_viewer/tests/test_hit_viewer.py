@@ -30,7 +30,9 @@ from otmetki.features.hit_viewer.model import (
     vehicle_vector,
     settings_page,
     viewer_state,
+    zone_of,
 )
+from otmetki.features.hit_viewer.model.profile import armor_profile
 from otmetki.features.hit_viewer.model.geometry import impact_point
 from otmetki.features.hit_viewer.settings import SCHEMA, SETTINGS
 
@@ -46,6 +48,21 @@ UNIT_BOX = ((-1.0, -1.0, -1.0), (1.0, 1.0, 1.0))
 OWN = {'cd': 1, 'chassis': 11, 'turret': 12, 'gun': 13, 'name': u'ИС-7', 'class': 'heavy'}
 ENEMY = {'cd': 2, 'chassis': 21, 'turret': None, 'gun': None, 'name': u'Maus', 'class': 'heavy'}
 ATTACKER = 7
+
+
+def segment(code, part, start, end):
+    packed = code | (part << 8)
+    for shift, value in zip((16, 24, 32, 40, 48, 56), tuple(start) + tuple(end)):
+        packed |= int(value) << shift
+    return packed
+
+
+def hull_at(height, depth, code=4):
+    return segment(code, 1, (120, height, depth), (130, height, depth + 1))
+
+
+def turret_at(depth, code=4):
+    return segment(code, 2, (120, 120, depth), (130, 120, depth + 1))
 
 
 def translator():
@@ -471,6 +488,110 @@ class PageTest(unittest.TestCase):
         page = settings_page(book.battles, translator())
 
         assert page['rows'][0]['actions'][0]['id'] == 'open'
+
+
+class ZoneTest(unittest.TestCase):
+
+    def test_a_high_front_hull_point_is_the_upper_plate(self):
+        assert zone_of([hull_at(200, 240)]) == 'hull_upper'
+
+    def test_a_low_front_hull_point_is_the_lower_plate(self):
+        assert zone_of([hull_at(40, 240)]) == 'hull_lower'
+
+    def test_a_middle_hull_point_is_the_side(self):
+        assert zone_of([hull_at(120, 120)]) == 'hull_side'
+
+    def test_a_back_hull_point_is_the_rear(self):
+        assert zone_of([hull_at(120, 10)]) == 'hull_rear'
+
+    def test_turret_points_split_into_front_side_and_rear(self):
+        assert [zone_of([turret_at(depth)]) for depth in (220, 110, 20)] == [
+            'turret_front', 'turret_side', 'turret_rear']
+
+    def test_the_gun_and_the_wheels_keep_their_part(self):
+        assert (zone_of([segment(4, 3, (0, 0, 0), (9, 9, 9))]), zone_of([WHEEL_PEN])) == ('gun', 'chassis')
+
+    def test_a_shot_without_a_drawn_point_has_no_zone(self):
+        assert zone_of([NO_LENGTH]) is None
+
+
+def profile_book(outcomes, segments=None):
+    book = HitBook(None, 20)
+    for number, outcome_codes in enumerate(outcomes):
+        book.start(number + 1, 1000.0 + number, u'Химмельсдорф', u'ИС-7')
+        book.target(OWN_TARGET, OWN)
+        book.target(u'9', ENEMY)
+        for code in outcome_codes:
+            book.hit(received((segments or hull_at(200, 240, code),)), 1.0)
+        book.hit(dealt(), 2.0)
+        book.finish()
+    return book
+
+
+class ProfileTest(unittest.TestCase):
+
+    def test_the_profile_counts_the_hits_on_the_own_tank_of_every_battle(self):
+        found = armor_profile(profile_book([(4, 3), (4,)]).battles, OWN['cd'])
+
+        assert (found['battles'], found['hits'], found['held']) == (2, 3, 1)
+
+    def test_the_hits_dealt_never_reach_the_profile(self):
+        found = armor_profile(profile_book([(4,)]).battles, OWN['cd'])
+
+        assert [zone['id'] for zone in found['zones']] == ['hull_upper']
+
+    def test_another_tank_has_its_own_profile(self):
+        assert armor_profile(profile_book([(4, 4)]).battles, 99)['hits'] == 0
+
+    def test_the_most_penetrated_zone_is_the_weak_one(self):
+        found = armor_profile(profile_book([(4, 4, 4), (3, 3)]).battles, OWN['cd'])
+
+        assert found['weak'] == 'hull_upper'
+
+    def test_too_few_hits_name_no_weak_zone(self):
+        assert armor_profile(profile_book([(4, 4)]).battles, OWN['cd'])['weak'] is None
+
+    def test_a_zone_the_armour_always_held_is_never_weak(self):
+        assert armor_profile(profile_book([(3, 3, 2, 2, 3)]).battles, OWN['cd'])['weak'] is None
+
+    def test_the_page_shows_the_weak_zone_with_its_advice(self):
+        book = profile_book([(4, 4, 4), (3, 3)])
+        battle = book.battles[-1]
+
+        state = viewer_state(book.battles, {'battle': battle['id']}, translator(),
+                             profile=armor_profile(book.battles, OWN['cd']))
+
+        assert state['profile']['advice'].startswith(u'Чаще всего пробивают ВЛД')
+
+    def test_the_page_counts_battles_and_hits_in_words(self):
+        book = profile_book([(4, 4, 4), (3, 3)])
+
+        state = viewer_state(book.battles, {}, translator(), profile=armor_profile(book.battles, OWN['cd']))
+
+        assert state['profile']['meta'] == u'2 боя · 5 попаданий · броня держит 40%'
+
+    def test_no_hits_on_the_tank_show_no_profile(self):
+        _, book = finished_battle()
+
+        assert viewer_state(book.battles, {}, translator(), profile=armor_profile(book.battles, 99))['profile'] is None
+
+
+class SummaryTest(unittest.TestCase):
+
+    def state(self, tab):
+        book = profile_book([(4, 3, 2)])
+        return viewer_state(book.battles, {'tab': tab}, translator())
+
+    def test_the_own_tab_shows_the_share_the_armour_held(self):
+        found = self.state(SIDE_RECEIVED)['summary']
+
+        assert (found['share'], found['share_label']) == (67, u'Броня держит')
+
+    def test_the_enemy_tab_shows_the_share_that_penetrated(self):
+        assert self.state(SIDE_DEALT)['summary']['share'] == 0
+
+    def test_a_row_names_its_zone(self):
+        assert self.state(SIDE_RECEIVED)['rows'][0]['zone'] == u'ВЛД'
 
 
 class ResultTest(unittest.TestCase):

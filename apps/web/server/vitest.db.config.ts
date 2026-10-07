@@ -3,10 +3,6 @@ import { defineConfig } from 'vitest/config';
 
 import { SERVER_TEST_DECORATORS, SERVER_TEST_ENV } from './vitest.config';
 
-// Query tests against a real TimescaleDB: `bun run test:db` from the repo root.
-// vitest.db.global-setup.ts creates a throwaway database from the Prisma schema and
-// the Timescale layer and drops it afterwards. Files run one at a time because
-// they share that database and truncate tables between tests.
 export default defineConfig({
   root: fileURLToPath(new URL('.', import.meta.url)),
   oxc: SERVER_TEST_DECORATORS,

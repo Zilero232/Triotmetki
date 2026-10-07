@@ -1,0 +1,1 @@
+export { ArmorProfile } from './ArmorProfile';

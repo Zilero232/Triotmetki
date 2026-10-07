@@ -2,8 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from .constants import COLORS, MODE_ALWAYS, MODE_HOTKEY, RADIUS_M
 
-# Fair play: a circle of a fixed radius around the player's own tank, drawn on the ground like the game's own area
-# markers. It is placed from the own vehicle only and says nothing about other vehicles; nothing is changed in the game.
+# Fair play: a fixed circle around the own tank only; nothing about other vehicles.
 
 
 def color_of(name):

@@ -1,5 +1,3 @@
-// Draws SVG to PNG with resvg for the Python 2.7 tooling (tools/build/rasterize.py), which has no resvg of its own.
-// Usage: node tools/build/rasterize.mjs <jobs.json>; each job is {svg, width, out, fontDirs?, fontFamily?, resourcesDir?}.
 import { Resvg } from '@resvg/resvg-js';
 import { readFileSync, writeFileSync } from 'node:fs';
 

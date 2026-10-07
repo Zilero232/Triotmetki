@@ -51,7 +51,6 @@ def by_id(items):
     return {entry['id']: entry for entry in items}
 
 
-# The page's side (ui-web applyFeed), for the round trip: a snapshot replaces, a delta on the held base patches.
 def apply(held, message):
     if message['base'] is None:
         return {'rev': message['rev'], 'page': message['page'], 'items': list(message['items'])}

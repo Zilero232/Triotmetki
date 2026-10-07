@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-# The built-in lines (auto_messages_default_<trigger>): variants separated by «|», one picked at random. Only the text
-# smileys the battle chat turns into its own pictures (RU 1.45 gui_battle BattleSmileyMap: :) :( :O >:O ;) :P), never
-# Unicode emoji, which its font does not draw.
+# RU 1.45 gui_battle BattleSmileyMap: only its text smileys, the chat font draws no Unicode emoji.
 TEXT_HINT_RU = u'Варианты через «|», выбирается случайный. Пусто — встроенные фразы.'
 TEXT_HINT_EN = u'Variants separated by «|», one is picked at random. Empty: the built-in lines.'
 

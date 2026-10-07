@@ -24,7 +24,6 @@ def _create_context(ssl_module):
     return context
 
 
-# The bundled roots only add to the system store: a context that cannot take them still verifies against Windows'.
 def _add_roots(context):
     try:
         context.load_verify_locations(cadata=TRUSTED_ROOTS)

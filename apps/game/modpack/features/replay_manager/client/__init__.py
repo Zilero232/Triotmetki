@@ -226,8 +226,6 @@ class ReplayManager(FeatureComponent):
     def ui_page(self):
         return {'kind': PAGE_KIND} if self.enabled_in_hangar() else None
 
-    # The replays page, sent apart from the settings state while the window shows it (`ui` feeds): the folder is
-    # listed again on the player's own request only, a poll reads what the background indexing added.
     def ui_feed(self, poll=False):
         if not self.enabled_in_hangar():
             return None

@@ -69,7 +69,6 @@ class PreviewCapture(object):
         log('preview capture: saved %s' % (getattr(event, 'ctx', None) or {}).get('path'))
 
 
-# A developer tool: only a dev install (companion.config.is_dev_install) gets the hotkeys, never a release.
 def start_capture(app, dev):
     if not dev:
         return None

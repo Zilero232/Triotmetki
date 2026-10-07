@@ -6,8 +6,6 @@ from .constants import FORMS, PLURAL_SEPARATOR
 from .number import format_number
 
 
-# The form of `count` among `forms`: three forms follow the Russian rule (1 бой, 2 боя, 5 боёв, 21 бой, 11 боёв), two
-# the English one (1 battle, 2 battles).
 def plural_index(count, forms):
     number = abs(int(count)) if is_number(count) else 0
     if forms == 2:

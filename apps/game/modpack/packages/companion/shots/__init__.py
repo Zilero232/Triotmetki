@@ -5,8 +5,7 @@ from ...core.shells import shell_code
 from .constants import KIND_BY_CODE, MAX_DAMAGE, MAX_DISTANCE_M, MAX_SHOTS, OUTCOMES, SHELL_KINDS, UNKNOWN_SHELL
 
 
-# A client shell type arrives as the battle feedback's BATTLE_LOG_SHELL_TYPES member (RU 1.45), its name or
-# index, or a vehicle descriptor's shell kind string; anything else is 'unknown'.
+# RU 1.45 battle feedback BATTLE_LOG_SHELL_TYPES member, its name or index, or a descriptor kind string.
 def normalize_shell(raw):
     return KIND_BY_CODE.get(shell_code(raw), UNKNOWN_SHELL)
 

@@ -85,9 +85,7 @@ def selected_tank_id():
     return getattr(selected_vehicle(), 'intCD', None)
 
 
-# RU 1.45 client source: gui/shared/personality.py onAccountBecomeNonPlayer calls g_currentVehicle.destroy(), whose
-# event manager clear() drops every onChanged subscriber, so after a battle nothing would hear the selection change.
-# One dispatcher holds the callbacks and is subscribed again on each onAccountShowGUI.
+# RU 1.45 gui/shared/personality.py onAccountBecomeNonPlayer drops every g_currentVehicle subscriber.
 _vehicle_changed = {'callbacks': [], 'vehicle': None, 'handler': None, 'player_events': None}
 
 
@@ -129,9 +127,7 @@ def player_tank_id(player):
     return getattr(vehicle_type, 'compactDescr', None)
 
 
-# `tank_id` as the int items.vehicles.getVehicleType decodes, or None. RU 1.45 source: only an int or a long is read as
-# a type id (isVehicleTypeCompactDescr); any other value is parsed as a packed vehicle descriptor, so a digit string
-# would name another vehicle.
+# RU 1.45 items.vehicles.getVehicleType reads only an int or a long as a type id.
 def type_compact_descr(tank_id):
     if is_int(tank_id):
         value = tank_id

@@ -19,6 +19,7 @@ export const DeltaText = ({ text, direction, tone, className }: DeltaTextProps) 
         <span className={s.triangle}>
           <svg
             aria-hidden='true'
+            className={s.svg}
             height='100%'
             viewBox={`0 0 ${String(HUD_FIGURE.triangleBox)} ${String(HUD_FIGURE.triangleBox)}`}
             width='100%'

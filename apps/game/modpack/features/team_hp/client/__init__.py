@@ -17,9 +17,6 @@ from ..settings import PANEL_ID
 PANEL_SPEC = PanelSpec.of(settings, STRINGS, preview, PREVIEW_SIZE)
 
 
-# Replaces the stock score strip (fragCorrelationBar) while the Gameface page draws it, except in an overlay style.
-# Pinned by default: it stays in the stock strip's place (or right of it) and takes no drag. The strip follows the
-# game's own score strip options (vehicle icons, tier grouping), read through the settings core.
 class TeamHpPanel(BattlePanel):
 
     def __init__(self, app):

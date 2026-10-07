@@ -17,7 +17,7 @@ export const TeamStrip = ({ items, mirrored = false }: TeamStripProps) => (
         </span>
       ) : (
         <span key={item.key} className={clsx(s.vehicle, !item.alive && s.dead)}>
-          <ClientIcon icon={item.icon} size={TEAM_HP.iconSize} />
+          <ClientIcon native icon={item.icon} size={TEAM_HP.iconSize} />
         </span>
       )
     )}

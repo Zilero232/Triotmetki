@@ -14,8 +14,7 @@ from ..settings import PANEL_ID, SCHEMA, SWITCH
 from .constants import MATH_MODULE, PROJECTION_FUNCTION, PROJECTION_MODULE
 
 
-# RU 1.45 client source: VehicleDescriptor.gun.turretYawLimits, (min, max) in radians or None
-# (gui/battle_control/vehicle_getter).
+# RU 1.45 client source: VehicleDescriptor.gun.turretYawLimits, (min, max) in radians or None.
 def yaw_limits(battle_player):
     descriptor = getattr(battle_player, 'vehicleTypeDescriptor', None)
     gun = getattr(descriptor, 'gun', None)
@@ -26,9 +25,7 @@ def _vector(value):
     return value.x, value.y, value.z
 
 
-# RU 1.45 client source: Avatar.getOwnVehicleStabilisedMatrix (the hull without its sway, the matrix the gun rotator
-# aims from) and VehicleGunRotator.markerInfo, (the gun marker's world point, direction, size). None while either is
-# missing (the battle is still loading).
+# RU 1.45 client source: Avatar.getOwnVehicleStabilisedMatrix and VehicleGunRotator.markerInfo.
 def own_aim(math):
     avatar = player()
     hull = call(avatar, 'getOwnVehicleStabilisedMatrix')
@@ -44,7 +41,6 @@ def project(math, matrix, point):
     return clip.x, clip.y, clip.z, clip.w
 
 
-# The client pieces a tick reads, looked up once they are there (the battle may still be loading at the start).
 class ClientMath(object):
 
     def __init__(self):
@@ -109,8 +105,6 @@ class GunArcPanel(BattlePanel):
         self.render()
         return True
 
-    # A tick whose markers and reticle stand where the last one drew them (the tank, the gun and the camera still)
-    # sends nothing; markers that left the canvas keep the panel with no marks rather than taking it off and on.
     @safe
     def render(self):
         ctrl = crosshair()

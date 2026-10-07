@@ -79,8 +79,7 @@ class BushCircle(FeatureComponent):
         if self.state.killed():
             self.apply()
 
-    # The controlled vehicle switches on a respawn (the player's own new tank) and after death to the ally the camera
-    # follows (RU 1.45 vehicle_state_ctrl._setup): only the own one gets the circle.
+    # RU 1.45 vehicle_state_ctrl._setup: the controlled vehicle changes on respawn and after death.
     def _on_vehicle_controlling(self, vehicle):
         if self.state is None or not getattr(vehicle, 'isPlayerVehicle', False):
             return
@@ -114,7 +113,7 @@ class BushCircle(FeatureComponent):
         if generation == self.generation:
             self.apply(attempt)
 
-    # The model is taken off the avatar it was added to: on battle_leave BigWorld.player() may already be the account.
+    # On battle_leave BigWorld.player() may already be the account.
     def _create(self, entity):
         import Math
         try:

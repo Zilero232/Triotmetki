@@ -77,7 +77,6 @@ class SecretPair(object):
         self.private = private
 
 
-# A `JsonFile` stand-in kept in two folders; a failure of the durable side never fails a save of the game-folder copy.
 class MirroredFile(object):
 
     def __init__(self, primary_dir, mirror_dir, name, pretty=False, clock=time.time):

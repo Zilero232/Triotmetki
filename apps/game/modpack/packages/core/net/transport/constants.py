@@ -5,20 +5,14 @@ DEFAULT_TIMEOUT_S = 15.0
 HTTP_WORKER = 'otmetki-http'
 DEFAULT_WORKER = 'otmetki-worker'
 
-# The API answers small JSON bodies; a larger answer is cut off and reported as a network error, so a hostile or broken
-# server cannot fill the game's memory.
 DEFAULT_MAX_RESPONSE_BYTES = 8 * 1024 * 1024
 READ_BLOCK_BYTES = 64 * 1024
 
 SECURE_SCHEME = 'https'
 PLAIN_SCHEME = 'http'
-# Plain http only reaches the developer's own machine (the dev server_url); everything else needs verified TLS.
 LOOPBACK_HOSTS = ('localhost', '127.0.0.1')
 
-# The roots the API's certificate chains up to: Caddy takes its certificates from Let's Encrypt (ISRG Root X1 for RSA,
-# X2 for ECDSA chains). Python 2.7's load_default_certs() sees only the roots already in the Windows ROOT/CA stores
-# (Windows adds the rest on demand, which Python never triggers), so they are loaded next to the system store. Public
-# certificates from https://letsencrypt.org/certs/; tests/test_transport.py pins their SHA-256 fingerprints.
+# Python 2.7's load_default_certs() sees only roots already in the Windows stores.
 ISRG_ROOT_X1 = '''-----BEGIN CERTIFICATE-----
 MIIFazCCA1OgAwIBAgIRAIIQz7DSQONZRGPgu2OCiwAwDQYJKoZIhvcNAQELBQAw
 TzELMAkGA1UEBhMCVVMxKTAnBgNVBAoTIEludGVybmV0IFNlY3VyaXR5IFJlc2Vh

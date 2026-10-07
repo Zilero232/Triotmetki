@@ -47,8 +47,7 @@ def own_damage(events, damage_type, is_enemy):
     return sum(extra_amount(call(event, 'getExtra')) for event in events or () if is_own_damage(event))
 
 
-# The summary's assist with its stun assist added: BattleSummaryFeedbackEvent (feedback_events, RU 1.45) reports
-# getTotalAssistDamage() (track + radio) and getTotalStunDamage() apart.
+# RU 1.45 feedback_events BattleSummaryFeedbackEvent reports track + radio and stun assist apart.
 def assist_with_stun(assist, stun):
     return assist + stun if is_number(assist) and is_number(stun) else assist
 

@@ -16,10 +16,3 @@
 
   @include hud-type(caption);
 }
-
-.hint {
-  margin-top: 8px;
-  color: token(hud-dim);
-
-  @include hud-type(caption);
-}

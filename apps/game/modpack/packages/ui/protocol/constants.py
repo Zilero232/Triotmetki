@@ -1,6 +1,5 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-# 2: the replays page left the settings state for the `feed` property (a snapshot, then only the changed items).
 PROTOCOL_VERSION = 2
 MAX_MESSAGE_CHARS = 64 * 1024
 
@@ -58,10 +57,8 @@ REQUIRED = {
     'scroll': ('page', 'top'),
 }
 
-# Commands that change nothing in the settings state: the window gets no new state for them.
 QUIET_COMMANDS = ('feed', 'diag', 'escape', 'scroll')
 
-# A diag line from the page goes to otmetki.log cut to this many characters.
 MAX_DIAG_CHARS = 400
 
 RES_MAP_WINDOW = 'otmetki/ui/settings'

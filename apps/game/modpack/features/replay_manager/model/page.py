@@ -188,8 +188,6 @@ def _frozen(site):
     return (site['state'], site['link']) if site else None
 
 
-# The items already described, by file name: an item is built again only when its file, its header, its marks or
-# the client change, so a page of a thousand replays costs a lookup per replay.
 class ItemCache(object):
 
     def __init__(self):

@@ -38,8 +38,6 @@ def once_step(once, section_value, is_chosen, game_value, wanted):
     return ONCE_NATIVE
 
 
-# A one-time switch whose earlier revision ran on a wrong read runs again under a new mark; revision 1 keeps the bare
-# component id that state.json files already hold.
 def once_mark(component_id, revision):
     if revision <= 1:
         return component_id

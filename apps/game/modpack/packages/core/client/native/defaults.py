@@ -143,9 +143,6 @@ class ClientDefaults(object):
         return [{'id': action, 'label': translate(key), 'confirm': translate(key + '_confirm')}]
 
     def _client_holds(self):
-        """Whether the client itself holds the recommended values: a section at them while the game's own settings
-        window moved one away (the minimap's extended features to 'never') still offers the recommended button. True
-        when the client cannot be read, so nothing is offered blind."""
         values = dict(self.component.settings.to_dict())
         values.update(recommended(self.schema, self.keys))
         settings, account = self.component.client_values(values)

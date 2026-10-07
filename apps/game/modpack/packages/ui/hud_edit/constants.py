@@ -4,7 +4,6 @@ DEFAULT_WIDTH = 220
 DEFAULT_HEIGHT = 40
 MAX_SIZE = 2000
 PREVIEW_MAX_CHARS = 400
-# A panel that did not describe itself (its feature is off or not loaded).
 NO_DESCRIPTION = {
     'preview': None,
     'text': None,

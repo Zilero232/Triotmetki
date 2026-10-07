@@ -101,8 +101,6 @@ def _battle_indexes(entries):
     ]
 
 
-# A battle's starting point is the dossier read on the way into it (companion before_battle) when the entry has it: the
-# entry before it may be a hangar read the client refreshed after the battle, which already holds the new percent.
 def start_of(entries, index):
     before = entries[index].get('before')
     if entries[index].get('source') == SOURCE_BATTLE and is_int(before):
@@ -133,8 +131,6 @@ def _hundredths_near(entries, index):
     return None
 
 
-# A battle entry an older version stored with the results' whole percent (67 for 66.47 %) among the dossier's
-# hundredths: its rating times 100 lies next to the hundredths around it.
 def _is_wrong_scale(entries, index):
     entry = entries[index]
     rating = entry.get('rating')
@@ -213,7 +209,6 @@ class MarksHistory(object):
             return False
         return any(item.get('arena') == arena for item in self._entries(tank_id))
 
-    # A battle whose rating cannot be real is not recorded; `rejected` says why (the client logs it).
     def record_battle(self, event, label=None, kind=None, before=None):
         moe = event.get('moe') or {}
         info = event.get('vehicle') or {}
@@ -231,8 +226,6 @@ class MarksHistory(object):
         vehicle = self._vehicle_for(tank_id, label or vehicle_label(info.get('name')), info.get('tier'), kind)
         return self._record(vehicle, entry)
 
-    # The hangar's first dossier read after a battle has the rating the results rounded to a whole percent: it
-    # corrects the battle entry instead of adding one.
     def _correct_battle(self, entries, entry):
         last = entries[-1] if entries else None
         if last is None or last.get('source') != SOURCE_BATTLE or last.get('marks') != entry['marks']:
@@ -261,8 +254,6 @@ class MarksHistory(object):
     def clear(self, tank_id):
         return self.vehicles.pop(str(tank_id), None) is not None
 
-    # The battle panel's stand-in for a hangar snapshot when the battle came before any hangar (a reconnect after a
-    # crash): the tank's last recorded values.
     def last_reading(self, tank_id):
         for entry in reversed(self._entries(tank_id)):
             if is_int(entry.get('rating')) and is_number(entry.get('avg')):
