@@ -17,10 +17,24 @@ runs:
   using: composite
 
   steps:
+    # mise's shims would install every other mise.toml tool the moment a shimmed command (cargo, python) runs, through
+    # the GitHub API without a token (60 requests an hour per runner IP: the release's manager job hit 403 fetching
+    # ruff). A job installs exactly the tools it asks for below; the token goes to mise-action only, never to the
+    # job's environment where install scripts could read it.
+    - name: Configure mise
+      shell: bash
+      run: |
+        {
+          echo "MISE_AUTO_INSTALL=false"
+          echo "MISE_EXEC_AUTO_INSTALL=false"
+          echo "MISE_NOT_FOUND_AUTO_INSTALL=false"
+        } >> "$GITHUB_ENV"
+
     # Every tool comes from mise.toml, so CI and a local `mise install` run the same versions.
     - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
       with:
         install_args: bun ${{ inputs.tools }}${{ inputs.python == 'true' && ' conda:python' || '' }}
+        github_token: ${{ github.token }}
 
     # The anaconda build ships no pip, so ensurepip bootstraps the one Python 2.7 bundles.
     - name: Install the modpack tooling packages
