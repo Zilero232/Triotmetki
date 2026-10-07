@@ -1,6 +1,6 @@
 {
   "name": "@otmetki/manager",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "private": true,
   "description": "Three Marks modpack manager: a Tauri 2 desktop app (Rust core, React UI) that installs the modpack, toggles components, keeps sets and profiles, and moves the modpack after a client patch.",
   "homepage": "https://triotmetki.ru",

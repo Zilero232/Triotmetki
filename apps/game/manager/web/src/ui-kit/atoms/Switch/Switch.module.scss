@@ -38,9 +38,9 @@
   flex-shrink: 0;
   align-items: center;
   padding: 2px;
-  border: 1px solid var(--color-border-control);
-  border-radius: var(--radius-sm);
-  background-color: var(--color-surface-sunken);
+  border: 1px solid var(--win-line-soft);
+  border-radius: var(--win-radius-control);
+  background: var(--win-well-bg);
   cursor: pointer;
   transition:
     background-color var(--duration-fast) ease,
@@ -55,8 +55,8 @@
   }
 
   &[data-checked] {
-    border-color: var(--color-accent);
-    background-color: var(--color-accent-soft);
+    border-color: var(--win-index);
+    background: var(--win-accent);
   }
 
   &[data-checked]:hover:not([data-disabled]) {
@@ -79,15 +79,15 @@
   width: 16px;
   height: 16px;
   border-radius: 1px;
-  background-color: var(--color-border-control);
+  background-color: var(--win-text-caption);
   place-items: center;
   transition:
     transform var(--duration-fast) var(--ease-out),
     background-color var(--duration-fast) ease;
 
   &[data-checked] {
-    background-color: var(--color-accent);
-    box-shadow: 0 0 6px color-mix(in srgb, var(--color-accent) 55%, transparent);
+    background-color: var(--color-accent-contrast);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 60%);
     transform: translateX(18px);
   }
 }
@@ -95,6 +95,6 @@
 .lock {
   width: 10px;
   height: 10px;
-  color: var(--color-accent-contrast);
+  color: var(--color-accent-pressed);
   stroke-width: 2.5;
 }

@@ -6,8 +6,6 @@
   "categories": "Категории",
   "allCategories": "Все",
   "state": {
-    "enabled": "Включён",
-    "disabled": "Выключен",
     "missing": "Не установлен"
   },
   "required": "Обязательный",

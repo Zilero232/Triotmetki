@@ -8,14 +8,20 @@ import s from './WizardFooter.module.scss';
 
 export const WizardFooter = () => {
   const t = useTranslations();
-  const { isFirstStep, isLastStep, canInstall, isInstalling, removeOthers, goBack, goNext, onInstall } = useInstallWizard();
+  const { isFirstStep, isLastStep, canInstall, isInstalling, removeOthers, goBack, goNext, onCancel, onInstall } = useInstallWizard();
 
   return (
     <div className={s.root}>
-      <Button disabled={isFirstStep || isInstalling} variant='ghost' onClick={goBack}>
-        <ArrowLeft aria-hidden />
-        {t('install.back')}
-      </Button>
+      {isFirstStep ? (
+        <Button variant='ghost' onClick={onCancel}>
+          {t('common.cancel')}
+        </Button>
+      ) : (
+        <Button disabled={isInstalling} variant='ghost' onClick={goBack}>
+          <ArrowLeft aria-hidden />
+          {t('install.back')}
+        </Button>
+      )}
       {!isLastStep && (
         <Button disabled={!canInstall} onClick={goNext}>
           {t('install.next')}

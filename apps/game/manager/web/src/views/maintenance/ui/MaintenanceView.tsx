@@ -6,6 +6,7 @@ import { ClientPicker } from '@/features/client/client-picker';
 import { ClearCache } from '@/features/settings/clear-cache';
 import { UninstallModpackCard } from '@/features/setup/uninstall-modpack';
 import { Button, Card, HelpTip, PageHeader } from '@/ui-kit';
+import { ConflictReport } from '@/widgets/conflict-report';
 
 import { useMaintenanceView } from '../model/hooks';
 
@@ -36,6 +37,7 @@ export const MaintenanceView = () => {
       <Card description={t('maintenance.gameDescription')} title={t('maintenance.gameTitle')}>
         <ClientPicker />
       </Card>
+      <ConflictReport />
       <Card title={t('settings.cache.title')}>
         <ClearCache />
       </Card>

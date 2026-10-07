@@ -3,7 +3,8 @@ import { clamp } from 'remeda';
 import { useLocale } from 'use-intl';
 
 import { useSelectedClient } from '@/entities/client';
-import { toggledSet } from '@/shared/lib';
+import { PAGES } from '@/shared/config';
+import { toggledSet, useNavigation } from '@/shared/lib';
 
 import type { Selection } from '../../../lib';
 import type { ClientScoped, ToggleInput, UseInstallWizardStateInput } from './use-install-wizard-state.types';
@@ -30,9 +31,10 @@ import { useLoadProfile } from '../use-load-profile';
 export const useInstallWizardState = ({ initialPreset, initialComponents, startAtReview, profileId }: UseInstallWizardStateInput) => {
   const locale = useLocale();
   const { clientPath } = useSelectedClient();
+  const { navigate } = useNavigation();
   const planQuery = useInstallPlan(clientPath);
   const install = useInstallMutation({ clientPath, profileId });
-  const [stepIndex, setStepIndex] = useState(startAtReview ? LAST_WIZARD_STEP : 0);
+  const [pickedStep, setPickedStep] = useState<number | null>(startAtReview ? LAST_WIZARD_STEP : null);
   const [chosenFor, setChosenFor] = useState<ClientScoped | null>(null);
   const [removeOthersFor, setRemoveOthersFor] = useState<ClientScoped | null>(null);
   const [focusedId, setFocusedId] = useState<string | null>(null);
@@ -48,6 +50,9 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
   const selection = chosen ?? wizardSelection({ plan, components, presetId: defaultPreset({ presets, initialPreset }), initialComponents });
   const groups = wizardGroups({ catalog, selection, locale });
   const blocker = plan && installBlocker(plan);
+  const isClientSupported = plan !== null && plan.client.problem === null;
+  const stepIndex = pickedStep ?? (isClientSupported ? INSTALL_WIZARD.steps.indexOf('components') : 0);
+  const stepBy = (delta: number) => setPickedStep(clamp(stepIndex + delta, { min: 0, max: LAST_WIZARD_STEP }));
 
   return {
     clientPath,
@@ -66,16 +71,17 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
     totalCount: components.length,
     removeOthers,
     isReinstall: isReinstall(plan),
-    isClientSupported: plan !== null && plan.client.problem === null,
+    isClientSupported,
     isOffline: blocker === 'offline',
     parkedCount: parkedCount({ parked: plan?.parkedComponents ?? [], selection }),
     canInstall: clientPath !== null && plan !== null && blocker === null,
     blocker,
     isInstalling: install.isPending,
     isLoadingProfile: loadProfile.isPending,
-    goTo: setStepIndex,
-    goNext: () => setStepIndex((index) => clamp(index + 1, { min: 0, max: LAST_WIZARD_STEP })),
-    goBack: () => setStepIndex((index) => clamp(index - 1, { min: 0, max: LAST_WIZARD_STEP })),
+    goTo: setPickedStep,
+    goNext: () => stepBy(1),
+    goBack: () => stepBy(-1),
+    onCancel: () => navigate({ page: PAGES.initial }),
     onPresetChange: (id: string) => setChosen(presetSelection({ components, presetId: id })),
     onToggle: ({ id, checked }: ToggleInput) => setChosen(toggleSelection({ components, selection, id, checked })),
     onFocus: setFocusedId,

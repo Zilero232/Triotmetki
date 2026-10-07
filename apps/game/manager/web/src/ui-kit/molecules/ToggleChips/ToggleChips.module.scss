@@ -34,8 +34,8 @@
   }
 
   &[aria-pressed='true'] {
-    background-color: var(--color-surface-hover);
-    box-shadow: inset 0 -2px 0 var(--color-accent);
+    background-color: var(--win-selected);
+    box-shadow: inset 0 -2px 0 var(--win-index);
     color: var(--color-text);
   }
 }

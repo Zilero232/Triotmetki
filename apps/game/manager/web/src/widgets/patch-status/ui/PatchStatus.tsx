@@ -16,8 +16,8 @@ export const PatchStatus = () => {
     <Card
       actions={
         <>
-          {action && <PatchActionButton clientPath={clientPath} kind={action} />}
           <PatchActionButton clientPath={clientPath} kind='check' />
+          {action && <PatchActionButton clientPath={clientPath} kind={action} />}
         </>
       }
       title={t('title')}

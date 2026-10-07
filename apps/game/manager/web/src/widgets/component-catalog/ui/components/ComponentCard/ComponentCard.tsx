@@ -22,7 +22,7 @@ export const ComponentCard = ({ clientPath, isInstalled, row }: ComponentCardPro
       <div className={s.body}>
         <header className={s.header}>
           <h3 className={s.title}>{row.title}</h3>
-          <Badge tone={COMPONENT_CATALOG.stateTones[row.state]}>{t(`state.${row.state}`)}</Badge>
+          {row.state === COMPONENT_CATALOG.missingState && <Badge tone='warning'>{t('state.missing')}</Badge>}
           {row.isNew && (
             <Badge icon={<Sparkles aria-hidden />} tone='premium'>
               {t('new')}

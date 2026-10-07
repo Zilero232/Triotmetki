@@ -5,5 +5,6 @@
   "removeConfigDescription": "Deletes the settings in the game folder and their copy in %APPDATA%\\TriOtmetki, including the binding key. If another client has the modpack, that copy stays — unbind the device on the site.",
   "action": "Remove the modpack",
   "confirmTitle": "Remove the modpack from this client?",
+  "confirmWithConfig": "Removes our files, the mod settings and the site binding. Other mods stay in place.",
   "done": "The modpack is removed"
 }

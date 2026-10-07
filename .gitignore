@@ -50,3 +50,4 @@ apps/web/server/downloads/
 
 # Redesign screenshots and scripts (local only)
 apps/game/modpack/ui-web/.redesign/
+apps/game/manager/web/.redesign/

@@ -3,7 +3,7 @@
   align-items: flex-end;
   gap: var(--space-4);
 
-  > :first-child {
+  > :first-child:not(:last-child) {
     flex: 1;
   }
 }

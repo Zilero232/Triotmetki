@@ -21,7 +21,7 @@
   flex-direction: column;
   padding: var(--space-6) var(--space-4);
   border-right: 1px solid var(--color-border);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--color-accent) 7%, transparent) 0%, transparent 200px), var(--color-bg-deep);
+  background: var(--win-rail);
   gap: var(--space-6);
 
   @include sidebar-rail {
@@ -112,8 +112,9 @@
   font-size: var(--text-md);
   font-weight: 600;
   gap: var(--space-4);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   text-align: left;
+  text-transform: uppercase;
   transition:
     background-color var(--duration-fast) ease,
     color var(--duration-fast) ease;
@@ -134,12 +135,12 @@
   }
 
   &[aria-current='page'] {
-    background: linear-gradient(90deg, color-mix(in srgb, var(--color-accent) 18%, transparent) 0%, var(--color-surface-hover) 70%);
-    box-shadow: inset 3px 0 0 var(--color-accent);
+    background: var(--win-nav-on);
+    box-shadow: inset 2px 0 0 var(--win-index);
     color: var(--color-text);
 
     :global(svg) {
-      color: var(--color-accent);
+      color: var(--color-accent-hover);
     }
   }
 
@@ -201,7 +202,9 @@
   overflow: hidden auto;
   min-width: 0;
   min-height: 0;
-  background-color: var(--color-bg);
+  background:
+    var(--win-bar) top / 100% 260px no-repeat local,
+    var(--color-bg);
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
 }

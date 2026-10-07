@@ -1,9 +1,32 @@
+@use 'sass:meta';
+@use 'sass:string';
 @use '@otmetki/design-tokens' as tokens;
+
+@function plain($value) {
+  @if meta.type-of($value) == string {
+    @return string.unquote($value);
+  }
+
+  @return $value;
+}
 
 :root {
   @include tokens.root-properties;
   @include tokens.theme-properties(dark);
 
+  @each $name, $value in tokens.$window-palette {
+    --#{$name}: #{plain($value)};
+  }
+
+  --radius-sm: 2px;
+  --panel-gradient: var(--win-card), var(--color-surface);
+  --panel-highlight: var(--win-card-shadow);
+  --shadow-popover: var(--win-card-shadow), var(--win-shadow);
+  --gradient-press: linear-gradient(180deg, rgb(0 0 0 / 30%) 0%, rgb(0 0 0 / 15%) 100%);
+  --gradient-danger: linear-gradient(180deg, #ff7035 0%, #e82600 4%, #c41e00 40%, #881200 85%, #520400 100%);
+  --gradient-danger-hover:
+    linear-gradient(180deg, rgb(252 248 235 / 25%) 0%, rgb(252 248 235 / 10%) 50%, rgb(255 255 255 / 0%) 100%), var(--gradient-danger);
+  --color-on-control: rgb(254 254 236 / 75%);
   --font-display: 'Fira Sans Condensed', 'Arial Narrow', sans-serif;
   --font-sans: 'Fira Sans', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;

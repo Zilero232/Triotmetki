@@ -1,22 +1,19 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  --bevel-top: color-mix(in srgb, var(--color-on-media) 34%, transparent);
-  --bevel-bottom: color-mix(in srgb, var(--color-shade) 30%, transparent);
-  --drop: 0 1px 0 color-mix(in srgb, var(--color-shade) 30%, transparent);
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border: 1px solid transparent;
-  border-radius: var(--radius-sm);
+  border-radius: var(--win-radius-control);
   appearance: none;
   cursor: pointer;
   font-family: var(--font-display);
   font-weight: 700;
   gap: var(--space-3);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
   line-height: 1;
+  text-shadow: var(--win-text-shadow);
   text-transform: uppercase;
   transition:
     color var(--duration-fast) ease,
@@ -83,63 +80,45 @@
 }
 
 .primary {
-  border-color: color-mix(in srgb, var(--color-accent-pressed) 70%, var(--color-shade));
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--color-accent) 84%, var(--color-on-media)) 0%,
-    var(--color-accent) 46%,
-    var(--color-accent-pressed) 100%
-  );
-  box-shadow:
-    inset 0 1px 0 var(--bevel-top),
-    inset 0 -2px 0 var(--bevel-bottom),
-    var(--drop);
+  background: var(--win-accent);
+  box-shadow: var(--win-accent-shadow);
   color: var(--color-accent-contrast);
 
   &:hover:not(:disabled) {
-    box-shadow:
-      inset 0 1px 0 var(--bevel-top),
-      inset 0 -2px 0 var(--bevel-bottom),
-      0 0 16px color-mix(in srgb, var(--color-accent) 45%, transparent);
+    background: var(--win-accent-hover);
   }
 
   &:active:not(:disabled) {
-    background: linear-gradient(180deg, var(--color-accent-pressed) 0%, var(--color-accent) 100%);
-    box-shadow: inset 0 2px 3px var(--bevel-bottom);
+    background: var(--gradient-press), var(--win-accent);
   }
 }
 
 .premium {
   @include premium-surface;
 
+  text-shadow: none;
+
   &:hover:not(:disabled) {
     background: var(--gradient-premium-hover);
   }
 
   &:active:not(:disabled) {
-    box-shadow: inset 0 2px 3px var(--bevel-bottom);
+    background: var(--gradient-press), var(--gradient-premium);
   }
 }
 
 .secondary {
-  --bevel-top: color-mix(in srgb, var(--color-on-media) 9%, transparent);
-  --bevel-bottom: color-mix(in srgb, var(--color-shade) 22%, transparent);
-
-  border-color: color-mix(in srgb, var(--color-text) 22%, var(--color-border-strong));
-  background: linear-gradient(180deg, var(--color-surface-overlay) 0%, var(--color-surface-raised) 50%, var(--color-surface-sunken) 100%);
-  box-shadow:
-    inset 0 1px 0 var(--bevel-top),
-    inset 0 -2px 0 var(--bevel-bottom),
-    var(--drop);
-  color: var(--color-text);
+  background: var(--win-control);
+  box-shadow: var(--win-control-shadow);
+  color: var(--color-on-control);
 
   &:hover:not(:disabled) {
-    border-color: color-mix(in srgb, var(--color-text) 50%, var(--color-border-strong));
+    background: var(--win-control-hover);
+    color: var(--color-text);
   }
 
   &:active:not(:disabled) {
-    background: linear-gradient(180deg, var(--color-surface-sunken) 0%, var(--color-surface-raised) 100%);
-    box-shadow: inset 0 2px 3px var(--bevel-bottom);
+    background: var(--gradient-press), var(--win-control);
   }
 }
 
@@ -155,20 +134,15 @@
 }
 
 .danger {
-  border-color: color-mix(in srgb, var(--color-danger) 70%, var(--color-shade));
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--color-danger) 86%, var(--color-on-media)) 0%,
-    var(--color-danger) 50%,
-    color-mix(in srgb, var(--color-danger) 80%, var(--color-shade)) 100%
-  );
-  box-shadow:
-    inset 0 1px 0 var(--bevel-top),
-    inset 0 -2px 0 var(--bevel-bottom),
-    var(--drop);
-  color: var(--color-on-solid);
+  background: var(--gradient-danger);
+  box-shadow: var(--win-accent-shadow);
+  color: var(--color-accent-contrast);
+
+  &:hover:not(:disabled) {
+    background: var(--gradient-danger-hover);
+  }
 
   &:active:not(:disabled) {
-    box-shadow: inset 0 2px 3px var(--bevel-bottom);
+    background: var(--gradient-press), var(--gradient-danger);
   }
 }

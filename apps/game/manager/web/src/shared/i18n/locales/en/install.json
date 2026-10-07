@@ -1,6 +1,8 @@
 {
   "title": "Install the modpack",
   "description": "Pick a client and the components. The manager never touches other mods without your confirmation.",
+  "changeTitle": "Change the selection",
+  "changeDescription": "Add or remove components: the manager installs the modpack with the new selection. Other mods are never touched without your confirmation.",
   "steps": {
     "client": "Client",
     "components": "Components",

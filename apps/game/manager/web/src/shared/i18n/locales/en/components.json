@@ -6,8 +6,6 @@
   "categories": "Categories",
   "allCategories": "All",
   "state": {
-    "enabled": "On",
-    "disabled": "Off",
     "missing": "Not installed"
   },
   "required": "Required",

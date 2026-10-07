@@ -11,7 +11,7 @@ export const ClientStep = () => {
   const { plan } = useInstallWizard();
 
   return (
-    <Card description={t('install.description')} title={t('install.steps.client')}>
+    <Card description={t('maintenance.gameDescription')} title={t('install.steps.client')}>
       <ClientPicker />
       {plan && (
         <div className={s.facts}>
@@ -19,9 +19,11 @@ export const ClientStep = () => {
           <span className={s.path}>{plan.client.modsDir}</span>
           {plan.client.problem && <Badge tone='danger'>{t(`client.problem.${plan.client.problem}`)}</Badge>}
           {plan.client.problem && <span className={s.warning}>{t('install.clientUnsupported')}</span>}
-          <Badge tone={plan.source === 'release' ? 'neutral' : 'danger'}>
-            {t(`install.source.${plan.source}`, { version: plan.release?.version ?? '' })}
-          </Badge>
+          {plan.source === 'release' ? (
+            <span className={s.hint}>{t('install.source.release', { version: plan.release?.version ?? '' })}</span>
+          ) : (
+            <Badge tone='danger'>{t(`install.source.${plan.source}`, { version: plan.release?.version ?? '' })}</Badge>
+          )}
         </div>
       )}
     </Card>

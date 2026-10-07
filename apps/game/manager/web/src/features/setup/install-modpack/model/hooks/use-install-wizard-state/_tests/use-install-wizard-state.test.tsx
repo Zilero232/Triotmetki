@@ -96,6 +96,43 @@ describe('useInstallWizardState', () => {
     expect(result.current.isFirstStep).toBe(true);
   });
 
+  it('opens on the components step once the selected client is supported', async () => {
+    const { wrapper } = setup();
+    const { result } = renderHook(
+      () => useInstallWizardState({ initialPreset: null, initialComponents: null, startAtReview: false, profileId: null }),
+      { wrapper }
+    );
+
+    await waitFor(() => expect(result.current.plan).not.toBeNull());
+
+    expect(result.current.step).toBe('components');
+  });
+
+  it('steps back from the components step to the client step', async () => {
+    const { wrapper } = setup();
+    const { result } = renderHook(
+      () => useInstallWizardState({ initialPreset: null, initialComponents: null, startAtReview: false, profileId: null }),
+      { wrapper }
+    );
+
+    await waitFor(() => expect(result.current.plan).not.toBeNull());
+    act(() => result.current.goBack());
+
+    expect(result.current.step).toBe('client');
+  });
+
+  it('returns to the home page when the player cancels', () => {
+    const { navigation, wrapper } = setup();
+    const { result } = renderHook(
+      () => useInstallWizardState({ initialPreset: null, initialComponents: null, startAtReview: false, profileId: null }),
+      { wrapper }
+    );
+
+    act(() => result.current.onCancel());
+
+    expect(navigation.navigate).toHaveBeenCalledWith({ page: 'home' });
+  });
+
   it('installs the selection with its libraries and removes nothing by default', async () => {
     const { calls, navigation, wrapper } = setup();
     const { result } = renderHook(

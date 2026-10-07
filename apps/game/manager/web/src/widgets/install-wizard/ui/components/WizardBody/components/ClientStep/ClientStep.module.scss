@@ -13,3 +13,7 @@
 .warning {
   color: var(--color-danger);
 }
+
+.hint {
+  @include muted-text;
+}

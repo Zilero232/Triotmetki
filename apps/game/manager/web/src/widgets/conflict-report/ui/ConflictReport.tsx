@@ -24,11 +24,11 @@ export const ConflictReport = ({ hideWhenClean = false }: ConflictReportProps) =
     <Card
       actions={
         <div className={s.actions}>
-          {hasMissing && <RestoreMissingButton clientPath={clientPath} count={restorable} />}
           <Button isPending={isChecking} size='sm' variant='ghost' onClick={onRecheck}>
             <RefreshCw aria-hidden />
             {t('conflicts.recheck')}
           </Button>
+          {hasMissing && <RestoreMissingButton clientPath={clientPath} count={restorable} />}
         </div>
       }
       description={t('conflicts.description')}

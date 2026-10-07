@@ -41,6 +41,7 @@ export const useClientPicker = () => {
   return {
     options,
     clientPath,
+    hasClients: options.length > 0,
     isPending: selectMutation.isPending || addMutation.isPending,
     onSelect: (path: string) => selectMutation.mutate(path),
     onAdd: () => addMutation.mutate()

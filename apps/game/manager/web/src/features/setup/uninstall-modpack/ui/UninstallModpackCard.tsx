@@ -24,7 +24,7 @@ export const UninstallModpackCard = ({ clientPath, isInstalled }: UninstallModpa
           }
           cancelLabel={common('cancel')}
           confirmLabel={t('action')}
-          description={t('description')}
+          description={removeConfig ? t('confirmWithConfig') : t('description')}
           isPending={isPending}
           title={t('confirmTitle')}
           tone='danger'
