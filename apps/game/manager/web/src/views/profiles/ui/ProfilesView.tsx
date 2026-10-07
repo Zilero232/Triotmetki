@@ -3,7 +3,7 @@ import { useTranslations } from 'use-intl';
 
 import { ImportProfileForm } from '@/features/profile/import-profile';
 import { SaveProfileForm } from '@/features/profile/save-profile';
-import { Button, Card, HelpTip, Notice, PageHeader } from '@/ui-kit';
+import { Button, Card, HelpTip, Notice, PageColumns, PageHeader } from '@/ui-kit';
 import { ProfileList } from '@/widgets/profile-list';
 
 import { useProfilesView } from '../model/hooks';
@@ -26,25 +26,32 @@ export const ProfilesView = () => {
           {t('profiles.pendingSetsHint')}
         </Notice>
       )}
-      <ProfileList />
-      <Card description={t('profiles.saveDescription')} title={t('profiles.saveTitle')}>
-        <SaveProfileForm clientPath={clientPath} components={components} disabled={isDisabled} />
-      </Card>
-      {presets.length > 0 && (
-        <Card description={t('profiles.presetsDescription')} title={t('profiles.presetsTitle')}>
-          <div className={s.presets}>
-            {presets.map((preset) => (
-              <Button key={preset.id} disabled={isDisabled} variant='secondary' onClick={() => onStartFromPreset(preset.id)}>
-                <PackagePlus aria-hidden />
-                {preset.title}
-              </Button>
-            ))}
-          </div>
-        </Card>
-      )}
-      <Card description={t('profiles.importDescription')} title={t('profiles.importTitle')}>
-        <ImportProfileForm clientPath={clientPath} disabled={isDisabled} initialCode={initialCode} />
-      </Card>
+      <PageColumns
+        aside={
+          <>
+            <Card description={t('profiles.saveDescription')} title={t('profiles.saveTitle')}>
+              <SaveProfileForm clientPath={clientPath} components={components} disabled={isDisabled} />
+            </Card>
+            {presets.length > 0 && (
+              <Card description={t('profiles.presetsDescription')} title={t('profiles.presetsTitle')}>
+                <div className={s.presets}>
+                  {presets.map((preset) => (
+                    <Button key={preset.id} disabled={isDisabled} variant='secondary' onClick={() => onStartFromPreset(preset.id)}>
+                      <PackagePlus aria-hidden />
+                      {preset.title}
+                    </Button>
+                  ))}
+                </div>
+              </Card>
+            )}
+            <Card description={t('profiles.importDescription')} title={t('profiles.importTitle')}>
+              <ImportProfileForm clientPath={clientPath} disabled={isDisabled} initialCode={initialCode} />
+            </Card>
+          </>
+        }
+      >
+        <ProfileList />
+      </PageColumns>
     </>
   );
 };

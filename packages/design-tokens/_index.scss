@@ -1,4 +1,5 @@
 @forward './scss/properties' show token, root-properties, theme-properties, rating-palette-properties, $root, $themes;
+@forward './scss/scale' show $spacing;
 @forward './scss/motion' show reduced-motion;
 @forward './scss/textures' show texture;
 @forward './scss/hud' show hud-type;

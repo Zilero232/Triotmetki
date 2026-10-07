@@ -1,4 +1,12 @@
+@use 'sass:map';
 @forward '@otmetki/design-tokens' show reduced-motion, texture;
+
+$page-widths: (
+  medium: 48rem,
+  split: 72rem,
+  wide: 80rem,
+  ultra: 96rem
+);
 
 @mixin stack($gap: var(--space-4)) {
   display: flex;
@@ -127,7 +135,7 @@
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--color-on-media) 45%, transparent),
     0 0 0 1px color-mix(in srgb, var(--color-shade) 20%, transparent),
-    0 4px 14px var(--color-gold-soft);
+    0 0.25rem 0.875rem var(--color-gold-soft);
   color: var(--color-gold-contrast);
 }
 
@@ -196,4 +204,14 @@
   @media (width <= 980px) {
     @content;
   }
+}
+
+@mixin page-from($name) {
+  @container page (width >= #{map.get($page-widths, $name)}) {
+    @content;
+  }
+}
+
+@mixin readable {
+  max-width: var(--measure);
 }

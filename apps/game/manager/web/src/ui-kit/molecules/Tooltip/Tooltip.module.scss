@@ -7,7 +7,7 @@
 .popup {
   @include popup-surface;
 
-  max-width: 300px;
+  max-width: 18.75rem;
   padding: var(--space-3) var(--space-4);
   font-size: var(--text-sm);
   line-height: var(--leading-body);

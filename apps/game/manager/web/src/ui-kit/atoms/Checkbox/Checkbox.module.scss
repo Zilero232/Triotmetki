@@ -10,8 +10,8 @@
   @include reset-button;
 
   display: inline-flex;
-  width: 18px;
-  height: 18px;
+  width: 1.125rem;
+  height: 1.125rem;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
@@ -40,8 +40,8 @@
   display: inline-flex;
 
   :global(svg) {
-    width: 12px;
-    height: 12px;
+    width: 0.75rem;
+    height: 0.75rem;
   }
 }
 

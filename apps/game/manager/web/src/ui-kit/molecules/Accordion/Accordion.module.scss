@@ -39,8 +39,8 @@
 }
 
 .chevron {
-  width: 16px;
-  height: 16px;
+  width: 1rem;
+  height: 1rem;
   flex-shrink: 0;
   color: var(--color-text-dim);
   transition: transform var(--duration-fast) ease;
@@ -59,6 +59,7 @@
 
 .content {
   @include muted-text;
+  @include readable;
 
   padding: 0 var(--space-5) var(--space-5);
   user-select: text;

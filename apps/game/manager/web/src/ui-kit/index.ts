@@ -18,6 +18,7 @@ export {
   NameDialog,
   NameForm,
   Notice,
+  PageColumns,
   PageHeader,
   QueryState,
   ToggleChips,

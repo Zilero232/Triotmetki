@@ -37,7 +37,7 @@
   @include reset-button;
 
   display: flex;
-  min-height: 40px;
+  min-height: 2.5rem;
   align-items: flex-start;
   padding: var(--space-2);
   border-radius: var(--radius-sm);
@@ -57,7 +57,7 @@
   }
 
   @include sidebar-rail {
-    min-width: 40px;
+    min-width: 2.5rem;
     align-items: center;
     justify-content: center;
     margin: 0;
@@ -65,11 +65,11 @@
 }
 
 .dot {
-  width: 8px;
-  height: 8px;
+  width: 0.5rem;
+  height: 0.5rem;
   flex-shrink: 0;
   border-radius: var(--radius-full);
-  margin-top: 5px;
+  margin-top: 0.3125rem;
   background-color: var(--dock-tone);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--dock-tone) 18%, transparent);
 
@@ -107,10 +107,10 @@
 .skeleton {
   display: block;
   width: 70%;
-  height: 10px;
+  height: 0.625rem;
   border-radius: var(--radius-sm);
   background-color: var(--color-surface-hover);
-  margin-block: 4px;
+  margin-block: 0.25rem;
 
   & + & {
     width: 90%;
@@ -124,11 +124,11 @@
 
   @starting-style {
     opacity: 0;
-    translate: 0 4px;
+    translate: 0 0.25rem;
   }
 
   @include sidebar-rail {
-    width: 40px;
+    width: 2.5rem;
     padding: 0;
   }
 

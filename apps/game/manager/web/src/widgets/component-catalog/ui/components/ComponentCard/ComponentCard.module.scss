@@ -7,12 +7,8 @@
   align-items: start;
   padding: var(--space-5);
   gap: var(--space-5);
-  grid-template-columns: 240px minmax(0, 1fr) auto;
+  grid-template-columns: min(15rem, 32%) minmax(0, 1fr) auto;
   transition: border-color var(--duration-fast) ease;
-
-  @media (width <= 760px) {
-    grid-template-columns: 168px minmax(0, 1fr) auto;
-  }
 
   &[data-state='enabled'] {
     border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-border-strong));
@@ -58,8 +54,8 @@
 }
 
 .audio {
-  width: min(240px, 100%);
-  height: 32px;
+  width: min(15rem, 100%);
+  height: 2rem;
 }
 
 .toggle {

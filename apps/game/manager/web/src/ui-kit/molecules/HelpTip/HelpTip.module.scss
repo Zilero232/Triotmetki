@@ -1,14 +1,14 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include icon-button(22px);
+  @include icon-button(2rem);
 
   flex-shrink: 0;
   color: var(--color-text-dim);
   vertical-align: middle;
 
   :global(svg) {
-    width: 15px;
-    height: 15px;
+    width: 0.9375rem;
+    height: 0.9375rem;
   }
 }

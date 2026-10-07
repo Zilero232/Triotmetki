@@ -39,7 +39,7 @@
   @include stack(var(--space-2));
 
   min-width: 0;
-  flex: 1 1 280px;
+  flex: 1 1 17.5rem;
 }
 
 .title {
@@ -50,6 +50,7 @@
 
 .description {
   @include muted-text;
+  @include readable;
 
   margin: 0;
 }

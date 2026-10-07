@@ -18,8 +18,8 @@
 }
 
 .icon {
-  width: 16px;
-  height: 16px;
+  width: 1rem;
+  height: 1rem;
   flex-shrink: 0;
   margin-top: 2px;
   color: var(--color-warning);
@@ -54,8 +54,8 @@
   gap: var(--space-3);
 
   :global(svg) {
-    width: 16px;
-    height: 16px;
+    width: 1rem;
+    height: 1rem;
     color: var(--color-success);
   }
 }

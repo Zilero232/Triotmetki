@@ -1,3 +1,4 @@
+@use 'sass:math';
 @use 'sass:meta';
 @use 'sass:string';
 @use '@otmetki/design-tokens' as tokens;
@@ -13,6 +14,10 @@
 :root {
   @include tokens.root-properties;
   @include tokens.theme-properties(dark);
+
+  @each $name, $value in tokens.$spacing {
+    --#{$name}: #{math.div($value, 16px) * 1rem};
+  }
 
   @each $name, $value in tokens.$window-palette {
     --#{$name}: #{plain($value)};
@@ -30,8 +35,12 @@
   --font-display: 'Fira Sans Condensed', 'Arial Narrow', sans-serif;
   --font-sans: 'Fira Sans', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
-  --sidebar-width: 232px;
-  --content-width: 960px;
+  --root-size: clamp(1rem, 0.55rem + 0.5vw, 1.75rem);
+  --sidebar-width: 14.5rem;
+  --rail-width: 4rem;
+  --content-width: 104rem;
+  --aside-width: 26rem;
+  --measure: 75ch;
   --z-overlay: 60;
   --z-toast: 80;
 

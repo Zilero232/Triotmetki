@@ -4,7 +4,7 @@
   @include label;
 
   display: inline-flex;
-  height: 20px;
+  height: 1.25rem;
   flex-shrink: 0;
   align-items: center;
   padding: 0 var(--space-3);
@@ -16,8 +16,8 @@
   white-space: nowrap;
 
   :global(svg) {
-    width: 12px;
-    height: 12px;
+    width: 0.75rem;
+    height: 0.75rem;
   }
 }
 

@@ -33,7 +33,7 @@
   display: grid;
   align-items: baseline;
   gap: var(--space-3) var(--space-5);
-  grid-template-columns: minmax(96px, max-content) minmax(0, 1fr);
+  grid-template-columns: minmax(6rem, max-content) minmax(0, 1fr);
 
   dt {
     color: var(--color-text-muted);

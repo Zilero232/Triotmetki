@@ -9,6 +9,7 @@ export { HelpTip } from './HelpTip';
 export { NameDialog } from './NameDialog';
 export { NameForm } from './NameForm';
 export { Notice } from './Notice';
+export { PageColumns } from './PageColumns';
 export { PageHeader } from './PageHeader';
 export { QueryState } from './QueryState';
 export { ToggleChips } from './ToggleChips';

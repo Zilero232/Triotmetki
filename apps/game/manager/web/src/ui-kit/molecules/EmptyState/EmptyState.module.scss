@@ -14,8 +14,8 @@
   color: var(--color-text-dim);
 
   :global(svg) {
-    width: 28px;
-    height: 28px;
+    width: 1.75rem;
+    height: 1.75rem;
   }
 }
 
@@ -30,6 +30,6 @@
 .hint {
   @include muted-text;
 
-  max-width: 440px;
+  max-width: 27.5rem;
   margin: 0;
 }

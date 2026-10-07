@@ -3,7 +3,7 @@
 .root {
   @include text-field;
 
-  min-height: 72px;
+  min-height: 4.5rem;
   padding: var(--space-3) var(--space-4);
   resize: vertical;
 }

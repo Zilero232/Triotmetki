@@ -26,8 +26,8 @@
 }
 
 .icon {
-  width: 18px;
-  height: 18px;
+  width: 1.125rem;
+  height: 1.125rem;
   flex-shrink: 0;
   margin-top: 1px;
   color: var(--notice-color);
@@ -36,7 +36,7 @@
 .text {
   @include stack(var(--space-1));
 
-  min-width: 200px;
+  min-width: 12.5rem;
   flex: 1;
 }
 

@@ -22,9 +22,9 @@
   top: 50%;
   left: 50%;
   display: flex;
-  width: calc(100% - 32px);
-  max-width: 460px;
-  max-height: calc(100% - 48px);
+  width: calc(100% - 2rem);
+  max-width: 28.75rem;
+  max-height: calc(100% - 3rem);
   flex-direction: column;
   padding: var(--space-6);
   gap: var(--space-5);
@@ -33,7 +33,7 @@
   transition: opacity var(--duration-fast) ease;
 
   &[data-size='lg'] {
-    max-width: 720px;
+    max-width: 45rem;
   }
 
   &[data-starting-style],
@@ -43,7 +43,12 @@
 }
 
 .close {
-  @include icon-button(28px);
+  @include icon-button(2rem);
+
+  :global(svg) {
+    width: 1rem;
+    height: 1rem;
+  }
 
   position: absolute;
   top: var(--space-4);

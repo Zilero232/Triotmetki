@@ -5,7 +5,7 @@
   display: grid;
   padding-bottom: var(--space-7);
   column-gap: var(--space-5);
-  grid-template-columns: 28px minmax(0, 1fr);
+  grid-template-columns: 1.75rem minmax(0, 1fr);
 
   &:last-child {
     padding-bottom: 0;
@@ -13,9 +13,9 @@
 
   &:not(:last-child):after {
     position: absolute;
-    top: 36px;
+    top: 2.25rem;
     bottom: var(--space-2);
-    left: 13px;
+    left: 0.8125rem;
     width: 2px;
     border-radius: var(--radius-full);
     background-color: var(--color-border);
@@ -25,14 +25,29 @@
   &[data-done]:not(:last-child):after {
     background-color: color-mix(in srgb, var(--color-success) 45%, var(--color-border));
   }
+
+  @include page-from(ultra) {
+    align-content: start;
+    padding-top: var(--space-5);
+    padding-bottom: 0;
+    border-top: 2px solid var(--color-border);
+
+    &[data-done] {
+      border-top-color: color-mix(in srgb, var(--color-success) 60%, var(--color-border));
+    }
+
+    &:not(:last-child):after {
+      content: none;
+    }
+  }
 }
 
 .marker {
   @include numeric;
 
   display: flex;
-  width: 28px;
-  height: 28px;
+  width: 1.75rem;
+  height: 1.75rem;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--color-border-strong);
@@ -44,8 +59,8 @@
   font-weight: 700;
 
   :global(svg) {
-    width: 14px;
-    height: 14px;
+    width: 0.875rem;
+    height: 0.875rem;
   }
 
   .step[data-done] & {
@@ -65,7 +80,7 @@
   @include heading(var(--text-md));
 
   display: flex;
-  min-height: 28px;
+  min-height: 1.75rem;
   align-items: center;
   margin: 0;
 }

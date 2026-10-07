@@ -1,9 +1,12 @@
 .root {
   display: flex;
+  max-width: 52rem;
+  flex-wrap: wrap;
   align-items: flex-end;
   gap: var(--space-4);
 
   > :first-child:not(:last-child) {
-    flex: 1;
+    min-width: 0;
+    flex: 1 1 18rem;
   }
 }

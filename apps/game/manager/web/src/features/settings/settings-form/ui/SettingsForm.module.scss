@@ -2,6 +2,12 @@
 
 .root {
   @include stack(var(--space-5));
+
+  @include page-from(split) {
+    display: grid;
+    align-items: start;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .fields {
@@ -13,4 +19,5 @@
 .actions {
   display: flex;
   justify-content: flex-end;
+  grid-column: 1 / -1;
 }

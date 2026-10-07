@@ -1,0 +1,43 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: grid;
+  align-items: start;
+  gap: var(--space-7);
+  grid-template-columns: minmax(0, 1fr);
+
+  &:not(:has(> :not(:empty))) {
+    display: none;
+  }
+
+  @include page-from(split) {
+    &:has(> .main:not(:empty)):has(> .aside:not(:empty)) {
+      grid-template-columns: minmax(0, 1fr) var(--aside-width);
+    }
+
+    &[data-layout='even']:has(> .main:not(:empty)):has(> .aside:not(:empty)) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
+.aside {
+  .root[data-aside-first] > & {
+    order: -1;
+
+    @include page-from(split) {
+      order: 0;
+    }
+  }
+}
+
+.main,
+.aside {
+  @include stack(var(--space-7));
+
+  min-width: 0;
+
+  &:empty {
+    display: none;
+  }
+}

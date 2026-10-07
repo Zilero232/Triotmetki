@@ -1,6 +1,6 @@
 import { useTranslations } from 'use-intl';
 
-import { HelpTip, PageHeader, Spinner } from '@/ui-kit';
+import { HelpTip, PageColumns, PageHeader, Spinner } from '@/ui-kit';
 import { ConflictReport } from '@/widgets/conflict-report';
 import { FirstRun } from '@/widgets/first-run';
 import { GameHealthCard } from '@/widgets/game-health-card';
@@ -27,9 +27,10 @@ export const HomeView = () => {
         <>
           {isPatchShown && <PatchStatus />}
           <HomeSummary />
-          <GameHealthCard />
-          <WhatsNewCard />
-          <ConflictReport hideWhenClean />
+          <PageColumns aside={<WhatsNewCard />}>
+            <GameHealthCard />
+            <ConflictReport hideWhenClean />
+          </PageColumns>
         </>
       )}
     </>

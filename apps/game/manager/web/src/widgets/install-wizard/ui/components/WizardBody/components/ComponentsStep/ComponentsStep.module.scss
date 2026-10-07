@@ -8,7 +8,7 @@
   gap: var(--space-5);
 
   > :first-child {
-    width: min(280px, 100%);
+    width: min(17.5rem, 100%);
   }
 }
 
@@ -16,15 +16,21 @@
   display: grid;
   align-items: start;
   gap: var(--space-6);
-  grid-template-columns: minmax(0, 1fr) 300px;
+  grid-template-columns: minmax(0, 1fr);
 
-  @media (width <= 860px) {
-    grid-template-columns: minmax(0, 1fr);
+  @include page-from(medium) {
+    grid-template-columns: minmax(0, 1fr) min(var(--aside-width), 40%);
   }
 }
 
 .tree {
   @include stack(var(--space-5));
+
+  @include page-from(wide) {
+    display: grid;
+    align-content: start;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+  }
 }
 
 .group {
@@ -49,12 +55,12 @@
   @include well;
   @include stack(var(--space-3));
 
-  position: sticky;
-  top: 0;
+  position: static;
   padding: var(--space-4);
 
-  @media (width <= 860px) {
-    position: static;
+  @include page-from(medium) {
+    position: sticky;
+    top: 0;
   }
 }
 
@@ -72,5 +78,5 @@
 
 .audio {
   width: 100%;
-  height: 32px;
+  height: 2rem;
 }
