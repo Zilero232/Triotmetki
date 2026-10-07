@@ -54,6 +54,7 @@ from ...badge.client import BadgePreference
 from ...battles.client import BattleCapture
 from ...binding import CredentialStore
 from ...binding.client import Binder
+from ...capture.client import start_capture
 from ...config import Config, is_dev_install
 from ...config.client import migrate_stored
 from ...i18n import Translator, resolve_language
@@ -138,6 +139,7 @@ class OtmetkiApp(object):
         log('started %s' % VERSION)
         warn_mixed_install()
         registry().bind(self)
+        self.capture = start_capture(self, is_dev_install())
 
     def stop(self):
         """The client is closing: write the settings saves still held back (`core.client.storage`)."""

@@ -8,7 +8,8 @@ catalog/
                         and the third-party runtime mods (kind "dependency") the manager installs
   catalog.schema.json   the JSON Schema (Draft 7) of catalog.json, which setupkit validates it against
   previews/<id>.svg     16:9 component previews on the 640x360 canvas (below); a HUD component's is <id>.png, rendered
-                        by its own HUD panel (below)
+                        by its own HUD panel (below), a stock-UI change's <id>.png is a real screenshot (below)
+  previews/CAPTURE.md   which previews need a real screenshot and what it must show; capture.json their crop boxes
   fonts/                Fira Sans Regular and Bold (Latin + Cyrillic subset, SIL OFL 1.1, OFL.txt): the only fonts
                         the preview renderer loads, so a Linux release runner draws the same text as Windows
 ```
@@ -35,6 +36,19 @@ cd apps/game/modpack
 bun run ui:build                                   # the HUD page the previews are drawn with
 python tools/build/previews                        # -> catalog/previews/<id>.png (Playwright's Chromium)
 ```
+
+## Screenshot previews
+
+A component that changes the stock interface (filters, the hangar, the minimap, the camera, the chat) or draws a window of ours is shown by a real screenshot from the game, not a drawing. [previews/CAPTURE.md](previews/CAPTURE.md) lists every entry, what its shot must show and with which setting; [previews/capture.json](previews/capture.json) holds the crop box of each (`[left, top, width, height]` on its `screen`, scaled to the shot's resolution and grown to 16:9 around its centre; `null` is the whole screen). The shots come from the dev install's preview capture (README «Dev loop»: Ctrl+Shift+F12 / Ctrl+Shift+F11), then:
+
+```bash
+cd apps/game/modpack
+python tools/build/previews/capture --prepare   # the dev install's capture.json: the ids to shoot, in order
+python tools/build/previews/capture --list      # which ids have a shot in <client>/screenshots
+python tools/build/previews/capture [ID ...]    # newest otmetki_<id>_NNN.png -> previews/<id>.png, 640x360, 256 colours
+```
+
+It switches the entry's `preview.image` in `catalog.json` to `previews/<id>.png` (only that string changes) and removes the drawn SVG no other entry shows; `--shots DIR` reads another folder, `--dry-run` writes nothing, `--colours 0` keeps full colour. It refuses the HUD components above, which the HUD page draws. [tools/build/previews/capture/tests](../tools/build/previews/capture/tests/test_capture_tool.py) checks the crop file, the shot names, the 16:9 box and the catalog switch, and that every entry is drawn by the HUD page, captured or in CAPTURE.md's short list of drawings.
 
 ## Build
 

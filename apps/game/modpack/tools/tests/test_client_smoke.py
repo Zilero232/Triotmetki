@@ -120,6 +120,7 @@ NEXT_ARENA = 4243
 REPLAY_ID = '0f8e2d4c-6b1a-4f3e-9d2c-7a5b3c1d9e8f'
 BUSH_CIRCLE_KEY = 48
 STREAMER_KEY = 35
+CAPTURE_SHOT_KEY, CAPTURE_NEXT_KEY = 88, 87
 LEFT_CONTROL, LEFT_SHIFT, RIGHT_CONTROL, RIGHT_SHIFT = 29, 42, 157, 54
 # RU 1.45 Vehicle.showDamageFromShot: a packed hit point (flags, component, position and angles).
 FRONT_HULL_PEN = 4 | (1 << 8) | (120 << 16) | (100 << 24) | (250 << 32) | (130 << 40) | (110 << 48) | (255 << 56)
@@ -1455,6 +1456,7 @@ class CompanionAloneTest(StoryTest):
     def play(cls, game):
         app = game.load(['mod_otmetki'])
         cls.instances = dict(game.instances())
+        cls.capture = app.capture
         game.play_battle(app)
         cls.battles = copy.deepcopy(game.battle_events(app))
         cls.state = app.state_file.read({})
@@ -1474,6 +1476,9 @@ class CompanionAloneTest(StoryTest):
     def test_a_client_without_tls_says_so_in_the_status(self):
         self.assertEqual(self.tls_status, self.tls_expected)
 
+    def test_a_release_install_has_no_preview_capture(self):
+        self.assertIsNone(self.capture)
+
     def test_the_companion_alone_registers_no_feature(self):
         self.assertEqual(self.instances, {})
 
@@ -1481,6 +1486,44 @@ class CompanionAloneTest(StoryTest):
         self.assertEqual(len(self.battles), 1)
         self.assertIsNone(self.battles[0]['session_id'])
         self.assertNotIn('session', self.state)
+
+
+class DevPreviewCaptureTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        dev_folder = os.path.join(game.game_dir, 'mods', '1.45.0.0', 'otmetki-dev')
+        os.makedirs(dev_folder)
+        with open(os.path.join(dev_folder, 'otmetki-dev.json'), 'w') as handle:
+            handle.write('{}')
+        game.install_hotkey_input(
+            KEY_F12=CAPTURE_SHOT_KEY,
+            KEY_F11=CAPTURE_NEXT_KEY,
+            KEY_LCONTROL=LEFT_CONTROL,
+            KEY_LSHIFT=LEFT_SHIFT,
+            KEY_RCONTROL=RIGHT_CONTROL,
+            KEY_RSHIFT=RIGHT_SHIFT,
+        )
+        cls.shots = []
+        sys.modules['BigWorld'].screenShot = lambda extension, name: cls.shots.append((extension, name))
+        app = game.open_hangar(['mod_otmetki', 'mod_otmetki_minimap', 'mod_otmetki_camera'])
+        cls.is_on = app.capture is not None
+        game.press(CAPTURE_SHOT_KEY)
+        game.press(CAPTURE_NEXT_KEY)
+        game.press(CAPTURE_SHOT_KEY)
+        cls.notes = [text for text in game.messages if 'minimap' in text]
+
+    def test_a_dev_install_has_the_preview_capture(self):
+        self.assertTrue(self.is_on)
+
+    def test_the_shots_are_named_after_the_chosen_component(self):
+        self.assertEqual(self.shots, [
+            ('png', 'screenshots/otmetki_camera'),
+            ('png', 'screenshots/otmetki_minimap'),
+        ])
+
+    def test_picking_the_next_component_says_which_one(self):
+        self.assertEqual(len(self.notes), 1)
 
 
 class BattleHudTest(StoryTest):
