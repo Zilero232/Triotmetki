@@ -28,6 +28,7 @@ FEATURES = (
     'battle_aim_circle',
     'hangar_info',
     'battle_chat_filter',
+    'battle_auto_messages',
     'hangar_auto_resupply',
     'hangar_notification_filter',
     'hangar_cleaner',
@@ -90,7 +91,7 @@ SHARE_CHANNELS = ('telegram', 'discord', 'both')
 # one when it still holds the old default and the file predates the change (`defaults_revision`).
 # (revision, key, old default, new default). A switch of a removed component is left out of DEFAULTS: Settings ignores
 # a key its schema does not know, so the leftover drops out of the file on the next save.
-DEFAULTS_REVISION = 8
+DEFAULTS_REVISION = 9
 RETIRED_DEFAULTS = (
     (1, 'battle_loadout', False, True),
     (3, 'hangar_tweaks', True, False),
@@ -269,7 +270,8 @@ DROPPED_SECTIONS = (
 # battle panel's Alt view (alt_detail), so its box is the one the player places, and aim_info's aim circle keys
 # (AIM_CIRCLE_FROM). Revision 7: hangar_info's battle clock switch and its timer replacement. Revision 8: the
 # crosshair's aim circle, now a component of its own (AIM_CIRCLE_PART_TO), and the battle log's Alt view (alt_mode,
-# alt_entry_template): no battle panel changes while Alt is held, so the notes follow show_notes alone.
+# alt_entry_template): no battle panel changes while Alt is held, so the notes follow show_notes alone. Revision 9:
+# pack_badge's stock_badge choice: the badge sits after the name and never covers the player's own badge.
 DROPPED_KEYS = (
     ('crosshair', 'repair_timers'),
     ('crosshair', 'aim_circle'),
@@ -303,6 +305,7 @@ DROPPED_KEYS = (
     ('hangar_info', 'replace_timer'),
     ('damage_log', 'alt_mode'),
     ('damage_log', 'alt_entry_template'),
+    ('pack_badge', 'stock_badge'),
 )
 # Components that stay but are no HUD panel any more, so their battle-type places go (revision 4: aim_info).
 DROPPED_PANELS = ('aim_info',)
@@ -337,6 +340,7 @@ DEFAULTS = {
     'battle_aim_circle': False,
     'hangar_info': True,
     'battle_chat_filter': False,
+    'battle_auto_messages': True,
     'hangar_auto_resupply': False,
     'hangar_notification_filter': False,
     'hangar_cleaner': False,

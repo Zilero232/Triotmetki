@@ -4,17 +4,7 @@ from ....core.compat import is_int
 from ....core.errors import ReasonError
 from ....core.me import device_body
 from ....core.vendor import attr
-from .constants import (
-    ACCOUNT_KEY,
-    BADGE_ICON,
-    BADGE_KEY,
-    BADGE_SIZE,
-    ENABLED_KEY,
-    HAS_BADGE_KEY,
-    MAX_ACCOUNT_IDS,
-    SHOW_OWN_KEY,
-    STOCK_KEEP,
-)
+from .constants import ACCOUNT_KEY, BADGE_TAG, ENABLED_KEY, MAX_ACCOUNT_IDS, REGION_KEY, SHOW_OWN_KEY
 
 # Not combat information (docs/specs/2026-10-06-modpack-user-badge.md): the request carries only the account ids of the
 # arena data behind the stock player panels, never vehicles, teams, HP or positions; an anonymised player's real id
@@ -65,23 +55,16 @@ def show_own(config):
     return bool(config.get(ENABLED_KEY)) and bool(config.get(SHOW_OWN_KEY))
 
 
-def badge_vo():
-    return {'icon': BADGE_ICON, 'content': '', 'sizeContent': BADGE_SIZE, 'isDynamic': False, 'isAtlasSource': False}
+def with_badge(region):
+    if region and BADGE_TAG in region:
+        return region
+    return '%s %s' % (region, BADGE_TAG) if region else BADGE_TAG
 
 
-# The players panel redraws a badge only when the old one is empty or the badge flag flips (BasePlayersPanelListItem.as
-# setBadge, RU 1.45), so a refresh first sends the marked rows without a badge (`clearing`), then with ours.
-def decorate(data, marked, stock_badge, clearing):
+def decorate(data, marked):
     if data.get(ACCOUNT_KEY) not in marked:
         return False
-    if stock_badge == STOCK_KEEP and data.get(HAS_BADGE_KEY):
-        return False
-    if clearing:
-        data.pop(BADGE_KEY, None)
-        data[HAS_BADGE_KEY] = False
-    else:
-        data[BADGE_KEY] = badge_vo()
-        data[HAS_BADGE_KEY] = True
+    data[REGION_KEY] = with_badge(data.get(REGION_KEY))
     return True
 
 

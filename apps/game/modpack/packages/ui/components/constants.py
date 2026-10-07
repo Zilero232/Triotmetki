@@ -88,6 +88,7 @@ PLACEMENT = {
     'aim_circle': (SECTION_BATTLE, CONTEXT_BATTLE),
     'camera': (SECTION_BATTLE, CONTEXT_BATTLE),
     'chat_filter': (SECTION_BATTLE, CONTEXT_BATTLE),
+    'auto_messages': (SECTION_BATTLE, CONTEXT_BATTLE),
     'pack_badge': (SECTION_BATTLE, CONTEXT_BATTLE),
     'streamer_mode': (SECTION_HANGAR, CONTEXT_ANY),
     'hangar_cleaner': (SECTION_HANGAR, CONTEXT_HANGAR),

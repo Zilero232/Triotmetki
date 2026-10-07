@@ -436,6 +436,16 @@ class StockControlFirstBattleTest(unittest.TestCase):
 
         assert panel.pushed[-1] == {1: {'reloaderTimerAlphaValue': 0}}
 
+    def test_every_crosshair_panel_of_the_battle_gets_the_parts_hidden(self):
+        first, second = CrosshairPanelContainer(), CrosshairPanelContainer()
+        first.setSettings({1: {'reloaderTimerAlphaValue': 1.0}})
+        second.setSettings({1: {'reloaderTimerAlphaValue': 1.0}})
+        ClassicPage()._populate()
+
+        self.control.want('panel', ('reloaderTimerAlphaValue',))
+
+        assert first.pushed[-1] == {1: {'reloaderTimerAlphaValue': 0}}
+
     def test_an_autoloading_clip_loses_its_countdown_while_ours_draws_it(self):
         panel = CrosshairPanelContainer()
         ClassicPage()._populate()

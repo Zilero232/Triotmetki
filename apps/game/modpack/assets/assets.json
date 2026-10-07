@@ -112,9 +112,9 @@
       "url": "https://triotmetki.ru",
       "sources": "otmetki/pack_badge/src",
       "files": "otmetki/pack_badge/png",
-      "renditions": [{ "size": 24 }],
+      "renditions": [{ "size": 16 }],
       "target": "res/gui/maps/icons/otmetki/pack_badge",
-      "contents": "1 badge (three marks on a shield): SVG source, RGBA PNG 24 px for the stock badge slot of the player panels",
+      "contents": "1 badge (three marks on a shield): SVG source, RGBA PNG 16 px drawn after the name in the player panels, the Tab stats and the loading screen",
       "fair_play": "Drawn next to the names of players who use the bound modpack and chose to show it; carries no battle information."
     },
     {

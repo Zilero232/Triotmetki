@@ -6,23 +6,17 @@ from ...log import log, safe
 class ViewWatch(object):
     """Calls `on_view(view)` for every Scaleform view named in `aliases` that the app of the `namespace` (an
     APP_NAME_SPACE name: SF_LOBBY, SF_BATTLE) loads, and for one already loaded when the watch starts or the app is
-    created again; `on_app_gone()` when that app is destroyed. `matches(view)`, when given, decides a loaded view
-    instead of its alias (every battle page, whatever its alias); `aliases` then only name the views looked up when
-    the watch starts. `get_app()` returns the app (None while there is none). `start()` / `stop()` are idempotent;
-    `start()` is falsy when the client lacks the app events."""
+    created again; `on_app_gone()` when that app is destroyed. `get_app()` returns the app (None while there is
+    none). `start()` / `stop()` are idempotent; `start()` is falsy when the client lacks the app events."""
 
-    def __init__(self, namespace, aliases, get_app, on_view, on_app_gone, matches=None):
+    def __init__(self, namespace, aliases, get_app, on_view, on_app_gone):
         self.namespace = namespace
         self.aliases = tuple(aliases)
         self.get_app = get_app
         self.on_view = on_view
         self.on_app_gone = on_app_gone
-        self.matches = matches or self._named
         self.app = None
         self.started = False
-
-    def _named(self, view):
-        return getattr(view, 'alias', None) in self.aliases
 
     @safe
     def start(self):
@@ -91,5 +85,5 @@ class ViewWatch(object):
 
     @safe
     def _on_view_loaded(self, view, *args, **kwargs):
-        if self.matches(view):
+        if getattr(view, 'alias', None) in self.aliases:
             self.on_view(view)

@@ -43,7 +43,7 @@ class MarksPanel(BattlePanel):
 
     def start(self, player):
         tank_id = player_tank_id(player)
-        snapshot = self.moe.snapshot(tank_id)
+        snapshot = self.moe.snapshot(tank_id) or self.card.history.last_reading(tank_id)
         if snapshot is None:
             self.wait(NO_SNAPSHOT % tank_id)
             return

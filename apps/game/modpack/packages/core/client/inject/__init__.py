@@ -17,7 +17,7 @@ a component registered from Python populates like one registered from AS3; every
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ...compat import to_native
-from ...inject import GF_INJECT_CLASS, below_covers
+from ...inject import GF_INJECT_CLASS
 from ...log import log, log_exception, safe
 from .page import bind, page_layout, page_usable
 
@@ -39,21 +39,15 @@ def new_inject_component(app):
     return factory.getObject(to_native(GF_INJECT_CLASS))
 
 
-def _child_index(flash, name):
-    child = getattr(flash, name, None)
-    return flash.getChildIndex(child) if child is not None else None
-
-
 class InjectHost(object):
     """One Gameface page (`layout_key`: an OpenWG Gameface res_map item id) inside a Scaleform view.
 
-    `attach(parent_view)` puts the page into a loaded Scaleform view (gui.Scaleform View: the hangar, the battle page;
+    `attach(parent_view)` puts the page into a loaded Scaleform view (gui.Scaleform View: the hangar view;
     again for the same view does nothing, for another view moves it there), `detach()` takes it out. `owner` hears
     `on_page(view)` once the page loaded, `on_message(raw)` for every message the page sends and `on_gone()` when the
     page went away (detached, or the parent view destroyed). `push(text)` sets the page's state string,
-    `set_mouse(enabled)` lets the mouse reach the page or pass through it to the view below, `move(x, y)` places it in
-    the parent view's coordinates and `place_below(names)` puts it under the named children of the parent (the battle
-    page's loading screen, Tab and radial menu)."""
+    `set_mouse(enabled)` lets the mouse reach the page or pass through it to the view below and `move(x, y)` places it
+    in the parent view's coordinates."""
 
     def __init__(self, alias, layout_key, owner):
         self.alias = alias
@@ -120,18 +114,6 @@ class InjectHost(object):
         if self.component is not None:
             self.component.mouseEnabled = bool(enabled)
             self.component.mouseChildren = bool(enabled)
-
-    @safe
-    def place_below(self, names):
-        """Move the page under the parent view's children named in `names` (those it has, as AS3 members of its root);
-        returns the display-list index it went to, or None when the parent has none of them."""
-        if self.component is None:
-            return None
-        flash = self.parent.flashObject
-        index = below_covers([_child_index(flash, name) for name in names])
-        if index is not None:
-            flash.setChildIndex(self.component, index)
-        return index
 
     @safe
     def move(self, x, y):

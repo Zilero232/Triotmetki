@@ -181,6 +181,11 @@ class SectionsTest(unittest.TestCase):
 
         self.assertEqual(components['damage_log'], {'style': 'compact'})
 
+    def test_the_pack_badge_loses_its_stock_badge_choice(self):
+        _, components = migrate({'defaults_revision': 8}, {'pack_badge': {'stock_badge': 'keep'}})
+
+        self.assertEqual(components['pack_badge'], {})
+
     def test_minimap_names_the_player_left_to_the_game_stay(self):
         config = {'defaults_revision': 7, 'user_set': 'minimap.vehicle_names'}
 

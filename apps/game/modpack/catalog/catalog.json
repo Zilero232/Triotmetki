@@ -702,6 +702,28 @@
       }
     },
     {
+      "id": "auto_messages",
+      "category": "battle",
+      "context": "battle",
+      "presets": ["recommended"],
+      "title": {
+        "ru": "Автосообщения в чат боя",
+        "en": "Battle chat auto messages"
+      },
+      "description": {
+        "ru": "Пишет союзникам в чат боя о ваших событиях: арта попала по вам, урон от союзника, засвет, когда союзников осталось мало; по желанию — пожар, гусеница, боеукладка, фраг, «удачи» и «gg». Свои тексты, пауза между сообщениями.",
+        "en": "Writes to your allies in the battle chat about your own events: artillery hit you, ally damage, being spotted when few allies are left; optionally fire, tracks, ammo rack, a kill, «good luck» and «gg». Your own texts, a pause between lines."
+      },
+      "fairPlay": {
+        "ru": "Только ваши события, которые игра уже показывает (строка журнала урона о попадании по вам, лампа, ваш танк); сообщения уходят через обычный чат игры с его ограничениями. Ничего о позициях, перезарядке или прицеле противников.",
+        "en": "Only your own events the game already shows (the damage log line about a hit on you, the lamp, your own tank); lines go out through the game's own chat with its limits. Nothing about enemy positions, reloads or aim."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/auto_messages.svg"
+      }
+    },
+    {
       "id": "streamer_mode",
       "category": "battle",
       "context": "any",

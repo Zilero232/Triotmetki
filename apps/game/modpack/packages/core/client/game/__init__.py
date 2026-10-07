@@ -190,6 +190,16 @@ def main_window():
         return None
 
 
+def client_windows():
+    """Every wulf window of the client (IGuiLoader.windowsManager.findWindows, RU 1.45 client source), or an empty list
+    before the GUI loader exists."""
+    try:
+        manager = _windows_manager()
+        return list(manager.findWindows(lambda window: True)) if manager is not None else []
+    except Exception:
+        return []
+
+
 def vehicle_class_tag(tank_id):
     """The class tag (lightTank, ..., SPG) of a vehicle type (items.vehicles VehicleType.classTag, RU 1.45), or None."""
     return getattr(vehicle_type(tank_id), 'classTag', None)

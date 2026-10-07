@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import weakref
 
-from ....core.client.battle import BattleHooks, arena, arena_dp
+from ....core.client.battle import BattleHooks, arena, arena_dp, own_account_id
 from ....core.client.component import FeatureComponent
 from ....core.client.game import client_attr
 from ....core.client.me import post_signed
@@ -12,7 +12,7 @@ from ....core.log import log, safe
 from ....core.me import OK_STATUS
 from ..i18n import STRINGS
 from ..model import ArenaPlayer, BattleBadges, asked_account_ids, badges_request, decorate, parse_badges, show_own
-from ..model.constants import BADGES_PATH
+from ..model.constants import BADGE_TAG, BADGES_PATH
 from ..settings import SCHEMA, SECTION, SWITCH
 from .constants import STATS_CONTROLLER_CLASS, STATS_CONTROLLER_MODULE, VEHICLE_INFO_CLASS, VEHICLE_INFO_MODULE
 
@@ -33,18 +33,6 @@ def arena_players():
     return players
 
 
-# The own badge marks this install, as Near_You's does: it needs no binding and nothing is sent, so the own account id
-# comes from the arena data behind the stock panels (RU 1.45 Avatar.playerVehicleID, ArenaDataProvider.getVehicleInfo).
-def own_arena_account_id(player):
-    provider = arena_dp()
-    vehicle_id = getattr(player, 'playerVehicleID', None)
-    if provider is None or vehicle_id is None:
-        return None
-    info = provider.getVehicleInfo(vehicle_id)
-    account_id = getattr(getattr(info, 'player', None), 'accountDBID', 0)
-    return account_id or None
-
-
 class PackBadge(FeatureComponent):
 
     def __init__(self, app):
@@ -52,7 +40,6 @@ class PackBadge(FeatureComponent):
         self.badges = BattleBadges()
         self.hooks = BattleHooks()
         self.controller = None
-        self.clearing = False
         self.drawn = False
         self._hook_client()
         bus = app.bus
@@ -71,11 +58,14 @@ class PackBadge(FeatureComponent):
 
     def _add_vehicle_info(self, original, component, *args, **kwargs):
         result = original(component, *args, **kwargs)
-        if self.enabled() and self.badges.marked:
-            marked = decorate(component.get(), self.badges.marked, self.settings.get('stock_badge'), self.clearing)
-            if marked and not self.clearing and not self.drawn:
-                self.drawn = True
-                log('pack badge: the badge is in the player rows')
+        if not self.enabled() or not self.badges.marked:
+            return result
+
+        is_marked = decorate(component.get(), self.badges.marked)
+        if is_marked and not self.drawn:
+            self.drawn = True
+            # UNVERIFIED on Lesta 1.45: an img:// mod PNG in the battle name fields (model.constants BADGE_TAG).
+            log('pack badge: the badge is after the name in the player rows: %s' % BADGE_TAG)
         return result
 
     def _start_control(self, original, controller, *args, **kwargs):
@@ -91,11 +81,12 @@ class PackBadge(FeatureComponent):
     def _on_battle_ready(self, player):
         if not self.enabled():
             return
-        own_account_id = own_arena_account_id(player) if show_own(self.app.config) else None
+        # The own badge marks this install, as Near_You's does: it needs no binding and nothing is sent for it.
+        own_id = own_account_id(player) if show_own(self.app.config) else None
         arena_id = getattr(player, 'arenaUniqueID', None)
-        self.badges.start(arena_id, own_account_id)
+        self.badges.start(arena_id, own_id)
         self.drawn = False
-        log('pack badge: own row %s' % ('marked' if own_account_id else 'not marked'))
+        log('pack badge: own row %s' % ('marked' if own_id else 'not marked'))
         self.refresh()
         self.request(arena_id)
         if not self.badges.requested:
@@ -138,9 +129,4 @@ class PackBadge(FeatureComponent):
         provider = arena_dp()
         if controller is None or provider is None:
             return
-        self.clearing = True
-        try:
-            controller.invalidateVehiclesInfo(provider)
-        finally:
-            self.clearing = False
         controller.invalidateVehiclesInfo(provider)

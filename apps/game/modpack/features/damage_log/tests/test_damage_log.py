@@ -162,17 +162,22 @@ class TotalsTest(unittest.TestCase):
 
         assert log.values()['dealt'] == 100
 
-    def test_zero_totals_are_hidden(self):
+    def test_a_counted_total_keeps_the_zero_ones_beside_it(self):
         log = DamageLog()
         log.add('damage', 390, target(TIGER, 'Tiger', 1.0))
 
-        assert shown_totals(log, settings()) == [('dealt', 390)]
+        assert shown_totals(log, settings()) == [('dealt', 390), ('assist', 0), ('blocked', 0), ('received', 0)]
 
-    def test_an_empty_log_shows_the_dealt_total_at_zero(self):
-        assert shown_totals(DamageLog(), settings()) == [('dealt', 0)]
+    def test_an_empty_log_shows_every_total_at_zero(self):
+        assert shown_totals(DamageLog(), settings()) == [('dealt', 0), ('assist', 0), ('blocked', 0), ('received', 0)]
 
-    def test_an_empty_log_of_the_received_section_shows_its_first_total_at_zero(self):
-        assert shown_totals(DamageLog(), settings(sections='received')) == [('blocked', 0)]
+    def test_an_empty_log_of_the_received_section_shows_its_totals_at_zero(self):
+        assert shown_totals(DamageLog(), settings(sections='received')) == [('blocked', 0), ('received', 0)]
+
+    def test_the_stun_total_waits_for_its_first_stun(self):
+        keys = [key for key, _ in shown_totals(DamageLog(), settings())]
+
+        assert 'stun' not in keys
 
     def test_the_dealt_section_hides_the_blocked_and_received_totals(self):
         keys = [key for key, _ in shown_totals(filled_log(), settings(sections='dealt'))]

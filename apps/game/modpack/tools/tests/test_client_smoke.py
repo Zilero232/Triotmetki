@@ -26,8 +26,8 @@ OTHER_TANK = 999
 # client views or send client requests.
 BATTLE_OPT_INS = (
     'battle_progress', 'battle_gun_arc', 'battle_platoon_points', 'battle_bush_circle',
-    'battle_chat_filter', 'streamer_mode', 'hangar_tweaks', 'hangar_auto_resupply', 'hangar_notification_filter',
-    'hangar_cleaner',
+    'battle_chat_filter', 'battle_auto_messages', 'streamer_mode', 'hangar_tweaks', 'hangar_auto_resupply',
+    'hangar_notification_filter', 'hangar_cleaner',
 )
 REGISTERED = tuple(_support.feature_ids()) + ('ui',)
 ENTRY_MODULES = ('mod_otmetki',) + tuple('mod_otmetki_' + key for key in REGISTERED)
@@ -96,12 +96,9 @@ OWN_SHOT = {
     'fatal': False,
 }
 HANGAR_LABEL_PLACE = {'x': 1, 'y': 2, 'alignX': 'left', 'alignY': 'top'}
-# core.inject.constants: the aliases the HUD page is registered under in the hangar view and in the battle page.
+# core.inject.constants: the alias the HUD page is registered under in the hangar view.
 INJECT_ALIAS = 'otmetkiHudInject'
-BATTLE_INJECT_ALIAS = 'otmetkiHudBattleInject'
 INJECT_LABEL = 'otmetki.hangar_test'
-# RU 1.45 client source (AS3 gui_battle): the battle page children an injected page goes under, bottom to top.
-BATTLE_PAGE_COVERS = ('battleLoading', 'fullStats', 'radialMenu')
 # BATTLE_VIEW_ALIASES the battle page registered: the stock damage log the damage log replaces once drawn.
 STOCK_COMPONENTS = ('battleDamageLogPanel', 'teamBasesPanel', 'minimap', 'consumablesPanel')
 SESSION_LABEL_PLACE = {'x': 0, 'y': 0, 'alignX': 'right', 'alignY': 'top'}
@@ -625,6 +622,7 @@ def window_impl_class(test):
             self.layer = layer
             self.uniqueID = len(test.windows) + 1
             self.windowStatus = 1
+            self.isFocused = False
             self.onStatusChanged = StatusEvent()
 
         def load(self):
@@ -1071,6 +1069,7 @@ class Game(object):
             WindowFlags=constants('WindowFlags', {'WINDOW': 1}),
             WindowLayer=constants('WindowLayer', {'WINDOW': 7}),
             WindowStatus=constants('WindowStatus', {'LOADED': 3, 'DESTROYING': 4, 'DESTROYED': 5}),
+            Window=type('Window', (object,), {'_cFocusChanged': lambda window, focused: None}),
         )
         package('gui.impl')
         module('gui.impl.pub', ViewImpl=ViewImpl, WindowImpl=window_impl_class(self))
@@ -1291,10 +1290,10 @@ class Game(object):
                 callback(response_json(data))
 
     def hud_page(self):
-        """The state of the HUD page on the screen: inside the battle page in battle, inside the hangar view else."""
+        """The state of the HUD page on the screen: the HUD window's in battle, inside the hangar view else."""
         if hasattr(self.player, 'arena'):
-            return self.injected_page(self.scaleform.battle.containerManager.views['classicBattlePage'],
-                                      BATTLE_INJECT_ALIAS)
+            self.next_frame_pushes()
+            return json.loads(self.windows[-1].content.getViewModel().strings[0][1])
         return self.injected_page(self.scaleform.lobby.containerManager.views['hangar'])
 
     def hud_page_ids(self):
@@ -1316,6 +1315,7 @@ class Game(object):
     def install_scaleform(self, **options):
         self.scaleform = _scaleform.Scaleform(**options).install()
         loader = self.install_app_loader()
+        self.loader = loader
         loader.getApp = self.scaleform.app_loader.getApp
         loader.getDefBattleApp = self.scaleform.app_loader.getDefBattleApp
         return loader
@@ -1332,11 +1332,26 @@ class Game(object):
     def load_hangar(self):
         return self.scaleform.load_view(self.scaleform.lobby, 'hangar')
 
+    def enter_space(self, space_name):
+        self.loader.onGUISpaceLeft(self.loader.space)
+        self.loader.space = GUI_SPACES[space_name]
+        self.loader.onGUISpaceEntered(self.loader.space)
+
+    def enter_window_battle(self):
+        """The battle GUI space entered and settled (the HUD window opens a frame later), then the battle itself."""
+        self.enter_space('BATTLE')
+        session = self.enter_battle(1)
+        self.run_callbacks()
+        return session
+
     def load_battle_page(self):
         return self.scaleform.load_battle_page(components=STOCK_COMPONENTS)
 
     def send_from_page(self, view, alias, **message):
         self.scaleform.page(view, alias).getViewModel().send({'message': json.dumps(message)})
+
+    def send_from_window(self, **message):
+        self.windows[-1].content.getViewModel().commands['send']({'message': json.dumps(message)})
 
     def set_battle_cursor(self, shown):
         self.hud_backend()._set_cursor(shown)
@@ -2979,43 +2994,42 @@ class InjectHangarTest(StoryTest):
         self.assertEqual(self.windows, 0)
 
 
-class InjectBattleTest(StoryTest):
+class BattleWindowTest(StoryTest):
 
     @classmethod
     def play(cls, game):
         app = game.open_inject_lobby()
         app.ui.show(INJECT_LABEL, 'hangar only', HANGAR_LABEL_PLACE)
         hangar = game.load_hangar()
-        session = game.enter_battle(1)
+        session = game.enter_window_battle()
         game.scaleform.destroy_view(game.scaleform.lobby, hangar)
         page = game.load_battle_page()
-        component = game.scaleform.battle.factory.made[-1]
-        cls.order = [getattr(child, 'name', 'page') for child in page.flashObject.children]
+        cls.battle_components_made = len(game.scaleform.battle.factory.made)
+        cls.injected_in_battle = INJECT_ALIAS in page.components
         session.own_feedback(Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)))
+        cls.windows_in_battle = len(game.windows)
+        cls.window_layer = game.windows[0].layer
         cls.state = game.hud_page()
-        cls.mouse_without_cursor = component.mouseChildren
         cls.play_stock(game, page)
-        cls.play_edit(game, app, page, component)
+        cls.play_edit(game, app)
         cls.play_covers(game, page)
         cls.play_leaving(game, page)
-        cls.windows = len(game.windows)
 
     @classmethod
     def play_stock(cls, game, page):
         cls.stock_hidden_before_drawn = set(page.hidden)
-        game.send_from_page(page, BATTLE_INJECT_ALIAS, type='drawn', ids=['otmetki.hud.damage_log'])
+        game.send_from_window(type='drawn', ids=['otmetki.hud.damage_log'])
         cls.stock_hidden_once_drawn = set(page.hidden)
 
     @classmethod
-    def play_edit(cls, game, app, page, component):
+    def play_edit(cls, game, app):
         game.set_battle_cursor(True)
         cls.edit_state = game.hud_page()
-        cls.mouse_with_cursor = component.mouseChildren
-        game.send_from_page(page, BATTLE_INJECT_ALIAS, type='moved', id='otmetki.hud.damage_log', x=111, y=222,
-                            align_x='left', align_y='bottom')
+        game.send_from_window(type='moved', id='otmetki.hud.damage_log', x=111, y=222, align_x='left',
+                              align_y='bottom')
         cls.saved = game.saved_components(app)['damage_log']
         game.set_battle_cursor(False)
-        cls.mouse_after_cursor = component.mouseChildren
+        cls.state_after_cursor = game.hud_page()
 
     @classmethod
     def play_covers(cls, game, page):
@@ -3041,58 +3055,73 @@ class InjectBattleTest(StoryTest):
 
     @classmethod
     def play_leaving(cls, game, page):
+        game.enter_space('LOBBY')
         game.scaleform.destroy_view(game.scaleform.battle, page)
-        cls.page_after_the_battle = game.scaleform.page(page, BATTLE_INJECT_ALIAS)
+        cls.windows_after_the_battle = len(game.windows)
         cls.drawn_after_the_battle = game.hud_backend().drawn_aliases()
         game.back_to_hangar()
         cls.hangar_page = [panel['id'] for panel in game.injected_page(game.load_hangar())['panels']]
+        cls.windows_back_in_the_hangar = len(game.windows)
 
-    def test_the_page_goes_below_the_loading_screen_tab_and_the_radial_menu(self):
-        self.assertEqual(self.order, ['page', 'battleLoading', 'fullStats', 'radialMenu'])
+    def test_nothing_is_injected_into_the_battle_page(self):
+        self.assertEqual(self.battle_components_made, 0)
 
-    def test_the_battle_page_gets_the_battle_panels_without_the_hangar_labels(self):
-        ids = [panel['id'] for panel in self.state['panels']]
+    def test_the_battle_page_registers_no_page_of_ours(self):
+        self.assertFalse(self.injected_in_battle)
 
-        self.assertIn('otmetki.hud.damage_log', ids)
-        self.assertNotIn(INJECT_LABEL, ids)
+    def test_the_battle_draws_in_one_hud_window(self):
+        self.assertEqual(self.windows_in_battle, 1)
 
-    def test_the_battle_page_takes_no_mouse_without_the_cursor(self):
-        self.assertFalse(self.mouse_without_cursor)
+    def test_the_hud_window_sits_on_the_window_layer(self):
+        self.assertEqual(self.window_layer, 7)
+
+    def test_the_hud_window_gets_the_battle_panels(self):
+        self.assertIn('otmetki.hud.damage_log', [panel['id'] for panel in self.state['panels']])
+
+    def test_the_hud_window_gets_no_hangar_label(self):
+        self.assertNotIn(INJECT_LABEL, [panel['id'] for panel in self.state['panels']])
+
+    def test_the_hud_window_is_not_in_edit_mode_without_the_cursor(self):
         self.assertFalse(self.state['edit'])
 
-    def test_the_stock_damage_log_stays_until_the_page_draws_ours(self):
+    def test_the_stock_damage_log_stays_until_the_window_draws_ours(self):
         self.assertEqual(self.stock_hidden_before_drawn, set())
 
-    def test_the_stock_damage_log_hides_once_the_page_draws_ours(self):
+    def test_the_stock_damage_log_hides_once_the_window_draws_ours(self):
         self.assertIn('battleDamageLogPanel', self.stock_hidden_once_drawn)
 
     def test_the_battle_cursor_is_the_edit_mode(self):
         self.assertTrue(self.edit_state['edit'])
-        self.assertTrue(self.mouse_with_cursor)
 
     def test_a_panel_dragged_in_battle_saves_its_place(self):
         self.assertEqual((self.saved['x'], self.saved['y']), (111, 222))
 
-    def test_hiding_the_cursor_takes_the_mouse_back(self):
-        self.assertFalse(self.mouse_after_cursor)
+    def test_hiding_the_cursor_ends_the_edit_mode(self):
+        self.assertFalse(self.state_after_cursor['edit'])
 
-    def test_v_hides_the_panels_and_brings_them_back(self):
+    def test_v_hides_the_panels(self):
         self.assertFalse(self.visible_under_v)
+
+    def test_the_panels_come_back_after_v(self):
         self.assertTrue(self.visible_after_v)
 
-    def test_tab_hides_the_panels_and_brings_them_back(self):
+    def test_tab_hides_the_panels(self):
         self.assertFalse(self.visible_under_tab)
+
+    def test_the_panels_come_back_after_tab(self):
         self.assertTrue(self.visible_after_tab)
 
     def test_tab_keeps_the_stock_damage_log_hidden(self):
         self.assertTrue(self.stock_hidden_under_tab)
 
-    def test_the_loading_screen_hides_the_panels_and_brings_them_back(self):
+    def test_the_loading_screen_hides_the_panels(self):
         self.assertFalse(self.visible_under_loading)
+
+    def test_the_panels_come_back_after_the_loading_screen(self):
         self.assertTrue(self.visible_after_loading)
 
-    def test_the_page_leaves_with_the_battle_page(self):
-        self.assertIsNone(self.page_after_the_battle)
+    def test_leaving_the_battle_closes_the_hud_window(self):
+        self.assertEqual(self.windows_after_the_battle, 0)
 
     def test_nothing_is_confirmed_drawn_after_the_battle(self):
         self.assertIsNone(self.drawn_after_the_battle)
@@ -3100,8 +3129,39 @@ class InjectBattleTest(StoryTest):
     def test_the_hangar_page_comes_back_with_the_hangar_labels(self):
         self.assertIn(INJECT_LABEL, self.hangar_page)
 
-    def test_no_window_is_ever_opened(self):
-        self.assertEqual(self.windows, 0)
+    def test_the_hangar_opens_no_window(self):
+        self.assertEqual(self.windows_back_in_the_hangar, 0)
+
+
+class GamefaceWindowFrameTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        app = game.open_inject_lobby()
+        game.enter_space('LOBBY')
+        app.ui.show(INJECT_LABEL, 'hangar only', HANGAR_LABEL_PLACE)
+        game.load_hangar()
+        game.run_callbacks()
+        cls.windows_in_the_lobby = len(game.windows)
+        game.enter_space('BATTLE')
+        session = game.enter_battle(1)
+        session.own_feedback(Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)))
+        cls.windows_in_the_battle_frame = len(game.windows)
+        game.run_callbacks()
+        cls.windows_next_frame = len(game.windows)
+        cls.page = game.hud_page_ids()
+
+    def test_the_lobby_opens_no_window(self):
+        self.assertEqual(self.windows_in_the_lobby, 0)
+
+    def test_no_window_opens_in_the_frame_the_battle_is_entered(self):
+        self.assertEqual(self.windows_in_the_battle_frame, 0)
+
+    def test_the_window_opens_a_frame_after_the_battle_was_entered(self):
+        self.assertEqual(self.windows_next_frame, 1)
+
+    def test_the_window_draws_the_battle_panels(self):
+        self.assertIn('otmetki.hud.damage_log', self.page)
 
 
 class InjectWithoutClassFactoryTest(StoryTest):
@@ -3113,22 +3173,21 @@ class InjectWithoutClassFactoryTest(StoryTest):
         sys.stdout = capture
         app.ui.show(INJECT_LABEL, 'hangar only', HANGAR_LABEL_PLACE)
         game.load_hangar()
-        game.enter_battle(1)
-        page = game.load_battle_page()
-        game.run_callbacks()
-        sys.stdout = Sink()
-        cls.output = ''.join(capture.parts)
-        cls.windows = len(game.windows)
+        cls.windows_in_the_lobby = len(game.windows)
         cls.labels = sorted(game.components)
         cls.drawn = game.hud_backend().drawn_aliases()
+        game.enter_window_battle()
+        page = game.load_battle_page()
+        sys.stdout = Sink()
+        cls.output = ''.join(capture.parts)
+        cls.windows_in_battle = len(game.windows)
         cls.stock_hidden = set(page.hidden)
 
     def test_a_page_that_cannot_be_placed_is_logged(self):
         self.assertIn('the page could not be placed in the hangar view', self.output)
-        self.assertIn('the page could not be placed in the battle page', self.output)
 
-    def test_no_window_takes_over(self):
-        self.assertEqual(self.windows, 0)
+    def test_no_window_takes_over_in_the_lobby(self):
+        self.assertEqual(self.windows_in_the_lobby, 0)
 
     def test_the_labels_wait_for_a_page(self):
         self.assertIn(INJECT_LABEL, self.labels)
@@ -3136,7 +3195,10 @@ class InjectWithoutClassFactoryTest(StoryTest):
     def test_nothing_is_confirmed_drawn(self):
         self.assertIsNone(self.drawn)
 
-    def test_every_stock_element_stays(self):
+    def test_the_battle_still_draws_in_the_hud_window(self):
+        self.assertEqual(self.windows_in_battle, 1)
+
+    def test_every_stock_element_stays_until_the_window_draws(self):
         self.assertEqual(self.stock_hidden, set())
 
 
@@ -3178,16 +3240,23 @@ class HudWithoutInjectTest(StoryTest):
         sys.stdout = Sink()
         cls.output = ''.join(capture.parts)
         cls.backend_name = game.hud_module().hud_layer(app).backend.name
-        cls.windows = len(game.windows)
+        app.ui.show(INJECT_LABEL, 'hangar only', HANGAR_LABEL_PLACE)
+        cls.windows_in_the_lobby = len(game.windows)
+        session = game.enter_battle(1)
+        session.own_feedback(Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)))
+        cls.battle_page = game.hud_page_ids()
 
-    def test_a_client_without_the_inject_classes_draws_no_panel(self):
-        self.assertEqual(self.backend_name, 'none')
+    def test_a_client_without_the_inject_classes_keeps_the_gameface_backend(self):
+        self.assertEqual(self.backend_name, 'gameface')
 
     def test_the_missing_inject_classes_are_logged(self):
-        self.assertIn('no inject adaptor for the HUD page', self.output)
+        self.assertIn('no inject adaptor for the hangar page', self.output)
 
-    def test_no_window_is_opened(self):
-        self.assertEqual(self.windows, 0)
+    def test_the_hangar_panels_open_no_window(self):
+        self.assertEqual(self.windows_in_the_lobby, 0)
+
+    def test_the_battle_draws_in_the_hud_window(self):
+        self.assertIn('otmetki.hud.damage_log', self.battle_page)
 
 
 class SessionLogTest(StoryTest):

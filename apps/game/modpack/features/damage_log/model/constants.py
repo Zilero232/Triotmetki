@@ -70,6 +70,8 @@ TOTALS = (
     ('blocked', 'received'),
     ('received', 'received'),
 )
+# Totals shown only once they count: the stun total is artillery's alone.
+COUNTED_ONLY_TOTALS = ('stun',)
 # Per total: the post-battle efficiency icon (None: our glyph), the widget tone and the text line's colour macro.
 TOTAL_ICONS = {'dealt': 'damage', 'assist': 'help', 'stun': 'stun', 'blocked': 'armor', 'received': None}
 TOTAL_TONES = {'dealt': 'accent', 'assist': 'radio', 'stun': 'stun', 'blocked': 'blocked', 'received': 'received'}

@@ -67,29 +67,40 @@ replay) from the `pack_badge` component:
 
 ### Drawing (Lesta 1.45)
 
-Three options were weighed:
+Revised 2026-10-07 (pack_badge 0.1.2): the first build used the stock prefix badge slot, and in game our icon showed
+instead of the player's own achievement badge. The owner wants it as Near_You shows it: a separate small mark that
+leaves the player's badge alone. Near_You's pack is closed (no source to read); XVM puts its user mark as an
+`<img>` in the name line, which is what this does.
 
-1. **The stock prefix badge slot** — chosen. `VehicleInfoComponent.addVehicleInfo`
-   (`gui/Scaleform/daapi/view/battle/shared/stats_exchange/vehicle.py:122-169`, RU 1.45) builds the dict the
-   players panel, the Tab table and the loading screen all read; `data['badge']` is a `BadgeVisualVO`, and
-   `BadgeComponent.setData` (`sources-as3/gui_base/.../controls/BadgeComponent.as`) draws it from the battle atlas
-   only when `isAtlasSource` is true, otherwise `icon.source = path` loads any image. So setting `badge = {icon:
-   '../maps/icons/otmetki/pack_badge/badge_24.png', isAtlasSource: False, sizeContent: '24x24'}` and
-   `hasSelectedBadge = True` for a marked row draws our 24 px icon in all three views with no Flash code, the same
-   display-only data rewrite Battle Observer does for its «hide badges».
-2. **The suffix badge** (`suffixBadgeType`): drawn by `BattleAtlasSprite.imageName` from the battle atlas only
-   (`StatsTableItemBase.as:195-212`); an own image would need a patched `battleAtlas`, which we never ship.
-3. **Gameface icons positioned over the panel rows**: needs row geometry the HUD page cannot read (panel modes,
-   sorting, scrolling), breaks on every panel layout; rejected.
+Options weighed:
 
-The prefix slot holds one badge. A viewer choice `stock_badge` (`replace`, default, or `keep`) decides whether a
-pack user's own stock badge gives way to ours or stays (then that row shows no mark).
+1. **An `<IMG>` in the name text** — chosen. `VehicleInfoComponent.addVehicleInfo`
+   (`gui/Scaleform/daapi/view/battle/shared/stats_exchange/vehicle.py`, RU 1.45) sends `region` with every row; the
+   players panel (`BasePlayersListItemHolder.updateUserProps`), the Tab table (`StatsTableItemHolderBase.updateUserProps`)
+   and the loading screen (`BasePlayerItemRenderer.draw`) pass it to `CommonsBattle.formatPlayerName`
+   (`sources-as3/battle/.../CommonsBattle.as`), which sets `htmlText = name + [clan] + ' ' + region + igr + eye`;
+   the stock IGR and anonymiser marks are `<IMG SRC="img://gui/maps/icons/library/...">` in that same string. So
+   `region = <IMG SRC="img://gui/maps/icons/otmetki/pack_badge/badge_16.png" width="16" height="16" vspace="-4"/>`
+   (region is empty on RU: `player_format.getRegionCode` returns a code only for another realm; a code is kept before
+   the icon) draws a 16 px icon after the name and clan in all three views, with no Flash code; Battle Observer draws
+   its own `img://gui/maps/icons/battle_observer/...` PNGs in battle text the same way. The stock prefix badge is not
+   touched. Limits: the players panel shows it only in its full-name mode (the cut-name modes draw the bare
+   `userName`); a name too long for the field is cut by the stock algorithm, which drops the suffix (and our icon)
+   last. UNVERIFIED on Lesta 1.45: the mod PNG through `img://` in these fields; the component logs the tag it sends.
+2. **The stock prefix badge slot** (`data['badge']`, `isAtlasSource: False`): works, but the slot holds one badge,
+   so ours replaced the player's achievement badge. Dropped with its `stock_badge` choice (retired in companion
+   config revision 9).
+3. **The suffix badge** (`suffixBadgeType`): drawn by `BattleAtlasSprite.imageName` from the battle atlas only
+   (`StatsTableItemBase.as`, `BasePlayerItemRenderer.as`), and the random-battle players panel has no suffix slot at
+   all; an own image would need a patched `battleAtlas`, which we never ship, and a stock suffix id would impersonate
+   a real badge.
+4. **`playerName` itself**: the players panel's cut field and the stock name cutter treat it as plain text
+   (`truncateTextFieldText`, `cutPlayerName` takes `substr` of it), so a tag there would break; rejected.
+5. **Gameface icons positioned over the panel rows**: needs row geometry the HUD page cannot read; rejected.
 
 The server answer arrives after the panels are drawn, so the component re-sends the vehicle data
-(`BattleStatisticsDataController.invalidateVehiclesInfo`, captured from `startControl`). The players panel only
-redraws a badge when the old one is null or the `hasSelectedBadge` flag flips
-(`BasePlayersPanelListItem.setBadge`, `.as:363-370`), so a row whose stock badge is replaced is sent twice: once
-without a badge, then with ours.
+(`BattleStatisticsDataController.invalidateVehiclesInfo`, captured from `startControl`); a changed `region` marks the
+name props changed (`StatsUserProps.region`), so the name is redrawn on the one pass.
 
 ### The own badge
 

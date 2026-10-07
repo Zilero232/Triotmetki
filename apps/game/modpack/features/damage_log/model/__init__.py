@@ -10,6 +10,7 @@ from ..settings.constants import STYLE_MINIMAL
 from .constants import (
     BLOCKED_OUTCOMES,
     COMPACT_STYLES,
+    COUNTED_ONLY_TOTALS,
     KIND_CRIT,
     KINDS,
     MAX_ENTRIES,
@@ -122,13 +123,13 @@ def _is_shown_total(key, section, settings):
     return settings.get('style') != STYLE_MINIMAL or key in MINIMAL_TOTALS
 
 
-# A total is shown once it is above zero; before anything counts, the first total the settings show stands at zero, so
-# the panel is on screen from the start in place of the stock damage log it hides (whose totals show from the start).
+# Every total the settings show stands from the start, at zero until something counts, as the stock damage log's
+# totals do: the strip keeps its width and nothing jumps when the first damage comes. The stun total only counts for
+# artillery, so it waits for its first stun.
 def shown_totals(log, settings):
     values = log.values()
     shown = [(key, values[key]) for key, section in TOTALS if _is_shown_total(key, section, settings)]
-    counted = [(key, value) for key, value in shown if value > 0]
-    return counted or shown[:1]
+    return [(key, value) for key, value in shown if value > 0 or key not in COUNTED_ONLY_TOTALS]
 
 
 def shows_rows(settings):

@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.compat import as_int, is_int, string_types, to_text
+from ....core.compat import as_int, is_int, is_number, string_types, to_text
 from ....core.moe import implausible_change, is_post_battle_reading
 from .constants import (
     ASSIST_STATS,
@@ -260,6 +260,19 @@ class MarksHistory(object):
 
     def clear(self, tank_id):
         return self.vehicles.pop(str(tank_id), None) is not None
+
+    # The battle panel's stand-in for a hangar snapshot when the battle came before any hangar (a reconnect after a
+    # crash): the tank's last recorded values.
+    def last_reading(self, tank_id):
+        for entry in reversed(self._entries(tank_id)):
+            if is_int(entry.get('rating')) and is_number(entry.get('avg')):
+                return {
+                    'tank_id': tank_id,
+                    'moving_avg_damage': entry['avg'],
+                    'damage_rating': entry['rating'],
+                    'marks_on_gun': entry.get('marks'),
+                }
+        return None
 
     def summary(self, tank_id, trend_battles):
         entries = self._entries(tank_id)

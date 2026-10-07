@@ -7,6 +7,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Entries are short: one line per change, saying what the player sees or gets — no implementation details.
 - Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## 0.3.8
+
+### ru
+
+- Панели боя снова в отдельном окне: встраивание в экран боя могло ронять игру.
+
+### en
+
+- Battle panels are back in their own window: building them into the battle screen could crash the game.
+
 ## 0.3.7
 
 ### ru
@@ -362,6 +372,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Battle HUD: damage and hit logs, clock and battle timer, team HP, sixth sense, a chat filter.
 - Hangar components: battle summary, marks history, ratings, replay manager, quick actions and more.
 - A settings window with profiles and a HUD editor; settings survive a wiped mods folder.
+
+## pack_badge 0.1.2
+
+### ru
+
+- Значок стоит после ника и больше не заменяет нашивку игрока; настройка «Если у игрока выбрана своя нашивка» убрана.
+
+### en
+
+- The badge sits after the name and no longer replaces the player's own badge; the «When a player has a badge of their own» setting is gone.
 
 ## pack_badge 0.1.1
 
@@ -1891,6 +1911,18 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - Five new one-colour centre marks and a choice of six colours.
 
+## core 0.9.7
+
+### ru
+
+- Панели боя снова в отдельном окне: встраивание в экран боя могло ронять игру.
+- Стандартный таймер перезарядки у прицела прячется и тогда, когда игра создала прицел дважды.
+
+### en
+
+- Battle panels are back in their own window: building them into the battle screen could crash the game.
+- The stock reticle reload timer is hidden even when the game created the reticle twice.
+
 ## core 0.9.6
 
 ### ru
@@ -2198,6 +2230,20 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - The shared base of all mod components and the battle HUD with a layout editor.
 - Settings are mirrored to a backup copy and restored on load.
+
+## companion 0.8.7
+
+### ru
+
+- При обновлении убирается старая настройка значка «Три отметки» «Если у игрока выбрана своя нашивка».
+- После краша и переподключения сразу в бой мод узнаёт аккаунт из боя.
+- Автосообщения в чат боя включены по умолчанию: арта по мне, урон от союзника, засвет.
+
+### en
+
+- On update the old Three Marks badge setting «When a player has a badge of their own» is removed.
+- After a crash and a reconnect straight into battle the mod takes the account from the battle.
+- Battle chat auto messages are on by default: artillery on me, ally damage, spotted.
 
 ## companion 0.8.6
 
@@ -2753,6 +2799,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - The settings window: a card per component, profiles (save, load, share as a code) and the on-screen HUD editor.
 - Opens from the «///» hangar button, ModsList or Ctrl+Shift+T.
 
+## marks_panel 0.8.4
+
+### ru
+
+- Панель отметки работает и после краша, когда игра переподключает сразу в бой: данные танка берутся из истории.
+
+### en
+
+- The marks panel works after a crash too, when the game reconnects straight into battle: the tank's values come from the history.
+
 ## marks_panel 0.8.3
 
 ### ru
@@ -3084,6 +3140,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### en
 
 - Opt-in (off): uploads the replays the game recorded of your battles; they stay private until you publish them. Files above 50 MiB are refused.
+
+## damage_log 0.5.5
+
+### ru
+
+- Итоги урона, помощи, блока и полученного урона видны с начала боя, с нулями.
+
+### en
+
+- The dealt, assist, blocked and received totals show from the start of the battle, at zero.
 
 ## damage_log 0.5.4
 
@@ -3526,6 +3592,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### en
 
 - A notification after each battle with result, XP, credits, stats and the MoE change; the session's battles in the mod window.
+
+## auto_messages 0.1.0
+
+### ru
+
+- Новый компонент: автосообщения союзникам в чат боя — арта по вам, урон от союзника, засвет; по желанию пожар, гусеница, боеукладка, фраг, «удачи» и «gg». Свои тексты, не чаще раза в 10 с, не в реплеях.
+
+### en
+
+- New component: automatic battle chat lines to your allies — artillery on you, ally damage, being spotted; optionally fire, tracks, ammo rack, a kill, «good luck» and «gg». Your own texts, at most once in 10 s, never in replays.
 
 ## chat_filter 0.1.3
 

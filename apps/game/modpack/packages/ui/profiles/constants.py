@@ -39,6 +39,7 @@ CODE_EXCLUDED_CONFIG_KEYS = (
     'hangar_cleaner',
     'hangar_notification_filter',
     'battle_chat_filter',
+    'battle_auto_messages',
 )
 CODE_EXCLUDED_SECTIONS = (
     'auto_reserves',
@@ -47,6 +48,7 @@ CODE_EXCLUDED_SECTIONS = (
     'hangar_cleaner',
     'notification_filter',
     'chat_filter',
+    'auto_messages',
 )
 CODE_EXCLUDED_SECTION_KEYS = {'hangar_tweaks': ('quick_actions',)}
 # Plain-data sections a code may carry besides the schema sections of the installed components: the HUD places per

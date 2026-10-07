@@ -2,12 +2,10 @@
 
 The client draws a Gameface `ViewImpl` inside a Scaleform view through the stock `GFInjectComponent` and an
 `InjectComponentAdaptor` (core/client/inject); docs/specs/2026-10-06-gameface-inject-host.md. This half decides
-what needs no client: where a page goes in a battle page's display list, a res_map answer as a layout id, the message a
-page sent.
+what needs no client: a res_map answer as a layout id, the message a page sent.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ..compat import is_number
 from .constants import (
     GF_INJECT_CLASS,
     INVALID_RES_ID,
@@ -22,17 +20,9 @@ __all__ = (
     'PAGE_MESSAGE_ARG',
     'PAGE_SEND_COMMAND',
     'PAGE_STATE_PROPERTY',
-    'below_covers',
     'message_of',
     'valid_layout',
 )
-
-
-def below_covers(indices):
-    """The display-list index that puts a page below every covering child (their `indices`, None for a child the page
-    lacks; the GFx bridge may hand an AS3 int over as a float), or None when the page has none of them."""
-    found = [int(index) for index in indices if is_number(index)]
-    return min(found) if found else None
 
 
 def valid_layout(found):

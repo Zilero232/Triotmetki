@@ -54,6 +54,11 @@ class HistoryBook(object):
         if entry is not None:
             self.history.save()
 
+    def last_reading(self, tank_id):
+        if self.history is None or not tank_id:
+            return None
+        return self.history.last_reading(tank_id)
+
     def summary(self, tank_id):
         if not self.is_open() or not tank_id:
             return None

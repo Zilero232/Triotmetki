@@ -4,8 +4,16 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 import _support  # noqa: F401
-from otmetki.core.hud.cover import CoverState, FollowedComponents, PageOverlays
+from otmetki.core.hud.cover import CoverState, FollowedComponents, PageOverlays, window_reason
 from otmetki.core.hud.layer.constants import COVER_FULL_STATS, COVER_GUI, COVER_LOADING, COVER_SCREEN
+
+WINDOW = 1
+DIALOG = 17
+POP_OVER = 33
+TOOLTIP = 49
+MAIN_WINDOW = 6
+FULLSCREEN = 1024
+WINDOW_MODAL = 4096
 
 
 class CoverStateTest(unittest.TestCase):
@@ -22,10 +30,10 @@ class CoverStateTest(unittest.TestCase):
     def test_the_reason_goes_with_the_last_source_that_reported_it(self):
         state = CoverState()
         state.report('page', (COVER_SCREEN,))
-        state.report('loading', (COVER_SCREEN,))
+        state.report('windows', (COVER_SCREEN,))
         state.report('page', ())
 
-        state.report('loading', ())
+        state.report('windows', ())
 
         assert state.reasons() == frozenset()
 
@@ -53,7 +61,8 @@ class CoverStateTest(unittest.TestCase):
     def test_the_window_switch_off_leaves_only_v_and_the_loading_screen(self):
         state = CoverState()
         state.report('gui', (COVER_GUI,))
-        state.report('page', (COVER_FULL_STATS, COVER_SCREEN))
+        state.report('page', (COVER_FULL_STATS,))
+        state.report('windows', (COVER_SCREEN,))
 
         reasons = state.reasons(windows=False)
 
@@ -190,6 +199,45 @@ class PageOverlaysTest(unittest.TestCase):
         overlays.changed(visible={'fullStats'})
 
         assert not overlays.changed(visible={'fullStats', 'damagePanel'})
+
+
+class WindowReasonTest(unittest.TestCase):
+
+    def test_a_full_screen_window_hides_the_panels(self):
+        assert window_reason({'flags': WINDOW | FULLSCREEN}) == COVER_SCREEN
+
+    def test_a_full_screen_dialog_hides_the_panels(self):
+        assert window_reason({'flags': DIALOG | FULLSCREEN}) == COVER_SCREEN
+
+    def test_a_dialog_covers_nothing(self):
+        assert window_reason({'flags': DIALOG}) is None
+
+    def test_a_modal_window_covers_nothing(self):
+        assert window_reason({'flags': WINDOW | WINDOW_MODAL}) is None
+
+    def test_a_plain_window_covers_nothing(self):
+        assert window_reason({'flags': WINDOW}) is None
+
+    def test_a_pop_over_covers_nothing(self):
+        assert window_reason({'flags': POP_OVER}) is None
+
+    def test_a_tooltip_covers_nothing(self):
+        assert window_reason({'flags': TOOLTIP | WINDOW_MODAL}) is None
+
+    def test_the_main_window_covers_nothing(self):
+        assert window_reason({'flags': MAIN_WINDOW | FULLSCREEN}) is None
+
+    def test_our_own_window_covers_nothing(self):
+        assert window_reason({'flags': WINDOW | FULLSCREEN, 'own': True}) is None
+
+    def test_a_scaleform_window_is_left_to_the_modal_watch(self):
+        assert window_reason({'flags': DIALOG | FULLSCREEN, 'scaleform': True}) is None
+
+    def test_a_closing_window_covers_nothing(self):
+        assert window_reason({'flags': WINDOW | FULLSCREEN, 'alive': False}) is None
+
+    def test_a_hidden_window_covers_nothing(self):
+        assert window_reason({'flags': DIALOG | FULLSCREEN, 'hidden': True}) is None
 
 
 class FollowedComponentsTest(unittest.TestCase):

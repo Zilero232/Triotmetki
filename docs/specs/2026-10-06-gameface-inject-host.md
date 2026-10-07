@@ -1,9 +1,11 @@
 # Gameface pages inside the Scaleform lobby and battle (inject host)
 
-Status: phases 0-3 are built. The hangar spike was verified in game on RU 1.45 on 2026-10-06 (section 6.1), the
-players' hangar page (phase 1) and the battle spike on 2026-10-07. Phase 2 (the battle panels inside the battle
-page) and phase 3 (the HUD window and its focus workarounds removed, no fallback window) were built on 2026-10-07
-and wait for the owner's in-game check (section 6.3). Phase 4 is not started.
+Status: phase 1 (the hangar page) is live; phases 2 and 3 were rolled back in 0.3.8. The hangar spike was verified
+in game on RU 1.45 on 2026-10-06 (section 6.1), the players' hangar page (phase 1) and the battle spike on
+2026-10-07. Phase 2 (the battle panels inside the battle page) and phase 3 (the HUD window removed) shipped in 0.3.7
+and crashed the owner's client natively in battle (section 4.1), so 0.3.8 draws the battle in the HUD window again,
+with its focus hand-back and the cover watch of full-screen Gameface windows; the hangar stays inside the hangar
+view. Phase 4 is not started.
 
 ## 1. Problem
 
@@ -149,7 +151,7 @@ changes).
 - **Show and hide:**
   - Lobby: the host lives in the hangar view, so other lobby screens remove it. Full-screen client windows
     (`FULLSCREEN_WINDOW`, `OVERLAY`) are wulf windows above the Scaleform page and cover it.
-  - Battle: the inject sits below `battleLoading`, `fullStats` and `radialMenu`, so loading, Tab and the radial menu
+  - Battle (0.3.7 only, rolled back in 0.3.8, section 4.1): the inject sat below `battleLoading`, `fullStats` and `radialMenu`, so loading, Tab and the radial menu
     cover it. V hides it with the page. The Esc menu (`TOP_WINDOW`) is above. The `cover` fades can then go.
 - **Settings window:** stays a window, because it is modal, takes the keyboard and closes on Esc. It becomes a
   `LobbyWindow` subclass (`gui/impl/pub/lobby_window.py`: parent = the lobby view's window, not the main window) with
@@ -169,7 +171,7 @@ changes).
    session; the companion switch `hud_inject` («Дополнительно», on) turned it off (removed in phase 3). Kept for now: the labels'
    `plain_hangar` gating (still needed by the window fallback, harmless inside the hangar view), the window's focus
    machinery (battle and fallback). Not done in this phase: the settings window's move to `LobbyWindow`.
-3. **Phase 2, battle panels (done 2026-10-07, waiting for the in-game check):** the Gameface backend draws the
+3. **Phase 2, battle panels (shipped in 0.3.7, rolled back in 0.3.8, section 4.1):** the Gameface backend draws the
    battle panels into a second `hud.html` inside the battle page (`core/client/hud/inject_page` `BATTLE`, alias
    `otmetkiHudBattleInject`). It attaches on the battle app's `onViewLoaded` to every `SharedPage` (the pages the
    stock suppression and the cover watch follow; by the `core.hud.modes` page aliases when the class is missing)
@@ -182,7 +184,7 @@ changes).
    are made invisible too, so a page without those children and the stock elements follow one rule, and every
    reason clears on its own close event, the page's periodic check or the page's end. The fade (`cover` prop,
    `menu` reason) and the watch of full-screen wulf windows are gone: wulf windows draw over the whole battle page.
-4. **Phase 3, remove `HudWindow` (done 2026-10-07):** the window backend, its focus machinery (`last_focus`,
+4. **Phase 3, remove `HudWindow` (shipped in 0.3.7, rolled back in 0.3.8 for the battle, section 4.1):** the window backend, its focus machinery (`last_focus`,
    `core.hud.focus`, the wulf focus hand-on), the GUI-space wait for the window, the cover watch of Gameface
    windows, the `cover` fade and the companion switch `hud_inject` (a stored key drops out of `config.json` on the
    next save) are removed, with the dev spikes. Every caller of the window is on the pages now: the hangar labels,
@@ -196,6 +198,30 @@ changes).
    resized to the client after the first area, inside an inject as in a window), the labels' `plain_hangar`
    gating (the hangar view may stay alive under the queue or another sub view, spec section 5).
 5. **Phase 4 (optional):** per-widget hosts where a panel must sit between two stock elements.
+
+### 4.1 Battle inject rolled back (0.3.8)
+
+What happened: with 0.3.7 the owner's client crashed natively (a minidump, exit code 1, no Python traceback in
+`python.log`) twice, both times 20-140 s into a battle with the battle page's `otmetkiHudBattleInject` placed
+(display-list index 31, below `battleLoading`, `fullStats` and `radialMenu`). The hangar page (`otmetkiHudInject`)
+ran for hours without a crash. The dev battle spike (one label, 2026-10-07) never ran a full battle under load.
+
+What 0.3.8 does: the battle draws from the full-screen `HudWindow` again, exactly as before phase 2
+(`core/client/hud/gameface`: the window opens a frame after the battle GUI space was entered and closes when it is
+left; `last_focus` and `core.hud.focus` hand every focus the engine gives it back; `core/client/hud/cover/windows`
+hides the panels under a full-screen Gameface window). Nothing is placed in the battle app any more (the `BATTLE`
+place, `place_below`, `below_covers` and the battle alias are gone; `test_client_smoke.BattleWindowTest` checks that
+no component is made in the battle app). The lobby stays inside the hangar view with no fallback window; a client
+without the inject classes keeps the battle window and loses only the hangar panels. The stock suppression still
+trusts only `drawn` from the page of the current GUI space.
+
+Open question: why the battle page inject crashes. Candidates, none verified: the state pushed every frame into a
+child view whose texture the battle page composites (the hangar page gets far fewer pushes); the page's
+`setInputArea` refresh every second while the battle page re-lays out; the injected component at a display-list
+index the battle page's own AS3 re-orders (`setChildIndex` against children the page swaps); the battle app's
+view-cache and dispose order at the end of the battle. Before any retry: a dev-only battle spike that pushes the
+real state rate for whole battles, with the minidump read, and the native crash reproduced or ruled out per
+candidate.
 
 ## 5. Risks
 
@@ -293,10 +319,10 @@ In the hangar:
 - [ ] Open research or the store and come back: the cards go and come back (`page destroyed`, `adaptor disposed`,
   `placed`, `page loaded` in the log), no error.
 - [ ] Alt+Tab out and back, type in the lobby chat: keys and clicks still reach the hangar.
-- [ ] Battle and back: the battle panels draw inside the battle page (6.3), the hangar cards come back in the
-  hangar view and no window opens anywhere.
+- [ ] Battle and back: the battle panels draw in the HUD window (section 4.1), the hangar cards come back in the
+  hangar view and no window opens in the lobby.
 
-### 6.3 Phase 2 and 3: the battle panels inside the battle page (no window)
+### 6.3 Phase 2 and 3: the battle panels inside the battle page (no window; superseded by 0.3.8, section 4.1)
 
 Setup: uninstall the modpack in the manager, `cd apps/game/modpack && bun run dev:install`, start the game,
 `bun run dev:log`. Delete `mods/configs/otmetki/inject_spike.flag` if it is still there (nothing reads it now).
@@ -348,17 +374,17 @@ In a random battle:
 
 ## 7. Implementation
 
-- `packages/core/inject/` (pure): `GF_INJECT_CLASS`, the page protocol names, `below_covers`, `valid_layout`,
-  `message_of`, the aliases, `BATTLE_COVERS` and the load timeout. Tests in `packages/core/tests/test_inject.py`.
-- `packages/core/client/inject/`: `InjectHost` (`attach`, `detach`, `push`, `set_mouse`, `move`, `place_below`),
-  `page.py` (`PageViewModel`, `PageView`, `PageInjectAdaptor`, `bind`, `page_layout`, `page_usable`), `watch.py`
-  (`ViewWatch`: an app's views by alias or by a `matches(view)` rule).
-- `packages/core/client/hud/inject_page/`: `PagePlace` (`HANGAR`, `BATTLE`), `InjectPage` (one place's page:
-  attach, the place under the covers, the load check), `is_battle_page`.
-- `packages/core/client/hud/gameface/`: `GamefaceBackend` over the two pages (the page of the current GUI space,
-  the mouse lever per place, the cursor, `drawn`).
-- Tests: `packages/core/tests/test_hud_gameface_space.py` and `test_hud_gameface_window.py` (the backend over fake
-  pages); `tools/testing/_scaleform.py` stubs the Scaleform side (apps, ClassFactory, views, the adaptor and a
-  `SharedPage` battle page); `tools/tests/test_client_smoke.py` (`GamefaceBackendTest`, `Inject*Test`,
-  `HudWithoutInjectTest`) and `test_ui_smoke.py` play the hangar page, the battle page, the failures and a client
-  without the inject classes.
+- `packages/core/inject/` (pure): `GF_INJECT_CLASS`, the page protocol names, `valid_layout`, `message_of`, the
+  hangar alias and the load timeout. Tests in `packages/core/tests/test_inject.py`.
+- `packages/core/client/inject/`: `InjectHost` (`attach`, `detach`, `push`, `set_mouse`, `move`), `page.py`
+  (`PageViewModel`, `PageView`, `PageInjectAdaptor`, `bind`, `page_layout`, `page_usable`), `watch.py`
+  (`ViewWatch`: an app's views by alias).
+- `packages/core/client/hud/inject_page/`: `PagePlace` (`HANGAR`), `InjectPage` (the page: attach, the load check).
+- `packages/core/client/hud/gameface/`: `GamefaceBackend` over the hangar page in the lobby and the `HudWindow` in
+  battle (the page of the current GUI space, the hangar mouse lever, the cursor, the focus hand-back, `drawn`).
+- Tests: `packages/core/tests/test_hud_gameface_space.py` (the backend over a fake hangar page and a fake window)
+  and `test_hud_gameface_window.py` (the window's focus hand-back, `LastFocus`, the cursor poll);
+  `tools/testing/_scaleform.py` stubs the Scaleform side (apps, ClassFactory, views, the adaptor and a `SharedPage`
+  battle page); `tools/tests/test_client_smoke.py` (`GamefaceBackendTest`, `Inject*Test`, `BattleWindowTest`,
+  `GamefaceWindowFrameTest`, `HudWithoutInjectTest`) and `test_ui_smoke.py` play the hangar page, the battle window
+  (nothing placed in the battle page), the failures and a client without the inject classes.

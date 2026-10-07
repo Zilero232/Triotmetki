@@ -1,12 +1,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ..model.constants import STOCK_BADGE_CHOICES, STOCK_REPLACE
-
 SWITCH = 'battle_pack_badge'
 SECTION = 'pack_badge'
 GROUP = 'battle'
 
-DEFAULTS = {
-    'stock_badge': STOCK_REPLACE,
-}
-CHOICES = {'stock_badge': STOCK_BADGE_CHOICES}
+# The badge sits after the name and never covers the player's own badge, so the component has no options (the old
+# stock_badge choice leaves the stored file through companion.config DROPPED_KEYS).
+DEFAULTS = {}

@@ -324,5 +324,16 @@ class PageTest(unittest.TestCase):
         assert action['link'] == '/me/progress'
 
 
+class LastReadingTest(unittest.TestCase):
+
+    def test_the_last_battle_stands_in_for_the_hangar_snapshot(self):
+        reading = recorded_history().last_reading(1)
+
+        assert reading == {'tank_id': 1, 'moving_avg_damage': 2600, 'damage_rating': 8610, 'marks_on_gun': 2}
+
+    def test_a_tank_without_entries_has_no_reading(self):
+        assert recorded_history().last_reading(99) is None
+
+
 if __name__ == '__main__':
     unittest.main()

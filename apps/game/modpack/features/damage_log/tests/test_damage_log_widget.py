@@ -44,7 +44,7 @@ def gold_he_log():
 
 class TotalsTest(unittest.TestCase):
 
-    def test_totals_are_keyed_in_order_without_the_zero_ones(self):
+    def test_totals_are_keyed_in_order(self):
         keys = [item['key'] for item in preview_data()['totals']]
 
         assert keys == ['dealt', 'assist', 'blocked', 'received']

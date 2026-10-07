@@ -32,8 +32,7 @@ class ReticleControl(object):
 
     def __init__(self):
         self.suppression = StockSuppression(RETICLE_PARTS)
-        self.panel = None
-        self.settings = None
+        self.panels = {}
         self.hidden = frozenset()
         self.installed = False
 
@@ -49,8 +48,7 @@ class ReticleControl(object):
 
         @override(CrosshairPanelContainer, 'setSettings')
         def _set_settings(original, panel, vo):
-            control.panel = panel
-            control.settings = vo
+            control.panels[id(panel)] = (panel, vo)
             return original(panel, hide_reticle_parts(vo, control.hidden))
 
         # RU 1.45 crosshair/plugins.py AmmoPlugin: an autoloading clip (the Gendarme) draws its own countdown through
@@ -69,9 +67,7 @@ class ReticleControl(object):
 
         @override(CrosshairPanelContainer, '_dispose')
         def _dispose(original, panel, *args, **kwargs):
-            if panel is control.panel:
-                control.panel = None
-                control.settings = None
+            control.panels.pop(id(panel), None)
             return original(panel, *args, **kwargs)
 
     def hides_timer(self):
@@ -96,15 +92,17 @@ class ReticleControl(object):
         self.suppression = StockSuppression(RETICLE_PARTS)
         self.sync('the battle page left')
 
+    # A battle may create the crosshair panel more than once (python.log: battleCrosshairsApp twice at the battle's
+    # start), and the one on screen may be any of them, so every live panel gets the parts.
     def _push(self):
-        panel, settings = self.panel, self.settings
-        if panel is None or settings is None:
-            return
-        try:
-            panel.as_setSettingsS(hide_reticle_parts(settings, self.hidden))
-        except Exception:
-            log_exception('HUD: stock reticle settings')
-            self._restore(panel, settings)
+        for panel, settings in list(self.panels.values()):
+            if settings is None:
+                continue
+            try:
+                panel.as_setSettingsS(hide_reticle_parts(settings, self.hidden))
+            except Exception:
+                log_exception('HUD: stock reticle settings')
+                self._restore(panel, settings)
 
     @staticmethod
     @guarded('HUD: restore the stock reticle')

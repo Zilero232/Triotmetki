@@ -83,6 +83,14 @@ def vehicle_info(vehicle_id):
     return provider.getVehicleInfo(vehicle_id)
 
 
+def own_account_id(avatar):
+    """The player's own account id from the arena data (RU 1.45 Avatar.playerVehicleID), or None; it is there in a
+    battle the client reconnected to straight after a crash, before any hangar."""
+    info = vehicle_info(getattr(avatar, 'playerVehicleID', None))
+    account_id = getattr(getattr(info, 'player', None), 'accountDBID', 0)
+    return account_id or None
+
+
 def vehicle_name(vehicle_id):
     """The short vehicle name the player panels and the vanilla damage log show."""
     vehicle_type = getattr(vehicle_info(vehicle_id), 'vehicleType', None)

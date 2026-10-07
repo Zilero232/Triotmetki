@@ -11,14 +11,14 @@ from otmetki.features.pack_badge.model import (
     ArenaPlayer,
     BattleBadges,
     asked_account_ids,
-    badge_vo,
     badges_request,
     decorate,
     is_anonymised,
     parse_badges,
     show_own,
+    with_badge,
 )
-from otmetki.features.pack_badge.model.constants import MAX_ACCOUNT_IDS, STOCK_KEEP, STOCK_REPLACE
+from otmetki.features.pack_badge.model.constants import BADGE_TAG, MAX_ACCOUNT_IDS
 
 OWN = 1000
 CREDENTIALS = Credentials('dev_badge', 'q' * 43, OWN)
@@ -29,11 +29,11 @@ def player(account_id, name='Tanker', fake_name='', is_bot=False):
     return ArenaPlayer(account_id=account_id, name=name, fake_name=fake_name, is_bot=is_bot)
 
 
-def row(account_id, has_badge=False):
-    data = {'accountDBID': account_id, 'hasSelectedBadge': has_badge}
-    if has_badge:
-        data['badge'] = {'icon': 'badge_5', 'isAtlasSource': True}
-    return data
+STOCK_BADGE = {'icon': 'badge_5', 'isAtlasSource': True}
+
+
+def row(account_id, region=None):
+    return {'accountDBID': account_id, 'region': region, 'hasSelectedBadge': True, 'badge': dict(STOCK_BADGE)}
 
 
 class IsAnonymisedTest(unittest.TestCase):
@@ -124,49 +124,59 @@ class ShowOwnTest(unittest.TestCase):
         self.assertFalse(show_own(dict(COMPANION_DEFAULTS, show_pack_badge=False)))
 
 
+class WithBadgeTest(unittest.TestCase):
+
+    def test_no_region_is_the_badge_alone(self):
+        self.assertEqual(with_badge(None), BADGE_TAG)
+
+    def test_an_empty_region_is_the_badge_alone(self):
+        self.assertEqual(with_badge(''), BADGE_TAG)
+
+    def test_a_region_keeps_its_text_before_the_badge(self):
+        self.assertEqual(with_badge('EU'), 'EU ' + BADGE_TAG)
+
+    def test_a_region_with_the_badge_takes_no_second_one(self):
+        self.assertEqual(with_badge(with_badge('EU')), 'EU ' + BADGE_TAG)
+
+
 class DecorateTest(unittest.TestCase):
 
-    def test_puts_the_badge_on_a_marked_row(self):
+    def test_puts_the_badge_after_the_name_of_a_marked_row(self):
         data = row(2)
 
-        decorate(data, frozenset([2]), STOCK_REPLACE, False)
+        decorate(data, frozenset([2]))
 
-        self.assertEqual(data['badge'], badge_vo())
+        self.assertEqual(data['region'], BADGE_TAG)
+
+    def test_the_badge_is_an_image_tag_of_the_name_field(self):
+        self.assertTrue(BADGE_TAG.startswith('<IMG SRC="img://gui/maps/icons/otmetki/pack_badge/'))
+
+    def test_keeps_the_stock_badge_of_a_marked_row(self):
+        data = row(2)
+
+        decorate(data, frozenset([2]))
+
+        self.assertEqual(data['badge'], STOCK_BADGE)
+
+    def test_keeps_the_stock_badge_flag_of_a_marked_row(self):
+        data = row(2)
+
+        decorate(data, frozenset([2]))
+
         self.assertTrue(data['hasSelectedBadge'])
 
-    def test_the_badge_is_an_image_not_an_atlas_name(self):
-        self.assertFalse(badge_vo()['isAtlasSource'])
-
     def test_leaves_a_row_that_is_not_marked(self):
-        data = row(3, has_badge=True)
+        data = row(3)
 
-        changed = decorate(data, frozenset([2]), STOCK_REPLACE, False)
+        decorate(data, frozenset([2]))
 
-        self.assertFalse(changed)
-        self.assertEqual(data['badge']['icon'], 'badge_5')
+        self.assertIsNone(data['region'])
 
-    def test_replaces_a_stock_badge_by_default(self):
-        data = row(2, has_badge=True)
+    def test_reports_a_row_that_is_not_marked(self):
+        self.assertFalse(decorate(row(3), frozenset([2])))
 
-        decorate(data, frozenset([2]), STOCK_REPLACE, False)
-
-        self.assertEqual(data['badge'], badge_vo())
-
-    def test_keeps_a_stock_badge_when_asked_to(self):
-        data = row(2, has_badge=True)
-
-        changed = decorate(data, frozenset([2]), STOCK_KEEP, False)
-
-        self.assertFalse(changed)
-        self.assertEqual(data['badge']['icon'], 'badge_5')
-
-    def test_the_clearing_pass_sends_the_row_without_a_badge(self):
-        data = row(2, has_badge=True)
-
-        decorate(data, frozenset([2]), STOCK_REPLACE, True)
-
-        self.assertNotIn('badge', data)
-        self.assertFalse(data['hasSelectedBadge'])
+    def test_reports_a_marked_row(self):
+        self.assertTrue(decorate(row(2), frozenset([2])))
 
 
 class BattleBadgesTest(unittest.TestCase):

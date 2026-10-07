@@ -21,10 +21,26 @@ STUBBED = (
     'gui.Scaleform.daapi.view.meta',
     'gui.Scaleform.daapi.view.meta.PrebattleAmmunitionPanelViewMeta',
     'gui.mods',
+    'frameworks',
+    'frameworks.wulf',
+    'helpers',
+    'helpers.dependency',
+    'skeletons',
+    'skeletons.gui',
+    'skeletons.gui.impl',
 )
 HOOKED = ('_populate', '_dispose', '_setComponentsVisibility')
 SETUPS_HOOKED = ('as_showS', 'as_hideS')
+FULLSCREEN_WINDOW = 1 | 1024
+DIALOG = 17
+POP_OVER = 33
 CLIENT_MODULES = ('otmetki.core.client.hud', 'otmetki.core.client.timer')
+
+
+class Namespace(object):
+
+    def __init__(self, **values):
+        self.__dict__.update(values)
 
 
 class ClientEvent(object):
@@ -85,6 +101,31 @@ class PrebattleAmmunitionPanelViewMeta(object):
         return 'hidden'
 
 
+class Window(object):
+
+    def __init__(self, flags, status='LOADED'):
+        self.windowFlags = flags
+        self.windowStatus = status
+
+
+class WindowsManager(object):
+
+    def __init__(self):
+        self.onWindowStatusChanged = ClientEvent()
+        self.windows = []
+
+    def findWindows(self, predicate):
+        return [window for window in self.windows if predicate(window)]
+
+    def open(self, window):
+        self.windows.append(window)
+        self.onWindowStatusChanged(id(window), 'LOADED')
+
+    def close(self, window):
+        self.windows.remove(window)
+        self.onWindowStatusChanged(id(window), 'DESTROYED')
+
+
 class Event(object):
 
     def __init__(self, ctx):
@@ -118,7 +159,7 @@ class Callbacks(object):
             callback()
 
 
-def install_stubs(callbacks):
+def install_stubs(callbacks, manager):
     forget_client_modules()
     saved = {name: sys.modules.get(name) for name in STUBBED}
     for name in STUBBED:
@@ -129,6 +170,10 @@ def install_stubs(callbacks):
     sys.modules['gui.Scaleform.daapi.view.battle.shared.page'].SharedPage = SharedPage
     setups = sys.modules['gui.Scaleform.daapi.view.meta.PrebattleAmmunitionPanelViewMeta']
     setups.PrebattleAmmunitionPanelViewMeta = PrebattleAmmunitionPanelViewMeta
+    sys.modules['frameworks.wulf'].WindowStatus = Namespace(DESTROYING='DESTROYING', DESTROYED='DESTROYED')
+    sys.modules['helpers'].dependency = sys.modules['helpers.dependency']
+    sys.modules['helpers.dependency'].instance = lambda interface: Namespace(windowsManager=manager)
+    sys.modules['skeletons.gui.impl'].IGuiLoader = object
     return saved
 
 
@@ -149,7 +194,8 @@ class CoverWatchTest(unittest.TestCase):
 
     def setUp(self):
         self.callbacks = Callbacks()
-        self.saved = install_stubs(self.callbacks)
+        self.manager = WindowsManager()
+        self.saved = install_stubs(self.callbacks, self.manager)
         self.originals = {name: SharedPage.__dict__[name] for name in HOOKED}
         self.setups_originals = {
             name: PrebattleAmmunitionPanelViewMeta.__dict__[name] for name in SETUPS_HOOKED
@@ -340,6 +386,43 @@ class CoverWatchTest(unittest.TestCase):
 
         assert self.callbacks.pending == []
 
+    def test_a_full_screen_gameface_window_hides_the_panels(self):
+        self.battle_page()
+
+        self.manager.open(Window(FULLSCREEN_WINDOW))
+
+        assert self.layer.gui_hidden
+
+    def test_a_dialog_window_leaves_the_panels(self):
+        self.battle_page()
+
+        self.manager.open(Window(DIALOG))
+
+        assert self.layer.covers == frozenset()
+
+    def test_a_pop_over_leaves_the_panels(self):
+        self.battle_page()
+
+        self.manager.open(Window(POP_OVER))
+
+        assert self.layer.covers == frozenset()
+
+    def test_the_panels_come_back_when_the_window_closes(self):
+        self.battle_page()
+        window = Window(FULLSCREEN_WINDOW)
+        self.manager.open(window)
+
+        self.manager.close(window)
+
+        assert not self.layer.gui_hidden
+
+    def test_a_window_open_when_the_page_appears_covers_it_at_once(self):
+        self.manager.windows.append(Window(FULLSCREEN_WINDOW))
+
+        self.battle_page()
+
+        assert self.layer.gui_hidden
+
     def test_panels_hide_with_the_stock_gui(self):
         self.battle_page()
 
@@ -400,6 +483,13 @@ class CoverWatchTest(unittest.TestCase):
         page._dispose()
 
         assert self.layer.covers == frozenset()
+
+    def test_the_page_end_stops_following_the_windows(self):
+        page = self.battle_page()
+
+        page._dispose()
+
+        assert self.manager.onWindowStatusChanged.handlers == []
 
     def test_a_new_page_starts_uncovered(self):
         page = self.battle_page()

@@ -32,6 +32,7 @@ import BattleReplay
 import BigWorld
 from PlayerEvents import g_playerEvents
 
+from ....core.client.battle import own_account_id
 from ....core.client.game import client_language, client_version, on_vehicle_changed
 from ....core.client.native import repair_detection_sound
 from ....core.client.packaging import warn_mixed_install
@@ -289,8 +290,19 @@ class OtmetkiApp(object):
         if replay:
             return
         player = BigWorld.player()
+        self._account_from_arena(player)
         _step(self.battles.on_battle_ready, player)
         self.bus.emit('battle_ready', player)
+
+    # A client that crashed reconnects straight into the running battle, with no hangar to name the account: the arena
+    # data does, so the account's own files (marks history, outbox) open in that battle too.
+    def _account_from_arena(self, player):
+        if self.account_id is not None:
+            return
+        account_id = own_account_id(player)
+        if account_id:
+            log('account %s taken from the battle (no hangar before it)' % account_id)
+            _step(self._switch_account, account_id)
 
     def _on_avatar_leave(self, *args):
         self.in_battle = False

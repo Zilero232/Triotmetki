@@ -18,16 +18,10 @@ INVALID_RES_ID = -1
 
 # gui/app_loader/settings.py APP_NAME_SPACE names (RU 1.45 client source) of the Scaleform apps a page goes into.
 LOBBY_APP = 'SF_LOBBY'
-BATTLE_APP = 'SF_BATTLE'
-# The HUD page (docs/specs/2026-10-06-gameface-inject-host.md): the aliases its GFInjectComponent is registered under,
-# one per place, in the Scaleform hangar view and in the battle page.
+# The HUD page in the Scaleform hangar view (docs/specs/2026-10-06-gameface-inject-host.md): the alias its
+# GFInjectComponent is registered under. Nothing is placed in the battle page: the battle page inject of 0.3.7 crashed
+# the client natively within minutes of a battle, so the battle draws from the HUD window.
 HUD_INJECT_ALIAS = 'otmetkiHudInject'
-HUD_BATTLE_INJECT_ALIAS = 'otmetkiHudBattleInject'
 # A placed page that has not loaded this long after is taken out again until its view loads the next time. The 1.45
-# spikes' page loaded within a frame in the hangar and in the battle page.
+# spike's page loaded within a frame in the hangar.
 HUD_INJECT_LOAD_TIMEOUT_S = 10.0
-# The children of a battle page the HUD page goes under (RU 1.45 client source, AS3 gui_battle:
-# BaseBattlePage.battleLoading, random BattlePage.fullStats and radialMenu; the client puts its own GF inject,
-# battleNotifier, under radialMenu the same way, random/views/BattlePage.as:153), so the loading screen, Tab and the
-# radial menu cover it. A page without them keeps the page on top of its own children.
-BATTLE_COVERS = ('battleLoading', 'fullStats', 'radialMenu')

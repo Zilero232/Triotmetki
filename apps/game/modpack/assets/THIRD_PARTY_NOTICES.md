@@ -89,7 +89,7 @@ visual reference only (layout, sizes, readability, colour conventions); nothing 
 - Copyright: Copyright (c) 2026 Три отметки
 - Licence: LicenseRef-TriOtmetki-Artwork (`assets/otmetki/LICENSE.md`)
 - Source: https://triotmetki.ru
-- Contents: 1 badge (three marks on a shield): SVG source, RGBA PNG 24 px for the stock badge slot of the player panels
+- Contents: 1 badge (three marks on a shield): SVG source, RGBA PNG 16 px drawn after the name in the player panels, the Tab stats and the loading screen
 - Ships in: `res/gui/maps/icons/otmetki/pack_badge` (component `pack_badge`)
 - Fair play: Drawn next to the names of players who use the bound modpack and chose to show it; carries no battle information.
 

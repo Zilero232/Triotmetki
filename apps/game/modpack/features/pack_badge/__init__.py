@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'pack_badge'
 PACKAGE_ID = 'net.triotmetki.pack_badge'
 PACKAGE_NAME = 'Three Marks: modpack user badge'
-VERSION = '0.1.1'
+VERSION = '0.1.2'
 
 
 def create(app):
