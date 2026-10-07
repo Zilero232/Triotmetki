@@ -76,10 +76,10 @@ class ConfigTest(unittest.TestCase):
 
         self.assertEqual(upgraded.get('battle_loadout'), True)
 
-    def test_the_pack_badge_left_on_is_switched_off(self):
+    def test_the_pack_badge_comes_back_on_once(self):
         upgraded = config_at_retired_defaults()
 
-        self.assertFalse(upgraded.get('battle_pack_badge'))
+        self.assertTrue(upgraded.get('battle_pack_badge'))
 
     def test_upgrading_keeps_the_other_switches(self):
         upgraded = config_at_retired_defaults()
@@ -103,10 +103,17 @@ class ConfigTest(unittest.TestCase):
 
         self.assertEqual(upgraded.get('battle_loadout'), True)
 
-    def test_a_pack_badge_the_player_turned_on_is_switched_off_once(self):
-        upgraded = Config({'defaults_revision': 9, 'battle_pack_badge': True, 'user_set': 'battle_pack_badge'})
+    def test_a_pack_badge_the_0_3_8_update_switched_off_is_turned_on_once(self):
+        upgraded = Config({'defaults_revision': 9, 'battle_pack_badge': False, 'user_set': 'battle_pack_badge'})
 
-        self.assertFalse(upgraded.get('battle_pack_badge'))
+        self.assertTrue(upgraded.get('battle_pack_badge'))
+
+    def test_the_pack_badge_turned_off_after_the_upgrade_stays_off(self):
+        upgraded = Config({'defaults_revision': 9})
+
+        chosen = Config(dict(upgraded.to_dict(), battle_pack_badge=False))
+
+        self.assertFalse(chosen.get('battle_pack_badge'))
 
     def test_the_equipment_row_turned_off_after_the_one_time_switches_stays_off(self):
         upgraded = Config({'defaults_revision': 1})

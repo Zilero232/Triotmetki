@@ -1,9 +1,10 @@
 # Modpack user badge (`pack_badge`)
 
-Status: implemented 2026-10-06 (server `mod-badges`, companion 0.8.4, ui 0.9.4, new component `pack_badge` 0.1.0); the
-battle drawing is off by default since `pack_badge` 0.1.3 (2026-10-07): suspected of native client crashes, see the
-modpack README «pack_badge». The same 0.1.3 replaces the name-field `<IMG>` with our own AS3 library SWF in the
-players panel (section «Drawing», revision 2026-10-07 b), still behind the off-by-default switch.
+Status: implemented 2026-10-06 (server `mod-badges`, companion 0.8.4, ui 0.9.4, new component `pack_badge` 0.1.0).
+`pack_badge` 0.1.3 (2026-10-07) replaces the stock-data drawing, suspected of native client crashes, with our own AS3
+library SWF in the players panel, the Tab stats and the loading screen (section «Drawing», revision 2026-10-07 b); it
+is on by default and switched back on once for installs the 0.3.8 update turned off (companion 0.8.8, config
+revision 10).
 
 The owner asked for what Near_You's pack has: players who use the modpack carry its icon next to their name in the
 battle player panels («уши»), in the full stats (Tab) and on the loading screen, the player himself included.
@@ -93,10 +94,19 @@ own in the stock rows.
   per-frame work.
 - **Toolchain.** Apache Royale `mxmlc` from npm on Java (mise); playerglobal generated from Royale's Apache-licensed
   typedefs; no Lesta SWC (the client's classes are reached by name). The SWF is committed (`bun run swf:build`).
-- **Left out.** The Tab stats and the loading screen: their rows are rebound through non-display table controllers
-  (`StatsTableControllerBase`), not worth the risk for a test build. The players panel is where Near_You draws.
+- **Tab and loading screen.** Their rows are fixed slots of one big clip, rebound to other vehicles by sort:
+  `StatsTableControllerBase.allyRenderers/enemyRenderers` hold `StatsTableItemHolderBase` (public `getVehicleID()`,
+  `statsItem` with `vehicleIcon`, `_playerNameTF`, `_fragsTF`; `StatsTableItem.as`, `StatsTableItemBase.as`), and
+  `BattleLoadingForm._allyRenderers/_enemyRenderers` hold `BasePlayerItemRenderer` (`model.vehicleID`,
+  `_vehicleIcon`, `_textField`), which Battle Observer reads the same way (`ColoredIconsUI.as`
+  `getLoadingHolderByVehicleID`). Both owners rebind rows when their `VehiclesDataProvider`s (`_teamDP`, `_enemyDP`)
+  dispatch `validateItems`, so the library listens to those and repaints 150 ms later; a decoration hangs on the slot's
+  icon and is checked against the slot's current vehicle on every repaint. The Tab table draws its rows only once
+  shown, so Python listens to `GameEvent.FULL_STATS` on `g_eventBus` (the event the page itself handles) and asks for
+  a repaint 0.2 s after Tab goes down. Battle Observer draws nothing in the Tab; this part follows the client source.
 - UNVERIFIED on Lesta 1.45: the library loading from a mod package, the status string coming back through the GFx
-  bridge, Scaleform decoding the embedded PNG (a vector copy is drawn otherwise) and the private `_items` lookup.
+  bridge, Scaleform decoding the embedded PNG (a vector copy is drawn otherwise) and the private `_items`,
+  `tableCtrl`, `_allyRenderers` lookups (Battle Observer relies on the panel and loading ones).
 
 The history below is kept for the record.
 
@@ -161,10 +171,10 @@ Near_You marks its users: nothing is sent for it, so it shows unbound and when t
 
 ## 5. What to verify in game
 
-0.1.3 (SWF path): switch «Плашка «Три отметки» в ушах» on; in a random battle the own row shows the plate after the
-tank icon and the gradient; it follows the panel modes; python.log has the `pack badge swf:` lines listed in the
-modpack README test step 17. Play several battles and watch for the 0xC0000005 crash. The checks below are for the
-earlier paths.
+0.1.3 (SWF path, on by default): in a random battle the own row shows the plate after the tank icon and the gradient
+on the loading screen, in the ears (following the panel modes) and in the Tab table; python.log has one `pack badge
+swf:` line per screen for every push (modpack README «pack_badge», «Log»). Play several battles and watch for the
+0xC0000005 crash. The checks below are for the earlier paths.
 
 - Switch on, bound or not: the own row shows the icon in the ears, Tab and the loading screen (with a stock badge
   chosen, `replace` shows ours, `keep` the stock one).

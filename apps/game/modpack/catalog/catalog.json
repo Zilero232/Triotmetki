@@ -421,12 +421,12 @@
       "context": "battle",
       "presets": ["recommended", "streamer"],
       "title": {
-        "ru": "Плашка «Три отметки» в ушах",
-        "en": "Three Marks plate in the player panels"
+        "ru": "Плашка «Три отметки» в бою",
+        "en": "Three Marks plate in battle"
       },
       "description": {
-        "ru": "Плашка модпака после иконки танка в ушах и оранжевая подсветка строки: у вас и у игроков, которые привязали мод и не выключили свой значок. Тестовая, по умолчанию выключена.",
-        "en": "The modpack's plate after the vehicle icon in the player panels and an orange row highlight: on you and on players who bound the mod and left their badge on. Experimental, off by default."
+        "ru": "Плашка модпака после иконки танка и оранжевая подсветка строки в ушах, по Tab и на экране загрузки: у вас и у игроков, которые привязали мод и не выключили свой значок.",
+        "en": "The modpack's plate after the vehicle icon and an orange row highlight in the player panels, the Tab stats and the loading screen: on you and on players who bound the mod and left their badge on."
       },
       "fairPlay": {
         "ru": "Не боевая информация: сайт получает только номера аккаунтов игроков боя и ничего не хранит. Свой значок выключается в «Данные и сайт».",

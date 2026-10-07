@@ -72,9 +72,11 @@ class PackBadge(FeatureComponent):
         self.badges.start(arena_id, own_id)
         log('pack badge swf: own row %s' % ('marked' if own_id else 'not marked'))
         self.bridge.start()
-        self.show()
+        self.show('battle start')
         self.request(arena_id)
         self.hooks.add(arena, 'onVehicleAdded', lambda *args: self._on_vehicle_added(arena_id))
+        # The loading screen and the Tab table change with the arena period, a few times a battle.
+        self.hooks.add(arena, 'onPeriodChange', lambda *args: self.show('arena period'))
 
     def _on_battle_leave(self):
         self.hooks.clear()
@@ -83,12 +85,12 @@ class PackBadge(FeatureComponent):
 
     def _on_vehicle_added(self, arena_id):
         self.request(arena_id)
-        self.show()
+        self.show('vehicle added')
 
-    def show(self):
+    def show(self, reason):
         if not self.badges.marked:
             return
-        self.bridge.show(marked_vehicle_ids(arena_vehicles(arena_infos()), self.badges.marked))
+        self.bridge.show(marked_vehicle_ids(arena_vehicles(arena_infos()), self.badges.marked), reason)
 
     def _can_request(self, arena_id):
         if self.badges.requested or arena_id != self.badges.arena_id:
@@ -114,6 +116,6 @@ class PackBadge(FeatureComponent):
                 return
             if self.badges.answered(arena_id, parse_badges(data, frozenset(asked))):
                 log('pack badge swf: the site answered, %d marked accounts' % len(self.badges.marked))
-                self.show()
+                self.show('site answer')
 
         post_signed(app, BADGES_PATH, payload, done)

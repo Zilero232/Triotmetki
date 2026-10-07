@@ -43,8 +43,8 @@ class Bridge(object):
     def start(self):
         self.started = True
 
-    def show(self, vehicle_ids):
-        self.shown = vehicle_ids
+    def show(self, vehicle_ids, reason):
+        self.shown = (vehicle_ids, reason)
 
 
 class ClientTestCase(unittest.TestCase):

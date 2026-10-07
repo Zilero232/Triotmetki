@@ -17,9 +17,12 @@ from otmetki.features.pack_badge.model import (
     marked_vehicle_ids,
     parse_badges,
     show_own,
+    status_lines,
 )
 from otmetki.features.pack_badge.model.constants import (
+    FLASH_CLEAR,
     FLASH_MARK,
+    FLASH_REPAINT,
     LIBRARY_ADD,
     LIBRARY_REMOVE,
     LIBRARY_SWF,
@@ -159,10 +162,26 @@ class LibraryActionTest(unittest.TestCase):
         self.assertIsNone(library_action(['windows.swf'], 'ours.swf', False))
 
 
+class StatusLinesTest(unittest.TestCase):
+
+    def test_splits_the_answer_into_one_line_per_screen(self):
+        status = 'panel rows 30, marked 2 | tab rows 30, marked 2 | loading not found | art bitmap'
+
+        self.assertEqual(status_lines(status), [
+            'panel rows 30, marked 2', 'tab rows 30, marked 2', 'loading not found', 'art bitmap',
+        ])
+
+    def test_no_answer_is_no_lines(self):
+        self.assertEqual(status_lines(None), [])
+
+    def test_an_error_answer_is_one_line(self):
+        self.assertEqual(status_lines('error boom'), ['error boom'])
+
+
 class ShippingTest(unittest.TestCase):
 
-    def test_the_battle_drawing_is_off_by_default(self):
-        self.assertFalse(COMPANION_DEFAULTS['battle_pack_badge'])
+    def test_the_battle_drawing_is_on_by_default(self):
+        self.assertTrue(COMPANION_DEFAULTS['battle_pack_badge'])
 
     def test_the_library_swf_ships_in_the_package(self):
         path = os.path.join(_support.MODPACK_DIR, 'features', 'pack_badge', 'flash', LIBRARY_SWF)
@@ -175,11 +194,14 @@ class ShippingTest(unittest.TestCase):
         with open(path, 'rb') as handle:
             self.assertEqual(handle.read(3), b'FWS')
 
-    def test_the_library_defines_the_page_function_python_calls(self):
+    def test_the_library_defines_the_page_functions_python_calls(self):
         path = os.path.join(_support.MODPACK_DIR, 'as3', 'src', 'net', 'triotmetki', 'packbadge', 'PackBadgeLibrary.as')
 
         with open(path, 'rb') as handle:
-            self.assertIn(('prototype.%s = ' % FLASH_MARK).encode('ascii'), handle.read())
+            source = handle.read()
+
+        for name in (FLASH_MARK, FLASH_REPAINT, FLASH_CLEAR):
+            self.assertIn(('prototype.%s = ' % name).encode('ascii'), source)
 
 
 class BattleBadgesTest(unittest.TestCase):

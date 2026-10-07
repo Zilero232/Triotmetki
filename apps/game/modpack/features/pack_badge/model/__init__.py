@@ -1,10 +1,10 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.compat import is_int
+from ....core.compat import is_int, to_text
 from ....core.errors import ReasonError
 from ....core.me import device_body
 from ....core.vendor import attr
-from .constants import ENABLED_KEY, LIBRARY_ADD, LIBRARY_REMOVE, MAX_ACCOUNT_IDS, SHOW_OWN_KEY
+from .constants import ENABLED_KEY, LIBRARY_ADD, LIBRARY_REMOVE, MAX_ACCOUNT_IDS, SHOW_OWN_KEY, STATUS_SEPARATOR
 
 # Not combat information (docs/specs/2026-10-06-modpack-user-badge.md): the request carries only the account ids of the
 # arena data behind the stock player panels, never vehicles, teams, HP or positions; an anonymised player's real id
@@ -49,6 +49,12 @@ def parse_badges(data, asked):
     if not isinstance(ids, list):
         return frozenset()
     return frozenset(account_id for account_id in ids if is_int(account_id) and account_id in asked)
+
+
+def status_lines(status):
+    if status is None:
+        return []
+    return [part.strip() for part in to_text(status).split(STATUS_SEPARATOR) if part.strip()]
 
 
 def show_own(config):

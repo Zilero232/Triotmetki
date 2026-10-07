@@ -16,3 +16,10 @@ PAGE_ALIASES = ('classicBattlePage', 'epicRandomPage', 'strongholdBattlePage', '
 # The library loads while the loading screen is up; the page is polled for its functions this long.
 FLASH_RETRY_S = 0.5
 FLASH_RETRIES = 60
+
+# RU 1.45 client source: gui/shared events.GameEvent.FULL_STATS on g_eventBus (EVENT_BUS_SCOPE.BATTLE) with ctx isDown,
+# what the battle page itself listens to (battle/shared/page.py); the Tab table draws its rows after it is shown.
+EVENTS_MODULE = 'gui.shared'
+GAME_EVENTS_MODULE = 'gui.shared.events'
+FULL_STATS_DOWN = 'isDown'
+TAB_REPAINT_DELAY_S = 0.2

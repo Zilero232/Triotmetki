@@ -11,7 +11,7 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 ### ru
 
-- Значок модпака в бою выключен: похоже, именно он ронял игру. Новая плашка после иконки танка — по включению в настройках.
+- Плашка «Три отметки» теперь рисуется своим Flash-файлом после иконки танка в ушах, по Tab и на загрузке.
 - Журнал боя вдвое компактнее; панели боя чётче, ХП команд без «мыла».
 - Прицел с барабаном: в центре сразу пауза между выстрелами.
 - Лампа без хвостика таймера, карточка танка не раскрывается по Alt, подсказки панелей только в редакторе HUD.
@@ -19,7 +19,7 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 ### en
 
-- The modpack badge in battle is off: it looks like the cause of the game crashes. A new plate after the tank icon is opt-in in the settings.
+- The Three Marks plate is now drawn by its own Flash file after the tank icon in the player panels, the Tab stats and the loading screen.
 - A battle log half the size; sharper battle panels, crisp team HP.
 - Clip reticle: the time between shots in the centre from the start.
 - No timer sliver on the lamp, the Tank card no longer expands on Alt, panel hints only in the HUD editor.
@@ -51,6 +51,7 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - В python.log больше нет тысяч предупреждений Gameface о rem в SVG за бой.
 - Подсказка с описанием панели — только в режиме редактирования HUD, в бою и ангаре не всплывает.
 - Редактор HUD: переключатель «Раскладка по типу боя» справа от заголовка.
+- Подсказка «Показывать мой значок»: плашка в ушах, по Tab и на экране загрузки.
 - Просмотр попаданий: фильтр по исходу, итог вкладки, панель «Броня танка» со слабым местом, зона попадания в списке.
 
 ### en
@@ -61,6 +62,7 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - python.log no longer fills with thousands of Gameface warnings about rem in SVG each battle.
 - A panel's description tooltip shows only in the HUD edit mode, never in battle or the hangar.
 - HUD editor: the «Layout per battle type» switch sits right of the title.
+- The «Show my badge» hint: the plate in the player panels, the Tab stats and the loading screen.
 - Hit viewer: a result filter, tab totals, the «Tank armour» panel with the weak spot, the hit zone in the list.
 
 ## ui 0.9.7
@@ -437,15 +439,15 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 ### ru
 
-- Значок в бою выключен по умолчанию: проверяем, не он ли ронял игру.
-- Вместо значка у ника — плашка «Три отметки» после иконки танка в ушах и оранжевая подсветка строки (тестовая, включается вручную).
-- По Tab и на экране загрузки значка больше нет.
+- Вместо значка у ника — плашка «Три отметки» после иконки танка и оранжевая подсветка строки: в ушах, по Tab и на экране загрузки.
+- Плашку рисует свой Flash-файл, а не картинка в тексте ника, из-за которой игра могла падать.
+- Включена по умолчанию.
 
 ### en
 
-- The battle badge is off by default while we check whether it crashed the game.
-- Instead of the badge by the name: a Three Marks plate after the vehicle icon in the player panels and an orange row highlight (experimental, switch it on yourself).
-- The Tab stats and the loading screen no longer show the badge.
+- Instead of the badge by the name: a Three Marks plate after the vehicle icon and an orange row highlight in the player panels, the Tab stats and the loading screen.
+- The plate is drawn by its own Flash file instead of an image in the name text, which could crash the game.
+- On by default.
 
 ## pack_badge 0.1.2
 
@@ -2336,12 +2338,12 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### ru
 
 - При обновлении убирается старая настройка «Подробности по Alt» карточки танка.
-- Значок «Три отметки» в бою выключается при обновлении и по умолчанию.
+- Плашка «Три отметки» в бою включена по умолчанию и снова включается у тех, кому её выключило прошлое обновление.
 
 ### en
 
 - On update the Tank card's old «Details on Alt» setting is removed.
-- The Three Marks battle badge is switched off on update and by default.
+- The Three Marks plate in battle is on by default and comes back on for those the previous update switched it off for.
 
 ## companion 0.8.7
 

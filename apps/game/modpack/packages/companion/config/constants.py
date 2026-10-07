@@ -82,7 +82,6 @@ OPT_IN_FEATURES = (
     'hangar_space',
     'hangar_quick_demount',
     'free_camera',
-    'battle_pack_badge',
 )
 SHARE_CHANNELS = ('telegram', 'discord', 'both')
 DEFAULTS_REVISION = 10
@@ -95,13 +94,11 @@ RETIRED_DEFAULTS = (
     (3, 'hangar_cleaner', True, False),
     (3, 'streamer_mode', True, False),
     (3, 'battle_bush_circle', True, False),
-    # UNVERIFIED on Lesta 1.45: suspected of native battle crashes after its image entered the player rows.
-    (10, 'battle_pack_badge', True, False),
 )
 ONE_TIME_SWITCHES = (
     (2, 'battle_loadout', True),
-    # UNVERIFIED on Lesta 1.45: native crashes followed the badge image in the battle UI.
-    (10, 'battle_pack_badge', False),
+    # The 0.3.8 update switched the badge off over the <IMG> crashes; its SWF plate replaces that path, so on once.
+    (10, 'battle_pack_badge', True),
 )
 MIGRATION_REVISION = 3
 COMPONENTS_FILE = 'components.json'
@@ -298,7 +295,7 @@ DEFAULTS = {
     'battle_hotkeys': False,
     'battle_hud_layouts': True,
     'battle_aim_info': True,
-    'battle_pack_badge': False,
+    'battle_pack_badge': True,
     'hangar_comp7_helper': True,
     'hangar_event_trackers': False,
     'hangar_depot_seller': False,

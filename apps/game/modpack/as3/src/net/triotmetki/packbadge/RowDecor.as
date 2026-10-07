@@ -12,8 +12,8 @@ package net.triotmetki.packbadge
     {
         private static const COLORS:Array = [0xFF5500, 0xFF5500];
         private static const RATIOS:Array = [0, 255];
-        private static const TOWARD_ICON:Array = [0, 0.3];
-        private static const FROM_ICON:Array = [0.3, 0];
+        private static const TOWARD_ANCHOR:Array = [0, 0.3];
+        private static const FROM_ANCHOR:Array = [0.3, 0];
         private static const GAP:Number = 4;
         private static const STRIP_WIDTH:Number = 240;
         private static const MATRIX:Matrix = new Matrix();
@@ -35,47 +35,41 @@ package net.triotmetki.packbadge
             this.plate.tabChildren = false;
         }
 
-        public function attach(row:DisplayObjectContainer, backgroundTop:int):void
-        {
-            if (this.strip.parent != row)
-            {
-                row.addChildAt(this.strip, backgroundTop + 1);
-            }
-            else
-            {
-                var current:int = row.getChildIndex(this.strip);
-                var target:int = current < backgroundTop ? backgroundTop : backgroundTop + 1;
-                if (current != target)
-                {
-                    row.setChildIndex(this.strip, target);
-                }
-            }
-            if (this.plate.parent != row)
-            {
-                row.addChild(this.plate);
-            }
-        }
-
-        public function detach():void
+        public function removeStrip():void
         {
             if (this.strip.parent != null)
             {
                 this.strip.parent.removeChild(this.strip);
             }
+        }
+
+        public function attach(container:DisplayObjectContainer, stripIndex:int):void
+        {
+            this.removeStrip();
+            container.addChildAt(this.strip, Math.max(0, Math.min(stripIndex, container.numChildren)));
+            if (this.plate.parent != container)
+            {
+                container.addChild(this.plate);
+            }
+        }
+
+        public function detach():void
+        {
+            this.removeStrip();
             if (this.plate.parent != null)
             {
                 this.plate.parent.removeChild(this.plate);
             }
         }
 
-        public function layout(icon:Rectangle, row:Rectangle, scale:Number):void
+        public function layout(anchor:Rectangle, row:Rectangle, scale:Number):void
         {
             this.useArt(PlateArt.indexFor(scale));
-            var outwardRight:Boolean = icon.x + icon.width / 2 >= row.x + row.width / 2;
-            this.plate.x = Math.round(outwardRight ? icon.right + GAP : icon.left - GAP - PlateArt.WIDTH);
+            var outwardRight:Boolean = anchor.x + anchor.width / 2 >= row.x + row.width / 2;
+            this.plate.x = Math.round(outwardRight ? anchor.right + GAP : anchor.left - GAP - PlateArt.WIDTH);
             this.plate.y = Math.round(row.y + (row.height - PlateArt.HEIGHT) / 2);
-            var left:Number = outwardRight ? Math.max(row.left, icon.right - STRIP_WIDTH) : icon.left;
-            var right:Number = outwardRight ? icon.right : Math.min(row.right, icon.left + STRIP_WIDTH);
+            var left:Number = outwardRight ? Math.max(row.left, anchor.right - STRIP_WIDTH) : anchor.left;
+            var right:Number = outwardRight ? anchor.right : Math.min(row.right, anchor.left + STRIP_WIDTH);
             this.drawStrip(left, row.y, right - left, row.height, outwardRight);
         }
 
@@ -110,7 +104,7 @@ package net.triotmetki.packbadge
                 return;
             }
             MATRIX.createGradientBox(width, height, 0, x, y);
-            this.strip.graphics.beginGradientFill(GradientType.LINEAR, COLORS, towardRight ? TOWARD_ICON : FROM_ICON, RATIOS, MATRIX);
+            this.strip.graphics.beginGradientFill(GradientType.LINEAR, COLORS, towardRight ? TOWARD_ANCHOR : FROM_ANCHOR, RATIOS, MATRIX);
             this.strip.graphics.drawRect(x, y, width, height);
             this.strip.graphics.endFill();
         }

@@ -89,7 +89,7 @@ visual reference only (layout, sizes, readability, colour conventions); nothing 
 - Copyright: Copyright (c) 2026 Три отметки
 - Licence: LicenseRef-TriOtmetki-Artwork (`assets/otmetki/LICENSE.md`)
 - Source: https://triotmetki.ru
-- Contents: 1 plate (the «///» mark and the «ТРИ ОТМЕТКИ» wordmark, 2:1): SVG source, RGBA PNG 36x18, 54x27 and 72x36 (interface scale 1x, 1.5x, 2x), embedded in the pack_badge SWF (as3/) that draws it after the vehicle icon in the players panel rows
+- Contents: 1 plate (the «///» mark and the «ТРИ ОТМЕТКИ» wordmark, 2:1): SVG source, RGBA PNG 36x18, 54x27 and 72x36 (interface scale 1x, 1.5x, 2x), embedded in the pack_badge SWF (as3/) that draws it after the vehicle icon in the players panel, the Tab stats and the loading screen
 - Ships in: `res/gui/maps/icons/otmetki/pack_badge` (component `pack_badge`)
 - Fair play: Drawn in the rows of players who use the bound modpack and chose to show it; carries no battle information.
 
