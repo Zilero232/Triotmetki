@@ -641,20 +641,42 @@
       "context": "battle",
       "presets": ["recommended", "streamer"],
       "title": {
-        "ru": "Прицелы и уменьшенный круг сведения",
-        "en": "Crosshairs and smaller aim circle"
+        "ru": "Прицелы",
+        "en": "Crosshairs"
       },
       "description": {
-        "ru": "Два компонента со своими настройками. «Прицелы»: пресеты стандартного прицела игры (сетка, центральная метка, круг сведения, индикаторы) для аркадного и снайперского режимов, серверный прицел и 26 центральных меток на выбор: 19 своих одноцветных в восьми цветах (с тёмным контуром или без), 4 своих цветных (среди них зелёные дуги и уголки поправки) и 3 из CC0-набора Kenney; по умолчанию центр прицела — стандартный. Таймер перезарядки у прицела и барабан значками снарядов (заряженные светлые, отстрелянные тусклые, время всего барабана, дозарядка у автозаряжания), по желанию кратность снайперского прицела; пока они на экране, стандартные таймер, индикатор барабана и кратность скрыты. Ремонт модулей остаётся на стандартной панели повреждений. «Уменьшенный круг сведения», как в модпаках: круг игры рисуется на 80, 70 или 60 % от своего размера, для аркадного и снайперского прицела; выключен по умолчанию, включается своим переключателем в окне мода.",
-        "en": "Two components with their own settings. «Crosshairs»: presets for the game's own reticle (net, central marker, aiming circle, indicators) in arcade and sniper modes, the server reticle and 26 centre marks to pick from: 19 one-colour marks of ours in eight colours (with or without a dark outline), 4 full-colour marks of ours (green arcs and stacked chevrons among them) and 3 from Kenney's CC0 pack; the game's own centre stays by default. A reload timer by the reticle and the magazine as shell icons (loaded bright, fired dim, the whole drum's reload, the auto-reloader's refill), the sniper zoom on request; while they are on screen the stock reload timer, magazine indicator and zoom hide. Module repairs stay on the stock damage panel. «Smaller aim circle» as in the packs: the game's circle drawn at 80, 70 or 60 % of its size for the arcade and sniper reticles; off by default, turned on by its own switch in the mod window."
+        "ru": "Пресеты стандартного прицела игры (сетка, центральная метка, круг сведения, индикаторы) для аркадного и снайперского режимов, серверный прицел и 26 центральных меток на выбор: 19 своих одноцветных в восьми цветах (с тёмным контуром или без), 4 своих цветных (среди них зелёные дуги и уголки поправки) и 3 из CC0-набора Kenney; по умолчанию центр прицела — стандартный. Таймер перезарядки у прицела и барабан значками снарядов (заряженные светлые, отстрелянные тусклые, время всего барабана, дозарядка у автозаряжания), по желанию кратность снайперского прицела; пока они на экране, стандартные таймер, индикатор барабана и кратность скрыты. Ремонт модулей остаётся на стандартной панели повреждений.",
+        "en": "Presets for the game's own reticle (net, central marker, aiming circle, indicators) in arcade and sniper modes, the server reticle and 26 centre marks to pick from: 19 one-colour marks of ours in eight colours (with or without a dark outline), 4 full-colour marks of ours (green arcs and stacked chevrons among them) and 3 from Kenney's CC0 pack; the game's own centre stays by default. A reload timer by the reticle and the magazine as shell icons (loaded bright, fired dim, the whole drum's reload, the auto-reloader's refill), the sniper zoom on request; while they are on screen the stock reload timer, magazine indicator and zoom hide. Module repairs stay on the stock damage panel."
       },
       "fairPlay": {
-        "ru": "Только внешний вид: без автоприцела, калькулятора пробития и чужих данных. Уменьшенный круг сведения — это круг игры, нарисованный меньше; разброс, выстрел и реплей не меняются.",
-        "en": "Looks only: no aim assist, no penetration calculator, no data about others. The smaller aim circle is the game's own circle drawn smaller; dispersion, the shot and the replay stay as they are."
+        "ru": "Только внешний вид: без автоприцела, калькулятора пробития и чужих данных.",
+        "en": "Looks only: no aim assist, no penetration calculator, no data about others."
       },
       "perf": "medium",
       "preview": {
         "image": "previews/crosshair.png"
+      }
+    },
+    {
+      "id": "aim_circle",
+      "category": "battle",
+      "context": "battle",
+      "presets": [],
+      "title": {
+        "ru": "Уменьшенный круг сведения",
+        "en": "Smaller aim circle"
+      },
+      "description": {
+        "ru": "Как в модпаках: круг сведения игры рисуется на 80, 70 или 60 % от своего размера, ближе к тому, куда ложится большинство снарядов. Для аркадного и снайперского прицела, обычного и серверного; у арты — как в игре.",
+        "en": "As in the packs: the game's aim circle drawn at 80, 70 or 60 % of its size, closer to where most shells land. For the arcade and sniper reticles, client and server; SPGs keep the game's."
+      },
+      "fairPlay": {
+        "ru": "Это маркер орудия, который рассчитал сам клиент, нарисованный меньше; никаких новых данных о прицеливании. Разброс, выстрел и реплей не меняются.",
+        "en": "It is the gun marker the client itself computed, drawn smaller; no extra aim data. Dispersion, the shot and the replay stay as they are."
+      },
+      "perf": "medium",
+      "preview": {
+        "image": "previews/aim_circle.svg"
       }
     },
     {

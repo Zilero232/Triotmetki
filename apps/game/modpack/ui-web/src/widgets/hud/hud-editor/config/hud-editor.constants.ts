@@ -12,7 +12,7 @@ export const HUD_EDITOR = {
   defaultScreen: { width: 1920, height: 1080 },
   dragSlop: 5,
   nudge: NUDGE,
-  stage: { width: 768, minWidth: 320, maxWidth: 1760, maxHeight: 720, bottomGap: 16, measureFrames: 6 },
+  stage: { width: 768, minWidth: 320, measureFrames: 6 },
   fit: {
     bare: { width: 14, height: 12 },
     label: { width: 72, height: 16 }

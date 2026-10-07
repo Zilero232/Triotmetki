@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <royale-config>
-  <target-player>17.0</target-player>
-  <swf-version>17</swf-version>
+  <target-player>10.1</target-player>
+  <!-- Scaleform 4 implements the Flash Player 10 AVM2. -->
+  <swf-version>10</swf-version>
   <compiler>
     <targets>
       <target>SWF</target>
@@ -21,7 +22,7 @@
     <verbose-stacktraces>false</verbose-stacktraces>
     <!-- The battle page functions the library adds read the page they are called on through this. -->
     <warn-this-within-closure>false</warn-this-within-closure>
-    <!-- Scaleform reads plain and zlib SWFs; for this swf-version the compiler would write LZMA (ZWS). Battle Observer ships its library uncompressed too. -->
+    <!-- Battle Observer ships its library uncompressed too. -->
     <compress>false</compress>
     <theme/>
   </compiler>

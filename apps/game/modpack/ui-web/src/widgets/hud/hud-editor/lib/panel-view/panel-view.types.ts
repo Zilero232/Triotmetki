@@ -20,8 +20,6 @@ export type PanelTone = Extract<UiIconTone, 'accent' | 'muted' | 'text'>;
 
 export type StageFrameInput = { screen: Size; width: number };
 
-export type StageWidthInput = { room: Size; screen: Size };
-
 export type StageFrame = { scale: number; style: { width: string; height: string } };
 
 export type PlacedPanel = { panel: UiPanel; rect: Rect };

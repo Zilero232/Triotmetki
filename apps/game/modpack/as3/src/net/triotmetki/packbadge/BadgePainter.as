@@ -74,7 +74,7 @@ package net.triotmetki.packbadge
             this.attachLoading();
             var status:String = this.paint();
             this.settleLater();
-            return status + " | art " + (PlateArt.source || "-");
+            return status;
         }
 
         public function dispose():void
@@ -228,7 +228,7 @@ package net.triotmetki.packbadge
             var decor:RowDecor = this.decorFor(item);
             decor.removeStrip();
             decor.attach(item, backgroundTop(item) + 1);
-            decor.layout(this.anchor, this.row, onScreenScale(item));
+            decor.layout(this.anchor, this.row);
             this.drawn++;
         }
 
@@ -293,7 +293,7 @@ package net.triotmetki.packbadge
             var decor:RowDecor = this.decorFor(icon);
             decor.removeStrip();
             decor.attach(container, lowestIndex(container, icon, name));
-            decor.layout(this.anchor, this.row, onScreenScale(container));
+            decor.layout(this.anchor, this.row);
             this.drawn++;
         }
 
@@ -463,11 +463,6 @@ package net.triotmetki.packbadge
             target.y = source.y;
             target.width = source.width;
             target.height = source.height;
-        }
-
-        private static function onScreenScale(target:DisplayObject):Number
-        {
-            return Math.abs(target.transform.concatenatedMatrix.a);
         }
 
         private static function component(page:Object, alias:String):Object

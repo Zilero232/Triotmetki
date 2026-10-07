@@ -1,6 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import io
 import os
+import struct
 import unittest
 
 import _support
@@ -178,15 +180,47 @@ class StatusLinesTest(unittest.TestCase):
         self.assertEqual(status_lines('error boom'), ['error boom'])
 
 
+BITMAP_TAGS = frozenset((6, 20, 21, 35, 36, 90))
+SCALEFORM_SWF_VERSION = 10
+
+
+def library_path():
+    return os.path.join(_support.MODPACK_DIR, 'features', 'pack_badge', 'flash', LIBRARY_SWF)
+
+
+def swf_tags(data):
+    rect_bits = 5 + (bytearray(data[8:9])[0] >> 3) * 4
+    position = 8 + (rect_bits + 7) // 8 + 4
+    codes = []
+    while position < len(data):
+        head, = struct.unpack(str('<H'), data[position:position + 2])
+        length = head & 0x3f
+        position += 2
+        if length == 0x3f:
+            length, = struct.unpack(str('<I'), data[position:position + 4])
+            position += 4
+        codes.append(head >> 6)
+        position += length
+    return codes
+
+
 class ShippingTest(unittest.TestCase):
+
+    def setUp(self):
+        with io.open(library_path(), 'rb') as library:
+            self.swf = library.read()
 
     def test_the_battle_drawing_is_on_by_default(self):
         self.assertTrue(COMPANION_DEFAULTS['battle_pack_badge'])
 
-    def test_the_library_swf_ships_in_the_package(self):
-        path = os.path.join(_support.MODPACK_DIR, 'features', 'pack_badge', 'flash', LIBRARY_SWF)
+    def test_the_library_is_an_uncompressed_swf(self):
+        self.assertEqual(self.swf[:3], b'FWS')
 
-        self.assertTrue(os.path.isfile(path))
+    def test_the_library_targets_the_scaleform_player(self):
+        self.assertLessEqual(bytearray(self.swf[3:4])[0], SCALEFORM_SWF_VERSION)
+
+    def test_the_library_embeds_no_bitmaps(self):
+        self.assertFalse(BITMAP_TAGS.intersection(swf_tags(self.swf)))
 
     def test_the_library_swf_is_uncompressed(self):
         path = os.path.join(_support.MODPACK_DIR, 'features', 'pack_badge', 'flash', LIBRARY_SWF)

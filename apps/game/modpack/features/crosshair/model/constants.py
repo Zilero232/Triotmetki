@@ -120,12 +120,6 @@ RETIRED_MARKS = {
     'kenney_pincer': 'angles',
 }
 CENTRE_PART = 'centralTag'
-AIM_CIRCLE_SCALES = {'stock': 100, 'p80': 80, 'p70': 70, 'p60': 60}
-PERCENT = 100.0
-CIRCLE_STOCK = 'stock'
-CIRCLE_CHOSEN = 'chosen'
-CIRCLE_EDITOR_GROUPS = (('size', ('size',)),)
-CIRCLE_SAMPLE_MARK_SIZE = 32
 PREVIEW_SIZE = (128, 128)
 KIND = 'crosshair'
 EDITOR_GROUPS = (

@@ -101,23 +101,6 @@
       "fair_play": "Decorates the player's own damage-log lines; the class glyph shows the vehicle class the player panels already show."
     },
     {
-      "id": "otmetki_pack_badge",
-      "feature": "pack_badge",
-      "title": "Modpack user plate",
-      "origin": "original",
-      "author": "Три отметки",
-      "copyright": "Copyright (c) 2026 Три отметки",
-      "license": "LicenseRef-TriOtmetki-Artwork",
-      "license_file": "otmetki/LICENSE.md",
-      "url": "https://triotmetki.ru",
-      "sources": "otmetki/pack_badge/src",
-      "files": "otmetki/pack_badge/png",
-      "renditions": [{ "size": 36 }, { "size": 54 }, { "size": 72 }],
-      "target": "res/gui/maps/icons/otmetki/pack_badge",
-      "contents": "1 plate (the «///» mark and the «ТРИ ОТМЕТКИ» wordmark, 2:1): SVG source, RGBA PNG 36x18, 54x27 and 72x36 (interface scale 1x, 1.5x, 2x), embedded in the pack_badge SWF (as3/) that draws it after the vehicle icon in the players panel, the Tab stats and the loading screen",
-      "fair_play": "Drawn in the rows of players who use the bound modpack and chose to show it; carries no battle information."
-    },
-    {
       "id": "battlehits_models",
       "feature": "hit_viewer",
       "title": "BattleHits shell and hit-effect models",

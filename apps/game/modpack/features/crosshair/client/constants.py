@@ -12,8 +12,5 @@ READOUT_STATES = (
     ('HEALTH', STATE_HEALTH),
     ('DESTROYED', STATE_DESTROYED),
 )
-# RU 1.45 gun_marker_ctrl._DefaultGunMarkerController.update ends with _dataProvider.updateSize.
-MARKER_METHOD = 'update'
-MARKER_RELAX_ARG = 4
 # The ammo controller's events after which the own magazine is read again (RU 1.45 ammo_ctrl.AmmoController).
 CLIP_EVENTS = ('onShellsUpdated', 'onCurrentShellChanged', 'onGunSettingsSet')

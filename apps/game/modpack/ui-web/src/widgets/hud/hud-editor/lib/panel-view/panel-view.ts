@@ -1,4 +1,4 @@
-import { clamp, sortBy } from 'remeda';
+import { sortBy } from 'remeda';
 
 import { panelRect, stageBox } from '@/entities/hud/panel-layout';
 import { remBox } from '@/shared/lib/css-unit';
@@ -16,8 +16,7 @@ import type {
   PlacedPanelsInput,
   StackedRect,
   StageFrame,
-  StageFrameInput,
-  StageWidthInput
+  StageFrameInput
 } from './panel-view.types';
 
 import { HUD_EDITOR } from '../../config';
@@ -56,12 +55,7 @@ export const panelTone = ({ active, enabled }: PanelToneInput): PanelTone => {
   return enabled ? 'text' : 'muted';
 };
 
-export const stageWidthFor = ({ room, screen }: StageWidthInput): number => {
-  const aspect = screen.width / Math.max(screen.height, 1);
-  const widest = Math.min(HUD_EDITOR.stage.maxWidth, HUD_EDITOR.stage.maxHeight * aspect);
-
-  return Math.floor(clamp(Math.min(room.width, room.height * aspect), { min: HUD_EDITOR.stage.minWidth, max: widest }));
-};
+export const stageWidthFor = (roomWidth: number): number => Math.floor(Math.max(roomWidth, HUD_EDITOR.stage.minWidth));
 
 export const stageFrame = ({ screen, width }: StageFrameInput): StageFrame => {
   const scale = width / Math.max(screen.width, 1);

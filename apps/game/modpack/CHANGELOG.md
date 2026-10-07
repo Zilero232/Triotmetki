@@ -7,6 +7,20 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Entries are short: one line per change, saying what the player sees or gets — no implementation details.
 - Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## 0.3.10
+
+### ru
+
+- Игра больше не падает в начале боя с плашкой «Три отметки».
+- Редактор HUD во всю ширину окна.
+- Уменьшенный круг сведения — отдельный компонент в менеджере.
+
+### en
+
+- The game no longer crashes when a battle starts with the Three Marks plate on.
+- The HUD editor fills the window's width.
+- The reduced aim circle is a separate component in the manager.
+
 ## 0.3.9
 
 ### ru
@@ -40,6 +54,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - The settings window in the client's style: the lobby's colours and buttons, actions at the bottom right, reset set apart.
 - The Three Marks badge sits after the name and no longer covers the achievement badge.
 - Battle chat auto messages: artillery on me, ally damage, spotted and a dozen more events to pick.
+
+## ui 0.9.9
+
+### ru
+
+- Поле редактора HUD занимает всю ширину окна.
+
+### en
+
+- The HUD editor's stage fills the window's width.
 
 ## ui 0.9.8
 
@@ -434,6 +458,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Battle HUD: damage and hit logs, clock and battle timer, team HP, sixth sense, a chat filter.
 - Hangar components: battle summary, marks history, ratings, replay manager, quick actions and more.
 - A settings window with profiles and a HUD editor; settings survive a wiped mods folder.
+
+## pack_badge 0.1.4
+
+### ru
+
+- Плашка рисуется без вшитых картинок: из-за них игра падала в начале боя.
+
+### en
+
+- The plate is drawn without embedded images, which crashed the game when a battle started.
 
 ## pack_badge 0.1.3
 
@@ -1868,6 +1902,26 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - A key (Ctrl+Shift+H by default) hides and restores all mod panels; they can stay hidden in the next battle too.
 - Private mode hides other players' chat and the hangar labels with your numbers. Your name and clan stay.
+
+## aim_circle 0.1.0
+
+### ru
+
+- Уменьшенный круг сведения — отдельный компонент.
+
+### en
+
+- The smaller aim circle is a component of its own.
+
+## crosshair 0.6.6
+
+### ru
+
+- Круг сведения вынесен в отдельный компонент.
+
+### en
+
+- The aim circle moved to a component of its own.
 
 ## crosshair 0.6.5
 

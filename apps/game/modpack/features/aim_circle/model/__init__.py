@@ -1,17 +1,17 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import is_number
-from .constants import AIM_CIRCLE_SCALES, PERCENT
+from .constants import PERCENT, SCALES, STOCK
 
 # Fair play: visual only; dispersion, the aim sent to the server and the replay's size stay the client's.
 
 
 def circle_percent(choice):
-    return AIM_CIRCLE_SCALES.get(choice, AIM_CIRCLE_SCALES['stock'])
+    return SCALES.get(choice, SCALES[STOCK])
 
 
 def is_scaled(choice):
-    return circle_percent(choice) != AIM_CIRCLE_SCALES['stock']
+    return circle_percent(choice) != SCALES[STOCK]
 
 
 def scaled_size(size, percent):

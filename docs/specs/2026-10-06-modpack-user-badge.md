@@ -105,8 +105,12 @@ own in the stock rows.
   shown, so Python listens to `GameEvent.FULL_STATS` on `g_eventBus` (the event the page itself handles) and asks for
   a repaint 0.2 s after Tab goes down. Battle Observer draws nothing in the Tab; this part follows the client source.
 - UNVERIFIED on Lesta 1.45: the library loading from a mod package, the status string coming back through the GFx
-  bridge, Scaleform decoding the embedded PNG (a vector copy is drawn otherwise) and the private `_items`,
+  bridge and the private `_items`,
   `tableCtrl`, `_allyRenderers` lookups (Battle Observer relies on the panel and loading ones).
+
+Revised 2026-10-08 (pack_badge 0.1.4): 0.3.9 embedded the plate as PNG in `DefineBitsJPEG2` (SWF 17), and the battle
+app crashed natively while loading the library, in every battle; the plate is vector art now and the library is
+SWF 10 with no bitmap tags.
 
 The history below is kept for the record.
 

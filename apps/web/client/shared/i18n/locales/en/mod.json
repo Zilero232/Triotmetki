@@ -106,7 +106,7 @@
       },
       "aim_info": {
         "title": "Aim and shells",
-        "text": "The distance to any vehicle under the reticle; damage, penetration, velocity and module damage in the shell tooltip. Optionally a smaller aim circle."
+        "text": "The distance to any vehicle under the reticle; damage, penetration, velocity and module damage in the shell tooltip."
       },
       "platoon_points": {
         "title": "Platoon points",
@@ -123,6 +123,10 @@
       "crosshair": {
         "title": "Crosshairs",
         "text": "Presets of the stock reticle, the server reticle and 26 centre markers to pick from, plus a reload timer and the drum next to the reticle."
+      },
+      "aim_circle": {
+        "title": "Smaller aim circle",
+        "text": "The game's aim circle at 80, 70 or 60 % of its size, as in the modpacks. Dispersion and the shot stay the same."
       },
       "camera": {
         "title": "Zoom and camera",

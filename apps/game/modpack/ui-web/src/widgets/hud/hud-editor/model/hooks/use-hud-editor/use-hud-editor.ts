@@ -26,7 +26,7 @@ export const useHudEditor = (panels: UiPanel[]) => {
   screenRef.current = designScreen({ client: gameface.clientSize(), scale: rootScale(), fallback: HUD_EDITOR.defaultScreen });
 
   const screen = screenRef.current;
-  const { boxRef, width } = useStageWidth({ stageRef, screen });
+  const { boxRef, width } = useStageWidth(screen);
   const frame = stageFrame({ screen, width });
 
   const placed = placedPanels({ panels, showDisabled, live, screen });

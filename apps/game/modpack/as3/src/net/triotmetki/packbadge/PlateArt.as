@@ -1,9 +1,6 @@
 package net.triotmetki.packbadge
 {
-    import flash.display.Bitmap;
-    import flash.display.BitmapData;
     import flash.display.CapsStyle;
-    import flash.display.DisplayObject;
     import flash.display.Graphics;
     import flash.display.JointStyle;
     import flash.display.LineScaleMode;
@@ -14,9 +11,6 @@ package net.triotmetki.packbadge
         public static const WIDTH:Number = 36;
         public static const HEIGHT:Number = 18;
         private static const DESIGN_SCALE:Number = 0.5;
-        private static const FACTORS:Array = [1, 1.5, 2];
-        private static const ART:Array = [Plate1x, Plate15x, Plate2x];
-        private static const CACHE:Array = [undefined, undefined, undefined];
         private static const PLATE_FILL:uint = 0x0E0E10;
         private static const PLATE_LINE:uint = 0xFF5500;
         private static const WORDMARK:uint = 0xFFB000;
@@ -43,59 +37,11 @@ package net.triotmetki.packbadge
             [63, 20.5, 63, 28.5, 66.6, 20.5, 66.6, 28.5]
         ];
 
-        public static var source:String = "";
-
-        public static function indexFor(scale:Number):int
+        public static function create():Shape
         {
-            if (scale >= 1.75)
-            {
-                return 2;
-            }
-            if (scale >= 1.25)
-            {
-                return 1;
-            }
-            return 0;
-        }
-
-        public static function create(index:int):DisplayObject
-        {
-            var data:BitmapData = bitmapData(index);
-            if (data == null)
-            {
-                source = "vector";
-                var shape:Shape = new Shape();
-                draw(shape.graphics);
-                return shape;
-            }
-            source = "bitmap";
-            var bitmap:Bitmap = new Bitmap(data, "auto", true);
-            bitmap.scaleX = bitmap.scaleY = 1 / FACTORS[index];
-            return bitmap;
-        }
-
-        private static function bitmapData(index:int):BitmapData
-        {
-            if (CACHE[index] === undefined)
-            {
-                CACHE[index] = decoded(index);
-            }
-            return CACHE[index];
-        }
-
-        private static function decoded(index:int):BitmapData
-        {
-            try
-            {
-                var art:Class = ART[index];
-                var data:BitmapData = new art() as BitmapData;
-                var isDecoded:Boolean = data != null && data.width > 0 && data.height > 0;
-                return isDecoded && data.getPixel32(data.width >> 1, data.height >> 1) >>> 24 > 0 ? data : null;
-            }
-            catch (error:Error)
-            {
-            }
-            return null;
+            var shape:Shape = new Shape();
+            draw(shape.graphics);
+            return shape;
         }
 
         private static function draw(graphics:Graphics):void

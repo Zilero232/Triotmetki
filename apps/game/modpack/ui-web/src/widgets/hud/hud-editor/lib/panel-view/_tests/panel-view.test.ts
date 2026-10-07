@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { UiPanel } from '@/shared/api/protocol';
 
+import { HUD_EDITOR } from '../../../config';
 import { panelFit, panelLayer, panelLook, panelTone, placedPanels, stackOrder, stageFrame, stageWidthFor } from '../panel-view';
 
 const rect = (width: number, height: number) => ({ left: 0, top: 0, width, height });
@@ -73,34 +74,16 @@ describe(stageFrame, () => {
 });
 
 describe(stageWidthFor, () => {
-  const screen = { width: 1920, height: 1080 };
-
   it('fills the width of the page', () => {
-    expect(stageWidthFor({ room: { width: 943, height: 900 }, screen })).toBe(943);
+    expect(stageWidthFor(943)).toBe(943);
   });
 
-  it('narrows the stage so its height fits the page', () => {
-    expect(stageWidthFor({ room: { width: 943, height: 432 }, screen })).toBe(768);
-  });
-
-  it('keeps an ultrawide screen as wide as the page allows', () => {
-    expect(stageWidthFor({ room: { width: 943, height: 432 }, screen: { width: 3440, height: 1440 } })).toBe(943);
-  });
-
-  it('never grows taller than the largest stage', () => {
-    expect(stageWidthFor({ room: { width: 3000, height: 3000 }, screen })).toBe(1280);
-  });
-
-  it('lets an ultrawide stage grow wider at the same height', () => {
-    expect(stageWidthFor({ room: { width: 3000, height: 3000 }, screen: { width: 2560, height: 1080 } })).toBe(1706);
-  });
-
-  it('never grows wider than the widest stage', () => {
-    expect(stageWidthFor({ room: { width: 4000, height: 3000 }, screen: { width: 5120, height: 1440 } })).toBe(1760);
+  it('fills a page wider than any screen preset', () => {
+    expect(stageWidthFor(2194)).toBe(2194);
   });
 
   it('never shrinks below the smallest stage', () => {
-    expect(stageWidthFor({ room: { width: 200, height: 100 }, screen })).toBe(320);
+    expect(stageWidthFor(200)).toBe(HUD_EDITOR.stage.minWidth);
   });
 });
 

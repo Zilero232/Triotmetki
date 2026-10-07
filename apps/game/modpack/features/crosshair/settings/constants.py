@@ -43,10 +43,3 @@ CHOICES = {
 }
 
 LIMITS = {'mark_size': (16, 128), 'x': (-200, 200), 'y': (-200, 200)}
-
-CIRCLE_PANEL_ID = 'aim_circle'
-CIRCLE_SWITCH = 'battle_aim_circle'
-CIRCLE_GROUP = 'battle'
-CIRCLE_SIZES = ('p80', 'p70', 'p60')
-CIRCLE_DEFAULTS = {'size': 'p70'}
-CIRCLE_CHOICES = {'size': CIRCLE_SIZES}
