@@ -86,7 +86,7 @@
     "e2e:screens": "playwright test -c playwright.screens.config.ts",
     "fix": "bun run lint:fix && bun run format && bun run lint:css:fix && bun --filter @otmetki/server format:prisma",
     "format": "prettier --write . --cache",
-    "format:check": "prettier --check . --cache",
+    "format:check": "prettier --check . --cache --cache-strategy content",
     "gamedata:import": "bun --filter @otmetki/server gamedata:import",
     "lint": "eslint . --cache --cache-strategy content --cache-location node_modules/.cache/.eslintcache",
     "lint:css": "stylelint \"{apps/web/client,apps/game/modpack/ui-web,apps/game/manager/web,packages/design-tokens}/**/*.scss\" --cache --cache-strategy content --cache-location node_modules/.cache/.stylelintcache",

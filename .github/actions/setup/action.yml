@@ -30,11 +30,17 @@ runs:
           echo "MISE_NOT_FOUND_AUTO_INSTALL=false"
         } >> "$GITHUB_ENV"
 
-    # Every tool comes from mise.toml, so CI and a local `mise install` run the same versions.
+    # Every tool comes from mise.toml, so CI and a local `mise install` run the same versions. mise-action caches its
+    # install dir keyed by mise.toml and install_args. Python 2.7's pip keeps no built wheels (no `wheel` package), so
+    # the packages installed below are cached inside that dir instead: the key adds the requirements hash and the save
+    # waits for the post step, after the pip install.
     - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
       with:
         install_args: bun ${{ inputs.tools }}${{ inputs.python == 'true' && ' conda:python' || '' }}
         github_token: ${{ github.token }}
+        cache_key_prefix: >-
+          ${{ inputs.python == 'true' && format('mise-v1-pip-{0}', hashFiles('apps/game/modpack/tools/requirements.txt')) || 'mise-v1' }}
+        cache_save_post: ${{ inputs.python }}
 
     # The anaconda build ships no pip, so ensurepip bootstraps the one Python 2.7 bundles.
     - name: Install the modpack tooling packages
@@ -45,6 +51,7 @@ runs:
         python -m pip --version || python -m ensurepip
         python -m pip install --disable-pip-version-check --no-warn-script-location --require-hashes -r apps/game/modpack/tools/requirements.txt
 
+    # bun keeps its cache in ~/.bun/install/cache on Linux and Windows alike (`bun pm cache`).
     - name: Cache bun packages
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
       with:

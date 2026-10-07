@@ -44,4 +44,5 @@ runs:
         tags: ghcr.io/${{ steps.owner.outputs.value }}/otmetki-${{ inputs.image }}:latest
         build-args: ${{ inputs.build-args }}
         cache-from: type=gha,scope=${{ inputs.image }}
-        cache-to: type=gha,mode=max,scope=${{ inputs.image }}
+        # A failed cache export (the gha cache API rate-limits) must not fail a build whose image already pushed.
+        cache-to: type=gha,mode=max,scope=${{ inputs.image }},ignore-error=true
