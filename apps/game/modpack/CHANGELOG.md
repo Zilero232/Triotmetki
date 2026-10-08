@@ -28,6 +28,7 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Реплеи загружаются и называются только при записи всех боёв.
 - «Выбор ангара»: плитки во всю ширину с картинками из самой игры, ручные поля свёрнуты в «Дополнительно».
 - Стандартный журнал боя больше не появляется под нашим после гибели танка.
+- Текст панелей в бою читается на ярком фоне: тёмная обводка, светлее подписи, плотнее подложка.
 
 ### en
 
@@ -48,6 +49,7 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Replays are uploaded and named only when every battle is recorded.
 - «Hangar switcher»: full-width tiles with pictures from the game itself, the manual fields folded under «Advanced».
 - The stock battle log no longer shows under ours after your tank is destroyed.
+- Battle panel text reads over bright scenery: a dark outline, lighter labels, a denser plate.
 
 ## 0.3.10
 
@@ -128,6 +130,7 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Код профиля не меняет язык и настройки сессии; места панелей по типам боя очищаются.
 - Своя плашка «Прогресса боя»: медаль, остаток урона и полоса прогресса.
 - Страница-галерея: плитки во всю ширину, вся плитка выбирает, ручные поля свёрнуты в «Дополнительно» внизу.
+- Текст панелей в бою с тёмной обводкой, подписи светлее, подложка плотнее.
 
 ### en
 
@@ -142,6 +145,7 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - A profile code no longer changes the language or the session settings; panel places per battle type are cleaned.
 - Battle progress has a plate of its own: the medal, the damage left and a progress bar.
 - A gallery page: full-width tiles, the whole tile chooses, the manual fields folded under «Advanced» at the bottom.
+- Battle panel text has a dark outline, lighter labels and a denser plate.
 
 ## ui 0.9.9
 
