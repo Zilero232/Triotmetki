@@ -138,7 +138,7 @@ own in the stock rows.
   mode shows), `vehicleIcon`, `hit` and the backgrounds.
 - **Tab and loading screen.** Their rows are fixed slots rebound to other players by sort. Tab (RU 1.45 client source:
   `StatsBase`, `FullStatsTable`, `FullStatsTableBase`, `StatsTableItemBase`): the public `fullStats.statsTable` holds
-  the cell collections `playerNameCollection`, `vehicleIconCollection` and `fragsCollection`, one index per slot; an
+  the cell collections `playerNameCollection` and `vehicleIconCollection`, one index per slot; an
   empty slot keeps its name field hidden. The cells are drawn only once Tab is shown, so Python listens to
   `GameEvent.FULL_STATS` on `g_eventBus` and asks for a repaint 0.2 s after Tab goes down. Loading (RU 1.45 client
   source: `BattleLoadingForm`, `BaseRendererContainer`): the form's child named `container` holds the public vectors

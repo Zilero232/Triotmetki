@@ -22,7 +22,6 @@ package net.triotmetki.packbadge
         private static const TAB_TABLE:String = "statsTable";
         private static const TAB_ICONS:String = "vehicleIconCollection";
         private static const TAB_NAMES:String = "playerNameCollection";
-        private static const TAB_FRAGS:String = "fragsCollection";
         private static const LOADING_FIELD:String = "battleLoading";
         private static const LOADING_FORM:String = "form";
         private static const LOADING_CONTAINER:String = "container";
@@ -34,7 +33,6 @@ package net.triotmetki.packbadge
         private static const ICON_WIDTH:Number = 63;
         private static const ROW_HEIGHT:Number = 25;
         private static const MIN_SLOT_HEIGHT:Number = 22;
-        private static const FRAGS_REACH:Number = 60;
         private static const SETTLE_MS:Number = 150;
 
         private var page:IEventDispatcher;
@@ -245,10 +243,9 @@ package net.triotmetki.packbadge
                 return "not found (no page." + TAB_FIELD + "." + TAB_TABLE + "." + TAB_NAMES + ")";
             }
             this.resetCounts();
-            var frags:Object = read(table, TAB_FRAGS);
             for (var index:int = 0; index < shownNames.length && index < icons.length; index++)
             {
-                this.paintSlot(icons[index] as DisplayObject, shownNames[index] as TextField, frags != null ? frags[index] as DisplayObject : null);
+                this.paintSlot(icons[index] as DisplayObject, shownNames[index] as TextField);
             }
             return TAB_FIELD + "." + TAB_TABLE + " cells " + this.slots + ", " + this.counts();
         }
@@ -272,13 +269,13 @@ package net.triotmetki.packbadge
                 var shownNames:Object = read(container, side[1]);
                 for (var index:int = 0; icons != null && shownNames != null && index < shownNames.length && index < icons.length; index++)
                 {
-                    this.paintSlot(icons[index] as DisplayObject, shownNames[index] as TextField, null);
+                    this.paintSlot(icons[index] as DisplayObject, shownNames[index] as TextField);
                 }
             }
             return LOADING_FORM + "." + LOADING_CONTAINER + " slots " + this.slots + ", " + this.counts();
         }
 
-        private function paintSlot(icon:DisplayObject, name:TextField, frags:DisplayObject):void
+        private function paintSlot(icon:DisplayObject, name:TextField):void
         {
             if (icon == null || icon.parent == null || name == null)
             {
@@ -298,7 +295,7 @@ package net.triotmetki.packbadge
                 return;
             }
             var container:DisplayObjectContainer = icon.parent;
-            if (!this.measureSlot(container, icon, name, frags))
+            if (!this.measureSlot(container, icon, name))
             {
                 this.undecorate(icon);
                 this.waiting++;
@@ -369,7 +366,7 @@ package net.triotmetki.packbadge
             }
         }
 
-        private function measureSlot(container:DisplayObjectContainer, iconObject:DisplayObject, nameObject:DisplayObject, fragsObject:DisplayObject):Boolean
+        private function measureSlot(container:DisplayObjectContainer, iconObject:DisplayObject, nameObject:DisplayObject):Boolean
         {
             var icon:Rectangle = boundsIn(iconObject, container);
             if (icon == null)
@@ -379,16 +376,6 @@ package net.triotmetki.packbadge
             var name:Rectangle = boundsIn(nameObject, container) || icon;
             var outwardRight:Boolean = icon.x + icon.width / 2 >= name.x + name.width / 2;
             copy(icon, this.anchor);
-            var frags:Rectangle = boundsIn(fragsObject, container);
-            if (frags != null && outwardRight && frags.left >= icon.left && frags.left - icon.right < FRAGS_REACH)
-            {
-                this.anchor.width = Math.max(icon.right, frags.right) - this.anchor.x;
-            }
-            if (frags != null && !outwardRight && frags.right <= icon.right && icon.left - frags.right < FRAGS_REACH)
-            {
-                this.anchor.x = Math.min(icon.left, frags.left);
-                this.anchor.width = icon.right - this.anchor.x;
-            }
             var height:Number = Math.max(MIN_SLOT_HEIGHT, icon.height);
             this.row.x = Math.min(name.left, this.anchor.left);
             this.row.width = Math.max(name.right, this.anchor.right) - this.row.x;
