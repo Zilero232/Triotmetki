@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { MOD_BADGES, MOD_HANGAR, MOD_RATINGS } from '../mod.constants';
 import {
   modBadgePreferenceSchema,
+  modBadgePresenceRequestSchema,
   modBadgesRequestSchema,
   modRatingsRequestSchema,
   modReplayStatusRequestSchema,
@@ -104,5 +105,24 @@ describe('modBadgePreferenceSchema', () => {
     expect(modBadgePreferenceSchema.safeParse({ ...device, visible: false }).success).toBe(true);
     expect(modBadgePreferenceSchema.safeParse({ ...device, visible: 'yes' }).success).toBe(false);
     expect(modBadgePreferenceSchema.safeParse({ ...device, visible: true, nickname: 'x' }).success).toBe(false);
+  });
+});
+
+describe('modBadgePresenceRequestSchema', () => {
+  const presence = { account_id: 12_345, visible: true };
+
+  it('accepts a battle with no other players to ask about', () => {
+    expect(modBadgePresenceRequestSchema.safeParse({ ...presence, account_ids: [] }).success).toBe(true);
+  });
+
+  it('refuses one past the arena limit and a repeated id', () => {
+    const ids = Array.from({ length: MOD_BADGES.maxAccountIds + 1 }, (_, index) => index + 1);
+
+    expect(modBadgePresenceRequestSchema.safeParse({ ...presence, account_ids: ids }).success).toBe(false);
+    expect(modBadgePresenceRequestSchema.safeParse({ ...presence, account_ids: [7, 7] }).success).toBe(false);
+  });
+
+  it('refuses a device id, since the route works without binding', () => {
+    expect(modBadgePresenceRequestSchema.safeParse({ ...presence, ...device, account_ids: [] }).success).toBe(false);
   });
 });

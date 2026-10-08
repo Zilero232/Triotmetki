@@ -15,6 +15,7 @@ const ANONYMOUS_WRITE_ROUTES = [
   'POST /marks/projection',
   'POST /mod/badges',
   'POST /mod/badges/preference',
+  'POST /mod/badges/presence',
   'POST /mod/bind',
   'POST /mod/ingest',
   'POST /mod/me/goals',

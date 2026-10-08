@@ -5,7 +5,7 @@ import type { QuotaKeyInput, QuotaMembersInput } from './badge-quota.types';
 import { hmacSha256Hex, moscowDay, moscowDayStart } from '../../../../common/lib';
 import { MOD_BADGES_QUOTA } from '../../config/mod-badges.constants';
 
-export const quotaKey = ({ deviceId, now }: QuotaKeyInput): string => `${MOD_BADGES_QUOTA.keyPrefix}${deviceId}:${moscowDay(now)}`;
+export const quotaKey = ({ subject, now }: QuotaKeyInput): string => `${MOD_BADGES_QUOTA.keyPrefix}${subject}:${moscowDay(now)}`;
 
 export const quotaMembers = ({ accountIds, secret, now }: QuotaMembersInput): string[] => {
   const day = moscowDay(now);

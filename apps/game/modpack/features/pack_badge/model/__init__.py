@@ -2,13 +2,20 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.compat import is_int, to_text
 from ....core.errors import ReasonError
-from ....core.me import device_body
 from ....core.vendor import attr
-from .constants import ENABLED_KEY, LIBRARY_ADD, LIBRARY_REMOVE, MAX_ACCOUNT_IDS, SHOW_OWN_KEY, STATUS_SEPARATOR
+from .constants import (
+    ENABLED_KEY,
+    LIBRARY_ADD,
+    LIBRARY_REMOVE,
+    MAX_ACCOUNT_IDS,
+    MAX_LOOKUPS,
+    SHOW_OWN_KEY,
+    STATUS_SEPARATOR,
+)
 
-# Not combat information (docs/specs/2026-10-06-modpack-user-badge.md): the request carries only the account ids of the
-# arena data behind the stock player panels, never vehicles, teams, HP or positions; an anonymised player's real id
-# and the own account are not sent.
+# Not combat information (docs/specs/2026-10-06-modpack-user-badge.md): the request carries only the own account id, the
+# own "show my badge" switch and the account ids of the arena data behind the stock player panels, never vehicles,
+# teams, HP or positions; an anonymised player's real id is not sent.
 
 
 @attr.s(frozen=True)
@@ -36,12 +43,10 @@ def asked_account_ids(players, own_account_id, limit=MAX_ACCOUNT_IDS):
     return ids[:limit]
 
 
-def badges_request(credentials, account_ids):
-    if not account_ids:
-        raise ReasonError('no_players')
-    body = device_body(credentials)
-    body['account_ids'] = list(account_ids)
-    return body
+def presence_request(own_account_id, visible, account_ids):
+    if not is_int(own_account_id) or own_account_id <= 0:
+        raise ReasonError('no_account')
+    return {'account_id': int(own_account_id), 'visible': bool(visible), 'account_ids': list(account_ids)}
 
 
 def parse_badges(data, asked):
@@ -80,14 +85,25 @@ def library_action(libraries, name, is_on):
 class BattleBadges(object):
 
     def __init__(self):
-        self.arena_id = None
-        self.marked = frozenset()
-        self.requested = False
+        self.start(None, None, False)
 
-    def start(self, arena_id, own_account_id):
+    def start(self, arena_id, own_account_id, visible):
         self.arena_id = arena_id
-        self.marked = frozenset([own_account_id]) if own_account_id else frozenset()
-        self.requested = False
+        self.own_account_id = own_account_id
+        self.visible = bool(visible)
+        self.marked = frozenset([own_account_id]) if own_account_id and visible else frozenset()
+        self.asked = frozenset()
+        self.lookups = 0
+
+    def lookup(self, account_ids):
+        if not self.own_account_id or self.lookups >= MAX_LOOKUPS:
+            return None
+        fresh = [account_id for account_id in account_ids if account_id not in self.asked]
+        if not fresh and (self.lookups or not self.visible):
+            return None
+        self.lookups += 1
+        self.asked = self.asked | frozenset(fresh)
+        return fresh
 
     def answered(self, arena_id, account_ids):
         if arena_id != self.arena_id or not account_ids:
@@ -97,4 +113,4 @@ class BattleBadges(object):
         return self.marked != before
 
     def stop(self):
-        self.start(None, None)
+        self.start(None, None, False)

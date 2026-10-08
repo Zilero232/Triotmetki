@@ -468,6 +468,7 @@ export {
   MOD_RATINGS,
   modBadgePreferenceAnswerSchema,
   modBadgePreferenceSchema,
+  modBadgePresenceRequestSchema,
   modBadgesRequestSchema,
   modBadgesSchema,
   modBattleLoadoutSchema,

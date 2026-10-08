@@ -262,6 +262,14 @@ export const modBadgesSchema = z
   })
   .describe('The asked accounts that use the bound mod and chose to show its badge');
 
+export const modBadgePresenceRequestSchema = z
+  .strictObject({
+    account_id: modAccountIdSchema,
+    visible: z.boolean(),
+    account_ids: modBadgeAccountIdsSchema
+  })
+  .describe('Unsigned body of POST /mod/badges/presence: the own account, its badge switch and the other players of the battle');
+
 export const modBadgePreferenceSchema = z
   .strictObject({
     device_id: modDeviceIdSchema,

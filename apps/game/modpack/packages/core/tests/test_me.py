@@ -7,7 +7,8 @@ import unittest
 
 import _support
 from otmetki.companion.binding import Credentials
-from otmetki.core.client.me import SignedRead, signed_body, signed_read
+from otmetki.core.client.me import SignedRead, post_json, signed_body, signed_read
+from otmetki.core.codec import encode_json
 from otmetki.core.errors import ReasonError
 from otmetki.core.me import (
     MAX_TANKS,
@@ -411,6 +412,40 @@ class SignedReadTest(unittest.TestCase):
         body = signed_body(self.app, tank_ids=[1])
 
         assert body == {'device_id': 'dev_me', 'account_id': ACCOUNT, 'tank_ids': [1]}
+
+
+class PostJsonTest(unittest.TestCase):
+
+    def setUp(self):
+        self.app = FakeApp(credentials=None)
+        self.answers = []
+
+    def post(self):
+        post_json(self.app, '/mod/x', {'a': 1}, lambda *answer: self.answers.append(answer))
+        return self.app.transport.requests[-1]
+
+    def test_posts_the_json_body_without_a_device_or_signature(self):
+        request = self.post()
+
+        assert request['method'] == 'POST'
+        assert request['url'] == API + '/mod/x'
+        assert request['body'] == encode_json({'a': 1})
+        assert request['headers']['Content-Type'] == 'application/json'
+        assert not [name for name in request['headers'] if name.lower().startswith('x-otmetki')]
+
+    def test_an_answer_reaches_the_caller_as_json(self):
+        self.post()
+
+        self.app.transport.respond(200, b'{"ok":true}')
+
+        assert self.answers == [(200, {'ok': True}, None)]
+
+    def test_a_rate_limit_carries_its_retry_after(self):
+        self.post()
+
+        self.app.transport.respond(429, b'{}', {'Retry-After': '30'})
+
+        assert self.answers == [(429, None, 30)]
 
 
 if __name__ == '__main__':

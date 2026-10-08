@@ -5,12 +5,20 @@ import type { LampView } from './lamp-view.types';
 
 import { SIXTH_SENSE } from '../../config';
 
+const secondsLeft = (data: SixthSenseData): number => Math.max(0, data.duration - data.elapsed);
+
+const ringProgress = (data: SixthSenseData): number => {
+  const left = secondsLeft(data);
+
+  return data.held || left < SIXTH_SENSE.ring.minSeconds ? 0 : left / data.duration;
+};
+
 export const lampView = (data: SixthSenseData): LampView => {
-  const left = Math.max(0, data.duration - data.elapsed);
+  const left = secondsLeft(data);
 
   return {
     ring: data.size + SIXTH_SENSE.ring.padding,
-    progress: data.duration > 0 ? left / data.duration : 0,
+    progress: ringProgress(data),
     seconds: data.timer && left > 0 ? formatSeconds(left) : '',
     alpha: data.dim ? SIXTH_SENSE.dimAlpha : 1,
     tone: data.color === null ? 'text' : null,

@@ -425,12 +425,12 @@
         "en": "Three Marks plate in battle"
       },
       "description": {
-        "ru": "Плашка модпака после иконки танка и оранжевая подсветка строки в ушах, по Tab и на экране загрузки: у вас и у игроков, которые привязали мод и не выключили свой значок.",
-        "en": "The modpack's plate after the vehicle icon and an orange row highlight in the player panels, the Tab stats and the loading screen: on you and on players who bound the mod and left their badge on."
+        "ru": "Плашка модпака после иконки танка и оранжевая подсветка строки в ушах, по Tab и на экране загрузки: у вас и у всех игроков с модом, которые не выключили свой значок. Привязка к сайту не нужна.",
+        "en": "The modpack's plate after the vehicle icon and an orange row highlight in the player panels, the Tab stats and the loading screen: on you and on every player with the mod who left their badge on. No site binding needed."
       },
       "fairPlay": {
-        "ru": "Не боевая информация: сайт получает только номера аккаунтов игроков боя и ничего не хранит. Свой значок выключается в «Данные и сайт».",
-        "en": "Not combat information: the site gets only the account numbers of the battle's players and keeps nothing. Your own badge is switched off in «Data and site»."
+        "ru": "Не боевая информация: раз за бой сайт получает только ваш номер аккаунта, номера аккаунтов игроков боя и положение вашего переключателя значка; хранит лишь отметку «мод установлен» на 30 дней и стирает её, когда вы выключаете значок в «Данные и сайт».",
+        "en": "Not combat information: once a battle the site gets only your account number, the account numbers of the battle's players and your badge switch; it keeps only a 30-day «has the mod» mark and deletes it when you switch your badge off in «Data and site»."
       },
       "perf": "low",
       "preview": {

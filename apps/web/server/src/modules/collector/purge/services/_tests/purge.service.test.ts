@@ -1,4 +1,5 @@
 import type { Queue } from 'bullmq';
+import type { Redis } from 'ioredis';
 
 import { describe, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
@@ -7,6 +8,7 @@ import type { DataDeletionRequest, Replay } from '../../../../../../generated';
 import type { ObjectStorage } from '../../../../../core';
 import type { PurgeQueries } from '../../queries/purge.types';
 
+import { modPresenceKey } from '../../../../../common/lib';
 import { mockPrismaService } from '../../../../../core/prisma/_tests/prisma-mock';
 import { JOB } from '../../../contracts';
 import { PURGE } from '../../config/purge.constants';
@@ -19,12 +21,13 @@ const createPurge = () => {
   const queue = mock<Queue>();
   const storage = mock<ObjectStorage>();
   const queries = mock<PurgeQueries>();
+  const redis = mock<Redis>();
 
   prisma.$transaction.mockImplementation(async (run) => run(prisma));
   prisma.dataDeletionRequest.updateMany.mockResolvedValue({ count: 1 });
   prisma.replay.findMany.mockResolvedValue([]);
 
-  return { prisma, queue, storage, queries, purge: new PurgeService(prisma, queue, storage, queries) };
+  return { prisma, queue, storage, queries, redis, purge: new PurgeService(prisma, queue, storage, queries, redis) };
 };
 
 const statuses = (prisma: ReturnType<typeof createPurge>['prisma']) =>
@@ -80,6 +83,24 @@ describe('PurgeService.purgeAccount', () => {
     await purge.purgeAccount({ accountId: 5, isFinalAttempt: true });
 
     expect(storage.remove).toHaveBeenCalledTimes(2);
+  });
+
+  it('forgets the mod presence of the purged account, so its badge stops showing', async () => {
+    const { redis, purge } = createPurge();
+
+    await purge.purgeAccount({ accountId: 5, requestId, isFinalAttempt: true });
+
+    expect(redis.del).toHaveBeenCalledWith(modPresenceKey(5));
+  });
+
+  it('keeps the mod presence when a re-link cancels the purge', async () => {
+    const { prisma, redis, purge } = createPurge();
+
+    prisma.dataDeletionRequest.updateMany.mockResolvedValueOnce({ count: 1 }).mockResolvedValueOnce({ count: 0 });
+
+    await purge.purgeAccount({ accountId: 5, requestId, isFinalAttempt: true });
+
+    expect(redis.del).not.toHaveBeenCalled();
   });
 
   it('keeps the recorded replay files when a re-link cancels the purge', async () => {

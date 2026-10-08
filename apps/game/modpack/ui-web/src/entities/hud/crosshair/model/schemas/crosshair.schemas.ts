@@ -5,7 +5,7 @@ import { hudIconSchema } from '@/shared/api/hud-protocol';
 import { CROSSHAIR, RETICLE_MARKS, RETICLE_READOUTS } from '../../config';
 
 const refillSchema = z.object({
-  value: z.string(),
+  value: z.nullable(z.string()),
   progress: z.nullable(z.number())
 });
 

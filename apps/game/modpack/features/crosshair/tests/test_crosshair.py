@@ -586,6 +586,16 @@ class ReadoutsTest(unittest.TestCase):
         data = readouts_data(readouts, Settings(None, SCHEMA), str)['reload']
         assert (data['value'], data['full'], data['clip']['refill']['value']) == ('1.5', '8.0', '5.0')
 
+    def test_an_empty_auto_reloader_counts_the_refill_only_in_the_box(self):
+        readouts = clip_readouts(loaded=0)
+        readouts.set_autoloader(True)
+        readouts.set_reload(16.0, 24.0)
+        readouts.set_auto_reload(16.0, 24.0)
+
+        refill = readouts_data(readouts, Settings(None, SCHEMA), str)['reload']['clip']['refill']
+
+        assert refill['value'] is None
+
     def test_a_single_shot_gun_ignores_a_clip_interval(self):
         readouts = Readouts()
         readouts.set_clip(1, 1)

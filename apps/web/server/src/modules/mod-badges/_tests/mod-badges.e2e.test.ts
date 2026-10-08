@@ -12,14 +12,20 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 import { z } from 'zod';
 
-import type { ModDevice, Player } from '../../../../generated';
+import type { DataDeletionRequest, ModDevice, Player } from '../../../../generated';
 
 import { AllExceptionsFilter } from '../../../common/filters';
+import { modPresenceKey } from '../../../common/lib';
 import { AppConfigService } from '../../../config';
 import { PrismaService, REDIS } from '../../../core';
+import { PurgeGuardService } from '../../collector/purge';
 import { deviceSecret, hashSecret, MOD_DEVICE, ModDeviceService, signedMessage } from '../../mod';
+import { MOD_BADGE_PRESENCE } from '../config/badge-presence.constants';
 import { MOD_BADGES_QUOTA } from '../config/mod-badges.constants';
+import { ModBadgePresenceController } from '../mod-badge-presence.controller';
 import { ModBadgesController } from '../mod-badges.controller';
+import { ModBadgePresenceReaderService } from '../services/mod-badge-presence-reader.service';
+import { ModBadgePresenceWriterService } from '../services/mod-badge-presence-writer.service';
 import { ModBadgeQuotaWriterService } from '../services/mod-badge-quota-writer.service';
 import { ModBadgeWriterService } from '../services/mod-badge-writer.service';
 import { ModBadgesReaderService } from '../services/mod-badges-reader.service';
@@ -53,6 +59,12 @@ const storedDevice: ModDevice = {
   createdAt: new Date('2026-09-01T12:00:00.000Z')
 };
 
+type PresenceBody = {
+  account_id: number;
+  visible: boolean;
+  account_ids: number[];
+};
+
 type SignedPostInput = {
   path: string;
   body: unknown;
@@ -60,6 +72,7 @@ type SignedPostInput = {
 
 const prisma = mockDeep<PrismaService>();
 const config = mock<AppConfigService>();
+const redis = new RedisMock();
 
 let app: INestApplication;
 
@@ -79,19 +92,24 @@ const signedPost = ({ path, body }: SignedPostInput) => {
     .send(raw.toString());
 };
 
+const presencePost = (body: PresenceBody | Record<string, unknown>) => request(app.getHttpServer()).post('/mod/badges/presence').send(body);
+
 beforeAll(async () => {
   config.get.mockReturnValue(SERVER_SECRET);
 
   const moduleRef = await Test.createTestingModule({
-    controllers: [ModBadgesController],
+    controllers: [ModBadgesController, ModBadgePresenceController],
     providers: [
       ModDeviceService,
       ModBadgesReaderService,
       ModBadgeWriterService,
       ModBadgeQuotaWriterService,
+      ModBadgePresenceReaderService,
+      ModBadgePresenceWriterService,
+      PurgeGuardService,
       { provide: PrismaService, useValue: prisma },
       { provide: AppConfigService, useValue: config },
-      { provide: REDIS, useValue: new RedisMock() },
+      { provide: REDIS, useValue: redis },
       { provide: APP_PIPE, useClass: ZodValidationPipe },
       { provide: APP_FILTER, useClass: AllExceptionsFilter },
       { provide: APP_INTERCEPTOR, useClass: ZodSerializerInterceptor }
@@ -106,6 +124,7 @@ beforeEach(() => {
   prisma.modDevice.findUnique.mockResolvedValue(storedDevice);
   prisma.modDevice.findMany.mockResolvedValue([]);
   prisma.player.findMany.mockResolvedValue([]);
+  prisma.dataDeletionRequest.findMany.mockResolvedValue([]);
 });
 
 afterAll(async () => {
@@ -131,7 +150,7 @@ describe('POST /mod/badges', () => {
     const quota = app.get(ModBadgeQuotaWriterService);
     const asked = Array.from({ length: MOD_BADGES_QUOTA.distinctIdsPerDay }, (_, index) => index + 1);
 
-    await quota.claim({ deviceId: DEVICE_ID, accountIds: asked, now: new Date() });
+    await quota.claim({ subject: DEVICE_ID, accountIds: asked, now: new Date() });
 
     const response = await signedPost({
       path: '/mod/badges',
@@ -207,5 +226,99 @@ describe('POST /mod/badges/preference', () => {
 
     expect(modBadgePreferenceAnswerSchema.parse(response.body)).toEqual({ account_id: ACCOUNT_ID, visible: false });
     expect(prisma.modDevice.update.mock.calls.at(-1)?.[0]).toMatchObject({ where: { id: DEVICE_ID }, data: { badgeVisible: false } });
+  });
+});
+
+describe('POST /mod/badges/presence', () => {
+  it('answers without a device or a signature', async () => {
+    const response = await presencePost({ account_id: ACCOUNT_ID, visible: true, account_ids: [OTHER_ACCOUNT_ID] });
+
+    expect(modBadgesSchema.parse(response.body)).toEqual({ account_ids: [] });
+  });
+
+  it('remembers the sender for the activity window when its badge is on', async () => {
+    await presencePost({ account_id: ACCOUNT_ID, visible: true, account_ids: [] });
+
+    expect(await redis.get(modPresenceKey(ACCOUNT_ID))).toBe(MOD_BADGE_PRESENCE.value);
+    expect(await redis.ttl(modPresenceKey(ACCOUNT_ID))).toBe(MOD_BADGE_PRESENCE.ttlSeconds);
+  });
+
+  it('forgets the sender as soon as it turns the badge off', async () => {
+    await redis.set(modPresenceKey(ACCOUNT_ID), MOD_BADGE_PRESENCE.value);
+    await presencePost({ account_id: ACCOUNT_ID, visible: false, account_ids: [] });
+
+    expect(await redis.exists(modPresenceKey(ACCOUNT_ID))).toBe(0);
+  });
+
+  it('marks an asked player that reported its presence, with no binding', async () => {
+    await redis.set(modPresenceKey(OTHER_ACCOUNT_ID), MOD_BADGE_PRESENCE.value);
+
+    const response = await presencePost({ account_id: ACCOUNT_ID, visible: true, account_ids: [OTHER_ACCOUNT_ID, 7] });
+
+    expect(response.body).toEqual({ account_ids: [OTHER_ACCOUNT_ID] });
+  });
+
+  it('does not mark a bound player that never reported its presence', async () => {
+    prisma.modDevice.findMany.mockResolvedValue([mock<ModDevice>({ accountId: BigInt(OTHER_ACCOUNT_ID), badgeVisible: true })]);
+
+    const response = await presencePost({ account_id: ACCOUNT_ID, visible: true, account_ids: [OTHER_ACCOUNT_ID] });
+
+    expect(response.body).toEqual({ account_ids: [] });
+  });
+
+  it('leaves out a player hidden on the site', async () => {
+    await redis.set(modPresenceKey(OTHER_ACCOUNT_ID), MOD_BADGE_PRESENCE.value);
+    prisma.player.findMany.mockResolvedValue([mock<Player>({ accountId: BigInt(OTHER_ACCOUNT_ID) })]);
+
+    const response = await presencePost({ account_id: ACCOUNT_ID, visible: true, account_ids: [OTHER_ACCOUNT_ID] });
+
+    expect(response.body).toEqual({ account_ids: [] });
+  });
+
+  it('never stores a presence for a sender with a deletion request', async () => {
+    prisma.dataDeletionRequest.findMany.mockResolvedValue([mock<DataDeletionRequest>({ accountId: BigInt(ACCOUNT_ID) })]);
+
+    await presencePost({ account_id: ACCOUNT_ID, visible: true, account_ids: [] });
+
+    expect(await redis.exists(modPresenceKey(ACCOUNT_ID))).toBe(0);
+  });
+
+  it('drops the stored presence of a sender with a deletion request', async () => {
+    await redis.set(modPresenceKey(ACCOUNT_ID), MOD_BADGE_PRESENCE.value);
+    prisma.dataDeletionRequest.findMany.mockResolvedValue([mock<DataDeletionRequest>({ accountId: BigInt(ACCOUNT_ID) })]);
+
+    await presencePost({ account_id: ACCOUNT_ID, visible: true, account_ids: [] });
+
+    expect(await redis.exists(modPresenceKey(ACCOUNT_ID))).toBe(0);
+  });
+
+  it('leaves out a player with a deletion request even after its player row is purged', async () => {
+    await redis.set(modPresenceKey(OTHER_ACCOUNT_ID), MOD_BADGE_PRESENCE.value);
+    prisma.dataDeletionRequest.findMany.mockResolvedValue([mock<DataDeletionRequest>({ accountId: BigInt(OTHER_ACCOUNT_ID) })]);
+
+    const response = await presencePost({ account_id: ACCOUNT_ID, visible: true, account_ids: [OTHER_ACCOUNT_ID] });
+
+    expect(response.body).toEqual({ account_ids: [] });
+  });
+
+  it('turns a client address away with Retry-After once it used up its daily distinct accounts', async () => {
+    const asked = Array.from({ length: MOD_BADGES_QUOTA.distinctIdsPerDay }, (_, index) => index + 1);
+    const batch = contract.definitions.accountIds.maxItems;
+
+    for (let start = 0; start < asked.length; start += batch) {
+      await presencePost({ account_id: ACCOUNT_ID, visible: true, account_ids: asked.slice(start, start + batch) });
+    }
+
+    const response = await presencePost({ account_id: ACCOUNT_ID, visible: true, account_ids: [OTHER_ACCOUNT_ID] });
+
+    expect(response.status).toBe(429);
+    expect(response.body).toMatchObject({ error: 'rate_limited' });
+    expect(Number(response.headers['retry-after'])).toBeGreaterThan(0);
+  });
+
+  it('refuses a body carrying a device id', async () => {
+    const response = await presencePost({ device_id: DEVICE_ID, account_id: ACCOUNT_ID, visible: true, account_ids: [] });
+
+    expect(response.status).toBe(400);
   });
 });

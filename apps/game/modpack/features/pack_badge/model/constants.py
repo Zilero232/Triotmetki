@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-# contract/badges.schema.json, docs/specs/2026-10-06-modpack-user-badge.md.
-BADGES_PATH = '/mod/badges'
+# contract/badges.schema.json, docs/specs/2026-10-06-modpack-user-badge.md: anonymous and unsigned, so an unbound
+# install is marked too, as Near_You marks every install.
+PRESENCE_PATH = '/mod/badges/presence'
+# The battle start's lookup and one more for the players a vehicle added later brings.
+MAX_LOOKUPS = 2
 # contract/badges.schema.json accountIds maxItems, MOD_BADGES.maxAccountIds on the server (Frontline holds 60).
 MAX_ACCOUNT_IDS = 100
 
-# The companion's own switches (config.json): the whole mod and «show my badge» on the «Данные и сайт» page; the own row
-# is marked only while both are on.
+# The companion's config.json switches: the whole mod and «show my badge» (shown on this component's page); the own row
+# is marked and reported visible only while both are on.
 ENABLED_KEY = 'enabled'
 SHOW_OWN_KEY = 'show_pack_badge'
 

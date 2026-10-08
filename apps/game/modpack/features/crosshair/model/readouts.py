@@ -272,6 +272,9 @@ def _reload_box(readouts, settings, translate):
         return None
     value = _reload_value(readouts, state, translate)
     clip = _clip(readouts, settings.get('drum_style'))
+    # An auto-reloader refills the shell the box already counts down: one timer, not two.
+    if clip is not None and clip['refill'] is not None and clip['refill']['value'] == value:
+        clip['refill']['value'] = None
     return {
         'value': value,
         'full': _full(readouts, value, state in COUNTING_STATES, clip),

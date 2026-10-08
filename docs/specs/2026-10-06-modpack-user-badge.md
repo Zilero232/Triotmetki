@@ -6,6 +6,11 @@ library SWF in the players panel, the Tab stats and the loading screen (section 
 is on by default and switched back on once for installs the 0.3.8 update turned off (companion 0.8.8, config
 revision 10).
 
+Revised 2026-10-08 (owner's decision): the mark no longer depends on the site. Every player with the mod installed
+and the switch on is marked, with no binding and no site account, as Near_You does. The mod calls the new unsigned
+`POST /mod/badges/presence {account_id, visible, account_ids}` (section «Presence»); the server keeps only a 30-day
+presence key per account. The signed routes below stay for older mods.
+
 The owner asked for what Near_You's pack has: players who use the modpack carry its icon next to their name in the
 battle player panels («уши»), in the full stats (Tab) and on the loading screen, the player himself included.
 
@@ -69,6 +74,26 @@ replay) from the `pack_badge` component:
 - Answer `{account_ids}`: the subset that passes the rules above. Nothing else (no nicknames, no stats).
 - Rate limit: 30 per minute per device (`modDeviceTracker`), more than any real battle rate.
 
+### Presence (revised 2026-10-08)
+
+`POST /mod/badges/presence {account_id, visible, account_ids}`, anonymous and unsigned (no device headers, no
+binding, `modBadgePresenceRequestSchema`, `mod-badges/mod-badge-presence.controller.ts`):
+
+- `account_id` is the sender's own account, `visible` its `show_pack_badge` switch, `account_ids` 0–100 ids of the
+  battle's other players (same filtering as the read below; an empty list only reports the switch).
+- `visible: true` sets the Redis key `otmetki:mod:presence:<account_id>` to `1` with a 30-day TTL
+  (`MOD_BADGES_API.activeDays`), refreshed on every call; `visible: false` deletes it at once. Nothing else is stored.
+  An account with a data-deletion request (`PurgeGuardService.blocked`) never gets the key: it is deleted instead.
+- Answer `{account_ids}`: the asked ids that have a presence key (one `MGET`), minus players with `player.is_hidden`
+  and accounts with a data-deletion request (one batched `blocked` check, which also covers purged accounts).
+  Bound devices and `mod_device.badge_visible` play no part.
+- Throttled per client IP (`request.ip` behind the trusted proxy, IPv6 by /56): 30 per minute
+  (`MOD_BADGES_API.presenceThrottle`), and the same 3000 distinct ids per Moscow day with the quota keyed by
+  `ip:` + the first 16 hex characters of an HMAC of the address (`ipQuotaSubject`), then 429 `rate_limited` with
+  Retry-After.
+- Retention: the TTL is the deletion; the account purge job deletes the key of a purged account
+  (`collector/purge/services/purge.service.ts`).
+
 ### Drawing (Lesta 1.45)
 
 Revised again 2026-10-07 (pack_badge 0.1.3, «b»): both stock-data paths below (the prefix badge slot, then the
@@ -94,19 +119,35 @@ own in the stock rows.
   per-frame work.
 - **Toolchain.** Apache Royale `mxmlc` from npm on Java (mise); playerglobal generated from Royale's Apache-licensed
   typedefs; no Lesta SWC (the client's classes are reached by name). The SWF is committed (`bun run swf:build`).
-- **Tab and loading screen.** Their rows are fixed slots of one big clip, rebound to other vehicles by sort:
-  `StatsTableControllerBase.allyRenderers/enemyRenderers` hold `StatsTableItemHolderBase` (public `getVehicleID()`,
-  `statsItem` with `vehicleIcon`, `_playerNameTF`, `_fragsTF`; `StatsTableItem.as`, `StatsTableItemBase.as`), and
-  `BattleLoadingForm._allyRenderers/_enemyRenderers` hold `BasePlayerItemRenderer` (`model.vehicleID`,
-  `_vehicleIcon`, `_textField`), which Battle Observer reads the same way (`ColoredIconsUI.as`
-  `getLoadingHolderByVehicleID`). Both owners rebind rows when their `VehiclesDataProvider`s (`_teamDP`, `_enemyDP`)
-  dispatch `validateItems`, so the library listens to those and repaints 150 ms later; a decoration hangs on the slot's
-  icon and is checked against the slot's current vehicle on every repaint. The Tab table draws its rows only once
-  shown, so Python listens to `GameEvent.FULL_STATS` on `g_eventBus` (the event the page itself handles) and asks for
-  a repaint 0.2 s after Tab goes down. Battle Observer draws nothing in the Tab; this part follows the client source.
-- UNVERIFIED on Lesta 1.45: the library loading from a mod package, the status string coming back through the GFx
-  bridge and the private `_items`,
-  `tableCtrl`, `_allyRenderers` lookups (Battle Observer relies on the panel and loading ones).
+- **Field access.** Revised 2026-10-08 after the first live log on 1.45 (`panel rows 0, marked 0`, `tab not found`,
+  `loading rows 0, marked 0`): the field names were right, the lookup was not. The library read every field as
+  `target[name]`; that resolves public members only, and `_items`, `tableCtrl` and `_allyRenderers` are private or
+  protected. Battle Observer writes `list._items` on an untyped value, and its compiled multiname
+  (`modBattleObserver.swf` 1.43.44, `PlayersPanelsUI`) carries none of the client's private namespaces yet resolves in
+  Scaleform, so `ClientFields` reads the non-public fields the same way, by compile-time dot access on untyped values,
+  and keeps `target[name]` for public ones.
+- **Players panel** (RU 1.45 client source: `battle.swf`, `net.wg.gui.battle.random.views.BattlePage`,
+  `PlayersPanelBase`, `BasePlayersPanelList`, `BasePlayersListItemHolder`). The page field is public `playersPanel`
+  (`epicRandomPlayersPanel` on `EpicRandomPage`; `getComponent` is protected, so the field is read instead), its
+  public `listLeft`/`listRight`, the private `_items` vector of holders, each with public `getListItem()` and
+  `vehicleID`.
+- **Tab and loading screen.** Their rows are fixed slots rebound to other vehicles by sort. Tab (RU 1.45 client
+  source: `StatsBase`, `StatsTableControllerBase`, `StatsTableItemBase`, `StatsTableItem`): `fullStats.tableCtrl`
+  (protected) holds the protected `allyRenderers`/`enemyRenderers` (`StatsTableItemHolderBase`, public
+  `containsData` and `getVehicleID()`); renderer `row` of column `c` (0 allies, 1 enemies) draws into cell
+  `c * numRows + row` of the public `fullStats.statsTable` collections `vehicleIconCollection`,
+  `playerNameCollection`, `fragsCollection`, which the library reads instead of the private `statsItem` fields. The
+  holders keep their data while Tab is hidden; the cells are drawn only once shown, so Python listens to
+  `GameEvent.FULL_STATS` on `g_eventBus` and asks for a repaint 0.2 s after Tab goes down. Loading (RU 1.45 client
+  source: `BattleLoading`, `BattleLoadingForm`, `BasePlayerItemRenderer`, `BaseRendererContainer`):
+  `battleLoading.form._allyRenderers/_enemyRenderers` (private) hold renderers whose protected `model` carries
+  `vehicleID`; renderer `i` of a side draws into index `i` of the public vectors `vehicleIconsAlly`/`vehicleIconsEnemy`
+  and `textFieldsAlly`/`textFieldsEnemy` of the form's child named `container`. Both owners rebind rows when their
+  private `VehiclesDataProvider`s (`_teamDP`, `_enemyDP`) dispatch `validateItems`, so the library listens to those
+  and repaints 150 ms later; a decoration hangs on the slot's icon and is checked against the slot's current vehicle on
+  every repaint. Battle Observer draws nothing in the Tab; this part follows the client source.
+- The library loads and answers on Lesta 1.45. UNVERIFIED there: the dot access to private and protected fields
+  (Battle Observer relies on it on the WG client).
 
 Revised 2026-10-08 (pack_badge 0.1.4): 0.3.9 embedded the plate as PNG in `DefineBitsJPEG2` (SWF 17), and the battle
 app crashed natively while loading the library, in every battle; the plate is vector art now and the library is
@@ -156,7 +197,8 @@ Near_You marks its users: nothing is sent for it, so it shows unbound and when t
 
 ## 4. Privacy and retention
 
-- Nothing is sent before the mod is bound; the request carries only the arena's numeric account ids and the device
+- Since 2026-10-08 the presence route sends the own account id and the switch without a binding (owner's decision);
+  no other personal data is sent. The read request carries only the arena's numeric account ids and the device
   fields, never player names (`features/pack_badge/model.badges_request`, pinned by its test; checked in the
   2026-10-06 security review). The badge stays on by default (owner's decision).
 - The server stores no account id from the read: no table, no cache of the roster, no log line with ids (request logs

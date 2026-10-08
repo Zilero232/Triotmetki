@@ -5,13 +5,24 @@ export type BadgesReadInput = {
   now: Date;
 };
 
+export type ReportPresenceInput = {
+  accountId: number;
+  visible: boolean;
+};
+
 export type SaveBadgePreferenceInput = {
   device: AuthenticatedDevice;
   visible: boolean;
 };
 
 export type ClaimBadgeQuotaInput = {
-  deviceId: string;
+  subject: string;
+  accountIds: readonly number[];
+  now: Date;
+};
+
+export type ClaimClientQuotaInput = {
+  ip: string | undefined;
   accountIds: readonly number[];
   now: Date;
 };

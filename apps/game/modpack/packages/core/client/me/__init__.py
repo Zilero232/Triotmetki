@@ -1,5 +1,5 @@
-"""The bound account's own reads from the site on the app's transport: `post_signed` (one signed /mod/me
-request) and `tank_ratings(app)`, the process-wide read of the player's own tank rows (`/mod/me/tanks`:
+"""The mod's JSON requests to the site on the app's transport: `post_json` (one unsigned POST), `post_signed` (one
+signed /mod/me request) and `tank_ratings(app)`, the process-wide read of the player's own tank rows (`/mod/me/tanks`:
 ratings, career records, WN8 expected values), shared by the features that show them so each tank is read
 once per game session and again after its own battles."""
 from __future__ import absolute_import, division, print_function, unicode_literals
@@ -24,6 +24,7 @@ from ...me import (
 )
 from ...me.constants import MAX_WATCHED_TANKS
 from ...net.signing import SignedRequest, signed_request
+from ...net.signing.constants import JSON_CONTENT_TYPE
 from ...vendor import attr
 
 _state = {'service': None}
@@ -32,6 +33,19 @@ _state = {'service': None}
 def can_read(app):
     """True in the hangar of a bound account whose device the server has not refused."""
     return app.is_bound() and not app.auth_failed and not app.in_battle
+
+
+def post_json(app, path, payload, on_done):
+    """POSTs `payload` to `path` as JSON with no device or signature. `on_done(status, data, retry_after)` gets the JSON
+    object of a 200 answer (else None)."""
+    headers = {'Content-Type': JSON_CONTENT_TYPE, 'Accept': JSON_CONTENT_TYPE, 'User-Agent': app.user_agent()}
+
+    @safe
+    def done(status, body, headers):
+        data = parse_json_body(body) if status == OK_STATUS else None
+        on_done(status, data, parse_retry_after(headers))
+
+    app.transport.request('POST', app.config.endpoint(path), headers, encode_json(payload), done)
 
 
 def post_signed(app, path, payload, on_done):

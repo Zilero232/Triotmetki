@@ -1,5 +1,5 @@
 export type QuotaKeyInput = {
-  deviceId: string;
+  subject: string;
   now: Date;
 };
 

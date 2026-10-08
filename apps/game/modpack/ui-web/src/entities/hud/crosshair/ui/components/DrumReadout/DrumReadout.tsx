@@ -26,7 +26,7 @@ export const DrumReadout = ({ clip, style }: DrumReadoutProps) => {
 
   return (
     <div className={s.drum} style={style}>
-      {clip.refill && <TabularText className={s.refill} text={clip.refill.value} />}
+      {clip.refill?.value && <TabularText className={s.refill} text={clip.refill.value} />}
       {!isRow && <DrumCount clip={clip} loadedPaint={loadedPaint} ticked={motion(clip.loaded) === 'eject'} />}
       {isRow &&
         clip.style === 'shells' &&

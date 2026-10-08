@@ -2,8 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.battle import BattleHooks, arena, arena_dp, own_account_id
 from ....core.client.component import FeatureComponent
-from ....core.client.me import post_signed
-from ....core.errors import ReasonError
+from ....core.client.me import post_json
 from ....core.log import log
 from ....core.me import OK_STATUS
 from ..i18n import STRINGS
@@ -11,12 +10,12 @@ from ..model import (
     ArenaPlayer,
     BattleBadges,
     asked_account_ids,
-    badges_request,
     marked_vehicle_ids,
     parse_badges,
+    presence_request,
     show_own,
 )
-from ..model.constants import BADGES_PATH
+from ..model.constants import PRESENCE_PATH
 from ..settings import SCHEMA, SECTION, SWITCH
 from .flash import PageBridge, set_library
 
@@ -66,11 +65,10 @@ class PackBadge(FeatureComponent):
     def _on_battle_ready(self, player):
         if not self.enabled():
             return
-        # The own badge marks this install, as Near_You's does: it needs no binding and nothing is sent for it.
-        own_id = own_account_id(player) if show_own(self.app.config) else None
+        visible = show_own(self.app.config)
         arena_id = getattr(player, 'arenaUniqueID', None)
-        self.badges.start(arena_id, own_id)
-        log('pack badge swf: own row %s' % ('marked' if own_id else 'not marked'))
+        self.badges.start(arena_id, own_account_id(player), visible)
+        log('pack badge swf: own row %s' % ('marked' if self.badges.marked else 'not marked'))
         self.bridge.start()
         self.show('battle start')
         self.request(arena_id)
@@ -92,30 +90,21 @@ class PackBadge(FeatureComponent):
             return
         self.bridge.show(marked_vehicle_ids(arena_vehicles(arena_infos()), self.badges.marked), reason)
 
-    def _can_request(self, arena_id):
-        if self.badges.requested or arena_id != self.badges.arena_id:
-            return False
-        return self.app.is_bound() and not self.app.auth_failed
-
     def request(self, arena_id):
-        app = self.app
-        if not self._can_request(arena_id):
+        badges = self.badges
+        if arena_id != badges.arena_id:
             return
-        asked = asked_account_ids(arena_players(arena_infos()), app.account_id)
-        try:
-            payload = badges_request(app.current_credentials(), asked)
-        except ReasonError as error:
-            log('pack badge swf: not requested: %s' % error.reason)
+        asked = badges.lookup(asked_account_ids(arena_players(arena_infos()), badges.own_account_id))
+        if asked is None:
             return
-
-        self.badges.requested = True
+        payload = presence_request(badges.own_account_id, badges.visible, asked)
 
         def done(status, data, retry_after):
             if status != OK_STATUS:
                 log('pack badge swf: the site answered %s' % status)
                 return
-            if self.badges.answered(arena_id, parse_badges(data, frozenset(asked))):
-                log('pack badge swf: the site answered, %d marked accounts' % len(self.badges.marked))
+            if badges.answered(arena_id, parse_badges(data, frozenset(asked))):
+                log('pack badge swf: the site answered, %d marked accounts' % len(badges.marked))
                 self.show('site answer')
 
-        post_signed(app, BADGES_PATH, payload, done)
+        post_json(self.app, PRESENCE_PATH, payload, done)

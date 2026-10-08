@@ -35,7 +35,7 @@ export class ModBadgesController {
   async badgesOf(@Req() request: RawBodyRequest<Request>, @Res({ passthrough: true }) response: Response) {
     const { device, body } = await this.devices.authenticateBody({ request, schema: modBadgesRequestSchema });
     const now = new Date();
-    const retryAfterSec = await this.quota.claim({ deviceId: device.id, accountIds: body.account_ids, now });
+    const retryAfterSec = await this.quota.claim({ subject: device.id, accountIds: body.account_ids, now });
 
     if (retryAfterSec !== null) {
       response.setHeader('Retry-After', String(retryAfterSec));

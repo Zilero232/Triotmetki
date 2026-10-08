@@ -25,6 +25,14 @@ describe(lampView, () => {
     expect(lampView(lamp()).progress).toBeCloseTo(0.7);
   });
 
+  it('leaves no sliver of the ring in its last tick', () => {
+    expect(lampView(lamp(null, 9.7)).progress).toBe(0);
+  });
+
+  it('draws no ring while the lamp is held after its time', () => {
+    expect(lampView({ ...lamp(null, 10), held: true }).progress).toBe(0);
+  });
+
   it('writes the seconds in white without a colour of the player: the ring carries the colour', () => {
     expect(lampView(lamp())).toMatchObject({ seconds: '7', tone: 'text', color: undefined });
   });

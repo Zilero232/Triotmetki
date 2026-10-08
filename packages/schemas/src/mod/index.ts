@@ -4,6 +4,7 @@ export {
   bindCodeSchema,
   modBadgePreferenceAnswerSchema,
   modBadgePreferenceSchema,
+  modBadgePresenceRequestSchema,
   modBadgesRequestSchema,
   modBadgesSchema,
   modBattleLoadoutSchema,

@@ -13,7 +13,6 @@ COMPANION_KEYS = (
     'send_queue_times',
     'send_loadouts',
     'send_shots',
-    'show_pack_badge',
     'share_settings',
     'settings_target',
     'settings_anonymous_stats',

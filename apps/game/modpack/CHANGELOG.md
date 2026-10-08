@@ -7,6 +7,18 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Entries are short: one line per change, saying what the player sees or gets — no implementation details.
 - Add the new entry on top of the component's previous ones when you bump a `VERSION`.
 
+## 0.3.11
+
+### ru
+
+- Плашка «Три отметки» видна у всех игроков с модом, привязка к сайту не нужна.
+- Прицел с автозарядкой показывает одну перезарядку, а не две; у лампы нет хвостика таймера.
+
+### en
+
+- The Three Marks plate shows on every player with the mod, no site binding needed.
+- The auto-reloader reticle shows one reload, not two; no timer sliver on the lamp.
+
 ## 0.3.10
 
 ### ru
@@ -54,6 +66,18 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - The settings window in the client's style: the lobby's colours and buttons, actions at the bottom right, reset set apart.
 - The Three Marks badge sits after the name and no longer covers the achievement badge.
 - Battle chat auto messages: artillery on me, ally damage, spotted and a dozen more events to pick.
+
+## ui 0.9.10
+
+### ru
+
+- «Показывать мой значок» переехал на страницу «Плашка «Три отметки» в бою».
+- Кольцо лампы не оставляет хвостика в конце таймера.
+
+### en
+
+- «Show my badge» moved to the «Three Marks plate in battle» page.
+- The lamp ring leaves no sliver at the end of its timer.
 
 ## ui 0.9.9
 
@@ -458,6 +482,18 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Battle HUD: damage and hit logs, clock and battle timer, team HP, sixth sense, a chat filter.
 - Hangar components: battle summary, marks history, ratings, replay manager, quick actions and more.
 - A settings window with profiles and a HUD editor; settings survive a wiped mods folder.
+
+## pack_badge 0.1.5
+
+### ru
+
+- Плашка видна у всех игроков с модом, привязка к сайту не нужна.
+- Плашка находит строки в ушах, по Tab и на загрузке.
+
+### en
+
+- The plate shows on every player with the mod, no site binding needed.
+- The plate finds its rows in the ears, the Tab table and the loading screen.
 
 ## pack_badge 0.1.4
 
@@ -1913,6 +1949,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - The smaller aim circle is a component of its own.
 
+## crosshair 0.6.7
+
+### ru
+
+- Барабан с автозарядкой: одна перезарядка в рамке, без второго такого же числа у снарядов.
+
+### en
+
+- Auto-reloading drum: one reload in the box, no second identical number by the shells.
+
 ## crosshair 0.6.6
 
 ### ru
@@ -2066,6 +2112,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### en
 
 - Five new one-colour centre marks and a choice of six colours.
+
+## core 0.9.8
+
+### ru
+
+- Плашка «Три отметки» узнаёт игроков с модом без привязки к сайту.
+
+### en
+
+- The Three Marks plate finds players with the mod without a site binding.
 
 ## core 0.9.7
 
@@ -2386,6 +2442,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - The shared base of all mod components and the battle HUD with a layout editor.
 - Settings are mirrored to a backup copy and restored on load.
+
+## companion 0.8.9
+
+### ru
+
+- Переключатель «Показывать мой значок» больше не отправляется на сайт после привязки: он едет только с плашкой в бою.
+
+### en
+
+- The «Show my badge» switch is no longer reported to the site after binding: it only travels with the battle's plate.
 
 ## companion 0.8.8
 

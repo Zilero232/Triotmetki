@@ -1,4 +1,5 @@
 import type { Queue } from 'bullmq';
+import type { Redis } from 'ioredis';
 
 import { afterAll, beforeEach, expect, it } from 'vitest';
 import { mock } from 'vitest-mock-extended';
@@ -19,7 +20,7 @@ describeWithDatabase('PurgeService.purgeAccount', () => {
   const createPurge = () => {
     const storage = mock<ObjectStorage>();
 
-    return { storage, purge: new PurgeService(prisma, mock<Queue>(), storage, PURGE_QUERIES) };
+    return { storage, purge: new PurgeService(prisma, mock<Queue>(), storage, PURGE_QUERIES, mock<Redis>()) };
   };
 
   const seedAccounts = async () => {

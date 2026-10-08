@@ -9,11 +9,11 @@ const NEXT_MORNING = new Date('2026-10-06T21:00:30.000Z');
 
 describe('quotaKey', () => {
   it('starts a new quota at Moscow midnight', () => {
-    expect(quotaKey({ deviceId: 'dev_a', now: EVENING })).not.toBe(quotaKey({ deviceId: 'dev_a', now: NEXT_MORNING }));
+    expect(quotaKey({ subject: 'dev_a', now: EVENING })).not.toBe(quotaKey({ subject: 'dev_a', now: NEXT_MORNING }));
   });
 
-  it('keeps one quota per device', () => {
-    expect(quotaKey({ deviceId: 'dev_a', now: EVENING })).not.toBe(quotaKey({ deviceId: 'dev_b', now: EVENING }));
+  it('keeps one quota per subject', () => {
+    expect(quotaKey({ subject: 'dev_a', now: EVENING })).not.toBe(quotaKey({ subject: 'dev_b', now: EVENING }));
   });
 });
 

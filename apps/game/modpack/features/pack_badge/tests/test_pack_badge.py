@@ -6,18 +6,17 @@ import struct
 import unittest
 
 import _support
-from otmetki.companion.binding import Credentials
 from otmetki.companion.config import DEFAULTS as COMPANION_DEFAULTS
 from otmetki.core.errors import ReasonError
 from otmetki.features.pack_badge.model import (
     ArenaPlayer,
     BattleBadges,
     asked_account_ids,
-    badges_request,
     is_anonymised,
     library_action,
     marked_vehicle_ids,
     parse_badges,
+    presence_request,
     show_own,
     status_lines,
 )
@@ -29,10 +28,10 @@ from otmetki.features.pack_badge.model.constants import (
     LIBRARY_REMOVE,
     LIBRARY_SWF,
     MAX_ACCOUNT_IDS,
+    MAX_LOOKUPS,
 )
 
 OWN = 1000
-CREDENTIALS = Credentials('dev_badge', 'q' * 43, OWN)
 ARENA = 4242
 
 
@@ -75,29 +74,40 @@ class AskedAccountIdsTest(unittest.TestCase):
         self.assertEqual(len(asked_account_ids(players, OWN)), MAX_ACCOUNT_IDS)
 
 
-class BadgesRequestTest(unittest.TestCase):
+class PresenceRequestTest(unittest.TestCase):
 
-    def test_carries_the_device_and_the_account_ids_only(self):
-        body = badges_request(CREDENTIALS, [2, 3])
+    def test_carries_the_own_account_the_switch_and_the_account_ids_only(self):
+        body = presence_request(OWN, True, [2, 3])
 
-        self.assertEqual(body, {'device_id': 'dev_badge', 'account_id': OWN, 'account_ids': [2, 3]})
+        self.assertEqual(body, {'account_id': OWN, 'visible': True, 'account_ids': [2, 3]})
+
+    def test_the_own_switch_off_is_sent_as_not_visible(self):
+        self.assertFalse(presence_request(OWN, False, [2])['visible'])
 
     def test_matches_the_contract(self):
-        validator = _support.schema_validator('badges.schema.json', 'request')
+        validator = _support.schema_validator('badges.schema.json', 'presence')
         if validator is None:
             self.skipTest('jsonschema is not installed')
 
-        body = badges_request(CREDENTIALS, [2, 3])
+        errors = list(validator.iter_errors(presence_request(OWN, False, [2, 3])))
 
-        self.assertEqual(list(validator.iter_errors(body)), [])
+        self.assertEqual(errors, [])
 
-    def test_is_not_built_without_players(self):
+    def test_an_empty_battle_matches_the_contract(self):
+        validator = _support.schema_validator('badges.schema.json', 'presence')
+        if validator is None:
+            self.skipTest('jsonschema is not installed')
+
+        errors = list(validator.iter_errors(presence_request(OWN, True, [])))
+
+        self.assertEqual(errors, [])
+
+    def test_is_built_without_other_players(self):
+        self.assertEqual(presence_request(OWN, True, [])['account_ids'], [])
+
+    def test_is_not_built_without_the_own_account(self):
         with self.assertRaises(ReasonError):
-            badges_request(CREDENTIALS, [])
-
-    def test_is_not_built_without_a_binding(self):
-        with self.assertRaises(ReasonError):
-            badges_request(None, [2])
+            presence_request(None, True, [2])
 
 
 class ParseBadgesTest(unittest.TestCase):
@@ -240,23 +250,56 @@ class ShippingTest(unittest.TestCase):
 
 class BattleBadgesTest(unittest.TestCase):
 
-    def test_marks_the_own_account_from_the_start(self):
+    def started(self, visible=True):
         badges = BattleBadges()
+        badges.start(ARENA, OWN, visible)
+        return badges
 
-        badges.start(ARENA, OWN)
-
-        self.assertEqual(badges.marked, frozenset([OWN]))
+    def test_marks_the_own_account_from_the_start(self):
+        self.assertEqual(self.started().marked, frozenset([OWN]))
 
     def test_marks_nobody_without_an_own_badge(self):
+        self.assertEqual(self.started(visible=False).marked, frozenset())
+
+    def test_the_first_lookup_asks_every_player(self):
+        self.assertEqual(self.started().lookup([2, 3]), [2, 3])
+
+    def test_the_first_lookup_goes_out_with_nobody_to_ask_to_record_the_own_badge(self):
+        self.assertEqual(self.started().lookup([]), [])
+
+    def test_nothing_goes_out_with_the_own_badge_off_and_nobody_to_ask(self):
+        self.assertIsNone(self.started(visible=False).lookup([]))
+
+    def test_the_own_badge_off_still_asks_about_the_others(self):
+        self.assertEqual(self.started(visible=False).lookup([2]), [2])
+
+    def test_a_later_lookup_asks_only_the_new_players(self):
+        badges = self.started()
+        badges.lookup([2, 3])
+
+        self.assertEqual(badges.lookup([2, 3, 4]), [4])
+
+    def test_a_later_lookup_without_new_players_is_skipped(self):
+        badges = self.started()
+        badges.lookup([2])
+
+        self.assertIsNone(badges.lookup([2]))
+
+    def test_stops_after_the_lookup_limit(self):
+        badges = self.started()
+        for account_id in range(MAX_LOOKUPS):
+            badges.lookup([account_id + 2])
+
+        self.assertIsNone(badges.lookup([99]))
+
+    def test_never_looks_up_without_the_own_account(self):
         badges = BattleBadges()
+        badges.start(ARENA, None, True)
 
-        badges.start(ARENA, None)
-
-        self.assertEqual(badges.marked, frozenset())
+        self.assertIsNone(badges.lookup([2]))
 
     def test_adds_the_answer_of_this_battle(self):
-        badges = BattleBadges()
-        badges.start(ARENA, OWN)
+        badges = self.started()
 
         changed = badges.answered(ARENA, frozenset([2]))
 
@@ -264,8 +307,7 @@ class BattleBadgesTest(unittest.TestCase):
         self.assertEqual(badges.marked, frozenset([OWN, 2]))
 
     def test_drops_an_answer_for_another_battle(self):
-        badges = BattleBadges()
-        badges.start(ARENA, OWN)
+        badges = self.started()
 
         changed = badges.answered(ARENA + 1, frozenset([2]))
 
@@ -273,8 +315,7 @@ class BattleBadgesTest(unittest.TestCase):
         self.assertEqual(badges.marked, frozenset([OWN]))
 
     def test_forgets_everything_when_the_battle_ends(self):
-        badges = BattleBadges()
-        badges.start(ARENA, OWN)
+        badges = self.started()
         badges.answered(ARENA, frozenset([2]))
 
         badges.stop()

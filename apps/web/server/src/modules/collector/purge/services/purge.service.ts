@@ -1,13 +1,14 @@
 import { InjectQueue } from '@nestjs/bullmq';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Queue } from 'bullmq';
+import { Redis } from 'ioredis';
 
 import type { PurgeAccountPayload } from '../../contracts';
 import type { DeleteAccountRowsInput, ErasePurgedAccountInput, PurgeAccountInput, PurgeRelationalInput, ReleaseRequestInput } from '../purge.types';
 import type { PurgeQueries } from '../queries/purge.types';
 
-import { errorMessage } from '../../../../common/lib';
-import { asPrismaTransaction, ObjectStorage, PrismaService } from '../../../../core';
+import { errorMessage, modPresenceKey } from '../../../../common/lib';
+import { asPrismaTransaction, ObjectStorage, PrismaService, REDIS } from '../../../../core';
 import { JOB, QUEUE } from '../../contracts';
 import { PURGE, PURGE_TOKENS } from '../config/purge.constants';
 
@@ -19,7 +20,8 @@ export class PurgeService {
     private readonly prisma: PrismaService,
     @InjectQueue(QUEUE.purge) private readonly queue: Queue,
     private readonly storage: ObjectStorage,
-    @Inject(PURGE_TOKENS.purgeQueries) private readonly queries: PurgeQueries
+    @Inject(PURGE_TOKENS.purgeQueries) private readonly queries: PurgeQueries,
+    @Inject(REDIS) private readonly redis: Redis
   ) {}
 
   async dispatch(): Promise<number> {
@@ -73,6 +75,7 @@ export class PurgeService {
     );
 
     if (isPurged) {
+      await this.redis.del(modPresenceKey(accountId));
       await this.removeFiles(recorded.flatMap((replay) => (replay.timelineKey ? [replay.storageKey, replay.timelineKey] : [replay.storageKey])));
     }
 
