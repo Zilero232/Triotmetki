@@ -8,7 +8,6 @@ import { remBox } from '@/shared/lib/css-unit';
 
 import { layoutLabels } from '../../../lib/label-layout';
 import { createMouseReport } from '../../../lib/mouse-report';
-import { panelHint } from '../../../lib/panel-hint';
 import { useDrawnReport } from '../use-drawn-report';
 import { useHoveredPanel } from '../use-hovered-panel';
 import { useHudScreen } from '../use-hud-screen';
@@ -47,13 +46,8 @@ export const useHudOverlay = () => {
 
   useInputArea({ edit, hover: Boolean(state?.hover), dragging: live !== null, screen, targets: targetsRef.current, hovered, report });
 
-  const hint = panelHint(edit && live === null ? layouts.find(({ id, panel }) => id === hovered && panel.visible) : undefined);
-
   return {
     labels,
-    hint,
-    edit,
-    screen,
     style: remBox(screen)
   };
 };

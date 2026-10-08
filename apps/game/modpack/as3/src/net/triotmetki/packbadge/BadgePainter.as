@@ -5,6 +5,7 @@ package net.triotmetki.packbadge
     import flash.events.Event;
     import flash.events.IEventDispatcher;
     import flash.geom.Rectangle;
+    import flash.text.TextField;
     import flash.utils.Dictionary;
     import flash.utils.clearTimeout;
     import flash.utils.setTimeout;
@@ -15,6 +16,7 @@ package net.triotmetki.packbadge
         private static const PANEL_EVENTS:Array = [Event.CHANGE, "onItemsCountChange", "stateChanged"];
         private static const PANEL_LISTS:Array = ["listLeft", "listRight"];
         private static const LIST_EVENT:String = "itemsCountChange";
+        private static const PANEL_NAMES:Array = ["playerNameFullTF", "playerNameCutTF"];
         private static const PANEL_BACKGROUNDS:Array = ["bg", "selfBg", "deadBg", "normAltBg", "deadAltBg"];
         private static const TAB_FIELD:String = "fullStats";
         private static const TAB_TABLE:String = "statsTable";
@@ -24,10 +26,10 @@ package net.triotmetki.packbadge
         private static const LOADING_FIELD:String = "battleLoading";
         private static const LOADING_FORM:String = "form";
         private static const LOADING_CONTAINER:String = "container";
-        private static const LOADING_ICONS:Array = ["vehicleIconsAlly", "vehicleIconsEnemy"];
-        private static const LOADING_NAMES:Array = ["textFieldsAlly", "textFieldsEnemy"];
-        private static const SIDES:Array = [false, true];
-        private static const PROVIDER_EVENT:String = "validateItems";
+        private static const LOADING_SIDES:Array = [["vehicleIconsAlly", "textFieldsAlly"], ["vehicleIconsEnemy", "textFieldsEnemy"]];
+        private static const CUT_MARK:String = "..";
+        private static const NAME_ENDS:Array = ["..", "[", " "];
+        private static const MIN_CUT_NAME:int = 4;
         private static const ROW_WIDTH:Number = 339;
         private static const ICON_WIDTH:Number = 63;
         private static const ROW_HEIGHT:Number = 25;
@@ -39,14 +41,14 @@ package net.triotmetki.packbadge
         private var onGone:Function;
         private var panel:IEventDispatcher;
         private var panelField:String;
-        private var tableController:Object;
-        private var loadingForm:Object;
         private var watched:Array = [];
-        private var marked:Dictionary = new Dictionary();
+        private var names:Dictionary = new Dictionary();
+        private var nameList:Array = [];
         private var decors:Dictionary = new Dictionary(true);
         private var settleId:uint = 0;
         private var anchor:Rectangle = new Rectangle();
         private var row:Rectangle = new Rectangle();
+        private var slots:int = 0;
         private var rows:int = 0;
         private var drawn:int = 0;
         private var waiting:int = 0;
@@ -58,21 +60,24 @@ package net.triotmetki.packbadge
             page.addEventListener(Event.REMOVED_FROM_STAGE, this.onPageRemoved, false, 0, true);
         }
 
-        public function mark(ids:Array):String
+        public function mark(ids:Array, shownNames:Array):String
         {
-            this.marked = new Dictionary();
-            for each (var id:* in ids)
+            this.names = new Dictionary();
+            this.nameList = [];
+            for each (var name:* in shownNames)
             {
-                this.marked[Number(id)] = true;
+                if (name is String && name != "" && this.names[name] != true)
+                {
+                    this.names[name] = true;
+                    this.nameList.push(name);
+                }
             }
-            return this.repaint() + " | ids " + ids.length;
+            return this.repaint() + " | names " + this.nameList.length + ", ids " + ids.length;
         }
 
         public function repaint():String
         {
             this.attachPanel();
-            this.attachTable();
-            this.attachLoading();
             var status:String = this.paint();
             this.settleLater();
             return status;
@@ -106,8 +111,6 @@ package net.triotmetki.packbadge
             this.watched = [];
             this.decors = new Dictionary(true);
             this.panel = null;
-            this.tableController = null;
-            this.loadingForm = null;
             this.page = null;
         }
 
@@ -145,38 +148,6 @@ package net.triotmetki.packbadge
             }
         }
 
-        private function attachTable():void
-        {
-            if (this.tableController != null)
-            {
-                return;
-            }
-            this.tableController = ClientFields.tableController(read(this.page, TAB_FIELD));
-            this.listenProviders(this.tableController);
-        }
-
-        private function attachLoading():void
-        {
-            if (this.loadingForm != null)
-            {
-                return;
-            }
-            this.loadingForm = read(read(this.page, LOADING_FIELD), LOADING_FORM);
-            this.listenProviders(this.loadingForm);
-        }
-
-        private function listenProviders(owner:Object):void
-        {
-            if (owner == null)
-            {
-                return;
-            }
-            for each (var provider:Object in ClientFields.providers(owner))
-            {
-                this.listen(provider, PROVIDER_EVENT);
-            }
-        }
-
         private function listen(target:Object, type:String):void
         {
             if (target == null)
@@ -200,35 +171,58 @@ package net.triotmetki.packbadge
                 return "not found (no page." + PANEL_FIELDS.join(" or page.") + ")";
             }
             this.resetCounts();
-            var holders:int = 0;
-            var unreadable:Array = [];
+            var lists:int = 0;
             for each (var side:String in PANEL_LISTS)
             {
-                var list:Object = ClientFields.panelHolders(read(this.panel, side));
-                if (list == null)
+                var list:DisplayObjectContainer = read(this.panel, side) as DisplayObjectContainer;
+                if (list != null)
                 {
-                    unreadable.push(side + "._items");
-                    continue;
-                }
-                for each (var holder:* in list)
-                {
-                    holders++;
-                    this.paintPanelRow(holder);
+                    lists++;
+                    this.paintPanelList(list);
                 }
             }
-            var gaps:String = unreadable.length > 0 ? " (unreadable " + unreadable.join(", ") + ")" : "";
-            return this.panelField + " holders " + holders + gaps + ", " + this.counts();
+            return this.panelField + " lists " + lists + ", items " + this.slots + ", " + this.counts();
         }
 
-        private function paintPanelRow(holder:*):void
+        private function paintPanelList(list:DisplayObjectContainer):void
         {
-            var item:DisplayObjectContainer = call(holder, "getListItem") as DisplayObjectContainer;
-            if (item == null)
+            for (var index:int = 0; index < list.numChildren; index++)
+            {
+                var child:DisplayObjectContainer = list.getChildAt(index) as DisplayObjectContainer;
+                if (child == null)
+                {
+                    continue;
+                }
+                if (firstOf(child, PANEL_NAMES) != null)
+                {
+                    this.paintPanelRow(child);
+                    continue;
+                }
+                for (var nested:int = 0; nested < child.numChildren; nested++)
+                {
+                    var item:DisplayObjectContainer = child.getChildAt(nested) as DisplayObjectContainer;
+                    if (item != null && firstOf(item, PANEL_NAMES) != null)
+                    {
+                        this.paintPanelRow(item);
+                    }
+                }
+            }
+        }
+
+        private function paintPanelRow(item:DisplayObjectContainer):void
+        {
+            this.slots++;
+            var shown:String = null;
+            for each (var field:String in PANEL_NAMES)
+            {
+                shown = shown || textOf(read(item, field) as TextField);
+            }
+            if (shown == null)
             {
                 return;
             }
             this.rows++;
-            if (!this.marked[Number(read(holder, "vehicleID"))])
+            if (!this.isMarked(shown))
             {
                 this.undecorate(item);
                 return;
@@ -243,43 +237,25 @@ package net.triotmetki.packbadge
 
         private function paintTable():String
         {
-            if (this.tableController == null)
-            {
-                return "not found (no page." + TAB_FIELD + ".tableCtrl)";
-            }
             var table:Object = read(read(this.page, TAB_FIELD), TAB_TABLE);
             var icons:Object = read(table, TAB_ICONS);
-            var names:Object = read(table, TAB_NAMES);
-            if (icons == null || names == null)
+            var shownNames:Object = read(table, TAB_NAMES);
+            if (icons == null || shownNames == null)
             {
-                return "not found (no " + TAB_FIELD + "." + TAB_TABLE + "." + TAB_ICONS + ")";
+                return "not found (no page." + TAB_FIELD + "." + TAB_TABLE + "." + TAB_NAMES + ")";
             }
             this.resetCounts();
-            var numRows:int = int(read(table, "numRows"));
             var frags:Object = read(table, TAB_FRAGS);
-            var holders:int = 0;
-            for each (var enemy:Boolean in SIDES)
+            for (var index:int = 0; index < shownNames.length && index < icons.length; index++)
             {
-                var renderers:Object = ClientFields.tableRenderers(this.tableController, enemy);
-                for (var index:int = 0; renderers != null && index < renderers.length; index++)
-                {
-                    var holder:* = renderers[index];
-                    holders++;
-                    if (!read(holder, "containsData"))
-                    {
-                        continue;
-                    }
-                    var cell:int = (enemy ? numRows : 0) + index;
-                    var id:Number = Number(call(holder, "getVehicleID"));
-                    this.paintSlot(icons[cell] as DisplayObject, id, names[cell] as DisplayObject, frags != null ? frags[cell] as DisplayObject : null);
-                }
+                this.paintSlot(icons[index] as DisplayObject, shownNames[index] as TextField, frags != null ? frags[index] as DisplayObject : null);
             }
-            return "tableCtrl holders " + holders + ", " + this.counts();
+            return TAB_FIELD + "." + TAB_TABLE + " cells " + this.slots + ", " + this.counts();
         }
 
         private function paintLoading():String
         {
-            var form:DisplayObjectContainer = this.loadingForm as DisplayObjectContainer;
+            var form:DisplayObjectContainer = read(read(this.page, LOADING_FIELD), LOADING_FORM) as DisplayObjectContainer;
             if (form == null)
             {
                 return "not found (no page." + LOADING_FIELD + "." + LOADING_FORM + ")";
@@ -290,34 +266,33 @@ package net.triotmetki.packbadge
                 return "not found (no " + LOADING_FORM + "." + LOADING_CONTAINER + ")";
             }
             this.resetCounts();
-            var renderersFound:int = 0;
-            for each (var enemy:Boolean in SIDES)
+            for each (var side:Array in LOADING_SIDES)
             {
-                var renderers:Object = ClientFields.loadingRenderers(form, enemy);
-                var icons:Object = read(container, LOADING_ICONS[int(enemy)]);
-                var names:Object = read(container, LOADING_NAMES[int(enemy)]);
-                if (renderers == null || icons == null)
+                var icons:Object = read(container, side[0]);
+                var shownNames:Object = read(container, side[1]);
+                for (var index:int = 0; icons != null && shownNames != null && index < shownNames.length && index < icons.length; index++)
                 {
-                    continue;
-                }
-                for (var index:int = 0; index < renderers.length && index < icons.length; index++)
-                {
-                    renderersFound++;
-                    var id:Number = ClientFields.loadingVehicleID(renderers[index]);
-                    this.paintSlot(icons[index] as DisplayObject, id, names != null ? names[index] as DisplayObject : null, null);
+                    this.paintSlot(icons[index] as DisplayObject, shownNames[index] as TextField, null);
                 }
             }
-            return "form._allyRenderers/_enemyRenderers " + renderersFound + ", " + this.counts();
+            return LOADING_FORM + "." + LOADING_CONTAINER + " slots " + this.slots + ", " + this.counts();
         }
 
-        private function paintSlot(icon:DisplayObject, id:Number, name:DisplayObject, frags:DisplayObject):void
+        private function paintSlot(icon:DisplayObject, name:TextField, frags:DisplayObject):void
         {
-            if (icon == null || icon.parent == null || isNaN(id))
+            if (icon == null || icon.parent == null || name == null)
             {
                 return;
             }
+            this.slots++;
+            var shown:String = name.visible ? textOf(name) : null;
+            if (shown == null)
+            {
+                this.undecorate(icon);
+                return;
+            }
             this.rows++;
-            if (!this.marked[id])
+            if (!this.isMarked(shown))
             {
                 this.undecorate(icon);
                 return;
@@ -334,6 +309,36 @@ package net.triotmetki.packbadge
             decor.attach(container, lowestIndex(container, icon, name));
             decor.layout(this.anchor, this.row);
             this.drawn++;
+        }
+
+        private function isMarked(shown:String):Boolean
+        {
+            var end:int = shown.length;
+            for each (var ending:String in NAME_ENDS)
+            {
+                var at:int = shown.indexOf(ending);
+                if (at >= 0 && at < end)
+                {
+                    end = at;
+                }
+            }
+            var visible:String = shown.substring(0, end);
+            if (shown.indexOf(CUT_MARK) != end)
+            {
+                return this.names[visible] == true;
+            }
+            if (visible.length < MIN_CUT_NAME)
+            {
+                return false;
+            }
+            for each (var name:String in this.nameList)
+            {
+                if (name.indexOf(visible) == 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private function measurePanelRow(item:DisplayObjectContainer):void
@@ -415,6 +420,7 @@ package net.triotmetki.packbadge
 
         private function resetCounts():void
         {
+            this.slots = 0;
             this.rows = 0;
             this.drawn = 0;
             this.waiting = 0;
@@ -422,7 +428,7 @@ package net.triotmetki.packbadge
 
         private function counts():String
         {
-            return "rows " + this.rows + ", marked " + this.drawn + (this.waiting > 0 ? ", not drawn yet " + this.waiting : "");
+            return "names read " + this.rows + ", marked " + this.drawn + (this.waiting > 0 ? ", not drawn yet " + this.waiting : "");
         }
 
         private function settleLater():void
@@ -450,6 +456,11 @@ package net.triotmetki.packbadge
             var page:IEventDispatcher = this.page;
             this.dispose();
             gone(page);
+        }
+
+        private static function textOf(field:TextField):String
+        {
+            return field != null && field.text != "" ? field.text : null;
         }
 
         private static function backgroundTop(item:DisplayObjectContainer):int
@@ -494,14 +505,15 @@ package net.triotmetki.packbadge
             target.height = source.height;
         }
 
-        private static function call(target:*, name:String):*
+        private static function firstOf(target:*, names:Array):*
         {
-            try
+            for each (var name:String in names)
             {
-                return target[name]();
-            }
-            catch (error:Error)
-            {
+                var value:* = read(target, name);
+                if (value != null)
+                {
+                    return value;
+                }
             }
             return null;
         }

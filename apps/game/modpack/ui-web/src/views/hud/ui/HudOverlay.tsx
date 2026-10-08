@@ -1,7 +1,7 @@
 import { ErrorBoundary } from 'react-error-boundary';
 
 import { useHudOverlay } from '../model/hooks';
-import { HudHint, HudLabel } from './components';
+import { HudLabel } from './components';
 
 import s from './HudOverlay.module.scss';
 
@@ -15,11 +15,6 @@ export const HudOverlay = () => {
           <HudLabel {...label} />
         </ErrorBoundary>
       ))}
-      {overlay.hint && (
-        <ErrorBoundary fallback={null} resetKeys={[overlay.hint]}>
-          <HudHint hint={overlay.hint} screen={overlay.screen} />
-        </ErrorBoundary>
-      )}
     </div>
   );
 };

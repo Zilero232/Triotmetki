@@ -14,6 +14,7 @@ from otmetki.features.pack_badge.model import (
     asked_account_ids,
     is_anonymised,
     library_action,
+    marked_names,
     marked_vehicle_ids,
     parse_badges,
     presence_request,
@@ -157,6 +158,35 @@ class MarkedVehicleIdsTest(unittest.TestCase):
 
     def test_marks_nothing_without_marked_accounts(self):
         self.assertEqual(marked_vehicle_ids([(11, OWN)], frozenset()), [])
+
+
+def arena_player(account_id, name, fake_name=''):
+    return ArenaPlayer(account_id=account_id, name=name, fake_name=fake_name, is_bot=False)
+
+
+class MarkedNamesTest(unittest.TestCase):
+
+    def test_names_the_players_of_marked_accounts(self):
+        players = [arena_player(OWN, 'Own'), arena_player(2, 'Other'), arena_player(3, 'Friend')]
+
+        self.assertEqual(marked_names(players, frozenset([OWN, 3])), ['Friend', 'Own'])
+
+    def test_an_anonymised_player_is_found_by_both_names(self):
+        players = [arena_player(OWN, 'Own', fake_name='Hidden')]
+
+        self.assertEqual(marked_names(players, frozenset([OWN])), ['Hidden', 'Own'])
+
+    def test_each_name_goes_once_and_as_text(self):
+        players = [arena_player(2, b'Twin', fake_name=b'Twin'), arena_player(2, 'Twin')]
+
+        self.assertEqual(marked_names(players, frozenset([2])), ['Twin'])
+        self.assertIsInstance(marked_names(players, frozenset([2]))[0], type(u''))
+
+    def test_leaves_out_empty_names(self):
+        self.assertEqual(marked_names([arena_player(2, None), arena_player(2, '')], frozenset([2])), [])
+
+    def test_names_nobody_without_marked_accounts(self):
+        self.assertEqual(marked_names([arena_player(OWN, 'Own')], frozenset()), [])
 
 
 class LibraryActionTest(unittest.TestCase):

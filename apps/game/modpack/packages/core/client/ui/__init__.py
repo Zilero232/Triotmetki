@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ...hud.panel import dock_of, panel_hint
+from ...hud.panel import dock_of
 from ...log import log, safe
 from ..hud import create_backend
 from ..lobby_view import lobby_view
@@ -15,13 +15,11 @@ class Ui(object):
     A label is framed only while the player holds the edit modifier; `on_moved(props)` gets the new place
     (x, y, alignX, alignY or scale) after the player moved or resized it. A label may carry a structured `widget`
     (`core.hud.widget`) the Gameface page draws instead of its text; a label at its column's anchor is docked
-    (`core.hud.panel.dock_of`). With the app's `translate` every label carries its component's short description, the
-    tooltip the Gameface page shows over it (`core.hud.panel.panel_hint`)."""
+    (`core.hud.panel.dock_of`)."""
 
-    def __init__(self, backend=None, watch=None, translate=None):
+    def __init__(self, backend=None, watch=None):
         self.backend = backend or create_backend()
         self.watch = watch
-        self.translate = translate
         self.watching = False
         self.components = set()
         self.moved = {}
@@ -69,7 +67,6 @@ class Ui(object):
             'widget': widget,
             'visible': self.in_view,
             'dock': dock_of(alias, layout),
-            'hint': panel_hint(self.translate, alias),
         }
         if alias in self.components:
             self.backend.update(alias, content)

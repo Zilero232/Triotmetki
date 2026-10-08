@@ -47,7 +47,7 @@ def component_config(app):
 def hud_layer(app):
     """The process-wide HUD layer (created on first use, so features need no load order)."""
     if _state['layer'] is None:
-        _state['layer'] = HudLayer(create_backend(), component_config(app), getattr(app, 'translate', None))
+        _state['layer'] = HudLayer(create_backend(), component_config(app))
         battle_cover(app)
     return _state['layer']
 

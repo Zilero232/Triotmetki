@@ -22,8 +22,6 @@ const ON_LABEL = { x: 20, y: 940 };
 
 const OFF_EVERY_PANEL = { x: 900, y: 300 };
 
-const PANEL_HINT = 'Нанесённый и полученный урон за бой.';
-
 const sampleSchema = z.looseObject({ panels: z.array(z.record(z.string(), z.unknown())) });
 
 const withState = ({ patch = {}, panel = {} }: { patch?: Record<string, unknown>; panel?: Record<string, unknown> }): string => {
@@ -364,70 +362,15 @@ describe(useHudOverlay, () => {
     expect(mock.inputAreas().at(-1)).toEqual(WHOLE_SCREEN);
   });
 
-  it('describes the panel under the cursor with its hint', async () => {
-    const { hook, hover } = await startInBattle();
+  it('takes no mouse over a pinned panel in battle', async () => {
+    const { hover, mock } = await startInBattle({ state: withState({ panel: { drag: false } }) });
 
     hover(ON_LABEL);
 
-    expect(hook.result.current.hint?.text).toBe(PANEL_HINT);
-  });
-
-  it('describes no panel outside the edit mode', async () => {
-    const { hook, hover } = await startInBattle({ state: withState({ patch: { edit: false } }) });
-
-    hover(ON_LABEL);
-
-    expect(hook.result.current.hint).toBeNull();
-  });
-
-  it('shows the new hint the game sends after a language switch', async () => {
-    const { hook, hover, mock } = await startInBattle();
-
-    hover(ON_LABEL);
-
-    act(() => mock.push({ state: withState({ panel: { hint: 'Damage dealt and received in the battle.' } }) }));
-
-    expect(hook.result.current.hint?.text).toBe('Damage dealt and received in the battle.');
-  });
-
-  it('drops the hint once the cursor leaves the panel', async () => {
-    const { hook, hover } = await startInBattle();
-
-    hover(ON_LABEL);
-
-    hover(OFF_EVERY_PANEL);
-
-    expect(hook.result.current.hint).toBeNull();
-  });
-
-  it('drops the hint when the battle cursor hides', async () => {
-    const { hook, hover, mock } = await startInBattle();
-
-    hover(ON_LABEL);
-
-    act(() => mock.push({ state: withState({ patch: { cursor: false, edit: false } }) }));
-
-    expect(hook.result.current.hint).toBeNull();
-  });
-
-  it('describes a pinned panel without taking the mouse over it', async () => {
-    const { hook, hover, mock } = await startInBattle({ state: withState({ panel: { drag: false } }) });
-
-    hover(ON_LABEL);
-
-    expect(hook.result.current.hint?.text).toBe(PANEL_HINT);
     expect(mock.inputAreas().at(-1)).toEqual(NO_INPUT);
   });
 
-  it('draws its own readable hint even when the client offers its tooltip', async () => {
-    const { hook, hover } = await startInBattle({ tooltips: true });
-
-    hover(ON_LABEL);
-
-    expect(hook.result.current.hint?.text).toBe(PANEL_HINT);
-  });
-
-  it('never opens the client tooltip, whose body text is too dim over the battle', async () => {
+  it('never opens the client tooltip over a panel', async () => {
     const { hover, mock } = await startInBattle({ tooltips: true });
 
     hover(ON_LABEL);

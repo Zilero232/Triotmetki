@@ -7,7 +7,6 @@ export const HUD_OVERLAY = {
   noInputRect: { left: 0, top: 0, width: 1, height: 1 },
   inputAreaRefreshMs: 1000,
   dock: { gap: 6, reserve: 190, ceiling: 80 },
-  hintGap: 6,
   attach: {
     gap: 12,
     edge: 8,

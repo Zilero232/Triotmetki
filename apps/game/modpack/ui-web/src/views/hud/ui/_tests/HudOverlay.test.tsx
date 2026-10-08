@@ -13,7 +13,6 @@ import { HudOverlay } from '../HudOverlay';
 vi.mock('../../model/hooks', () => ({ useHudOverlay: vi.fn() }));
 
 vi.mock('../components', () => ({
-  HudHint: () => null,
   HudLabel: ({ id }: HudLabelProps) => {
     if (id === 'broken') {
       throw new Error('label failed');
@@ -22,8 +21,6 @@ vi.mock('../components', () => ({
     return <span>{id}</span>;
   }
 }));
-
-const SCREEN = { width: 1920, height: 1080 };
 
 const panelOf = (id: string): HudPanel => ({
   id,
@@ -54,9 +51,6 @@ const labelOf = (id: string): HudLabelModel => ({
 
 const overlayOf = (ids: string[]): ReturnType<typeof useHudOverlay> => ({
   labels: ids.map(labelOf),
-  hint: null,
-  edit: false,
-  screen: SCREEN,
   style: { width: '1920rem', height: '1080rem' }
 });
 

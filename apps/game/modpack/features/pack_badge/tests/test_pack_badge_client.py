@@ -37,8 +37,8 @@ class Bridge(object):
     def stop(self):
         self.started = False
 
-    def show(self, vehicle_ids, reason):
-        self.shown = (vehicle_ids, reason)
+    def show(self, vehicle_ids, names, reason):
+        self.shown = (vehicle_ids, names, reason)
 
 
 class ClientTestCase(unittest.TestCase):
@@ -135,7 +135,7 @@ class OwnBadgeTest(ClientTestCase):
         self.transport.respond(200, b'{"account_ids":[21]}')
 
         assert component.badges.marked == frozenset([OWN_ACCOUNT, 21])
-        assert component.bridge.shown == ([OWN_VEHICLE, 8], 'site answer')
+        assert component.bridge.shown == ([OWN_VEHICLE, 8], ['Tanker21', 'Tanker3500'], 'site answer')
 
     def test_a_vehicle_added_later_asks_only_about_its_player(self):
         component = self.component({'enabled': True, 'show_pack_badge': True})

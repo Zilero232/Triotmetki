@@ -51,7 +51,13 @@ describe(RadialTimer, () => {
     expect(ring(0.5).querySelector('circle')).toBeNull();
   });
 
-  it('leaves only the track once the time is out', () => {
-    expect(ring(0).querySelectorAll('path')).toHaveLength(1);
+  it('keeps the arc element once the time is out, so Gameface redraws the emptied ring instead of a stale sliver', () => {
+    expect(ring(0).querySelectorAll('path')).toHaveLength(2);
+  });
+
+  it('draws nothing of the arc once the time is out', () => {
+    const arc = ring(0).querySelectorAll('path')[1];
+
+    expect([arc?.getAttribute('stroke-opacity'), arc?.getAttribute('stroke-width')]).toEqual(['0', '0']);
   });
 });

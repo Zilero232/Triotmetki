@@ -8,7 +8,6 @@ import unittest
 
 import _support
 from otmetki.core.hud.panel import dock_layout
-from otmetki.core.i18n import Catalog, Translator
 
 CLIENT_PREFIX = 'otmetki.core.client'
 
@@ -62,31 +61,6 @@ class Watch(object):
     def change(self, visible):
         for listener in self.listeners:
             listener(visible)
-
-
-def hint_translator():
-    hints = {
-        'component_session_stats_hint': u'Бои и средний урон за сессию.',
-        'component_hangar_info_hint': u'Часы и сервер.',
-    }
-    return Translator(Catalog({'ru': hints}), 'ru')
-
-
-class UiHintTest(unittest.TestCase):
-
-    def setUp(self):
-        self.backend = Backend()
-        self.ui = load_ui()(self.backend, Watch(), hint_translator())
-
-    def test_a_hangar_label_carries_its_component_hint(self):
-        self.ui.show('otmetki.session', u'text', dock_layout('hangar_right'))
-
-        assert self.backend.calls[-1][2]['hint'] == u'Бои и средний урон за сессию.'
-
-    def test_a_label_of_its_own_alias_carries_its_component_hint(self):
-        self.ui.show('otmetki.hangar_info', u'12:00', {'x': 1, 'y': 2})
-
-        assert self.backend.calls[-1][2]['hint'] == u'Часы и сервер.'
 
 
 class UiContextTest(unittest.TestCase):

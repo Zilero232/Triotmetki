@@ -2,7 +2,7 @@
 
 `core/client/hud/` implements it with OpenWG Gameface (the ui package's HUD page); `NullBackend` stands in while
 OpenWG Gameface or the client's inject classes are missing. Props are the label names (x, y, alignX, alignY, alpha,
-drag, border, text, visible, scale, widget, dock, attach, hint).
+drag, border, text, visible, scale, widget, dock, attach).
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 

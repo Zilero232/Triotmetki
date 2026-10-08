@@ -114,40 +114,39 @@ own in the stock rows.
   a mode switch, the lists `itemsCountChange` (`PlayersPanelBase.as`, `PlayersPanel.as`, `BasePlayersPanelList.as`).
 - **What we draw.** A 36x18 plate (the «///» mark and the «ТРИ ОТМЕТКИ» wordmark, our art in
   `assets/otmetki/pack_badge`, renditions for 1x, 1.5x and 2x) right after the vehicle icon, and a 240 px
-  orange-to-transparent strip above the row backgrounds and below the text. Python sends only the vehicle ids of
-  marked accounts; the library repaints on the panel's own events, removes itself with the page and does no
+  orange-to-transparent strip above the row backgrounds and below the text. Python sends the vehicle ids and the shown
+  names of marked accounts; the library repaints on the panel's own events, removes itself with the page and does no
   per-frame work.
 - **Toolchain.** Apache Royale `mxmlc` from npm on Java (mise); playerglobal generated from Royale's Apache-licensed
   typedefs; no Lesta SWC (the client's classes are reached by name). The SWF is committed (`bun run swf:build`).
-- **Field access.** Revised 2026-10-08 after the first live log on 1.45 (`panel rows 0, marked 0`, `tab not found`,
-  `loading rows 0, marked 0`): the field names were right, the lookup was not. The library read every field as
-  `target[name]`; that resolves public members only, and `_items`, `tableCtrl` and `_allyRenderers` are private or
-  protected. Battle Observer writes `list._items` on an untyped value, and its compiled multiname
-  (`modBattleObserver.swf` 1.43.44, `PlayersPanelsUI`) carries none of the client's private namespaces yet resolves in
-  Scaleform, so `ClientFields` reads the non-public fields the same way, by compile-time dot access on untyped values,
-  and keeps `target[name]` for public ones.
+- **Field access.** Revised 2026-10-08 after two live logs on 1.45. The vehicle id of a stock row lives only in
+  private or protected fields (`BasePlayersPanelList._items`, `StatsBase.tableCtrl`,
+  `StatsTableControllerBase.allyRenderers`, `BattleLoadingForm._allyRenderers`, `BasePlayerItemRenderer.model`). A
+  string lookup (`target[name]`) found none of them (`panel rows 0`, `tab not found`, `loading rows 0`), and neither
+  did compile-time dot access on untyped values, the way Battle Observer's `PlayersPanelsUI.as` reads `list._items`
+  on the WG client (`unreadable listLeft._items, listRight._items`, `no page.fullStats.tableCtrl`). The library
+  therefore reads public members only and finds a row by the player name it shows: Python sends
+  `as_otmetkiPackBadge(vehicleIds, names)`, the names being the marked players' `player.name` plus `fakeName` for an
+  anonymised player (`model.marked_names`). A row's name is its text field's text up to a clan tag `[`, a space
+  (region, IGR icon, the anonymised eye) or the client's cut mark `..` (`CommonsBattle.formatPlayerName`,
+  `BattleLoadingUtil.formatPlayerName`), compared case-sensitively; a cut name (at least 4 characters) matches a
+  marked name it starts.
 - **Players panel** (RU 1.45 client source: `battle.swf`, `net.wg.gui.battle.random.views.BattlePage`,
-  `PlayersPanelBase`, `BasePlayersPanelList`, `BasePlayersListItemHolder`). The page field is public `playersPanel`
-  (`epicRandomPlayersPanel` on `EpicRandomPage`; `getComponent` is protected, so the field is read instead), its
-  public `listLeft`/`listRight`, the private `_items` vector of holders, each with public `getListItem()` and
-  `vehicleID`.
-- **Tab and loading screen.** Their rows are fixed slots rebound to other vehicles by sort. Tab (RU 1.45 client
-  source: `StatsBase`, `StatsTableControllerBase`, `StatsTableItemBase`, `StatsTableItem`): `fullStats.tableCtrl`
-  (protected) holds the protected `allyRenderers`/`enemyRenderers` (`StatsTableItemHolderBase`, public
-  `containsData` and `getVehicleID()`); renderer `row` of column `c` (0 allies, 1 enemies) draws into cell
-  `c * numRows + row` of the public `fullStats.statsTable` collections `vehicleIconCollection`,
-  `playerNameCollection`, `fragsCollection`, which the library reads instead of the private `statsItem` fields. The
-  holders keep their data while Tab is hidden; the cells are drawn only once shown, so Python listens to
+  `PlayersPanelBase`, `BasePlayersPanelList`, `BasePlayersPanelListItem`). The page field is public `playersPanel`
+  (`epicRandomPlayersPanel` on `EpicRandomPage`); its public `listLeft`/`listRight` are sprites whose renderer
+  container holds the rows; a row has public `playerNameFullTF` and `playerNameCutTF` (both filled whichever the panel
+  mode shows), `vehicleIcon`, `hit` and the backgrounds.
+- **Tab and loading screen.** Their rows are fixed slots rebound to other players by sort. Tab (RU 1.45 client source:
+  `StatsBase`, `FullStatsTable`, `FullStatsTableBase`, `StatsTableItemBase`): the public `fullStats.statsTable` holds
+  the cell collections `playerNameCollection`, `vehicleIconCollection` and `fragsCollection`, one index per slot; an
+  empty slot keeps its name field hidden. The cells are drawn only once Tab is shown, so Python listens to
   `GameEvent.FULL_STATS` on `g_eventBus` and asks for a repaint 0.2 s after Tab goes down. Loading (RU 1.45 client
-  source: `BattleLoading`, `BattleLoadingForm`, `BasePlayerItemRenderer`, `BaseRendererContainer`):
-  `battleLoading.form._allyRenderers/_enemyRenderers` (private) hold renderers whose protected `model` carries
-  `vehicleID`; renderer `i` of a side draws into index `i` of the public vectors `vehicleIconsAlly`/`vehicleIconsEnemy`
-  and `textFieldsAlly`/`textFieldsEnemy` of the form's child named `container`. Both owners rebind rows when their
-  private `VehiclesDataProvider`s (`_teamDP`, `_enemyDP`) dispatch `validateItems`, so the library listens to those
-  and repaints 150 ms later; a decoration hangs on the slot's icon and is checked against the slot's current vehicle on
-  every repaint. Battle Observer draws nothing in the Tab; this part follows the client source.
-- The library loads and answers on Lesta 1.45. UNVERIFIED there: the dot access to private and protected fields
-  (Battle Observer relies on it on the WG client).
+  source: `BattleLoadingForm`, `BaseRendererContainer`): the form's child named `container` holds the public vectors
+  `textFieldsAlly`/`textFieldsEnemy` and `vehicleIconsAlly`/`vehicleIconsEnemy`. A decoration hangs on the slot's
+  icon and is checked against the slot's current name on every repaint. Battle Observer draws nothing in the Tab; this
+  part follows the client source.
+- The library loads and answers on Lesta 1.45. UNVERIFIED there: the name text the screens show for an anonymised
+  player; two players whose names the client cut to the same prefix would both match.
 
 Revised 2026-10-08 (pack_badge 0.1.4): 0.3.9 embedded the plate as PNG in `DefineBitsJPEG2` (SWF 17), and the battle
 app crashed natively while loading the library, in every battle; the plate is vector art now and the library is

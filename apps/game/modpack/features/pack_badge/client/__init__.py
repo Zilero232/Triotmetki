@@ -10,6 +10,7 @@ from ..model import (
     ArenaPlayer,
     BattleBadges,
     asked_account_ids,
+    marked_names,
     marked_vehicle_ids,
     parse_badges,
     presence_request,
@@ -88,7 +89,10 @@ class PackBadge(FeatureComponent):
     def show(self, reason):
         if not self.badges.marked:
             return
-        self.bridge.show(marked_vehicle_ids(arena_vehicles(arena_infos()), self.badges.marked), reason)
+        infos = arena_infos()
+        marked = self.badges.marked
+        self.bridge.show(marked_vehicle_ids(arena_vehicles(infos), marked), marked_names(arena_players(infos), marked),
+                         reason)
 
     def request(self, arena_id):
         badges = self.badges

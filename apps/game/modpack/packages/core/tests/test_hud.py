@@ -7,7 +7,7 @@ import unittest
 import _support  # noqa: F401
 from otmetki.core.events import EventBus
 from otmetki.core.hud.modifier import is_held, modifier_keys
-from otmetki.core.hud.panel import component_of, moved_values
+from otmetki.core.hud.panel import moved_values
 from otmetki.core.hud import (
     EVENT_DESCRIBE,
     EVENT_EDIT,
@@ -32,18 +32,6 @@ from _support import MemoryFile
 PREVIEW_TEXT = u'<font color="#FFFFFF">390</font>'
 DAMAGE_LOG = alias_of('damage_log')
 SESSION = alias_of('session')
-
-
-class ComponentOfTest(unittest.TestCase):
-
-    def test_a_battle_panel_belongs_to_the_component_of_its_id(self):
-        assert component_of('otmetki.hud.damage_log') == 'damage_log'
-
-    def test_a_hangar_label_belongs_to_the_component_before_its_part(self):
-        assert component_of('otmetki.event_trackers.caravan') == 'event_trackers'
-
-    def test_the_session_label_belongs_to_the_session_stats(self):
-        assert component_of('otmetki.session') == 'session_stats'
 
 
 class FakeBackend(HudBackend):

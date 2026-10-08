@@ -1,5 +1,6 @@
 import { HUD_FIGURE, HUD_TONE_COLORS } from '@/shared/config';
 import { remRect } from '@/shared/lib/css-unit';
+import { RADIAL } from '@/shared/lib/radial';
 
 import type { ReticleArcsProps } from './ReticleArcs.types';
 
@@ -40,8 +41,20 @@ export const ReticleArcs = ({ arcs }: ReticleArcsProps) => {
               />
             )
         )}
-        {reload && <path d={reload} fill='none' stroke={HUD_FIGURE.index} strokeWidth={geometry.stroke} />}
-        {health && <path d={health} fill='none' stroke={HUD_TONE_COLORS.ally.hex} strokeWidth={geometry.stroke} />}
+        <path
+          d={reload || RADIAL.emptyPath}
+          fill='none'
+          stroke={HUD_FIGURE.index}
+          strokeOpacity={reload ? 1 : 0}
+          strokeWidth={reload ? geometry.stroke : 0}
+        />
+        <path
+          d={health || RADIAL.emptyPath}
+          fill='none'
+          stroke={HUD_TONE_COLORS.ally.hex}
+          strokeOpacity={health ? 1 : 0}
+          strokeWidth={health ? geometry.stroke : 0}
+        />
       </svg>
     </span>
   );

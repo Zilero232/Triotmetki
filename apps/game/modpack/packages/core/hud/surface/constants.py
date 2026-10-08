@@ -34,7 +34,6 @@ PANEL_KEYS = (
     ('widget', 'widget', None),
     ('dock', 'dock', None),
     ('attach', 'attach', None),
-    ('hint', 'hint', ''),
 )
 DOCK_NUMBERS = ('reserve', 'ceiling')
 ATTACH_NUMBERS = ('bar', 'minimap')

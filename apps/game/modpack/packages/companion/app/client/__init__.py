@@ -110,7 +110,7 @@ class OtmetkiApp(object):
         self.in_battle = False
         self.last_flush = 0.0
         self.flush_requested = False
-        self.ui = Ui(translate=self.translate)
+        self.ui = Ui()
         self.binder = Binder(self)
         self.marks = MarksCapture(self)
         self.battles = BattleCapture(self)

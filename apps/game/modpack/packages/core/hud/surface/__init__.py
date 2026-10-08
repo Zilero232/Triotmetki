@@ -3,7 +3,7 @@
 `HudSurface` keeps every label the layer created (its props) with the GUI space it was created in, so a hangar label
 never shows in battle and the other way round. `encode(space, cursor, edit)` is the view model's `state` property:
 `{v, cursor, edit, hover, panels: [{id, text, x, y, align_x, align_y, alpha, drag, border, visible, scale, widget, dock,
-attach, hint}]}`; `widget` is a panel's structured payload (`core.hud.widget`) or
+attach}]}`; `widget` is a panel's structured payload (`core.hud.widget`) or
 None, drawn instead of `text` when the page knows its kind; `dock` (`{group, order}` or None, `core.hud.panel.dock_of`)
 stacks the panels of one column at its anchor; `attach` (`{kind, bar, minimap}` or None, `core.hud.panel.attach_of`)
 places a panel at its default place beside a stock element. `edit` is

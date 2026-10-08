@@ -13,11 +13,15 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - Плашка «Три отметки» видна у всех игроков с модом, привязка к сайту не нужна.
 - Прицел с автозарядкой показывает одну перезарядку, а не две; у лампы нет хвостика таймера.
+- Автосообщение о перезарядке не пишет «Барабан пуст» на танках без барабана.
+- Панели в бою не показывают описание при наведении.
 
 ### en
 
 - The Three Marks plate shows on every player with the mod, no site binding needed.
 - The auto-reloader reticle shows one reload, not two; no timer sliver on the lamp.
+- The reload auto message no longer says «Clip empty» on vehicles without a clip.
+- Battle panels show no description on hover.
 
 ## 0.3.10
 
@@ -73,11 +77,13 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - «Показывать мой значок» переехал на страницу «Плашка «Три отметки» в бою».
 - Кольцо лампы не оставляет хвостика в конце таймера.
+- Панели в бою не показывают описание при наведении.
 
 ### en
 
 - «Show my badge» moved to the «Three Marks plate in battle» page.
 - The lamp ring leaves no sliver at the end of its timer.
+- Battle panels show no description on hover.
 
 ## ui 0.9.9
 
@@ -488,12 +494,12 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### ru
 
 - Плашка видна у всех игроков с модом, привязка к сайту не нужна.
-- Плашка находит строки в ушах, по Tab и на загрузке.
+- Плашка находит строки по нику через открытые поля клиента.
 
 ### en
 
 - The plate shows on every player with the mod, no site binding needed.
-- The plate finds its rows in the ears, the Tab table and the loading screen.
+- The plate finds its rows by nickname through the client's public fields.
 
 ## pack_badge 0.1.4
 
@@ -2118,10 +2124,12 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### ru
 
 - Плашка «Три отметки» узнаёт игроков с модом без привязки к сайту.
+- Панели в бою не показывают описание при наведении.
 
 ### en
 
 - The Three Marks plate finds players with the mod without a site binding.
+- Battle panels show no description on hover.
 
 ## core 0.9.7
 
@@ -3856,6 +3864,16 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### en
 
 - A notification after each battle with result, XP, credits, stats and the MoE change; the session's battles in the mod window.
+
+## auto_messages 0.1.2
+
+### ru
+
+- Сообщение о перезарядке больше не пишет «Барабан пуст» на танках без барабана.
+
+### en
+
+- The reload message no longer says «Clip empty» on vehicles without a clip.
 
 ## auto_messages 0.1.1
 

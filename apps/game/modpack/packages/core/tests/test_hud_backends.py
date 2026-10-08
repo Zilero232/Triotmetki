@@ -26,7 +26,6 @@ from otmetki.core.hud.surface import (
     decode_hud_message,
 )
 from otmetki.core.hud.surface.constants import MOUSE_EVENTS
-from otmetki.core.i18n import Catalog, Translator
 from _support import MemoryFile
 
 HUD_PROTOCOL_DIR = os.path.join(_support.MODPACK_DIR, 'ui-web', 'src', 'shared', 'api', 'hud-protocol')
@@ -98,12 +97,7 @@ def damage_log_props():
         'drag': True,
         'border': False,
         'visible': True,
-        'hint': u'Нанесённый и полученный урон за бой.',
     }
-
-
-def hint_translator():
-    return Translator(Catalog({'ru': {'component_damage_log_hint': u'Урон за бой.'}}), 'ru')
 
 
 def hangar_info_props():
@@ -255,22 +249,6 @@ class LayerTest(unittest.TestCase):
         assert resized
         assert self.store.read()['panel']['scale'] == 150
 
-    def test_a_shown_panel_carries_its_component_hint(self):
-        layer = HudLayer(self.backend, ComponentConfig(self.store), hint_translator())
-        layer.register('damage_log', panel_schema())
-
-        layer.show('damage_log', 'text')
-
-        assert self.backend.labels[alias_of('damage_log')]['hint'] == u'Урон за бой.'
-
-    def test_a_panel_without_a_hint_string_carries_none(self):
-        layer = HudLayer(self.backend, ComponentConfig(self.store), hint_translator())
-        layer.register('panel', panel_schema())
-
-        layer.show('panel', 'text')
-
-        assert self.backend.labels[self.alias]['hint'] == u''
-
     def test_the_layer_reports_its_backend_name(self):
         assert self.layer.backend.name == 'fake'
 
@@ -383,7 +361,6 @@ class SurfaceTest(unittest.TestCase):
             'widget': None,
             'dock': None,
             'attach': None,
-            'hint': '',
         }
 
     def test_edit_mode_needs_the_cursor(self):

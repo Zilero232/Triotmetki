@@ -1,6 +1,6 @@
 import { HUD_FIGURE, HUD_TONE_COLORS } from '@/shared/config';
 import { remRect, remSquare } from '@/shared/lib/css-unit';
-import { radialArc } from '@/shared/lib/radial';
+import { RADIAL, radialArc } from '@/shared/lib/radial';
 
 import type { RadialTimerProps } from './RadialTimer.types';
 
@@ -27,7 +27,13 @@ export const RadialTimer = ({ progress, size, stroke, inner, tone = 'accent', ch
           xmlns='http://www.w3.org/2000/svg'
         >
           <path d={track} fill='none' stroke={HUD_FIGURE.empty.color} strokeOpacity={HUD_FIGURE.empty.opacity} strokeWidth={stroke} />
-          {arc && <path d={arc} fill='none' stroke={HUD_TONE_COLORS[tone].hex} strokeWidth={stroke} />}
+          <path
+            d={arc || RADIAL.emptyPath}
+            fill='none'
+            stroke={HUD_TONE_COLORS[tone].hex}
+            strokeOpacity={arc ? 1 : 0}
+            strokeWidth={arc ? stroke : 0}
+          />
         </svg>
       </span>
       <span className={s.content} style={innerBox}>

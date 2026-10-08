@@ -41,7 +41,6 @@ from ..panel import (
     is_pinned,
     layout_props,
     moved_values,
-    panel_hint,
     panel_of,
     pinned_values,
     retired_reset,
@@ -52,10 +51,9 @@ from .constants import COVER_FULL_STATS, COVER_GUI, COVER_REASONS
 
 class HudLayer(object):
 
-    def __init__(self, backend, config, translate=None):
+    def __init__(self, backend, config):
         self.backend = backend or NullBackend()
         self.config = config
-        self.translate = translate
         self.panels = {}
         self.schemas = {}
         self.shown = set()
@@ -162,7 +160,6 @@ class HudLayer(object):
         props = self.layout(panel_id)
         visible = self._visible(alias_of(panel_id))
         props.update({'text': text, 'visible': visible, 'widget': widget})
-        props['hint'] = panel_hint(self.translate, alias_of(panel_id))
         return props
 
     def allows(self, panel_id):

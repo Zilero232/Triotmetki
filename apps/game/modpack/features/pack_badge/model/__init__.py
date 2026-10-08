@@ -74,6 +74,19 @@ def marked_vehicle_ids(vehicles, marked):
     return sorted(ids)
 
 
+# The stock rows keep the vehicle id in private fields Scaleform does not resolve from a mod, so the library finds a row
+# by the name it shows: the player name, and the fake name the client shows for an anonymised player.
+def marked_names(players, marked):
+    names = set()
+    for player in players:
+        if player.account_id not in marked:
+            continue
+        for name in (player.name, player.fake_name):
+            if name:
+                names.add(to_text(name))
+    return sorted(names)
+
+
 def library_action(libraries, name, is_on):
     if is_on and name not in libraries:
         return LIBRARY_ADD

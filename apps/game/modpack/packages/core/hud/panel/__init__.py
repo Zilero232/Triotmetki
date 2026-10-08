@@ -24,9 +24,6 @@ from .constants import (  # noqa: F401
     FIT_AXES,
     FOLLOWS,
     HEX_COLOR,
-    HINT_COMPONENTS,
-    HINT_KEY,
-    HINT_PREFIXES,
     LAYOUT_KEYS,
     MOVED_ALIGNS,
     PANEL_CHOICES,
@@ -49,7 +46,6 @@ __all__ = (
     'alias_of',
     'anchor_of',
     'attach_of',
-    'component_of',
     'component_schema',
     'dock_layout',
     'dock_of',
@@ -60,7 +56,6 @@ __all__ = (
     'matching',
     'max_length',
     'moved_values',
-    'panel_hint',
     'panel_of',
     'panel_schema',
     'pinned_values',
@@ -163,25 +158,6 @@ def alias_of(panel_id):
 
 def panel_of(alias):
     return alias[len(ALIAS_PREFIX):] if alias.startswith(ALIAS_PREFIX) else None
-
-
-def component_of(alias):
-    """The id of the component that draws the panel `alias`."""
-    if alias in HINT_COMPONENTS:
-        return HINT_COMPONENTS[alias]
-    for prefix in HINT_PREFIXES:
-        if alias.startswith(prefix):
-            return alias[len(prefix):].split('.')[0]
-    return alias
-
-
-def panel_hint(translate, alias):
-    """The short description of what the panel `alias` shows (its tooltip on the Gameface page); empty without one."""
-    if translate is None:
-        return u''
-    key = HINT_KEY % component_of(alias)
-    text = translate(key)
-    return u'' if text == key else text
 
 
 def layout_props(settings):

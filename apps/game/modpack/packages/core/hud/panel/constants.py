@@ -42,10 +42,6 @@ HEX_COLOR = re.compile(r'^#[0-9A-Fa-f]{6}\Z')
 
 MOVED_ALIGNS = (('alignX', 'align_x'), ('alignY', 'align_y'))
 
-HINT_KEY = 'component_%s_hint'
-HINT_PREFIXES = (ALIAS_PREFIX, 'otmetki.')
-HINT_COMPONENTS = {'otmetki.session': 'session_stats'}
-
 DOCK_ANCHORS = {
     # The stock damage log's place (BattlePage.as: x 229, the damage panel's top + 3).
     'battle_left_bottom': {'x': 232, 'y': -6, 'align_x': 'left', 'align_y': 'bottom', 'reserve': 560},

@@ -54,6 +54,7 @@ class PageBridge(object):
     def __init__(self):
         self.page = None
         self.vehicle_ids = None
+        self.names = None
         self.attempts = 0
         self.tab_logged = False
         self.tab_listening = False
@@ -72,9 +73,11 @@ class PageBridge(object):
         self.watch.stop()
         self.page = None
         self.vehicle_ids = None
+        self.names = None
 
-    def show(self, vehicle_ids, reason):
+    def show(self, vehicle_ids, names, reason):
         self.vehicle_ids = list(vehicle_ids)
+        self.names = list(names)
         self.push(reason)
 
     def _on_page(self, view):
@@ -107,8 +110,8 @@ class PageBridge(object):
             self._wait()
             return
         self.retry.stop()
-        status = self._call(FLASH_MARK, self.vehicle_ids)
-        log_status('%s, %d marked vehicles' % (reason, len(self.vehicle_ids)), status)
+        status = self._call(FLASH_MARK, self.vehicle_ids, self.names)
+        log_status('%s, %d marked vehicles, %d names' % (reason, len(self.vehicle_ids), len(self.names)), status)
 
     @safe
     def repaint(self):
