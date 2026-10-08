@@ -44,6 +44,12 @@ export class TankArmorReaderService {
     return model;
   }
 
+  async showcase(idOrSlug: string): Promise<ArmorModelResponse> {
+    const tankId = await this.details.resolve(idOrSlug);
+
+    return this.armor(tankId);
+  }
+
   async guns(idOrSlug: string): Promise<ArmorAttackerData> {
     const tankId = await this.details.resolve(idOrSlug);
     const [entry, row] = await Promise.all([

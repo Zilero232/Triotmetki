@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { HONEST_RNG_VIEW } from '../../../config';
-import { bucketMidpoints, bucketShares, rollPercent, toShellKey } from '../rng-chart';
+import { bucketMidpoints, bucketShares, isRngShell, rollPercent } from '../rng-chart';
 
 describe('bucketMidpoints', () => {
   it('labels symmetric buckets with mirrored percents', () => {
@@ -29,9 +29,16 @@ describe('rollPercent', () => {
   });
 });
 
-describe('toShellKey', () => {
-  it('keeps known shells and folds the rest into unknown', () => {
-    expect(toShellKey('hollow_charge')).toBe('hollow_charge');
-    expect(toShellKey('flame')).toBe('unknown');
+describe('isRngShell', () => {
+  it('keeps a shell whose damage rolls the server counts', () => {
+    expect(isRngShell('hollow_charge')).toBe(true);
+  });
+
+  it('drops HE, whose damage the server leaves out of the rolls', () => {
+    expect(isRngShell('high_explosive')).toBe(false);
+  });
+
+  it('drops a shell the server could not identify', () => {
+    expect(isRngShell('unknown')).toBe(false);
   });
 });

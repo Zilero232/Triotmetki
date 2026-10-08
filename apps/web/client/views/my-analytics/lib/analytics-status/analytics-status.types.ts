@@ -4,6 +4,7 @@ export type AnalyticsStatusInput = {
   requiresPlus: boolean;
   isPlus: boolean;
   isPlusPending: boolean;
+  isPlusError: boolean;
   isPending: boolean;
   error: unknown;
 };

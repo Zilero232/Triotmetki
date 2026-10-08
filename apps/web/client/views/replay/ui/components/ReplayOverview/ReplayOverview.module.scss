@@ -40,11 +40,15 @@
   color: var(--color-text);
   font-weight: 600;
   gap: var(--space-1);
-  text-decoration: none;
 
-  &:hover,
-  &:focus-visible {
-    color: var(--color-accent);
+  a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-accent);
+    }
   }
 }
 

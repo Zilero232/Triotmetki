@@ -19,6 +19,7 @@ export const useProfileActions = () => {
     copied,
     share,
     signatureHref: ROUTES.players.signature(nickname),
+    replaysHref: ROUTES.replays.filtered({ player: nickname }),
     wrappedHref: now ? ROUTES.players.wrapped({ nickname, year: latestWrappedYear(now) }) : null,
     analyticsHref: session?.lestaAccountId === accountId ? ROUTES.account.analytics : null
   };

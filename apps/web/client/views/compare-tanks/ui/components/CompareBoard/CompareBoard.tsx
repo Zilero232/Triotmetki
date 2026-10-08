@@ -14,7 +14,7 @@ import s from './CompareBoard.module.scss';
 
 export const CompareBoard = () => {
   const t = useTranslations('tanks.compare.board');
-  const { count, sections, query, onClear, onRemove } = useCompareBoard();
+  const { count, sections, query, isStatsErrorOf, onRetryStats, onClear, onRemove } = useCompareBoard();
 
   return (
     <QueryState
@@ -45,7 +45,12 @@ export const CompareBoard = () => {
                   </th>
                   {vehicles.map((vehicle) => (
                     <th key={vehicle.tankId} className={s.head} scope='col'>
-                      <ColumnHead vehicle={vehicle} onRemove={() => onRemove(vehicle.tankId)} />
+                      <ColumnHead
+                        isStatsError={isStatsErrorOf(vehicle.tankId)}
+                        vehicle={vehicle}
+                        onRemove={() => onRemove(vehicle.tankId)}
+                        onRetryStats={() => onRetryStats(vehicle.tankId)}
+                      />
                     </th>
                   ))}
                 </tr>

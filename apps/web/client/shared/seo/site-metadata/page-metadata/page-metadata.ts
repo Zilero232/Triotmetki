@@ -26,6 +26,7 @@ export const createPageMetadata = ({
   return {
     title: { absolute: ogTitle },
     description,
+    applicationName: brand.name,
     alternates:
       index && isNonNullish(path)
         ? { canonical, languages: contentLocale ? contentAlternates({ path, locale: contentLocale }) : languageAlternates(path) }

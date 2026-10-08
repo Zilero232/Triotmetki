@@ -47,7 +47,7 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
   const presets = catalog?.presets ?? [];
   const chosen = chosenFor?.clientPath === clientPath ? chosenFor.selection : null;
   const removeOthers = removeOthersFor?.clientPath === clientPath ? removeOthersFor.selection : new Set<string>();
-  const selection = chosen ?? wizardSelection({ plan, components, presetId: defaultPreset({ presets, initialPreset }), initialComponents });
+  const selection = chosen ?? wizardSelection({ plan, components, presets, presetId: defaultPreset({ presets, initialPreset }), initialComponents });
   const groups = wizardGroups({ catalog, selection, locale });
   const blocker = plan && installBlocker(plan);
   const isClientSupported = plan !== null && plan.client.problem === null;
@@ -82,7 +82,7 @@ export const useInstallWizardState = ({ initialPreset, initialComponents, startA
     goNext: () => stepBy(1),
     goBack: () => stepBy(-1),
     onCancel: () => navigate({ page: PAGES.initial }),
-    onPresetChange: (id: string) => setChosen(presetSelection({ components, presetId: id })),
+    onPresetChange: (id: string) => setChosen(presetSelection({ components, presets, presetId: id })),
     onToggle: ({ id, checked }: ToggleInput) => setChosen(toggleSelection({ components, selection, id, checked })),
     onFocus: setFocusedId,
     onToggleOther: ({ id, checked }: ToggleInput) =>

@@ -1,8 +1,7 @@
 import { SITE } from '@/shared/config';
 
 export const SITE_METADATA = {
-  xDefault: 'x-default',
-  themeColor: '#18181b'
+  xDefault: 'x-default'
 } as const;
 
 export const SITE_BRAND = {

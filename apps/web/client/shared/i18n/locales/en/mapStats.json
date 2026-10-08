@@ -12,7 +12,7 @@
   "modes": {
     "random": "Random battles",
     "onslaught": "Onslaught",
-    "frontline": "Frontline",
+    "frontline": "Front Line",
     "ranked": "Ranked battles",
     "steelHunter": "Steel Hunter"
   },
@@ -31,7 +31,7 @@
     "meta": "{days} days · share of battles",
     "battles": "{count, plural, one {# battle} other {# battles}}",
     "empty": "No battles at this tier yet",
-    "emptyDescription": "The rotation shows up once players with the mod or uploaded replays play here.",
+    "emptyDescription": "The rotation appears once battles from the mod or uploaded replays come in.",
     "errorTitle": "The rotation did not load",
     "errorDescription": "The server is not responding."
   },

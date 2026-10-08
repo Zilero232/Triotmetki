@@ -4,7 +4,6 @@ import { CalendarClock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { DAILY_PUZZLE_KEYS, DailyPuzzleCard } from '@/entities/play/daily-puzzle';
-import { ROUTES } from '@/shared/constants';
 import { PageHeader } from '@/ui-kit';
 
 import { UpcomingCard } from './components';
@@ -23,7 +22,7 @@ export const PlayHubPage = () => {
             {t('head.reset')}
           </span>
         }
-        breadcrumbs={[{ label: t('crumbs.home'), href: ROUTES.home }, { label: t('head.title') }]}
+        breadcrumbs={[{ label: t('head.title') }]}
         description={t('head.description')}
         title={t('head.title')}
       />

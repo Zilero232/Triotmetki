@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { SITE } from '@/shared/config/site';
+import { SITE, SUPPORT } from '@/shared/config/site';
 
 import { articleJsonLd, breadcrumbJsonLd, clanJsonLd, itemListJsonLd, jsonLdText, organizationJsonLd, personJsonLd, siteJsonLd } from '../json-ld';
 
@@ -21,6 +21,10 @@ describe('jsonLdText', () => {
 describe('organizationJsonLd', () => {
   it('points the logo at an absolute url on the site', () => {
     expect(organizationJsonLd().logo).toBe(new URL('/icon.svg', SITE.url).toString());
+  });
+
+  it('links the project Telegram as the same organization', () => {
+    expect(organizationJsonLd().sameAs).toEqual([SUPPORT.telegramUrl]);
   });
 });
 
@@ -71,8 +75,11 @@ describe('breadcrumbJsonLd', () => {
 });
 
 describe('siteJsonLd', () => {
-  it('keeps the search placeholder unescaped', () => {
-    expect(jsonLdText(siteJsonLd('ru'))).toContain('/p/{search_term_string}');
+  it('describes the localized site without the retired sitelinks search box', () => {
+    const text = jsonLdText(siteJsonLd('en'));
+
+    expect(text).toContain(`"url":"${SITE.url}/en"`);
+    expect(text).not.toContain('SearchAction');
   });
 });
 

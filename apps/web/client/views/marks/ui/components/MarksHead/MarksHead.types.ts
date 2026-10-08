@@ -1,6 +1,5 @@
+import type { ReactNode } from 'react';
+
 export type MarksHeadProps = {
-  total: number;
-  updatedAt: string | null;
-  isLoading: boolean;
-  isEmpty: boolean;
+  figures: ReactNode;
 };

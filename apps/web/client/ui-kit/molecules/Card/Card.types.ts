@@ -10,6 +10,7 @@ export type CardProps = ComponentProps<'div'> & {
 
 export type CardHeaderProps = Omit<ComponentProps<'div'>, 'title'> & {
   title?: ReactNode;
+  titleAs?: 'h2' | 'h3';
   meta?: ReactNode;
   tabs?: ReactNode;
   action?: ReactNode;

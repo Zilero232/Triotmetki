@@ -10,3 +10,10 @@ export type MutationFeedbackMeta = {
 };
 
 export type MutationTranslator = (key: MessageKey) => string;
+
+export type MutationTranslatorScope = 'page' | 'root';
+
+export type MutationTranslatorInput = {
+  scope: MutationTranslatorScope;
+  translate: MutationTranslator | null;
+};

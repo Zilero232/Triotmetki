@@ -1,4 +1,4 @@
-import { PLUS_TRIAL } from '@otmetki/schemas';
+import { PLUS_GRACE, PLUS_TRIAL } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
@@ -32,7 +32,7 @@ export const PlusFaq = ({ trialDays }: PlusFaqProps) => {
                     </Link>
                   )
                 })}
-              {id !== 'trial' && id !== 'cancel' && t(`items.${id}.answer`)}
+              {id !== 'trial' && id !== 'cancel' && t(`items.${id}.answer`, { days: PLUS_GRACE.overflowReadOnlyDays })}
             </>
           )
         }))}

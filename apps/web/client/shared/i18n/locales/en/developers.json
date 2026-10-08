@@ -53,14 +53,14 @@
     "description": "The server sends a POST to your URL when a followed player earns a mark, finishes a session or a clan roster changes.",
     "eventsTitle": "Events",
     "events": {
-      "markGained": "A player earned a new mark of excellence. Fires for followed players and members of followed clans.",
+      "markGained": "A player earned a new mark of excellence. Fires for the players and clans in the webhook filter.",
       "sessionEnded": "A player finished a play session: battles, wins, average damage and session WN8.",
       "clanMemberChanged": "A clan roster changed: someone joined, left or got a new role."
     },
     "payload": "Request body",
     "headersTitle": "Headers",
     "headers": {
-      "signature": "Space-separated signatures, each “v1,” followed by base64: HMAC-SHA256 with the webhook secret (base64 after the whsec_ prefix) over “id.timestamp.body”, per the Standard Webhooks spec.",
+      "signature": "Space-separated signatures, each “v1,” followed by base64: HMAC-SHA256 over “id.timestamp.body”, keyed with the base64-decoded part of the secret after the whsec_ prefix, per the Standard Webhooks spec.",
       "timestamp": "Send time in Unix seconds. Part of the signature.",
       "event": "Event name, same as the event field.",
       "delivery": "Delivery id: part of the signature, use it for idempotency."
@@ -78,7 +78,7 @@
     },
     "notes": {
       "tolerance": "Reject deliveries older than {count, plural, one {# minute} other {# minutes}} — it guards against replays.",
-      "retries": "A failed delivery is retried up to {count, plural, one {# time} other {# times}} with growing backoff.",
+      "retries": "A failed delivery is retried with growing backoff: up to {count, plural, one {# attempt} other {# attempts}} in total.",
       "disable": "After {count, plural, one {# failure} other {# failures}} in a row the webhook is switched off; turn it back on in the dashboard."
     }
   },
@@ -107,7 +107,7 @@
   "terms": {
     "title": "API terms",
     "items": {
-      "free": "The public API is free: anyone can get a key, and the API has no paid plans.",
+      "free": "The public API is free: anyone can get a key. Plus only raises your personal limits.",
       "personal": "Plus limits are for personal non-commercial use: your own bots, widgets and scripts.",
       "community": "Open free community projects can get Community limits at no cost — contact us about your project.",
       "resale": "Reselling access to our API or putting its data behind a paywall is forbidden.",

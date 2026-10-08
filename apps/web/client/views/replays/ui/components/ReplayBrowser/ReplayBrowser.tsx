@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
 import { ROUTES } from '@/shared/constants';
-import { Button, Card, CardHeader, DataTable, FilteredEmptyState, QueryState, Tabs } from '@/ui-kit';
+import { Card, CardHeader, DataTable, FilteredEmptyState, LoadMore, QueryState, Tabs } from '@/ui-kit';
 
 import type { ReplayTab } from './ReplayBrowser.types';
 
@@ -18,24 +18,8 @@ import s from './ReplayBrowser.module.scss';
 export const ReplayBrowser = () => {
   const t = useTranslations('replays.list');
   const titleId = useId();
-  const {
-    tab,
-    isSignedIn,
-    isMine,
-    query,
-    total,
-    pager,
-    isFiltered,
-    isPaging,
-    empty,
-    columns,
-    vehicleOf,
-    mapNameOf,
-    setTab,
-    resetFilters,
-    goPrev,
-    goNext
-  } = useReplayBrowser();
+  const { tab, isSignedIn, isMine, list, total, isTotalKnown, isFiltered, empty, columns, vehicleOf, mapNameOf, setTab, resetFilters } =
+    useReplayBrowser();
 
   return (
     <Card aria-labelledby={titleId} className={s.root} padding='none'>
@@ -45,7 +29,7 @@ export const ReplayBrowser = () => {
             <Tabs<ReplayTab> items={REPLAY_TABS.map((value) => ({ value, label: t(`tabs.${value}`) }))} value={tab} onValueChange={setTab} />
           )
         }
-        meta={t('total', { total })}
+        meta={isTotalKnown && t('total', { total })}
         title={<span id={titleId}>{t('title')}</span>}
       />
       {!isMine && <ReplayFilters />}
@@ -63,22 +47,20 @@ export const ReplayBrowser = () => {
         empty={<FilteredEmptyState description={t(empty.description)} isFiltered={isFiltered} title={t(empty.title)} onReset={resetFilters} />}
         errorDescription={t('errorDescription')}
         errorTitle={t('errorTitle')}
-        isEmpty={({ items }) => items.length === 0}
-        query={query}
+        isEmpty={(items) => items.length === 0}
+        query={list.query}
       >
-        {({ items }) => (
+        {(items) => (
           <DataTable
             footer={
-              pager.pages > 1 && (
-                <div className={s.pager}>
-                  <Button disabled={pager.prevOffset === null || isPaging} size='sm' variant='secondary' onClick={goPrev}>
-                    {t('prev')}
-                  </Button>
-                  <span className={s.page}>{t('page', { page: pager.page, pages: pager.pages })}</span>
-                  <Button disabled={pager.nextOffset === null || isPaging} size='sm' variant='secondary' onClick={goNext}>
-                    {t('next')}
-                  </Button>
-                </div>
+              list.hasMore && (
+                <LoadMore
+                  className={s.more}
+                  hasNextPage={list.hasNextPage}
+                  isError={list.isError}
+                  isFetchingNextPage={list.isFetchingNextPage}
+                  onLoadMore={list.loadMore}
+                />
               )
             }
             caption={t('title')}

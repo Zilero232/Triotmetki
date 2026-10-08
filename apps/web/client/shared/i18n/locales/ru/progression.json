@@ -40,7 +40,7 @@
       "damageBattles": "{target, plural, one {# бой} few {# боя} many {# боёв} other {# боя}} с уроном от {threshold}",
       "wins": "{target, plural, one {# победа} few {# победы} many {# побед} other {# победы}}",
       "spotted": "{target, plural, one {# засвет} few {# засвета} many {# засветов} other {# засвета}}",
-      "frags": "{target, plural, one {# уничтоженный} few {# уничтоженных} many {# уничтоженных} other {# уничтоженных}}",
+      "frags": "{target, plural, one {# фраг} few {# фрага} many {# фрагов} other {# фрага}}",
       "blocked": "{target} заблокированного урона",
       "survived": "Выжить в {target, plural, one {# бою} other {# боях}}",
       "moeBattles": "{target, plural, one {# бой} few {# боя} many {# боёв} other {# боя}} с ростом отметки",
@@ -56,7 +56,7 @@
     "maxed": "Дорожка пройдена",
     "endsAt": "До {date}",
     "rewardLevel": "Ур. {level}",
-    "rewardShells": "{amount} гильз",
+    "rewardShells": "{amount, plural, one {# гильза} few {# гильзы} many {# гильз} other {# гильзы}}",
     "claimed": "Получено",
     "locked": "Впереди"
   },

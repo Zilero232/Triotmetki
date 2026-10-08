@@ -1,10 +1,9 @@
-import { PAGINATION } from '@otmetki/schemas';
 import { describe, expect, it } from 'vitest';
 
 import type { ReplayFilters } from '../replay-query.types';
 
 import { REPLAY_LIST } from '../../../config';
-import { fromSelectValue, hasActiveFilters, pageWindow, toSearchQuery, toSelectValue } from '../replay-query';
+import { fromSelectValue, hasActiveFilters, toSearchQuery, toSelectValue } from '../replay-query';
 
 const EMPTY: ReplayFilters = {
   tank: null,
@@ -23,22 +22,21 @@ const EMPTY: ReplayFilters = {
   mastery: null,
   version: null,
   tags: [],
-  sort: 'recent',
-  offset: 0
+  sort: 'recent'
 };
 
 describe('toSearchQuery', () => {
-  it('sends only the sort and the page when no filter is set', () => {
-    expect(toSearchQuery({ filters: EMPTY, limit: 25 })).toEqual({ sort: 'recent', limit: 25, offset: 0 });
+  it('sends only the sort and the page size when no filter is set', () => {
+    expect(toSearchQuery({ filters: EMPTY, limit: 25 })).toEqual({ sort: 'recent', limit: 25 });
   });
 
   it('maps every URL filter onto its server query field', () => {
     const query = toSearchQuery({
-      filters: { ...EMPTY, tank: 1, map: '01_karelia', mode: 'ctf', player: 'Straik', result: 'win', sort: 'damage', offset: 50 },
+      filters: { ...EMPTY, tank: 1, map: '01_karelia', mode: 'ctf', player: 'Straik', result: 'win', sort: 'damage' },
       limit: 25
     });
 
-    expect(query).toEqual({ sort: 'damage', limit: 25, offset: 50, tankId: 1, arenaId: '01_karelia', mode: 'ctf', player: 'Straik', result: 'win' });
+    expect(query).toEqual({ sort: 'damage', limit: 25, tankId: 1, arenaId: '01_karelia', mode: 'ctf', player: 'Straik', result: 'win' });
   });
 
   it('drops a nickname the server would reject instead of failing the whole request', () => {
@@ -57,15 +55,10 @@ describe('toSearchQuery', () => {
     expect(query.mode).toBeUndefined();
   });
 
-  it('never sends a negative offset or a non-positive tank id', () => {
-    const query = toSearchQuery({ filters: { ...EMPTY, offset: -10, tank: 0 }, limit: 25 });
+  it('never sends a non-positive tank id', () => {
+    const query = toSearchQuery({ filters: { ...EMPTY, tank: 0 }, limit: 25 });
 
-    expect(query.offset).toBe(0);
     expect(query.tankId).toBeUndefined();
-  });
-
-  it('clamps an offset from the URL to the deepest one the API accepts', () => {
-    expect(toSearchQuery({ filters: { ...EMPTY, offset: PAGINATION.maxOffset * 3 }, limit: 25 }).offset).toBe(PAGINATION.maxOffset);
   });
 });
 
@@ -124,8 +117,8 @@ describe('hasActiveFilters', () => {
     expect(hasActiveFilters({ ...EMPTY, clan: 'ABC' })).toBe(true);
   });
 
-  it('treats the sort and the page as not being filters', () => {
-    expect(hasActiveFilters({ ...EMPTY, sort: 'xp', offset: 25 })).toBe(false);
+  it('treats the sort as not being a filter', () => {
+    expect(hasActiveFilters({ ...EMPTY, sort: 'xp' })).toBe(false);
   });
 
   it('treats a whitespace-only nickname as empty', () => {
@@ -134,28 +127,6 @@ describe('hasActiveFilters', () => {
 
   it('reports a set result filter', () => {
     expect(hasActiveFilters({ ...EMPTY, result: 'loss' })).toBe(true);
-  });
-});
-
-describe('pageWindow', () => {
-  it('has no neighbours when everything fits on one page', () => {
-    expect(pageWindow({ offset: 0, limit: 25, total: 10 })).toEqual({ page: 1, pages: 1, prevOffset: null, nextOffset: null });
-  });
-
-  it('shows one page for an empty result', () => {
-    expect(pageWindow({ offset: 0, limit: 25, total: 0 }).pages).toBe(1);
-  });
-
-  it('stops at the last page exactly on the boundary', () => {
-    const window = pageWindow({ offset: 25, limit: 25, total: 50 });
-
-    expect(window.page).toBe(2);
-    expect(window.nextOffset).toBeNull();
-    expect(window.prevOffset).toBe(0);
-  });
-
-  it('clamps an offset past the end to the last page', () => {
-    expect(pageWindow({ offset: 500, limit: 25, total: 60 }).page).toBe(3);
   });
 });
 

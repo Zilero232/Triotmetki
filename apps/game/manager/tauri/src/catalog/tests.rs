@@ -134,6 +134,15 @@ fn round_trips_the_dependencies_through_the_ui_shape() {
 }
 
 #[test]
+fn keeps_the_everything_flag_of_a_preset() {
+    let parsed = parse(&catalog_json().to_string()).unwrap();
+    let served = serde_json::to_value(&parsed).unwrap();
+
+    assert_eq!(served["presets"][0]["everything"], false);
+    assert_eq!(served["presets"][1]["everything"], true);
+}
+
+#[test]
 fn keeps_the_optional_flag_of_a_dependency() {
     let mut optional = catalog_json();
 

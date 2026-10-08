@@ -1,5 +1,6 @@
 export { useClosestMarks } from './use-closest-marks';
 export { useMarksColumns } from './use-marks-columns';
+export { useMarksHeadStats } from './use-marks-head-stats';
 export { useMarksPage } from './use-marks-page';
 export { useMarksPresets } from './use-marks-presets';
 export type { MarksPresetId } from './use-marks-presets';

@@ -18,6 +18,17 @@ export const PLUS_BENEFITS = {
 
 export const PLUS_LIMIT_TIERS = ['free', 'plus'] as const;
 
+export const PLUS_LIMIT_ROWS = [
+  'linkedAccounts',
+  'goals',
+  'watchedTanks',
+  'watchedPlayers',
+  'overlays',
+  'storedReplays',
+  'streamerFollows',
+  'historyDays'
+] as const satisfies readonly (keyof typeof PLUS_LIMITS)[];
+
 export const PLUS_LIMIT_UNITS: Partial<Record<keyof typeof PLUS_LIMITS, 'days'>> = {
   historyDays: 'days'
 };

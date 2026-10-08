@@ -26,7 +26,7 @@
     "watchlist": "Watchlist",
     "groups": {
       "profile": "My profile",
-      "subscriptions": "Follows and alerts",
+      "subscriptions": "Watchlist and alerts",
       "account": "Account"
     }
   },
@@ -36,11 +36,12 @@
     "favoriteRemoved": "Removed from favorites",
     "goalAdded": "Goal set",
     "goalRemoved": "Goal removed",
-    "botUnlinked": "Account unlinked"
+    "botUnlinked": "Account unlinked",
+    "signOutFailed": "Could not sign out. Try again."
   },
   "favorites": {
     "title": "Favorites",
-    "description": "Players you keep an eye on.",
+    "description": "Players you bookmarked for quick access.",
     "empty": "Nobody yet. Press “Add to favorites” on a player profile.",
     "own": "Mine",
     "remove": "Remove from favorites",
@@ -68,12 +69,12 @@
     }
   },
   "mod": {
-    "title": "Companion mod",
+    "title": "Modpack",
     "description": "Link the mod so sessions, accuracy and marks progress arrive right after each battle.",
     "issue": "Get a binding code",
     "steps": {
-      "install": "Install the Three Marks mod into the game client mods folder.",
-      "open": "Start the game and open the mod window in the garage.",
+      "install": "Install the modpack with the Three Marks manager.",
+      "open": "Start the game and open the modpack settings in the hangar.",
       "enter": "Enter the code — the device shows up in the list below."
     },
     "codeLabel": "Binding code",
@@ -85,7 +86,10 @@
     "devices": "Linked devices",
     "noDevices": "The mod is not linked yet.",
     "deviceMeta": "mod {version} · last seen {seen}",
-    "revoke": "Unlink"
+    "revoke": "Unlink",
+    "cancel": "Cancel",
+    "revokeTitle": "Unlink {name}?",
+    "revokeDescription": "The mod on this device stops sending battles. Linking it again takes a new bind code."
   },
   "notifications": {
     "title": "Notifications",
@@ -94,7 +98,7 @@
   },
   "goals": {
     "title": "Goals",
-    "description": "Set a goal for a week or a month — progress tracks itself.",
+    "description": "Set a goal for 7, 14 or 30 days — progress tracks itself.",
     "empty": "No goals yet. Time to set the first one.",
     "remove": "Remove goal",
     "goalTitle": "{metric}: {target}",
@@ -114,14 +118,14 @@
       "active": "In progress",
       "achieved": "Achieved",
       "failed": "Missed",
-      "cancelled": "Cancelled"
+      "cancelled": "Canceled"
     },
     "metric": {
       "winRate": "Win rate",
       "wn8": "WN8",
       "avgDamage": "Average damage",
       "battles": "Battles in period",
-      "moe": "Marks of excellence",
+      "moe": "MoE %",
       "broneIndex": "Bronya Index"
     },
     "newGoal": "New goal",
@@ -135,7 +139,7 @@
       "wn8": "Counted only over battles inside the period. Judged when the period ends.",
       "avgDamage": "Counted only over battles inside the period. Judged when the period ends.",
       "battles": "How many battles to play within the period. Starts from zero — earlier battles do not count.",
-      "moe": "Mark of excellence percent on the tank. Achieved as soon as it is reached.",
+      "moe": "MoE percentage on the tank. Achieved as soon as it is reached.",
       "broneIndex": "Bronya Index value. Achieved as soon as it is reached."
     },
     "targetPlaceholder": {
@@ -147,28 +151,28 @@
       "broneIndex": "For example, 5000"
     },
     "duration": "{count, plural, one {# day} other {# days}}",
-    "durationLabel": "Deadline",
+    "durationLabel": "Duration",
     "invalid": "Enter a positive number.",
     "add": "Set goal"
   },
   "export": {
     "title": "Data export",
-    "description": "Your own stats as JSON or CSV.",
+    "description": "Your stats as JSON or CSV.",
     "raw": "Stats",
-    "rawHint": "The original Lesta data of your accounts — free.",
+    "rawHint": "Raw Lesta data for your accounts — free.",
     "analytics": "Analytics",
     "analyticsHint": "Sessions, mod battles and tank levels.",
     "json": "JSON",
     "tanksCsv": "Tanks, CSV",
     "sessionsCsv": "Sessions, CSV",
     "battlesCsv": "Battles, CSV",
-    "failed": "Couldn't export the data."
+    "failed": "Could not export the data."
   },
   "deleteAccount": {
     "title": "Delete account",
     "description": "Permanently removes your Three Marks profile. This cannot be undone.",
-    "removed": "Deleted: your profile, sign-in methods, favorites, goals, notifications, API keys and webhooks, streamer profile and overlays, bot links and mod devices.",
-    "kept": "Kept: the public game stats of your Lesta accounts — they are only unlinked from you.",
+    "removed": "Deleted: your profile, sign-in methods, favorites, goals, notifications and push subscriptions, API keys and webhooks, streamer profile and overlays, Telegram and other bot links, modpack devices and settings library, your community posts.",
+    "kept": "Your linked Lesta accounts are hidden from the site, and the stats, battles and replays we collected for them are erased. If you link the account again later, collection starts over.",
     "billing": "An active Plus subscription stops renewing. You can get the unused days refunded on request to support — see the <terms>refund terms</terms>.",
     "exportFirst": "Download my data first",
     "open": "Delete account",
@@ -188,7 +192,7 @@
     "linked": "linked",
     "notLinked": "not linked",
     "unlink": "Unlink",
-    "unavailable": "The bot is not set up on this server yet.",
+    "unavailable": "This bot is not available yet.",
     "discord": {
       "name": "Discord",
       "about": "Link Discord so the bot knows your nickname, grants clan and rating roles and posts event reminders.",
@@ -224,7 +228,7 @@
     },
     "cosmetics": {
       "title": "Cosmetics need a sign-in",
-      "description": "The badges, banners and profile frames you have earned."
+      "description": "Badges, frames and profile banners — for casings and season rewards."
     },
     "watchlist": {
       "title": "The watchlist needs a sign-in",
@@ -239,7 +243,7 @@
       "description": "Link the bot to get reports in Telegram."
     },
     "billing": {
-      "title": "Billing needs a sign-in",
+      "title": "Subscription needs a sign-in",
       "description": "Plus, promo codes and payment history."
     },
     "streamer": {
@@ -247,8 +251,9 @@
       "description": "Overlays, challenges and settings for your stream."
     },
     "developer": {
-      "title": "The API cabinet needs a sign-in",
+      "title": "API keys need a sign-in",
       "description": "Keys, limits and webhooks for your integrations."
     }
-  }
+  },
+  "publicProfile": "Public profile"
 }

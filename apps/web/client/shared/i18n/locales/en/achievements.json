@@ -4,11 +4,10 @@
     "description": "Which medals and tanks are the rarest in Mir Tankov: owner share, rarity tiers and the collectors leaderboard."
   },
   "hero": {
-    "home": "Home",
     "title": "Medals and rarity",
     "lead": "How many players in the sample earned each medal and own each tank. The smaller the share, the rarer the award.",
     "sample": "Players in sample",
-    "catalog": "Medals in catalogue",
+    "catalog": "Medals in catalog",
     "rarest": "Rarest"
   },
   "tabs": {
@@ -38,7 +37,7 @@
       "special": "Special",
       "memorial": "Commemorative",
       "group": "Group",
-      "class": "Class",
+      "class": "Mastery",
       "action": "Campaigns",
       "other": "Other"
     },
@@ -49,7 +48,7 @@
       "share": "Share",
       "tier": "Rarity"
     },
-    "summary": "Sample of {sample, plural, one {# player} other {# players}}, {total, plural, one {# medal} other {# medals}} in the catalogue",
+    "summary": "Sample of {sample, plural, one {# player} other {# players}}, {total, plural, one {# medal} other {# medals}} in the catalog",
     "empty": "Medal rarity has not been computed yet",
     "emptyDescription": "There is no rarity data for this section yet.",
     "error": "Could not load medals",
@@ -73,7 +72,7 @@
     "empty": "No tanks",
     "emptyDescription": "No tank matches these filters.",
     "error": "Could not load tank rarity",
-    "caption": "Medal rarity by tank"
+    "caption": "Tank rarity"
   },
   "collectors": {
     "columns": {

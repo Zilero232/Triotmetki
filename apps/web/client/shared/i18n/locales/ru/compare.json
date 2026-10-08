@@ -18,7 +18,7 @@
   "best": "Лучший",
   "metrics": {
     "battles": "Бои",
-    "winRate": "Победы",
+    "winRate": "% побед",
     "avgDamage": "Ср. урон",
     "wn8": "WN8",
     "eff": "ЭФФ",

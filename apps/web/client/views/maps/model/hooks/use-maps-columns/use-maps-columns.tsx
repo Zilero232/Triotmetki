@@ -43,7 +43,8 @@ export const useMapsColumns = (): TableColumn<MapSummary>[] => {
     column.accessor((row) => row.camouflage ?? '', {
       id: 'camouflage',
       header: t('columns.camouflage'),
-      cell: ({ row: { original } }) => <CamouflageCell camouflage={original.camouflage} />
+      cell: ({ row: { original } }) => <CamouflageCell camouflage={original.camouflage} />,
+      meta: { hideBelow: 'md' }
     }),
     column.accessor((row) => row.sizeMeters ?? 0, {
       id: 'size',
@@ -55,7 +56,8 @@ export const useMapsColumns = (): TableColumn<MapSummary>[] => {
       id: 'modes',
       header: t('columns.modes'),
       enableSorting: false,
-      cell: ({ row: { original } }) => labels.modes(original.modes).join(' · ')
+      cell: ({ row: { original } }) => labels.modes(original.modes).join(' · '),
+      meta: { hideBelow: 'lg' }
     })
   ];
 };

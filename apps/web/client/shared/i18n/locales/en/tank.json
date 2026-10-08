@@ -34,7 +34,8 @@
     "mm": "mm",
     "per_min": "rds/min",
     "s": "s",
-    "t": "t"
+    "t": "t",
+    "horsepower": "hp"
   },
   "specGroups": {
     "firepower": "Firepower",
@@ -75,14 +76,14 @@
     }
   },
   "stats": {
-    "title": "Server, last {period}",
+    "title": "Server stats · {period}",
     "periodLabel": "Statistics period",
     "figures": {
       "winRate": "Win rate",
       "avgDamage": "Avg damage",
       "battles": "Battles",
       "players": "Players",
-      "winRateDiff": "WR diff"
+      "winRateDiff": "Win rate gap"
     },
     "pp": "pp",
     "emptyTitle": "No battles in this period",
@@ -92,10 +93,10 @@
       "beginner": "Beginners",
       "average": "Average",
       "good": "Good",
-      "elite": "Top 10 %"
+      "elite": "Top 10%"
     },
     "cohortLabel": "Players",
-    "cohortWinRate": "Wins",
+    "cohortWinRate": "Win rate",
     "cohortDamage": "Damage",
     "cohortBattles": "Battles",
     "trendTitle": "Trend, {days} days",
@@ -116,11 +117,11 @@
     "damageUnit": "damage",
     "deltaDays": "{days} d",
     "updated": "Updated {date}",
-    "historyTitle": "Thresholds, 60 days",
+    "historyTitle": "Threshold history",
     "historyEmpty": "No threshold history yet"
   },
   "mastery": {
-    "title": "Mastery badge",
+    "title": "Mastery badges",
     "levels": {
       "class3": "3rd class",
       "class2": "2nd class",
@@ -144,7 +145,7 @@
     "battlesColumn": "Battles",
     "emptyTitle": "The leaderboard is empty",
     "podiumLabel": "Top three",
-    "rank": "Place {rank}",
+    "rank": "#{rank}",
     "battles": "{battles, plural, one {# battle} other {# battles}}"
   },
   "builds": {
@@ -203,7 +204,7 @@
     "verdicts": {
       "buff": "Buff",
       "nerf": "Nerf",
-      "mixed": "Mixed",
+      "mixed": "Buff and nerf",
       "new": "New",
       "changed": "Changed"
     },
@@ -228,7 +229,7 @@
     "emptyTitle": "No economy data yet",
     "emptyDescription": "Medians appear once mod users play enough random battles on this tank.",
     "noAccountData": "Not enough battles for this account type yet",
-    "note": "Medians over {battles, plural, one {# random battle} other {# random battles}} by {players, plural, one {# mod user} other {# mod users}} in {days} days.",
+    "note": "Medians over {battles, plural, one {# random battle} other {# random battles}} from the modpack and replays ({players, plural, one {# player} other {# players}}) in {days} days.",
     "noteEmpty": "Computed from battle results sent by the mod and from replays."
   },
   "learning": {
@@ -243,11 +244,11 @@
       "title": "Your place on the curve",
       "battles": "Your battles",
       "winRate": "Your win rate",
-      "bucketWinRate": "Players at {bucket}",
-      "ahead": "{delta} pp above players at your stage",
-      "behind": "{delta} pp below players at your stage",
+      "bucketWinRate": "Players with {bucket} battles on the tank",
+      "ahead": "{delta} pp above players with as many battles",
+      "behind": "{delta} pp below players with as many battles",
       "emptyTitle": "No data for your account",
-      "emptyDescription": "Link a Lesta account and play the tank to see your place."
+      "emptyDescription": "Sign in with Lesta ID and play the tank to see your place."
     }
   },
   "obtain": {
@@ -275,7 +276,7 @@
       "kinds": {
         "personalMissions": "Personal missions",
         "event": "Event",
-        "battlePass": "Battle pass",
+        "battlePass": "Battle Pass",
         "bonds": "Bonds",
         "workshop": "Workshop",
         "shop": "Shop",
@@ -290,7 +291,7 @@
       "signIn": "Sign in to learn when the tank is back in the shop",
       "enabled": "We will tell you when the tank is back",
       "disabled": "No longer watching for the tank’s return",
-      "limit": "You have reached the limit of watched tanks",
+      "limit": "Watch limit reached — Plus raises it",
       "failed": "Could not save the alert"
     },
     "note": "From the game files and our shop offer history."

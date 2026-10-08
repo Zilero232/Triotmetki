@@ -43,7 +43,6 @@ export class ClanStrongholdReaderService {
       level: row?.strongholdLevel ?? null,
       stats: stored.stats ?? null,
       buildings: stored.buildings ?? null,
-      reserves: stored.reserves ?? null,
       updatedAt: row?.strongholdUpdatedAt ?? null,
       elo: {
         eloRating6: snapshot?.eloRating6 ?? null,

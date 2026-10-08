@@ -4,10 +4,6 @@
   @include data-list-row;
 
   justify-content: space-between;
-
-  &[data-muted='true'] {
-    color: var(--color-text-dim);
-  }
 }
 
 .label {

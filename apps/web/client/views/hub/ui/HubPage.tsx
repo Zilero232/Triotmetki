@@ -5,7 +5,6 @@ import { AnimatePresence } from 'motion/react';
 import * as m from 'motion/react-m';
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
 import { MOTION_VARIANTS } from '@/shared/lib';
 import { FilteredEmptyState, Input, PageHeader } from '@/ui-kit';
 
@@ -17,16 +16,11 @@ import s from './HubPage.module.scss';
 
 export const HubPage = () => {
   const t = useTranslations('hub');
-  const tCommon = useTranslations('common');
   const { query, sections, isFiltered, onQueryChange, onReset } = useHubSections();
 
   return (
     <div className={s.root}>
-      <PageHeader
-        breadcrumbs={[{ label: tCommon('home'), href: ROUTES.home }, { label: t('head.title') }]}
-        description={t('head.description')}
-        title={t('head.title')}
-      >
+      <PageHeader breadcrumbs={[{ label: t('head.title') }]} description={t('head.description')} title={t('head.title')}>
         <div className={s.search} role='search'>
           <Input
             aria-label={t('filter.label')}

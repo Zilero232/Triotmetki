@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { tankRouteEntity, topTankSlugs } from '@/entities/tank/tank/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
@@ -13,7 +14,7 @@ import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
 import { RequestTime } from '@/shared/seo/request-time';
 import { requireRouteEntity } from '@/shared/seo/require-route-entity';
 import { RouteGuard } from '@/shared/seo/route-guard';
-import { PageHeroFallback } from '@/ui-kit';
+import { PageHeaderFallback } from '@/ui-kit';
 import { BuildPage } from '@/views/build';
 import { buildPageState } from '@/views/build/server';
 
@@ -23,12 +24,12 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/builds/[
   const locale = resolveLocale(await rootParams.locale());
   const tank = decodeRouteParam((await params).tank);
   const t = await getTranslations({ locale, namespace: 'builds.meta' });
-  const { name } = await requireRouteEntity(tankRouteEntity(tank));
+  const { name, key } = await requireRouteEntity(tankRouteEntity(tank));
 
   return createPageMetadata({
     title: t('title', { name }),
     description: t('description', { name }),
-    path: ROUTES.builds.detail(tank),
+    path: ROUTES.builds.detail(key),
     locale,
     index: true,
     follow: true,
@@ -47,7 +48,7 @@ const Page = ({ params }: PageProps<'/[locale]/builds/[tank]'>) => (
     <Suspense>
       <RouteGuard entity={params.then(({ tank }) => tankRouteEntity(decodeRouteParam(tank)))} />
     </Suspense>
-    <Suspense fallback={<PageHeroFallback />}>
+    <Suspense fallback={<PageHeaderFallback />}>
       <BuildRoute params={params} />
     </Suspense>
     <Suspense>
@@ -56,4 +57,4 @@ const Page = ({ params }: PageProps<'/[locale]/builds/[tank]'>) => (
   </>
 );
 
-export default Page;
+export default withMessages({ component: Page, messages: ['builds', 'compare.points', 'compare.vs', 'plus', 'tanks.picker'] });

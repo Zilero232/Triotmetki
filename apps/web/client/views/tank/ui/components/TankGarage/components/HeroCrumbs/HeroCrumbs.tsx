@@ -18,9 +18,10 @@ export const HeroCrumbs = () => {
       isCurrentAccent
       items={[
         { label: t('crumbTanks'), href: ROUTES.tanks.catalog },
-        { label: tGame(`nations.${identity.nation}`) },
-        { label: tGame(`classes.${identity.type}`) },
-        { label: t('crumbTier', { tier: toRoman(identity.tier) }) }
+        { label: tGame(`nations.${identity.nation}`), href: ROUTES.tanks.filtered({ nations: identity.nation }) },
+        { label: tGame(`classes.${identity.type}`), href: ROUTES.tanks.filtered({ types: identity.type }) },
+        { label: t('crumbTier', { tier: toRoman(identity.tier) }), href: ROUTES.tanks.filtered({ tiers: identity.tier }) },
+        { label: identity.name }
       ]}
     />
   );

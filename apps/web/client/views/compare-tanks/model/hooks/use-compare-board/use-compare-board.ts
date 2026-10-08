@@ -17,7 +17,7 @@ export const useCompareBoard = () => {
   const tTank = useTranslations('tank');
   const format = useFormatter();
   const spec = useSpecFormat();
-  const { ids, vehicles, statsOf, isStatsLoading, isLoading, isError, isFetching, refetch } = useComparison();
+  const { ids, vehicles, statsOf, isStatsLoading, isStatsErrorOf, retryStatsOf, isLoading, isError, isFetching, refetch } = useComparison();
   const { clear, remove } = useCompareIds();
 
   const statUnit: Record<CompareStatKey, string> = { winRate: '%', winRateDiff: tTank('stats.pp'), avgDamage: '', battles: '' };
@@ -60,6 +60,8 @@ export const useCompareBoard = () => {
       isRefetching: isFetching,
       refetch
     },
+    isStatsErrorOf,
+    onRetryStats: retryStatsOf,
     onClear: clear,
     onRemove: remove
   };

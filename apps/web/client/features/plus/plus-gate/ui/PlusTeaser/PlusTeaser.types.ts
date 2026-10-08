@@ -1,6 +1,6 @@
-import type { PlusFeature } from '@otmetki/schemas';
+import type { PlusTeaserFeature } from '../../config';
 
 export type PlusTeaserProps = {
-  feature: PlusFeature;
+  feature: PlusTeaserFeature;
   className?: string;
 };

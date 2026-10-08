@@ -1,10 +1,9 @@
 {
   "meta": {
     "title": "Mir Tankov vehicle catalog",
-    "description": "Every vehicle in the game: search by name, filter by nation, type, tier and premium status. Open a tank's card for its specs, stats and builds."
+    "description": "Every vehicle in the game: search by name, filter by nation, class, tier, status and role. Open a tank’s card for its specs, stats and builds."
   },
   "head": {
-    "home": "Home",
     "title": "Vehicle catalog",
     "description": "Every vehicle in the game in one place. Find a tank by name or filter by nation, type and tier, then open its card."
   },

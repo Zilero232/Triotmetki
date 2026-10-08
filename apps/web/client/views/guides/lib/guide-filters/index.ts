@@ -1,1 +1,1 @@
-export { hasActiveFilters, pageCount, toGuideListQuery } from './guide-filters';
+export { hasActiveFilters, toGuideListQuery } from './guide-filters';

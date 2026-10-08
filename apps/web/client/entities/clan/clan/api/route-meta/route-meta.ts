@@ -13,7 +13,7 @@ const lookupClan = async (idOrTag: string) => {
     load: async () => {
       const { clan } = await getClan({ idOrTag });
 
-      return `[${clan.tag}] ${clan.name}`;
+      return { name: `[${clan.tag}] ${clan.name}`, key: clan.tag };
     }
   });
 };

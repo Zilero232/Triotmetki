@@ -10,5 +10,6 @@
   "gameSite": "tanki.su",
   "telegram": "Бот в Telegram",
   "actionsLabel": "Быстрые действия",
-  "version": "v{version}"
+  "version": "v{version}",
+  "shortAttribution": "© Леста Игры · данные API Леста Игры"
 }

@@ -10,17 +10,20 @@ import { useVehicleCatalog } from '@/features/tank/pick-tank';
 import type { UseArmorCompareInput } from './use-armor-compare.types';
 
 import { TANK_ARMOR_URL_PARSERS } from '../../../config';
+import { compareArmorSlug, findArmorVehicle } from '../../../lib/armor-vehicle';
 import { compareStatus } from '../../../lib/compare-status';
 
-export const useArmorCompare = ({ slug, enabled }: UseArmorCompareInput) => {
+export const useArmorCompare = ({ slug, modelTankId, enabled }: UseArmorCompareInput) => {
   const [{ vs }, setParams] = useQueryStates(TANK_ARMOR_URL_PARSERS, { history: 'replace' });
   const { data: vehicles } = useVehicleCatalog();
-  const compareSlug = vs && vs !== slug ? vs : null;
+
+  const primary = findArmorVehicle({ vehicles, idOrSlug: slug });
+  const primaryId = primary?.tankId ?? modelTankId;
+  const compareSlug = compareArmorSlug({ vs, slug, primaryId, vehicles });
+
   const query = useArmorModel({ idOrSlug: compareSlug ?? '', enabled: enabled && compareSlug !== null });
 
-  const vehicle = vehicles?.find((item) => item.slug === compareSlug) ?? null;
-  const primaryId = vehicles?.find((item) => item.slug === slug)?.tankId;
-
+  const vehicle = findArmorVehicle({ vehicles, idOrSlug: compareSlug ?? '' });
   const status = compareStatus({ hasData: query.data !== undefined, error: query.error });
 
   const onPick = (picked: VehicleSummary | null) => void setParams({ vs: picked?.slug ?? null });

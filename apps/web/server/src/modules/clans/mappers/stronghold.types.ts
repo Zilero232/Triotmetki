@@ -7,7 +7,6 @@ export type ToStrongholdInput = {
   level: number | null;
   stats: unknown;
   buildings: unknown;
-  reserves: unknown;
   updatedAt: Date | null;
   elo: Pick<ClanSnapshot, 'eloRating10' | 'eloRating6' | 'eloRating8'>;
   provinces: StrongholdProvince[];

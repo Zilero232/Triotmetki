@@ -1,6 +1,5 @@
 export const BLOG_POST_PAGE = {
-  staleMs: 5 * 60_000,
-  skeletonHeights: [360, 640]
+  staleMs: 5 * 60_000
 } as const;
 
 export const ARTICLE_SHARE = {

@@ -10,5 +10,6 @@
   "gameSite": "tanki.su",
   "telegram": "Telegram bot",
   "actionsLabel": "Quick actions",
-  "version": "v{version}"
+  "version": "v{version}",
+  "shortAttribution": "© Lesta Games · data from the Lesta Games API"
 }

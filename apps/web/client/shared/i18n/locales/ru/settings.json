@@ -7,9 +7,9 @@
   "language": "Язык",
   "theme": "Тема",
   "palette": "Шкала рейтингов",
-  "paletteHint": "Цвета WN8, WR и других рейтингов",
+  "paletteHint": "Цвета WN8, процента побед и других рейтингов",
   "paletteOptions": {
-    "default": "Своя",
+    "default": "По\u00a0умолчанию",
     "xvm": "XVM",
     "wotlife": "wot-life"
   }

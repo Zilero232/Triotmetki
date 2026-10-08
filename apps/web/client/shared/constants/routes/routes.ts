@@ -1,4 +1,13 @@
-import type { MissionOperationRouteInput, PlayerSessionRouteInput, PlayerWrappedRouteInput, TreeTankRouteInput } from './routes.types';
+import { isNonNullish, mapValues, pickBy } from 'remeda';
+
+import type {
+  MissionOperationRouteInput,
+  PlayerSessionRouteInput,
+  PlayerWrappedRouteInput,
+  ReplaysFilterRouteInput,
+  TanksFilterRouteInput,
+  TreeTankRouteInput
+} from './routes.types';
 
 import { ROUTE_ANCHORS, ROUTE_PARAMS } from './routes.constants';
 
@@ -24,6 +33,12 @@ export const ROUTES = {
   tanks: {
     list: '/tanks',
     catalog: '/t',
+    filtered: (filter: TanksFilterRouteInput) => {
+      const present = pickBy(filter, isNonNullish);
+      const query = new URLSearchParams(mapValues(present, String));
+
+      return `/t?${query.toString()}`;
+    },
     detail: (slug: string) => `/t/${slug}`,
     armor: (slug: string) => `/t/${slug}/armor`,
     collection: (slug: string) => `/t/collections/${slug}`,
@@ -95,6 +110,12 @@ export const ROUTES = {
   plus: '/plus',
   replays: {
     list: '/replays',
+    filtered: (filter: ReplaysFilterRouteInput) => {
+      const present = pickBy(filter, isNonNullish);
+      const query = new URLSearchParams(mapValues(present, String));
+
+      return `/replays?${query.toString()}`;
+    },
     detail: (id: string) => `/replays/${encodeURIComponent(id)}`
   },
   tactics: {

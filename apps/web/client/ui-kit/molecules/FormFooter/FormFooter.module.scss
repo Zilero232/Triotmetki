@@ -1,0 +1,22 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.hint {
+  @include source-line;
+
+  margin: 0 auto 0 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}

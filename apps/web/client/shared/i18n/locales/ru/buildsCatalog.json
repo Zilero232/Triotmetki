@@ -19,7 +19,7 @@
     "tank": "Танк",
     "coverage": "Выборка",
     "players": "{count, plural, one {# игрок} few {# игрока} other {# игроков}}",
-    "winRate": "Победы",
+    "winRate": "% побед",
     "avgDamage": "Ср. урон",
     "equipment": "Оборудование",
     "consumables": "Снаряжение",

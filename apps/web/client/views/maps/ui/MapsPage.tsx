@@ -3,7 +3,6 @@
 import { GlobalMapIcon } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
 import { DataSourceNote, PageHero, Tabs } from '@/ui-kit';
 import { MapRotationPanel } from '@/widgets/map/map-rotation';
 
@@ -15,14 +14,13 @@ import s from './MapsPage.module.scss';
 export const MapsPage = () => {
   const t = useTranslations('maps');
   const tabs = useTranslations('mapStats.tabs');
-  const tCommon = useTranslations('common');
   const { tab, setTab } = useMapsTab();
 
   return (
     <div className={s.root}>
       <PageHero
         art={{ kind: 'emblem', glyph: <GlobalMapIcon size={480} /> }}
-        breadcrumbs={[{ label: tCommon('home'), href: ROUTES.home }, { label: t('head.title') }]}
+        breadcrumbs={[{ label: t('head.title') }]}
         lead={t('head.description')}
         title={t('head.title')}
       />

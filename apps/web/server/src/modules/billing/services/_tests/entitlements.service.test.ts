@@ -134,7 +134,7 @@ describe('EntitlementsService.assertFeature', () => {
 
     prisma.subscription.findUnique.mockResolvedValue(running('active'));
 
-    await expect(service.assertFeature({ userId: 'u1', feature: 'history' })).resolves.toBeUndefined();
+    await expect(service.assertFeature({ userId: 'u1', feature: 'analytics' })).resolves.toBeUndefined();
   });
 
   it('asks a free user to subscribe, naming the feature', async () => {
@@ -142,9 +142,9 @@ describe('EntitlementsService.assertFeature', () => {
 
     prisma.subscription.findUnique.mockResolvedValue(null);
 
-    await expect(service.assertFeature({ userId: 'u1', feature: 'history' })).rejects.toMatchObject({
+    await expect(service.assertFeature({ userId: 'u1', feature: 'analytics' })).rejects.toMatchObject({
       status: 403,
-      response: { code: 'SUBSCRIPTION_REQUIRED', details: { feature: 'history' } }
+      response: { code: 'SUBSCRIPTION_REQUIRED', details: { feature: 'analytics' } }
     });
   });
 });

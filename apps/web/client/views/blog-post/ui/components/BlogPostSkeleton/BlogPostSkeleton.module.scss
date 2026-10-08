@@ -1,0 +1,15 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--gap-panel));
+}
+
+.page {
+  @include page(var(--gap-panel));
+}
+
+.layout {
+  @include grid-columns(minmax(0, 1fr) 18rem, $gap: var(--gap-panel), $below-2xl: 1);
+
+  align-items: start;
+}

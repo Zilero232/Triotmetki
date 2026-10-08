@@ -4,7 +4,6 @@ import { BUILD_USAGE } from '@otmetki/schemas';
 import { Wrench } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
 import { PageHero } from '@/ui-kit';
 
 import { CatalogControls, CatalogTable } from './components';
@@ -13,13 +12,12 @@ import s from './BuildsCatalogPage.module.scss';
 
 export const BuildsCatalogPage = () => {
   const t = useTranslations('buildsCatalog');
-  const tCommon = useTranslations('common');
 
   return (
     <div className={s.root}>
       <PageHero
         art={{ kind: 'emblem', glyph: <Wrench size={480} strokeWidth={1.25} /> }}
-        breadcrumbs={[{ label: tCommon('home'), href: ROUTES.home }, { label: t('head.title') }]}
+        breadcrumbs={[{ label: t('head.title') }]}
         lead={t('head.description')}
         title={t('head.title')}
       />

@@ -3,14 +3,16 @@
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 
+import type { MutationTranslatorScope } from '@/shared/api/query-client';
+
 import { setMutationTranslator } from '@/shared/api/query-client';
 
-export const useMutationFeedbackSync = () => {
+export const useMutationFeedbackSync = (scope: MutationTranslatorScope) => {
   const t = useTranslations();
 
   useEffect(() => {
-    setMutationTranslator((key) => t(key));
+    setMutationTranslator({ scope, translate: (key) => t(key) });
 
-    return () => setMutationTranslator(null);
-  }, [t]);
+    return () => setMutationTranslator({ scope, translate: null });
+  }, [scope, t]);
 };

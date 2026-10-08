@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Clans",
-    "description": "Rating and search of Mir Tankov clans: roster, activity, stronghold and roster change history."
+    "description": "Rating and search of Mir Tankov clans: roster, activity, Stronghold and roster change history."
   },
   "clanMeta": {
     "title": "{name} — clan",
@@ -9,8 +9,7 @@
   },
   "head": {
     "title": "Clans",
-    "description": "Rating and search of Mir Tankov clans: average WN8, win rate, Stronghold and Global Map.",
-    "home": "Home"
+    "description": "Rating and search of Mir Tankov clans: average WN8, win rate, Stronghold and Global Map."
   },
   "search": {
     "label": "Search clans",
@@ -46,7 +45,7 @@
       "wn8": "Avg WN8",
       "winRate": "Win rate",
       "stronghold": "Stronghold",
-      "elo": "Elo X"
+      "elo": "Tier X Elo"
     }
   },
   "missing": {
@@ -66,7 +65,7 @@
     "loading": "Loading clan",
     "founded": "Founded {date}",
     "members": "{count, plural, one {# member} other {# members}} on the roster",
-    "activeShort": "{active} of {total} active in 7 d",
+    "activeShort": "{active} of {total} played in 7 days",
     "stats": {
       "winRate": "Avg win rate",
       "wn8": "Avg WN8",
@@ -87,7 +86,7 @@
       "active": "On duty",
       "recent": "Played this week",
       "idle": "Resting",
-      "gone": "Missing"
+      "gone": "Long inactive"
     },
     "columns": {
       "nickname": "Member",
@@ -96,7 +95,7 @@
       "lastBattle": "Last battle",
       "battles": "Battles",
       "winRate": "Win rate",
-      "recentWn8": "WN8 30 d"
+      "recentWn8": "30-day WN8"
     },
     "roles": {
       "commander": "Commander",
@@ -115,7 +114,7 @@
       "role": "Role",
       "idle": "Not played",
       "idleAll": "All",
-      "idleDays": "{days}+ d",
+      "idleDays": "{days}+ days",
       "roles": {
         "all": "All",
         "command": "Command",
@@ -155,14 +154,12 @@
   "bases": {
     "loading": "Loading stronghold",
     "error": "Stronghold data is unavailable",
-    "errorDescription": "Lesta did not answer about the Stronghold. Try again later.",
+    "errorDescription": "Lesta did not return Stronghold data. Try again later.",
     "stronghold": {
       "levelOf": "Level {level} of {max}",
       "levelUnknown": "Level unknown",
       "buildingsTitle": "Buildings",
-      "reservesTitle": "Reserves",
-      "reserveLevel": "lvl {level}",
-      "count": "×{count}",
+      "buildingLevel": "lvl {level}",
       "battles": "Skirmish battles",
       "winRate": "Skirmish win rate",
       "resources": "Industrial resource",
@@ -170,8 +167,7 @@
       "tier": "Tier {tier}",
       "battlesCount": "{count, plural, one {# battle} other {# battles}}",
       "noSkirmishes": "No skirmishes yet.",
-      "noBuildings": "No stronghold building data yet.",
-      "reservesHidden": "Reserves show up only once a clan officer shares access."
+      "noBuildings": "No stronghold building data yet."
     },
     "globalMap": {
       "provinces": "{count, plural, =0 {No provinces} one {# province} other {# provinces}}",
@@ -179,7 +175,7 @@
       "dailyRevenue": "Daily income",
       "provincesTitle": "Provinces",
       "noProvinces": "The clan holds no provinces on the Global Map.",
-      "elo": "Elo tier {tier}"
+      "elo": "Tier {tier} Elo"
     }
   },
   "leaders": {

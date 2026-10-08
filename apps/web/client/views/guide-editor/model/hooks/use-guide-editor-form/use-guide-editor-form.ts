@@ -17,6 +17,7 @@ import { vehicleIndex } from '@/entities/tank/tank';
 import { useVehicleCatalog } from '@/features/tank/pick-tank';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
+import { useUnsavedGuard } from '@/shared/lib';
 
 import type { GuideFormOutput, GuideFormValues } from '../../../lib/guide-form';
 
@@ -47,6 +48,7 @@ export const useGuideEditorForm = (guide: Guide | null) => {
     mutationFn: (values: GuideFormOutput) =>
       guide ? updateGuide({ id: guide.id, body: toGuideUpdateInput(values) }) : createGuide(toGuideInput(values)),
     onSuccess: (saved) => {
+      form.reset(form.getValues());
       toast.success(guide ? t('editor.updated') : t('editor.created'));
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.guides.all, refetchType: 'none' });
       queryClient.setQueryData(QUERY_KEYS.guides.detail({ viewerId: session?.user.id ?? null, slug: saved.slug }), saved);
@@ -55,11 +57,13 @@ export const useGuideEditorForm = (guide: Guide | null) => {
     onError: () => toast.error(t('editor.failed'))
   });
 
+  useUnsavedGuard(form.formState.isDirty);
+
   const onSubmit = form.handleSubmit((values) => save.mutate(values));
+  const idleSubmitLabel = guide ? t('editor.save') : t('editor.publish');
 
   return {
     form,
-    isEdit: guide !== null,
     kind,
     kindOptions: GUIDE_FORM_KINDS.map((value) => ({ value, label: t(`kinds.${value}`) })),
     localeOptions: GUIDE_FORM_LOCALES.map((value) => ({ value, label: t(`locales.${value}`) })),
@@ -79,6 +83,8 @@ export const useGuideEditorForm = (guide: Guide | null) => {
     titleLength: title.length,
     titleMax: GUIDE_FORM.titleMax,
     isPending: save.isPending,
+    submitLabel: save.isPending ? t('editor.saving') : idleSubmitLabel,
+    cancelHref: guide ? ROUTES.guides.detail(guide.slug) : ROUTES.guides.list,
     onSubmit
   };
 };

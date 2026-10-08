@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { clanRouteEntity, topClanTags } from '@/entities/clan/clan/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
@@ -14,7 +15,7 @@ import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
 import { RequestTime } from '@/shared/seo/request-time';
 import { requireRouteEntity } from '@/shared/seo/require-route-entity';
 import { RouteGuard } from '@/shared/seo/route-guard';
-import { PageHeroFallback } from '@/ui-kit';
+import { PageHeaderFallback } from '@/ui-kit';
 import { ClanPage } from '@/views/clan';
 import { clanPageState } from '@/views/clan/server';
 
@@ -24,12 +25,12 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/c/[tag]'
   const locale = resolveLocale(await rootParams.locale());
   const tag = decodeRouteParam((await params).tag);
   const t = await getTranslations({ locale, namespace: 'clans.clanMeta' });
-  const { name } = await requireRouteEntity(clanRouteEntity(tag));
+  const { name, key } = await requireRouteEntity(clanRouteEntity(tag));
 
   return createPageMetadata({
     title: t('title', { name }),
     description: t('description', { name }),
-    path: ROUTES.clans.detail(tag),
+    path: ROUTES.clans.detail(key),
     locale,
     index: true,
     follow: true,
@@ -51,10 +52,10 @@ const Page = ({ params }: PageProps<'/[locale]/c/[tag]'>) => {
       <Suspense>
         <RouteGuard
           entity={tag.then(clanRouteEntity)}
-          schema={async ({ name }) => clanJsonLd({ name, path: ROUTES.clans.detail(await tag), locale: resolveLocale(await rootParams.locale()) })}
+          schema={async ({ name, key }) => clanJsonLd({ name, path: ROUTES.clans.detail(key), locale: resolveLocale(await rootParams.locale()) })}
         />
       </Suspense>
-      <Suspense fallback={<PageHeroFallback />}>
+      <Suspense fallback={<PageHeaderFallback />}>
         <ClanRoute params={params} />
       </Suspense>
       <Suspense>
@@ -64,4 +65,4 @@ const Page = ({ params }: PageProps<'/[locale]/c/[tag]'>) => {
   );
 };
 
-export default Page;
+export default withMessages({ component: Page, messages: ['clans', 'events.roleChange', 'events.unknownPlayer'] });

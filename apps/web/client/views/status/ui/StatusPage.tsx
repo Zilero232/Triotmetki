@@ -3,8 +3,7 @@
 import { HeartPulse } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
-import { DataSourceNote, PageHero, SectionHeader, Skeleton } from '@/ui-kit';
+import { DataSourceNote, ErrorState, PageHero, SectionHeader, Skeleton } from '@/ui-kit';
 
 import { STATUS_PAGE } from '../config';
 import { useStatusPage } from '../model/hooks';
@@ -14,14 +13,13 @@ import s from './StatusPage.module.scss';
 
 export const StatusPage = () => {
   const t = useTranslations('status.page');
-  const tCommon = useTranslations('common');
-  const { summary, collector, build, isPending, isFetching, checkedAt, onRefresh } = useStatusPage();
+  const { summary, collector, isCollectorError, build, isPending, isFetching, checkedAt, onRefresh } = useStatusPage();
 
   return (
     <div className={s.root}>
       <PageHero
         art={{ kind: 'emblem', glyph: <HeartPulse size={STATUS_PAGE.heroGlyph} strokeWidth={1.25} /> }}
-        breadcrumbs={[{ label: tCommon('home'), href: ROUTES.home }, { label: t('title') }]}
+        breadcrumbs={[{ label: t('title') }]}
         lead={t('lead')}
         title={t('title')}
       />
@@ -40,6 +38,12 @@ export const StatusPage = () => {
           </ul>
         </section>
         {isPending && <Skeleton className={s.collectorSkeleton} shape='block' />}
+        {isCollectorError && (
+          <section className={s.section}>
+            <SectionHeader as='h2' description={t('collector.lead')} title={t('collector.title')} />
+            <ErrorState isCompact isRetrying={isFetching} onRetry={onRefresh} />
+          </section>
+        )}
         {collector && (
           <section className={s.section}>
             <SectionHeader as='h2' description={t('collector.lead')} title={t('collector.title')} />

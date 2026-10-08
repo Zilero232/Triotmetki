@@ -53,7 +53,7 @@
     "description": "На чём сыграть сегодня",
     "shuffle": "Ещё вариант",
     "empty": "Подобрать технику не получилось",
-    "plusHint": "С Плюсом — {size, plural, one {# танк} few {# танка} many {# танков} other {# танка}} и больше причин: низкий винрейт, задачи ЛБЗ.",
+    "plusHint": "С Плюсом — {size, plural, one {# танк} few {# танка} many {# танков} other {# танка}} и больше причин: низкий процент побед, задачи ЛБЗ.",
     "plusLink": "Подробнее",
     "moe": "Отметка",
     "toNextMark": "До отметки",
@@ -62,15 +62,15 @@
       "closeToMark": "Близко к отметке",
       "firstWin": "Первая победа",
       "longUnplayed": "Давно не играли",
-      "lowWinRate": "Низкий винрейт",
+      "lowWinRate": "Низкий процент побед",
       "mission": "Задача ЛБЗ"
     }
   },
   "overview": {
     "source": "Боёв из мода за период: {count}",
     "totals": {
-      "battles": "Боёв",
-      "winRate": "Победы",
+      "battles": "Бои",
+      "winRate": "Процент побед",
       "avgDamage": "Средний урон",
       "wn8": "WN8",
       "survivalRate": "Выживаемость"
@@ -99,7 +99,7 @@
       "longest": "Худшая серия поражений",
       "current": "Текущая серия",
       "afterLosses": "{count, plural, =0 {После победы или в начале сессии} one {После # поражения подряд} other {После # поражений подряд}}",
-      "afterLossesPlus": "{count, plural, one {После # и более поражений} other {После # и более поражений}}",
+      "afterLossesPlus": "После {count} и\u00a0более поражений подряд",
       "battles": "{count, plural, one {# бой} few {# боя} many {# боёв} other {# боя}}",
       "advice": "После {losses, plural, one {# поражения} other {# поражений}} подряд ваш процент побед падает до {winRate} — делайте паузу.",
       "noAdvice": "Явного тильта не видно: серии поражений почти не влияют на ваш процент побед."
@@ -112,7 +112,7 @@
   },
   "maps": {
     "title": "Карты",
-    "description": "Отклонение — разница с вашим средним процентом побед",
+    "description": "«К\u00a0среднему»\u00a0— разница с\u00a0вашим средним процентом побед",
     "empty": "Нет данных по картам",
     "weakTitle": "Где вы проседаете",
     "strongTitle": "Где вы сильны",
@@ -123,17 +123,17 @@
     "spawnUnknown": "—"
   },
   "platoon": {
-    "soloBattles": "Боёв соло",
-    "soloWinRate": "Победы соло",
-    "platoonBattles": "Боёв во взводе",
-    "platoonWinRate": "Победы во взводе",
+    "soloBattles": "Бои соло",
+    "soloWinRate": "Процент побед соло",
+    "platoonBattles": "Бои во\u00a0взводе",
+    "platoonWinRate": "Процент побед во\u00a0взводе",
     "platoonDamage": "Урон во взводе",
     "tracked": "Боёв с данными о взводе: {count}",
-    "matesTitle": "Химия взвода",
+    "matesTitle": "С\u00a0кем вы\u00a0играете лучше",
     "matesDescription": "С кем вы побеждаете чаще, чем соло",
     "matesEmpty": "Во взводе вы пока не играли",
     "untrackedTitle": "Нет данных о взводах",
-    "untrackedText": "Состав взвода записывает только свежая версия мода «Три отметки». Обновите мод и сыграйте во взводе."
+    "untrackedText": "Состав взвода записывает только свежая версия модпака «Три отметки». Обновите модпак и\u00a0сыграйте во\u00a0взводе."
   },
   "rng": {
     "shots": "Выстрелов",
@@ -168,14 +168,14 @@
     "byClass": "Класс",
     "byNation": "Нация",
     "battles": "Бои",
-    "winRate": "Победы",
+    "winRate": "% побед",
     "avgDamage": "Ср. урон",
     "wn8": "WN8",
     "survivalRate": "Выжив.",
     "startedAt": "Дата",
     "winRateDelta": "Δ побед",
     "avgDamageDelta": "Δ урона",
-    "pointsSuffix": " п.п.",
+    "pointsSuffix": " п.\u00a0п.",
     "map": "Карта",
     "winRateVsAverage": "К среднему",
     "spawn": "Респ",
@@ -212,8 +212,8 @@
       "damageDealt": "Урон",
       "damageAssisted": "Помощь",
       "damageBlocked": "Заблокировано",
-      "frags": "Уничтожено",
-      "spotted": "Обнаружено",
+      "frags": "Фраги",
+      "spotted": "Засвет",
       "xp": "Опыт",
       "credits": "Кредиты",
       "moe": "Отметка",
@@ -223,7 +223,7 @@
     "share": {
       "action": "Поделиться",
       "title": "Бой на {tank}",
-      "text": "{result} на {tank}, {map}: {damage} урона и {assisted} помощи",
+      "text": "{result} на\u00a0{tank}, {map}: {damage} урона и\u00a0{assisted} ассиста",
       "copied": "Ссылка на бой скопирована",
       "failed": "Не получилось поделиться"
     },
@@ -242,17 +242,17 @@
       "title": "Из чего сложился урон",
       "dealt": "Нанесено",
       "assistedRadio": "По засвету",
-      "assistedTrack": "По гусенице",
-      "assistedStun": "Оглушение",
+      "assistedTrack": "По\u00a0гусеницам",
+      "assistedStun": "Оглушением",
       "blocked": "Заблокировано"
     },
     "moe": {
       "title": "Как бой повлиял на отметку",
-      "combined": "Суммарный урон",
+      "combined": "Урон + лучшая помощь",
       "movingAverage": "Скользящее среднее",
       "shortfall": "Не хватило",
       "percent": "Отметка после боя",
-      "note": "Отметка растёт, когда урон с помощью выше скользящего среднего по танку."
+      "note": "Отметка растёт, когда урон плюс бо́льшая из\u00a0помощей (засвет, гусеница или оглушение) выше скользящего среднего по\u00a0танку."
     },
     "accuracy": {
       "title": "Стрельба",
@@ -271,15 +271,15 @@
       "lowDamage": "Урон {value} при вашем среднем {reference} на этом танке.",
       "lowSpotting": "Засвечено {value} при среднем {reference} — для этого класса засвет важен.",
       "lowAssist": "Помощь {value} при среднем {reference}.",
-      "diedEarly": "Уничтожен рано: прожито {value} с из {reference} с боя.",
-      "lowAccuracy": "Процент попаданий {value}% при норме от {reference}%.",
-      "lowPenetration": "Процент пробитий {value}% при норме от {reference}% — проверьте снаряды и цели.",
+      "diedEarly": "Уничтожен рано: {value}\u00a0с из\u00a0{reference}\u00a0с боя.",
+      "lowAccuracy": "Процент попаданий {value}% при норме {reference}% и\u00a0выше.",
+      "lowPenetration": "Процент пробитий {value}% при норме {reference}% и\u00a0выше\u00a0— проверьте снаряды и\u00a0цели.",
       "moeLoss": "Бой потянул отметку вниз: {value} при скользящем среднем {reference}."
     },
     "title": "Разбор боя"
   },
   "battlesPage": {
-    "title": "Бои",
+    "title": "Мои бои",
     "description": "Бои из мода «Три отметки». Нажмите на строку, чтобы открыть разбор."
   },
   "tankMeta": {
@@ -298,7 +298,7 @@
       "month": "Месяцы"
     },
     "battles": "Бои",
-    "winRate": "Победы",
+    "winRate": "Процент побед",
     "avgDamage": "Средний урон",
     "wn8": "WN8",
     "survivalRate": "Выживаемость",

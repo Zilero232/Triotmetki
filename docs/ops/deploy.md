@@ -148,7 +148,7 @@ On the first run, or after an edit to `003_continuous_aggregates.sql`, the full 
 - [ ] **Game data.** The API catalog fills from Lesta through the nightly encyclopedia sync. Builds, armor, personal missions and patch diffs need the client files import (`apps/web/server/scripts/gamedata-import.ts`), which needs no Lesta key. Run it once inside the server image and again after every game patch — see §7 «Каталог техники».
 - [ ] Optional: `docker compose run --rm server bun scripts/streamers-seed.ts` loads the invited streamer list (`bun --filter @otmetki/server streamers:seed` in development).
 - [ ] Sign in with Lesta ID and with Telegram on the live site. Check that the footer shows the Lesta attribution on every page.
-- [ ] Check `https://triotmetki.ru/sitemap.xml` and `/robots.txt`. The sitemap reads the API at build or request time, so it fills once the collector has data.
+- [ ] Check `/robots.txt` and the sitemaps it lists (`/sitemap/{pages,tanks,players,clans,content}.xml`). They read the API at build or request time, so they fill once the collector has data.
 
 ## 4. Game mod: releases on the VPS
 

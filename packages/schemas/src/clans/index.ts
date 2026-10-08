@@ -21,6 +21,5 @@ export type {
   ClanStronghold,
   ClanSummary,
   StrongholdBattles,
-  StrongholdBuilding,
-  StrongholdReserve
+  StrongholdBuilding
 } from './clans.types';

@@ -10,7 +10,7 @@ import type { ArmorCompareBarProps } from './ArmorCompareBar.types';
 
 import s from './ArmorCompareBar.module.scss';
 
-export const ArmorCompareBar = ({ vehicle, excludeIds, isActive, onPick, onClear }: ArmorCompareBarProps) => {
+export const ArmorCompareBar = ({ vehicle, excludeIds, isActive, quota, onPick, onClear }: ArmorCompareBarProps) => {
   const t = useTranslations('armor.compare');
 
   return (
@@ -22,6 +22,7 @@ export const ArmorCompareBar = ({ vehicle, excludeIds, isActive, onPick, onClear
           {t('clear')}
         </Button>
       )}
+      {quota}
       <p className={s.note}>{t('note')}</p>
     </div>
   );

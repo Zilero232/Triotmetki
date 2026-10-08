@@ -17,8 +17,10 @@ export const ResourceGate = <TData,>({
   error,
   notFound,
   back,
+  header,
   isNotFound = isNotFoundError(query.error),
   className = s.fallback,
+  skeletonClassName = className,
   children
 }: ResourceGateProps<TData>) => {
   if (isNotFound && !notFound && query.data === undefined) {
@@ -29,6 +31,7 @@ export const ResourceGate = <TData,>({
     <QueryState
       errorState={
         <div className={className}>
+          {header}
           {isNotFound && notFound ? (
             <ResourceMissing back={back} reason='notFound' {...notFound} />
           ) : (
@@ -37,7 +40,7 @@ export const ResourceGate = <TData,>({
         </div>
       }
       query={query}
-      skeleton={<div className={className}>{skeleton}</div>}
+      skeleton={<div className={skeletonClassName}>{skeleton}</div>}
     >
       {children}
     </QueryState>

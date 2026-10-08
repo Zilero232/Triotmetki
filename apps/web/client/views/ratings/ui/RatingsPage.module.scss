@@ -1,26 +1,17 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include stack(0);
-
-  padding-bottom: var(--space-8);
+  @include page(var(--space-6));
 }
 
 .body {
-  @include shell;
-
   display: grid;
   align-items: start;
   gap: var(--space-5) var(--space-6);
   grid-template-columns: minmax(0, 1fr);
-  padding-block: var(--space-7);
 
   @include from(3xl) {
     grid-template-columns: 220px minmax(0, 1fr);
-  }
-
-  @include below(md) {
-    padding-top: var(--space-5);
   }
 }
 

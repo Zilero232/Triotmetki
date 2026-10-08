@@ -2,7 +2,7 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { TankCell } from '@/entities/tank/tank';
+import { TankLink } from '@/entities/tank/tank';
 import { percentText } from '@/shared/lib';
 import { DeltaValue } from '@/ui-kit';
 
@@ -20,7 +20,7 @@ export const TankInsightList = ({ kind, tanks }: TankInsightListProps) => {
       <ol className={s.list}>
         {tanks.map(({ vehicle, battles, winRate, winRateDelta, damageRatio }) => (
           <li key={vehicle.tankId} className={s.row}>
-            <TankCell className={s.tank} vehicle={vehicle} />
+            <TankLink className={s.tank} image='small' vehicle={vehicle} />
             <span className={s.meta}>
               {percentText({ format, value: winRate })} · {t('battles', { count: battles })}
             </span>

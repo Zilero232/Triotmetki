@@ -13,3 +13,10 @@ export const getArmorModel = ({ idOrSlug, signal }: ArmorModelInput): Promise<Ar
 
     return armorModelSchema.parse(data);
   });
+
+export const getArmorShowcase = ({ idOrSlug, signal }: ArmorModelInput): Promise<ArmorModelResponse> =>
+  fromServer(async () => {
+    const { data } = await api.get(`/tanks/${encodeURIComponent(idOrSlug)}/armor/showcase`, { signal });
+
+    return armorModelSchema.parse(data);
+  });

@@ -5,15 +5,9 @@ export type GuideFilters = {
   tank: number | null;
   map: string | null;
   sort: GuideSort;
-  page: number;
 };
 
 export type ToGuideListQueryInput = {
   filters: GuideFilters;
-  pageSize: number;
-};
-
-export type PageCountInput = {
-  total: number;
   pageSize: number;
 };

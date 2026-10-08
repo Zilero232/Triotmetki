@@ -2,6 +2,8 @@ import type { RngBucket } from '@otmetki/schemas';
 
 import { round } from 'remeda';
 
+import type { RngShell } from '../../config';
+
 import { HONEST_RNG_VIEW, RNG_SHELLS } from '../../config';
 
 export const bucketMidpoints = (buckets: readonly Pick<RngBucket, 'from' | 'to'>[]): number[] =>
@@ -14,6 +16,4 @@ export const rollPercent = (value: number | null | undefined): number | null =>
 
 const SHELL_KEYS: ReadonlySet<string> = new Set(RNG_SHELLS);
 
-const isShellKey = (shell: string): shell is (typeof RNG_SHELLS)[number] => SHELL_KEYS.has(shell);
-
-export const toShellKey = (shell: string): (typeof RNG_SHELLS)[number] => (isShellKey(shell) ? shell : 'unknown');
+export const isRngShell = (shell: string): shell is RngShell => SHELL_KEYS.has(shell);

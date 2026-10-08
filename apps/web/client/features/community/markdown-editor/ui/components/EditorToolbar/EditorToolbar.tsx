@@ -12,7 +12,9 @@ import {
   UndoRedo
 } from '@mdxeditor/editor';
 
-export const EditorToolbar = () => (
+import type { MarkdownToolbarProps } from '../../../model/hooks';
+
+export const EditorToolbar = ({ canInsertImage }: MarkdownToolbarProps) => (
   <>
     <UndoRedo />
     <Separator />
@@ -21,7 +23,7 @@ export const EditorToolbar = () => (
     <Separator />
     <ListsToggle />
     <CreateLink />
-    <InsertImage />
+    {canInsertImage && <InsertImage />}
     <InsertTable />
     <InsertThematicBreak />
   </>

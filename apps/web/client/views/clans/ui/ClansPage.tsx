@@ -3,7 +3,6 @@
 import { StrongholdIcon } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
 import { DataSourceNote, PageHero } from '@/ui-kit';
 
 import { useClanLeaders } from '../model/hooks';
@@ -20,7 +19,7 @@ export const ClansPage = () => {
       <PageHero
         actions={<ClanSearch />}
         art={{ kind: 'emblem', glyph: <StrongholdIcon size={480} /> }}
-        breadcrumbs={[{ label: t('home'), href: ROUTES.home }, { label: t('title') }]}
+        breadcrumbs={[{ label: t('title') }]}
         lead={t('description')}
         title={t('title')}
       />

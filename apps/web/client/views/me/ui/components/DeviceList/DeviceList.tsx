@@ -4,13 +4,13 @@ import { Monitor, Unplug } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { useClientNow } from '@/shared/lib';
-import { Button } from '@/ui-kit';
+import { Button, ConfirmDialog } from '@/ui-kit';
 
 import type { DeviceListProps } from './DeviceList.types';
 
 import s from './DeviceList.module.scss';
 
-export const DeviceList = ({ devices, isRevoking, onRevoke }: DeviceListProps) => {
+export const DeviceList = ({ devices, revokingId, onRevoke }: DeviceListProps) => {
   const t = useTranslations('me.mod');
   const format = useFormatter();
   const now = useClientNow({ updateInterval: 60_000 });
@@ -29,10 +29,21 @@ export const DeviceList = ({ devices, isRevoking, onRevoke }: DeviceListProps) =
                 {t('deviceMeta', { version: modVersion ?? '—', seen: lastSeenAt && now ? format.relativeTime(new Date(lastSeenAt), now) : '—' })}
               </span>
             </span>
-            <Button disabled={isRevoking} size='sm' variant='ghost' onClick={() => onRevoke(id)}>
-              <Unplug size={14} />
-              {t('revoke')}
-            </Button>
+            <ConfirmDialog
+              trigger={
+                <Button disabled={revokingId === id} size='sm' variant='ghost'>
+                  <Unplug size={14} />
+                  {t('revoke')}
+                </Button>
+              }
+              cancelLabel={t('cancel')}
+              confirmLabel={t('revoke')}
+              description={t('revokeDescription')}
+              isPending={revokingId === id}
+              title={t('revokeTitle', { name: name ?? id })}
+              tone='danger'
+              onConfirm={() => onRevoke(id)}
+            />
           </li>
         ))}
       </ul>

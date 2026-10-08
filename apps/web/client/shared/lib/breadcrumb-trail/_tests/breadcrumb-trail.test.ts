@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { breadcrumbCrumbs, breadcrumbTrail } from '@/shared/lib';
+import { breadcrumbCrumbs, breadcrumbTrail, withHomeCrumb } from '@/shared/lib';
+
+const HOME = { label: 'Главная', href: '/' };
 
 describe('breadcrumbTrail', () => {
   it('keeps linked crumbs and the current one', () => {
@@ -29,5 +31,19 @@ describe('breadcrumbCrumbs', () => {
     const keys = breadcrumbCrumbs([{ label: 'Танки', href: '/tanks' }, { label: 'СССР' }, { label: 'ИС-7' }]).map(({ key }) => key);
 
     expect(new Set(keys).size).toBe(keys.length);
+  });
+});
+
+describe('withHomeCrumb', () => {
+  it('puts the home crumb in front of a section trail', () => {
+    const trail = withHomeCrumb({ items: [{ label: 'Танки', href: '/tanks' }, { label: 'ИС-7' }], home: HOME });
+
+    expect(trail[0]).toEqual(HOME);
+  });
+
+  it('adds the home crumb only once when the trail already starts at home', () => {
+    const trail = withHomeCrumb({ items: [HOME, { label: 'Гайды' }], home: HOME });
+
+    expect(trail).toHaveLength(2);
   });
 });

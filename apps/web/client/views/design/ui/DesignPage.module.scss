@@ -1,9 +1,7 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include shell;
-
-  padding-top: var(--space-9);
+  @include page(var(--space-8));
 }
 
 .sections {

@@ -51,7 +51,7 @@ export const PlusPage = () => {
           )
         }
         art={{ kind: 'emblem', glyph: <OtmetkiLogoIcon size={480} /> }}
-        breadcrumbs={[{ label: t('home'), href: ROUTES.home }, { label: tBrand('plus') }]}
+        breadcrumbs={[{ label: tBrand('plus') }]}
         lead={t('description')}
         title={tBrand('plus')}
       />

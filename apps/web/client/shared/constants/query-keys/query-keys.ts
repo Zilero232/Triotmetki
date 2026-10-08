@@ -46,6 +46,7 @@ export const QUERY_KEYS = {
     patches: (tankId: number) => ['tanks', tankId, 'patches'] as const,
     maps: (tankId: number) => ['tanks', tankId, 'maps'] as const,
     armor: (idOrSlug: string) => ['tanks', 'armor', idOrSlug] as const,
+    armorShowcase: (idOrSlug: string) => ['tanks', 'armor-showcase', idOrSlug] as const,
     armorGuns: (idOrSlug: string) => ['tanks', 'armor-guns', idOrSlug] as const,
     economy: (params: object) => ['tanks', 'economy', params] as const,
     tankEconomy: (tankId: number) => ['tanks', tankId, 'economy'] as const,
@@ -102,7 +103,16 @@ export const QUERY_KEYS = {
     detail: (id: string) => ['maps', 'detail', id] as const,
     tanks: (id: string) => ['maps', 'tanks', id] as const
   },
-  userScoped: [['me'], ['tanks', 'armor'], ['replays', 'mine'], ['tactics', 'board'], ['coaching', 'orders'], ['streamers', 'claim']] as const,
+  userScoped: [
+    ['me'],
+    ['tanks', 'armor'],
+    ['replays'],
+    ['competitions'],
+    ['tactics', 'board'],
+    ['coaching', 'orders'],
+    ['streamers', 'claim'],
+    [{ _id: 'supertestControllerMine' }]
+  ] as const,
   auth: {
     session: ['auth', 'session'] as const,
     telegramWidget: ['auth', 'telegram-widget'] as const

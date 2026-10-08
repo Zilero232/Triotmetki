@@ -70,7 +70,7 @@
     "source": "Mod battles in the period: {count}",
     "totals": {
       "battles": "Battles",
-      "winRate": "Wins",
+      "winRate": "Win rate",
       "avgDamage": "Avg damage",
       "wn8": "WN8",
       "survivalRate": "Survival"
@@ -99,7 +99,7 @@
       "longest": "Worst losing streak",
       "current": "Current streak",
       "afterLosses": "{count, plural, =0 {After a win or at session start} one {After # loss in a row} other {After # losses in a row}}",
-      "afterLossesPlus": "{count, plural, one {After # or more losses} other {After # or more losses}}",
+      "afterLossesPlus": "After {count} or more losses in a row",
       "battles": "{count, plural, one {# battle} other {# battles}}",
       "advice": "After {losses, plural, one {# loss} other {# losses}} in a row your win rate drops to {winRate} — take a break.",
       "noAdvice": "No clear tilt: losing streaks barely affect your win rate."
@@ -112,7 +112,7 @@
   },
   "maps": {
     "title": "Maps",
-    "description": "Delta is the difference from your average win rate",
+    "description": "“Vs average” is the difference from your average win rate",
     "empty": "No map data",
     "weakTitle": "Where you struggle",
     "strongTitle": "Where you shine",
@@ -124,16 +124,16 @@
   },
   "platoon": {
     "soloBattles": "Solo battles",
-    "soloWinRate": "Solo wins",
+    "soloWinRate": "Solo win rate",
     "platoonBattles": "Platoon battles",
-    "platoonWinRate": "Platoon wins",
+    "platoonWinRate": "Platoon win rate",
     "platoonDamage": "Platoon damage",
     "tracked": "Battles with platoon data: {count}",
-    "matesTitle": "Platoon chemistry",
+    "matesTitle": "Who you play best with",
     "matesDescription": "Who you win with more often than solo",
     "matesEmpty": "You have not played in a platoon yet",
     "untrackedTitle": "No platoon data",
-    "untrackedText": "Only a recent version of the “Three Marks” mod records platoon members. Update the mod and play in a platoon."
+    "untrackedText": "Only a recent version of the Three Marks modpack records platoon members. Update the modpack and play in a platoon."
   },
   "rng": {
     "shots": "Shots",
@@ -168,7 +168,7 @@
     "byClass": "Class",
     "byNation": "Nation",
     "battles": "Battles",
-    "winRate": "Wins",
+    "winRate": "Win rate",
     "avgDamage": "Avg dmg",
     "wn8": "WN8",
     "survivalRate": "Survival",
@@ -212,8 +212,8 @@
       "damageDealt": "Damage",
       "damageAssisted": "Assist",
       "damageBlocked": "Blocked",
-      "frags": "Destroyed",
-      "spotted": "Spotted",
+      "frags": "Frags",
+      "spotted": "Spotting",
       "xp": "XP",
       "credits": "Credits",
       "moe": "Mark",
@@ -223,7 +223,7 @@
     "share": {
       "action": "Share",
       "title": "Battle in the {tank}",
-      "text": "{result} in the {tank} on {map}: {damage} damage and {assisted} assist",
+      "text": "{result} in the {tank} on {map}: {damage} damage and {assisted} assisted damage",
       "copied": "Battle link copied",
       "failed": "Could not share"
     },
@@ -248,11 +248,11 @@
     },
     "moe": {
       "title": "What it did to your mark",
-      "combined": "Combined damage",
+      "combined": "Damage + best assist",
       "movingAverage": "Moving average",
       "shortfall": "Shortfall",
       "percent": "Mark after battle",
-      "note": "The mark grows when damage plus assist beats the tank's moving average."
+      "note": "The mark grows when your damage plus your largest assist (spotting, tracking or stun) beats the tank’s moving average."
     },
     "accuracy": {
       "title": "Shooting",
@@ -271,15 +271,15 @@
       "lowDamage": "Damage {value} against your average of {reference} in this tank.",
       "lowSpotting": "Spotted {value} against an average of {reference} — spotting matters for this class.",
       "lowAssist": "Assist {value} against an average of {reference}.",
-      "diedEarly": "Destroyed early: alive for {value} s of a {reference} s battle.",
-      "lowAccuracy": "Hit rate {value}% against a norm of {reference}%.",
-      "lowPenetration": "Pen rate {value}% against a norm of {reference}% — check your shells and targets.",
+      "diedEarly": "Destroyed early: {value} s into a {reference} s battle.",
+      "lowAccuracy": "Hit rate {value}% against a norm of {reference}% or more.",
+      "lowPenetration": "Pen rate {value}% against a norm of {reference}% or more — check your shells and targets.",
       "moeLoss": "The battle pulled your mark down: {value} against a moving average of {reference}."
     },
-    "title": "Battle breakdown"
+    "title": "Battle review"
   },
   "battlesPage": {
-    "title": "Battles",
+    "title": "My battles",
     "description": "Battles from the Three Marks mod. Click a row to open the review."
   },
   "tankMeta": {

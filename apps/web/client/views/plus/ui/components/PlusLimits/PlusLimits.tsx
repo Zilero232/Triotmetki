@@ -1,11 +1,11 @@
 import { PLUS_LIMITS, USAGE_METERS } from '@otmetki/schemas';
 import { useFormatter, useTranslations } from 'next-intl';
 import { entries } from 'remeda';
-import { match, P } from 'ts-pattern';
+import { match } from 'ts-pattern';
 
 import { SectionHeader } from '@/ui-kit';
 
-import { PLUS_LIMIT_TIERS, PLUS_LIMIT_UNITS } from '../../../config';
+import { PLUS_LIMIT_ROWS, PLUS_LIMIT_TIERS, PLUS_LIMIT_UNITS } from '../../../config';
 
 import s from './PlusLimits.module.scss';
 
@@ -28,15 +28,14 @@ export const PlusLimits = () => {
           </tr>
         </thead>
         <tbody>
-          {entries(PLUS_LIMITS).map(([key, limit]) => (
+          {PLUS_LIMIT_ROWS.map((key) => (
             <tr key={key}>
               <th scope='row'>{t(`rows.${key}`)}</th>
               {PLUS_LIMIT_TIERS.map((tier) => (
                 <td key={tier} className={tier === 'plus' ? s.plus : undefined}>
-                  {match(limit[tier])
+                  {match(PLUS_LIMITS[key][tier])
                     .with(null, () => t('unlimited'))
-                    .with(P.number, (count) => (PLUS_LIMIT_UNITS[key] ? t(`units.${PLUS_LIMIT_UNITS[key]}`, { count }) : format.number(count)))
-                    .otherwise(({ per, count }) => t(`rate.${per}`, { count }))}
+                    .otherwise((count) => (PLUS_LIMIT_UNITS[key] ? t(`units.${PLUS_LIMIT_UNITS[key]}`, { count }) : format.number(count)))}
                 </td>
               ))}
             </tr>

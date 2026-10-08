@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { Skeleton } from '@/ui-kit';
+import { buttonVariants, SectionHeader, Skeleton } from '@/ui-kit';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import type { MyBattlePageProps } from './MyBattlePage.types';
@@ -22,13 +22,17 @@ export const MyBattlePage = ({ id }: MyBattlePageProps) => {
 
   return (
     <div className={s.root}>
-      <h1 className={s.title}>{t('title')}</h1>
-      <Link className={s.back} href={ROUTES.account.battles}>
-        <ArrowLeft size={14} />
-        {t('back')}
-      </Link>
+      <SectionHeader
+        action={
+          <Link className={buttonVariants({ variant: 'ghost', size: 'sm' })} href={ROUTES.account.battles}>
+            <ArrowLeft aria-hidden size={14} />
+            {t('back')}
+          </Link>
+        }
+        as='h1'
+        title={t('title')}
+      />
       <ResourceGate
-        back={{ href: ROUTES.account.battles, label: t('back') }}
         error={{ title: t('errorTitle'), description: t('errorText') }}
         notFound={{ title: t('notFoundTitle'), description: t('notFoundText') }}
         query={query}

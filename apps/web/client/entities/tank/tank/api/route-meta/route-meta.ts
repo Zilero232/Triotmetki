@@ -12,7 +12,14 @@ import { getTank, listTankStats, listVehicles } from '../tanks';
 const lookupTank = async (idOrSlug: string) => {
   'use cache';
 
-  return lookupRouteEntity({ key: idOrSlug, load: async () => (await getTank({ idOrSlug, period: TANK_DETAIL.period })).vehicle.name });
+  return lookupRouteEntity({
+    key: idOrSlug,
+    load: async () => {
+      const { vehicle } = await getTank({ idOrSlug, period: TANK_DETAIL.period });
+
+      return { name: vehicle.name, key: vehicle.slug };
+    }
+  });
 };
 
 export const tankRouteEntity = async (idOrSlug: string) => routeEntity({ key: idOrSlug, lookup: lookupTank });
@@ -24,6 +31,12 @@ export const topTankSlugs = async ({ fallback, limit = ROUTE_STATIC_PARAMS.limit
     fallback,
     load: async () => (await listTankStats({ limit })).items.map(({ vehicle }) => vehicle.slug)
   });
+};
+
+export const vehicleSlugs = async () => {
+  'use cache';
+
+  return routeSlugs({ load: async () => (await listVehicles({})).map(({ slug }) => slug) });
 };
 
 export const tankCollectionItems = async (slug: TankCollectionSlug) => {

@@ -3,7 +3,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 
-import { decodeArmorModel, getArmorModel } from '@/entities/armor/armor-model';
+import { decodeArmorModel, getArmorShowcase } from '@/entities/armor/armor-model';
 import { QUERY_KEYS } from '@/shared/constants';
 
 import type { UseShowcaseModelInput } from './use-showcase-model.types';
@@ -12,8 +12,8 @@ import { showcaseRig } from '../../../lib/showcase-rig';
 
 export const useShowcaseModel = ({ slug, onReady }: UseShowcaseModelInput) => {
   const { data } = useQuery({
-    queryKey: QUERY_KEYS.tanks.armor(slug),
-    queryFn: ({ signal }) => getArmorModel({ idOrSlug: slug, signal }),
+    queryKey: QUERY_KEYS.tanks.armorShowcase(slug),
+    queryFn: ({ signal }) => getArmorShowcase({ idOrSlug: slug, signal }),
     select: decodeArmorModel,
     placeholderData: keepPreviousData,
     staleTime: Infinity,

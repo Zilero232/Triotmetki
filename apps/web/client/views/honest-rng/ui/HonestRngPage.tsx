@@ -3,7 +3,6 @@
 import { Dices } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
 import { Band, DataSourceNote, EmptyState, KeyFigure, PageHero, QueryState, SegmentedControl, TierNumeral } from '@/ui-kit';
 
 import { useHonestRngPage } from '../model/hooks';
@@ -40,7 +39,7 @@ export const HonestRngPage = () => {
           )
         }
         art={{ kind: 'emblem', glyph: <Dices size={480} strokeWidth={1.25} /> }}
-        breadcrumbs={[{ label: t('head.home'), href: ROUTES.home }, { label: t('head.title') }]}
+        breadcrumbs={[{ label: t('head.title') }]}
         lead={t('head.lead')}
         title={t('head.title')}
       />

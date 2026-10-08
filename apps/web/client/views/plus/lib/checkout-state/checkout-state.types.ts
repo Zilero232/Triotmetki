@@ -14,10 +14,11 @@ export type CheckoutNote =
 
 export type CheckoutModeInput = {
   isPending: boolean;
+  isError: boolean;
   isSignedIn: boolean;
   isPlus: boolean;
   isCheckoutAvailable: boolean;
   trialAvailable: boolean;
 };
 
-export type CheckoutMode = 'buy' | 'guest' | 'pending' | 'plus' | 'promo' | 'trial';
+export type CheckoutMode = 'buy' | 'error' | 'guest' | 'pending' | 'plus' | 'promo' | 'trial';

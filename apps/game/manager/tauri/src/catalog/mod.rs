@@ -36,6 +36,8 @@ pub struct Preset {
     pub description: Localized,
     #[serde(default)]
     pub custom: bool,
+    #[serde(default)]
+    pub everything: bool,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]

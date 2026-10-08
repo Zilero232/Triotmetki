@@ -25,7 +25,7 @@ export const StreamersSettingsPage = () => {
             {t('compare')}
           </Link>
         }
-        breadcrumbs={[{ label: t('crumb'), href: ROUTES.streamers.list }]}
+        breadcrumbs={[{ label: t('crumb'), href: ROUTES.streamers.list }, { label: t('title') }]}
         description={t('description')}
         title={t('title')}
       />

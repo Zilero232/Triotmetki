@@ -8,7 +8,7 @@ import type { BreadcrumbsProps } from './Breadcrumbs.types';
 
 import s from './Breadcrumbs.module.scss';
 
-export const Breadcrumbs = ({ items, isCurrentAccent = false, className }: BreadcrumbsProps) => {
+export const Breadcrumbs = ({ items, isCurrentAccent = false, withSchema = true, className }: BreadcrumbsProps) => {
   const t = useTranslations('common');
   const { crumbs, jsonLd } = useBreadcrumbs(items);
 
@@ -27,7 +27,7 @@ export const Breadcrumbs = ({ items, isCurrentAccent = false, className }: Bread
           </li>
         ))}
       </ol>
-      {jsonLd && <JsonLd data={jsonLd} />}
+      {withSchema && jsonLd && <JsonLd data={jsonLd} />}
     </nav>
   );
 };

@@ -13,7 +13,8 @@ import { EconomyResults, EconomyShells, RealMedians } from './components';
 
 export const EconomyCalculator = () => {
   const t = useTranslations('tools.economy');
-  const { values, field, onTierChange, vehicle, onVehicleChange, medians, isMediansPending, isMediansError } = useEconomyCalculator();
+  const { values, field, onTierChange, vehicle, onVehicleChange, medians, isMediansPending, isMediansError, isMediansRetrying, retryMedians } =
+    useEconomyCalculator();
 
   return (
     <CalcShell
@@ -49,7 +50,14 @@ export const EconomyCalculator = () => {
       results={
         <>
           <EconomyResults values={values} />
-          <RealMedians isError={isMediansError} isPending={isMediansPending} medians={medians} vehicle={vehicle} />
+          <RealMedians
+            isError={isMediansError}
+            isPending={isMediansPending}
+            isRetrying={isMediansRetrying}
+            medians={medians}
+            vehicle={vehicle}
+            onRetry={retryMedians}
+          />
         </>
       }
       description={t('description')}

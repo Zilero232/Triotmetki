@@ -8,3 +8,4 @@ export {
   PERCENT_METRICS
 } from './mission-operation.constants';
 export { MISSION_PARAMS } from './mission-selection.constants';
+export { OPERATION_SKELETON } from './operation-skeleton.constants';

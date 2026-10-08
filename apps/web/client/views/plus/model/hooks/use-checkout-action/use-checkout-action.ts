@@ -27,6 +27,9 @@ export const useCheckoutAction = () => {
 
   return {
     mode,
+    isStatusVisible: mode !== 'error',
+    retryAccess: access.refetch,
+    isAccessRetrying: access.isRefetching,
     loginHref,
     trialDays: access.trialDays,
     canStartTrial: access.trialAvailable,

@@ -7,8 +7,11 @@ export const useTanksTab = () => {
   const { request, matches } = useTanksFilterContext();
   const query = usePlayerTanks(request);
 
+  const rows = query.data?.items.filter(({ vehicle }) => matches(vehicle.name)) ?? [];
+
   return {
     query,
-    rows: query.data?.items.filter(({ vehicle }) => matches(vehicle.name)) ?? []
+    rows,
+    total: query.data ? rows.length : null
   };
 };

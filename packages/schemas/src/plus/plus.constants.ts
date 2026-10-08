@@ -3,20 +3,15 @@ export const PLUS = {
 } as const;
 
 export const PLUS_FEATURES = [
-  'history',
   'analytics',
   'mapAdvisor',
   'battleAnalysis',
-  'aiCoach',
-  'moeTracker',
   'priorityPolling',
   'progression',
   'overlays',
   'cosmetics',
   'analyticsExport',
   'apiLimits',
-  'earlyAccess',
-  'hangarExtras',
   'privateCompetitions',
   'streamerAlerts',
   'supertest',
@@ -31,8 +26,7 @@ export const PLUS_LIMITS = {
   overlays: { free: 2, plus: 20 },
   storedReplays: { free: 50, plus: 1_000 },
   streamerFollows: { free: 3, plus: 200 },
-  historyDays: { free: 90, plus: null },
-  aiReviews: { free: { per: 'week', count: 1 }, plus: { per: 'day', count: 5 } }
+  historyDays: { free: 90, plus: null }
 } as const;
 
 export const PLUS_GRACE = {

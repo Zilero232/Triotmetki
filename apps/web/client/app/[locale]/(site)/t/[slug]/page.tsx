@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { tankRouteEntity, topTankSlugs } from '@/entities/tank/tank/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
@@ -23,12 +24,12 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/t/[slug]
   const locale = resolveLocale(await rootParams.locale());
   const slug = decodeRouteParam((await params).slug);
   const t = await getTranslations({ locale, namespace: 'tank.meta' });
-  const { name } = await requireRouteEntity(tankRouteEntity(slug));
+  const { name, key } = await requireRouteEntity(tankRouteEntity(slug));
 
   return createPageMetadata({
     title: t('title', { name }),
     description: t('description', { name }),
-    path: ROUTES.tanks.detail(slug),
+    path: ROUTES.tanks.detail(key),
     locale,
     index: true,
     follow: true,
@@ -56,4 +57,20 @@ const Page = ({ params }: PageProps<'/[locale]/t/[slug]'>) => (
   </>
 );
 
-export default Page;
+export default withMessages({
+  component: Page,
+  messages: [
+    'armor',
+    'bestBattles.widget',
+    'builds.panels',
+    'maps.samples',
+    'marks.progress',
+    'notFound.description',
+    'notFound.title',
+    'periods',
+    'plus',
+    'showcase',
+    'tankMath',
+    'tanks.picker'
+  ]
+});

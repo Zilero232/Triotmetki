@@ -1,8 +1,8 @@
-import type { ClanPage, TankDetail } from '@/shared/api/generated';
+import type { ClanPage, Guide, MapDetail, TankDetail } from '@/shared/api/generated';
 import type { Locale } from '@/shared/i18n';
 import type { OgMetric } from '@/shared/seo/og';
 
-type EntityOgKind = 'build' | 'tank';
+type EntityOgKind = 'armor' | 'build' | 'tank';
 
 type EntityOgInput = {
   locale: Locale;
@@ -18,6 +18,14 @@ export type SiteOgCardInput = EntityOgInput;
 
 export type ClanOgCardInput = EntityOgInput & {
   page: Pick<ClanPage, 'clan' | 'stats'>;
+};
+
+export type MapOgCardInput = EntityOgInput & {
+  map: Pick<MapDetail, 'maxPlayersInTeam' | 'name' | 'nameEn' | 'sizeMeters' | 'slug' | 'stats'>;
+};
+
+export type GuideOgCardInput = EntityOgInput & {
+  guide: Pick<Guide, 'author' | 'kind' | 'likesCount' | 'slug' | 'title'>;
 };
 
 export type DashInput = {

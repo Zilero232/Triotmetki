@@ -11,16 +11,16 @@
   },
   "modes": {
     "ctf": "Standard battle",
-    "domination": "Encounter",
+    "domination": "Encounter battle",
     "assault": "Assault",
-    "assault2": "Assault (alt.)",
+    "assault2": "Assault (var. 2)",
     "comp7": "Onslaught",
-    "ctf30x30": "Grand battle",
+    "ctf30x30": "Grand Battle",
     "domination30x30": "Encounter 30×30",
-    "domination3": "Encounter (alt.)",
-    "epic": "Frontline",
-    "bob": "Bloggers battle",
-    "bootcamp": "Boot camp",
+    "domination3": "Encounter (var. 3)",
+    "epic": "Front Line",
+    "bob": "Battle of Bloggers",
+    "bootcamp": "Boot Camp",
     "maps_training": "Map training"
   },
   "results": {
@@ -41,9 +41,6 @@
     },
     "errorTitle": "Replays failed to load",
     "errorDescription": "The server did not respond. Try again.",
-    "prev": "Previous",
-    "next": "Next",
-    "page": "{page} of {pages}",
     "emptyTitle": "No replays",
     "emptyDescription": "Public parsed replays show up here. Be the first to upload one.",
     "emptyFilteredDescription": "Nothing matches these filters.",
@@ -99,7 +96,7 @@
       "minDamage": "Damage from",
       "minAssist": "Assist from",
       "minBlocked": "Blocked from",
-      "minFrags": "Kills from"
+      "minFrags": "Frags from"
     },
     "masteryLabel": "Mastery badge",
     "mastery": {
@@ -147,8 +144,8 @@
       "notFound": "Replay not found or not yours.",
       "conflict": "This replay is already uploaded.",
       "invalid": "This file does not look like a Mir Tankov replay.",
-      "plus": "You have reached the stored replays limit. Delete old ones or get Plus.",
-      "rateLimited": "Too many uploads, try again in a minute.",
+      "plus": "You have reached the stored replays limit. Delete old ones — and if you don’t have Plus yet, it raises the limit.",
+      "rateLimited": "Too many uploads at once. Wait for the current one to finish and try again.",
       "unknown": "Something went wrong. Try again."
     }
   },
@@ -163,7 +160,7 @@
     "processingTitle": "Parsing the replay",
     "processingDescription": "This usually takes a few seconds. The page updates by itself.",
     "download": "Download",
-    "duration": "{duration} battle",
+    "duration": "Duration {duration}",
     "visibility": {
       "public": "Public",
       "unlisted": "Unlisted",
@@ -201,8 +198,8 @@
       "unauthorized": "Sign in to continue.",
       "forbidden": "You are not allowed to do this.",
       "notFound": "Only the uploader can manage this replay.",
-      "conflict": "This replay is already uploaded.",
-      "rateLimited": "Too many uploads, try again in a minute.",
+      "conflict": "The replay was already changed. Refresh the page.",
+      "rateLimited": "Too many requests, try again in a minute.",
       "unknown": "Something went wrong. Try again."
     }
   },
@@ -235,7 +232,7 @@
     "allies": "Allies",
     "enemies": "Enemies",
     "chartLabel": "Vehicles alive in each team over the battle",
-    "killsLabel": "Kills",
+    "killsLabel": "Frags",
     "killedBy": "{killer} destroyed {victim}",
     "destroyed": "{victim} destroyed",
     "note": "Built from when vehicles were destroyed. The replay does not record damage over time.",
@@ -245,7 +242,7 @@
   "heatmap": {
     "title": "Heatmap",
     "noArenaTitle": "Unknown map",
-    "noArenaDescription": "The replay does not name its map.",
+    "noArenaDescription": "The replay has no map info.",
     "modeLabel": "Mode",
     "modes": {
       "replay": "This mode",
@@ -263,7 +260,7 @@
     "errorTitle": "Heatmap failed to load",
     "errorDescription": "Try again.",
     "chartLabel": "Where vehicles spend time on {map}",
-    "samples": "{samples} positions from all replays",
+    "samples": "{samples, plural, one {# position} other {# positions}} from all replays",
     "empty": "No data for this selection yet",
     "low": "less",
     "high": "more"

@@ -14,17 +14,17 @@ import s from './ModActions.module.scss';
 
 export const ModActions = () => {
   const t = useTranslations('mod.hero');
-  const { distribution, isPreparing, manager, game } = useModDownloads();
+  const { distribution, isPreparing, isManagerAvailable, manager, game } = useModDownloads();
 
   return (
     <div className={s.root}>
       <div className={s.buttons}>
         <DownloadLink
           hasShine
-          file={manager}
           fileName={distribution.managerFileName}
           href={distribution.managerUrl}
           icon={Download}
+          isAvailable={isManagerAvailable}
           label={t('download')}
           variant='primary'
         />

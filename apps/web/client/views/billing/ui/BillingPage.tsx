@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { PageHeader } from '@/ui-kit';
+import { SectionHeader } from '@/ui-kit';
 
 import { useCheckoutReturn } from '../model/hooks';
 import { PaymentHistory, PromoRedeemCard, ReferralCard, StatusPanel } from './components';
@@ -17,7 +17,7 @@ export const BillingPage = () => {
 
   return (
     <div className={s.root}>
-      <PageHeader description={t('description', { plus: tBrand('plus') })} title={t('title')} />
+      <SectionHeader as='h1' description={t('description', { plus: tBrand('plus') })} title={t('title')} />
       <StatusPanel />
       <div className={s.grid}>
         <PromoRedeemCard />

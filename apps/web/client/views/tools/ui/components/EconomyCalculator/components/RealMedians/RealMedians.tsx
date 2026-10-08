@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { EmptyState, Skeleton } from '@/ui-kit';
+import { EmptyState, ErrorState, Skeleton } from '@/ui-kit';
 
 import type { RealMediansProps } from './RealMedians.types';
 
@@ -11,7 +11,7 @@ import { ResultFigure } from '../../../ResultFigure';
 
 import s from './RealMedians.module.scss';
 
-export const RealMedians = ({ vehicle, medians, isPending, isError }: RealMediansProps) => {
+export const RealMedians = ({ vehicle, medians, isPending, isError, isRetrying, onRetry }: RealMediansProps) => {
   const t = useTranslations('tools.economy.real');
 
   if (!vehicle) {
@@ -22,9 +22,13 @@ export const RealMedians = ({ vehicle, medians, isPending, isError }: RealMedian
     return <Skeleton height={TOOLS_LAYOUT.mediansSkeleton} shape='block' />;
   }
 
+  if (isError) {
+    return <ErrorState isCompact isRetrying={isRetrying} onRetry={onRetry} />;
+  }
+
   const { premium, standard, windowDays } = medians;
 
-  if (isError || (!premium && !standard)) {
+  if (!premium && !standard) {
     return <EmptyState isCompact description={t('emptyDescription')} title={t('emptyTitle', { tank: vehicle.shortName })} />;
   }
 

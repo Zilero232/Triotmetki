@@ -7,7 +7,7 @@ STRINGS = {
         'component_armor_view_hint': u'Бронирование танка в 3D на сайте triotmetki.ru: кнопка «Броня танков» в '
                                      u'списке модов открывает выбранный в ангаре танк (или танк в предпросмотре), '
                                      u'пункт «Броня танка» в меню танка в карусели — этот танк. Открывается во '
-                                     u'внешнем браузере. В бою не работает.',
+                                     u'внешнем браузере или, по выбору, в игре. В бою не работает.',
         'armor_view_context_menu': u'Пункт «Броня танка» в меню танка в карусели',
         'armor_view_open_in': u'Где открывать 3D-схему',
         'armor_view_open_in_game': u'В игре',
@@ -25,7 +25,7 @@ STRINGS = {
         'component_armor_view_hint': u'The tank\'s armour in 3D on triotmetki.ru: the «Tank armour» entry in the '
                                      u'mods list opens the tank selected in the hangar (or the previewed one), '
                                      u'«Tank armour» in a carousel tank\'s menu opens that tank. Opens in the '
-                                     u'external browser. Does nothing in battle.',
+                                     u'external browser or, by choice, in the game. Does nothing in battle.',
         'armor_view_context_menu': u'«Tank armour» in the carousel tank menu',
         'armor_view_open_in': u'Open the 3D scheme in',
         'armor_view_open_in_game': u'The game',

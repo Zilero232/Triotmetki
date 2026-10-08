@@ -2345,20 +2345,15 @@
               "feature": {
                 "type": "string",
                 "enum": [
-                  "history",
                   "analytics",
                   "mapAdvisor",
                   "battleAnalysis",
-                  "aiCoach",
-                  "moeTracker",
                   "priorityPolling",
                   "progression",
                   "overlays",
                   "cosmetics",
                   "analyticsExport",
                   "apiLimits",
-                  "earlyAccess",
-                  "hangarExtras",
                   "privateCompetitions",
                   "streamerAlerts",
                   "supertest",
@@ -2367,17 +2362,7 @@
               },
               "limitKey": {
                 "type": "string",
-                "enum": [
-                  "linkedAccounts",
-                  "goals",
-                  "watchedTanks",
-                  "watchedPlayers",
-                  "overlays",
-                  "storedReplays",
-                  "streamerFollows",
-                  "historyDays",
-                  "aiReviews"
-                ]
+                "enum": ["linkedAccounts", "goals", "watchedTanks", "watchedPlayers", "overlays", "storedReplays", "streamerFollows", "historyDays"]
               },
               "limit": {
                 "type": "integer",

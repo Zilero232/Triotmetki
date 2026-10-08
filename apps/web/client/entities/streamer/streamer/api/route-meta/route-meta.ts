@@ -10,7 +10,14 @@ import { getStreamerBySlug } from '../streamers';
 const lookupStreamer = async (slug: string) => {
   'use cache';
 
-  return lookupRouteEntity({ key: slug, load: async () => (await getStreamerBySlug(slug)).displayName });
+  return lookupRouteEntity({
+    key: slug,
+    load: async () => {
+      const streamer = await getStreamerBySlug(slug);
+
+      return { name: streamer.displayName, key: streamer.slug };
+    }
+  });
 };
 
 export const streamerRouteEntity = async (slug: string) => routeEntity({ key: slug, lookup: lookupStreamer });

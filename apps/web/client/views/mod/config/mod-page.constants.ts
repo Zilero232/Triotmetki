@@ -7,7 +7,7 @@ export const MOD_PAGE = {
   bytesPerMegabyte: 1_048_576,
   latestReleaseLimit: 1,
   gameWildcard: /\.\*$/u,
-  presetCount: 3,
+  presetCount: 4,
   price: 0,
   currency: 'RUB'
 } as const;

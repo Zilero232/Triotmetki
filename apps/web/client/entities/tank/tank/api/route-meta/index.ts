@@ -1,1 +1,1 @@
-export { tankCollectionItems, tankRouteEntity, topTankSlugs } from './route-meta';
+export { tankCollectionItems, tankRouteEntity, topTankSlugs, vehicleSlugs } from './route-meta';

@@ -13,11 +13,10 @@ export const useGuideFilters = () => {
 
   return {
     filters,
-    setKind: (kind: GuideKindFilter) => void setFilters({ kind: kind === 'all' ? null : kind, tank: null, map: null, page: null }),
-    setTank: (tank: number | null) => void setFilters({ tank, page: null }),
-    setMap: (map: string | null) => void setFilters({ map, page: null }),
-    setSort: (sort: GuideSort) => void setFilters({ sort, page: null }),
-    setPage: (page: number) => void setFilters({ page }),
+    setKind: (kind: GuideKindFilter) => void setFilters({ kind: kind === 'all' ? null : kind, tank: null, map: null }),
+    setTank: (tank: number | null) => void setFilters({ tank }),
+    setMap: (map: string | null) => void setFilters({ map }),
+    setSort: (sort: GuideSort) => void setFilters({ sort }),
     reset: () => void setFilters(null)
   };
 };

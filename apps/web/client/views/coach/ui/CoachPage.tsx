@@ -15,6 +15,7 @@ import s from './CoachPage.module.scss';
 
 export const CoachPage = ({ userId }: CoachPageProps) => {
   const t = useTranslations('coaching');
+  const tNav = useTranslations('nav.items');
   const query = useCoach(userId);
 
   return (
@@ -28,6 +29,7 @@ export const CoachPage = ({ userId }: CoachPageProps) => {
         }
         back={{ href: ROUTES.coaching.list, label: t('coach.back') }}
         error={{ title: t('coach.errorTitle'), description: t('coach.errorDescription') }}
+        header={<PageHeader breadcrumbs={[{ label: tNav('coaching'), href: ROUTES.coaching.list }]} title={tNav('coaching')} />}
         notFound={{ title: t('coach.notFoundTitle'), description: t('coach.notFoundDescription') }}
         query={query}
       >

@@ -5,9 +5,9 @@
   },
   "eyebrow": "“Bronya” design system",
   "title": "Steel at dusk",
-  "description": "Graphite armour, hot metal and cold steel. Every component, icon and animation on a single page.",
+  "description": "Graphite armor, hot metal and cold steel. Every component, icon and animation on a single page.",
   "colors": {
-    "title": "Colours and tokens",
+    "title": "Colors and tokens",
     "surfaces": "Surfaces",
     "accents": "Accents",
     "signals": "Signals and text",
@@ -22,7 +22,7 @@
     "title": "Typography",
     "display": {
       "meta": "Fira Sans Condensed · display",
-      "sample": "Armour-piercing"
+      "sample": "Armor-piercing"
     },
     "heading": {
       "meta": "Fira Sans Condensed · heading",
@@ -45,13 +45,13 @@
     "title": "Icons",
     "size": "Size",
     "stroke": "Stroke width",
-    "replay": "Replay",
+    "replay": "Play again",
     "groups": {
       "brand": "Mark",
       "classes": "Vehicle classes",
       "nations": "Nations",
       "marks": "Marks of excellence",
-      "mastery": "Mastery",
+      "mastery": "Mastery badges",
       "modes": "Battle modes",
       "misc": "Combat",
       "crew": "Crew",
@@ -59,7 +59,7 @@
       "tiers": "Tiers",
       "animated": "Animated",
       "silhouettes": "Silhouettes (backdrops)",
-      "nationsColor": "Nations in colour",
+      "nationsColor": "Nations in color",
       "masteryTinted": "Mastery in metal",
       "marksRings": "Marks as rings",
       "tiersEngraved": "Engraved tiers",
@@ -72,7 +72,7 @@
       "elite": "Classes — elite"
     },
     "panel": "Panel",
-    "rendersError": "Could not load the vehicle catalogue.",
+    "rendersError": "Could not load the vehicle catalog.",
     "rendersEmpty": "No vehicles with renders yet.",
     "retry": "Retry"
   },
@@ -89,7 +89,7 @@
     "iconButtons": "Icon buttons",
     "search": "Search",
     "notifications": "Notifications",
-    "favorite": "Add to favourites",
+    "favorite": "Add to favorites",
     "aim": "Aim",
     "badges": "Badges",
     "inputs": "Inputs",
@@ -109,16 +109,16 @@
     "avatars": "Avatars",
     "small": "Small",
     "large": "Large",
-    "invalidValue": "invalid value!"
+    "invalidValue": "Invalid value"
   },
   "overlays": {
     "title": "Overlays and notifications",
     "tooltip": "Tooltip",
-    "tooltipBody": "The Bronya Index weighs damage, spotting and survival.",
-    "wn8Hint": "WN8 above 2900 is unicum level",
+    "tooltipBody": "The Bronya Index weighs damage, wins, frags, spotting and capture resets.",
+    "wn8Hint": "WN8 above 2900 is super unicum",
     "popover": "Popover",
     "popoverTitle": "Mark threshold",
-    "popoverBody": "Calculated from the top 95% of results over the last 14 days.",
+    "popoverBody": "The 95th percentile of players’ damage on this tank over the last 14 days.",
     "openPopover": "Details",
     "dialog": "Dialog",
     "openDialog": "Open dialog",
@@ -146,12 +146,12 @@
     "winRate": "Win rate",
     "damage": "Average damage",
     "marks": "Marks",
-    "marksHint": "3 stars",
+    "marksHint": "3 marks",
     "number": "Counter",
     "shuffle": "New value",
     "progress": "Progress",
     "moe": "Mark",
-    "master": "Mastery",
+    "master": "Ace Tanker",
     "index": "Bronya Index",
     "rings": "Rings",
     "sparklines": "Sparklines",
@@ -182,7 +182,7 @@
     "retry": "Retry"
   },
   "patterns": {
-    "title": "v3 patterns",
+    "title": "Patterns",
     "actionStrip": "Action strip",
     "cta": "Install the mod",
     "links": {

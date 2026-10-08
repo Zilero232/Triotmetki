@@ -27,7 +27,7 @@
     "noClan": "Без клана"
   },
   "stats": {
-    "winRate": "Побед",
+    "winRate": "Процент побед",
     "avgDamage": "Ср. урон",
     "battles": "Боёв"
   },
@@ -37,8 +37,8 @@
     "liveBadge": "в бою",
     "empty": "Сессий пока нет.",
     "battles": "Боёв",
-    "winRate": "Побед",
-    "avgDamage": "Урон",
+    "winRate": "Процент побед",
+    "avgDamage": "Ср. урон",
     "details": "Разбор сессии"
   },
   "marks": {

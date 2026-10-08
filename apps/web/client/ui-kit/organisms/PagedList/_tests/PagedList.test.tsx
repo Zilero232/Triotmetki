@@ -29,9 +29,11 @@ const LIST: OffsetInfiniteList<Item> = {
   error: null,
   isRetrying: false,
   hasNextPage: false,
+  hasMore: false,
   isFetchingNextPage: false,
   loadMore: () => undefined,
-  retry: () => undefined
+  retry: () => undefined,
+  query: { data: ITEMS, isError: false, isRefetching: false, refetch: () => undefined }
 };
 
 const BASE: ComponentProps<typeof PagedList<Item>> = {

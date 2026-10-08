@@ -5,10 +5,9 @@
   },
   "head": {
     "title": "Bonus codes",
-    "description": "Codes from the game's news and social channels: what they give and whether they still work, by player reports",
-    "home": "Home",
+    "description": "Codes from tanki.su news and fan sites: what they give and whether they still work, by player reports",
     "activeFigure": "Active codes",
-    "expiringFigure": "Expiring this week"
+    "expiringFigure": "Expiring within 7 days"
   },
   "error": {
     "title": "Could not load the codes",
@@ -42,8 +41,8 @@
     "working": "Works",
     "expired": "Doesn't work",
     "signIn": "Sign in to report",
-    "thanks": "Thanks, your report is counted",
-    "failed": "Could not send the report"
+    "thanks": "Thanks, your vote is counted",
+    "failed": "Could not send the vote"
   },
   "alert": {
     "label": "Notify me about new codes",

@@ -7,6 +7,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
 const OFFLINE_PAGES = ['/en', '/en/tanks', '/en/marks'] as const;
 
+const EN_LESTA_COPYRIGHT = '© Lesta Games. All rights reserved.';
+
 const LOCALES = [
   {
     name: 'ru',
@@ -22,7 +24,7 @@ const LOCALES = [
     home: '/en',
     title: /Three Marks|Три отметки/,
     searchPlaceholder: /./,
-    lestaCopyright: '© Lesta Games. All rights reserved.'
+    lestaCopyright: EN_LESTA_COPYRIGHT
   }
 ] as const;
 
@@ -65,7 +67,16 @@ test('an unknown route renders the not-found page', async ({ page }) => {
   const response = await page.goto('/en/definitely-not-a-real-route');
 
   expect(response?.status()).toBe(404);
-  await expect(page.getByRole('contentinfo')).toBeVisible();
+  await expect(page.getByRole('contentinfo')).toContainText(EN_LESTA_COPYRIGHT);
+});
+
+test('the Telegram mini app carries the Lesta attribution', async ({ page }) => {
+  await page.goto('/en/tg');
+
+  const footer = page.getByRole('contentinfo');
+
+  await expect(footer).toContainText(EN_LESTA_COPYRIGHT);
+  await expect(footer.getByRole('link', { name: 'tanki.su', exact: true })).toHaveAttribute('href', /tanki\.su/);
 });
 
 test.describe('without the API', () => {

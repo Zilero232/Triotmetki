@@ -3,8 +3,7 @@
 import { Sigma } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
-import { PageHero } from '@/ui-kit';
+import { PageHeader } from '@/ui-kit';
 
 import { RATINGS_PAGE } from '../config';
 import { useRatingsMethod } from '../model/hooks';
@@ -14,17 +13,11 @@ import s from './RatingsPage.module.scss';
 
 export const RatingsPage = () => {
   const t = useTranslations('methodology.head');
-  const tCommon = useTranslations('common');
   const { sections, scale } = useRatingsMethod();
 
   return (
     <div className={s.root}>
-      <PageHero
-        art={{ kind: 'emblem', glyph: <Sigma size={RATINGS_PAGE.heroGlyph} strokeWidth={1.25} /> }}
-        breadcrumbs={[{ label: tCommon('home'), href: ROUTES.home }, { label: t('title') }]}
-        lead={t('lead')}
-        title={t('title')}
-      />
+      <PageHeader breadcrumbs={[{ label: t('title') }]} description={t('lead')} emblem={<Sigma />} title={t('title')} />
       <div className={s.body}>
         <nav aria-label={t('toc')} className={s.toc}>
           <p aria-hidden className={s.tocTitle}>

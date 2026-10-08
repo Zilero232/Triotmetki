@@ -1,6 +1,9 @@
 'use client';
 
+import type { FormEvent } from 'react';
+
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useBoolean } from '@siberiacancode/reactuse';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -13,6 +16,7 @@ import { BLOG_CATEGORIES } from '@/entities/blog/post';
 import { isConflictError } from '@/shared/api/source';
 import { QUERY_KEYS, ROUTES } from '@/shared/constants';
 import { useRouter } from '@/shared/i18n/navigation';
+import { useUnsavedGuard } from '@/shared/lib';
 
 import type { BlogPostFormOutput, BlogPostFormValues, BlogPostStatus, ToBlogPostInput } from '../../../lib/blog-post-form';
 
@@ -32,6 +36,7 @@ export const useBlogPostForm = (post: BlogEditorPost | null) => {
   });
 
   const [uploadedCover, setUploadedCover] = useState<string | null>(post?.coverKey ? post.cover : null);
+  const [isUnpublishOpen, unpublishDialog] = useBoolean(false);
   const [coverKey, coverUrl, title, excerpt] = useWatch({ control: form.control, name: ['coverKey', 'coverUrl', 'title', 'excerpt'] });
 
   const save = useMutation({
@@ -41,6 +46,8 @@ export const useBlogPostForm = (post: BlogEditorPost | null) => {
       return post ? updateBlogPost({ id: post.id, body }) : createBlogPost(body);
     },
     onSuccess: (saved) => {
+      form.reset(form.getValues());
+      unpublishDialog(false);
       toast.success(saved.status === 'published' ? t('published') : t('saved'));
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.blog.all });
       router.push(saved.status === 'published' ? ROUTES.blog.detail(saved.slug) : ROUTES.blog.editor.edit(saved.id));
@@ -58,12 +65,30 @@ export const useBlogPostForm = (post: BlogEditorPost | null) => {
     onError: () => toast.error(t('coverFailed'))
   });
 
+  useUnsavedGuard(form.formState.isDirty);
+
   const submitWith = (status: BlogPostStatus) => form.handleSubmit((values) => save.mutate({ values, status }));
+  const isPublished = post?.status === 'published';
+  const saveDraft = submitWith('draft');
+
+  const savingStatus = save.isPending ? (save.variables?.status ?? null) : null;
+  const idleDraftLabel = isPublished ? t('unpublish') : t('saveDraft');
+  const idlePublishLabel = isPublished ? t('update') : t('publish');
+
+  const onSaveDraft = () => {
+    if (isPublished) {
+      unpublishDialog(true);
+
+      return;
+    }
+
+    void saveDraft();
+  };
 
   return {
     form,
     isEdit: post !== null,
-    isPublished: post?.status === 'published',
+    isPublished,
     categoryItems: BLOG_CATEGORIES.map((value) => ({ value, label: tCategories(value) })),
     localeOptions: BLOG_POST_FORM.locales.map((value) => ({ value, label: t(`locales.${value}`) })),
     titleLimit: { length: title.length, min: BLOG_POST_FORM.titleMin, max: BLOG_POST_FORM.titleMax ?? title.length },
@@ -83,7 +108,13 @@ export const useBlogPostForm = (post: BlogEditorPost | null) => {
     },
     onImageUpload: async (file: File) => (await uploadBlogImage(file)).url,
     isPending: save.isPending,
-    onSaveDraft: submitWith('draft'),
-    onPublish: submitWith('published')
+    draftLabel: savingStatus === 'draft' ? t('saving') : idleDraftLabel,
+    publishLabel: savingStatus === 'published' ? t('saving') : idlePublishLabel,
+    isUnpublishOpen,
+    onUnpublishOpenChange: (open: boolean) => unpublishDialog(open),
+    onUnpublish: () => void saveDraft(),
+    onFormSubmit: (event: FormEvent<HTMLFormElement>) => event.preventDefault(),
+    onSaveDraft,
+    onPublish: () => void submitWith('published')()
   };
 };

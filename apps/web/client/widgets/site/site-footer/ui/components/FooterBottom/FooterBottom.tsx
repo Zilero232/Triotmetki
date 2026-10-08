@@ -1,7 +1,7 @@
-import { ArrowUpRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { env, EXTERNAL_LINKS, SITE } from '@/shared/config';
+import { LestaAttribution } from '@/entities/app/lesta-attribution';
+import { env } from '@/shared/config';
 import { SITE_LEGAL_LINKS } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 
@@ -20,26 +20,12 @@ export const FooterBottom = () => {
               {tLegal(item.key)}
             </Link>
           ))}
-          <a className={s.link} href={EXTERNAL_LINKS.lestaSupport} rel='noreferrer' target='_blank'>
-            {t('support')}
-            <ArrowUpRight aria-hidden size={14} />
-          </a>
         </nav>
         <p className={s.meta}>
-          <span>{t('copyright', { year: SITE.copyrightYear })}</span>
           <span className={s.version}>{t('version', { version: env.NEXT_PUBLIC_APP_VERSION })}</span>
         </p>
       </div>
-      <p className={s.attribution}>
-        <span>{t('lestaCopyright')}</span>
-        <span>
-          {t('dataSource')}{' '}
-          <a className={s.source} href={EXTERNAL_LINKS.game} rel='noreferrer' target='_blank'>
-            {t('gameSite')}
-          </a>
-        </span>
-        <span>{t('disclaimer')}</span>
-      </p>
+      <LestaAttribution />
     </div>
   );
 };

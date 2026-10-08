@@ -6,10 +6,10 @@
   "hero": {
     "eyebrow": "Radio link",
     "title": "Notifications",
-    "description": "Everything Three Marks spotted for you: new marks, session results, clan moves and bonus codes. Choose where and when to send the signal.",
+    "description": "Everything Three Marks spotted for you: new marks, session results, clan roster changes and bonus codes. Choose where and when to send them.",
     "unread": "Unread",
-    "unreadHint": "Fresh reports on the air",
-    "quietHint": "All clear — everything is read"
+    "unreadHint": "There are fresh notifications",
+    "quietHint": "All quiet — everything is read"
   },
   "feed": {
     "eyebrow": "Log",
@@ -45,7 +45,7 @@
     "clan_weekly_report": "Weekly clan report",
     "bonus_code": "Bonus codes",
     "premium_offer": "Vehicle discounts",
-    "tank_changed": "Stat changes",
+    "tank_changed": "Vehicle stat changes",
     "goal_reached": "Goal reached",
     "badge_awarded": "New badge",
     "challenge_resolved": "Streamer challenge",
@@ -78,7 +78,7 @@
     "channel": {
       "site": "On the site",
       "telegram": "Telegram",
-      "email": "E-mail",
+      "email": "Email",
       "web_push": "Browser push"
     },
     "channelHint": {
@@ -89,7 +89,7 @@
     },
     "eventsEyebrow": "Enabled: {count} of {total}",
     "events": "What to report",
-    "eventsHint": "Pick the events worth a glance away from the battle.",
+    "eventsHint": "Pick the events worth looking away from the battle for.",
     "reportsEyebrow": "Digests",
     "reports": "Reports",
     "sessionReport": "Session report",
@@ -111,7 +111,7 @@
     "crossesMidnight": "Across midnight",
     "dialLabel": "Quiet hours from {start} to {end}",
     "nowQuiet": "Silent mode is on right now",
-    "nowLoud": "Notifications arrive right away now"
+    "nowLoud": "Notifications are arriving immediately right now"
   },
   "push": {
     "eyebrow": "Web Push",
@@ -121,15 +121,15 @@
       "loading": "Checking the browser…",
       "unsupported": "This browser has no push support",
       "denied": "Notifications are blocked",
-      "unconfigured": "Push is not configured on the server",
+      "unconfigured": "Push is not available yet",
       "idle": "Not connected",
       "subscribed": "Connected"
     },
     "hint": {
       "loading": "Checking whether this browser can receive push.",
       "unsupported": "Open the site in a recent Chrome, Firefox, Edge or Safari — or install Three Marks as an app.",
-      "denied": "Allow notifications for this site in the browser settings (the lock icon by the address bar) and reload the page.",
-      "unconfigured": "The server has not issued a push key yet. Other channels work as usual.",
+      "denied": "Allow notifications for this site in the browser settings (the icon left of the site address) and reload the page.",
+      "unconfigured": "Push isn’t available yet. Other channels work as usual.",
       "idle": "The browser will ask for permission — press “Allow”.",
       "subscribed": "This device receives push. You can turn it off at any time."
     },

@@ -16,6 +16,7 @@ type ModDownloads = ReturnType<typeof useModDownloads>;
 const COPY = messages.en.mod.hero;
 const PUBLISHED: Omit<ModDownloads, 'distribution'> = {
   isPreparing: false,
+  isManagerAvailable: true,
   manager: { version: '0.2.0', size: '8.4 MB' },
   game: '1.45'
 };
@@ -63,16 +64,23 @@ describe('ModActions', () => {
   });
 
   it('disables the download and explains why before the first release', () => {
-    renderActions({ downloads: { isPreparing: true, manager: null, game: null } });
+    renderActions({ downloads: { isPreparing: true, isManagerAvailable: false, manager: null, game: null } });
 
     expect(screen.getByRole('button', { name: COPY.download })).toBeDisabled();
     expect(screen.getByRole('status')).toHaveTextContent(COPY.preparing);
   });
 
   it('keeps the download disabled and silent while the status loads', () => {
-    renderActions({ downloads: { isPreparing: false, manager: null, game: null } });
+    renderActions({ downloads: { isPreparing: false, isManagerAvailable: false, manager: null, game: null } });
 
     expect(screen.getByRole('button', { name: COPY.download })).toBeDisabled();
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
+
+  it('still links the manager without version or size when the release status failed', () => {
+    renderActions({ downloads: { isPreparing: false, isManagerAvailable: true, manager: null, game: null } });
+
+    expect(screen.getByRole('link', { name: COPY.download })).toHaveAttribute('href', MOD_DISTRIBUTION.managerUrl);
+    expect(screen.queryByText(/^Version /)).not.toBeInTheDocument();
   });
 });

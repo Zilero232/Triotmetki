@@ -10,7 +10,6 @@ export const GUIDE_SORTS = ['recent', 'popular'] as const satisfies readonly Gui
 
 export const GUIDE_LIST = {
   pageSize: 20,
-  firstPage: 1,
   anyMap: 'any',
   authorsShown: 10,
   skeletonRows: [0, 1, 2],
@@ -21,6 +20,5 @@ export const GUIDE_FILTER_PARSERS = {
   kind: parseAsStringLiteral(GUIDE_KINDS),
   tank: parseAsInteger,
   map: parseAsString,
-  sort: parseAsStringLiteral(GUIDE_SORTS).withDefault('recent'),
-  page: parseAsInteger.withDefault(GUIDE_LIST.firstPage)
+  sort: parseAsStringLiteral(GUIDE_SORTS).withDefault('recent')
 } as const;

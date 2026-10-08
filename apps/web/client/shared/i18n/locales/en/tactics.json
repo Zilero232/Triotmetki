@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Tactic boards",
-    "description": "Draw tactics on the map with your platoon: arrows, LT/MT/HT/TD/SPG positions, layers and live co-editing."
+    "description": "Draw tactics on the map with your platoon: arrows, LT, MT, HT, TD and SPG positions, layers and live co-editing."
   },
   "boardMeta": {
     "title": "Tactic board",
@@ -37,14 +37,14 @@
   "settings": {
     "none": "Not set",
     "title": "Title",
-    "titlePlaceholder": "e.g. Push through the 1st line",
+    "titlePlaceholder": "e.g. Push through the first line",
     "titleError": "1 to 120 characters",
     "map": "Map",
     "mode": "Mode",
     "visibility": "Access",
     "visibilityHint": {
-      "public": "Anyone with the plain link can view. Editing needs the editor link.",
-      "unlisted": "Only people you send the link to can view.",
+      "public": "Anyone with the board’s regular link can view it. Editing needs the editor link.",
+      "unlisted": "Only people you send the view link to can see the board.",
       "private": "Only you can see the board; links do not work."
     },
     "serverError": "Could not save. Try again.",
@@ -118,7 +118,7 @@
       "enemy": "Enemies",
       "neutral": "Neutral"
     },
-    "color": "Colour",
+    "color": "Color",
     "width": "Width",
     "undo": "Undo",
     "redo": "Redo",
@@ -143,7 +143,7 @@
     "disconnected": "Offline",
     "denied": "No access",
     "readOnly": "View only",
-    "alone": "Nobody else here",
+    "alone": "Just you here",
     "guest": "Guest"
   }
 }

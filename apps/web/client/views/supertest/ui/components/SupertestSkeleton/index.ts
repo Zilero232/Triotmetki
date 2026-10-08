@@ -1,0 +1,1 @@
+export { SupertestSkeleton } from './SupertestSkeleton';

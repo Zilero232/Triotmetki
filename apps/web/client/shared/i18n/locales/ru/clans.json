@@ -9,8 +9,7 @@
   },
   "head": {
     "title": "Кланы",
-    "description": "Рейтинг и поиск кланов «Мира танков»: средний WN8, победы, укрепрайон и Глобальная карта.",
-    "home": "Главная"
+    "description": "Рейтинг и поиск кланов «Мира танков»: средний WN8, победы, укрепрайон и Глобальная карта."
   },
   "search": {
     "label": "Поиск клана",
@@ -27,7 +26,7 @@
       "wn8": "Ср. WN8",
       "winRate": "% побед",
       "members": "Бойцов",
-      "activeMembers": "Активных за 7 дн",
+      "activeMembers": "Активных за 7 дн.",
       "eloRating10": "Эло X ур.",
       "strongholdLevel": "Уровень укрепрайона"
     },
@@ -46,7 +45,7 @@
       "wn8": "Ср. WN8",
       "winRate": "% побед",
       "stronghold": "Укрепрайон",
-      "elo": "Эло X"
+      "elo": "Эло X\u00a0ур."
     }
   },
   "missing": {
@@ -66,7 +65,7 @@
     "loading": "Загружаем клан",
     "founded": "Основан {date}",
     "members": "{count, plural, one {# боец} few {# бойца} many {# бойцов} other {# бойца}} в составе",
-    "activeShort": "{active} из {total} в строю за 7 дн",
+    "activeShort": "{active} из\u00a0{total} играли за\u00a07\u00a0дн.",
     "stats": {
       "winRate": "Ср. % побед",
       "wn8": "Ср. WN8",
@@ -85,9 +84,9 @@
     "daysAgo": "{days, plural, =0 {сегодня} one {# день назад} few {# дня назад} many {# дней назад} other {# дня назад}}",
     "status": {
       "active": "В строю",
-      "recent": "Заходил на неделе",
+      "recent": "Играл на\u00a0неделе",
       "idle": "Отдыхает",
-      "gone": "Пропал"
+      "gone": "Давно не\u00a0играет"
     },
     "columns": {
       "nickname": "Боец",
@@ -96,7 +95,7 @@
       "lastBattle": "Последний бой",
       "battles": "Бои",
       "winRate": "% побед",
-      "recentWn8": "WN8 за 30 дн"
+      "recentWn8": "WN8 за 30 дн."
     },
     "roles": {
       "commander": "Командующий",
@@ -115,7 +114,7 @@
       "role": "Должность",
       "idle": "Не играли",
       "idleAll": "Все",
-      "idleDays": "{days}+ дн",
+      "idleDays": "{days}+\u00a0дн.",
       "roles": {
         "all": "Все",
         "command": "Командование",
@@ -155,14 +154,12 @@
   "bases": {
     "loading": "Загружаем укрепрайон",
     "error": "Данные укрепрайона недоступны",
-    "errorDescription": "Леста не ответила про укрепрайон. Попробуйте позже.",
+    "errorDescription": "Леста не\u00a0отдала данные укрепрайона. Попробуйте позже.",
     "stronghold": {
       "levelOf": "Уровень {level} из {max}",
       "levelUnknown": "Уровень неизвестен",
       "buildingsTitle": "Строения",
-      "reservesTitle": "Резервы",
-      "reserveLevel": "ур. {level}",
-      "count": "×{count}",
+      "buildingLevel": "ур. {level}",
       "battles": "Боёв в вылазках",
       "winRate": "% побед в вылазках",
       "resources": "Промресурс",
@@ -170,8 +167,7 @@
       "tier": "{tier} ур.",
       "battlesCount": "{count, plural, one {# бой} few {# боя} many {# боёв} other {# боя}}",
       "noSkirmishes": "Вылазок пока нет.",
-      "noBuildings": "Данных о строениях укрепрайона пока нет.",
-      "reservesHidden": "Резервы видны, только если офицер клана поделился доступом."
+      "noBuildings": "Данных о строениях укрепрайона пока нет."
     },
     "globalMap": {
       "provinces": "{count, plural, =0 {Нет провинций} one {# провинция} few {# провинции} many {# провинций} other {# провинции}}",

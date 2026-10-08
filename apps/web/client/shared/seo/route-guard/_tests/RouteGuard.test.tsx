@@ -6,7 +6,7 @@ import type { RouteGuardProps } from '../RouteGuard.types';
 
 import { RouteGuard } from '../RouteGuard';
 
-const FOUND = { name: 'ИС-7', isFound: true };
+const FOUND = { name: 'ИС-7', key: 'is-7', isFound: true };
 
 const structuredData = (container: HTMLElement) =>
   [...container.querySelectorAll('script[type="application/ld+json"]')].map((node) => JSON.parse(node.innerHTML));
@@ -34,7 +34,7 @@ describe('RouteGuard', () => {
       throw new Error('NEXT_HTTP_ERROR_FALLBACK;404');
     });
 
-    await expect(RouteGuard({ entity: Promise.resolve({ name: 'missing', isFound: false }), schema })).rejects.toThrow(
+    await expect(RouteGuard({ entity: Promise.resolve({ name: 'missing', key: 'missing', isFound: false }), schema })).rejects.toThrow(
       'NEXT_HTTP_ERROR_FALLBACK;404'
     );
 

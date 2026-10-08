@@ -1,9 +1,9 @@
-import { nicknameSchema, PAGINATION, REPLAY_MASTERY_LEVELS } from '@otmetki/schemas';
-import { clamp, isIncludedIn } from 'remeda';
+import { nicknameSchema, REPLAY_MASTERY_LEVELS } from '@otmetki/schemas';
+import { isIncludedIn } from 'remeda';
 
 import type { ReplaySearchQuery } from '@/entities/replay/replay';
 
-import type { PageWindow, PageWindowInput, ReplayFilters, ToSearchQueryInput } from './replay-query.types';
+import type { ReplayFilters, ToSearchQueryInput } from './replay-query.types';
 
 import { REPLAY_LIST, REPLAY_MINIMUMS } from '../../config';
 
@@ -28,7 +28,6 @@ const playerQuery = (player: string): string | undefined => {
 export const toSearchQuery = ({ filters, limit }: ToSearchQueryInput): ReplaySearchQuery => ({
   sort: filters.sort,
   limit,
-  offset: clamp(filters.offset, { min: 0, max: PAGINATION.maxOffset }),
   tankId: filters.tank !== null && filters.tank > 0 ? filters.tank : undefined,
   arenaId: slugOrUndefined(filters.map),
   mode: slugOrUndefined(filters.mode),
@@ -53,18 +52,6 @@ export const hasActiveFilters = (filters: ReplayFilters): boolean =>
   ) ||
   [filters.tiers, filters.types, filters.nations, filters.tags].some((values) => values.length > 0) ||
   [filters.player, filters.clan].some((text) => text.trim().length > 0);
-
-export const pageWindow = ({ offset, limit, total }: PageWindowInput): PageWindow => {
-  const pages = Math.max(1, Math.ceil(total / limit));
-  const page = Math.min(pages, Math.floor(offset / limit) + 1);
-
-  return {
-    page,
-    pages,
-    prevOffset: offset > 0 ? Math.max(0, offset - limit) : null,
-    nextOffset: offset + limit < total && offset + limit <= PAGINATION.maxOffset ? offset + limit : null
-  };
-};
 
 export const toSelectValue = (value: string | null): string => value ?? REPLAY_LIST.anyValue;
 

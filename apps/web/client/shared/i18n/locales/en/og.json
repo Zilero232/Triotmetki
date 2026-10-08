@@ -3,12 +3,14 @@
     "tank": "TANK",
     "build": "BUILD",
     "clan": "CLAN",
-    "site": "STATS"
+    "site": "STATS",
+    "armor": "ARMOR",
+    "map": "MAP",
+    "guide": "GUIDE"
   },
   "tankLine": "Tier {tier} · {type}",
   "winRate": "Win rate",
   "avgDamage": "Avg damage",
   "players": "Players",
-  "members": "Members",
-  "source": "Data: Lesta Games"
+  "members": "Members"
 }

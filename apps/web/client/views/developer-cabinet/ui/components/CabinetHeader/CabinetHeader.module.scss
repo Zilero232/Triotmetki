@@ -6,29 +6,6 @@
   align-items: center;
 }
 
-.copy {
-  @include stack(var(--space-3));
-
-  align-items: flex-start;
-}
-
-.eyebrow {
-  @include label;
-
-  color: var(--color-accent);
-}
-
-.title {
-  @include heading(var(--text-3xl));
-
-  font-stretch: 75%;
-}
-
-.lead {
-  max-width: 58ch;
-  color: var(--color-text-muted);
-}
-
 .tag {
   position: relative;
   padding: var(--space-5) var(--space-6);

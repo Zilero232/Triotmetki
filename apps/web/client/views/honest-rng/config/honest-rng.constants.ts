@@ -11,7 +11,9 @@ export const HONEST_RNG_VIEW = {
   staleMs: 5 * 60_000
 } as const;
 
-export const RNG_SHELLS = ['armor_piercing', 'armor_piercing_cr', 'hollow_charge', 'high_explosive', 'unknown'] as const;
+export const RNG_SHELLS = ['armor_piercing', 'armor_piercing_cr', 'hollow_charge'] as const;
+
+export type RngShell = (typeof RNG_SHELLS)[number];
 
 export const RNG_LUCK_TONES = {
   lucky: 'good',

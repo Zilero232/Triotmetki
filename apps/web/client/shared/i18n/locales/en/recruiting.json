@@ -18,7 +18,7 @@
       "clan_seeks_player": "No clan is recruiting right now. Officers can be the first to post.",
       "player_seeks_clan": "Nobody is looking for a clan. Tell clans about yourself — they'll see your stats."
     },
-    "errorTitle": "Couldn't load posts",
+    "errorTitle": "Could not load posts",
     "errorDescription": "The server didn't respond. Try again."
   },
   "card": {
@@ -30,7 +30,7 @@
   "create": {
     "dialog": {
       "clan_seeks_player": {
-        "open": "Recruit for clan",
+        "open": "Post a recruiting call",
         "title": "Recruiting post",
         "description": "Players see your requirements. The post is tied to the clan where you're an officer.",
         "cancel": "Cancel",
@@ -45,7 +45,7 @@
       }
     },
     "checkingClan": "Checking your clan…",
-    "notOfficer": "Only a commander, deputy, personnel, recruitment or combat officer can post for a clan. None of your linked accounts holds such a role.",
+    "notOfficer": "Only a commander, executive officer, personnel officer, recruitment officer or combat officer can post for a clan. None of your linked accounts holds such a role.",
     "clan": "Clan",
     "postTitle": "Title",
     "titlePlaceholder": {
@@ -70,7 +70,7 @@
     "notOfficer": "Only officers of this clan can recruit",
     "forbidden": "Link your Lesta account in your profile first",
     "notFound": "The post is closed already or another officer posted it",
-    "conflict": "Data conflict, try again",
+    "conflict": "Could not save, refresh the page",
     "validation": "Check the form fields",
     "unauthorized": "Sign in to continue",
     "rateLimited": "Too many requests, wait a bit",

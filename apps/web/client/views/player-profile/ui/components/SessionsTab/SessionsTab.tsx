@@ -13,7 +13,7 @@ import s from './SessionsTab.module.scss';
 
 export const SessionsTab = () => {
   const t = useTranslations('profile.sessions');
-  const { accountId, nickname, query, selectedId, select, showMore } = useSessionsTab();
+  const { accountId, nickname, query, detailRef, selectedId, select, showMore } = useSessionsTab();
 
   return (
     <QueryState
@@ -23,6 +23,8 @@ export const SessionsTab = () => {
         </div>
       }
       empty={<EmptyState title={t('empty')} />}
+      errorDescription={t('listErrorDescription')}
+      errorTitle={t('listErrorTitle')}
       isEmpty={({ items }) => items.length === 0}
       query={query}
     >
@@ -36,7 +38,9 @@ export const SessionsTab = () => {
             onMore={showMore}
             onSelect={select}
           />
-          <div className={s.detail}>{selectedId && <SessionDetail accountId={accountId} nickname={nickname} sessionId={selectedId} />}</div>
+          <div ref={detailRef} className={s.detail}>
+            {selectedId && <SessionDetail accountId={accountId} nickname={nickname} sessionId={selectedId} />}
+          </div>
         </div>
       )}
     </QueryState>

@@ -1,2 +1,2 @@
-export { getArmorModel } from './armor';
+export { getArmorModel, getArmorShowcase } from './armor';
 export { getArmorGuns } from './armor-guns';

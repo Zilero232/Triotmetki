@@ -11,12 +11,12 @@ export const PROFILE_VIEW = {
 
 export const SESSIONS = {
   pageSize: 20,
-  skeletonHeight: 480
+  skeletonHeight: 480,
+  stackedQuery: '(width < 900px)'
 } as const;
 
 export const PROFILE_SKELETON = {
   panels: 4,
-  headerHeight: 168,
   tabsHeight: 36,
   panelHeight: 240
 } as const;

@@ -4,7 +4,6 @@ import { SITE } from '@/shared/config';
 import { DEFAULT_LOCALE } from '@/shared/i18n';
 
 import { siteImage } from '../site-metadata';
-import { SITE_METADATA } from '../site-metadata.constants';
 
 export const defaultMetadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -38,7 +37,7 @@ export const defaultMetadata: Metadata = {
 };
 
 export const defaultViewport: Viewport = {
-  themeColor: SITE_METADATA.themeColor,
+  themeColor: SITE.themeColor.dark,
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,

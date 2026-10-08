@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import { useRouteParam } from '@/shared/lib';
-import { DataSourceNote, Tabs } from '@/ui-kit';
+import { DataSourceNote, PageHeader, Tabs } from '@/ui-kit';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import { useClanPage } from '../model/hooks';
@@ -14,6 +14,7 @@ import s from './ClanPage.module.scss';
 
 export const ClanPage = () => {
   const t = useTranslations('clans');
+  const tNav = useTranslations('nav.items');
   const clanTag = useRouteParam('tag');
   const query = useClanPage(clanTag);
 
@@ -22,6 +23,7 @@ export const ClanPage = () => {
       <ResourceGate
         back={{ href: ROUTES.clans.list, label: t('missing.toClans') }}
         error={{ title: t('missing.errorTitle'), description: t('missing.errorDescription', { tag: clanTag }) }}
+        header={<PageHeader breadcrumbs={[{ label: tNav('clans'), href: ROUTES.clans.list }, { label: `[${clanTag}]` }]} title={`[${clanTag}]`} />}
         notFound={{ title: t('missing.notFoundTitle'), description: t('missing.notFoundDescription', { tag: clanTag }) }}
         query={query}
         skeleton={<ClanSkeleton />}

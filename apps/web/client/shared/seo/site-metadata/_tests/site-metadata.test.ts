@@ -27,6 +27,10 @@ describe('absoluteUrl', () => {
   it('resolves a path against the site origin', () => {
     expect(absoluteUrl('/tanks')).toBe(new URL('/tanks', SITE.url).toString());
   });
+
+  it('writes the site root without a trailing slash, the way page metadata spells the canonical', () => {
+    expect(absoluteUrl('/')).toBe(SITE.url);
+  });
 });
 
 describe('createPageMetadata', () => {
@@ -42,6 +46,7 @@ describe('createPageMetadata', () => {
     const plain = createPageMetadata({ title: 'Tanks', description: '', locale: 'en' });
 
     expect(plain.title).toEqual({ absolute: `Tanks · ${SITE.en.title}` });
+    expect(plain.applicationName).toBe(SITE.en.title);
     expect(plain.openGraph).toMatchObject({ siteName: SITE.en.title, locale: SITE.en.locale, alternateLocale: [SITE.locale] });
   });
 

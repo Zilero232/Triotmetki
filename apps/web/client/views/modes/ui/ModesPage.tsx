@@ -4,7 +4,6 @@ import { Swords } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ModeSourceNote } from '@/entities/mode/mode';
-import { ROUTES } from '@/shared/constants';
 import { PageHero, QueryState, Skeleton } from '@/ui-kit';
 
 import { MODES_HUB } from '../config';
@@ -15,14 +14,13 @@ import s from './ModesPage.module.scss';
 
 export const ModesPage = () => {
   const t = useTranslations('modes.hub');
-  const tCommon = useTranslations('common');
   const query = useModesHub();
 
   return (
     <div className={s.root}>
       <PageHero
         art={{ kind: 'emblem', glyph: <Swords size={480} strokeWidth={1.25} /> }}
-        breadcrumbs={[{ label: tCommon('home'), href: ROUTES.home }, { label: t('title') }]}
+        breadcrumbs={[{ label: t('title') }]}
         lead={t('description')}
         title={t('title')}
       />

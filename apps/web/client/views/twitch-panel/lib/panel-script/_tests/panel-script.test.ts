@@ -12,7 +12,7 @@ import { panelHtml } from '../../panel-html';
 
 const PUBLIC_DIR = path.resolve(import.meta.dirname, '../../../../../public');
 
-const COPY: PanelCopy = fromKeys(TWITCH_PANEL.copyKeys, (key) => key);
+const COPY: PanelCopy = { ...fromKeys(TWITCH_PANEL.copyKeys, (key) => key), attribution: 'attribution' };
 
 const PANEL: TwitchPanel = {
   nickname: 'Jove',
@@ -57,6 +57,17 @@ describe('panel script', () => {
     expect(document.querySelector('.block-title')).toHaveTextContent('live');
     expect(document.querySelector('.bar > span')).toHaveStyle({ width: '91.5%' });
     expect(document.querySelector('a.open')).toHaveAttribute('href', PANEL.profileUrl);
+  });
+
+  it('formats the mark percent with the panel locale', async () => {
+    vi.useFakeTimers();
+    window.history.replaceState(null, '', '/?channel=42');
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify(PANEL))));
+
+    mount(panelHtml({ apiUrl: 'https://api.otmetki.app', locale: 'ru', copy: COPY }))();
+    await vi.waitFor(() => expect(document.querySelector('.nick')).toHaveTextContent('Jove'));
+
+    expect(document.querySelector('.mark-row strong')?.textContent).toBe('91,50 %');
   });
 
   it('shows the error state without a channel', () => {

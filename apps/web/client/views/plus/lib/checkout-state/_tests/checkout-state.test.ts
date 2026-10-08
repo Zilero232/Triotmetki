@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { checkoutMode, checkoutNote } from '../checkout-state';
 
-const SIGNED_IN = { isPending: false, isSignedIn: true, isPlus: false, isCheckoutAvailable: false, trialAvailable: false } as const;
+const SIGNED_IN = { isPending: false, isError: false, isSignedIn: true, isPlus: false, isCheckoutAvailable: false, trialAvailable: false } as const;
 
 describe('checkoutNote', () => {
   it('tells a subscriber how long the current state lasts', () => {
@@ -38,6 +38,10 @@ describe('checkoutNote', () => {
 });
 
 describe('checkoutMode', () => {
+  it('reports a failed subscription lookup instead of offering a purchase', () => {
+    expect(checkoutMode({ ...SIGNED_IN, isError: true, isCheckoutAvailable: true })).toBe('error');
+  });
+
   it('waits while the session or the billing status loads', () => {
     expect(checkoutMode({ ...SIGNED_IN, isPending: true })).toBe('pending');
   });

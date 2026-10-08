@@ -4,7 +4,6 @@ import { LayoutDashboard, LogIn } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { useLoginHref } from '@/entities/auth/session';
-import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { buttonVariants, EmptyState, PageHeader, QueryState, Skeleton } from '@/ui-kit';
 
@@ -16,14 +15,13 @@ import s from './TacticsPage.module.scss';
 export const TacticsPage = () => {
   const loginHref = useLoginHref();
   const t = useTranslations('tactics.list');
-  const tCommon = useTranslations('common');
   const { isGuest, isSignedIn, query } = useTacticsPage();
 
   return (
     <div className={s.root}>
       <PageHeader
         actions={isSignedIn && <CreateBoardDialog />}
-        breadcrumbs={[{ label: tCommon('home'), href: ROUTES.home }, { label: t('title') }]}
+        breadcrumbs={[{ label: t('title') }]}
         description={t('description')}
         title={t('title')}
       />

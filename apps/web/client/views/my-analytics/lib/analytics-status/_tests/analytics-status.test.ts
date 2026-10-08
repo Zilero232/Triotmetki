@@ -5,7 +5,7 @@ import { NotFoundError, PlusRequiredError, UnauthorizedError } from '@/shared/ap
 import { ANALYTICS_VIEW } from '../../../config';
 import { analyticsStatus, shouldRetryAnalytics } from '../analytics-status';
 
-const READY = { requiresPlus: false, isPlus: false, isPlusPending: false, isPending: false, error: null } as const;
+const READY = { requiresPlus: false, isPlus: false, isPlusPending: false, isPlusError: false, isPending: false, error: null } as const;
 const PLUS_REQUIRED = new PlusRequiredError({ code: 'SUBSCRIPTION_REQUIRED', details: {}, message: 'Plus' });
 
 describe('analyticsStatus', () => {
@@ -15,6 +15,14 @@ describe('analyticsStatus', () => {
 
   it('waits while the subscription is still loading instead of flashing the teaser', () => {
     expect(analyticsStatus({ ...READY, requiresPlus: true, isPlusPending: true })).toBe('pending');
+  });
+
+  it('reports a failed subscription lookup as an error instead of the teaser', () => {
+    expect(analyticsStatus({ ...READY, requiresPlus: true, isPlusError: true })).toBe('error');
+  });
+
+  it('ignores a failed subscription lookup on a free section', () => {
+    expect(analyticsStatus({ ...READY, isPlusError: true })).toBe('ready');
   });
 
   it('shows the teaser when the server refuses with a Plus error even for a subscriber', () => {

@@ -5,7 +5,7 @@ import { ROUTES } from '@/shared/constants';
 
 export const SITEMAP = {
   limit: PAGINATION.maxLimit,
-  path: '/sitemap.xml',
+  sections: ['pages', 'tanks', 'players', 'clans', 'content'],
   allow: ['/', '/api/og/'],
   disallow: ['/me', '/api/', '/overlay/', '/serwist/', ROUTES.miniApp, ROUTES.vkMiniApp, ROUTES.auth.login, ROUTES.design, ROUTES.blog.editor.list]
 } as const;

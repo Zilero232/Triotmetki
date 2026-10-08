@@ -6,7 +6,7 @@ export {
   leaderboardsControllerOfficialHistoryOptions,
   leaderboardsControllerOfficialNeighborsOptions,
   leaderboardsControllerOfficialTopOptions,
-  playersControllerAchievementsOptions,
+  playersControllerAchievementsQueryKey,
   playersControllerCareerOptions,
   playersControllerModesOptions,
   playersControllerOfficialRatingsOptions,

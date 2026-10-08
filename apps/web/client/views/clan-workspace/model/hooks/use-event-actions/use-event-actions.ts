@@ -15,7 +15,7 @@ import type { UseEventActionsInput } from './use-event-actions.types';
 
 import { removeWorkspaceEvent, rsvpEvent, syncEventAttendance } from '../../../api';
 import { ATTENDANCE_STATUSES } from '../../../config';
-import { attendanceCounts, hasStarted } from '../../../lib/attendance';
+import { attendanceCounts, canSyncAttendance, hasStarted } from '../../../lib/attendance';
 
 export const useEventActions = ({ clanId, event }: UseEventActionsInput) => {
   const t = useTranslations('clanWorkspace');
@@ -64,6 +64,7 @@ export const useEventActions = ({ clanId, event }: UseEventActionsInput) => {
       .otherwise(() => t('events.noReminder')),
     myStatus: mine,
     hasStarted: hasStarted({ startsAt: event.startsAt, now }),
+    canSync: canSyncAttendance({ kind: event.kind, startsAt: event.startsAt, now }),
     isRsvpPending: rsvp.isPending,
     isRemoving: remove.isPending,
     isSyncing: sync.isPending,

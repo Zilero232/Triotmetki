@@ -3,7 +3,14 @@
 import { usePlus } from '@/features/plus/plus-gate';
 
 export const useProgressPage = () => {
-  const { isPlus, isPending } = usePlus();
+  const { isPlus, isPending, isError, isRefetching, refetch } = usePlus();
 
-  return { isFrozen: !isPending && !isPlus };
+  const isPlusKnown = !isPending && !isError;
+
+  return {
+    isFrozen: isPlusKnown && !isPlus,
+    isPlusError: isError,
+    isPlusRetrying: isRefetching,
+    retryPlus: refetch
+  };
 };

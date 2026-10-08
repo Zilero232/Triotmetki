@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
@@ -28,4 +29,4 @@ const Page = ({ params }: PageProps<'/[locale]/overlay/[publicId]'>) => (
   </Suspense>
 );
 
-export default Page;
+export default withMessages({ component: Page, messages: ['overlay'] });

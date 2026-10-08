@@ -18,6 +18,7 @@ import s from './TournamentPage.module.scss';
 
 export const TournamentPage = ({ slug }: TournamentPageProps) => {
   const t = useTranslations('tournaments');
+  const tNav = useTranslations('nav.items');
   const query = useTournament(slug);
 
   return (
@@ -28,6 +29,7 @@ export const TournamentPage = ({ slug }: TournamentPageProps) => {
         ))}
         back={{ href: ROUTES.tournaments.list, label: t('page.back') }}
         error={{ title: t('page.errorTitle'), description: t('page.errorDescription') }}
+        header={<PageHeader breadcrumbs={[{ label: tNav('tournaments'), href: ROUTES.tournaments.list }, { label: slug }]} title={slug} />}
         notFound={{ title: t('page.notFoundTitle'), description: t('page.notFoundDescription') }}
         query={query}
       >

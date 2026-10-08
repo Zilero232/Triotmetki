@@ -3,7 +3,11 @@ import type { ComponentType } from 'react';
 
 export type MarkdownImageUpload = NonNullable<ImageUploadHandler>;
 
+export type MarkdownToolbarProps = {
+  canInsertImage: boolean;
+};
+
 export type UseMarkdownEditorPluginsInput = {
-  toolbar: ComponentType;
-  onImageUpload: MarkdownImageUpload;
+  toolbar: ComponentType<MarkdownToolbarProps>;
+  onImageUpload?: MarkdownImageUpload;
 };

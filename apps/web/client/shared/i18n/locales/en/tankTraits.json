@@ -20,7 +20,7 @@
   "role": {
     "label": "Role",
     "HT_assault": "Assault heavy",
-    "HT_break": "Break-through heavy",
+    "HT_break": "Breakthrough heavy",
     "HT_universal": "Versatile heavy",
     "HT_support": "Support heavy",
     "MT_universal": "Versatile medium",
@@ -48,7 +48,7 @@
     "masteryHint": "Ace Tanker threshold against the average player XP on the tank: ×{value}"
   },
   "difficulty": {
-    "label": "Learning",
+    "label": "Learning curve",
     "easy": "Easy",
     "moderate": "Moderate",
     "hard": "Hard",

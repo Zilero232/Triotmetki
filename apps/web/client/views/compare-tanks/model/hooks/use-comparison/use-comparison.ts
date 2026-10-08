@@ -41,8 +41,11 @@ export const useComparison = () => {
   const vehicles = orderByIds({ items: comparison?.vehicles ?? [], ids, idOf: ({ vehicle }) => vehicle.tankId });
   const statsOf = (tankId: number) => details[ids.indexOf(tankId)]?.data?.serverStats.find(({ cohort }) => cohort === 'all') ?? null;
   const isStatsLoading = details.some((detail) => detail.isPending);
+  const detailOf = (tankId: number) => details[ids.indexOf(tankId)];
+  const isStatsErrorOf = (tankId: number) => detailOf(tankId)?.isError ?? false;
+  const retryStatsOf = (tankId: number) => void detailOf(tankId)?.refetch();
 
   const isLoading = isPending || (isPlaceholderData && vehicles.length === 0);
 
-  return { ids, vehicles, statsOf, isStatsLoading, isLoading, isError, isFetching, refetch };
+  return { ids, vehicles, statsOf, isStatsLoading, isStatsErrorOf, retryStatsOf, isLoading, isError, isFetching, refetch };
 };

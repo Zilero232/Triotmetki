@@ -9,6 +9,7 @@ import { KeyFigure, Skeleton } from '@/ui-kit';
 import type { StatGridProps } from './StatGrid.types';
 
 import { STAT_GRID } from '../../../config';
+import { roundedFigure } from '../../../lib/rounded-figure';
 
 import s from './StatGrid.module.scss';
 
@@ -28,16 +29,9 @@ export const StatGrid = ({ stats }: StatGridProps) => {
 
   return (
     <div className={s.root}>
-      <KeyFigure isFramed label={tCommon('ratings.wn8')} tone={ratingValueTone(stats.wn8)} value={Math.round(stats.wn8.value ?? 0)} />
-      <KeyFigure
-        isFramed
-        format={STAT_GRID.winRateFormat}
-        label={t('winRate')}
-        suffix='%'
-        tone={winRateTone(stats.winRate)}
-        value={stats.winRate ?? 0}
-      />
-      <KeyFigure isFramed label={t('avgDamage')} value={Math.round(stats.avgDamage ?? 0)} />
+      <KeyFigure isFramed label={tCommon('ratings.wn8')} tone={ratingValueTone(stats.wn8)} value={roundedFigure(stats.wn8.value)} />
+      <KeyFigure isFramed format={STAT_GRID.winRateFormat} label={t('winRate')} suffix='%' tone={winRateTone(stats.winRate)} value={stats.winRate} />
+      <KeyFigure isFramed label={t('avgDamage')} value={roundedFigure(stats.avgDamage)} />
       <KeyFigure isFramed label={t('battles')} value={stats.battles} />
     </div>
   );

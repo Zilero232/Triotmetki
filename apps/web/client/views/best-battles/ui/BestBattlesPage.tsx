@@ -3,7 +3,6 @@
 import { Trophy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
 import { Card, DataSourceNote, FilteredEmptyState, KeyFigure, PageHero, PodiumSkeleton, QueryState } from '@/ui-kit';
 
 import { BEST_BATTLES_VIEW } from '../config';
@@ -32,7 +31,7 @@ export const BestBattlesPage = () => {
           )
         }
         art={{ kind: 'emblem', glyph: <Trophy size={480} strokeWidth={1.25} /> }}
-        breadcrumbs={[{ label: t('hero.home'), href: ROUTES.home }, { label: t('hero.title') }]}
+        breadcrumbs={[{ label: t('hero.title') }]}
         lead={t('hero.lead')}
         title={t('hero.title')}
       />

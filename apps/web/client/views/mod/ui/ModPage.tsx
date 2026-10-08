@@ -3,7 +3,6 @@
 import { OtmetkiLogoIcon } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
 import { Band, KeyFigure, PageHero, Reveal } from '@/ui-kit';
 import { PromoShowcase } from '@/widgets/promo/promo-banners';
 
@@ -22,14 +21,14 @@ export const ModPage = () => {
       <PageHero
         figures={
           <>
-            <KeyFigure label={t('figures.components')} value={figures.components} variant='compact' />
+            <KeyFigure label={t('figures.components', { count: figures.components })} value={figures.components} variant='compact' />
             <KeyFigure label={t('figures.presets')} value={figures.presets} variant='compact' />
             <KeyFigure label={t('figures.price')} value={figures.price} variant='compact' />
           </>
         }
         actions={<ModActions />}
         art={{ kind: 'emblem', glyph: <OtmetkiLogoIcon size={MOD_PAGE.heroGlyph} /> }}
-        breadcrumbs={[{ label: t('home'), href: ROUTES.home }, { label: t('crumb') }]}
+        breadcrumbs={[{ label: t('crumb') }]}
         eyebrow={t('eyebrow')}
         lead={t('lead', { count: figures.components })}
         title={t('title')}

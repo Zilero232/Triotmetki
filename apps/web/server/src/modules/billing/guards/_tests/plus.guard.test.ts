@@ -17,7 +17,7 @@ import { EntitlementsService } from '../../services/entitlements.service';
 import { PlusGuard } from '../plus.guard';
 
 const now = new Date('2026-09-25T12:00:00Z');
-const feature: PlusFeature = 'history';
+const feature: PlusFeature = 'analytics';
 
 const contextFor = (request: { session?: { user: { id: string } } | null }) => {
   const http = mock<HttpArgumentsHost>();

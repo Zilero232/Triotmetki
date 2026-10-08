@@ -1571,6 +1571,36 @@
         "tags": ["tanks"]
       }
     },
+    "/tanks/{idOrSlug}/armor/showcase": {
+      "get": {
+        "operationId": "TankArmorController_showcase",
+        "parameters": [
+          {
+            "name": "idOrSlug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "minLength": 1,
+              "maxLength": 128,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TankArmorDto_Output"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["tanks"]
+      }
+    },
     "/tanks/{idOrSlug}/armor/guns": {
       "get": {
         "operationId": "TankArmorController_guns",
@@ -25722,20 +25752,15 @@
                 "feature": {
                   "type": "string",
                   "enum": [
-                    "history",
                     "analytics",
                     "mapAdvisor",
                     "battleAnalysis",
-                    "aiCoach",
-                    "moeTracker",
                     "priorityPolling",
                     "progression",
                     "overlays",
                     "cosmetics",
                     "analyticsExport",
                     "apiLimits",
-                    "earlyAccess",
-                    "hangarExtras",
                     "privateCompetitions",
                     "streamerAlerts",
                     "supertest",
@@ -31461,77 +31486,6 @@
               "additionalProperties": false
             }
           },
-          "reserves": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string"
-                },
-                "title": {
-                  "type": ["string", "null"]
-                },
-                "level": {
-                  "anyOf": [
-                    {
-                      "type": "integer",
-                      "minimum": 0,
-                      "maximum": 9007199254740991
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
-                },
-                "status": {
-                  "type": ["string", "null"]
-                },
-                "count": {
-                  "anyOf": [
-                    {
-                      "type": "integer",
-                      "minimum": 0,
-                      "maximum": 9007199254740991
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
-                },
-                "bonusType": {
-                  "type": ["string", "null"]
-                },
-                "activatedAt": {
-                  "anyOf": [
-                    {
-                      "type": "string",
-                      "format": "date-time",
-                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
-                },
-                "expiresAt": {
-                  "anyOf": [
-                    {
-                      "type": "string",
-                      "format": "date-time",
-                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
-                }
-              },
-              "required": ["type", "title", "level", "status", "count", "bonusType", "activatedAt", "expiresAt"],
-              "additionalProperties": false
-            },
-            "description": "Empty unless a clan officer shared the reserves; Lesta serves them only with an officer token"
-          },
           "skirmishes": {
             "type": "array",
             "items": {
@@ -31687,7 +31641,6 @@
           "totalResources",
           "buildingSlots",
           "buildings",
-          "reserves",
           "skirmishes",
           "battles",
           "winRate",
@@ -41425,20 +41378,15 @@
               "feature": {
                 "type": "string",
                 "enum": [
-                  "history",
                   "analytics",
                   "mapAdvisor",
                   "battleAnalysis",
-                  "aiCoach",
-                  "moeTracker",
                   "priorityPolling",
                   "progression",
                   "overlays",
                   "cosmetics",
                   "analyticsExport",
                   "apiLimits",
-                  "earlyAccess",
-                  "hangarExtras",
                   "privateCompetitions",
                   "streamerAlerts",
                   "supertest",
@@ -41447,17 +41395,7 @@
               },
               "limitKey": {
                 "type": "string",
-                "enum": [
-                  "linkedAccounts",
-                  "goals",
-                  "watchedTanks",
-                  "watchedPlayers",
-                  "overlays",
-                  "storedReplays",
-                  "streamerFollows",
-                  "historyDays",
-                  "aiReviews"
-                ]
+                "enum": ["linkedAccounts", "goals", "watchedTanks", "watchedPlayers", "overlays", "storedReplays", "streamerFollows", "historyDays"]
               },
               "limit": {
                 "type": "integer",
@@ -61096,12 +61034,6 @@
                 "bio": {
                   "type": ["string", "null"]
                 },
-                "priceRub": {
-                  "type": ["number", "null"]
-                },
-                "priceNote": {
-                  "type": ["string", "null"]
-                },
                 "contacts": {
                   "type": "object",
                   "properties": {
@@ -61197,9 +61129,6 @@
                       "description": {
                         "type": ["string", "null"]
                       },
-                      "priceRub": {
-                        "type": ["number", "null"]
-                      },
                       "durationMinutes": {
                         "type": "integer",
                         "exclusiveMinimum": 0,
@@ -61212,7 +61141,7 @@
                         "type": "boolean"
                       }
                     },
-                    "required": ["id", "title", "description", "priceRub", "durationMinutes", "withReplay", "isActive"],
+                    "required": ["id", "title", "description", "durationMinutes", "withReplay", "isActive"],
                     "additionalProperties": false
                   }
                 }
@@ -61224,8 +61153,6 @@
                 "accountId",
                 "headline",
                 "bio",
-                "priceRub",
-                "priceNote",
                 "contacts",
                 "tankIds",
                 "isActive",
@@ -61287,26 +61214,6 @@
             "type": "string"
           },
           "bio": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "priceRub": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "priceNote": {
             "anyOf": [
               {
                 "type": "string"
@@ -61418,9 +61325,6 @@
                 "description": {
                   "type": ["string", "null"]
                 },
-                "priceRub": {
-                  "type": ["number", "null"]
-                },
                 "durationMinutes": {
                   "type": "integer",
                   "exclusiveMinimum": 0,
@@ -61433,7 +61337,7 @@
                   "type": "boolean"
                 }
               },
-              "required": ["id", "title", "description", "priceRub", "durationMinutes", "withReplay", "isActive"],
+              "required": ["id", "title", "description", "durationMinutes", "withReplay", "isActive"],
               "additionalProperties": false
             }
           }
@@ -61445,8 +61349,6 @@
           "accountId",
           "headline",
           "bio",
-          "priceRub",
-          "priceNote",
           "contacts",
           "tankIds",
           "isActive",
@@ -61473,15 +61375,6 @@
           "bio": {
             "type": "string",
             "maxLength": 4000
-          },
-          "priceRub": {
-            "type": "number",
-            "minimum": 100,
-            "maximum": 100000
-          },
-          "priceNote": {
-            "type": "string",
-            "maxLength": 140
           },
           "contacts": {
             "default": {},
@@ -61537,11 +61430,6 @@
             "type": "string",
             "maxLength": 2000
           },
-          "priceRub": {
-            "type": "number",
-            "minimum": 100,
-            "maximum": 100000
-          },
           "durationMinutes": {
             "type": "integer",
             "minimum": 15,
@@ -61575,16 +61463,6 @@
               }
             ]
           },
-          "priceRub": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
           "durationMinutes": {
             "type": "integer",
             "exclusiveMinimum": 0,
@@ -61597,7 +61475,7 @@
             "type": "boolean"
           }
         },
-        "required": ["id", "title", "description", "priceRub", "durationMinutes", "withReplay", "isActive"],
+        "required": ["id", "title", "description", "durationMinutes", "withReplay", "isActive"],
         "additionalProperties": false
       },
       "UpdateOfferDto": {
@@ -61611,11 +61489,6 @@
           "description": {
             "type": "string",
             "maxLength": 2000
-          },
-          "priceRub": {
-            "type": "number",
-            "minimum": 100,
-            "maximum": 100000
           },
           "durationMinutes": {
             "type": "integer",
@@ -61678,9 +61551,6 @@
               "type": "string",
               "enum": ["requested", "accepted", "completed", "cancelled"]
             },
-            "priceRub": {
-              "type": ["number", "null"]
-            },
             "notes": {
               "type": ["string", "null"]
             },
@@ -61728,7 +61598,6 @@
             "offerId",
             "replayId",
             "status",
-            "priceRub",
             "notes",
             "studentContact",
             "review",
@@ -61815,16 +61684,6 @@
             "type": "string",
             "enum": ["requested", "accepted", "completed", "cancelled"]
           },
-          "priceRub": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
           "notes": {
             "anyOf": [
               {
@@ -61893,7 +61752,6 @@
           "offerId",
           "replayId",
           "status",
-          "priceRub",
           "notes",
           "studentContact",
           "review",

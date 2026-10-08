@@ -2,6 +2,6 @@ import type { ModDevice } from '@otmetki/schemas';
 
 export type DeviceListProps = {
   devices: ModDevice[];
-  isRevoking: boolean;
+  revokingId: string | null;
   onRevoke: (id: string) => void;
 };

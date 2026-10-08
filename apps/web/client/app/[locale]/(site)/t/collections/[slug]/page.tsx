@@ -7,6 +7,7 @@ import { Suspense } from 'react';
 
 import type { TankCollectionPageProps } from '@/views/vehicle-catalog';
 
+import { withMessages } from '@/app/messages';
 import { isTankCollection, TANK_COLLECTION_SLUGS } from '@/entities/tank/tank';
 import { tankCollectionItems } from '@/entities/tank/tank/server';
 import { ROUTES } from '@/shared/constants';
@@ -80,4 +81,4 @@ const Page = async ({ params }: PageProps<'/[locale]/t/collections/[slug]'>) => 
   );
 };
 
-export default Page;
+export default withMessages({ component: Page, messages: ['status.label', 'tanks.filters', 'vehicleCatalog'] });

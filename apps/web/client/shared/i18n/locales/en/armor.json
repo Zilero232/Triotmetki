@@ -6,21 +6,21 @@
   "link": "3D armor",
   "page": {
     "eyebrow": "Armor layout",
-    "back": "Back to the vehicle",
+    "back": "Back to the tank page",
     "source": "Mir Tankov {version} · {client}",
     "sourceTitle": "Geometry, armor, modules and shells come from the Mir Tankov (Lesta Games) client, build {client}",
     "fallbackTitle": "Armor",
-    "intro": "An interactive armor layout: effective armor, spaced plates, ricochets and penetration with the chosen shell at any distance. The main plate thicknesses as text are in the <link>vehicle file</link>."
+    "intro": "An interactive armor layout: effective armor, spaced plates, ricochets and penetration with the chosen shell at any distance. The tank’s specs are on the <link>tank page</link>."
   },
   "states": {
     "loading": "Scanning the armor…",
     "emptyTitle": "No 3D armor model yet",
     "emptyDescription": "This vehicle has no armor geometry yet. It will appear after the next data update.",
-    "errorTitle": "Couldn't load the armor model",
+    "errorTitle": "Could not load the armor model",
     "errorDescription": "The server didn't answer. Try again in a minute."
   },
   "attribution": {
-    "lesta": "Armor geometry and characteristics: © Lesta Games. All rights reserved. Data source: Lesta Games.",
+    "lesta": "Armor geometry and characteristics: © Lesta Games, all rights reserved.",
     "site": "Official game website",
     "geometry": "Collision geometry from the <link>{repo}</link> mirror of the Mir Tankov client (Lesta branch), commit {commit}.",
     "note": "Only the simplified collision model is shown, with no visual models or textures."
@@ -53,7 +53,7 @@
     "hull": "Hull",
     "turret": "Turret",
     "gun": "Gun",
-    "chassis": "Tracks",
+    "chassis": "Chassis",
     "spaced": "Spaced armor"
   },
   "presets": {
@@ -107,12 +107,12 @@
   },
   "quota": {
     "remaining": "3D views left: {remaining} of {limit}. The allowance renews on {date}.",
-    "signIn": "Sign in for {count} a month",
+    "signIn": "Sign in with Lesta ID for {count} views a month",
     "plus": "Unlimited with Plus"
   },
   "limit": {
     "title": "This month's free 3D views are used up",
-    "anonymous": "Without signing in you can open {limit, plural, one {# vehicle} other {# vehicles}} in 3D. Sign in with Lesta ID to get {free} views a month, or go unlimited with Plus. Vehicle files and armor thickness as text stay free.",
+    "anonymous": "Without signing in you can open {limit, plural, one {# vehicle} other {# vehicles}} in 3D. Sign in with Lesta ID to get {free} views a month, or go unlimited with Plus. The tank page stays free.",
     "free": "You have opened {limit, plural, one {# vehicle} other {# vehicles}} in 3D this month, which is the free allowance. It renews on {date}, and vehicles you opened in the last day can still be viewed again. Plus makes 3D armor unlimited."
   },
   "attack": {
@@ -127,7 +127,7 @@
   },
   "heatmap": {
     "toggle": "Weak-spot heatmap",
-    "description": "Colours the armor by penetration chance for the chosen shell from the current view and range.",
+    "description": "Colors the armor by penetration chance for the chosen shell from the current view and range.",
     "legend": "Penetration chance from the current view",
     "note": "Penetration spread is treated as a normal distribution cut off at ±the spread. Only the plate the ray meets is counted; spaced armor and layers behind it are in the hover readout."
   },
@@ -140,7 +140,7 @@
   },
   "zones": {
     "title": "Key zone armor — table",
-    "caption": "A shot straight from the front, side and rear at the centre of the hull and turret, with the chosen shell at the chosen range.",
+    "caption": "A shot straight from the front, side and rear at the center of the hull and turret, with the chosen shell at the chosen range.",
     "captionNoShell": "The chosen gun has no shells: only nominal armor and angle are shown.",
     "zoneColumn": "Zone",
     "verdictColumn": "Result",

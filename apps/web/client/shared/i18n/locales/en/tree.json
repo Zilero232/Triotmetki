@@ -37,17 +37,17 @@
     "empty": "Pick a tank in the tree to count the XP and credits"
   },
   "premiums": {
-    "title": "Premium tanks of the nation",
-    "description": "Not researched: bought for gold.",
-    "empty": "No premium tanks for this nation in the catalogue"
+    "title": "Premium and collector vehicles",
+    "description": "Not researched: bought or earned in events.",
+    "empty": "No premium tanks for this nation in the catalog"
   },
   "states": {
     "loading": "Loading the tech tree",
     "emptyTitle": "This nation has no vehicles yet",
-    "errorTitle": "Couldn't load the tree"
+    "errorTitle": "Could not load the tree"
   },
   "head": {
     "title": "Tech tree",
-    "description": "Mir Tankov research branches by nation: pick a tank to see the path, XP and credits."
+    "description": "Mir Tankov research lines by nation: pick a tank to see the path, XP and credits."
   }
 }

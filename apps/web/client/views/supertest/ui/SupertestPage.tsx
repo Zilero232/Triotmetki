@@ -4,7 +4,6 @@ import { FlaskConical } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { PlusBadge, PlusGate } from '@/features/plus/plus-gate';
-import { ROUTES } from '@/shared/constants';
 import { ActionStrip, DataSourceNote, KeyFigure, PageHero, Tabs } from '@/ui-kit';
 
 import { SUPERTEST, SUPERTEST_SCOPES } from '../config';
@@ -30,7 +29,7 @@ export const SupertestPage = () => {
           )
         }
         art={{ kind: 'emblem', glyph: <FlaskConical size={480} strokeWidth={1.25} /> }}
-        breadcrumbs={[{ label: t('hero.home'), href: ROUTES.home }, { label: t('hero.title') }]}
+        breadcrumbs={[{ label: t('hero.title') }]}
         lead={t('hero.lead')}
         title={t('hero.title')}
       />

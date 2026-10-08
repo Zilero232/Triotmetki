@@ -52,7 +52,7 @@ export const ProfileHeader = () => {
         </div>
       }
       art={art}
-      breadcrumbs={[{ label: tHero('home'), href: ROUTES.home }, { label: tHero('players'), href: ROUTES.players.list }, { label: summary.nickname }]}
+      breadcrumbs={[{ label: tHero('players'), href: ROUTES.players.list }, { label: summary.nickname }]}
       figures={<HeaderFigures ring={wn8Ring} stats={stats} />}
       title={<span className={s.nickname}>{summary.nickname}</span>}
     />

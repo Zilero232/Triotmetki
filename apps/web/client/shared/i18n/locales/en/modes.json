@@ -10,12 +10,12 @@
   "names": {
     "onslaught": "Onslaught",
     "frontline": "Front Line",
-    "ranked": "Ranked Battles",
+    "ranked": "Ranked battles",
     "steelHunter": "Steel Hunter"
   },
   "blurbs": {
     "onslaught": "Competitive 7v7 mode with a rating and seasons.",
-    "frontline": "Large 30v30 battles with general levels and combat reserves.",
+    "frontline": "Large 30v30 battles with ranks, combat reserves and a defense breakthrough.",
     "ranked": "Seasonal battles for chevrons and ranks.",
     "steelHunter": "Battle royale: survive on the map and upgrade your vehicle as the battle goes on."
   },
@@ -36,7 +36,7 @@
     "winRate": "Average win rate"
   },
   "rank": {
-    "hint": "Rank {rank}: how much more often the tank wins than the mode average",
+    "hint": "Rank {rank}: the tank’s place in the mode by win rate",
     "none": "Too few battles for a rank"
   },
   "season": {
@@ -50,7 +50,7 @@
     "updated": "Updated"
   },
   "table": {
-    "caption": "Mode tanks: {count, plural, one {# tank} other {# tanks}}",
+    "caption": "Tanks in this mode: {count, plural, one {# tank} other {# tanks}}",
     "view": "View",
     "views": {
       "table": "Table",
@@ -66,7 +66,7 @@
     "avgFrags": "Frags",
     "survival": "Survival",
     "unranked": "Unranked",
-    "rankNote": "Rank shows how far the tank’s win rate is above the mode average, adjusted for sample size. A tank is ranked from {battles, plural, one {# battle} other {# battles}}.",
+    "rankNote": "Rank is the tank’s place among the mode’s tanks by how far its win rate is above the average, adjusted for sample size: S is the top 10%, A the next 20%, B the middle, C and D below average. A tank is ranked from {battles, plural, one {# battle} other {# battles}}.",
     "emptyTitle": "No stats yet",
     "emptyDescription": "No tank in this mode has reached {battles, plural, one {# battle} other {# battles}} in our data yet.",
     "filteredEmptyTitle": "No tanks match these filters",
@@ -92,6 +92,6 @@
     "linkAction": "Link account",
     "emptyTitle": "No battles in this mode",
     "emptyText": "We have not seen your battles in this mode over the last {days, plural, one {# day} other {# days}}.",
-    "career": "All time, per Lesta: {battles, plural, one {# battle} other {# battles}}, {winRate}% wins, {damage} avg damage"
+    "career": "All time, per Lesta: {battles, plural, one {# battle} other {# battles}}, {winRate}% win rate, {damage} avg damage"
   }
 }

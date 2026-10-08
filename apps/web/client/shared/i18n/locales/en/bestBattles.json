@@ -1,29 +1,28 @@
 {
   "meta": {
     "title": "Mir Tankov best battles and damage records",
-    "description": "Record Mir Tankov battles of the day, week and month: damage, assistance, spotting, kills, XP and blocked damage by tank, map and medal, with replays."
+    "description": "Record Mir Tankov battles of the last 24 hours, week and month: damage, assisted damage, spotting, frags, XP and blocked damage by tank, map and medal, with the replay where one was uploaded."
   },
   "hero": {
-    "home": "Home",
     "title": "Best battles",
     "lead": "Record battles from players running the Three Marks mod and from uploaded replays. Pick a period, a metric, a tank, a map or a medal.",
     "topDamage": "Damage record",
     "battles": {
-      "day": "Battles today",
+      "day": "Battles in 24 hours",
       "week": "Battles this week",
       "month": "Battles this month"
     }
   },
   "periods": {
-    "day": "Day",
+    "day": "24 hours",
     "week": "Week",
     "month": "Month"
   },
   "metrics": {
     "damage": "Damage",
-    "assisted": "Assistance",
+    "assisted": "Assisted damage",
     "spotted": "Spotted",
-    "frags": "Kills",
+    "frags": "Frags",
     "xp": "Experience",
     "blocked": "Blocked"
   },
@@ -60,12 +59,12 @@
   },
   "podium": {
     "title": "Top three battles",
-    "place": "Place {rank}"
+    "place": "#{rank}"
   },
   "unknownMap": "Unknown map",
   "replay": "Replay",
   "error": {
-    "title": "Couldn't load the battles",
+    "title": "Could not load the battles",
     "description": "The server did not respond. Try again."
   },
   "empty": {
@@ -77,7 +76,7 @@
     "title": "Best battles on this tank",
     "meta": "Last 30 days, by damage",
     "all": "All battles",
-    "error": "Couldn't load the battles",
+    "error": "Could not load the battles",
     "empty": "No battles yet",
     "emptyDescription": "No battles on this tank from mod players or public replays this month.",
     "unknownMap": "Unknown map",

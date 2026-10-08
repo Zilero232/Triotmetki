@@ -1,21 +1,21 @@
 {
   "meta": {
     "title": "Blog",
-    "description": "The Tri Otmetki team blog: project news, patch breakdowns, meta analysis and announcements."
+    "description": "The Three Marks team blog: project news, patch breakdowns, meta analysis and announcements."
   },
   "detailMeta": {
     "title": "Blog post",
-    "description": "A post from the Tri Otmetki team blog about Mir Tankov."
+    "description": "A post from the Three Marks team blog about Mir Tankov."
   },
   "editorMeta": {
     "listTitle": "Blog editor",
     "newTitle": "New post",
     "editTitle": "Edit post",
-    "description": "Drafts and published posts of the Tri Otmetki blog."
+    "description": "Drafts and published posts of the Three Marks blog."
   },
   "head": {
     "title": "Blog",
-    "description": "Project news, patch breakdowns and analysis from the Tri Otmetki team. Player-written guides live in Guides.",
+    "description": "Project news, patch breakdowns and analysis from the Three Marks team. Player-written guides live in Guides.",
     "rss": "RSS",
     "editor": "Editor"
   },
@@ -49,7 +49,7 @@
   },
   "article": {
     "breadcrumb": "Blog",
-    "team": "Tri Otmetki team",
+    "team": "Three Marks team",
     "published": "Published {date}",
     "readingTime": "{minutes, plural, one {# minute} other {# minutes}} read",
     "edit": "Edit",
@@ -157,7 +157,11 @@
         "coverUrl": "An https link is required",
         "seoTitle": "Up to 70 characters",
         "seoDescription": "Up to 170 characters"
-      }
+      },
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "unpublishTitle": "Unpublish this article?",
+      "unpublishDescription": "The article becomes a draft and leaves the blog until you publish it again."
     }
   }
 }

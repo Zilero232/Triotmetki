@@ -12,7 +12,6 @@ import s from './DevelopersPage.module.scss';
 
 export const DevelopersPage = () => {
   const t = useTranslations('developers');
-  const tCommon = useTranslations('common');
 
   return (
     <div className={s.root}>
@@ -22,7 +21,7 @@ export const DevelopersPage = () => {
             {t('header.getKey')}
           </Link>
         }
-        breadcrumbs={[{ label: tCommon('home'), href: ROUTES.home }, { label: t('header.title') }]}
+        breadcrumbs={[{ label: t('header.title') }]}
         description={t('header.lead')}
         title={t('header.title')}
       />

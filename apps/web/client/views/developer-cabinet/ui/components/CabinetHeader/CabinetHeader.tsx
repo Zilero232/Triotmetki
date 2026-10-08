@@ -6,7 +6,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { buttonVariants, Skeleton } from '@/ui-kit';
+import { buttonVariants, SectionHeader, Skeleton } from '@/ui-kit';
 
 import { useDeveloperOverview } from '../../../model/hooks';
 
@@ -28,16 +28,19 @@ export const CabinetHeader = () => {
     ] as const);
 
   return (
-    <header className={s.root}>
-      <div className={s.copy}>
-        <span className={s.eyebrow}>{t('eyebrow')}</span>
-        <h1 className={s.title}>{t('title')}</h1>
-        <p className={s.lead}>{t('lead')}</p>
-        <Link className={buttonVariants({ variant: 'ghost', size: 'sm' })} href={ROUTES.developers}>
-          <BookOpen size={15} />
-          {t('docs')}
-        </Link>
-      </div>
+    <div className={s.root}>
+      <SectionHeader
+        action={
+          <Link className={buttonVariants({ variant: 'ghost', size: 'sm' })} href={ROUTES.developers}>
+            <BookOpen size={15} />
+            {t('docs')}
+          </Link>
+        }
+        as='h1'
+        description={t('lead')}
+        meta={t('eyebrow')}
+        title={t('title')}
+      />
       <div className={s.tag}>
         <span className={s.tagLabel}>{t('tier')}</span>
         {overview && <span className={s.tier}>{tTier(overview.tier)}</span>}
@@ -57,6 +60,6 @@ export const CabinetHeader = () => {
           </Link>
         )}
       </div>
-    </header>
+    </div>
   );
 };

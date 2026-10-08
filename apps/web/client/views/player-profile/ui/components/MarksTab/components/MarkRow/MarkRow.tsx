@@ -5,7 +5,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
 import { TankAwards } from '@/entities/player/stats';
-import { TankCell } from '@/entities/tank/tank';
+import { TankLink } from '@/entities/tank/tank';
 
 import type { MarkRowProps } from './MarkRow.types';
 
@@ -25,7 +25,7 @@ export const MarkRow = ({ row, averageDamage }: MarkRowProps) => {
   return (
     <li className={s.root}>
       <div className={s.tank}>
-        <TankCell image='contour' vehicle={vehicle} />
+        <TankLink vehicle={vehicle} />
         <span className={s.battles}>{t('battles', { count: battles })}</span>
       </div>
       <div className={s.progress}>

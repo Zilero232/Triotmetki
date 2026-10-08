@@ -7,7 +7,11 @@ import { DEFAULT_LOCALE, localePath, LOCALES } from '@/shared/i18n';
 import { OG_SIZE } from '../og';
 import { SITE_BRAND, SITE_METADATA } from './site-metadata.constants';
 
-export const absoluteUrl = (path: string): string => new URL(path, SITE.url).toString();
+export const absoluteUrl = (path: string): string => {
+  const url = new URL(path, SITE.url);
+
+  return url.pathname === '/' ? `${url.origin}${url.search}` : url.toString();
+};
 
 export const languageAlternates = (path: string): Record<string, string> => {
   const localized = LOCALES.map((locale) => [locale, localePath({ path, locale })]);

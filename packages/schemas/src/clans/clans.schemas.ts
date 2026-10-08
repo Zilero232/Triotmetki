@@ -108,17 +108,6 @@ export const strongholdBuildingSchema = z.object({
   reserve: z.string().nullable()
 });
 
-export const strongholdReserveSchema = z.object({
-  type: z.string(),
-  title: z.string().nullable(),
-  level: z.number().int().nonnegative().nullable(),
-  status: z.string().nullable(),
-  count: countSchema.nullable(),
-  bonusType: z.string().nullable(),
-  activatedAt: isoDateTimeSchema.nullable(),
-  expiresAt: isoDateTimeSchema.nullable()
-});
-
 export const strongholdBattlesSchema = z.object({
   tier: z.number().int().positive(),
   battles: countSchema,
@@ -133,9 +122,6 @@ export const clanStrongholdSchema = z.object({
   totalResources: countSchema.nullable(),
   buildingSlots: countSchema.nullable(),
   buildings: z.array(strongholdBuildingSchema),
-  reserves: z
-    .array(strongholdReserveSchema)
-    .describe('Empty unless a clan officer shared the reserves; Lesta serves them only with an officer token'),
   skirmishes: z.array(strongholdBattlesSchema),
   battles: countSchema,
   winRate: percentSchema.nullable(),

@@ -14,10 +14,10 @@ export const Card = ({ variant = 'panel', padding = 'md', isInteractive = false,
   </div>
 );
 
-export const CardHeader = ({ title, meta, tabs, action, className, children, ...props }: CardHeaderProps) => (
+export const CardHeader = ({ title, titleAs: Title = 'h3', meta, tabs, action, className, children, ...props }: CardHeaderProps) => (
   <div className={clsx(s.header, className)} {...props}>
     <div className={s.heading}>
-      {title && <h3 className={s.title}>{title}</h3>}
+      {title && <Title className={s.title}>{title}</Title>}
       {meta && <span className={s.meta}>{meta}</span>}
       {children}
     </div>

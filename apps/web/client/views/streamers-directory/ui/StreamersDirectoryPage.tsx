@@ -23,7 +23,7 @@ export const StreamersDirectoryPage = () => {
     <div className={s.root}>
       <PageHero
         art={{ kind: 'emblem', glyph: <RadioIcon size={DIRECTORY.emblemSize} strokeWidth={DIRECTORY.emblemStroke} /> }}
-        breadcrumbs={[{ label: t('head.home'), href: ROUTES.home }, { label: t('head.title') }]}
+        breadcrumbs={[{ label: t('head.title') }]}
         lead={t('head.description')}
         title={t('head.title')}
       />

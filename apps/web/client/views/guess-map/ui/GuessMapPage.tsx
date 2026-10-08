@@ -27,7 +27,7 @@ export const GuessMapPage = () => {
             {t('head.otherGame')}
           </Link>
         }
-        breadcrumbs={[{ label: tCrumbs('home'), href: ROUTES.home }, { label: tCrumbs('hub'), href: ROUTES.play.hub }, { label: t('head.title') }]}
+        breadcrumbs={[{ label: tCrumbs('hub'), href: ROUTES.play.hub }, { label: t('head.title') }]}
         description={t('head.description')}
         title={t('head.title')}
       />

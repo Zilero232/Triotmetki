@@ -1,3 +1,3 @@
 import type { ReplayFilters } from '../../../lib/replay-query';
 
-export type ReplayFiltersPatch = Partial<Omit<ReplayFilters, 'offset'>>;
+export type ReplayFiltersPatch = Partial<ReplayFilters>;

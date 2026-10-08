@@ -11,10 +11,19 @@ import type { UseDebouncedSearchInput } from './use-debounced-search.types';
 import { SEARCH_REQUEST, searchQueryOptions } from '../../../api';
 
 export const useDebouncedSearch = <T = SearchResponse>({ query, select }: UseDebouncedSearchInput<T>) => {
-  const debounced = useDebounceValue(query.trim(), SEARCH_REQUEST.debounceMs);
-  const { data, isFetching, isError, refetch } = useQuery({ ...searchQueryOptions(debounced), select });
+  const trimmed = query.trim();
+  const debounced = useDebounceValue(trimmed, SEARCH_REQUEST.debounceMs);
+  const { data, isFetching, isError, isPlaceholderData, refetch } = useQuery({ ...searchQueryOptions(debounced), select });
 
   const isEnabled = debounced.length >= SEARCH.minLength;
+  const isStale = isPlaceholderData || trimmed !== debounced;
 
-  return { data: isEnabled ? data : undefined, isEnabled, isFetching: isEnabled && isFetching, isError, retry: () => refetch() };
+  return {
+    data: isEnabled ? data : undefined,
+    isEnabled,
+    isFetching: isEnabled && isFetching,
+    isStale: isEnabled && isStale,
+    isError,
+    retry: () => refetch()
+  };
 };

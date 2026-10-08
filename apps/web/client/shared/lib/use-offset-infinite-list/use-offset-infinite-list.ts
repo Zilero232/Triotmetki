@@ -15,16 +15,22 @@ export const useOffsetInfiniteList = <TItem>({ queryKey, queryFn, isKeepingPrevi
     placeholderData: isKeepingPrevious ? keepPreviousData : undefined
   });
 
+  const items = data?.pages.flatMap((page) => page.items) ?? [];
+  const hasItems = items.length > 0;
+  const retry = () => void refetch();
+
   return {
-    items: data?.pages.flatMap((page) => page.items) ?? [],
+    items,
     total: data?.pages[0]?.total ?? 0,
     isPending,
     isError,
     error,
     isRetrying: isFetching,
     hasNextPage,
+    hasMore: hasNextPage || (isError && hasItems),
     isFetchingNextPage,
     loadMore: () => void fetchNextPage(),
-    retry: () => void refetch()
+    retry,
+    query: { data: isPending ? undefined : items, isError: isError && !hasItems, isRefetching: isFetching, refetch: retry }
   };
 };

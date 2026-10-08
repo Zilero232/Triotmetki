@@ -45,4 +45,8 @@ export type HasStartedInput = Pick<WorkspaceEvent, 'startsAt'> & {
   now: Date | null;
 };
 
+export type CanSyncAttendanceInput = Pick<WorkspaceEvent, 'kind' | 'startsAt'> & {
+  now: Date | null;
+};
+
 export type AttendanceTone = Extract<ProgressTone, 'average' | 'bad' | 'good' | 'steel'>;

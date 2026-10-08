@@ -4,9 +4,7 @@ import { mock, mockDeep } from 'vitest-mock-extended';
 import type { PrismaService } from '../../../../core';
 import type { CommunityAccountsReaderService } from '../../../community-core';
 
-import { Prisma } from '../../../../../generated';
 import { AppNotFoundException } from '../../../../common/exceptions';
-import { COACHING } from '../../config/coaching.constants';
 import { CoachProfileWriterService } from '../coach-profile-writer.service';
 
 const now = new Date('2026-09-25T12:00:00Z');
@@ -16,8 +14,6 @@ const coach = {
   accountId: 7n,
   headline: 'Heavy tanks coach',
   bio: null,
-  priceRub: new Prisma.Decimal(COACHING.minPriceRub),
-  priceNote: null,
   contacts: { telegram: 'https://t.me/coach' },
   tankIds: [],
   isActive: true,

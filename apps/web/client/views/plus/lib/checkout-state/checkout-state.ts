@@ -12,9 +12,13 @@ export const checkoutNote = ({ isSignedIn, isPlus, state, periodEnd, isCheckoutA
   return { kind: 'text', key: isCheckoutAvailable ? 'note' : 'closedNote' };
 };
 
-export const checkoutMode = ({ isPending, isSignedIn, isPlus, isCheckoutAvailable, trialAvailable }: CheckoutModeInput): CheckoutMode => {
+export const checkoutMode = ({ isPending, isError, isSignedIn, isPlus, isCheckoutAvailable, trialAvailable }: CheckoutModeInput): CheckoutMode => {
   if (isPending) {
     return 'pending';
+  }
+
+  if (isError) {
+    return 'error';
   }
 
   if (!isSignedIn) {

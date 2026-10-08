@@ -5,13 +5,14 @@ import { notFound } from 'next/navigation';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { playerRouteEntity } from '@/entities/player/profile/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
 import { requireRouteEntity } from '@/shared/seo/require-route-entity';
-import { PageHeroFallback } from '@/ui-kit';
+import { PageHeaderFallback } from '@/ui-kit';
 import { parseWrappedYear, PlayerWrappedPage } from '@/views/player-wrapped';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/p/[nick]/wrapped/[year]'>): Promise<Metadata> => {
@@ -49,9 +50,9 @@ const WrappedRoute = async ({ params }: Pick<PageProps<'/[locale]/p/[nick]/wrapp
 };
 
 const Page = ({ params }: PageProps<'/[locale]/p/[nick]/wrapped/[year]'>) => (
-  <Suspense fallback={<PageHeroFallback />}>
+  <Suspense fallback={<PageHeaderFallback />}>
     <WrappedRoute params={params} />
   </Suspense>
 );
 
-export default Page;
+export default withMessages({ component: Page, messages: ['marks', 'players.head', 'tanks.picker', 'wrapped'] });

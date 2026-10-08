@@ -115,6 +115,11 @@ $status-tones: (
   &:focus-within {
     border-color: var(--color-accent);
   }
+
+  &:is(input, textarea):focus-visible,
+  &:has(input:focus-visible, textarea:focus-visible) {
+    @include focus-ring;
+  }
 }
 
 @mixin chip-active {

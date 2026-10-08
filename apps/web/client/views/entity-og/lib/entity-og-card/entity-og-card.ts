@@ -8,7 +8,15 @@ import { ROUTES } from '@/shared/constants';
 import { FORMATS, messages, TIME_ZONE } from '@/shared/i18n';
 import { OG_COLORS, OG_TONES } from '@/shared/seo/og';
 
-import type { ClanOgCardInput, DashInput, EntityOgCardData, SiteOgCardInput, TankOgCardInput } from './entity-og-card.types';
+import type {
+  ClanOgCardInput,
+  DashInput,
+  EntityOgCardData,
+  GuideOgCardInput,
+  MapOgCardInput,
+  SiteOgCardInput,
+  TankOgCardInput
+} from './entity-og-card.types';
 
 const toolsOf = (locale: Locale) => ({
   t: createTranslator({ locale, messages: messages[locale] }),
@@ -17,10 +25,16 @@ const toolsOf = (locale: Locale) => ({
 
 const dash = ({ value, render }: DashInput) => (value === null ? '—' : render(value));
 
+const TANK_OG_PATHS = {
+  tank: ROUTES.tanks.detail,
+  build: ROUTES.builds.detail,
+  armor: ROUTES.tanks.armor
+} as const;
+
 export const tankOgCard = ({ tank: { vehicle, serverStats }, kind, locale, host }: TankOgCardInput): EntityOgCardData => {
   const { t, format } = toolsOf(locale);
   const stats = serverStats[0] ?? null;
-  const path = kind === 'build' ? ROUTES.builds.detail(vehicle.slug) : ROUTES.tanks.detail(vehicle.slug);
+  const path = TANK_OG_PATHS[kind](vehicle.slug);
 
   return {
     heading: `${t('brand.name')} · ${t(`og.kinds.${kind}`)}`,
@@ -47,7 +61,7 @@ export const tankOgCard = ({ tank: { vehicle, serverStats }, kind, locale, host 
       }
     ],
     url: `${host}${path}`,
-    source: t('og.source')
+    source: t('footer.shortAttribution')
   };
 };
 
@@ -74,7 +88,48 @@ export const clanOgCard = ({ page: { clan, stats }, locale, host }: ClanOgCardIn
       { key: 'members', label: t('og.members'), value: format.number(clan.membersCount, 'integer'), color: OG_COLORS.text }
     ],
     url: `${host}${ROUTES.clans.detail(clan.tag)}`,
-    source: t('og.source')
+    source: t('footer.shortAttribution')
+  };
+};
+
+export const mapOgCard = ({ map, locale, host }: MapOgCardInput): EntityOgCardData => {
+  const { t, format } = toolsOf(locale);
+  const name = locale === 'en' && map.nameEn ? map.nameEn : map.name;
+  const size = map.sizeMeters === null ? '' : t('maps.size', { size: format.number(map.sizeMeters, 'integer') });
+
+  return {
+    heading: `${t('brand.name')} · ${t('og.kinds.map')}`,
+    title: name,
+    subtitle: size,
+    metrics: [
+      {
+        key: 'players',
+        label: t('maps.map.playersLabel'),
+        value: dash({ value: map.maxPlayersInTeam, render: (value) => format.number(value, 'integer') }),
+        color: OG_COLORS.text
+      },
+      {
+        key: 'battles',
+        label: t('maps.map.stats.battles'),
+        value: dash({ value: map.stats?.battles ?? null, render: (value) => format.number(value, 'integer') }),
+        color: OG_COLORS.text
+      }
+    ],
+    url: `${host}${ROUTES.maps.detail(map.slug)}`,
+    source: t('footer.shortAttribution')
+  };
+};
+
+export const guideOgCard = ({ guide, locale, host }: GuideOgCardInput): EntityOgCardData => {
+  const { t, format } = toolsOf(locale);
+
+  return {
+    heading: `${t('brand.name')} · ${t('og.kinds.guide')}`,
+    title: guide.title,
+    subtitle: `${t(`guides.kinds.${guide.kind}`)} · ${guide.author.name}`,
+    metrics: [{ key: 'likes', label: t('guides.authors.likes'), value: format.number(guide.likesCount, 'integer'), color: OG_COLORS.text }],
+    url: `${host}${ROUTES.guides.detail(guide.slug)}`,
+    source: t('footer.shortAttribution')
   };
 };
 
@@ -87,6 +142,6 @@ export const siteOgCard = ({ locale, host }: SiteOgCardInput): EntityOgCardData 
     subtitle: t('brand.tagline'),
     metrics: [],
     url: host,
-    source: t('og.source')
+    source: t('footer.shortAttribution')
   };
 };

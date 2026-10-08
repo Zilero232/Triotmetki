@@ -1,13 +1,13 @@
 {
   "meta": {
     "title": "How WN8, EFF, Bronya Index and marks work",
-    "description": "The WN8, EFF and Bronya Index formulas, the mark of excellence and mastery maths, the rating colour scale and the Three Marks data sources."
+    "description": "The WN8, EFF and Bronya Index formulas, the mark of excellence and mastery maths, the rating color scale and the Three Marks data sources."
   },
   "head": {
     "title": "Rating methodology",
     "lead": "Every formula below comes straight from the code the site computes ratings with: if a coefficient changes, this page changes too.",
     "toc": "Methodology sections",
-    "scale": "Colour scale"
+    "scale": "Color scale"
   },
   "link": {
     "label": "How ratings are computed",
@@ -16,7 +16,7 @@
   "sections": {
     "wn8": {
       "title": "WN8",
-      "lead": "WN8 compares your average damage, spotting, kills, base defence and win rate with the expected values for each tank. A ratio of 1 is what an average player does on that tank.",
+      "lead": "WN8 compares your average damage, spotting, frags, base defense and win rate with the expected values for each tank. A ratio of 1 is what an average player does on that tank.",
       "lines": {
         "ratios": "rDAMAGE = average damage ÷ expected damage; rSPOT, rFRAG, rDEF and rWIN work the same way",
         "win": "rWINc = max(0; (rWIN − {floor}) ÷ (1 − {floor}))",
@@ -33,9 +33,9 @@
     },
     "eff": {
       "title": "EFF (efficiency rating)",
-      "lead": "The classic formula that rewards damage adjusted for the average tier played, kills, spotting, capture and base defence.",
+      "lead": "The classic formula that rewards damage adjusted for the average tier played, frags, spotting, capture and base defense.",
       "lines": {
-        "total": "EFF = damage·({numerator} ÷ (tier + {offset}))·({base} + {slope}·tier ÷ 100) + kills·{frag} + spotted·{spot} + ln(capture + 1) ÷ ln({logBase})·{capture} + defence·{defence}"
+        "total": "EFF = damage·({numerator} ÷ (tier + {offset}))·({base} + {slope}·tier ÷ 100) + frags·{frag} + spotted·{spot} + ln(capture + 1) ÷ ln({logBase})·{capture} + defense·{defense}"
       },
       "notes": {
         "tier": "Every value is a per-battle average; “tier” is the average vehicle tier weighted by the battles on each tank."
@@ -45,8 +45,8 @@
       "title": "Bronya Index",
       "lead": "Our own rating. It does not lean on anyone else’s tables: it shows what share of the players in our database you beat on each of your tanks.",
       "lines": {
-        "percentiles": "For each tank we build the distribution of average damage, win rate, kills, spotting and base defence across every player in our database (percentiles at {levels}%) and find your place in it from 0 to 1.",
-        "score": "Tank score = {damage}% × damage + {winRate}% × wins + {frags}% × kills + {spotted}% × spotting + {defence}% × defence",
+        "percentiles": "For each tank we build the distribution of average damage, win rate, frags, spotting and base defense across every player in our database (percentiles at {levels}%) and find your place in it from 0 to 1.",
+        "score": "Tank score = {damage}% × damage + {winRate}% × wins + {frags}% × frags + {spotted}% × spotting + {defense}% × defense",
         "shrink": "While battles are few the score is pulled to the middle: (battles × score + {prior} × {neutral}) ÷ (battles + {prior})",
         "account": "Account Bronya Index = battle-weighted average tank score × {scale}"
       },
@@ -78,8 +78,8 @@
       }
     },
     "scale": {
-      "title": "Colour scale",
-      "lead": "Every rating uses the same nine tiers, folded into six colours on the site. The display settings can switch the palette to the XVM colours.",
+      "title": "Color scale",
+      "lead": "Every rating uses the same nine tiers, folded into six colors on the site. The display settings can switch the palette to the XVM colors.",
       "caption": "Lower bound of each tier for every rating",
       "columns": {
         "tier": "Tier",
@@ -93,13 +93,13 @@
     }
   },
   "sources": {
-    "title": "Sources and licences",
+    "title": "Sources and licenses",
     "xvm": "The XVM project publishes the WN8 expected values for the Lesta servers and refreshes them daily:",
     "xvmSite": "XVM website",
     "xvmData": "expected values table",
-    "noCopy": "We do not republish that table on the site: no licence is stated for it anywhere, so please read it at the source.",
+    "noCopy": "We do not republish that table on the site: no license is stated for it anywhere, so please read it at the source.",
     "wn8Formula": "The WN8 formula is the community’s open formula; we compute it unchanged.",
     "eff": "EFF is the classic public efficiency rating formula.",
-    "own": "The Bronya Index, the colour scale and the mark thresholds in our table are Three Marks’ own computations from mod, replay and public Lesta data."
+    "own": "The Bronya Index and the color scale are Three Marks’ own computations; the mark thresholds come from mod data and open sources, with the source shown for each tank."
   }
 }

@@ -18,7 +18,6 @@ import s from './ComparePlayersPage.module.scss';
 
 export const ComparePlayersPage = () => {
   const t = useTranslations('compare');
-  const tCommon = useTranslations('common');
   const tNav = useTranslations('nav');
   const titleId = useId();
   const tPeriods = useTranslations('periods');
@@ -27,11 +26,7 @@ export const ComparePlayersPage = () => {
   return (
     <div className={s.root}>
       <PageHeader
-        breadcrumbs={[
-          { label: tCommon('home'), href: ROUTES.home },
-          { label: tNav('items.players'), href: ROUTES.players.list },
-          { label: t('title') }
-        ]}
+        breadcrumbs={[{ label: tNav('items.players'), href: ROUTES.players.list }, { label: t('title') }]}
         description={t('description')}
         title={t('title')}
       >

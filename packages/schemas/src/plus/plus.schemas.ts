@@ -17,8 +17,7 @@ export const plusLimitKeySchema = z.enum([
   'overlays',
   'storedReplays',
   'streamerFollows',
-  'historyDays',
-  'aiReviews'
+  'historyDays'
 ] satisfies (keyof typeof PLUS_LIMITS)[]);
 
 export const plusStateSchema = z.object({

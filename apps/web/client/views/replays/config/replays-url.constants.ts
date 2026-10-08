@@ -22,6 +22,5 @@ export const REPLAYS_URL_PARSERS = {
   mastery: parseAsInteger,
   version: parseAsString,
   tags: parseAsArrayOf(parseAsStringLiteral(REPLAY_TAGS)).withDefault([]),
-  sort: parseAsStringLiteral(REPLAY_SORTS).withDefault(REPLAY_LIST.defaultSort),
-  offset: parseAsInteger.withDefault(0)
+  sort: parseAsStringLiteral(REPLAY_SORTS).withDefault(REPLAY_LIST.defaultSort)
 } as const;

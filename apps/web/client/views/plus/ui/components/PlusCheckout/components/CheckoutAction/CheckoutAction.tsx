@@ -5,7 +5,7 @@ import { match } from 'ts-pattern';
 
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { Button, buttonVariants, Skeleton } from '@/ui-kit';
+import { Button, buttonVariants, ErrorState, Skeleton } from '@/ui-kit';
 
 import { useCheckoutAction } from '../../../../../model/hooks';
 import { CheckoutStatus } from '../CheckoutStatus';
@@ -14,7 +14,21 @@ import s from './CheckoutAction.module.scss';
 
 export const CheckoutAction = () => {
   const t = useTranslations('plus.checkout.action');
-  const { mode, loginHref, trialDays, canStartTrial, isTrialPending, startTrial, isRedirecting, isClosed, canNotify, note } = useCheckoutAction();
+  const {
+    mode,
+    isStatusVisible,
+    retryAccess,
+    isAccessRetrying,
+    loginHref,
+    trialDays,
+    canStartTrial,
+    isTrialPending,
+    startTrial,
+    isRedirecting,
+    isClosed,
+    canNotify,
+    note
+  } = useCheckoutAction();
 
   const primary = buttonVariants({ variant: 'premium', size: 'lg', block: true });
   const secondary = buttonVariants({ variant: 'secondary', size: 'lg', block: true });
@@ -25,6 +39,7 @@ export const CheckoutAction = () => {
       <div className={s.actions}>
         {match(mode)
           .with('pending', () => <Skeleton className={s.skeleton} shape='block' />)
+          .with('error', () => <ErrorState isCompact isRetrying={isAccessRetrying} onRetry={retryAccess} />)
           .with('guest', () => (
             <Link className={primary} href={loginHref}>
               {t('signIn')}
@@ -64,7 +79,7 @@ export const CheckoutAction = () => {
           ))
           .exhaustive()}
       </div>
-      <CheckoutStatus canNotify={canNotify} isClosed={isClosed} isPending={mode === 'pending'} note={note} />
+      {isStatusVisible && <CheckoutStatus canNotify={canNotify} isClosed={isClosed} isPending={mode === 'pending'} note={note} />}
     </div>
   );
 };

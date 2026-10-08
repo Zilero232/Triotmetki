@@ -2,12 +2,12 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
 import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
-import { PageHeroFallback } from '@/ui-kit';
-import { TanksPage } from '@/views/tanks';
+import { TanksPage, TanksPageFallback } from '@/views/tanks';
 import { tanksPageState } from '@/views/tanks/server';
 
 export const generateMetadata = async () => {
@@ -18,11 +18,11 @@ export const generateMetadata = async () => {
 };
 
 const Page = ({ searchParams }: PageProps<'/[locale]/tanks'>) => (
-  <Suspense fallback={<PageHeroFallback />}>
+  <Suspense fallback={<TanksPageFallback />}>
     <PrefetchBoundary state={searchParams.then(tanksPageState)}>
       <TanksPage />
     </PrefetchBoundary>
   </Suspense>
 );
 
-export default Page;
+export default withMessages({ component: Page, messages: ['periods', 'plus', 'status.label', 'tanks'] });

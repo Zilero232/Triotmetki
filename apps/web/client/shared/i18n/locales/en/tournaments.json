@@ -22,7 +22,7 @@
     "registration": "Registration",
     "running": "Running",
     "finished": "Finished",
-    "cancelled": "Cancelled"
+    "cancelled": "Canceled"
   },
   "list": {
     "title": "All tournaments",
@@ -31,7 +31,7 @@
     "participants": "{count} / {max}",
     "emptyTitle": "No tournaments",
     "emptyDescription": "Nothing here yet. Create a tournament — registration opens right away.",
-    "errorTitle": "Couldn't load tournaments",
+    "errorTitle": "Could not load tournaments",
     "errorDescription": "The server didn't respond. Try again."
   },
   "create": {
@@ -58,7 +58,7 @@
     "about": "About",
     "notFoundTitle": "Tournament not found",
     "notFoundDescription": "The link may be outdated or the tournament is still a draft.",
-    "errorTitle": "Couldn't load the tournament",
+    "errorTitle": "Could not load the tournament",
     "errorDescription": "The server didn't respond. Try again."
   },
   "summary": {
@@ -83,7 +83,7 @@
     "teamNameHint": "Optional",
     "teamNameError": "2 to 40 characters",
     "submit": "Join",
-    "requirementsHint": "The server checks your account stats against the requirements.",
+    "requirementsHint": "We check your account stats against the requirements when you register.",
     "state": {
       "registered": "You're registered",
       "full": "No places left",
@@ -121,7 +121,7 @@
     "created": "Tournament created, registration is open",
     "opened": "Registration opened",
     "started": "The tournament has started",
-    "cancelled": "Tournament cancelled",
+    "cancelled": "Tournament canceled",
     "registered": "You're on the participant list",
     "reported": "Result saved",
     "withdrawn": "You have left the tournament"
@@ -129,7 +129,7 @@
   "errors": {
     "forbidden": "Requirements not met or no linked Lesta account",
     "notFound": "Tournament not found or you're not the organizer",
-    "conflict": "Not available right now: registration closed, no places left or you're already in",
+    "conflict": "This action isn’t available in the tournament’s current status. Refresh the page.",
     "validation": "Check the data",
     "unauthorized": "Sign in to continue",
     "rateLimited": "Too many requests, wait a bit",

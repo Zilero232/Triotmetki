@@ -20,7 +20,7 @@ export const ogLabels = (locale: Locale): OgLabels => {
       winRate: t('winRate'),
       battles: t('battles'),
       noClan: t('noClan'),
-      source: t('source')
+      source: tRoot('footer.shortAttribution')
     },
     session: {
       kind: t('session'),
@@ -28,7 +28,7 @@ export const ogLabels = (locale: Locale): OgLabels => {
       winRate: t('winRate'),
       avgDamage: t('avgDamage'),
       best: t('best'),
-      source: t('source')
+      source: tRoot('footer.shortAttribution')
     },
     wrapped: {
       kind: tWrapped('eyebrow'),
@@ -37,7 +37,7 @@ export const ogLabels = (locale: Locale): OgLabels => {
       winRate: t('winRate'),
       avgDamage: t('avgDamage'),
       marks: tWrapped('marks'),
-      source: t('source')
+      source: tRoot('footer.shortAttribution')
     }
   };
 };

@@ -11,7 +11,7 @@ import { QUERY_KEYS } from '@/shared/constants';
 import { HOME } from '../../../config';
 
 export const useForYou = () => {
-  const { data: session } = useAuthSession();
+  const { data: session, isPending: isSessionPending } = useAuthSession();
   const { data: accounts } = useLinkedAccounts({ enabled: Boolean(session) });
   const lesta = accounts?.lesta ?? [];
   const primary = lesta.find(({ isPrimary }) => isPrimary) ?? lesta[0] ?? null;
@@ -40,6 +40,7 @@ export const useForYou = () => {
   const challenges = weekly && weekly.challenges.length > 0 ? challengeSummary(challengeRows(weekly.challenges)) : null;
 
   return {
+    isPending: isSessionPending,
     isVisible: Boolean(session),
     nickname: primary?.nickname ?? null,
     firstWin: firstWin?.state === 'ready' ? { available: firstWin.available, taken: firstWin.taken } : null,

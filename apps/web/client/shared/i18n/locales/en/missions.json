@@ -4,8 +4,9 @@
     "description": "Personal mission campaigns and operations from the game files, mission conditions, fitting tanks by server stats and a progress tracker."
   },
   "operationMeta": {
-    "title": "Personal missions: operation {id}",
-    "description": "Operation missions by branch, main and honors conditions, the best tanks by server stats and progress checkmarks."
+    "title": "Personal missions: {name}",
+    "description": "Operation missions by branch, main and honors conditions, the best tanks by server stats and progress checkmarks.",
+    "descriptionNamed": "{name} personal missions by branch: main and honors conditions, the best tanks by server stats and progress checkmarks."
   },
   "hub": {
     "title": "Personal missions",
@@ -21,7 +22,6 @@
     "emptyDescription": "Personal missions show up here as soon as we receive them from the game client.",
     "errorTitle": "Could not load personal missions",
     "errorDescription": "The server did not respond. Try again.",
-    "home": "Home",
     "operationsFigure": "Operations",
     "plateProgress": "{done}/{total} missions{honors, plural, =0 {} other { · with honors: #}}"
   },
@@ -71,7 +71,7 @@
   },
   "tanks": {
     "title": "Best tanks by our data",
-    "description": "Fitting tanks by “{metric}”, cohort: {cohort}, period: {period}.",
+    "description": "Fitting tanks by “{metric}”: {cohort}, over {period}.",
     "cohort": {
       "all": "all players",
       "beginner": "beginners",
@@ -81,9 +81,9 @@
     },
     "tank": "Tank",
     "value": "Value",
-    "winRate": "Wins",
+    "winRate": "Win rate",
     "battles": "Battles",
-    "score": "Fit",
+    "score": "Fit score",
     "ownBattles": "Your battles",
     "ownWinRate": "Your wins",
     "emptyTitle": "No data for fitting tanks",
@@ -98,7 +98,7 @@
   },
   "metric": {
     "damage": "Damage",
-    "frags": "Kills",
+    "frags": "Frags",
     "spotting": "Spotting and assist",
     "blocked": "Blocked",
     "survival": "Survival",
@@ -109,7 +109,7 @@
   "plan": {
     "title": "Completion plan",
     "description": "The mission order that closes the operation faster: branches with fewer missions left and more fitting tanks in your hangar come first.",
-    "plusTitle": "The plan is part of Three Marks Plus",
+    "plusTitle": "The completion plan comes with Plus",
     "plusDescription": "Conditions, recommendations and the tracker are free. The completion plan comes with Plus.",
     "plusAction": "About Plus",
     "signIn": "Sign in to build a plan from your progress.",

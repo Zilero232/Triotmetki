@@ -2,12 +2,12 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
 import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
-import { PageHeroFallback } from '@/ui-kit';
-import { TopPage } from '@/views/top';
+import { TopBody, TopBodySkeleton, TopPage } from '@/views/top';
 import { topPageState } from '@/views/top/server';
 
 export const generateMetadata = async () => {
@@ -18,11 +18,13 @@ export const generateMetadata = async () => {
 };
 
 const Page = ({ searchParams }: PageProps<'/[locale]/top'>) => (
-  <Suspense fallback={<PageHeroFallback />}>
-    <PrefetchBoundary state={searchParams.then(topPageState)}>
-      <TopPage />
-    </PrefetchBoundary>
-  </Suspense>
+  <TopPage>
+    <Suspense fallback={<TopBodySkeleton />}>
+      <PrefetchBoundary state={searchParams.then(topPageState)}>
+        <TopBody />
+      </PrefetchBoundary>
+    </Suspense>
+  </TopPage>
 );
 
-export default Page;
+export default withMessages({ component: Page, messages: ['cosmetics', 'periods', 'tanks.picker', 'top'] });

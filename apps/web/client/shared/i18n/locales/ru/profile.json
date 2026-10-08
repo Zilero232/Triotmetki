@@ -6,7 +6,7 @@
   "loading": "Загружаем досье игрока",
   "stats": {
     "battles": "Бои",
-    "winRate": "Победы",
+    "winRate": "Процент побед",
     "avgDamage": "Ср. урон",
     "avgFrags": "Ср. фраги",
     "survival": "Выживаемость",
@@ -43,7 +43,7 @@
     "favoritesTitle": "Любимая техника",
     "favoritesEmpty": "Нет боёв на технике",
     "battles": "Бои",
-    "winRate": "Победы",
+    "winRate": "Процент побед",
     "marksTitle": "Отметки",
     "closestTitle": "Ближе всего к следующей отметке",
     "closestEmpty": "Нет танков в процессе получения отметки",
@@ -55,7 +55,7 @@
     "activityTitle": "Активность за год",
     "activitySummary": "{total, plural, one {# бой} few {# боя} many {# боёв} other {# боя}} за {active, plural, one {# день} few {# дня} many {# дней} other {# дня}}",
     "activityEmpty": "Нет боёв за последний год",
-    "activityDay": "{date}: {battles, plural, =0 {не играл} one {# бой} few {# боя} many {# боёв} other {# боя}}{battles, plural, =0 {} other {, {winRate}% побед}}",
+    "activityDay": "{date}: {battles, plural, =0 {боёв не\u00a0было} one {# бой} few {# боя} many {# боёв} other {# боя}}{battles, plural, =0 {} other {, {winRate}% побед}}",
     "activityHint": "Наведите на день, чтобы увидеть бои",
     "activityAria": "Календарь активности: {total, plural, one {# бой} few {# боя} many {# боёв} other {# боя}} за {active, plural, one {# активный день} few {# активных дня} many {# активных дней} other {# активного дня}}",
     "less": "Меньше",
@@ -64,7 +64,7 @@
       "title": "За 30 дней",
       "empty": "За 30 дней боёв нет",
       "wn8": "WN8",
-      "winRate": "Победы",
+      "winRate": "Процент побед",
       "avgDamage": "Средний урон",
       "battlesPerDay": "Боёв в день"
     },
@@ -94,7 +94,7 @@
     "columns": {
       "tank": "Танк",
       "battles": "Бои",
-      "winRate": "Победы",
+      "winRate": "% побед",
       "avgDamage": "Ср. урон",
       "awards": "Награды",
       "moe": "Отметка",
@@ -131,7 +131,9 @@
       "title": "Сессия {nickname}",
       "description": "Итоги игровой сессии {nickname}: бои, победы, урон и лучшие танки дня."
     },
-    "empty": "Сессий пока нет"
+    "empty": "Сессий пока нет",
+    "listErrorTitle": "Сессии не загрузились",
+    "listErrorDescription": "Сервер не ответил. Попробуйте ещё раз."
   },
   "marks": {
     "progressTitle": "Прогресс отметок",
@@ -170,7 +172,7 @@
     "metricLabel": "Показатель",
     "metric": {
       "wn8": "WN8",
-      "winRate": "Победы",
+      "winRate": "Процент побед",
       "avgDamage": "Ср. урон",
       "battles": "Бои",
       "eff": "ЭФФ",
@@ -198,16 +200,16 @@
     "battles": "{count, plural, one {# бой} few {# боя} many {# боёв} other {# боя}}",
     "weakTanks": "Где вы ниже сервера",
     "strongTanks": "Где вы сильнее сервера",
-    "ppSuffix": " п.п.",
+    "ppSuffix": " п.\u00a0п.",
     "damageRatio": "урон {value}% от сервера",
     "tips": {
       "weak_class": {
         "title": "Слабый класс",
-        "body": "На технике класса «{type}» ваш процент побед на {winRateDelta, number, ::.0} п.п. ниже среднего по серверу."
+        "body": "На технике класса «{type}» ваш процент побед на {winRateDelta, number, ::.0} п.\u00a0п. ниже среднего по серверу."
       },
       "weak_tier": {
         "title": "Проседающий уровень",
-        "body": "На {tierRoman} уровне вы выигрываете на {winRateDelta, number, ::.0} п.п. реже сервера — стоит пересмотреть технику."
+        "body": "На {tierRoman} уровне вы выигрываете на {winRateDelta, number, ::.0} п.\u00a0п. реже сервера — стоит пересмотреть технику."
       },
       "low_damage_tank": {
         "title": "Недобор урона",
@@ -246,10 +248,9 @@
   "og": {
     "eyebrow": "ДОСЬЕ",
     "broneIndex": "Броня-Индекс",
-    "winRate": "Победы",
+    "winRate": "Процент побед",
     "battles": "Бои",
     "noClan": "Без клана",
-    "source": "Данные: Леста Игры",
     "session": "СЕССИЯ",
     "avgDamage": "Ср. урон",
     "best": "Лучший танк"
@@ -263,7 +264,7 @@
     "lastBattle": "Последний бой",
     "compare": "Сравнить",
     "broneIndex": "Броня-Индекс",
-    "winRate": "Победы",
+    "winRate": "Процент побед",
     "battles": "Бои",
     "avgDamage": "Средний урон",
     "avgXp": "Средний опыт",
@@ -274,8 +275,8 @@
     "favoriteNation": "Нация",
     "favoriteClass": "Класс",
     "tiers": {
-      "very_bad": "Очень плохо",
-      "bad": "Плохо",
+      "very_bad": "Очень слабый",
+      "bad": "Слабый",
       "below_avg": "Ниже среднего",
       "avg": "Средний",
       "good": "Хороший",
@@ -300,7 +301,6 @@
     }
   },
   "hero": {
-    "home": "Главная",
     "players": "Игроки"
   },
   "actions": {
@@ -336,7 +336,7 @@
   "official": {
     "title": "Официальный рейтинг Лесты",
     "source": "по данным Лесты",
-    "lead": "Своей истории боёв у нас по этому игроку ещё нет — вот что Леста знает о нём за последние недели.",
+    "lead": "Своей истории боёв у\u00a0нас по\u00a0этому игроку ещё нет\u00a0— вот что Леста знает о\u00a0нём: последние недели и\u00a0всё время.",
     "periods": {
       "1d": "За сутки",
       "7d": "За 7 дней",
@@ -346,11 +346,11 @@
     "fields": {
       "globalRating": "Личный рейтинг",
       "battles": "Бои",
-      "winRate": "Победы",
+      "winRate": "Процент побед",
       "avgDamage": "Средний урон",
       "avgXp": "Средний опыт",
-      "avgFrags": "Уничтожено за бой",
-      "avgSpotted": "Обнаружено за бой",
+      "avgFrags": "Фраги за бой",
+      "avgSpotted": "Засвет за бой",
       "survivalRate": "Выживаемость",
       "accuracy": "Точность",
       "maxXp": "Максимум опыта"
@@ -363,7 +363,7 @@
     "records": {
       "maxDamage": "Максимум урона",
       "maxXp": "Максимум опыта",
-      "maxFrags": "Максимум уничтожений"
+      "maxFrags": "Максимум фрагов"
     },
     "since": "с {date}",
     "assist": {
@@ -379,9 +379,9 @@
     "emptyText": "Леста не знает о боях этого игрока на Линии фронта, в ранговых, Укрепрайоне или Глобальной карте.",
     "liveNote": "Данные получены от Лесты только что, разбивки по технике пока нет.",
     "battles": "{count, plural, one {# бой} few {# боя} many {# боёв} other {# боя}}",
-    "winRate": "Победы",
+    "winRate": "Процент побед",
     "avgDamage": "Средний урон",
-    "avgFrags": "Уничтожено за бой",
+    "avgFrags": "Фраги за бой",
     "survivalRate": "Выживаемость",
     "maxDamage": "Максимум урона",
     "names": {

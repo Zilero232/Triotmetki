@@ -13,7 +13,7 @@ import s from './ArmorHeader.module.scss';
 
 export const ArmorHeader = ({ slug, name, version, client, children }: ArmorHeaderProps) => {
   const t = useTranslations('armor.page');
-  const tCatalog = useTranslations('vehicleCatalog.head');
+  const tNav = useTranslations('nav');
 
   return (
     <PageHeader
@@ -24,7 +24,7 @@ export const ArmorHeader = ({ slug, name, version, client, children }: ArmorHead
         </Link>
       }
       breadcrumbs={[
-        { label: tCatalog('title'), href: ROUTES.tanks.catalog },
+        { label: tNav('groups.vehicles'), href: ROUTES.tanks.list },
         ...(name ? [{ label: name, href: ROUTES.tanks.detail(slug) }] : []),
         { label: t('eyebrow') }
       ]}

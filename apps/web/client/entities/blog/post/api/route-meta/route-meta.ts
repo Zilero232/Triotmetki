@@ -1,5 +1,8 @@
+import { cacheLife } from 'next/cache';
+
 import type { RouteMeta, RouteStaticParamsInput } from '@/shared/seo';
 
+import { UNAVAILABLE_CACHE_LIFE } from '@/shared/api/query-client';
 import { ROUTE_STATIC_PARAMS } from '@/shared/seo';
 import { lookupRouteMeta, routeMeta } from '@/shared/seo/server';
 
@@ -35,8 +38,10 @@ export const blogSitemapItems = async ({ limit = ROUTE_STATIC_PARAMS.limit }: Ro
   try {
     const { items } = await listBlogPosts({ limit });
 
-    return items.map(({ slug, locale }) => ({ slug, locale }));
+    return items.map(({ slug, locale, updatedAt }) => ({ slug, locale, updatedAt }));
   } catch {
+    cacheLife(UNAVAILABLE_CACHE_LIFE);
+
     return [];
   }
 };

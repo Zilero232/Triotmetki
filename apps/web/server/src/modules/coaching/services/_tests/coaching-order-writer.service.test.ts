@@ -4,9 +4,7 @@ import { mockDeep } from 'vitest-mock-extended';
 import type { CoachingOrder, CoachProfile } from '../../../../../generated';
 import type { PrismaService } from '../../../../core';
 
-import { Prisma } from '../../../../../generated';
 import { AppBadRequestException, AppNotFoundException } from '../../../../common/exceptions';
-import { COACHING } from '../../config/coaching.constants';
 import { CoachingOrderWriterService } from '../coaching-order-writer.service';
 
 const now = new Date('2026-09-25T12:00:00Z');
@@ -18,7 +16,6 @@ const order: CoachingOrder = {
   offerId: null,
   replayId: null,
   status: 'accepted',
-  priceRub: new Prisma.Decimal(COACHING.minPriceRub),
   notes: null,
   studentContact: '@student',
   review: null,
@@ -32,8 +29,6 @@ const coach: CoachProfile = {
   accountId: 7n,
   headline: 'Heavy tanks coach',
   bio: null,
-  priceRub: new Prisma.Decimal(COACHING.minPriceRub),
-  priceNote: null,
   contacts: null,
   tankIds: [],
   isActive: true,
@@ -60,7 +55,7 @@ describe('CoachingOrderWriterService.order', () => {
     expect(prisma.coachingOrder.create).not.toHaveBeenCalled();
   });
 
-  it('quotes the coach price when no offer is chosen', async () => {
+  it('records a request without an offer when none is chosen', async () => {
     const { service, prisma } = createService();
 
     prisma.coachProfile.findFirst.mockResolvedValue(coach);
@@ -68,9 +63,7 @@ describe('CoachingOrderWriterService.order', () => {
 
     await service.order({ userId: 'student', coachUserId: 'coach', studentContact: '@student' });
 
-    expect(prisma.coachingOrder.create).toHaveBeenCalledWith(
-      expect.objectContaining({ data: expect.objectContaining({ priceRub: coach.priceRub, offerId: null }) })
-    );
+    expect(prisma.coachingOrder.create).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ offerId: null }) }));
   });
 
   it('refuses an offer that is not active for this coach', async () => {

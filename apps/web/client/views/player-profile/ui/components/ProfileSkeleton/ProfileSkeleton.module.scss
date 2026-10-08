@@ -1,9 +1,5 @@
 @use '@/shared/styles/mixins' as *;
 
-.root {
-  @include stack(var(--gap-panel));
-}
-
 .grid {
   @include grid-columns(2, $gap: var(--gap-panel), $below-xl: 1);
 }

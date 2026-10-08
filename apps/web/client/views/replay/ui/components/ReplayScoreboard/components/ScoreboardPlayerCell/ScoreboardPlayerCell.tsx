@@ -15,7 +15,11 @@ export const ScoreboardPlayerCell = ({ nickname, clanTag, isRecorder, isDestroye
       <Link className={s.nickname} href={ROUTES.players.profile(nickname)}>
         {nickname}
       </Link>
-      {clanTag && <span className={s.clan}>[{clanTag}]</span>}
+      {clanTag && (
+        <Link className={s.clan} href={ROUTES.clans.detail(clanTag)}>
+          [{clanTag}]
+        </Link>
+      )}
       {isRecorder && <span className={s.marker}>{t('recorder')}</span>}
       {isDestroyed && <span className={s.srOnly}>{t('destroyed')}</span>}
     </span>

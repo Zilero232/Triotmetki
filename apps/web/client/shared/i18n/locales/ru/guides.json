@@ -42,9 +42,6 @@
     "emptyTitle": "Гайдов пока нет",
     "emptyDescription": "Станьте первым — напишите гайд.",
     "emptyFilteredDescription": "По этим фильтрам ничего не нашлось.",
-    "page": "Стр. {page} из {pages}",
-    "prev": "Назад",
-    "next": "Дальше",
     "sorts": {
       "recent": "Новые",
       "popular": "Популярные"
@@ -121,7 +118,7 @@
     "newTitle": "Новый гайд",
     "editTitle": "Редактирование гайда",
     "signIn": "Войти",
-    "signInTitle": "Нужен вход",
+    "signInTitle": "Нужно войти",
     "signInDescription": "Войдите, чтобы писать гайды.",
     "loadErrorTitle": "Не удалось загрузить гайд",
     "loadErrorDescription": "Сервер не ответил. Попробуйте ещё раз.",
@@ -138,10 +135,6 @@
     "counter": "{length} / {max}",
     "body": "Текст",
     "bodyPlaceholder": "Пишите в Markdown: заголовки, списки, таблицы.",
-    "write": "Текст",
-    "preview": "Предпросмотр",
-    "previewEmpty": "Здесь появится предпросмотр.",
-    "markdownHint": "Markdown: **жирный**, _курсив_, ## заголовок, - список, [ссылка](https://…), таблицы и `код`. HTML не поддерживается.",
     "moderationHint": "После сохранения гайд уйдёт на модерацию.",
     "save": "Сохранить",
     "publish": "Отправить на модерацию",
@@ -153,6 +146,8 @@
       "map": "Выберите карту",
       "title": "От {min} до {max, plural, one {# символа} few {# символов} many {# символов} other {# символа}}",
       "body": "От {min} до {max, plural, one {# символа} few {# символов} many {# символов} other {# символа}}"
-    }
+    },
+    "cancel": "Отмена",
+    "saving": "Сохранение…"
   }
 }

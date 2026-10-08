@@ -5,7 +5,8 @@ import { useId } from 'react';
 import { Controller, FormProvider } from 'react-hook-form';
 
 import { TankPicker } from '@/features/tank/pick-tank';
-import { Button, Card, FormField, Input, SegmentedControl, Select } from '@/ui-kit';
+import { Link } from '@/shared/i18n/navigation';
+import { Button, buttonVariants, Card, FormField, FormFooter, Input, SegmentedControl, Select } from '@/ui-kit';
 
 import type { GuideEditorFormProps } from './GuideEditorForm.types';
 
@@ -20,7 +21,6 @@ export const GuideEditorForm = ({ guide }: GuideEditorFormProps) => {
   const titleId = useId();
   const {
     form,
-    isEdit,
     kind,
     kindOptions,
     localeOptions,
@@ -32,6 +32,8 @@ export const GuideEditorForm = ({ guide }: GuideEditorFormProps) => {
     titleLength,
     titleMax,
     isPending,
+    submitLabel,
+    cancelHref,
     onSubmit
   } = useGuideEditorForm(guide);
 
@@ -86,12 +88,14 @@ export const GuideEditorForm = ({ guide }: GuideEditorFormProps) => {
             />
           </FormField>
           <GuideBodyField />
-          <div className={s.footer}>
-            <p className={s.moderation}>{t('moderationHint')}</p>
+          <FormFooter hint={t('moderationHint')}>
+            <Link className={buttonVariants({ variant: 'ghost' })} href={cancelHref}>
+              {t('cancel')}
+            </Link>
             <Button disabled={isPending} type='submit'>
-              {isEdit ? t('save') : t('publish')}
+              {submitLabel}
             </Button>
-          </div>
+          </FormFooter>
         </form>
       </Card>
     </FormProvider>

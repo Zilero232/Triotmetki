@@ -1,0 +1,16 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-3));
+
+  align-items: center;
+  padding: var(--space-4);
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}

@@ -33,7 +33,7 @@ export const TanksFilters = ({ total }: TanksFiltersProps) => {
           onChange={(event) => update({ query: event.target.value })}
         />
       }
-      actions={<span className={s.total}>{t('total', { count: total })}</span>}
+      actions={total !== null && <span className={s.total}>{t('total', { count: total })}</span>}
       activeCount={activeCount}
       onReset={reset}
     >

@@ -69,4 +69,10 @@ describe('ResourceGate', () => {
 
     expect(notFound).toHaveBeenCalled();
   });
+
+  it('keeps the page header over a failed request', () => {
+    renderGate({ header: <h1>Clan workspace</h1>, query: { ...QUERY, isError: true, error: new Error('boom') } });
+
+    expect(screen.getByRole('heading', { name: 'Clan workspace' })).toBeInTheDocument();
+  });
 });

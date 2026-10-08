@@ -17,25 +17,25 @@
     "display_refreshRate": "Refresh rate",
     "display_windowMode": "Window mode",
     "display_client": "Client",
-    "display_preset": "Graphics preset",
+    "display_preset": "Graphics quality",
     "display_fpsCap": "FPS cap",
     "display_vsync": "V-sync",
     "display_tripleBuffering": "Triple buffering",
     "camera_fov": "Field of view",
     "camera_postMortem": "Post-mortem effect",
     "camera_sniperDynamicCamera": "Sniper dynamic camera",
-    "camera_horizontalStabilisation": "Horizontal stabilisation",
-    "controls_sensitivity_arcade": "Sensitivity: arcade",
-    "controls_sensitivity_sniper": "Sensitivity: sniper",
-    "controls_sensitivity_artillery": "Sensitivity: artillery",
+    "camera_horizontalStabilisation": "Horizontal stabilization",
+    "controls_sensitivity_arcade": "Sensitivity in arcade mode",
+    "controls_sensitivity_sniper": "Sensitivity in sniper mode",
+    "controls_sensitivity_artillery": "Sensitivity in artillery mode",
     "controls_invert": "Invert vertical",
     "zoom_steps": "Zoom steps",
     "sight_arcade_reticle": "Arcade sight: reticle",
     "sight_arcade_gunMarker": "Arcade sight: gun marker",
-    "sight_arcade_colour": "Arcade sight: colour",
+    "sight_arcade_colour": "Arcade sight: color",
     "sight_sniper_reticle": "Sniper sight: reticle",
     "sight_sniper_gunMarker": "Sniper sight: gun marker",
-    "sight_sniper_colour": "Sniper sight: colour",
+    "sight_sniper_colour": "Sniper sight: color",
     "markers_enemy_base": "Enemies",
     "markers_enemy_alt": "Enemies (Alt)",
     "markers_ally_base": "Allies",
@@ -131,7 +131,7 @@
     },
     "compare": {
       "title": "Compare streamer settings",
-      "description": "Compare the settings of two to four Mir Tankov creators and your own, with differences highlighted."
+      "description": "Compare the settings of up to four Mir Tankov creators and your own, with differences highlighted."
     }
   },
   "page": {
@@ -139,7 +139,7 @@
     "description": "Game settings by group. Every group shows its source and check date.",
     "updated": "updated {date}",
     "crumbs": {
-      "settings": "Streamer settings"
+      "current": "Settings"
     },
     "emptyTitle": "No settings yet",
     "emptyDescription": "The creator has not published their settings yet.",
@@ -203,8 +203,8 @@
     },
     "live": "live",
     "allPresets": "All presets",
-    "search": "Creator, GPU",
-    "preset": "Graphics preset",
+    "search": "Search by creator or GPU",
+    "preset": "Graphics quality",
     "emptyTitle": "No settings yet",
     "emptyDescription": "Settings appear here as soon as creators publish them.",
     "noMatchTitle": "Nothing found",
@@ -220,7 +220,7 @@
     },
     "emptyTitle": "Not enough data yet",
     "emptyDescription": "A group shows once at least {min} people have shared their settings.",
-    "privacy": "Settings of players who are not creators count only anonymously and are never shown individually.",
+    "privacy": "Settings of regular players count only anonymously and are never shown individually.",
     "contributors": "{count, plural, one {# player} other {# players}}",
     "median": "median"
   },
@@ -230,7 +230,7 @@
     "steps": {
       "install": "Install our mod and link it to your account.",
       "hangar": "In the hangar, press “Send game settings to the site” in the mod window.",
-      "target": "Choose “compare only” and, if you like, tick “count anonymously in statistics”."
+      "target": "Choose “Only for me” and, if you like, turn on “Count my settings in anonymous statistics”."
     },
     "updated": "Received {date}",
     "anonymous": "Count anonymously in statistics",
@@ -247,7 +247,7 @@
   },
   "compare": {
     "title": "Compare settings",
-    "description": "Two to four creators and, optionally, your own settings from the mod. Differences are highlighted.",
+    "description": "Up to four creators and, optionally, your own settings from the mod — at least two columns. Differences are highlighted.",
     "crumb": "Streamer settings",
     "mine": "My settings",
     "mineToggle": "My settings",
@@ -256,7 +256,7 @@
     "noShareTitle": "No settings of yours yet",
     "noShareDescription": "Send them from the mod window in the hangar with “Send game settings to the site”.",
     "emptyTitle": "Pick who to compare",
-    "emptyDescription": "You need {min} to {max} columns: creators or your own settings.",
+    "emptyDescription": "Add creators (up to {max}) or your own settings — at least {min} columns.",
     "noValues": "The selected creators have no settings in common"
   }
 }

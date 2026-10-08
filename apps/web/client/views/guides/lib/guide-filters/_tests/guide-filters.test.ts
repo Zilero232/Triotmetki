@@ -2,22 +2,13 @@ import { describe, expect, it } from 'vitest';
 
 import type { GuideFilters } from '../guide-filters.types';
 
-import { hasActiveFilters, pageCount, toGuideListQuery } from '../guide-filters';
+import { hasActiveFilters, toGuideListQuery } from '../guide-filters';
 
-const EMPTY: GuideFilters = { kind: null, tank: null, map: null, sort: 'recent', page: 1 };
+const EMPTY: GuideFilters = { kind: null, tank: null, map: null, sort: 'recent' };
 
 describe('toGuideListQuery', () => {
-  it('starts the first page at offset zero and sends no empty filters', () => {
-    expect(toGuideListQuery({ filters: EMPTY, pageSize: 20 })).toEqual({ sort: 'recent', limit: 20, offset: 0 });
-  });
-
-  it('turns the page number into an offset', () => {
-    expect(toGuideListQuery({ filters: { ...EMPTY, page: 3 }, pageSize: 20 }).offset).toBe(40);
-  });
-
-  it('never sends a negative offset for a bad page in the URL', () => {
-    expect(toGuideListQuery({ filters: { ...EMPTY, page: 0 }, pageSize: 20 }).offset).toBe(0);
-    expect(toGuideListQuery({ filters: { ...EMPTY, page: -4 }, pageSize: 20 }).offset).toBe(0);
+  it('sends no empty filters', () => {
+    expect(toGuideListQuery({ filters: EMPTY, pageSize: 20 })).toEqual({ sort: 'recent', limit: 20 });
   });
 
   it('maps the tank and map filters to the server field names', () => {
@@ -31,23 +22,9 @@ describe('toGuideListQuery', () => {
   });
 });
 
-describe('pageCount', () => {
-  it('rounds a partial page up', () => {
-    expect(pageCount({ total: 41, pageSize: 20 })).toBe(3);
-  });
-
-  it('keeps one page for an exact multiple', () => {
-    expect(pageCount({ total: 40, pageSize: 20 })).toBe(2);
-  });
-
-  it('shows a single page when there is nothing', () => {
-    expect(pageCount({ total: 0, pageSize: 20 })).toBe(1);
-  });
-});
-
 describe('hasActiveFilters', () => {
-  it('ignores sort and page', () => {
-    expect(hasActiveFilters({ ...EMPTY, sort: 'popular', page: 4 })).toBe(false);
+  it('ignores sort', () => {
+    expect(hasActiveFilters({ ...EMPTY, sort: 'popular' })).toBe(false);
   });
 
   it('detects a kind, tank or map filter', () => {

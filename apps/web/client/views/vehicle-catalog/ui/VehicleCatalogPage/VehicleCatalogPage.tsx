@@ -21,12 +21,8 @@ export const VehicleCatalogPage = () => {
     <CatalogLayout
       hero={
         <PageHero
-          breadcrumbs={[
-            { label: t('head.home'), href: ROUTES.home },
-            { label: tNav('groups.vehicles'), href: ROUTES.tanks.list },
-            { label: tNav('tanksHub.catalog') }
-          ]}
           art={{ kind: 'emblem', glyph: <HeavyTankIcon size={VEHICLE_CATALOG_VIEW.emblemSize} strokeWidth={VEHICLE_CATALOG_VIEW.emblemStroke} /> }}
+          breadcrumbs={[{ label: tNav('groups.vehicles'), href: ROUTES.tanks.list }, { label: tNav('tanksHub.catalog') }]}
           lead={t('head.description')}
           title={t('head.title')}
         />

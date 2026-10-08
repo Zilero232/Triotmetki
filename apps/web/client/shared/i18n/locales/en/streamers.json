@@ -4,12 +4,11 @@
     "description": "Live-stat OBS overlays, donation challenges verified from real battles, !stat and !session chat commands and your own streamer page."
   },
   "hero": {
-    "onAir": "On air",
+    "onAir": "Live",
     "eyebrow": "Three Marks for streamers",
     "title": "A stream where <hot>the numbers don't lie</hot>",
     "lead": "Live stats in OBS, viewer challenges verified from the actual battle, and a bot that knows your WN8 better than chat does.",
     "ctaHow": "How challenges work",
-    "home": "Home",
     "crumb": "For streamers",
     "pageTitle": "For streamers"
   },
@@ -22,25 +21,25 @@
       "text": "Session, WN8, gun mark, win streak — pick the metrics and a style, paste the link into OBS. Transparent background, live numbers."
     },
     "challenges": {
-      "tag": "Only here",
+      "tag": "Battle-verified",
       "title": "Verified challenges",
-      "text": "A viewer donates with a code and a condition — “3000 damage in a light tank”. The mod checks the real battle, not the streamer's word. The result goes to chat and the overlay by itself.",
+      "text": "You set the condition — “3000 damage in a light tank” — and a viewer donates with the challenge code. The mod checks the real battle, not the streamer’s word. The result goes to chat and the overlay on its own.",
       "stamp": "Verified by the mod"
     },
     "commands": {
       "title": "Chat commands",
       "viewer": "viewer",
-      "text": "Twitch and VK Video Live: the bot answers with stats while you're in battle.",
+      "text": "Twitch: the bot answers with stats while you’re in battle. VK Video Live is coming soon.",
       "chat": {
-        "stat": "Nickname · battles · win rate · all-time WN8",
+        "stat": "Nickname · WN8 · win rate · battles",
         "session": "Session: battles · win rate · average damage",
-        "marks": "Mark progress on the current tank and what is left to the next one"
+        "marks": "How many tanks have three, two and one marks"
       }
     },
     "page": {
       "title": "Streamer page",
       "text": "A short address with channel links, live status and battle stats — handy for your channel description.",
-      "slug": "your-nickname"
+      "slug": "your-nick"
     },
     "sample": "Example"
   },
@@ -56,7 +55,7 @@
       },
       "verify": {
         "title": "The mod checks the battle",
-        "text": "Three Marks takes your battle results from the mod: damage, frags, spotting — no screenshots, no word of honour.",
+        "text": "Three Marks takes your battle results from the mod: damage, frags, spotting — no screenshots, no word of honor.",
         "sample": "LT · 3,412 damage · 6 spotted · victory"
       },
       "result": {

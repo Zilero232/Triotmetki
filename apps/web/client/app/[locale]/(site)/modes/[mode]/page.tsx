@@ -6,10 +6,11 @@ import { notFound } from 'next/navigation';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
-import { PageHeroFallback } from '@/ui-kit';
+import { PageHeaderFallback } from '@/ui-kit';
 import { ModePage } from '@/views/mode';
 
 export const generateStaticParams = () => PLAY_MODES.map((mode) => ({ mode }));
@@ -43,10 +44,10 @@ const Page = async ({ params }: PageProps<'/[locale]/modes/[mode]'>) => {
   }
 
   return (
-    <Suspense fallback={<PageHeroFallback />}>
+    <Suspense fallback={<PageHeaderFallback />}>
       <ModePage mode={parsed.data} />
     </Suspense>
   );
 };
 
-export default Page;
+export default withMessages({ component: Page, messages: ['hub.title', 'modes', 'plus', 'status.label', 'tanks.filters'] });

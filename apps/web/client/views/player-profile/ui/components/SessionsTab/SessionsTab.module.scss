@@ -12,4 +12,5 @@
 
 .detail {
   min-width: 0;
+  scroll-margin-top: calc(var(--header-offset) + var(--space-4));
 }

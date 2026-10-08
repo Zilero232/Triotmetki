@@ -16,7 +16,7 @@ export const SITE = {
   },
   en: {
     title: 'Three Marks',
-    description: '«Мир танков» stats: players, tanks, marks of excellence, leaderboards, clans and tools in one place.',
+    description: 'Mir Tankov stats: players, tanks, marks of excellence, leaderboards, clans and tools in one place.',
     locale: 'en_US',
     lang: 'en-US'
   }

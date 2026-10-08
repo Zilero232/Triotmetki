@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Calculators",
-    "description": "XP and credits to a tank, battles to a goal, marks, crew, battle economy and the battle pass."
+    "description": "XP and credits to a tank, battles to a goal, marks, crew, battle economy, the Battle Pass, Front Line and tank math."
   },
   "nav": "Calculators",
   "calcs": {
@@ -11,7 +11,7 @@
     "crew": "Crew",
     "economy": "Battle economy",
     "gold": "Gold",
-    "pass": "Battle pass",
+    "pass": "Battle Pass",
     "frontline": "Front Line",
     "math": "Tank math"
   },
@@ -73,7 +73,7 @@
     "done": "Target already reached",
     "impossible": "Out of reach: new battles have to beat {target}",
     "battles": "Battles to the target",
-    "battlesHint": "From {from} to {to} at the expected pace",
+    "battlesHint": "From {from} to {to} at the expected level of play",
     "curveAria": "How the metric grows with new battles",
     "targetLine": "Target"
   },
@@ -97,9 +97,9 @@
   "crew": {
     "title": "Crew experience",
     "description": "Battles to the next skill. Each new skill costs twice the previous one, and the last percents are the most expensive.",
-    "footer": "Formula: XP per percent = 50 · 100^(level/100) · 2^skill number. The first skill is about 220k XP, the second twice that. Bonuses multiply.",
+    "footer": "Formula: XP per percent = 50 · 100^(percent/100) · 2^skill number, for percents 0 to 99. The first skill is about 210k XP, the second twice that. Bonuses multiply.",
     "skill": "Skill in training",
-    "skillValue": "Skill {skill}",
+    "skillValue": "Skill #{skill}",
     "percent": "Skill progress",
     "xpPerBattle": "Crew XP per battle",
     "xpHint": "Without premium or bonuses",
@@ -199,12 +199,12 @@
     }
   },
   "pass": {
-    "title": "Battle pass",
+    "title": "Battle Pass",
     "description": "How many battles a day finish the pass before the season ends, and when you finish at your current pace.",
     "footer": "Points per battle depend on the result and your place in the team — use your average over the last few days.",
     "fields": {
       "stage": "Current stage",
-      "stagePoints": "Points in the stage",
+      "stagePoints": "Points earned in this stage",
       "pointsPerStage": "Points per stage",
       "stages": "Total stages",
       "daysLeft": "Days left",
@@ -224,7 +224,7 @@
   },
   "head": {
     "title": "Calculators",
-    "description": "Calculators for Mir Tankov: XP and credits to a tank, marks of excellence, crew, battle economy, gold and the battle pass."
+    "description": "Calculators for Mir Tankov: XP and credits to a tank, battles to a goal, marks of excellence, crew, battle economy, gold, the Battle Pass, Front Line and tank math."
   },
   "shell": {
     "inputs": "Inputs",

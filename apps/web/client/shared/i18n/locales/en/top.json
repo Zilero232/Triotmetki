@@ -4,12 +4,12 @@
     "description": "Mir Tankov leaderboards: top players, clans, rising stars, marks of excellence and streamers."
   },
   "title": "Leaderboards",
-  "description": "Top Mir Tankov players, clans and streamers by WN8, Bronya Index, win rate and damage.",
+  "description": "Top Mir Tankov players, clans and streamers by WN8, EFF, Bronya Index, win rate and damage.",
   "minBattles": "Players with at least {count, plural, one {# battle} other {# battles}} in the period",
   "scopes": {
     "players": "Players",
     "clans": "Clans",
-    "risingStars": "Rising",
+    "risingStars": "Rising stars",
     "marks": "Marks",
     "streamers": "Streamers"
   },
@@ -37,9 +37,7 @@
     "battles": "Battles",
     "tank": "Tank"
   },
-  "hero": {
-    "home": "Home"
-  },
+  "hero": {},
   "podium": {
     "title": "Top three",
     "place": "Place {rank}",
@@ -51,7 +49,7 @@
     "periodLabel": "Period",
     "fieldLabel": "Metric",
     "periods": {
-      "1d": "Day",
+      "1d": "24 hours",
       "7d": "7 days",
       "28d": "28 days",
       "overall": "All time"
@@ -59,10 +57,10 @@
     "fields": {
       "globalRating": "Personal rating",
       "battles": "Battles",
-      "winRate": "Wins",
+      "winRate": "Win rate",
       "avgDamage": "Avg damage",
       "avgXp": "Avg experience",
-      "avgFrags": "Kills per battle",
+      "avgFrags": "Frags per battle",
       "avgSpotted": "Spotted per battle",
       "survivalRate": "Survival",
       "accuracy": "Accuracy",
@@ -70,7 +68,7 @@
     },
     "empty": "Lesta has not published this rating yet",
     "aroundTitle": "Around you",
-    "signInHint": "Sign in with Lesta ID to see your rating neighbours and place history.",
+    "signInHint": "Sign in with Lesta ID to see your rating neighbors and place history.",
     "notRanked": "You are not in this rating yet — not enough battles in the period.",
     "trend": "Place over {days, plural, one {# day} other {# days}}: now #{rank, number}",
     "trendLabel": "Rating place history"

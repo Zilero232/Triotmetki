@@ -9,7 +9,7 @@
     "avgDamage": "Avg damage",
     "wn8": "WN8",
     "broneIndex": "Bronya Index",
-    "moePercent": "Gun mark",
+    "moePercent": "MoE %",
     "winStreak": "Win streak",
     "frags": "Frags",
     "lastBattle": "Last battle"
@@ -27,10 +27,10 @@
     "battles": "Battles: {done} of {total}",
     "status": {
       "pending": "Awaiting donation",
-      "active": "In play",
+      "active": "In progress",
       "succeeded": "Completed",
       "failed": "Failed",
-      "cancelled": "Cancelled",
+      "cancelled": "Canceled",
       "expired": "Expired",
       "refunded": "Refunded"
     }
@@ -39,6 +39,5 @@
     "invalid": "Invalid overlay link",
     "unavailable": "Overlay unavailable"
   },
-  "attribution": "data: Lesta Games",
   "paused": "Overlay paused"
 }

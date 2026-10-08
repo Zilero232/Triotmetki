@@ -135,4 +135,34 @@ describe('useSearchResults', () => {
     expect(result.current.isError).toBe(false);
     expect(result.current.total).toBe(2);
   });
+
+  it('hides the previous results while the next query is being searched', async () => {
+    vi.mocked(search)
+      .mockResolvedValueOnce(RESPONSE)
+      .mockReturnValueOnce(new Promise(() => undefined));
+
+    const { result, rerender } = renderSearch(QUERY);
+
+    await settle(SEARCH_REQUEST.debounceMs);
+
+    rerender('karelia');
+
+    expect(result.current.results).toBeUndefined();
+  });
+
+  it('keeps hiding the previous results until the next answer arrives', async () => {
+    vi.mocked(search)
+      .mockResolvedValueOnce(RESPONSE)
+      .mockReturnValueOnce(new Promise(() => undefined));
+
+    const { result, rerender } = renderSearch(QUERY);
+
+    await settle(SEARCH_REQUEST.debounceMs);
+
+    rerender('karelia');
+    await settle(SEARCH_REQUEST.debounceMs);
+
+    expect(result.current.results).toBeUndefined();
+    expect(result.current.isFetching).toBe(true);
+  });
 });

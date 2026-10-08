@@ -1,0 +1,36 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-2));
+
+  min-height: calc(var(--text-xs) * var(--leading-body) + var(--text-3xl) * var(--leading-tight) + var(--space-2) * 2 + var(--space-6) * 2);
+  justify-content: flex-end;
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-band);
+  box-shadow: var(--panel-highlight);
+
+  @include below(md) {
+    padding: var(--space-5) var(--space-4);
+  }
+}
+
+.crumbs {
+  width: 180px;
+  height: calc(var(--text-xs) * var(--leading-body));
+}
+
+.title {
+  width: min(420px, 80%);
+  height: calc(var(--text-3xl) * var(--leading-tight));
+
+  @include below(md) {
+    height: calc(var(--text-2xl) * var(--leading-tight));
+  }
+}
+
+.description {
+  width: min(560px, 90%);
+  height: calc(var(--text-sm) * var(--leading-body));
+}

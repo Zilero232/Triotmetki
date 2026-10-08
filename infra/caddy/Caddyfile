@@ -113,6 +113,10 @@
 	@immutable path /_next/static/*
 	header @immutable Cache-Control "public, max-age=31536000, immutable"
 
+	# The browser must revalidate the service worker on every check; Next marks the prerendered file s-maxage.
+	@serviceWorker path /serwist/*
+	header @serviceWorker >Cache-Control no-cache
+
 	import security_headers
 	import access_log
 }

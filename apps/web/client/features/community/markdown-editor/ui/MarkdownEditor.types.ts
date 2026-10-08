@@ -7,5 +7,5 @@ export type MarkdownEditorProps = {
   placeholder?: ReactNode;
   isInvalid?: boolean;
   onChange: (markdown: string) => void;
-  onImageUpload: MarkdownImageUpload;
+  onImageUpload?: MarkdownImageUpload;
 };

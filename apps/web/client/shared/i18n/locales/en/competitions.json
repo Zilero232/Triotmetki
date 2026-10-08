@@ -20,7 +20,7 @@
   "modes": {
     "random": "Random battles",
     "onslaught": "Onslaught",
-    "frontline": "Frontline",
+    "frontline": "Front Line",
     "ranked": "Ranked battles",
     "steelHunter": "Steel Hunter"
   },
@@ -28,8 +28,8 @@
     "damage": "Damage",
     "assist": "Assisted damage",
     "blocked": "Blocked by armor",
-    "frags": "Destroyed",
-    "spotted": "Spotted",
+    "frags": "Frags",
+    "spotted": "Spotting",
     "xp": "Experience",
     "win": "Victory",
     "survive": "Survived"
@@ -166,7 +166,7 @@
   "rules": {
     "title": "How points work",
     "points": "A player’s points are the sum of weight × metric over their first {battles, plural, one {# battle} other {# battles}} after the start, or after joining if they joined later. A team’s points are the sum of its members’ points.",
-    "sources": "With the mod, each battle comes from the mod, respecting the mode and the vehicle tier. Without the mod, and for random battles with no tier limit, the result comes from daily Lesta data scaled to the competition’s battle count.",
+    "sources": "With the mod, each battle comes from the mod, respecting the mode and the vehicle tier. Without the mod, only random battles with no tier limit are scored, from daily Lesta data scaled to the competition’s battle count; other modes need the mod.",
     "fairPlay": "Fair play: only each participant’s own results count. Nothing about opponents is ever used.",
     "refresh": "Standings refresh every 15 minutes; the final result lands 6 hours after the finish. Participants get a notification with the result."
   }

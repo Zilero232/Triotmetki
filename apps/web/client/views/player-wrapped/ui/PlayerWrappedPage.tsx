@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { winRateTone } from '@/entities/player/stats';
 import { ROUTES } from '@/shared/constants';
-import { EmptyState, KeyFigure, PageHero, QueryState, Skeleton } from '@/ui-kit';
+import { EmptyState, KeyFigure, KeyFigures, PageHeader, QueryState, Skeleton } from '@/ui-kit';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import type { PlayerWrappedPageProps } from './PlayerWrappedPage.types';
@@ -23,16 +23,20 @@ export const PlayerWrappedPage = ({ nickname: requested, year }: PlayerWrappedPa
 
   return (
     <div className={s.root}>
-      <PageHero
-        breadcrumbs={[
-          { label: tPlayers('title'), href: ROUTES.players.list },
-          { label: nickname, href: ROUTES.players.profile(nickname) },
-          { label: t('crumb', { year }) }
-        ]}
-        figures={
-          wrapped.data &&
-          wrapped.data.battles > 0 && (
-            <>
+      <div className={s.head}>
+        <PageHeader
+          breadcrumbs={[
+            { label: tPlayers('title'), href: ROUTES.players.list },
+            { label: nickname, href: ROUTES.players.profile(nickname) },
+            { label: t('crumb', { year }) }
+          ]}
+          description={t('lead', { nickname, year })}
+          emblem={<CalendarDays />}
+          meta={t('eyebrow', { year })}
+          title={t('title', { nickname, year })}
+        >
+          {wrapped.data && wrapped.data.battles > 0 && (
+            <KeyFigures>
               <KeyFigure label={t('figures.battles')} value={wrapped.data.battles} variant='compact' />
               <KeyFigure
                 format={{ style: 'percent', maximumFractionDigits: 2 }}
@@ -48,14 +52,10 @@ export const PlayerWrappedPage = ({ nickname: requested, year }: PlayerWrappedPa
                 value={wrapped.data.avgDamage}
                 variant='compact'
               />
-            </>
-          )
-        }
-        art={{ kind: 'emblem', glyph: <CalendarDays size={WRAPPED_VIEW.emblemSize} strokeWidth={WRAPPED_VIEW.emblemStroke} /> }}
-        eyebrow={t('eyebrow', { year })}
-        lead={t('lead', { nickname, year })}
-        title={t('title', { nickname, year })}
-      />
+            </KeyFigures>
+          )}
+        </PageHeader>
+      </div>
       <ResourceGate
         error={{ title: t('missing.errorTitle') }}
         notFound={{ title: t('missing.notFound', { nickname }) }}

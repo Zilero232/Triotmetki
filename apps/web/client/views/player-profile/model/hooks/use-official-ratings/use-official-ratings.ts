@@ -13,7 +13,7 @@ export const useOfficialRatings = () => {
   const percentFields: readonly string[] = OFFICIAL_CARD.percentFields;
   const isHistoryEmpty = !hasRecentHistory(profile.recent);
 
-  const { data } = useQuery({ ...playersControllerOfficialRatingsOptions({ path: { id: accountId } }), enabled: isHistoryEmpty });
+  const { data, isPending } = useQuery({ ...playersControllerOfficialRatingsOptions({ path: { id: accountId } }), enabled: isHistoryEmpty });
 
   const periods = (data?.periods ?? []).map(({ period, fields }) => ({
     period,
@@ -24,5 +24,9 @@ export const useOfficialRatings = () => {
     })
   }));
 
-  return { periods, isVisible: isHistoryEmpty && periods.length > 0 };
+  return {
+    periods,
+    isLoading: isHistoryEmpty && isPending,
+    isVisible: isHistoryEmpty && periods.length > 0
+  };
 };

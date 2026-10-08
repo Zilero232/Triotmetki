@@ -2,12 +2,12 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
 import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
-import { PageHeroFallback } from '@/ui-kit';
-import { MarksPage } from '@/views/marks';
+import { MarksBody, MarksBodySkeleton, MarksLiveFigures, MarksPage } from '@/views/marks';
 import { marksPageState } from '@/views/marks/server';
 
 export const generateMetadata = async () => {
@@ -17,12 +17,24 @@ export const generateMetadata = async () => {
   return createPageMetadata({ title: t('title'), description: t('description'), path: ROUTES.marks, locale, index: true, follow: true });
 };
 
-const Page = ({ searchParams }: PageProps<'/[locale]/marks'>) => (
-  <Suspense fallback={<PageHeroFallback />}>
-    <PrefetchBoundary state={searchParams.then(marksPageState)}>
-      <MarksPage />
-    </PrefetchBoundary>
-  </Suspense>
-);
+const Page = ({ searchParams }: PageProps<'/[locale]/marks'>) => {
+  const state = searchParams.then(marksPageState);
 
-export default Page;
+  return (
+    <MarksPage
+      figures={
+        <PrefetchBoundary state={state}>
+          <MarksLiveFigures />
+        </PrefetchBoundary>
+      }
+    >
+      <Suspense fallback={<MarksBodySkeleton />}>
+        <PrefetchBoundary state={state}>
+          <MarksBody />
+        </PrefetchBoundary>
+      </Suspense>
+    </MarksPage>
+  );
+};
+
+export default withMessages({ component: Page, messages: ['marks', 'status.label', 'tanks.filters'] });

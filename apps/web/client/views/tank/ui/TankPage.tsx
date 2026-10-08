@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import { useRouteParam } from '@/shared/lib';
+import { PageHeader } from '@/ui-kit';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import { useTankDetail } from '../model/hooks';
@@ -31,6 +32,7 @@ import s from './TankPage.module.scss';
 
 export const TankPage = () => {
   const t = useTranslations('tank.missing');
+  const tNav = useTranslations('nav.items');
   const ts = useTranslations('tank');
   const name = useRouteParam('slug');
   const query = useTankDetail();
@@ -41,6 +43,7 @@ export const TankPage = () => {
         back={{ href: ROUTES.tanks.catalog, label: t('back') }}
         className={s.shell}
         error={{ title: t('error.title'), description: t('error.description', { slug: name }) }}
+        header={<PageHeader breadcrumbs={[{ label: tNav('catalog'), href: ROUTES.tanks.catalog }, { label: name }]} title={name} />}
         notFound={{ title: t('notFound.title'), description: t('notFound.description', { slug: name }) }}
         query={query}
         skeleton={<TankSkeleton />}

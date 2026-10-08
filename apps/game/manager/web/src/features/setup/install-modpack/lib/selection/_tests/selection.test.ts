@@ -20,8 +20,30 @@ describe('closeDependencies', () => {
   });
 });
 
+describe('presetSelection', () => {
+  const withoutHitLog = components.map((component) => (component.id === 'hit_log' ? { ...component, presets: [] } : component));
+
+  it('picks every component of the catalogue for the everything preset', () => {
+    const selection = presetSelection({ components: withoutHitLog, presets, presetId: 'all' });
+
+    expect(selection.has('hit_log')).toBe(true);
+  });
+
+  it('picks only the members of a regular preset and what they need', () => {
+    const selection = presetSelection({ components: withoutHitLog, presets, presetId: 'recommended' });
+
+    expect([...selection].toSorted()).toEqual(['companion', 'core', 'damage_log', 'marks_panel']);
+  });
+
+  it('picks only the required components for an unknown preset', () => {
+    const selection = presetSelection({ components, presets, presetId: 'nope' });
+
+    expect([...selection].toSorted()).toEqual(['companion', 'core']);
+  });
+});
+
 describe('toggleSelection', () => {
-  const full = presetSelection({ components, presetId: presets[0]?.id ?? null });
+  const full = presetSelection({ components, presets, presetId: presets[0]?.id ?? null });
 
   it('unticks the unticked component', () => {
     expect(toggleSelection({ components, selection: full, id: 'damage_log', checked: false }).has('damage_log')).toBe(false);
@@ -40,7 +62,7 @@ describe('toggleSelection', () => {
 
 describe('matchingPreset', () => {
   const [first] = presets;
-  const presetPicked = presetSelection({ components, presetId: first?.id ?? null });
+  const presetPicked = presetSelection({ components, presets, presetId: first?.id ?? null });
 
   it('names the preset a selection equals', () => {
     expect(matchingPreset({ components, presets, selection: presetPicked })).toBe(first?.id);

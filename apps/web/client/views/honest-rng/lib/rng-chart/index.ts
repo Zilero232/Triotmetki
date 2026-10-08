@@ -1,1 +1,1 @@
-export { bucketMidpoints, bucketShares, rollPercent, toShellKey } from './rng-chart';
+export { bucketMidpoints, bucketShares, isRngShell, rollPercent } from './rng-chart';

@@ -4,7 +4,7 @@ import { Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ModeIcon } from '@/entities/map/map';
-import { TankIdentity, vehicleIdentity } from '@/entities/tank/tank';
+import { TankLink } from '@/entities/tank/tank';
 import { ReplayResultBadge } from '@/features/community/replay-meta';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
@@ -52,14 +52,18 @@ export const ReplayOverview = () => {
       />
       <Card className={s.card} padding='md'>
         <div className={s.owner}>
-          {vehicle && <TankIdentity image='small' tank={vehicleIdentity(vehicle)} />}
+          {vehicle && <TankLink image='small' vehicle={vehicle} />}
           {owner && (
             <span className={s.player}>
               <span className={s.label}>{t('recorder')}</span>
-              <Link className={s.nickname} href={ROUTES.players.profile(owner.nickname)}>
-                {owner.nickname}
-                {owner.clanTag && <span className={s.clan}>[{owner.clanTag}]</span>}
-              </Link>
+              <span className={s.nickname}>
+                <Link href={ROUTES.players.profile(owner.nickname)}>{owner.nickname}</Link>
+                {owner.clanTag && (
+                  <Link className={s.clan} href={ROUTES.clans.detail(owner.clanTag)}>
+                    [{owner.clanTag}]
+                  </Link>
+                )}
+              </span>
             </span>
           )}
           <span className={s.views}>{t('views', { views: replay.views })}</span>

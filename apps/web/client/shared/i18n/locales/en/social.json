@@ -6,7 +6,7 @@
     },
     "leagues": {
       "title": "Weekly leagues",
-      "description": "Weekly divisions from Bronze to Diamond: groups of 30 players, promotion and relegation every week. Plus a table of your friends."
+      "description": "Weekly divisions from Bronze to Diamond: groups of 30 players, promotion and relegation every week. There is also a friends table."
     },
     "challenges": {
       "title": "Weekly challenges",
@@ -15,7 +15,6 @@
   },
   "shell": {
     "label": "Community sections",
-    "home": "Home",
     "signIn": "Sign in",
     "sections": {
       "feed": {
@@ -58,7 +57,7 @@
     },
     "empty": {
       "title": "Nothing here yet",
-      "description": "Follow players to see their marks, masteries and records in your feed.",
+      "description": "Follow players to see their marks, Ace Tanker badges and records in your feed.",
       "action": "Find players"
     },
     "error": {
@@ -103,7 +102,7 @@
       "relegationMoves": "{count, plural, =0 {No relegation} one {# player → {tier}} other {# players → {tier}}}",
       "top": "Top division",
       "bottom": "Nobody drops out of this division",
-      "liveNote": "Zones update during the week. Results are locked on Monday at 00:05 Moscow time; a player short of the battle minimum drops a division.",
+      "liveNote": "Your place in the group is by weekly WN8. Zones update during the week. Results are locked on Monday at 00:05 Moscow time; a player short of the battle minimum drops a division.",
       "closedNote": "The week is closed: places and zones no longer change."
     },
     "pending": {
@@ -131,7 +130,7 @@
       "loading": "Loading the week"
     },
     "empty": {
-      "title": "Your league is empty",
+      "title": "No friends here yet",
       "description": "Follow players to compare your week with theirs.",
       "action": "Find players"
     },

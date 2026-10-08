@@ -12,7 +12,8 @@ export const catalogPresetSchema = z.object({
   id: z.string(),
   title: localizedSchema,
   description: localizedSchema,
-  custom: z.boolean()
+  custom: z.boolean(),
+  everything: z.boolean()
 });
 
 export const perfSchema = z.enum(['low', 'medium', 'high']);

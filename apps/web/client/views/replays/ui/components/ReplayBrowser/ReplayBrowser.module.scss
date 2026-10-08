@@ -4,15 +4,6 @@
   min-width: 0;
 }
 
-.pager {
-  display: flex;
+.more {
   width: 100%;
-  align-items: center;
-  justify-content: flex-end;
-  gap: var(--space-3);
-}
-
-.page {
-  @include source-line;
-  @include numeric;
 }

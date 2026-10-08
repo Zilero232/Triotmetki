@@ -3,13 +3,17 @@ export type RouteStaticParamsInput = {
   limit?: number;
 };
 
-export type RouteEntityInput = {
+export type RouteEntityRecord = {
+  name: string;
   key: string;
-  load: () => Promise<string>;
 };
 
-export type RouteEntity = {
-  name: string;
+export type RouteEntityInput = {
+  key: string;
+  load: () => Promise<RouteEntityRecord>;
+};
+
+export type RouteEntity = RouteEntityRecord & {
   isFound: boolean;
 };
 

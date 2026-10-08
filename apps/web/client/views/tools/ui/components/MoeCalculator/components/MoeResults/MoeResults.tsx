@@ -5,7 +5,7 @@ import { match, P } from 'ts-pattern';
 
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { buttonVariants, EmptyState, Skeleton } from '@/ui-kit';
+import { buttonVariants, EmptyState, ErrorState, Skeleton } from '@/ui-kit';
 
 import type { MoeResultsProps } from '../../MoeCalculator.types';
 
@@ -15,7 +15,7 @@ import { ResultFigure } from '../../../ResultFigure';
 export const MoeResults = (props: MoeResultsProps) => {
   const t = useTranslations('tools.moe');
   const format = useFormatter();
-  const { hasVehicle, isFetching, projection, targetPercent } = useMoeProjection(props);
+  const { hasVehicle, isFetching, isError, projection, targetPercent, retry } = useMoeProjection(props);
 
   const link = (
     <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={`${ROUTES.marks}#projection`}>
@@ -23,9 +23,10 @@ export const MoeResults = (props: MoeResultsProps) => {
     </Link>
   );
 
-  return match({ hasVehicle, isFetching, projection })
+  return match({ hasVehicle, isFetching, isError, projection })
     .with({ hasVehicle: false }, () => <EmptyState isCompact action={link} title={t('pickTitle')} />)
     .with({ isFetching: true, projection: null }, () => <Skeleton height={120} width='100%' />)
+    .with({ isError: true }, () => <ErrorState isCompact onRetry={retry} />)
     .with({ projection: P.nonNullable }, ({ projection: { battles, targetEma } }) => (
       <>
         <ResultFigure

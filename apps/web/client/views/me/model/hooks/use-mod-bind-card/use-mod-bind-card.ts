@@ -9,7 +9,7 @@ import { MOD_BIND } from '../../../config';
 import { useMeSection } from '../use-me-section';
 
 export const useModBindCard = () => {
-  const { data: devices, isError, isFetching, refetch } = useMeSection({ section: 'devices', fetcher: getModDevices });
+  const devicesQuery = useMeSection({ section: 'devices', fetcher: getModDevices });
   const issue = useMutation({
     mutationFn: () => issueBindCode(),
     meta: { errorKey: 'me.toast.failed', invalidates: [QUERY_KEYS.me.section('devices')] }
@@ -23,13 +23,12 @@ export const useModBindCard = () => {
   return {
     code: issue.data,
     steps: MOD_BIND.steps,
-    devices: devices ?? [],
+    devicesQuery,
     isIssuing: issue.isPending,
-    isError,
-    isRetrying: isFetching,
-    isRevoking: revoke.isPending,
+    isRetrying: devicesQuery.isFetching,
+    revokingId: revoke.isPending ? revoke.variables : null,
     onIssue: () => issue.mutate(undefined),
-    onRetry: () => void refetch(),
+    onRetry: () => void devicesQuery.refetch(),
     onRevoke: (id: string) => revoke.mutate(id)
   };
 };

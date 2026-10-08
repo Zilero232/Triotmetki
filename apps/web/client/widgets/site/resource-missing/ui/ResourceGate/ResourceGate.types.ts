@@ -11,8 +11,10 @@ export type ResourceGateProps<TData> = Pick<QueryStateProps<TData>, 'children'> 
   Pick<ResourceMissingProps, 'back'> & {
     query: QueryStateSource<TData> & Partial<Pick<QueryObserverBaseResult<TData>, 'error'>>;
     skeleton: ReactNode;
+    header?: ReactNode;
     error: ResourceGateMessage;
     notFound?: ResourceGateMessage;
     isNotFound?: boolean;
     className?: string;
+    skeletonClassName?: string;
   };

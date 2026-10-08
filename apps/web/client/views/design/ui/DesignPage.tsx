@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 
-import { SectionHeader } from '@/ui-kit';
+import { PageHeader } from '@/ui-kit';
 
 import {
   CardsSection,
@@ -22,7 +22,7 @@ export const DesignPage = () => {
 
   return (
     <div className={s.root}>
-      <SectionHeader description={t('description')} title={t('title')} />
+      <PageHeader breadcrumbs={[{ label: t('title') }]} description={t('description')} title={t('title')} />
       <div className={s.sections}>
         <ColorsSection />
         <TypographySection />

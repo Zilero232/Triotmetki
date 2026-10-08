@@ -4,9 +4,13 @@ import type { AnalyticsStatus, AnalyticsStatusInput, ShouldRetryInput } from './
 
 import { ANALYTICS_VIEW } from '../../config';
 
-export const analyticsStatus = ({ requiresPlus, isPlus, isPlusPending, isPending, error }: AnalyticsStatusInput): AnalyticsStatus => {
+export const analyticsStatus = ({ requiresPlus, isPlus, isPlusPending, isPlusError, isPending, error }: AnalyticsStatusInput): AnalyticsStatus => {
   if (requiresPlus && isPlusPending) {
     return 'pending';
+  }
+
+  if (requiresPlus && isPlusError) {
+    return 'error';
   }
 
   if ((requiresPlus && !isPlus) || isPlusRequiredError(error)) {

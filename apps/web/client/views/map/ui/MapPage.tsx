@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import { useRouteParam } from '@/shared/lib';
-import { DataSourceNote, Tabs } from '@/ui-kit';
+import { DataSourceNote, PageHeader, Tabs } from '@/ui-kit';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import { useMapDetail } from '../model/hooks';
@@ -14,6 +14,7 @@ import s from './MapPage.module.scss';
 
 export const MapPage = () => {
   const t = useTranslations('maps.missing');
+  const tNav = useTranslations('nav.items');
   const tTabs = useTranslations('maps.map.tabs');
   const mapId = useRouteParam('id');
   const query = useMapDetail(mapId);
@@ -23,6 +24,7 @@ export const MapPage = () => {
       <ResourceGate
         back={{ href: ROUTES.maps.list, label: t('toMaps') }}
         error={{ title: t('errorTitle'), description: t('errorDescription', { id: mapId }) }}
+        header={<PageHeader breadcrumbs={[{ label: tNav('maps'), href: ROUTES.maps.list }, { label: mapId }]} title={mapId} />}
         notFound={{ title: t('notFoundTitle'), description: t('notFoundDescription', { id: mapId }) }}
         query={query}
         skeleton={<MapSkeleton />}

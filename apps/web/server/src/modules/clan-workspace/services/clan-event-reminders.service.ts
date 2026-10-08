@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { subMinutes } from 'date-fns';
 
 import { PrismaService } from '../../../core';
 import { NotificationService } from '../../notifications';
+import { CLAN_WORKSPACE } from '../config/workspace.constants';
 import { ClanAccessService } from './clan-access.service';
 
 @Injectable()
@@ -13,8 +15,10 @@ export class ClanEventRemindersService {
   ) {}
 
   async sendReminders(now: Date): Promise<number> {
+    const startedSince = subMinutes(now, CLAN_WORKSPACE.reminderGraceMinutes);
+
     const due = await this.prisma.clanEvent.findMany({
-      where: { remindAt: { lte: now }, remindedAt: null, startsAt: { gt: now } },
+      where: { remindAt: { lte: now }, remindedAt: null, startsAt: { gt: startedSince } },
       include: { workspace: { include: { clan: { select: { tag: true } } } } }
     });
 

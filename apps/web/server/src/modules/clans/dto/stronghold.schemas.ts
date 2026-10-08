@@ -31,24 +31,3 @@ export const rawStrongholdSchema = z
     skirmish_statistics: z.record(z.string(), z.number().nullish()).nullish().catch(null)
   })
   .loose();
-
-const rawReserveStockSchema = z
-  .object({
-    level: optionalNumber,
-    amount: optionalNumber,
-    status: optionalString,
-    activated_at: optionalNumber,
-    active_till: optionalNumber
-  })
-  .loose();
-
-const rawReserveSchema = z
-  .object({
-    type: optionalString,
-    title: optionalString,
-    bonus_type: optionalString,
-    in_stock: z.array(rawReserveStockSchema).nullish().catch(null)
-  })
-  .loose();
-
-export const rawReservesSchema = z.array(rawReserveSchema).catch([]);

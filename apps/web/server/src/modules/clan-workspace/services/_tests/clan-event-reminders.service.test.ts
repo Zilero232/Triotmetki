@@ -1,4 +1,4 @@
-import { subHours } from 'date-fns';
+import { addMinutes, subHours } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
 
@@ -63,6 +63,21 @@ describe('ClanEventRemindersService.sendReminders', () => {
 
     expect(prisma.clanEvent.updateMany).toHaveBeenCalledWith(
       expect.objectContaining({ where: { id: 'e1', remindedAt: null }, data: { remindedAt: NOW } })
+    );
+  });
+
+  it('still picks an event that started within the grace window, so an at-start reminder fires', async () => {
+    const { service, prisma } = createService();
+    const tickAfterStart = addMinutes(startsAt, 3);
+
+    prisma.clanEvent.findMany.mockResolvedValue([]);
+
+    await service.sendReminders(tickAfterStart);
+
+    expect(prisma.clanEvent.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { remindAt: { lte: tickAfterStart }, remindedAt: null, startsAt: { gt: new Date('2026-09-20T17:53:00Z') } }
+      })
     );
   });
 

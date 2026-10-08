@@ -88,20 +88,20 @@ describe('wizardSelection', () => {
   const required = components.filter((component) => component.required).map((component) => component.id);
 
   it('starts from the components it was asked for', () => {
-    const selection = wizardSelection({ plan: null, components, presetId: firstPreset?.id ?? null, initialComponents: [] });
+    const selection = wizardSelection({ plan: null, components, presets, presetId: firstPreset?.id ?? null, initialComponents: [] });
 
     expect([...selection].toSorted()).toEqual(required.toSorted());
   });
 
   it('keeps what is installed on a reinstall', () => {
     const plan = { installed: true, currentComponents: ['hit_log'] };
-    const selection = wizardSelection({ plan, components, presetId: null, initialComponents: null });
+    const selection = wizardSelection({ plan, components, presets, presetId: null, initialComponents: null });
 
     expect(selection.has('hit_log')).toBe(true);
   });
 
   it('starts from the preset on a fresh install', () => {
-    const selection = wizardSelection({ plan: null, components, presetId: firstPreset?.id ?? null, initialComponents: null });
+    const selection = wizardSelection({ plan: null, components, presets, presetId: firstPreset?.id ?? null, initialComponents: null });
 
     expect(selection.size).toBe(components.filter((component) => component.presets.includes(firstPreset?.id ?? '')).length);
   });

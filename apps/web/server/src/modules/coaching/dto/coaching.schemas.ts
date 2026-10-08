@@ -13,8 +13,6 @@ import { z } from 'zod';
 import { playerStatsSchema } from '../../community-core';
 import { COACHING } from '../config/coaching.constants';
 
-const priceSchema = z.number().min(COACHING.minPriceRub).max(COACHING.maxPriceRub);
-
 export const coachContactsSchema = z.object({
   telegram: httpsUrlSchema.optional(),
   discord: z.string().trim().min(2).max(COACHING.contactMaxLength).optional(),
@@ -26,7 +24,6 @@ export const coachOfferSchema = z.object({
   id: uuidSchema,
   title: z.string(),
   description: z.string().nullable(),
-  priceRub: z.number().nullable(),
   durationMinutes: z.number().int().positive(),
   withReplay: z.boolean(),
   isActive: z.boolean()
@@ -39,8 +36,6 @@ export const coachSchema = z.object({
   accountId: accountIdSchema,
   headline: z.string(),
   bio: z.string().nullable(),
-  priceRub: z.number().nullable(),
-  priceNote: z.string().nullable(),
   contacts: coachContactsSchema,
   tankIds: z.array(tankIdSchema),
   isActive: z.boolean(),
@@ -60,8 +55,6 @@ export const upsertCoachSchema = z.object({
   accountId: accountIdSchema,
   headline: z.string().trim().min(5).max(140),
   bio: z.string().trim().max(4000).optional(),
-  priceRub: priceSchema.optional(),
-  priceNote: z.string().trim().max(COACHING.priceNoteMaxLength).optional(),
   contacts: coachContactsSchema.default({}),
   tankIds: z.array(tankIdSchema).max(30).default([]),
   isActive: z.boolean().optional()
@@ -70,7 +63,6 @@ export const upsertCoachSchema = z.object({
 const offerFieldsSchema = z.object({
   title: z.string().trim().min(3).max(140),
   description: z.string().trim().max(2000).optional(),
-  priceRub: priceSchema.optional(),
   durationMinutes: z.number().int().min(15).max(600),
   withReplay: z.boolean()
 });
@@ -88,7 +80,6 @@ export const coachingOrderSchema = z.object({
   offerId: uuidSchema.nullable(),
   replayId: uuidSchema.nullable(),
   status: coachingOrderStatusSchema,
-  priceRub: z.number().nullable(),
   notes: z.string().nullable(),
   studentContact: z.string().nullable().describe('Shown to the coach once the request is accepted'),
   review: z.string().nullable(),

@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "{nickname}: {year} in review",
-    "description": "Battles, damage, favourite tanks, marks and the best battle of {nickname} in {year}."
+    "description": "Battles, damage, favorite tanks, marks and the best battle of {nickname} in {year}."
   },
   "og": {
     "eyebrow": "YEAR IN REVIEW",
@@ -21,14 +21,14 @@
   "crumb": "Year {year}",
   "eyebrow": "Year in review · {year}",
   "title": "{nickname}: {year} in review",
-  "lead": "How the year went for {nickname}: battles, damage, favourite tanks and the best battle.",
+  "lead": "How the year went for {nickname}: battles, damage, favorite tanks and the best battle.",
   "missing": {
     "errorTitle": "The review did not load",
     "notFound": "Player {nickname} not found"
   },
   "empty": {
     "title": "No battles in {year}",
-    "description": "We have no tracked battles for this year. Stats are counted from the moment the profile is tracked."
+    "description": "We have no tracked battles for this year. Stats count from when we started tracking the profile."
   },
   "error": {
     "title": "The review did not load",
@@ -50,23 +50,23 @@
       "frags": "Vehicles destroyed"
     },
     "tanks": {
-      "title": "Favourite tanks",
+      "title": "Favorite tanks",
       "battles": "Battles",
       "damage": "Damage",
       "place": "#{place}",
-      "unknownTank": "#{place} · tank #{tankId} · battles"
+      "unknownTank": "#{place} · tank #{tankId}, battles"
     },
     "marks": {
       "title": "Marks and awards",
       "marks": "Marks gained",
-      "masteries": "Ace Tanker",
+      "masteries": "Ace Tanker badges",
       "badges": "Badges"
     },
     "best": {
       "title": "Battle of the year",
       "damage": "Damage",
-      "frags": "Destroyed",
-      "replay": "Watch the replay"
+      "frags": "Frags",
+      "replay": "Open replay"
     }
   },
   "outro": {

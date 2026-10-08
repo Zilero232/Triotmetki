@@ -17,7 +17,7 @@ import { AppToaster, TooltipProvider } from '@/ui-kit';
 
 import type { AppProvidersProps } from './AppProviders.types';
 
-import { MutationFeedbackSync } from './components';
+import { MutationFeedbackSync, ThemeColorSync } from './components';
 import { THEME_SCRIPT_PROPS } from './config';
 
 export const AppProviders = ({ children }: AppProvidersProps) => (
@@ -44,7 +44,8 @@ export const AppProviders = ({ children }: AppProvidersProps) => (
             </TooltipProvider>
             <RatingPatternsSync />
             <RatingPaletteSync />
-            <MutationFeedbackSync />
+            <MutationFeedbackSync scope='root' />
+            <ThemeColorSync />
             <AppToaster />
           </LazyMotion>
         </MotionConfig>

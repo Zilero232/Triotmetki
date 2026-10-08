@@ -1,0 +1,27 @@
+@use '@/shared/styles/mixins' as *;
+
+.bandInner {
+  @include grid-columns(minmax(0, 1fr) 320px, $gap: var(--space-6), $below-3xl: 1);
+
+  align-items: start;
+}
+
+.rail {
+  @include stack(var(--gap-panel));
+
+  min-width: 0;
+}
+
+.main {
+  @include shell;
+  @include stack(var(--space-3));
+
+  min-width: 0;
+  padding-top: var(--space-7);
+}
+
+.source {
+  @include source-line;
+
+  margin: 0;
+}

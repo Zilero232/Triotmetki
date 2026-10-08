@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { PageHeader, QueryState, Skeleton } from '@/ui-kit';
+import { QueryState, SectionHeader, Skeleton } from '@/ui-kit';
 
 import { useTelegramLinkPage } from '../model/hooks';
 import { CodeRequest, LinkedPanel, MiniAppCard } from './components';
@@ -15,7 +15,7 @@ export const TelegramLinkPage = () => {
 
   return (
     <div className={s.root}>
-      <PageHeader description={t('description')} title={t('title')} />
+      <SectionHeader as='h1' description={t('description')} title={t('title')} />
       <div className={s.grid}>
         <QueryState query={query} skeleton={<Skeleton height={320} shape='block' />}>
           {(status) =>

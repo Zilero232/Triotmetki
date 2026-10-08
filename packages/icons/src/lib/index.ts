@@ -7,3 +7,4 @@ export { TIERS, toRoman } from './roman';
 export type { Tier } from './roman';
 export { starPath } from './star-path';
 export { tierGlyphs } from './tier-glyphs';
+export { useHydrated } from './use-hydrated';

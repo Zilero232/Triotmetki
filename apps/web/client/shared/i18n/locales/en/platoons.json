@@ -9,7 +9,7 @@
   },
   "modes": {
     "random": "Random",
-    "ranked": "Ranked",
+    "ranked": "Ranked battles",
     "onslaught": "Onslaught",
     "stronghold": "Stronghold",
     "frontline": "Front Line",
@@ -34,7 +34,7 @@
     "emptyTitle": "No posts",
     "emptyDescription": "Nobody is looking for a platoon right now. Post yours — it stays up for a few hours.",
     "emptyFilteredDescription": "Nobody matches these filters. Loosen them or post your own.",
-    "errorTitle": "Couldn't load the board",
+    "errorTitle": "Could not load the board",
     "errorDescription": "The server didn't respond. Try again."
   },
   "card": {
@@ -60,7 +60,7 @@
     "close": "Take down"
   },
   "create": {
-    "open": "Post an ad",
+    "open": "Create a post",
     "title": "Looking for a platoon",
     "description": "Your post is public. Other players copy your nickname to reach you.",
     "tiers": "Tiers",
@@ -89,7 +89,7 @@
   "errors": {
     "forbidden": "Link your Lesta account in your profile first",
     "notFound": "The post is already closed or expired",
-    "conflict": "Data conflict, try again",
+    "conflict": "Could not save, refresh the page",
     "validation": "Check the form fields",
     "unauthorized": "Sign in to continue",
     "rateLimited": "Too many requests, wait a bit",

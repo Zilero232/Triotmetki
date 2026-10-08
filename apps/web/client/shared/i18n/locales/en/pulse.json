@@ -1,11 +1,15 @@
 {
   "meta": {
-    "title": "Mir Tankov server pulse: when people play — Three Marks",
+    "title": "Mir Tankov server pulse: when people play",
     "description": "How many tracked Mir Tankov players are in battle now, and which hours and weekdays are the busiest."
   },
   "head": {
     "title": "Server pulse",
     "description": "Activity of tracked players by hour and weekday — our sample, not the official online count"
+  },
+  "zone": {
+    "moscow": "Moscow time",
+    "other": "{timezone} time"
   },
   "figures": {
     "active": "Played in the last hour",
@@ -13,12 +17,12 @@
     "tracked": "Tracked",
     "trackedHint": "Players with battles in the last 28 days",
     "peak": "Peak hour",
-    "peakHint": "{timezone} time",
+    "peakHint": "In {zone}",
     "peakShare": "Battles at peak"
   },
   "heat": {
     "title": "Activity by hour",
-    "meta": "28 days · {timezone}",
+    "meta": "28 days · {zone}",
     "caption": "Players by weekday and hour",
     "day": "Day",
     "cell": "{day}, {hour}:00 — {players, plural, one {# player} other {# players}}",

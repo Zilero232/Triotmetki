@@ -67,7 +67,7 @@
     "description": "Name the key after the project so you always know where it is used.",
     "secretTitle": "Key “{name}” is ready",
     "secretDescription": "Copy it now — the dashboard keeps only its prefix.",
-    "done": "I saved the key",
+    "done": "Key saved",
     "name": "Name",
     "nameHint": "For example: “Clan bot” or “OBS widget”.",
     "namePlaceholder": "Clan bot",
@@ -126,7 +126,7 @@
   "webhooks": {
     "eyebrow": "Webhooks",
     "title": "Webhooks",
-    "description": "The server POSTs to your URL when a followed player earns a mark, finishes a session, or a clan roster changes.",
+    "description": "The server POSTs to your URL when a player in the filter earns a mark, finishes a session, or a clan roster changes.",
     "create": "New webhook",
     "limit": "{count} of {max} webhooks used on your tier.",
     "empty": "No webhooks yet",
@@ -159,7 +159,7 @@
       "title": "Webhook created",
       "description": "Verify every delivery’s signature with this secret."
     },
-    "done": "I saved the secret",
+    "done": "Secret saved",
     "url": "URL",
     "urlHint": "It must answer 2xx within a few seconds.",
     "events": "Events",

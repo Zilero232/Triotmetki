@@ -1,0 +1,12 @@
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.error {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}

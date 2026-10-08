@@ -57,8 +57,7 @@ export class CoachingOrderWriterService {
         offerId: offer?.id ?? null,
         replayId: replayId ?? null,
         notes: notes ?? null,
-        studentContact,
-        priceRub: offer?.priceRub ?? coach.priceRub
+        studentContact
       }
     });
 

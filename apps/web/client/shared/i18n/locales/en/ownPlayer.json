@@ -17,7 +17,7 @@
     "title": "You are {nickname}",
     "open": "My nickname: {nickname}",
     "linksLabel": "My pages",
-    "dashboard": "My dashboard",
+    "dashboard": "My stats on the home page",
     "profile": "My profile",
     "switch": "Switch nickname",
     "forget": "Forget nickname",

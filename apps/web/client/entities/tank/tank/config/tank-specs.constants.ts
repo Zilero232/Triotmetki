@@ -14,7 +14,7 @@ export const TANK_SPECS = {
   depression: { group: 'firepower', unit: 'deg', digits: 1, lowerIsBetter: true },
   maxHealth: { group: 'survivability', unit: 'hp', digits: 0 },
   weight: { group: 'mobility', unit: 't', digits: 1, lowerIsBetter: true },
-  enginePower: { group: 'mobility', unit: 'hp', digits: 0 },
+  enginePower: { group: 'mobility', unit: 'horsepower', digits: 0 },
   powerToWeight: { group: 'mobility', unit: 'hp_t', digits: 1 },
   speedForward: { group: 'mobility', unit: 'kmh', digits: 0 },
   speedBackward: { group: 'mobility', unit: 'kmh', digits: 0 },

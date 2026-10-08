@@ -2,7 +2,7 @@ import type { Catalog, CatalogComponent, CatalogPreset } from '@/entities/catalo
 import type { Locale } from '@/shared/i18n';
 
 import type { InstallPlan } from '../../api';
-import type { Selection } from '../selection';
+import type { Selection, SelectionPresets } from '../selection';
 
 export type WizardCatalog = Pick<Catalog, 'categories' | 'components' | 'previewsDir'>;
 
@@ -45,6 +45,7 @@ export type WizardPreviewInput = {
 export type WizardSelectionInput = {
   plan: Pick<InstallPlan, 'currentComponents' | 'installed'> | null;
   components: readonly CatalogComponent[];
+  presets: SelectionPresets;
   presetId: string | null;
   initialComponents: string[] | null;
 };

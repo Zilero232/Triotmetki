@@ -1,12 +1,11 @@
 {
   "meta": {
     "title": "Mir Tankov event calendar — Three Marks",
-    "description": "Battle pass, Front Line, Onslaught, ranked battles, marathons and drops in Mir Tankov: what is on now, what is next, and a calendar subscription."
+    "description": "Battle Pass, Front Line, Onslaught, ranked battles, marathons and drops in Mir Tankov: what is on now, what is next, and a calendar subscription."
   },
   "head": {
     "title": "Events",
-    "description": "Battle pass, Front Line, Onslaught, ranked battles, marathons and drops — from tanki.su news",
-    "home": "Home",
+    "description": "Battle Pass, Front Line, Onslaught, ranked battles, marathons and drops — from tanki.su news",
     "nowFigure": "Running now"
   },
   "filters": {
@@ -16,7 +15,7 @@
     "event": "Event",
     "sale": "Sale",
     "marathon": "Marathon",
-    "battle_pass": "Battle pass",
+    "battle_pass": "Battle Pass",
     "front_line": "Front Line",
     "onslaught": "Onslaught",
     "ranked": "Ranked battles",

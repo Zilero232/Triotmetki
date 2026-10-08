@@ -16,7 +16,7 @@ import { BaseSection } from '../BaseSection';
 export const StrongholdCard = ({ stronghold }: StrongholdCardProps) => {
   const t = useTranslations('clans.bases.stronghold');
 
-  const { level, buildings, reserves, skirmishes, battles, winRate, totalResources } = stronghold;
+  const { level, buildings, skirmishes, battles, winRate, totalResources } = stronghold;
 
   return (
     <BaseCard
@@ -40,19 +40,7 @@ export const StrongholdCard = ({ stronghold }: StrongholdCardProps) => {
       <BaseSection isEmpty={buildings.length === 0} note={t('noBuildings')} title={t('buildingsTitle')}>
         {buildings.map((building) => (
           <BaseRow key={`${building.type}-${building.position ?? ''}`} label={building.title ?? building.type}>
-            {building.level === null ? '—' : t('reserveLevel', { level: building.level })}
-          </BaseRow>
-        ))}
-      </BaseSection>
-      <BaseSection isEmpty={reserves.length === 0} note={t('reservesHidden')} title={t('reservesTitle')}>
-        {reserves.map((reserve) => (
-          <BaseRow
-            key={`${reserve.type}-${reserve.level ?? ''}-${reserve.status ?? ''}-${reserve.activatedAt ?? ''}`}
-            isMuted={reserve.count === 0}
-            label={reserve.title ?? reserve.type}
-          >
-            {reserve.level === null ? '—' : t('reserveLevel', { level: reserve.level })}
-            {t('count', { count: reserve.count ?? 0 })}
+            {building.level === null ? '—' : t('buildingLevel', { level: building.level })}
           </BaseRow>
         ))}
       </BaseSection>

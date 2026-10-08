@@ -18,7 +18,7 @@ export const useReplayFilters = () => {
 
   const filters: ReplayFilters = { ...rest, player, clan };
 
-  const update = (patch: ReplayFiltersPatch) => void setState({ ...patch, offset: null });
+  const update = (patch: ReplayFiltersPatch) => void setState(patch);
 
   return {
     tab,
@@ -26,8 +26,7 @@ export const useReplayFilters = () => {
     clanDraft,
     filters,
     update,
-    setTab: (next: typeof tab) => void setState({ tab: next, offset: null }),
-    setOffset: (offset: number) => void setState({ offset: offset > 0 ? offset : null }),
+    setTab: (next: typeof tab) => void setState({ tab: next }),
     reset: () => void setState(mapValues(omit(REPLAYS_URL_PARSERS, ['tab', 'sort']), () => null))
   };
 };

@@ -9,8 +9,11 @@ export type CloseDependenciesInput = {
   ids: Iterable<string>;
 };
 
+export type SelectionPresets = readonly Pick<CatalogPreset, 'everything' | 'id'>[];
+
 export type PresetSelectionInput = {
   components: SelectionComponents;
+  presets: SelectionPresets;
   presetId: string | null;
 };
 
@@ -23,7 +26,7 @@ export type ToggleSelectionInput = {
 
 export type MatchingPresetInput = {
   components: SelectionComponents;
-  presets: readonly Pick<CatalogPreset, 'custom' | 'id'>[];
+  presets: readonly Pick<CatalogPreset, 'custom' | 'everything' | 'id'>[];
   selection: Selection;
 };
 

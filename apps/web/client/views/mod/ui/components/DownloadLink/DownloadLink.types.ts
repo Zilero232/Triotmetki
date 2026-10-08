@@ -2,10 +2,8 @@ import type { LucideIcon } from 'lucide-react';
 
 import type { ButtonVariantProps } from '@/ui-kit';
 
-import type { ModDownload } from '../../../model/hooks';
-
 export type DownloadLinkProps = {
-  file: ModDownload | null;
+  isAvailable: boolean;
   href: string;
   fileName: string;
   icon: LucideIcon;

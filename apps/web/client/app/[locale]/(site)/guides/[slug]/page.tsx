@@ -4,12 +4,13 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { guideRouteMeta } from '@/entities/guide/guide/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
-import { PageHeroFallback } from '@/ui-kit';
+import { PageHeaderFallback } from '@/ui-kit';
 import { GuidePage } from '@/views/guide';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/guides/[slug]'>): Promise<Metadata> => {
@@ -36,9 +37,9 @@ const GuideRoute = async ({ params }: Pick<PageProps<'/[locale]/guides/[slug]'>,
 };
 
 const Page = ({ params }: PageProps<'/[locale]/guides/[slug]'>) => (
-  <Suspense fallback={<PageHeroFallback />}>
+  <Suspense fallback={<PageHeaderFallback />}>
     <GuideRoute params={params} />
   </Suspense>
 );
 
-export default Page;
+export default withMessages({ component: Page, messages: ['community.comments', 'community.report', 'guides', 'maps'] });

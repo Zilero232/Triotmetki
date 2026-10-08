@@ -13,8 +13,7 @@ import type {
   clanStrongholdSchema,
   clanSummarySchema,
   strongholdBattlesSchema,
-  strongholdBuildingSchema,
-  strongholdReserveSchema
+  strongholdBuildingSchema
 } from './clans.schemas';
 
 export type ClanRole = z.infer<typeof clanRoleSchema>;
@@ -28,6 +27,5 @@ export type ClanListQuery = z.infer<typeof clanListQuerySchema>;
 export type ClanListItem = z.infer<typeof clanListItemSchema>;
 export type ClanListPage = z.infer<typeof clanListPageSchema>;
 export type StrongholdBuilding = z.infer<typeof strongholdBuildingSchema>;
-export type StrongholdReserve = z.infer<typeof strongholdReserveSchema>;
 export type StrongholdBattles = z.infer<typeof strongholdBattlesSchema>;
 export type ClanStronghold = z.infer<typeof clanStrongholdSchema>;

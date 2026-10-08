@@ -30,7 +30,7 @@
       "battles": "Battles",
       "winRate": "Win rate",
       "avgDamage": "Avg damage",
-      "wn8": "WN8 7d",
+      "wn8": "WN8 7 d",
       "marks": "Marks"
     }
   },
@@ -45,7 +45,7 @@
   "toast": {
     "added": "Now watching {nickname}",
     "removed": "Player removed from the list",
-    "failed": "That did not work. Try again.",
+    "failed": "Something went wrong. Please try again.",
     "limit": "The list is full — Plus lets you watch more players.",
     "digestSaved": "Digest schedule saved",
     "digestPlus": "The hourly digest comes with Plus"
@@ -63,7 +63,7 @@
     },
     "hourlyPlus": "The hourly digest is part of Plus.",
     "plusLink": "About Plus",
-    "channels": "Where the digest goes — the site, Telegram, push or e-mail — is set up in <link>Notifications</link>."
+    "channels": "Where the digest goes — the site, Telegram, push or email — is set up in <link>Notifications</link>."
   },
   "button": {
     "watch": "Watch",
@@ -71,6 +71,6 @@
     "added": "Player added to your watchlist",
     "removed": "Player removed from your watchlist",
     "limit": "Your watchlist is full — Plus lets you watch more players.",
-    "failed": "That did not work. Try again."
+    "failed": "Something went wrong. Please try again."
   }
 }

@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Controller } from 'react-hook-form';
 
 import { MarkdownEditor } from '@/features/community/markdown-editor';
-import { Button, Card, FormField, Input, SegmentedControl, Select, Switch, Textarea } from '@/ui-kit';
+import { Button, Card, ConfirmDialog, FormField, FormFooter, Input, SegmentedControl, Select, Switch, Textarea } from '@/ui-kit';
 
 import type { BlogPostFormProps } from './BlogPostForm.types';
 
@@ -21,7 +21,7 @@ export const BlogPostForm = ({ post }: BlogPostFormProps) => {
   const { errors } = editor.form.formState;
 
   return (
-    <form noValidate className={s.root} onSubmit={editor.onSaveDraft}>
+    <form noValidate className={s.root} onSubmit={editor.onFormSubmit}>
       <div className={s.layout}>
         <Card className={s.main} padding='lg'>
           <FormField error={errors.title && t('errors.title', editor.titleLimit)} hint={t('counter', editor.titleLimit)} label={t('title')}>
@@ -108,14 +108,25 @@ export const BlogPostForm = ({ post }: BlogPostFormProps) => {
           </Card>
         </div>
       </div>
-      <div className={s.footer}>
-        <Button disabled={editor.isPending} type='submit' variant='secondary'>
-          {editor.isPublished ? t('unpublish') : t('saveDraft')}
+      <FormFooter>
+        <Button disabled={editor.isPending} type='button' variant='secondary' onClick={editor.onSaveDraft}>
+          {editor.draftLabel}
         </Button>
         <Button disabled={editor.isPending} type='button' onClick={editor.onPublish}>
-          {editor.isPublished ? t('update') : t('publish')}
+          {editor.publishLabel}
         </Button>
-      </div>
+      </FormFooter>
+      <ConfirmDialog
+        cancelLabel={t('cancel')}
+        confirmLabel={t('unpublish')}
+        description={t('unpublishDescription')}
+        isPending={editor.isPending}
+        open={editor.isUnpublishOpen}
+        title={t('unpublishTitle')}
+        tone='danger'
+        onConfirm={editor.onUnpublish}
+        onOpenChange={editor.onUnpublishOpenChange}
+      />
     </form>
   );
 };

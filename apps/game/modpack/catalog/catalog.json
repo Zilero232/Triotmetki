@@ -271,8 +271,8 @@
         "en": "Three Marks companion"
       },
       "description": {
-        "ru": "Привязка к сайту, отправка ваших итогов боя и процентов отметок. Ничего не отправляет, пока вы не привяжете мод кодом с сайта.",
-        "en": "Links the mod to the site and sends your own battle results and MoE percentages. Sends nothing until you bind it with a code from the site."
+        "ru": "Привязка к сайту, отправка ваших итогов боя и процентов отметок. Пока вы не привяжете мод кодом с сайта, отправляет только номера аккаунтов игроков боя для плашки «Три отметки».",
+        "en": "Links the mod to the site and sends your own battle results and MoE percentages. Until you bind it with a code from the site, it sends only the battle's account numbers for the Three Marks plate."
       },
       "fairPlay": {
         "ru": "Только ваши данные: ваша часть итогов боя и ваше досье. Данные других игроков не читаются.",

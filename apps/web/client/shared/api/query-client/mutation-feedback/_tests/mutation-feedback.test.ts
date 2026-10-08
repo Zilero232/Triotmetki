@@ -22,11 +22,12 @@ const run = ({ meta, mutationFn }: { meta?: MutationFeedbackMeta; mutationFn: ()
 beforeEach(() => {
   const t = createTranslator({ locale: 'en', messages: messages.en });
 
-  setMutationTranslator((key) => t(key));
+  setMutationTranslator({ scope: 'root', translate: (key) => t(key) });
 });
 
 afterEach(() => {
-  setMutationTranslator(null);
+  setMutationTranslator({ scope: 'root', translate: null });
+  setMutationTranslator({ scope: 'page', translate: null });
 });
 
 describe('createMutationCache', () => {
@@ -50,7 +51,7 @@ describe('createMutationCache', () => {
   });
 
   it('stays silent but still invalidates before a translator is registered', async () => {
-    setMutationTranslator(null);
+    setMutationTranslator({ scope: 'root', translate: null });
 
     const { execution, invalidate } = run({
       mutationFn: async () => 'ok',
@@ -61,6 +62,14 @@ describe('createMutationCache', () => {
 
     expect(toast.success).not.toHaveBeenCalled();
     expect(invalidate).toHaveBeenCalledWith({ queryKey: ['me', 'goals'] });
+  });
+
+  it('prefers the page translator, which holds the page messages, over the root one', async () => {
+    setMutationTranslator({ scope: 'page', translate: (key) => `page:${key}` });
+
+    await run({ mutationFn: async () => 'ok', meta: { successKey: 'me.toast.goalAdded' } }).execution;
+
+    expect(toast.success).toHaveBeenCalledWith('page:me.toast.goalAdded');
   });
 
   it('toasts a static error key', async () => {

@@ -3,11 +3,10 @@
 import { CrosshairIcon } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
 import { Badge, DataSourceNote, EmptyState, KeyFigure, PageHero, QueryState, SectionHeader, Skeleton } from '@/ui-kit';
 
 import { useMissionsHub } from '../model/hooks';
-import { OperationCard } from './components';
+import { MissionsSkeleton, OperationCard } from './components';
 
 import s from './MissionsPage.module.scss';
 
@@ -28,7 +27,7 @@ export const MissionsPage = () => {
           )
         }
         art={{ kind: 'emblem', glyph: <CrosshairIcon size={480} /> }}
-        breadcrumbs={[{ label: t('home'), href: ROUTES.home }, { label: t('title') }]}
+        breadcrumbs={[{ label: t('title') }]}
         figures={hasFigure && <KeyFigure label={t('operationsFigure')} value={operationsCount} variant='compact' />}
         lead={t('description')}
         title={t('title')}
@@ -40,7 +39,7 @@ export const MissionsPage = () => {
           errorTitle={t('errorTitle')}
           isEmpty={(data) => data.campaigns.length === 0}
           query={campaigns}
-          skeleton={<Skeleton height={320} shape='block' />}
+          skeleton={<MissionsSkeleton />}
         >
           {(data) =>
             data.campaigns.map((campaign) => (

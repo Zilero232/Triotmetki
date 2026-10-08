@@ -1,6 +1,6 @@
 import { isIncludedIn } from 'remeda';
 
-import type { CoachingOffer, Prisma } from '../../../../generated';
+import type { CoachingOffer } from '../../../../generated';
 import type { CoachContacts, CoachingOrderView, CoachOfferView, CoachView, OrderViewInput } from '../coaching.types';
 import type { CoachViewInput } from './coaching-views.types';
 
@@ -8,8 +8,6 @@ import { toIso } from '../../../common/lib';
 import { toAuthorView } from '../../community-core';
 import { COACHING } from '../config/coaching.constants';
 import { coachContactsSchema } from '../dto/coaching.schemas';
-
-const priceOf = (price: Prisma.Decimal | null): number | null => (price === null ? null : Number(price));
 
 export const contactsOf = (value: unknown): CoachContacts => {
   const parsed = coachContactsSchema.safeParse(value ?? {});
@@ -21,7 +19,6 @@ export const toOfferView = (offer: CoachingOffer): CoachOfferView => ({
   id: offer.id,
   title: offer.title,
   description: offer.description,
-  priceRub: priceOf(offer.priceRub),
   durationMinutes: offer.durationMinutes,
   withReplay: offer.withReplay,
   isActive: offer.isActive
@@ -34,8 +31,6 @@ export const toCoachView = ({ coach, stats }: CoachViewInput): CoachView => ({
   accountId: Number(coach.accountId),
   headline: coach.headline,
   bio: coach.bio,
-  priceRub: priceOf(coach.priceRub),
-  priceNote: coach.priceNote,
   contacts: contactsOf(coach.contacts),
   tankIds: coach.tankIds,
   isActive: coach.isActive,
@@ -55,7 +50,6 @@ export const toOrderView = ({ order, viewerId }: OrderViewInput): CoachingOrderV
     offerId: order.offerId,
     replayId: order.replayId,
     status: order.status,
-    priceRub: priceOf(order.priceRub),
     notes: order.notes,
     studentContact: showsContact ? order.studentContact : null,
     review: order.review,

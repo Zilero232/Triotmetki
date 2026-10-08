@@ -19,7 +19,7 @@
     "tank": "Tank",
     "coverage": "Sample",
     "players": "{count, plural, one {# player} other {# players}}",
-    "winRate": "Wins",
+    "winRate": "Win rate",
     "avgDamage": "Avg damage",
     "equipment": "Equipment",
     "consumables": "Consumables",

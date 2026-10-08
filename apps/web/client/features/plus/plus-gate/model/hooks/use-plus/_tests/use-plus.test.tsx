@@ -109,4 +109,30 @@ describe('usePlus', () => {
     expect(result.current.state).toBe('expired');
     expect(result.current.limits).toEqual(plusLimitsFor(false));
   });
+
+  it('reports a failed billing lookup instead of treating the viewer as free', async () => {
+    vi.mocked(getBillingStatus).mockRejectedValue(new Error('billing down'));
+    const { result } = renderPlus(SESSION);
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    expect(result.current.isPending).toBe(false);
+  });
+
+  it('retries the billing lookup on refetch', async () => {
+    vi.mocked(getBillingStatus).mockRejectedValueOnce(new Error('billing down')).mockResolvedValue(TRIAL_STATUS);
+    const { result } = renderPlus(SESSION);
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    result.current.refetch();
+
+    await waitFor(() => expect(result.current.isPlus).toBe(true));
+  });
+
+  it('never reports an error for a guest', () => {
+    const { result } = renderPlus(null);
+
+    expect(result.current.isError).toBe(false);
+  });
 });

@@ -16,12 +16,23 @@ import s from './StreamerSettingsPage.module.scss';
 
 export const StreamerSettingsPage = ({ slug }: StreamerSettingsPageProps) => {
   const t = useTranslations('streamerSettings.page');
+  const tNav = useTranslations('nav.items');
   const format = useFormatter();
   const { query, groups } = useStreamerSettingsPage(slug);
 
   return (
     <div className={s.root}>
       <ResourceGate
+        header={
+          <PageHeader
+            breadcrumbs={[
+              { label: tNav('streamers'), href: ROUTES.streamers.list },
+              { label: slug, href: ROUTES.streamers.profile(slug) },
+              { label: t('crumbs.current') }
+            ]}
+            title={t('title', { name: slug })}
+          />
+        }
         skeleton={
           <>
             <Skeleton height={96} shape='block' />
@@ -36,8 +47,9 @@ export const StreamerSettingsPage = ({ slug }: StreamerSettingsPageProps) => {
           <>
             <PageHeader
               breadcrumbs={[
-                { label: t('crumbs.settings'), href: ROUTES.streamers.settings.table },
-                { label: loaded.displayName, href: ROUTES.streamers.profile(loaded.slug) }
+                { label: tNav('streamers'), href: ROUTES.streamers.list },
+                { label: loaded.displayName, href: ROUTES.streamers.profile(loaded.slug) },
+                { label: t('crumbs.current') }
               ]}
               actions={groups.length > 0 && <SettingsActions view={loaded} />}
               description={t('description')}

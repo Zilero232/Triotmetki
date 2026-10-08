@@ -1,5 +1,4 @@
 {
-  "home": "Home",
   "draft": "Draft. This is not the final wording: the operator's details and the highlighted fields will be filled in before payments open.",
   "related": "Other documents",
   "docs": {
@@ -26,11 +25,11 @@
     },
     "data": {
       "title": "What data we process",
-      "body": "When you sign in with Lesta ID: the Mir Tankov account ID and nickname and a Lesta API access token. If you provide them: your email address and Telegram ID. For the Plus subscription: payment history and subscription status; card data is handled by the payment provider, we never receive or store it. Public game statistics come from the open Lesta API."
+      "body": "When you sign in with Lesta ID: the Mir Tankov account ID and nickname and a Lesta API access token. If you provide them: your email address and Telegram ID. If you bound the modpack: your battle results, your shots, tank loadouts, queue times, game settings (when you send them), replays (if you turned uploads on) and the device key. For the modpack plate the mod sends the account numbers of a battle’s players: the site keeps no copy of that list and, while the switch is on, keeps only a 30-day “mod installed” mark on your account. For the Plus subscription: payment history and subscription status; card data is handled by the payment provider, we never receive or store it. Public game statistics come from the open Lesta API."
     },
     "purposes": {
       "title": "Why",
-      "body": "To show your statistics and analytics, keep your settings, goals and favourites, send the notifications you turned on, and run the Plus subscription."
+      "body": "To show your statistics and analytics, keep your settings, goals and favorites, send the notifications you turned on, and run the Plus subscription."
     },
     "basis": {
       "title": "Legal basis",
@@ -38,15 +37,15 @@
     },
     "storage": {
       "title": "Where and how long data is stored",
-      "body": "Data is stored on servers in the Russian Federation: <todo>hosting provider and region</todo>. We keep it while you have an account and delete it within <todo>period</todo> after the account is deleted, except payment records the law requires us to keep longer."
+      "body": "Data is stored on servers in the Russian Federation: <todo>hosting provider and region</todo>. We keep it while you have an account and delete it right after the account is deleted, except payment records the law requires us to keep longer. Battle results and sessions from the modpack are kept for up to 2 years."
     },
     "transfer": {
       "title": "Who receives data",
-      "body": "The payment provider <todo>payment provider name</todo>, to take payments; Telegram, only if you connected the bot. Data is never sold or shared for advertising."
+      "body": "The payment provider <todo>payment provider name</todo>, to take payments; the email provider, for the emails you turned on; Telegram and Discord, only if you connected the bot or session reports. Data is never sold or shared for advertising."
     },
     "rights": {
       "title": "Your rights",
-      "body": "You can get a copy of your data, correct it, withdraw consent and delete your account under “My profile”. Send requests the interface cannot handle to <mail>{email}</mail>; we reply within 10 business days."
+      "body": "You can get a copy of your data, correct it, withdraw consent and delete your account in your account area (the Overview page). Send requests the interface cannot handle to <mail>{email}</mail>; we reply within 10 business days."
     },
     "cookies": {
       "title": "Cookies and local storage",
@@ -66,7 +65,7 @@
     },
     "account": {
       "title": "Account",
-      "body": "You sign in with Lesta ID. We never receive or store your game password. You are responsible for actions taken in your account and can delete it at any time under “My profile”."
+      "body": "You sign in with Lesta ID or Telegram. We never receive or store your game password. You are responsible for actions taken in your account and can delete it at any time in your account area (the Overview page)."
     },
     "plus": {
       "title": "The Plus subscription",
@@ -82,7 +81,7 @@
     },
     "rules": {
       "title": "Acceptable use",
-      "body": "Do not scrape the site around the public API, disrupt the service, publish other people's data without consent, or break the Mir Tankov rules. The Three Marks mod shows only your own data."
+      "body": "Do not scrape the site around the public API, disrupt the service, publish other people’s data without consent, or break the Mir Tankov rules. The Three Marks modpack shows only your own data and what the game client already shows."
     },
     "liability": {
       "title": "Liability",
@@ -106,7 +105,7 @@
     },
     "game": {
       "title": "Game support (Lesta)",
-      "body": "Game account questions, in-game purchases, bans and Lesta ID are handled only by Lesta Games support: <lesta>Lesta support centre</lesta>. We cannot help with them because we are not affiliated with Lesta Games."
+      "body": "Game account questions, in-game purchases, bans and Lesta ID are handled only by Lesta Games support: <lesta>Lesta support center</lesta>. We cannot help with them because we are not affiliated with Lesta Games."
     }
   },
   "footer": {

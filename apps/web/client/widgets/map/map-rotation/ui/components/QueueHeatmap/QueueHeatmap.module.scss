@@ -7,6 +7,7 @@
 }
 
 .scroller {
+  position: relative;
   overflow-x: auto;
 
   @include hide-scrollbar;

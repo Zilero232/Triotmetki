@@ -4,7 +4,6 @@
     "description": "How damage really rolls in Mir Tankov: the distribution of shots by players with the mod against the theoretical ±25%."
   },
   "head": {
-    "home": "Home",
     "title": "Honest RNG",
     "lead": "Real per-shot damage rolls from players with the mod against the theoretical ±25%.",
     "shots": "Shots sampled",
@@ -35,9 +34,7 @@
   "shells": {
     "armor_piercing": "AP",
     "armor_piercing_cr": "APCR",
-    "hollow_charge": "HEAT",
-    "high_explosive": "HE",
-    "unknown": "Unknown"
+    "hollow_charge": "HEAT"
   },
   "empty": {
     "title": "No shots yet",
@@ -45,7 +42,7 @@
   },
   "error": {
     "title": "Could not load the statistics",
-    "description": "The statistics server did not answer. Try again."
+    "description": "The statistics server did not respond. Try again."
   },
   "mine": {
     "title": "Your RNG",
@@ -66,7 +63,7 @@
     "guestText": "Sign in with Lesta ID and install the mod — we will measure the rolls of your shots.",
     "signIn": "Sign in",
     "noAccountTitle": "Link your account",
-    "noAccountText": "Link your Mir Tankov account to measure your RNG.",
+    "noAccountText": "Link your Lesta account to measure your RNG.",
     "link": "Link",
     "emptyTitle": "No shots of yours",
     "emptyText": "Play a few battles with the mod installed — the data arrives automatically.",
@@ -78,7 +75,7 @@
   },
   "method": {
     "title": "How we count",
-    "data": "We only use your own shots from the mod: damage on penetration and the shell's nominal damage. Killing shots and HE are excluded — their damage is capped or depends on armour.",
+    "data": "We only use mod players’ own shots: damage on penetration and the shell’s nominal damage. Killing shots, HE and unknown shells are excluded — their damage is capped or depends on armor.",
     "theory": "The theoretical curve is a normal distribution truncated at ±25% of nominal. The mean roll is how far total damage sits above or below nominal.",
     "fairPlay": "The mod reads nothing about enemies: only the results of your own battles."
   }

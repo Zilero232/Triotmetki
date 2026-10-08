@@ -29,7 +29,7 @@ test.describe('armor viewer', () => {
     const response = await page.goto(ARMOR_PAGE);
 
     expect(response?.status()).toBe(200);
-    await expect(page.getByRole('heading', { name: "Couldn't load the armor model" })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /load the armor model/i })).toBeVisible();
     await expect(page.getByTestId('armor-attribution')).toBeVisible();
   });
 });

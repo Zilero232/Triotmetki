@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
@@ -21,4 +22,4 @@ const Page = () => (
   </Suspense>
 );
 
-export default Page;
+export default withMessages({ component: Page, messages: ['bestBattles', 'maps', 'tanks.picker'] });

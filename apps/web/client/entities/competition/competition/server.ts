@@ -1,3 +1,3 @@
 import 'server-only';
 
-export { competitionRouteMeta } from './api/route-meta';
+export { competitionRouteMeta, competitionSlugs } from './api/route-meta';

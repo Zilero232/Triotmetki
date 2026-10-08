@@ -27,6 +27,7 @@ export const RecentPlayers = () => {
           </Button>
         }
         title={<span id={titleId}>{t('title')}</span>}
+        titleAs='h2'
       />
       <DataTable
         caption={t('title')}

@@ -87,6 +87,7 @@ pub fn catalog_json() -> serde_json::Value {
         ],
         "presets": [
             { "id": "recommended", "title": { "ru": "Рекомендуемый", "en": "Recommended" }, "description": { "ru": "", "en": "" }, "custom": false },
+            { "id": "all", "title": { "ru": "Все компоненты", "en": "All components" }, "description": { "ru": "", "en": "" }, "everything": true },
             { "id": "custom", "title": { "ru": "Свой", "en": "Custom" }, "description": { "ru": "", "en": "" }, "custom": true }
         ],
         "components": [

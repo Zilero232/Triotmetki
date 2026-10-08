@@ -1,8 +1,7 @@
 import type { MetadataRoute } from 'next';
 
-import { SITE } from '@/shared/config';
 import { localePath, LOCALES } from '@/shared/i18n';
-import { absoluteUrl, SITEMAP } from '@/shared/seo';
+import { SITEMAP, sitemapUrls } from '@/shared/seo';
 
 const robots = (): MetadataRoute.Robots => ({
   rules: {
@@ -10,8 +9,7 @@ const robots = (): MetadataRoute.Robots => ({
     allow: [...SITEMAP.allow],
     disallow: [...new Set(SITEMAP.disallow.flatMap((path) => LOCALES.map((locale) => localePath({ path, locale }))))]
   },
-  sitemap: absoluteUrl(SITEMAP.path),
-  host: SITE.url
+  sitemap: sitemapUrls()
 });
 
 export default robots;

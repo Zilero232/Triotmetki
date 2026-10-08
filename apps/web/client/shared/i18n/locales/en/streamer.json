@@ -25,13 +25,13 @@
       "saved": "Profile saved",
       "failed": "That didn't work. Please try again.",
       "connected": "Integration connected",
-      "connectFailed": "Couldn't connect the integration",
+      "connectFailed": "Could not connect the integration",
       "disconnected": "Integration disconnected",
       "overlaySaved": "Overlay saved",
       "overlayRemoved": "Overlay deleted",
       "challengeCreated": "Challenge created — waiting for a donation with the code",
       "challengeActivated": "Challenge started",
-      "challengeCancelled": "Challenge cancelled",
+      "challengeCancelled": "Challenge canceled",
       "settingsSaved": "Settings saved",
       "channelInvalid": "The server rejected a channel link — check the address",
       "channelTaken": "This channel already belongs to another streamer profile",
@@ -42,12 +42,12 @@
     "description": "Your public page: channel links, a short bio and stats from your linked account.",
     "slug": "Page address",
     "slugHint": "Latin letters, digits and hyphens, 3 to 32 characters.",
-    "slugPlaceholder": "your-name",
+    "slugPlaceholder": "your-nick",
     "displayName": "Display name",
     "bio": "About",
     "bioPlaceholder": "What you play, when you stream, what chat can expect",
     "bioCount": "{count} of {max}",
-    "account": "Tanks account",
+    "account": "Mir Tankov account",
     "accountNone": "Don't show stats",
     "accountHint": "This account's stats appear on your page and in overlays. Link an account on the Overview tab.",
     "save": "Save profile",
@@ -83,7 +83,7 @@
     }
   },
   "integrations": {
-    "description": "You connect through the service’s own sign-in, we never see passwords.",
+    "description": "You sign in through the service itself; we never see your password.",
     "provider": {
       "donationAlerts": "DonationAlerts",
       "twitch": "Twitch",
@@ -106,7 +106,7 @@
     "disconnectDescription": "Three Marks will stop receiving events from {name}. You can reconnect at any time.",
     "predictions": {
       "label": "Auto predictions",
-      "description": "The mod opens an “over N damage?” prediction when a battle starts and resolves it from the result. Needs Twitch affiliate or partner.",
+      "description": "When the mod reports a battle start, Three Marks opens an “over N damage?” prediction and resolves it from the result. Requires Twitch Affiliate or Partner status.",
       "reconnect": "Reconnect Twitch",
       "reconnectHint": "Reconnect Twitch to grant the new permission predictions need.",
       "panel": "The Twitch panel extension shows viewers your session and marks."
@@ -120,7 +120,7 @@
     "kind": {
       "session": "Session",
       "wn8": "WN8",
-      "moe": "Gun mark",
+      "moe": "Mark of excellence",
       "damage": "Damage",
       "win_rate": "Win rate",
       "win_streak": "Win streak",
@@ -154,8 +154,8 @@
       "metricsHint": "Up to {max} metrics, shown in the order you pick them.",
       "theme": "Style",
       "layout": "Layout",
-      "accent": "Custom accent colour",
-      "accentHint": "Match your channel's colours",
+      "accent": "Custom accent color",
+      "accentHint": "Match your channel's colors",
       "fontScale": "Scale",
       "animate": "Animation",
       "animateHint": "Numbers count up and flash when they change",
@@ -188,9 +188,9 @@
       }
     },
     "paused": "Paused",
-    "pausedHint": "This overlay is over the free limit and paused: its link shows a neutral placeholder. It runs again with Plus or once you are back to two overlays.",
+    "pausedHint": "This overlay is over the free limit and paused: its link shows a neutral placeholder. It runs again with Plus or once you are back to {limit} overlays.",
     "premiumThemes": "Plus themes",
-    "premiumThemesHint": "Available with Plus; Brass and Night are unlocked with shells in Cosmetics."
+    "premiumThemesHint": "Armor and HUD come with Plus. Brass and Night also need Plus and are bought for casings in Profile cosmetics."
   },
   "challenges": {
     "description": "A viewer donates with a code, the mod checks the battle, the result goes to chat and the overlay.",
@@ -216,11 +216,11 @@
         "assist": "Assisted damage",
         "blocked": "Blocked damage",
         "frags": "Frags",
-        "spotted": "Spotted",
+        "spotted": "Enemies spotted",
         "xp": "XP",
         "win": "Victory",
         "survive": "Survival",
-        "moePercent": "Gun mark percent"
+        "moePercent": "MoE %"
       },
       "operatorLabel": "Comparison",
       "operator": {
@@ -254,7 +254,7 @@
     "sentence": {
       "lead": {
         "single": "In a single battle —",
-        "each": "In each of {battles} battles —",
+        "each": "In each of {battles, plural, one {# battle} other {# battles}} —",
         "sum": "Across {battles} battles in total —",
         "avg": "On average over {battles} battles —"
       },
@@ -276,7 +276,7 @@
         "xp": "XP",
         "win": "wins",
         "survive": "survivals",
-        "moePercent": "% gun mark"
+        "moePercent": "% MoE"
       },
       "filter": {
         "tank": "in the {name}",
@@ -292,10 +292,10 @@
     },
     "status": {
       "pending": "Awaiting donation",
-      "active": "In play",
+      "active": "In progress",
       "succeeded": "Completed",
       "failed": "Failed",
-      "cancelled": "Cancelled",
+      "cancelled": "Canceled",
       "expired": "Expired",
       "refunded": "Refunded"
     },
@@ -322,7 +322,7 @@
     }
   },
   "page": {
-    "eyebrow": "Tanks streamer",
+    "eyebrow": "Mir Tankov streamer",
     "live": "Live",
     "offline": "Offline",
     "stats": {
@@ -335,7 +335,7 @@
       "hidden": "Account stats are unavailable right now"
     },
     "errorTitle": "Streamer page unavailable",
-    "errorDescription": "Couldn't load the data. Please try again.",
+    "errorDescription": "Could not load the data. Please try again.",
     "crumb": "Streamers"
   },
   "settings": {
@@ -360,12 +360,12 @@
       "title": "From the game via the mod",
       "description": "The Three Marks mod reads your settings straight from the client and sends them to your profile — no files, no copying.",
       "steps": {
-        "bind": "Install the mod and bind it in your account.",
+        "bind": "Install the modpack and link it in your account.",
         "share": "In the hangar, open the mod window and press “Send game settings to the site”.",
-        "target": "Choose “my profile” — the settings show up here marked “from the game via the mod”."
+        "target": "Choose “To my profile on the site” — the settings show up here marked “from the game via the mod”."
       },
       "hint": "The mod never sends your login, password or account data.",
-      "bind": "Install and bind the mod"
+      "bind": "Install and link the modpack"
     },
     "xml": {
       "title": "Upload preferences.xml",
@@ -385,7 +385,7 @@
     "live": "Current session",
     "noSession": "No sessions yet.",
     "battles": "Battles",
-    "winRate": "Wins",
+    "winRate": "Win rate",
     "avgDamage": "Avg damage",
     "wn8": "WN8",
     "marks": "Marks",
@@ -393,7 +393,6 @@
     "noMarks": "Mark progress shows up with the companion mod.",
     "open": "Profile on the site",
     "notConnected": "No account linked",
-    "error": "Couldn't load the streamer's data.",
-    "attribution": "Data: Lesta Games API. An unofficial fan project, not affiliated with Lesta Games."
+    "error": "Could not load the streamer's data."
   }
 }

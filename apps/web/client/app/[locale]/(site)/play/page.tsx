@@ -2,12 +2,13 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { DAILY_PUZZLE_KEYS, DAILY_PUZZLES } from '@/entities/play/daily-puzzle';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
 import { itemListJsonLd, JsonLd } from '@/shared/seo/json-ld';
-import { PageHeroFallback } from '@/ui-kit';
+import { PageHeaderFallback } from '@/ui-kit';
 import { PlayHubPage } from '@/views/play-hub';
 
 export const generateMetadata = async () => {
@@ -38,10 +39,10 @@ const Page = () => (
     <Suspense>
       <PlayHubSchema />
     </Suspense>
-    <Suspense fallback={<PageHeroFallback />}>
+    <Suspense fallback={<PageHeaderFallback />}>
       <PlayHubPage />
     </Suspense>
   </>
 );
 
-export default Page;
+export default withMessages({ component: Page, messages: ['play.hub', 'play.result'] });

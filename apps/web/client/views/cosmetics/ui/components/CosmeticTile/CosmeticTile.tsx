@@ -2,7 +2,9 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { CosmeticBadge, CosmeticName, CosmeticSurface } from '@/entities/player/cosmetics';
 import { PlusBadge } from '@/features/plus/plus-gate';
-import { Badge, Button } from '@/ui-kit';
+import { ROUTES } from '@/shared/constants';
+import { Link } from '@/shared/i18n/navigation';
+import { Badge, Button, buttonVariants, ConfirmDialog } from '@/ui-kit';
 
 import type { CosmeticTileProps } from './CosmeticTile.types';
 
@@ -45,9 +47,19 @@ export const CosmeticTile = ({ item, action, isBusy, onBuy, onEquip }: CosmeticT
           </Button>
         )}
         {action === 'buy' && (
-          <Button disabled={isBusy} size='sm' onClick={() => onBuy(code)}>
-            {t('buy', { price: format.number(price ?? 0) })}
-          </Button>
+          <ConfirmDialog
+            trigger={
+              <Button disabled={isBusy} size='sm'>
+                {t('buy', { price: format.number(price ?? 0) })}
+              </Button>
+            }
+            cancelLabel={t('cancel')}
+            confirmLabel={t('buy', { price: format.number(price ?? 0) })}
+            description={t('buyConfirmDescription')}
+            isPending={isBusy}
+            title={t('buyConfirmTitle', { price: price ?? 0 })}
+            onConfirm={() => onBuy(code)}
+          />
         )}
         {action === 'short' && (
           <span className={s.note}>
@@ -55,7 +67,11 @@ export const CosmeticTile = ({ item, action, isBusy, onBuy, onEquip }: CosmeticT
           </span>
         )}
         {action === 'owned' && <span className={s.note}>{t('owned')}</span>}
-        {action === 'plus' && <span className={s.note}>{price === null ? t('plusOnly') : t('buy', { price: format.number(price) })}</span>}
+        {action === 'plus' && (
+          <Link className={buttonVariants({ variant: 'premium', size: 'sm' })} href={ROUTES.plus}>
+            {price === null ? t('plusOnly') : t('buy', { price: format.number(price) })}
+          </Link>
+        )}
       </div>
     </article>
   );

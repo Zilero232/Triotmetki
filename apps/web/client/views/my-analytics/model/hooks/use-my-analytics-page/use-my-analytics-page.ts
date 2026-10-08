@@ -14,7 +14,7 @@ import { ANALYTICS_TAB_PARAM, ANALYTICS_TABS } from '../../../config';
 
 export const useMyAnalyticsPage = () => {
   const router = useRouter();
-  const { isPlus, isPending } = usePlus();
+  const { isPlus, isPending, isError } = usePlus();
   const [tab, setTab] = useQueryState(
     ANALYTICS_TAB_PARAM,
     parseAsStringLiteral(ANALYTICS_TABS.map(({ value }) => value))
@@ -22,9 +22,11 @@ export const useMyAnalyticsPage = () => {
       .withOptions({ history: 'replace', scroll: false })
   );
 
+  const isFreeViewer = !isPending && !isError && !isPlus;
+
   return {
     tab,
-    tabs: ANALYTICS_TABS.map(({ value, feature }) => ({ value, isLocked: feature !== null && !isPending && !isPlus })),
+    tabs: ANALYTICS_TABS.map(({ value, feature }) => ({ value, isLocked: feature !== null && isFreeViewer })),
     isPeriodVisible: ANALYTICS_TABS.some((item) => item.value === tab && item.hasPeriod),
     setTab: (next: AnalyticsTab) => void setTab(next),
     openTank: (vehicle: VehicleSummary | null) => {

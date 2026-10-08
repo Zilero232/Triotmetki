@@ -31,7 +31,7 @@
     "marksPanel": {
       "kicker": "Mod",
       "title": "“Marks of Excellence”",
-      "lead": "In battle, your MoE percent and its projection after the battle, with <hl>damage to 65, 85 and 95%</hl> on Alt. In the hangar, a tank card with the trend and battles to the mark.",
+      "lead": "In battle: your MoE percent, the post-battle projection and <hl>damage to 65, 85 and 95%</hl>. In the hangar: a tank card with the trend and battles to the next mark.",
       "cta": "About the mod"
     },
     "teamHp": {
@@ -49,7 +49,7 @@
     "crosshair": {
       "kicker": "Mod",
       "title": "“Crosshairs”",
-      "lead": "Presets for the game's own reticle in arcade and sniper modes, 26 centre marks and <hl>a reload timer with the drum</hl> next to the reticle.",
+      "lead": "Presets for the game's own reticle in arcade and sniper modes, 26 center marks and <hl>a reload timer with the drum</hl> next to the reticle.",
       "cta": "About the mod"
     },
     "gear": {
@@ -85,7 +85,7 @@
     "marks": {
       "kicker": "Marks",
       "title": "Damage for 65, 85 and 95%",
-      "lead": "The damage each mark needs <hl>for every vehicle in the game</hl> and a forecast in battles.",
+      "lead": "The damage each mark needs <hl>for every vehicle in the game</hl> and a battles-to-mark forecast.",
       "cta": "Marks table"
     },
     "ratings": {
@@ -97,7 +97,7 @@
     "play": {
       "kicker": "Mini-games",
       "title": "Guess the tank and the map",
-      "lead": "Daily «Мир танков» puzzles: <hl>a new tank and a new map</hl> every day.",
+      "lead": "Daily Mir Tankov puzzles: <hl>a new tank and a new map</hl> every day.",
       "cta": "Play"
     },
     "tournaments": {
@@ -134,7 +134,7 @@
       "enemies": "Enemies"
     },
     "damageLog": {
-      "title": "Damage log",
+      "title": "Battle log",
       "totals": {
         "dealt": "Dealt",
         "blocked": "Blocked",

@@ -9,6 +9,6 @@ export type BlogRouteMeta = Pick<BlogPost, 'cover' | 'excerpt' | 'publishedAt' |
   contentLocale: Locale;
 };
 
-export type BlogSitemapItem = Pick<BlogPost, 'slug'> & {
+export type BlogSitemapItem = Pick<BlogPost, 'slug' | 'updatedAt'> & {
   locale: Locale;
 };

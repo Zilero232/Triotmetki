@@ -120,6 +120,7 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### ru
 
 - «Показывать мой значок» переехал на страницу «Плашка «Три отметки» в бою».
+- Подсказка «Показывать мой значок» больше не обещает плашку по Tab.
 - Кольцо лампы не оставляет хвостика в конце таймера.
 - Исправлен вылет игры в бою: дуги прицела и лампы больше не перестраиваются на лету.
 - Панели в бою не показывают описание при наведении.
@@ -135,6 +136,7 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### en
 
 - «Show my badge» moved to the «Three Marks plate in battle» page.
+- The «Show my badge» hint no longer promises the plate in the Tab stats.
 - The lamp ring leaves no sliver at the end of its timer.
 - Fixed a game crash in battle: the reticle and lamp arcs are no longer rebuilt on the fly.
 - Battle panels show no description on hover.

@@ -5,8 +5,6 @@ export const WRAPPED_YEARS = {
 
 export const WRAPPED_VIEW = {
   skeletonHeight: 480,
-  emblemSize: 480,
-  emblemStroke: 1.25,
   percentScale: 100
 } as const;
 

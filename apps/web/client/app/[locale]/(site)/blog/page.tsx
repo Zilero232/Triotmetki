@@ -4,11 +4,12 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { env } from '@/shared/config';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
-import { PageHeroFallback } from '@/ui-kit';
+import { PageHeaderFallback } from '@/ui-kit';
 import { BlogPage, blogRssHref } from '@/views/blog';
 
 export const generateMetadata = async (): Promise<Metadata> => {
@@ -30,9 +31,9 @@ export const generateMetadata = async (): Promise<Metadata> => {
 };
 
 const Page = () => (
-  <Suspense fallback={<PageHeroFallback />}>
+  <Suspense fallback={<PageHeaderFallback />}>
     <BlogPage />
   </Suspense>
 );
 
-export default Page;
+export default withMessages({ component: Page, messages: ['blog'] });

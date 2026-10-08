@@ -24,6 +24,13 @@ export class TankArmorController {
     return this.armorModels.open({ idOrSlug, actor });
   }
 
+  @Get(':idOrSlug/armor/showcase')
+  @Header('Cache-Control', ARMOR_VIEWER.showcaseCacheControl)
+  @ZodResponse({ type: TankArmorDto })
+  showcase(@Param() { idOrSlug }: TankLookupParamsDto) {
+    return this.armorModels.showcase(idOrSlug);
+  }
+
   @Get(':idOrSlug/armor/guns')
   @Header('Cache-Control', ARMOR_VIEWER.gunsCacheControl)
   @ZodResponse({ type: TankArmorGunsDto })

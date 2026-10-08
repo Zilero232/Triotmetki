@@ -20,7 +20,7 @@
   },
   "modes": {
     "standard": "Standard battle",
-    "encounter": "Encounter",
+    "encounter": "Encounter battle",
     "assault": "Assault",
     "onslaught": "Onslaught"
   },
@@ -46,7 +46,7 @@
   "missing": {
     "toMaps": "All maps",
     "notFoundTitle": "Map not found",
-    "notFoundDescription": "Map “{id}” is not in rotation — it may have been removed from random battles.",
+    "notFoundDescription": "This map is not in rotation — it may have been removed from random battles.",
     "errorTitle": "Could not load the map",
     "errorDescription": "Data for “{id}” is unavailable right now."
   },
@@ -71,7 +71,7 @@
       }
     },
     "nav": {
-      "label": "Neighbouring maps",
+      "label": "Neighboring maps",
       "prev": "Previous",
       "next": "Next"
     },

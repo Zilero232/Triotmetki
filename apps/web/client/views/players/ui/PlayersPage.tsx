@@ -13,7 +13,6 @@ import s from './PlayersPage.module.scss';
 
 export const PlayersPage = () => {
   const t = useTranslations('players.head');
-  const tCommon = useTranslations('common');
 
   return (
     <div className={s.root}>
@@ -30,7 +29,7 @@ export const PlayersPage = () => {
           </div>
         }
         art={{ kind: 'emblem', glyph: <Users size={480} strokeWidth={1.25} /> }}
-        breadcrumbs={[{ label: tCommon('home'), href: ROUTES.home }, { label: t('title') }]}
+        breadcrumbs={[{ label: t('title') }]}
         lead={t('description')}
         title={t('title')}
       />

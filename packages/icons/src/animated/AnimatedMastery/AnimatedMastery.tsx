@@ -1,17 +1,23 @@
 'use client';
 
-import { motion, useReducedMotion } from 'motion/react';
+import { useReducedMotion } from 'motion/react';
+import * as m from 'motion/react-m';
 
 import type { AnimatedMasteryProps } from '../animated.types';
 
-import { MASTERY, MASTERY_EMBLEM, MASTERY_TINTS } from '../../icons';
-import { IconBase } from '../../lib';
+import { MASTERY, MASTERY_EMBLEM, MASTERY_TINTS, MasteryIcon } from '../../icons';
+import { IconBase, useHydrated } from '../../lib';
 import { ACCENT, DRAW, ICON_EASE, STAR_STYLE } from '../animated.constants';
 
 export const AnimatedMastery = ({ level, tinted = false, color, style, ...props }: AnimatedMasteryProps) => {
+  const isHydrated = useHydrated();
   const isReduced = useReducedMotion();
   const initial = isReduced ? false : 'hidden';
   const tint = tinted ? MASTERY_TINTS[level] : undefined;
+
+  if (!isHydrated) {
+    return <MasteryIcon color={color} level={level} style={style} tinted={tinted} {...props} />;
+  }
 
   return (
     <IconBase
@@ -20,7 +26,7 @@ export const AnimatedMastery = ({ level, tinted = false, color, style, ...props 
       style={tinted && level === 'master' ? { filter: MASTERY.glow, ...style } : style}
       {...props}
     >
-      <motion.path
+      <m.path
         animate='visible'
         d={MASTERY.shield}
         fill={tint}
@@ -30,7 +36,7 @@ export const AnimatedMastery = ({ level, tinted = false, color, style, ...props 
         variants={DRAW}
       />
       {MASTERY_EMBLEM[level].map((d, index) => (
-        <motion.path
+        <m.path
           key={d}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           d={d}

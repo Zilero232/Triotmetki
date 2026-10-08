@@ -28,7 +28,8 @@ export const GuideEditorPage = ({ slug }: GuideEditorPageProps) => {
       <PageHeader
         breadcrumbs={[
           { label: t('breadcrumb'), href: ROUTES.guides.list },
-          ...(guide ? [{ label: guide.title, href: ROUTES.guides.detail(guide.slug) }] : [])
+          ...(guide ? [{ label: guide.title, href: ROUTES.guides.detail(guide.slug) }] : []),
+          { label: isEdit ? t('editTitle') : t('newTitle') }
         ]}
         description={t('description')}
         title={isEdit ? t('editTitle') : t('newTitle')}

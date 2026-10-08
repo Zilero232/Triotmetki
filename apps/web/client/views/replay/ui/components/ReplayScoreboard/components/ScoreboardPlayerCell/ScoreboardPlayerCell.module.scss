@@ -34,6 +34,12 @@
 .clan {
   color: var(--color-text-muted);
   font-size: var(--text-xs);
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-accent);
+  }
 }
 
 .marker {

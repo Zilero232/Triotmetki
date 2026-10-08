@@ -1,12 +1,11 @@
 {
   "meta": {
     "title": "Supertest: vehicle changes",
-    "description": "What changes for tanks on the Mir Tankov supertest: buffs and nerfs from official announcements, compared with current stats."
+    "description": "What changes for tanks on the Mir Tankov supertest: buffs and nerfs from announcements (mostly official, from tanki.su), compared with current stats."
   },
   "hero": {
-    "home": "Home",
     "title": "Supertest",
-    "lead": "Vehicle buffs and nerfs from official supertest announcements, compared with the current in-game characteristics.",
+    "lead": "Vehicle buffs and nerfs from supertest announcements, mostly official, compared with the current in-game characteristics.",
     "tanks": "Tanks announced",
     "buffs": "Buffs",
     "nerfs": "Nerfs"
@@ -16,7 +15,7 @@
     "mine": "My tanks"
   },
   "card": {
-    "unofficial": "Not from tanki.su",
+    "unofficial": "Unofficial source",
     "new": "New tank",
     "newTab": "(opens in a new tab)",
     "verdicts": {

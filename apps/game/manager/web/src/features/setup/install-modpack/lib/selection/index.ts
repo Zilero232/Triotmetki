@@ -1,2 +1,2 @@
 export { closeDependencies, matchingPreset, presetSelection, toggleSelection } from './selection';
-export type { Selection } from './selection.types';
+export type { Selection, SelectionPresets } from './selection.types';

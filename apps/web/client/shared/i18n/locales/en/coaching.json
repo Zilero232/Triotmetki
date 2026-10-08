@@ -19,7 +19,7 @@
     "emptyTitle": "No coaches",
     "emptyDescription": "Nobody offers coaching yet. Be the first.",
     "emptyFilteredDescription": "Nobody coaches this tank yet.",
-    "errorTitle": "Couldn't load coaches",
+    "errorTitle": "Could not load coaches",
     "errorDescription": "The server didn't respond. Try again."
   },
   "card": {
@@ -32,12 +32,12 @@
     "back": "All coaches",
     "notFoundTitle": "Coach not found",
     "notFoundDescription": "The profile may be gone or the link is outdated.",
-    "errorTitle": "Couldn't load the profile",
+    "errorTitle": "Could not load the profile",
     "errorDescription": "The server didn't respond. Try again.",
     "inactive": "Not taking requests",
     "rating": "Rating",
     "noRating": "No ratings",
-    "sessions": "Sessions done",
+    "sessions": "Sessions held",
     "playerProfile": "Player profile",
     "about": "About",
     "tanks": "Tanks"
@@ -68,8 +68,8 @@
     "notes": "What to work on",
     "notesPlaceholder": "Tank, mode, what goes wrong",
     "notesError": "At most 2000 characters",
-    "replay": "Replay ID",
-    "replayHint": "Optional: a replay uploaded to the site",
+    "replay": "Replay from the site",
+    "replayHint": "Optional: the ID from the replay page address",
     "replayError": "That's not a replay ID",
     "submit": "Send request",
     "free": "Sessions are free.",
@@ -83,14 +83,14 @@
     "coach": "Coach",
     "student": "Student",
     "role": {
-      "coach": "You coach",
-      "student": "You learn"
+      "coach": "You’re the coach",
+      "student": "You’re the student"
     },
     "status": {
       "requested": "Waiting",
       "accepted": "Accepted",
-      "completed": "Done",
-      "cancelled": "Cancelled"
+      "completed": "Completed",
+      "cancelled": "Canceled"
     },
     "studentContact": "Student contact",
     "score": "{score} of 5",
@@ -103,7 +103,7 @@
     "sendReview": "Leave a review",
     "emptyTitle": "No requests",
     "emptyDescription": "Pick a coach and send a request.",
-    "errorTitle": "Couldn't load requests",
+    "errorTitle": "Could not load requests",
     "errorDescription": "The server didn't respond. Try again.",
     "toast": {
       "updated": "Request updated"
@@ -114,14 +114,14 @@
       "become": {
         "open": "Become a coach",
         "title": "Coach profile",
-        "description": "Coaching is free. Say what you specialise in and how to reach you.",
+        "description": "Coaching is free. Say what you specialize in and how to reach you.",
         "cancel": "Cancel",
         "submit": "Save"
       },
       "edit": {
         "open": "My coach profile",
         "title": "Coach profile",
-        "description": "Coaching is free. Say what you specialise in and how to reach you.",
+        "description": "Coaching is free. Say what you specialize in and how to reach you.",
         "cancel": "Cancel",
         "submit": "Save"
       }
@@ -153,7 +153,7 @@
   "errors": {
     "forbidden": "Not allowed for this request, or no linked Lesta account",
     "notFound": "Coach or request not found",
-    "conflict": "Data conflict, try again",
+    "conflict": "The data changed meanwhile — refresh and try again",
     "validation": "Check the form fields",
     "unauthorized": "Sign in to continue",
     "rateLimited": "Too many requests, wait a bit",

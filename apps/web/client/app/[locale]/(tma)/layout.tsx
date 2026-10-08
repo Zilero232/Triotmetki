@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 
+import { withMessages } from '@/app/messages';
 import { resolveLocale } from '@/shared/i18n';
 import { MiniAppFooter } from '@/views/mini-app';
 
@@ -25,4 +26,4 @@ const MiniAppLayout = async ({ children }: LayoutProps<'/[locale]'>) => {
   );
 };
 
-export default MiniAppLayout;
+export default withMessages({ component: MiniAppLayout, messages: ['tg'] });

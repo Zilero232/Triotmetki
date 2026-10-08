@@ -1,4 +1,4 @@
-import { countBy, fromKeys, reverse, sortBy } from 'remeda';
+import { countBy, fromKeys, isIncludedIn, reverse, sortBy } from 'remeda';
 
 import type { AttendanceEntry } from '../../api';
 import type {
@@ -7,6 +7,7 @@ import type {
   AttendanceDraftInput,
   AttendanceDraftRow,
   AttendanceTone,
+  CanSyncAttendanceInput,
   HasStartedInput,
   MemberAttendance,
   MemberAttendanceInput,
@@ -14,7 +15,7 @@ import type {
   SplitEventsInput
 } from './attendance.types';
 
-import { ATTENDANCE_STATUSES, WORKSPACE_VIEW } from '../../config';
+import { ATTENDANCE_STATUSES, SYNCED_EVENT_KINDS, WORKSPACE_VIEW } from '../../config';
 
 export const attendanceCounts = (attendance: readonly AttendanceEntry[]): AttendanceCounts => {
   const counts = countBy(attendance, (entry) => entry.status);
@@ -62,6 +63,12 @@ export const splitEvents = ({ events, now }: SplitEventsInput): SplitEvents => {
 };
 
 export const hasStarted = ({ startsAt, now }: HasStartedInput): boolean => now !== null && Date.parse(startsAt) <= now.getTime();
+
+export const canSyncAttendance = ({ kind, startsAt, now }: CanSyncAttendanceInput): boolean => {
+  const isSyncedKind = isIncludedIn(kind, SYNCED_EVENT_KINDS);
+
+  return isSyncedKind && hasStarted({ startsAt, now });
+};
 
 export const attendanceTone = (rate: number | null): AttendanceTone => {
   if (rate === null) {

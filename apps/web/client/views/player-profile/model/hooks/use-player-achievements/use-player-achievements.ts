@@ -4,9 +4,10 @@ import { useQuery } from '@tanstack/react-query';
 import { useLocale } from 'next-intl';
 import { partition } from 'remeda';
 
-import { playersControllerAchievementsOptions } from '@/shared/api/query-options';
+import { playersControllerAchievementsQueryKey } from '@/shared/api/query-options';
 import { localizedText } from '@/shared/lib';
 
+import { getPlayerAchievements } from '../../../api';
 import { ACHIEVEMENTS } from '../../../config';
 import { achievementSections } from '../../../lib/achievement-sections';
 import { useProfileContext } from '../../context';
@@ -16,7 +17,8 @@ export const usePlayerAchievements = () => {
   const { accountId } = useProfileContext();
 
   return useQuery({
-    ...playersControllerAchievementsOptions({ path: { idOrNick: String(accountId) } }),
+    queryKey: playersControllerAchievementsQueryKey({ path: { idOrNick: String(accountId) } }),
+    queryFn: ({ signal }) => getPlayerAchievements({ accountId, signal }),
     select: ({ items }) => {
       const localized = items.map((item) => ({
         ...item,

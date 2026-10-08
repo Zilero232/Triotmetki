@@ -1,0 +1,9 @@
+@use '@/shared/styles/mixins' as *;
+
+.root {
+  @include stack(var(--space-5));
+}
+
+.figures {
+  @include grid-columns(4, $gap: var(--space-3), $below-xl: 2);
+}

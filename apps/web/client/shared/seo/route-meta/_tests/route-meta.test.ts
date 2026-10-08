@@ -13,9 +13,10 @@ vi.mock('next/server', () => ({ connection: vi.fn(() => Promise.resolve()) }));
 const fail = () => Promise.reject(new Error('down'));
 
 describe('lookupRouteEntity', () => {
-  it('returns the loaded name', async () => {
-    await expect(lookupRouteEntity({ key: 'object-140', load: async () => 'Объект 140' })).resolves.toEqual({
+  it('returns the loaded name and canonical key', async () => {
+    await expect(lookupRouteEntity({ key: '1', load: async () => ({ name: 'Объект 140', key: 'object-140' }) })).resolves.toEqual({
       name: 'Объект 140',
+      key: 'object-140',
       isFound: true,
       isAvailable: true
     });
@@ -24,13 +25,20 @@ describe('lookupRouteEntity', () => {
   it('reports a missing entity', async () => {
     await expect(lookupRouteEntity({ key: 'nobody', load: () => Promise.reject(new NotFoundError('404')) })).resolves.toEqual({
       name: 'nobody',
+      key: 'nobody',
       isFound: false,
       isAvailable: true
     });
   });
 
   it('marks a transient failure as unavailable and keeps it in the cache only briefly', async () => {
-    await expect(lookupRouteEntity({ key: 'object-140', load: fail })).resolves.toEqual({ name: 'object-140', isFound: true, isAvailable: false });
+    await expect(lookupRouteEntity({ key: 'object-140', load: fail })).resolves.toEqual({
+      name: 'object-140',
+      key: 'object-140',
+      isFound: true,
+      isAvailable: false
+    });
+
     expect(cacheLife).toHaveBeenCalledWith(UNAVAILABLE_CACHE_LIFE);
   });
 
@@ -96,8 +104,9 @@ describe('routeEntity', () => {
   });
 
   it('passes the lookup result through and stays static', async () => {
-    await expect(routeEntity({ key: 'nobody', lookup: async (name) => ({ name, isFound: false, isAvailable: true }) })).resolves.toEqual({
+    await expect(routeEntity({ key: 'nobody', lookup: async (name) => ({ name, key: name, isFound: false, isAvailable: true }) })).resolves.toEqual({
       name: 'nobody',
+      key: 'nobody',
       isFound: false
     });
 
@@ -105,8 +114,11 @@ describe('routeEntity', () => {
   });
 
   it('renders the fallback at request time when the API was unavailable', async () => {
-    await expect(routeEntity({ key: 'object-140', lookup: async (name) => ({ name, isFound: true, isAvailable: false }) })).resolves.toEqual({
+    await expect(
+      routeEntity({ key: 'object-140', lookup: async (name) => ({ name, key: name, isFound: true, isAvailable: false }) })
+    ).resolves.toEqual({
       name: 'object-140',
+      key: 'object-140',
       isFound: true
     });
 
@@ -114,7 +126,7 @@ describe('routeEntity', () => {
   });
 
   it('falls back to the key and stays indexable when the lookup throws', async () => {
-    await expect(routeEntity({ key: 'стример', lookup: fail })).resolves.toEqual({ name: 'стример', isFound: true });
+    await expect(routeEntity({ key: 'стример', lookup: fail })).resolves.toEqual({ name: 'стример', key: 'стример', isFound: true });
     expect(connection).toHaveBeenCalledOnce();
   });
 });

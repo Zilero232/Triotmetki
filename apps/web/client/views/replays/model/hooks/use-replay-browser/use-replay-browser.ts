@@ -12,5 +12,5 @@ export const useReplayBrowser = () => {
   const vehicleOf = useReplayVehicle();
   const mapNameOf = useReplayMapName();
 
-  return { ...feed, columns, vehicleOf, mapNameOf, isPaging: feed.query.isFetching };
+  return { ...feed, columns, vehicleOf, mapNameOf };
 };

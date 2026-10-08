@@ -1,12 +1,11 @@
 {
   "meta": {
     "title": "{plus} — subscription",
-    "description": "One subscription on top of the free site: more frequent stats updates, more overlays and room, deep analytics, API limits. No ads."
+    "description": "One subscription on top of the free site: more frequent stats updates, more overlays and replay storage, deep analytics, API limits. No ads."
   },
   "header": {
-    "description": "One subscription on top of free Three Marks: our analytics, more room and conveniences. Core stats stay free for everyone.",
+    "description": "One subscription on top of free Three Marks: our analytics, more replay storage and conveniences. Core stats stay free for everyone.",
     "trialOffer": "Try it for {days, plural, one {# day} other {# days}} free — no card needed.",
-    "home": "Home",
     "priceFigure": "Price",
     "priceValue": "from {price}/mo",
     "cta": "Get Plus",
@@ -15,12 +14,12 @@
   },
   "benefits": {
     "title": "What is included",
-    "description": "Live — works right after you subscribe. Soon — arrives in Plus at no extra cost.",
+    "description": "All of this works as soon as you subscribe.",
     "live": "Live",
     "items": {
       "priorityPolling": {
-        "title": "Priority polling",
-        "text": "Your accounts are polled every 5 minutes instead of 15 — a fresh session shows up almost right after the battle."
+        "title": "Updates every 5 minutes",
+        "text": "Your accounts’ stats update every 5 minutes instead of 15 — the session shows up almost right after the battle."
       },
       "overlays": {
         "title": "Up to 20 overlays",
@@ -55,7 +54,7 @@
   "limits": {
     "title": "Free and with Plus",
     "description": "The limits the subscription raises. Everything else is the same for everyone.",
-    "feature": "What",
+    "feature": "Limit",
     "free": "Free",
     "plus": "With Plus",
     "caption": "Limits without a subscription and with Plus",
@@ -77,8 +76,7 @@
       "storedReplays": "Stored replays",
       "streamerFollows": "Streamer follows",
       "historyDays": "Analytics history depth",
-      "aiReviews": "AI coach reviews",
-      "armor3d": "3D armor: different vehicles",
+      "armor3d": "3D armor: vehicles a month",
       "battleAnalysis": "Detailed battle analysis"
     },
     "meters": "Monthly allowances renew on the 1st at 00:00 Moscow time. Without signing in, 3D armor covers {armor, plural, one {# vehicle} other {# vehicles}} a month."
@@ -100,11 +98,11 @@
       "basePrice": "base price"
     },
     "unavailable": "Pricing is not available yet",
-    "failed": "Couldn't open the payment page. Please try again.",
+    "failed": "Could not open the payment page. Please try again.",
     "promo": {
       "label": "Promo code",
       "placeholder": "If you have one",
-      "hint": "The discount is applied on the payment page.",
+      "hint": "The discount is applied on the payment page once payments open.",
       "rejected": "That promo code didn't work: check the spelling or its expiry date.",
       "invalid": "Between {min} and {max} characters."
     },
@@ -113,7 +111,7 @@
       "manage": "Manage subscription",
       "buy": "Get Plus",
       "redirecting": "Opening payment…",
-      "note": "Paid via YooKassa once payments open. Turn auto-renew off in your account any time.",
+      "note": "Payments go through YooKassa as soon as we open them. Turn auto-renew off in your account any time.",
       "notePlus": "Plus is already active — manage the term, card and auto-renew in your account.",
       "trial": "Try {days, plural, one {# day} other {# days}} free",
       "trialPending": "Starting…",
@@ -156,7 +154,7 @@
       },
       "expiry": {
         "question": "What happens when Plus ends?",
-        "answer": "Nothing is deleted. Analytics go back to the free window, extra overlays are paused, and goals, accounts and replays over the limit stay viewable. Renew Plus and everything comes back at once."
+        "answer": "Analytics go back to the free window, extra overlays are paused, goals and accounts over the limit stay viewable, and replays over the free limit stay read-only for {days} days and are then removed (we warn you in advance). Renew Plus and everything comes back at once."
       },
       "noAds": {
         "question": "Will there be ads?",
@@ -168,7 +166,7 @@
       },
       "promo": {
         "question": "How do I use a promo code?",
-        "answer": "A free-days code is redeemed in your account under “Subscription” — the days are added to your current period. A discount code is entered at checkout on this page."
+        "answer": "A free-days code is redeemed in your account under “Subscription” — the days are added to your current period. A discount code is entered at checkout on this page once payments open."
       }
     }
   },
@@ -178,7 +176,7 @@
     "trial": "Try {days, plural, one {# day} other {# days}} free",
     "subscribe": "Get Plus",
     "trialStarted": "Plus trial is on for {days, plural, one {# day} other {# days}}",
-    "trialFailed": "Couldn't start the trial. Make sure a Lesta account is linked.",
+    "trialFailed": "Could not start the trial: you need a linked Lesta account, and the trial is one per user.",
     "promo": "Redeem a promo code",
     "linkAccount": "Link account",
     "notify": "Get notified when checkout opens"
@@ -203,61 +201,25 @@
     "active": "Plus is active until {date}"
   },
   "gate": {
-    "history": {
-      "title": "Full history",
-      "text": "Charts over the whole stored window, not just 90 days: per-tank history and patch markers on the chart."
-    },
     "analytics": {
       "title": "Deep analytics",
       "text": "The full “why I lose” breakdown, results by hour and weekday, a tilt detector and the tank learning curve."
     },
     "mapAdvisor": {
       "title": "Map advisor",
-      "text": "Wins, damage and survival by map, class and spawn side; maps to avoid and platoon chemistry."
+      "text": "Wins, damage and survival by map, class and spawn side; maps to avoid and who you play best with in a platoon."
     },
     "battleAnalysis": {
       "title": "Battle analysis",
       "text": "Shot by shot: damage rolls, penetration by distance and shell, a timeline and a comparison with the best on that tank."
     },
-    "aiCoach": {
-      "title": "AI coach",
-      "text": "A review of a session or replay with advice. Free once a week, up to five a day with Plus."
-    },
-    "moeTracker": {
-      "title": "Marks tracker Plus",
-      "text": "Per-battle mark percentage history, an “evening playlist” of tanks closest to a mark, and the full advisor."
-    },
     "priorityPolling": {
-      "title": "Priority polling",
-      "text": "Your accounts' stats update every 5 minutes instead of 15, and first."
+      "title": "Updates every 5 minutes",
+      "text": "Your accounts’ stats update every 5 minutes instead of 15, and first in line."
     },
     "progression": {
       "title": "Tank levels and challenges",
       "text": "XP and levels 1–25 for every tank, three rotating challenges and a seasonal reward track."
-    },
-    "overlays": {
-      "title": "More overlays",
-      "text": "Up to 20 stream overlays instead of two, new themes and progress widgets."
-    },
-    "cosmetics": {
-      "title": "Profile cosmetics",
-      "text": "A Plus badge, frames, covers and a nickname accent — on the site only, never in the game."
-    },
-    "analyticsExport": {
-      "title": "Analytics export",
-      "text": "CSV and JSON with sessions, analytics tables and per-battle mod data. Exporting your own raw data is free."
-    },
-    "apiLimits": {
-      "title": "Personal API limits",
-      "text": "Up to 50,000 requests a day, 10 per second and 5 webhooks — for personal non-commercial projects."
-    },
-    "earlyAccess": {
-      "title": "Early access",
-      "text": "New features in beta before anyone else."
-    },
-    "hangarExtras": {
-      "title": "Hangar extras in the mod",
-      "text": "A map briefing and the evening playlist right in the hangar — outside battle only and from your own data."
     },
     "privateCompetitions": {
       "title": "Private competitions",

@@ -19,3 +19,20 @@
   justify-content: flex-end;
   padding-block: var(--space-8) var(--space-9);
 }
+
+.body {
+  @include page(var(--space-5), var(--space-6));
+}
+
+.strip {
+  min-height: 64px;
+  background-color: var(--color-band-raised);
+  border-block: 1px solid var(--color-border);
+}
+
+.stripActions {
+  @include shell;
+
+  height: 32px;
+  margin-block: var(--space-4);
+}

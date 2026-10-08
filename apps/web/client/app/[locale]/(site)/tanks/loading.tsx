@@ -1,5 +1,6 @@
-import { PageHeroFallback } from '@/ui-kit';
+import { withMessages } from '@/app/messages';
+import { TanksPageFallback } from '@/views/tanks';
 
-const Loading = () => <PageHeroFallback />;
+const Loading = () => <TanksPageFallback />;
 
-export default Loading;
+export default withMessages({ component: Loading, messages: ['periods', 'plus', 'status.label', 'tanks'] });

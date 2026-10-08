@@ -36,6 +36,7 @@ export const useSignOut = () => {
 
   return useMutation({
     mutationFn: signOut,
+    meta: { errorKey: 'me.toast.signOutFailed' },
     onSuccess: () => {
       queryClient.setQueryData(QUERY_KEYS.auth.session, null);
       resetUserQueries();

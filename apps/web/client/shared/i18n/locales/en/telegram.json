@@ -22,7 +22,7 @@
       "done": "This page updates by itself once linked"
     },
     "issue": "Get a code",
-    "note": "The code is single-use and valid for a few minutes. Do not forward it."
+    "note": "The code is single-use and valid for 15 minutes. Do not forward it."
   },
   "ticket": {
     "label": "Link code",

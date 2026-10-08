@@ -13,6 +13,7 @@ export const runPanelScript = (): void => {
   const { copy } = config;
   const number = new Intl.NumberFormat(config.locale, { maximumFractionDigits: 0 });
   const percent = new Intl.NumberFormat(config.locale, { style: 'percent', maximumFractionDigits: 1 });
+  const markPercent = new Intl.NumberFormat(config.locale, { style: 'percent', minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   const el = ({ tag, className = '', text }: PanelElementInput) => {
     const node = document.createElement(tag);
@@ -88,7 +89,7 @@ export const runPanelScript = (): void => {
       const bar = el({ tag: 'div', className: 'bar' });
       const fill = el({ tag: 'span' });
 
-      row.append(el({ tag: 'span', text: line.tankName }), el({ tag: 'strong', text: `${line.percent.toFixed(2)}%` }));
+      row.append(el({ tag: 'span', text: line.tankName }), el({ tag: 'strong', text: markPercent.format(line.percent / 100) }));
       fill.style.width = `${Math.max(0, Math.min(100, line.percent))}%`;
       bar.append(fill);
       mark.append(row, bar);

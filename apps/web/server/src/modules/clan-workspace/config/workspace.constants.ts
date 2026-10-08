@@ -4,6 +4,7 @@ export const CLAN_WORKSPACE = {
   battleLeadMinutes: 15,
   syncLookbackHours: 48,
   reminderLeadMinutes: 30,
+  reminderGraceMinutes: 10,
   inactiveDays: 7,
   reportDays: 7,
   maxCandidates: 500,

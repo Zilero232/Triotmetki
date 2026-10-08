@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { mapRouteEntity, mapSlugs } from '@/entities/map/map/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
@@ -13,7 +14,7 @@ import { PrefetchBoundary } from '@/shared/seo/prefetch-boundary';
 import { RequestTime } from '@/shared/seo/request-time';
 import { requireRouteEntity } from '@/shared/seo/require-route-entity';
 import { RouteGuard } from '@/shared/seo/route-guard';
-import { PageHeroFallback } from '@/ui-kit';
+import { PageHeaderFallback } from '@/ui-kit';
 import { MapPage } from '@/views/map';
 import { mapPageState } from '@/views/map/server';
 
@@ -23,12 +24,12 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/maps/[id
   const locale = resolveLocale(await rootParams.locale());
   const id = decodeRouteParam((await params).id);
   const t = await getTranslations({ locale, namespace: 'maps.mapMeta' });
-  const { name } = await requireRouteEntity(mapRouteEntity(id));
+  const { name, key } = await requireRouteEntity(mapRouteEntity(id));
 
   return createPageMetadata({
     title: t('title', { name }),
     description: t('description', { name }),
-    path: ROUTES.maps.detail(id),
+    path: ROUTES.maps.detail(key),
     locale,
     index: true,
     follow: true
@@ -46,7 +47,7 @@ const Page = ({ params }: PageProps<'/[locale]/maps/[id]'>) => (
     <Suspense>
       <RouteGuard entity={params.then(({ id }) => mapRouteEntity(decodeRouteParam(id)))} />
     </Suspense>
-    <Suspense fallback={<PageHeroFallback />}>
+    <Suspense fallback={<PageHeaderFallback />}>
       <MapRoute params={params} />
     </Suspense>
     <Suspense>
@@ -55,4 +56,4 @@ const Page = ({ params }: PageProps<'/[locale]/maps/[id]'>) => (
   </>
 );
 
-export default Page;
+export default withMessages({ component: Page, messages: ['maps'] });

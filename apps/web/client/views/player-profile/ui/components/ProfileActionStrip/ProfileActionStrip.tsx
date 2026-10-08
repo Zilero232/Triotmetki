@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3, CalendarDays, Check, PenLine, Share2 } from 'lucide-react';
+import { BarChart3, CalendarDays, Check, Film, PenLine, Share2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { CompareToggle } from '@/features/compare/compare-selection';
@@ -13,7 +13,8 @@ import { useProfileActions } from '../../../model/hooks';
 
 export const ProfileActionStrip = () => {
   const t = useTranslations('profile.actions');
-  const { accountId, nickname, copied, share, signatureHref, wrappedHref, analyticsHref } = useProfileActions();
+  const tNav = useTranslations('nav.items');
+  const { accountId, nickname, copied, share, signatureHref, replaysHref, wrappedHref, analyticsHref } = useProfileActions();
 
   return (
     <ActionStrip
@@ -33,6 +34,10 @@ export const ProfileActionStrip = () => {
           <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={signatureHref}>
             <PenLine aria-hidden size={16} />
             {t('signature')}
+          </Link>
+          <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={replaysHref}>
+            <Film aria-hidden size={16} />
+            {tNav('replays')}
           </Link>
           {wrappedHref && (
             <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={wrappedHref}>

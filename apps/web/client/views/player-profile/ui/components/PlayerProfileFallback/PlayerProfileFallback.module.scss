@@ -1,8 +1,6 @@
 @use '@/shared/styles/mixins' as *;
 
 .root {
-  @include shell;
-
-  padding-top: var(--space-6);
   padding-bottom: var(--space-8);
+  overflow-x: clip;
 }

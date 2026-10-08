@@ -14,19 +14,15 @@ import s from './TankArmorPage.module.scss';
 
 export const TankArmorPage = () => {
   const t = useTranslations('armor.states');
-  const { slug, query, compare, isCrawler, isLimited, isLimitShown, quota } = useTankArmorPage();
+  const { slug, tankSlug, name, query, compare, isCrawler, isLimited, isLimitShown, isLimitPending, quota } = useTankArmorPage();
 
   return (
     <div className={s.root}>
-      <ArmorHeader
-        client={query.data?.response.source.client}
-        name={query.data?.response.vehicle.name}
-        slug={slug}
-        version={query.data?.response.gameVersion}
-      >
-        <ArmorIntro slug={slug} />
+      <ArmorHeader client={query.data?.response.source.client} name={name} slug={tankSlug} version={query.data?.response.gameVersion}>
+        <ArmorIntro slug={tankSlug} />
       </ArmorHeader>
       <div className={s.stage}>
+        {isLimitPending && <ArmorLoading />}
         {isLimitShown && <ArmorLimit {...quota} />}
         {!isCrawler && !isLimited && (
           <QueryState
@@ -45,6 +41,7 @@ export const TankArmorPage = () => {
                 <ArmorCompareBar
                   excludeIds={compare.excludeIds}
                   isActive={compare.slug !== null}
+                  quota={quota.isVisible && <ArmorQuota {...quota} />}
                   vehicle={compare.vehicle}
                   onClear={compare.onClear}
                   onPick={compare.onPick}
@@ -67,7 +64,6 @@ export const TankArmorPage = () => {
           </QueryState>
         )}
       </div>
-      {quota.isVisible && <ArmorQuota {...quota} />}
       <ArmorAttribution commit={query.data?.response.source.commit} />
     </div>
   );

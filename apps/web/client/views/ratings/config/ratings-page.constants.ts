@@ -1,7 +1,6 @@
 import type { RatingScale } from '@otmetki/ratings';
 
 export const RATINGS_PAGE = {
-  heroGlyph: 480,
   percent: 100,
   scaleAnchor: 'scale'
 } as const;

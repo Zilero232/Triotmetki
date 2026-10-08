@@ -2,11 +2,12 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
 import { RequestTime } from '@/shared/seo/request-time';
-import { PageHeroFallback } from '@/ui-kit';
+import { PageHeaderFallback } from '@/ui-kit';
 import { BlogEditorPage } from '@/views/blog-editor';
 
 export const generateMetadata = async () => {
@@ -18,7 +19,7 @@ export const generateMetadata = async () => {
 
 const Page = () => (
   <>
-    <Suspense fallback={<PageHeroFallback />}>
+    <Suspense fallback={<PageHeaderFallback />}>
       <BlogEditorPage />
     </Suspense>
     <Suspense>
@@ -27,4 +28,4 @@ const Page = () => (
   </>
 );
 
-export default Page;
+export default withMessages({ component: Page, messages: ['blog'] });

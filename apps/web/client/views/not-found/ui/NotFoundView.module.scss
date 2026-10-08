@@ -170,3 +170,8 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.footer {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}

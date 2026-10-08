@@ -4,10 +4,10 @@
     "description": "Tank levels, weekly challenges and the season reward track."
   },
   "title": "Progress",
-  "description": "Tank levels grow from your battles, challenges rotate weekly and the season track pays out shells and profile cosmetics. Only your own battles count.",
-  "frozen": "Levels are visible to everyone, but XP, challenges and shells accrue only with Plus.",
+  "description": "Tank levels grow from your battles, challenges rotate weekly and the season track pays out casings and profile cosmetics. Only your own battles count.",
+  "frozen": "Levels are visible to everyone, but XP, challenges and casings accrue only with Plus.",
   "shells": {
-    "title": "Shells",
+    "title": "Casings",
     "hint": "Never sold or cashed out — spent only on profile cosmetics.",
     "earned": "Earned",
     "spent": "Spent",
@@ -31,16 +31,16 @@
   "challenges": {
     "title": "Weekly challenges",
     "description": "Three challenges for each of your most played tanks this week.",
-    "endsAt": "Rotate {date}",
+    "endsAt": "New challenges on {date}",
     "empty": "Play this week — challenges appear for your most played tanks.",
     "done": "Done",
-    "reward": "+{shells, plural, one {# shell} other {# shells}} · +{points, plural, one {# point} other {# points}}",
+    "reward": "+{casings, plural, one {# casing} other {# casings}} · +{points, plural, one {# point} other {# points}}",
     "progress": "{value} of {target}",
     "metric": {
       "damageBattles": "{target, plural, one {# battle} other {# battles}} with {threshold}+ damage",
       "wins": "{target, plural, one {# win} other {# wins}}",
       "spotted": "{target, plural, one {# spot} other {# spots}}",
-      "frags": "{target, plural, one {# kill} other {# kills}}",
+      "frags": "{target, plural, one {# frag} other {# frags}}",
       "blocked": "{target} damage blocked",
       "survived": "Survive {target, plural, one {# battle} other {# battles}}",
       "moeBattles": "{target, plural, one {# battle} other {# battles}} raising the mark",
@@ -49,17 +49,17 @@
   },
   "season": {
     "title": "Season {season}",
-    "description": "Season points come from challenges and tank levels. Rewards are shells and seasonal cosmetics you keep forever.",
+    "description": "Season points come from challenges and tank levels. Rewards are casings and seasonal cosmetics you keep forever.",
     "level": "Level {level} of {max}",
     "points": "{points, plural, one {# point} other {# points}}",
     "next": "{points} to the next level",
     "maxed": "Track complete",
     "endsAt": "Until {date}",
     "rewardLevel": "Lv. {level}",
-    "rewardShells": "{amount} shells",
+    "rewardShells": "{amount, plural, one {# casing} other {# casings}}",
     "claimed": "Claimed",
     "locked": "Ahead"
   },
-  "cosmeticsLink": "Spend shells",
-  "error": "Couldn't load progress."
+  "cosmeticsLink": "Spend casings",
+  "error": "Could not load progress."
 }

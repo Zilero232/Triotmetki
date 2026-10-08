@@ -1,0 +1,1 @@
+export { MarksBodySkeleton } from './MarksBodySkeleton';

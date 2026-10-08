@@ -1,1 +1,1 @@
-export { clientIpOf, isDocumentRequest, isMissingEntity, missingEntityRewrite, splitLocale } from './entity-presence';
+export { canonicalRedirect, checkEntity, clientIpOf, isDocumentRequest, missingEntityRewrite, splitLocale } from './entity-presence';

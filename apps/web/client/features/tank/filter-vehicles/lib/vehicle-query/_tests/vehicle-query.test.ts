@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { ROUTES } from '@/shared/constants';
+
 import { loadVehicleFilters, vehicleQuery } from '../vehicle-query';
 
 const NO_FILTERS = loadVehicleFilters(new URLSearchParams());
@@ -36,5 +38,15 @@ describe('loadVehicleFilters', () => {
     const filters = loadVehicleFilters(new URLSearchParams('statuses=gold&roles=pilot'));
 
     expect(vehicleQuery(filters)).toEqual({ tiers: [], types: [], nations: [], statuses: [], roles: [] });
+  });
+});
+
+describe('ROUTES.tanks.filtered', () => {
+  it('links to a catalog URL the page reads back as the same filter', () => {
+    const href = ROUTES.tanks.filtered({ nations: 'ussr', tiers: 8 });
+
+    const filters = loadVehicleFilters(new URLSearchParams(href.split('?')[1]));
+
+    expect(vehicleQuery(filters)).toMatchObject({ nations: ['ussr'], tiers: [8] });
   });
 });

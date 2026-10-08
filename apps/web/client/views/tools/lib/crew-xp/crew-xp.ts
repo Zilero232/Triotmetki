@@ -5,16 +5,19 @@ import type { CrewPlan, CrewPlanInput, SkillLevelCostInput, XpToNextSkillInput }
 import { CREW_BONUSES, CREW_XP } from '../../config';
 import { battlesFor } from '../research-plan';
 
-const LEVELS = range(1, CREW_XP.maxLevel + 1);
+const LEVELS = range(0, CREW_XP.maxLevel);
 
-export const skillLevelCost = ({ level, skill }: SkillLevelCostInput): number =>
-  Math.round(CREW_XP.levelBase * CREW_XP.levelGrowth ** (level / CREW_XP.maxLevel)) * 2 ** skill;
+export const skillLevelCost = ({ level, skill }: SkillLevelCostInput): number => {
+  const levelXp = CREW_XP.levelBase * CREW_XP.levelGrowth ** (level / CREW_XP.maxLevel);
+
+  return Math.round(levelXp * 2 ** skill);
+};
 
 export const skillTotalXp = (skill: number): number => sumBy(LEVELS, (level) => skillLevelCost({ level, skill }));
 
 export const xpToNextSkill = ({ skill, percent }: XpToNextSkillInput): number =>
   sumBy(
-    LEVELS.filter((level) => level > Math.floor(percent)),
+    LEVELS.filter((level) => level >= Math.floor(percent)),
     (level) => skillLevelCost({ level, skill })
   );
 

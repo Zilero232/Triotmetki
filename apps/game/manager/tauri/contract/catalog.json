@@ -335,10 +335,24 @@
         "en": "",
         "ru": ""
       },
+      "everything": false,
       "id": "recommended",
       "title": {
         "en": "Recommended",
         "ru": "Рекомендуемый"
+      }
+    },
+    {
+      "custom": false,
+      "description": {
+        "en": "",
+        "ru": ""
+      },
+      "everything": true,
+      "id": "all",
+      "title": {
+        "en": "All components",
+        "ru": "Все компоненты"
       }
     },
     {
@@ -347,6 +361,7 @@
         "en": "",
         "ru": ""
       },
+      "everything": false,
       "id": "custom",
       "title": {
         "en": "Custom",

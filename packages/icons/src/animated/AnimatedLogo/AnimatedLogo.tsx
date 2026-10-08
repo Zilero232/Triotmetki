@@ -1,20 +1,26 @@
 'use client';
 
-import { motion, useReducedMotion } from 'motion/react';
+import { useReducedMotion } from 'motion/react';
+import * as m from 'motion/react-m';
 
 import type { AnimatedLogoProps } from '../animated.types';
 
-import { LOGO_SHAPES } from '../../icons';
-import { IconBase } from '../../lib';
+import { LOGO_SHAPES, OtmetkiLogoIcon } from '../../icons';
+import { IconBase, useHydrated } from '../../lib';
 import { ACCENT, DRAW, ICON_EASE } from '../animated.constants';
 
 export const AnimatedLogo = ({ withTracer = true, ...props }: AnimatedLogoProps) => {
+  const isHydrated = useHydrated();
   const isReduced = useReducedMotion();
+
+  if (!isHydrated) {
+    return <OtmetkiLogoIcon {...props} />;
+  }
 
   return (
     <IconBase name='otmetki-logo-animated' {...props}>
       {LOGO_SHAPES.marks.map((d, index) => (
-        <motion.path
+        <m.path
           key={d}
           animate='visible'
           d={d}
@@ -24,7 +30,7 @@ export const AnimatedLogo = ({ withTracer = true, ...props }: AnimatedLogoProps)
         />
       ))}
       {withTracer && !isReduced && (
-        <motion.path
+        <m.path
           animate={{ pathOffset: [0, 1], opacity: [0, 1, 1, 0] }}
           d={LOGO_SHAPES.tracer}
           initial={{ pathLength: 0.14, pathOffset: 0, opacity: 0 }}

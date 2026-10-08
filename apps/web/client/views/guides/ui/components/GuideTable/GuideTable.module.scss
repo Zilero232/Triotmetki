@@ -4,11 +4,6 @@
   min-width: 0;
 }
 
-.progress {
-  @include source-line;
-}
-
-.pager {
-  display: flex;
-  gap: var(--space-2);
+.more {
+  flex: 1;
 }

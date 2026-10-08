@@ -1,5 +1,5 @@
 export const MOD_FAIR_PLAY = {
-  reads: ['results', 'dossier', 'feedback', 'queue', 'loadout'],
+  reads: ['results', 'dossier', 'feedback', 'queue', 'loadout', 'accounts'],
   never: ['enemies', 'reload', 'aim', 'allies', 'stats', 'others'],
   bans: {
     total: 50_882,

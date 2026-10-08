@@ -3,21 +3,3 @@
 .root {
   @include stack(var(--gap-panel));
 }
-
-.back {
-  display: inline-flex;
-  align-items: center;
-  align-self: flex-start;
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  gap: var(--space-1);
-  text-decoration: none;
-
-  &:hover {
-    color: var(--color-text);
-  }
-}
-
-.title {
-  @include sr-only;
-}

@@ -8,15 +8,17 @@ import type { RouteEntity, RouteEntityInput, RouteLookup, RouteLookupInput, Rout
 
 export const lookupRouteEntity = async ({ key, load }: RouteEntityInput): Promise<RouteLookup> => {
   try {
-    return { name: await load(), isFound: true, isAvailable: true };
+    const record = await load();
+
+    return { ...record, isFound: true, isAvailable: true };
   } catch (error) {
     if (isNotFoundError(error)) {
-      return { name: key, isFound: false, isAvailable: true };
+      return { name: key, key, isFound: false, isAvailable: true };
     }
 
     cacheLife(UNAVAILABLE_CACHE_LIFE);
 
-    return { name: key, isFound: true, isAvailable: false };
+    return { name: key, key, isFound: true, isAvailable: false };
   }
 };
 
@@ -48,18 +50,18 @@ const settledLookup = async ({ key, lookup }: RouteLookupInput): Promise<RouteLo
   try {
     return await lookup(key);
   } catch {
-    return { name: key, isFound: true, isAvailable: false };
+    return { name: key, key, isFound: true, isAvailable: false };
   }
 };
 
 export const routeEntity = async (input: RouteLookupInput): Promise<RouteEntity> => {
-  const { name, isFound, isAvailable } = await settledLookup(input);
+  const { name, key, isFound, isAvailable } = await settledLookup(input);
 
   if (!isAvailable) {
     await connection();
   }
 
-  return { name, isFound };
+  return { name, key, isFound };
 };
 
 export const routeSlugs = async ({ load, fallback }: RouteSlugsInput) => {
@@ -68,6 +70,8 @@ export const routeSlugs = async ({ load, fallback }: RouteSlugsInput) => {
 
     return values.length > 0 || fallback === undefined ? values : [fallback];
   } catch {
+    cacheLife(UNAVAILABLE_CACHE_LIFE);
+
     return fallback === undefined ? [] : [fallback];
   }
 };

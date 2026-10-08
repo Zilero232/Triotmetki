@@ -4,6 +4,8 @@ import type { AttendanceStatus, WorkspaceEventKind } from '../api';
 
 export const EVENT_KINDS = ['clan_wars', 'stronghold', 'training', 'tournament', 'other'] as const satisfies readonly WorkspaceEventKind[];
 
+export const SYNCED_EVENT_KINDS = ['clan_wars', 'stronghold'] as const satisfies readonly WorkspaceEventKind[];
+
 export const ATTENDANCE_STATUSES = ['invited', 'confirmed', 'declined', 'attended', 'absent'] as const satisfies readonly AttendanceStatus[];
 
 export const ATTENDANCE_TONES = {

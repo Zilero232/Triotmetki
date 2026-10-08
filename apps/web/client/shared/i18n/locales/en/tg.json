@@ -5,7 +5,7 @@
   },
   "outside": {
     "title": "Open in Telegram",
-    "description": "This is the Three Marks mini app. Open it from {bot} and it will recognise your account.",
+    "description": "This is the Three Marks mini app. Open it from {bot} and it will recognize your account.",
     "open": "Open in Telegram",
     "site": "Go to the site"
   },
@@ -37,8 +37,8 @@
     "liveBadge": "live",
     "empty": "No sessions yet.",
     "battles": "Battles",
-    "winRate": "Wins",
-    "avgDamage": "Damage",
+    "winRate": "Win rate",
+    "avgDamage": "Avg damage",
     "details": "Session recap"
   },
   "marks": {
@@ -61,7 +61,7 @@
   },
   "vkOutside": {
     "title": "Open in VK",
-    "description": "This is the Three Marks mini app for VK. Open it from the community or the bot and it will recognise your account.",
+    "description": "This is the Three Marks mini app for VK. Open it from the community or the bot and it will recognize your account.",
     "site": "Go to the site"
   },
   "vkMeta": {

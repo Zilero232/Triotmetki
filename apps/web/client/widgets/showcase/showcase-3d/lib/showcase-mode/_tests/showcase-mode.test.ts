@@ -2,11 +2,15 @@ import { describe, expect, it } from 'vitest';
 
 import { resolveShowcaseMode } from '../showcase-mode';
 
-const desktop = { hasWebgl: true, prefersReducedMotion: false, saveData: false, isCoarsePointer: false, cores: 8, memoryGb: 8 };
+const desktop = { hasWebgl: true, isCrawler: false, prefersReducedMotion: false, saveData: false, isCoarsePointer: false, cores: 8, memoryGb: 8 };
 
 describe('resolveShowcaseMode', () => {
   it('runs live on a capable desktop', () => {
     expect(resolveShowcaseMode(desktop)).toBe('live');
+  });
+
+  it('shows a crawler the flat render so it never downloads the model', () => {
+    expect(resolveShowcaseMode({ ...desktop, isCrawler: true })).toBe('flat');
   });
 
   it('falls back to the flat render without WebGL or with data saver', () => {

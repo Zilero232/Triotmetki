@@ -1,18 +1,16 @@
 {
   "meta": {
     "title": "Marks of excellence",
-    "description": "The 65, 85, 95 and 100 % thresholds of every Mir Tankov tank with 30-day history."
+    "description": "The 65, 85, 95 and 100% thresholds of every Mir Tankov tank with the 30-day change and threshold history."
   },
   "head": {
     "title": "Marks of excellence",
-    "lead": "65/85/95/100 % thresholds for every Mir Tankov tank · updated {date}",
     "leadPlain": "65/85/95/100 % thresholds for every Mir Tankov tank",
     "tracked": "Tanks tracked",
     "updated": "Updated",
     "updatedUnknown": "no data",
     "window": "Window",
-    "windowValue": "EMA · 100 battles",
-    "home": "Home"
+    "windowValue": "Moving average · 100 battles"
   },
   "table": {
     "title": "Thresholds for every tank",
@@ -74,7 +72,7 @@
     "historyAria": "Chart of the 65, 85, 95 and 100 percent thresholds over time",
     "noHistory": "No history yet",
     "noHistoryHint": "This tank's thresholds have been tracked only recently.",
-    "mastery": "Mastery badge",
+    "mastery": "Mastery badges",
     "noMastery": "No mastery thresholds for this tank yet.",
     "masteryLevels": {
       "third": "3rd class",
@@ -86,11 +84,11 @@
     "curveTitle": "Damage per percent",
     "curve": {
       "target": "Mark percent",
-      "damageCaption": "combined damage moving average",
-      "fromThreshold": "Mark threshold from the thresholds source.",
-      "fromMod": "Median of {players} players running the mod over {days} days, {battles} battles.",
+      "damageCaption": "average combined damage (damage + assist)",
+      "fromThreshold": "Threshold from the marks table.",
+      "fromMod": "Median of {players, plural, one {# player} other {# players}} running the mod over {days} days, {battles, plural, one {# battle} other {# battles}}.",
       "sourceThreshold": "threshold",
-      "sourceMod": "mod, players: {players}",
+      "sourceMod": "mod, {players, plural, one {# player} other {# players}}",
       "modNote": "In-between percents are the median moving average of players running the mod whose mark sat within ±{band} points of that percent over the last {days} days. Missing percents are never filled in.",
       "onlyThresholds": "Only the 65, 85, 95 and 100% thresholds are backed by data. In-between steps appear once at least {minPlayers} players running the mod reach each percent on this tank within {days} days.",
       "emptyTitle": "Nothing to calculate yet",

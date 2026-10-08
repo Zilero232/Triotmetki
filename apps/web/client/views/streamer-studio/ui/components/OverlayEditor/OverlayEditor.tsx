@@ -1,5 +1,6 @@
 'use client';
 
+import { PLUS_LIMITS } from '@otmetki/schemas';
 import { useTranslations } from 'next-intl';
 import { FormProvider } from 'react-hook-form';
 
@@ -49,7 +50,7 @@ export const OverlayEditor = ({ overlay, onSaved, onRemoved }: OverlayEditorProp
         <div className={s.stage}>
           {overlay?.isPaused && (
             <p className={s.paused} role='status'>
-              {t('pausedHint')}
+              {t('pausedHint', { limit: PLUS_LIMITS.overlays.free })}
             </p>
           )}
           <OverlayPreview accountId={overlay?.accountId ?? null} />

@@ -10,18 +10,13 @@ import { TanksFigures } from '../TanksFigures';
 
 export const TanksHero = () => {
   const t = useTranslations('tanks.head');
-  const tNav = useTranslations('tanks.hero');
   const tSite = useTranslations('nav');
   const { heroTanks, hasFigures } = useTanksFigures();
 
   return (
     <PageHero
-      breadcrumbs={[
-        { label: tNav('home'), href: ROUTES.home },
-        { label: tSite('groups.vehicles'), href: ROUTES.tanks.list },
-        { label: tSite('tanksHub.stats') }
-      ]}
       art={heroTanks.length > 0 ? { kind: 'tanks', tanks: heroTanks } : undefined}
+      breadcrumbs={[{ label: tSite('groups.vehicles'), href: ROUTES.tanks.list }, { label: tSite('tanksHub.stats') }]}
       figures={hasFigures && <TanksFigures />}
       lead={t('description')}
       title={t('title')}

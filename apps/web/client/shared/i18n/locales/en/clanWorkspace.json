@@ -4,7 +4,7 @@
     "description": "Events, attendance, reminders and weekly reports for the {name} clan."
   },
   "missingClan": {
-    "back": "To clans",
+    "back": "Back to clans",
     "errorTitle": "The clan did not load",
     "notFound": "Clan [{tag}] not found"
   },
@@ -18,7 +18,7 @@
   },
   "outsider": {
     "title": "Members only",
-    "description": "None of your linked Lesta accounts is in [{tag}]. Link the account you play in this clan.",
+    "description": "None of your linked Lesta accounts is in [{tag}]. Link the account you play with in this clan.",
     "action": "Linked accounts"
   },
   "forbidden": {
@@ -91,10 +91,10 @@
     "reminderSent": "Reminder sent {time}",
     "reminderAt": "Reminder at {time}",
     "noReminder": "No reminder",
-    "rsvp": "Your answer",
+    "rsvp": "Your RSVP",
     "going": "Going",
-    "notGoing": "Cannot make it",
-    "sync": "Mark attendance from battles",
+    "notGoing": "Can’t make it",
+    "sync": "Mark attendance from battles (clan wars and Stronghold)",
     "remove": "Delete",
     "cancel": "Cancel",
     "removeTitle": "Delete “{title}”?",

@@ -16,7 +16,7 @@ export const PopularPlayers = () => {
 
   return (
     <Card aria-labelledby={titleId} padding='none'>
-      <CardHeader meta={t('description', { days })} title={<span id={titleId}>{t('title')}</span>} />
+      <CardHeader meta={t('description', { days })} title={<span id={titleId}>{t('title')}</span>} titleAs='h2' />
       <QueryState
         isCompact
         errorTitle={t('errorTitle')}

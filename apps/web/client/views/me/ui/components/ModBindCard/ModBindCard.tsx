@@ -3,8 +3,9 @@
 import { Cpu, KeySquare } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Button } from '@/ui-kit';
+import { Button, QueryState, Skeleton } from '@/ui-kit';
 
+import { MOD_BIND } from '../../../config';
 import { useModBindCard } from '../../../model/hooks';
 import { BindCodeDisplay } from '../BindCodeDisplay';
 import { DeviceList } from '../DeviceList';
@@ -15,7 +16,7 @@ import s from './ModBindCard.module.scss';
 
 export const ModBindCard = () => {
   const t = useTranslations('me.mod');
-  const { code, steps, devices, isIssuing, isError, isRetrying, isRevoking, onIssue, onRetry, onRevoke } = useModBindCard();
+  const { code, steps, devicesQuery, isIssuing, isRetrying, revokingId, onIssue, onRetry, onRevoke } = useModBindCard();
 
   return (
     <MeCard description={t('description')} icon={<Cpu size={18} />} title={t('title')}>
@@ -35,11 +36,13 @@ export const ModBindCard = () => {
           </li>
         ))}
       </ol>
-      {isError ? (
-        <SectionError isRetrying={isRetrying} onRetry={onRetry} />
-      ) : (
-        <DeviceList devices={devices} isRevoking={isRevoking} onRevoke={onRevoke} />
-      )}
+      <QueryState
+        errorState={<SectionError isRetrying={isRetrying} onRetry={onRetry} />}
+        query={devicesQuery}
+        skeleton={<Skeleton count={MOD_BIND.skeletonRows} height={MOD_BIND.rowHeight} shape='block' />}
+      >
+        {(devices) => <DeviceList devices={devices} revokingId={revokingId} onRevoke={onRevoke} />}
+      </QueryState>
     </MeCard>
   );
 };

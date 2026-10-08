@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { DataSourceNote } from '@/ui-kit';
+import { DataSourceNote, PageHeader } from '@/ui-kit';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import type { PlayerProfilePageProps } from './PlayerProfilePage.types';
@@ -15,6 +15,7 @@ import s from './PlayerProfilePage.module.scss';
 
 export const PlayerProfilePage = ({ nickname }: PlayerProfilePageProps) => {
   const t = useTranslations('profile.missing');
+  const tNav = useTranslations('nav.items');
   const query = useProfilePage(nickname);
 
   return (
@@ -23,16 +24,18 @@ export const PlayerProfilePage = ({ nickname }: PlayerProfilePageProps) => {
         back={{ href: ROUTES.players.list, label: t('search') }}
         className={s.body}
         error={{ title: t('errorTitle'), description: t('errorDescription', { nickname }) }}
+        header={<PageHeader breadcrumbs={[{ label: tNav('players'), href: ROUTES.players.list }, { label: nickname }]} title={nickname} />}
         notFound={{ title: t('notFoundTitle'), description: t('notFoundDescription', { nickname }) }}
         query={query}
         skeleton={<ProfileSkeleton />}
+        skeletonClassName={s.gate}
       >
         {(profile) => (
           <ProfileProvider profile={profile}>
             <ProfileHeader />
-            <OfficialRatingsCard />
             <ProfileActionStrip />
             <div className={s.body}>
+              <OfficialRatingsCard />
               <ProfileTabs />
               <DataSourceNote updatedAt={profile.summary.updatedAt} />
             </div>

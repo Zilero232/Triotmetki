@@ -5,7 +5,7 @@ import { requireRouteEntity, requireRouteMeta } from '../require-route-entity';
 
 describe('requireRouteEntity', () => {
   it('returns an entity that exists without rendering not-found', async () => {
-    const entity = { name: 'ИС-7', isFound: true };
+    const entity = { name: 'ИС-7', key: 'is-7', isFound: true };
 
     await expect(requireRouteEntity(Promise.resolve(entity))).resolves.toBe(entity);
     expect(notFound).not.toHaveBeenCalled();
@@ -16,7 +16,10 @@ describe('requireRouteEntity', () => {
       throw new Error('NEXT_HTTP_ERROR_FALLBACK;404');
     });
 
-    await expect(requireRouteEntity(Promise.resolve({ name: 'missing', isFound: false }))).rejects.toThrow('NEXT_HTTP_ERROR_FALLBACK;404');
+    await expect(requireRouteEntity(Promise.resolve({ name: 'missing', key: 'missing', isFound: false }))).rejects.toThrow(
+      'NEXT_HTTP_ERROR_FALLBACK;404'
+    );
+
     expect(notFound).toHaveBeenCalledOnce();
   });
 

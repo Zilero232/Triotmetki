@@ -1,4 +1,4 @@
-export { getArmorModel } from './api';
+export { getArmorShowcase } from './api';
 export { ARMOR_FACE_CLASSES, ARMOR_PALETTE } from './config';
 export { ARMOR_SHADER, armorShaderValues } from './lib/armor-shader';
 export type { ArmorShaderValues } from './lib/armor-shader';

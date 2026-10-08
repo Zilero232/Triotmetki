@@ -1,21 +1,20 @@
 {
   "meta": {
     "title": "Three Marks modpack — download the manager",
-    "description": "A free Mir Tankov modpack: marks in battle, damage log, session stats, a replay manager and dozens more components. Your own data only, fair play by design, no ads."
+    "description": "A free Mir Tankov modpack: marks in battle, a battle log, session stats, a replay manager and dozens more components. Your own data only, fair play by design, no ads."
   },
   "hero": {
-    "home": "Home",
     "crumb": "Modpack",
     "eyebrow": "Modpack for Mir Tankov",
     "title": "Three Marks modpack",
-    "lead": "Your marks percentage right in battle, a damage log, session stats in the hangar and a replay manager — {count} components that work only with your own data. One app installs and updates them.",
+    "lead": "Your marks percentage right in battle, a battle log, session stats in the hangar and a replay manager — {count, plural, one {# component} other {# components}} for your own data and what the client already shows. One app installs and updates them.",
     "download": "Download the manager",
     "inside": "What's inside",
     "preparing": "The first release is on its way — the button works as soon as the files are on the server.",
     "file": "Version {version} · {size} · Windows 10 and 11",
     "game": "Client {game}",
     "figures": {
-      "components": "components",
+      "components": "{count, plural, one {component} other {components}}",
       "presets": "ready-made sets",
       "price": "no subscription, no ads"
     }
@@ -43,7 +42,7 @@
   },
   "showcase": {
     "title": "What's inside",
-    "lead": "{count} components in five sections. The core, the companion and the settings window always come along; the rest is your pick.",
+    "lead": "{count, plural, one {# component} other {# components}} in five sections. The core, the companion and the settings window always come along; the rest is your pick.",
     "legend": "“Default” means the component is in the “Recommended” set the manager offers first.",
     "tabsLabel": "Modpack sections",
     "default": "Default",
@@ -71,14 +70,14 @@
       },
       "streamers": {
         "title": "For streamers",
-        "lead": "Streamer mode that hides every panel on a key. The manager has a ready-made “Streamer” set with the panels viewers like to see."
+        "lead": "Streamer mode hides every panel on a key. The manager has a ready-made “Streamer” set with the panels viewers like to see."
       }
     },
     "streamerPage": "Everything for streamers",
     "components": {
       "damage_log": {
         "title": "Battle log",
-        "text": "The whole battle in one place: your hits with the outcome, shell and target HP left, assistance and the hits on you."
+        "text": "The whole battle in one place: your hits with the outcome, shell and target HP left, assisted damage and the hits on you."
       },
       "team_hp": {
         "title": "Team HP and score",
@@ -89,16 +88,16 @@
         "text": "A big icon when the skill fires. Replaces the stock lamp."
       },
       "pack_badge": {
-        "title": "Three Marks badge by names",
-        "text": "The modpack's badge by the name in the player panels, the Tab stats and the loading screen: on you and on players who bound the mod and left their badge on."
+        "title": "Three Marks plate by names",
+        "text": "The modpack plate after the vehicle icon and a row highlight in the player panels and the loading screen — on you and on every player with the mod who left their plate on. No site binding needed."
       },
       "battle_loadout": {
         "title": "Equipment in battle",
         "text": "The game's own equipment and directive icons to the left of the shell bar, no labels, with a tooltip on hover."
       },
       "gun_arc": {
-        "title": "Gun traverse",
-        "text": "How many degrees your gun still turns left and right. Only on vehicles with limited traverse."
+        "title": "Gun traverse limits",
+        "text": "Markers by the reticle where the gun reaches its traverse limit, five styles to pick from. Only on vehicles with limited traverse."
       },
       "bush_circle": {
         "title": "15 m circle",
@@ -110,7 +109,7 @@
       },
       "platoon_points": {
         "title": "Platoon points",
-        "text": "Points like in a platoon tournament: for damage, assist, kills and survival, by your own rules."
+        "text": "Points like in a platoon tournament: for damage, assist, frags and survival, by your own rules."
       },
       "responsive_reticle": {
         "title": "Responsive reticle",
@@ -122,15 +121,15 @@
       },
       "crosshair": {
         "title": "Crosshairs",
-        "text": "Presets of the stock reticle, the server reticle and 26 centre markers to pick from, plus a reload timer and the drum next to the reticle."
+        "text": "Presets of the stock reticle, the server reticle and 26 center markers to pick from, plus a reload timer and the drum next to the reticle."
       },
       "aim_circle": {
         "title": "Smaller aim circle",
-        "text": "The game's aim circle at 80, 70 or 60 % of its size, as in the modpacks. Dispersion and the shot stay the same."
+        "text": "The game’s aim circle at 80, 70 or 60% of its size, like other modpacks do. Dispersion and the shot stay the same."
       },
       "camera": {
         "title": "Zoom and camera",
-        "text": "Camera presets, sniper zoom and stabilisation — the game's own settings in one click."
+        "text": "Camera presets, sniper zoom and stabilization — the game's own settings in one click."
       },
       "minimap": {
         "title": "Minimap",
@@ -138,7 +137,7 @@
       },
       "hud_layouts": {
         "title": "Layout per battle type",
-        "text": "Its own panels for random battles, Onslaught, Frontline and events. Switches by itself."
+        "text": "Its own panels for random battles, Onslaught, Front Line and events. Switches by itself."
       },
       "auto_messages": {
         "title": "Chat auto messages",
@@ -162,7 +161,7 @@
       },
       "notification_filter": {
         "title": "Notification filter",
-        "text": "Hides ads, sales and auctions in the notification centre."
+        "text": "Hides ads, sales and auctions in the notification center."
       },
       "auto_resupply": {
         "title": "Auto-resupply",
@@ -170,7 +169,7 @@
       },
       "quick_demount": {
         "title": "Quick demount",
-        "text": "In the equipment menu: your tanks that carry the device. Pick one and it comes off in every setup."
+        "text": "In the equipment menu: your tanks that have it fitted. Pick one and it is removed in every setup."
       },
       "personal_missions": {
         "title": "Personal missions helper",
@@ -186,11 +185,11 @@
       },
       "depot_seller": {
         "title": "Depot seller",
-        "text": "Unused shells, modules, equipment and reserve crew in one go. Everything is off; the sale lists the items and the credits first."
+        "text": "Unused shells, modules, equipment and consumables, plus untrained reserve crew, in one go. Everything is off by default; the sale lists the items and the credits first."
       },
       "auto_reserves": {
         "title": "Auto personal reserves",
-        "text": "The chosen personal reserves turn on by themselves at the game start and when they run out."
+        "text": "The chosen personal reserves turn on by themselves when the game starts and when they run out."
       },
       "crew_xp": {
         "title": "Crew XP",
@@ -202,23 +201,23 @@
       },
       "hangar_looks": {
         "title": "Hangar looks",
-        "text": "Our own «Three Marks» looks for the game's hangar: night, sunset, steel and studio, with our colour grading."
+        "text": "Our own “Three Marks” looks for the game’s hangar: night, sunset, steel and studio, with our color grading."
       },
       "hit_viewer": {
         "title": "Hit viewer",
-        "text": "Where you were penetrated and where you hit: after the battle, on the tank model in the hangar, with the angle and effective armour."
+        "text": "Where you were penetrated and where you hit: after the battle, on the tank model in the hangar, with the angle and effective armor."
       },
       "update_notice": {
         "title": "New mod version",
-        "text": "A badge in the mods list and a notification when a release is out, with «Skip this version»."
+        "text": "A badge in the mods list and a notification about a new release; in the mod window, “Download on the site” and “Skip this version”."
       },
       "preset_advisor": {
         "title": "Build hints in the loadout",
         "text": "Marks the site's recommended equipment and directives for your tank in the loadout window."
       },
       "armor_view": {
-        "title": "Tank armour",
-        "text": "The tank's armour in 3D from the site: from the mods list or «Armour» in the carousel tank menu."
+        "title": "Tank armor",
+        "text": "The tank’s armor in 3D on the site: the “Tank armor” button in the mods list or the “Tank armor” item in the carousel tank menu (right click). Opens in your browser or in the game, as you choose."
       },
       "free_camera": {
         "title": "Free camera",
@@ -226,11 +225,11 @@
       },
       "marks_panel": {
         "title": "Marks of Excellence",
-        "text": "Two components with their own settings: “Marks in battle” shows the percent, the projection after the battle and the damage to the next goal, with 65, 85 and 95% on Alt; the “Tank card” in the hangar shows the trend, the damage to every mark up to 100% and the battles to the next one."
+        "text": "Two components with their own settings: “Marks in battle” shows the percent, the post-battle projection, the battle’s damage bar and the damage to the next goal; the “Tank card” in the hangar shows the trend, the 65/85/95/100% scale with the damage for each mark and the battles to the next one."
       },
       "battle_progress": {
         "title": "Battle progress",
-        "text": "One plate: the damage still needed for High Caliber and the WN8 of this battle."
+        "text": "One plate: the damage still needed for the High Caliber medal (random battles) and this battle’s WN8 (once the mod is bound)."
       },
       "session_stats": {
         "title": "Session",
@@ -238,7 +237,7 @@
       },
       "battle_results": {
         "title": "Battle results",
-        "text": "A summary after every battle and the map of hits on your tank in the mod window, and in battle your results once your tank is destroyed and the previous battle's results."
+        "text": "A summary after every battle in the notifications and the map of hits on your tank in the mod window; in battle, the previous battle’s results when they arrive in the next one."
       },
       "replay_manager": {
         "title": "Replay manager",
@@ -260,10 +259,11 @@
     "readsTitle": "What the modpack reads",
     "reads": {
       "results": "The personal block of your battle results",
-      "dossier": "Your tanks' dossier: marks and average damage",
+      "dossier": "Your tanks’ dossier: marks and average damage",
       "feedback": "Your damage and assist — the same events the stock log shows",
       "queue": "Time in the queue",
-      "loadout": "Your tank's equipment, consumables and crew in the hangar"
+      "loadout": "Your tank’s equipment, consumables and crew in the hangar",
+      "accounts": "The battle’s account numbers — for the modpack plate"
     },
     "neverTitle": "What the modpack never does",
     "never": {
@@ -276,7 +276,7 @@
     },
     "bans": {
       "label": "accounts",
-      "text": "Lesta blocked for forbidden mods in a single month.",
+      "text": "That many accounts Lesta blocked for forbidden mods in a single month.",
       "tiers": {
         "week": "for 7 days — a first offence",
         "month": "for 30 days — a second one",
@@ -300,20 +300,21 @@
       },
       "play": {
         "title": "Install and play",
-        "text": "The manager leaves other mods alone unless you tick them for removal yourself. The Three Marks window opens from a button in the bottom-right corner of the hangar."
+        "text": "The manager leaves other mods alone unless you tick them for removal yourself. The Three Marks window opens from the mods button in the bottom-right corner of the hangar."
       }
     },
     "presets": {
       "recommended": "Recommended",
       "minimal": "Minimal (FPS)",
       "streamer": "Streamer",
+      "all": "All components",
       "custom": "Custom"
     },
     "restart": "On the first start the game may restart once — that is how the OpenWG Gameface library hooks up the mod window."
   },
   "bind": {
     "title": "Bind the mod to the site",
-    "text": "Unbound, the mod works in the game but sends nothing. Once bound, your battles, marks and sessions show up on the site, and your ratings and goals in the hangar. The code is single-use; bound computers are listed in your account.",
+    "text": "Unbound, the mod works in the game and sends only the battle’s account numbers for the modpack plate. Once bound, your battles, marks and sessions show up on the site, and your ratings and goals in the hangar. The code is single-use; bound computers are listed in your account.",
     "signedIn": "Get a code",
     "signIn": "Sign in with Lesta ID"
   },
@@ -327,7 +328,7 @@
     "items": {
       "sets": {
         "title": "Sets and builds",
-        "text": "Three ready-made sets and up to 12 of your own. Share them as a code or a file."
+        "text": "Four ready-made sets and up to 12 of your own. Share them as a code or a file."
       },
       "profiles": {
         "title": "Settings profiles",
@@ -361,7 +362,7 @@
   },
   "switches": {
     "title": "What goes to the site",
-    "lead": "Your own account's events (plus the account numbers of a battle's players for the modpack badge), signed with the device key, and only after binding. Each item turns off in the mod window.",
+    "lead": "Once bound: your own account’s events, signed with the device key. Unbound: only the battle’s account numbers for the modpack plate. Each item turns off in the mod window.",
     "values": {
       "on": "On",
       "manual": "On a button",
@@ -370,7 +371,7 @@
     "items": {
       "battleResults": {
         "title": "Battle results",
-        "text": "Map, mode, result, your tank, damage, assist, spotting, kills, XP, credits, the marks after the battle and your platoon."
+        "text": "Map, mode, result, your tank, damage, assist, spotting, frags, XP, credits, the marks after the battle and your platoon."
       },
       "moeSnapshots": {
         "title": "Marks in the hangar",
@@ -386,11 +387,11 @@
       },
       "shots": {
         "title": "Your hits",
-        "text": "Damage and result of your shots at enemies, without positions or distances — for “Honest RNG”."
+        "text": "Damage, outcome and distance of your shots at enemies, without positions — for “Honest RNG”."
       },
       "badge": {
-        "title": "Modpack badge",
-        "text": "At the start of a battle, the account numbers of its players: the site answers which of them have the badge and keeps nothing. Other players with the mod see your badge while it is on."
+        "title": "Modpack plate",
+        "text": "At battle start, the battle’s account numbers: the site answers who has the plate and keeps no copy of the list. While the switch is on, the site remembers for 30 days that your account has the mod; switch it off and that mark is deleted at once."
       },
       "shareSettings": {
         "title": "Game settings",
@@ -436,11 +437,11 @@
       },
       "remove": {
         "question": "How do I remove the modpack?",
-        "answer": "In the manager: “Settings” → “General” → “Remove the modpack”. Only our files go; the mod settings and the site binding can go too or stay in case you come back. When you uninstall the manager itself, Windows asks whether to remove the modpack from every client too; the mod settings then stay. Other mods stay where they are."
+        "answer": "In the manager: “Maintenance” → “Remove the modpack”. Only our files go; the mod settings and the site binding can go too or stay in case you come back. When you uninstall the manager itself, Windows asks whether to remove the modpack from every client too; the mod settings then stay. Other mods stay where they are."
       },
       "bind": {
         "question": "Why bind the mod to the site?",
-        "answer": "Unbound, the mod works in the game but sends nothing. Once bound, your battles, marks and sessions show up on the site, and your ratings and goals in the hangar. Get a new code in your account; old computers are unbound there too."
+        "answer": "Unbound, the mod works in the game and sends only the battle’s account numbers for the modpack plate. Once bound, your battles, marks and sessions show up on the site, and your ratings and goals in the hangar. Get a new code in your account; old computers are unbound there too."
       },
       "replays": {
         "question": "Does the mod upload replays?",
@@ -448,7 +449,7 @@
       },
       "delete": {
         "question": "How do I delete my data?",
-        "answer": "Unbind the device and request an export or deletion of your data in your account."
+        "answer": "Unbind the device in your account; on its Overview page you can download or delete your data. The plate mark on the server goes away when you switch off “Show my badge” in the mod window."
       }
     }
   },
@@ -472,7 +473,7 @@
     "managerNote": "The manager opens “Profiles” with this code; you only confirm the import.",
     "gameNote": "Without the manager: copy the code and paste it in the game — the mod window, “Profiles”, “Add from code”.",
     "missingTitle": "The link has no profile code",
-    "missingDescription": "The link is cut off or outdated. Ask for a new one, or paste the code into the manager by hand: “Profiles” → “Import a code”.",
+    "missingDescription": "The link is cut off or outdated. Ask for a new one, or paste the code into the manager by hand: “Profiles” → “Import”.",
     "missingAction": "Download the mod manager"
   }
 }

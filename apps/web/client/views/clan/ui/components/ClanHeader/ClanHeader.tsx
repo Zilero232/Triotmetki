@@ -1,6 +1,6 @@
 'use client';
 
-import { ClipboardList } from 'lucide-react';
+import { ClipboardList, Film } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { ClanEmblem } from '@/entities/clan/clan';
@@ -18,6 +18,7 @@ import s from './ClanHeader.module.scss';
 export const ClanHeader = ({ page: { clan, stats, members } }: ClanHeaderProps) => {
   const t = useTranslations('clans.clan');
   const tNav = useTranslations('clans.head');
+  const tSiteNav = useTranslations('nav.items');
   const format = useFormatter();
   const workspaceHref = useWorkspaceLink({ clan, members });
 
@@ -26,12 +27,18 @@ export const ClanHeader = ({ page: { clan, stats, members } }: ClanHeaderProps) 
       <ClanEmblem className={s.emblem} color={clan.color} size='lg' src={clan.emblem} tag={clan.tag} />
       <PageHeader
         actions={
-          workspaceHref && (
-            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={workspaceHref}>
-              <ClipboardList aria-hidden size={16} />
-              {t('workspace')}
+          <>
+            <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.replays.filtered({ clan: clan.tag })}>
+              <Film aria-hidden size={16} />
+              {tSiteNav('replays')}
             </Link>
-          )
+            {workspaceHref && (
+              <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={workspaceHref}>
+                <ClipboardList aria-hidden size={16} />
+                {t('workspace')}
+              </Link>
+            )}
+          </>
         }
         meta={
           <span className={s.meta}>

@@ -1,13 +1,11 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-
 import { useReservedHeight } from '@/shared/lib';
 
 import type { PagedListProps } from './PagedList.types';
 
-import { Button, Skeleton } from '../../atoms';
-import { ErrorState, RetryButton } from '../../molecules';
+import { Skeleton } from '../../atoms';
+import { ErrorState, LoadMore } from '../../molecules';
 import { pagedListVariants } from './PagedList.variants';
 
 import s from './PagedList.module.scss';
@@ -27,7 +25,6 @@ export const PagedList = <TItem,>({
   label,
   className
 }: PagedListProps<TItem>) => {
-  const t = useTranslations('common');
   const { reservedStyle, measureRef } = useReservedHeight();
 
   const rootClassName = pagedListVariants({ layout, className });
@@ -68,20 +65,14 @@ export const PagedList = <TItem,>({
           </li>
         ))}
       </ul>
-      {isError ? (
-        <div className={s.more} role='alert'>
-          <span className={s.moreError}>{t('loadMoreError')}</span>
-          <RetryButton disabled={isFetchingNextPage} variant='ghost' onClick={loadMore} />
-        </div>
-      ) : (
-        hasNextPage && (
-          <div className={s.more}>
-            <Button disabled={isFetchingNextPage} size='sm' variant='secondary' onClick={loadMore}>
-              {moreLabel ?? t('showMore')}
-            </Button>
-          </div>
-        )
-      )}
+      <LoadMore
+        className={s.more}
+        hasNextPage={hasNextPage}
+        isError={isError}
+        isFetchingNextPage={isFetchingNextPage}
+        label={moreLabel}
+        onLoadMore={loadMore}
+      />
     </section>
   );
 };

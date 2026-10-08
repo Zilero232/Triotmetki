@@ -23,23 +23,9 @@ export type ReplayFilters = Record<ReplayMinimum, number | null> & {
   version: string | null;
   tags: ReplayTag[];
   sort: ReplaySort;
-  offset: number;
 };
 
 export type ToSearchQueryInput = {
   filters: ReplayFilters;
   limit: number;
-};
-
-export type PageWindowInput = {
-  offset: number;
-  limit: number;
-  total: number;
-};
-
-export type PageWindow = {
-  page: number;
-  pages: number;
-  prevOffset: number | null;
-  nextOffset: number | null;
 };

@@ -4,7 +4,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { useId } from 'react';
 
 import { MarkProgress } from '@/entities/player/marks';
-import { TankCell } from '@/entities/tank/tank';
+import { TankLink } from '@/entities/tank/tank';
 import { Band, EmptyState, ProgressRing, QueryState, Skeleton } from '@/ui-kit';
 
 import { OVERVIEW } from '../../../../../config';
@@ -54,7 +54,7 @@ export const MarksPanel = () => {
                 as='li'
                 damageToNext={damageToNext}
                 percent={percent}
-                title={<TankCell image='contour' vehicle={vehicle} />}
+                title={<TankLink vehicle={vehicle} />}
                 variant='card'
               />
             ))}

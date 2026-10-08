@@ -27,7 +27,9 @@ export const useEconomyCalculator = () => {
   const {
     data: medians,
     isPending: isMediansLoading,
-    isError: isMediansError
+    isError: isMediansError,
+    isRefetching: isMediansRetrying,
+    refetch: refetchMedians
   } = useQuery({
     queryKey: QUERY_KEYS.tanks.tankEconomy(tankId),
     queryFn: ({ signal }) => getTankEconomy({ tankId, signal }),
@@ -56,6 +58,8 @@ export const useEconomyCalculator = () => {
     onVehicleChange,
     medians: { premium, standard, windowDays: economy?.windowDays ?? 0 },
     isMediansPending: vehicle !== null && isMediansLoading,
-    isMediansError
+    isMediansError,
+    isMediansRetrying,
+    retryMedians: () => void refetchMedians()
   };
 };

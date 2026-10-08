@@ -1,15 +1,18 @@
 import { useTranslations } from 'next-intl';
 
+import { LestaAttribution } from '@/entities/app/lesta-attribution';
 import { CommandPaletteTrigger } from '@/features/search/command-palette';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { buttonVariants } from '@/ui-kit';
 
+import type { NotFoundViewProps } from './NotFoundView.types';
+
 import { NOT_FOUND, QUICK_LINKS } from '../config';
 
 import s from './NotFoundView.module.scss';
 
-export const NotFoundView = () => {
+export const NotFoundView = ({ withAttribution = false }: NotFoundViewProps) => {
   const t = useTranslations('notFound');
   const tNav = useTranslations('nav');
 
@@ -49,6 +52,11 @@ export const NotFoundView = () => {
           ))}
         </ul>
       </nav>
+      {withAttribution && (
+        <footer className={s.footer}>
+          <LestaAttribution />
+        </footer>
+      )}
     </section>
   );
 };

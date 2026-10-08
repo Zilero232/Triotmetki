@@ -1,1 +1,1 @@
-export { competitionRouteMeta } from './route-meta';
+export { competitionRouteMeta, competitionSlugs } from './route-meta';

@@ -25,7 +25,6 @@ import {
   Network,
   Newspaper,
   NotebookPen,
-  Palette,
   Scale,
   ShoppingCart,
   Sigma,
@@ -70,7 +69,7 @@ export const SITE_LINKS = {
   codes: { key: 'codes', href: ROUTES.codes, icon: Ticket },
   shop: { key: 'shop', href: ROUTES.shop, icon: ShoppingCart },
   news: { key: 'news', href: ROUTES.news, icon: Newspaper },
-  competitions: { key: 'competitions', href: ROUTES.social.leagues, icon: Award },
+  leagues: { key: 'leagues', href: ROUTES.social.leagues, icon: Award },
   tournaments: { key: 'tournaments', href: ROUTES.tournaments.list, icon: Swords },
   streamers: { key: 'streamers', href: ROUTES.streamers.list, icon: RadioIcon },
   replays: { key: 'replays', href: ROUTES.replays.list, icon: Film },
@@ -84,7 +83,6 @@ export const SITE_LINKS = {
   pulse: { key: 'pulse', href: ROUTES.pulse, icon: Activity },
   ratings: { key: 'ratings', href: ROUTES.ratings, icon: Sigma },
   status: { key: 'status', href: ROUTES.status, icon: HeartPulse },
-  design: { key: 'design', href: ROUTES.design, icon: Palette },
   hub: { key: 'hub', href: ROUTES.hub, icon: Compass }
 } as const satisfies Record<string, SiteNavLink>;
 
@@ -101,7 +99,7 @@ export const SITE_NAV = {
     {
       key: 'community',
       featured: 'liveStreamers',
-      items: [SITE_LINKS.competitions, SITE_LINKS.tournaments, SITE_LINKS.streamers, SITE_LINKS.replays, SITE_LINKS.guides]
+      items: [SITE_LINKS.leagues, SITE_LINKS.tournaments, SITE_LINKS.streamers, SITE_LINKS.replays, SITE_LINKS.guides]
     },
     SITE_LINKS.mod
   ],
@@ -142,29 +140,12 @@ export const SITE_HUB_GROUPS = [
   {
     key: 'community',
     featured: null,
-    items: [
-      SITE_LINKS.competitions,
-      SITE_LINKS.tournaments,
-      SITE_LINKS.streamers,
-      SITE_LINKS.replays,
-      SITE_LINKS.guides,
-      SITE_LINKS.blog,
-      SITE_LINKS.play
-    ]
+    items: [SITE_LINKS.leagues, SITE_LINKS.tournaments, SITE_LINKS.streamers, SITE_LINKS.replays, SITE_LINKS.guides, SITE_LINKS.blog, SITE_LINKS.play]
   },
   {
     key: 'project',
     featured: null,
-    items: [
-      SITE_LINKS.mod,
-      SITE_LINKS.plus,
-      SITE_LINKS.forStreamers,
-      SITE_LINKS.developers,
-      SITE_LINKS.pulse,
-      SITE_LINKS.ratings,
-      SITE_LINKS.status,
-      SITE_LINKS.design
-    ]
+    items: [SITE_LINKS.mod, SITE_LINKS.plus, SITE_LINKS.forStreamers, SITE_LINKS.developers, SITE_LINKS.pulse, SITE_LINKS.ratings, SITE_LINKS.status]
   }
 ] as const satisfies readonly SiteNavGroup[];
 

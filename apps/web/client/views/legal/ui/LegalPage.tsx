@@ -16,11 +16,7 @@ export const LegalPage = ({ doc }: LegalPageProps) => {
 
   return (
     <article className={s.root}>
-      <PageHeader
-        breadcrumbs={[{ label: t('home'), href: ROUTES.home }, { label: t(`docs.${doc}.title`) }]}
-        description={t(`docs.${doc}.lead`)}
-        title={t(`docs.${doc}.title`)}
-      />
+      <PageHeader breadcrumbs={[{ label: t(`docs.${doc}.title`) }]} description={t(`docs.${doc}.lead`)} title={t(`docs.${doc}.title`)} />
       {LEGAL.isDraft && (
         <p className={s.draft} role='note'>
           {t('draft')}

@@ -14,7 +14,6 @@ const input: ToStrongholdInput = {
   level: 5,
   stats: null,
   buildings: null,
-  reserves: null,
   updatedAt: null,
   elo: { eloRating6: null, eloRating8: 1_200, eloRating10: null },
   provinces: []
@@ -48,29 +47,6 @@ describe('toStronghold', () => {
     expect(stronghold.buildings.map((item) => item.type)).toEqual([building.building_type]);
   });
 
-  it('flattens every reserve in stock into its own entry', () => {
-    const activatedAt = 1_750_000_000;
-    const reserves = toStronghold({
-      ...input,
-      reserves: [
-        { type: 'battle_payments', title: 'Payments', in_stock: [{ level: 1, amount: 2, activated_at: activatedAt }, { level: 2 }] },
-        { type: 'empty', in_stock: null }
-      ]
-    }).reserves;
-
-    expect(reserves).toHaveLength(2);
-
-    expect(reserves[0]).toMatchObject({
-      type: 'battle_payments',
-      level: 1,
-      count: 2,
-      activatedAt: new Date(activatedAt * 1_000).toISOString(),
-      expiresAt: null
-    });
-
-    expect(reserves[1]?.count).toBeNull();
-  });
-
   it('lists only tiers with battles and derives the win rate as a percent', () => {
     const stronghold = toStronghold({
       ...input,
@@ -92,14 +68,13 @@ describe('toStronghold', () => {
   });
 
   it('treats unparseable stats as an empty stronghold', () => {
-    const stronghold = toStronghold({ ...input, stats: 'garbage', reserves: 'garbage' });
+    const stronghold = toStronghold({ ...input, stats: 'garbage' });
 
     expect(stronghold).toMatchObject({
       commandCenterArenaId: null,
       totalResources: null,
       buildingSlots: null,
       buildings: [],
-      reserves: [],
       skirmishes: [],
       battles: 0,
       winRate: null

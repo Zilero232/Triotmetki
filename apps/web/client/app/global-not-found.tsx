@@ -15,7 +15,7 @@ export const generateMetadata = async () => {
   const locale = resolveLocale(await getLocale());
   const t = await getTranslations({ locale, namespace: 'notFound' });
 
-  return { ...defaultMetadata, ...createPageMetadata({ title: t('title'), description: t('body'), locale }) };
+  return { ...defaultMetadata, ...createPageMetadata({ title: t('title'), description: t('body'), locale }), robots: null };
 };
 
 const GlobalNotFound = () => (

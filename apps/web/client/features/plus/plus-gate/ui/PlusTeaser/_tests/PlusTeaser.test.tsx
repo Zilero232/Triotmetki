@@ -30,7 +30,7 @@ const renderTeaser = (teaser: Partial<Teaser>) => {
 
   return render(
     <NextIntlClientProvider locale='en' messages={messages.en}>
-      <PlusTeaser feature='history' />
+      <PlusTeaser feature='analytics' />
     </NextIntlClientProvider>
   );
 };
@@ -39,8 +39,8 @@ describe('PlusTeaser', () => {
   it('names the locked feature as a labelled region', () => {
     renderTeaser({});
 
-    expect(screen.getByRole('region', { name: COPY.gate.history.title })).toBeInTheDocument();
-    expect(screen.getByText(COPY.gate.history.text)).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: COPY.gate.analytics.title })).toBeInTheDocument();
+    expect(screen.getByText(COPY.gate.analytics.text)).toBeInTheDocument();
   });
 
   it('shows no action while the Plus state loads', () => {
@@ -69,7 +69,7 @@ describe('PlusTeaser', () => {
 
     rerender(
       <NextIntlClientProvider locale='en' messages={messages.en}>
-        <PlusTeaser feature='history' />
+        <PlusTeaser feature='analytics' />
       </NextIntlClientProvider>
     );
 

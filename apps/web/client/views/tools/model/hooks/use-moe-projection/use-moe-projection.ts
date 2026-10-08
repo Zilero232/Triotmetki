@@ -13,7 +13,12 @@ import { MOE_TARGETS } from '../../../config';
 export const useMoeProjection = ({ vehicle, percent, damage, target }: UseMoeProjectionInput) => {
   const tankId = vehicle?.tankId ?? 0;
 
-  const { data: threshold = null, isFetching } = useQuery({
+  const {
+    data: threshold = null,
+    isFetching,
+    isError,
+    refetch
+  } = useQuery({
     queryKey: QUERY_KEYS.marks.history(tankId),
     queryFn: ({ signal }) => getMoeHistory({ tankId, signal }),
     enabled: vehicle !== null,
@@ -28,5 +33,12 @@ export const useMoeProjection = ({ vehicle, percent, damage, target }: UseMoePro
       ? projectMoeBattles({ currentPercent: percent, targetPercent, averageCombinedDamage: damage, thresholds: toMoeThresholds(threshold) })
       : null;
 
-  return { hasVehicle: vehicle !== null, isFetching, projection, targetPercent };
+  return {
+    hasVehicle: vehicle !== null,
+    isFetching,
+    isError: isError && threshold === null,
+    projection,
+    targetPercent,
+    retry: () => void refetch()
+  };
 };

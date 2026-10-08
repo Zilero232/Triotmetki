@@ -21,6 +21,7 @@ const fontCode = JetBrains_Mono({
   weight: ['400'],
   variable: '--font-code',
   display: 'swap',
+  preload: false,
   fallback: ['ui-monospace', 'monospace']
 });
 

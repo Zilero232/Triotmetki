@@ -5,11 +5,11 @@
   },
   "metric": {
     "battles": "Бои",
-    "winRate": "Победы",
+    "winRate": "Процент побед",
     "avgDamage": "Ср. урон",
     "wn8": "WN8",
     "broneIndex": "Броня-Индекс",
-    "moePercent": "Отметка",
+    "moePercent": "Процент отметки",
     "winStreak": "Серия побед",
     "frags": "Фраги",
     "lastBattle": "Последний бой"
@@ -27,7 +27,7 @@
     "battles": "Бои: {done} из {total}",
     "status": {
       "pending": "Ждёт доната",
-      "active": "В игре",
+      "active": "Идёт",
       "succeeded": "Выполнен",
       "failed": "Провален",
       "cancelled": "Отменён",
@@ -39,6 +39,5 @@
     "invalid": "Неверная ссылка на оверлей",
     "unavailable": "Оверлей недоступен"
   },
-  "attribution": "данные: Леста Игры",
   "paused": "Оверлей на паузе"
 }

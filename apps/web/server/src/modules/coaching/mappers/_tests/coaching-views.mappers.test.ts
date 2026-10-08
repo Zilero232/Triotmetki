@@ -11,7 +11,6 @@ const order: CoachingOrder = {
   offerId: null,
   replayId: null,
   status: 'requested',
-  priceRub: null,
   notes: null,
   studentContact: '@student',
   review: null,
@@ -28,10 +27,6 @@ describe('toOrderView', () => {
 
   it('always shows the student their own contact', () => {
     expect(toOrderView({ order, viewerId: 'student' }).studentContact).toBe('@student');
-  });
-
-  it('keeps an unpriced order unpriced', () => {
-    expect(toOrderView({ order, viewerId: 'student' }).priceRub).toBeNull();
   });
 });
 

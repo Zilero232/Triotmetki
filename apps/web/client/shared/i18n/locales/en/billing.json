@@ -43,7 +43,7 @@
       "renew": "Renew Plus",
       "upgrade": "Get Plus"
     },
-    "error": "Couldn't load your subscription",
+    "error": "Could not load your subscription",
     "errorHint": "Refresh the page in a moment.",
     "trialNotice": "Trial: {days, plural, =0 {last day} one {# day left} other {# days left}}. It does not renew — Plus switches off on its own.",
     "graceNotice": "The renewal payment failed. Update your card — Plus keeps working until {date}.",
@@ -83,11 +83,11 @@
   },
   "referral": {
     "title": "Build your platoon",
-    "description": "Share your link: your friend gets a {trialDays, plural, one {#-day} other {#-day}} Plus trial, and when they subscribe for the first time you get {days, plural, one {# day} other {# days}}.",
+    "description": "Share your link: your friend gets a {trialDays}-day Plus trial, and when they subscribe for the first time you get {days, plural, one {# day} other {# days}}.",
     "linkLabel": "Your link",
     "steps": {
       "share": "Send the link to a friend or drop it in your clan chat.",
-      "subscribe": "Your friend signs in to Three Marks and gets Plus for the first time.",
+      "subscribe": "Your friend signs in to Three Marks and gets Plus for the first time (once payments open).",
       "reward": "{days, plural, one {# day} other {# days}} of Plus are added to your account automatically."
     }
   },

@@ -11,6 +11,8 @@ export type { ActiveFilter, FilterBarProps } from './FilterBar';
 export { LineChart } from './LineChart';
 export { PagedList } from './PagedList';
 export { PageHeader } from './PageHeader';
+export { PageHeaderFallback } from './PageHeaderFallback';
+export { PageHeaderSkeleton } from './PageHeaderSkeleton';
 export { PageHero } from './PageHero';
 export type { PageHeroArt } from './PageHero';
 export { PageHeroFallback } from './PageHeroFallback';

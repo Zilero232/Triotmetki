@@ -3,7 +3,6 @@
 import { Gift } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
 import { ActionStrip, DataSourceNote, KeyFigure, PageHero, QueryState, Skeleton, Tabs } from '@/ui-kit';
 
 import { CODES } from '../config';
@@ -28,7 +27,7 @@ export const CodesPage = () => {
           )
         }
         art={{ kind: 'emblem', glyph: <Gift size={480} strokeWidth={1.25} /> }}
-        breadcrumbs={[{ label: t('head.home'), href: ROUTES.home }, { label: t('head.title') }]}
+        breadcrumbs={[{ label: t('head.title') }]}
         lead={t('head.description')}
         title={t('head.title')}
       />

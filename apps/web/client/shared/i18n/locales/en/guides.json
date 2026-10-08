@@ -42,9 +42,6 @@
     "emptyTitle": "No guides yet",
     "emptyDescription": "Be the first to write one.",
     "emptyFilteredDescription": "Nothing matches these filters.",
-    "page": "Page {page} of {pages}",
-    "prev": "Previous",
-    "next": "Next",
     "sorts": {
       "recent": "Newest",
       "popular": "Popular"
@@ -138,10 +135,6 @@
     "counter": "{length} / {max}",
     "body": "Text",
     "bodyPlaceholder": "Write in Markdown: headings, lists, tables.",
-    "write": "Write",
-    "preview": "Preview",
-    "previewEmpty": "The preview will show up here.",
-    "markdownHint": "Markdown: **bold**, _italic_, ## heading, - list, [link](https://…), tables and `code`. HTML is not supported.",
     "moderationHint": "Saving sends the guide to review.",
     "save": "Save",
     "publish": "Send to review",
@@ -153,6 +146,8 @@
       "map": "Pick a map",
       "title": "{min} to {max} characters",
       "body": "{min} to {max} characters"
-    }
+    },
+    "cancel": "Cancel",
+    "saving": "Saving…"
   }
 }

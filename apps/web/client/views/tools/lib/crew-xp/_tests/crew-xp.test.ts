@@ -16,9 +16,16 @@ describe('skillLevelCost', () => {
 });
 
 describe('skillTotalXp', () => {
-  it('doubles the price of every next skill', () => {
-    expect(skillTotalXp(2)).toBe(skillTotalXp(1) * 2);
-    expect(skillTotalXp(3)).toBe(skillTotalXp(2) * 2);
+  it('prices the first skill as the game does, summing levels 0 to 99', () => {
+    expect(skillTotalXp(1)).toBe(210_064);
+  });
+
+  it('roughly doubles the price of the second skill', () => {
+    expect(skillTotalXp(2)).toBe(420_133);
+  });
+
+  it('roughly doubles the price of the third skill again', () => {
+    expect(skillTotalXp(3)).toBe(840_256);
   });
 });
 
@@ -31,8 +38,8 @@ describe('xpToNextSkill', () => {
     expect(xpToNextSkill({ skill: 1, percent: 50 })).toBeGreaterThan(skillTotalXp(1) / 2);
   });
 
-  it('costs only the last level just before the skill is complete', () => {
-    expect(xpToNextSkill({ skill: 1, percent: CREW_XP.maxLevel - 1 })).toBe(skillLevelCost({ level: CREW_XP.maxLevel, skill: 1 }));
+  it('costs only the step from 99 % to 100 % just before the skill is complete', () => {
+    expect(xpToNextSkill({ skill: 1, percent: CREW_XP.maxLevel - 1 })).toBe(9_550);
   });
 });
 

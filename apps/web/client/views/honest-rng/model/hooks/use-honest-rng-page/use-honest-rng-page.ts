@@ -8,7 +8,7 @@ import { percentText } from '@/shared/lib';
 
 import { getHonestRng } from '../../../api';
 import { HONEST_RNG_VIEW, RNG_PERIODS } from '../../../config';
-import { bucketMidpoints, bucketShares, rollPercent, toShellKey } from '../../../lib/rng-chart';
+import { bucketMidpoints, bucketShares, isRngShell, rollPercent } from '../../../lib/rng-chart';
 import { useRngPeriod } from '../use-rng-period';
 
 export const useHonestRngPage = () => {
@@ -48,13 +48,13 @@ export const useHonestRngPage = () => {
       meanRoll: rollPercent(row.meanRoll),
       within: row.withinSpread
     })),
-    shells: (data?.shells ?? []).map((row) => ({
-      id: `shell-${row.shell}`,
-      shell: toShellKey(row.shell),
-      shots: row.shots,
-      meanRoll: rollPercent(row.meanRoll),
-      within: row.withinSpread
-    })),
+    shells: (data?.shells ?? []).flatMap(({ shell, shots, meanRoll, withinSpread }) => {
+      if (!isRngShell(shell)) {
+        return [];
+      }
+
+      return [{ id: `shell-${shell}`, shell, shots, meanRoll: rollPercent(meanRoll), within: withinSpread }];
+    }),
     formatPercent: (value: number) => percentText({ format, value, digits: 1 })
   };
 };

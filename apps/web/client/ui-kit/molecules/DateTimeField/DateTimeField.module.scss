@@ -9,6 +9,10 @@
   height: var(--control-h);
   align-items: center;
   padding-right: var(--space-1);
+
+  &:has(.trigger:focus-visible) {
+    @include focus-ring;
+  }
 }
 
 .trigger {

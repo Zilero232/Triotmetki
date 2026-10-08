@@ -1,0 +1,11 @@
+@use '@/shared/styles/mixins' as *;
+
+.content {
+  @include page(var(--space-7));
+}
+
+.body {
+  @include stack(var(--space-4));
+
+  padding: var(--space-4);
+}

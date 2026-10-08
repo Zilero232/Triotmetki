@@ -24,10 +24,12 @@ export const StatsTable = () => {
     >
       {({ total }) => (
         <DataTable
+          emptyState={
+            <FilteredEmptyState isFiltered={isFiltered} title={isFiltered ? t('emptyTitle') : t('noStatsTitle')} titleAs='h2' onReset={onReset} />
+          }
           caption={t('caption', { count: total })}
           columns={columns}
           data={rows}
-          emptyState={<FilteredEmptyState isFiltered={isFiltered} title={isFiltered ? t('emptyTitle') : t('noStatsTitle')} onReset={onReset} />}
           getRowId={(row) => String(row.vehicle.tankId)}
           getRowLink={(row) => ({ href: ROUTES.tanks.detail(row.vehicle.slug), label: row.vehicle.name })}
           initialSorting={[{ id: 'battles', desc: true }]}

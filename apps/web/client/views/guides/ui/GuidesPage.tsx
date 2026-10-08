@@ -13,7 +13,6 @@ import s from './GuidesPage.module.scss';
 
 export const GuidesPage = () => {
   const t = useTranslations('guides.list');
-  const tCommon = useTranslations('common');
 
   return (
     <div className={s.root}>
@@ -24,7 +23,7 @@ export const GuidesPage = () => {
             {t('write')}
           </Link>
         }
-        breadcrumbs={[{ label: tCommon('home'), href: ROUTES.home }, { label: t('title') }]}
+        breadcrumbs={[{ label: t('title') }]}
         description={t('description')}
         title={t('title')}
       />

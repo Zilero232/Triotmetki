@@ -1,12 +1,12 @@
-import type { ClanStronghold, StrongholdBuilding, StrongholdReserve } from '@otmetki/schemas';
+import type { ClanStronghold, StrongholdBuilding } from '@otmetki/schemas';
 
 import { sumBy } from 'remeda';
 
 import type { RawBuilding } from '../lib/stronghold-stats/stronghold-stats.types';
 import type { ToStrongholdInput } from './stronghold.types';
 
-import { fromUnixSeconds, percentOf, toIso } from '../../../common/lib';
-import { rawReservesSchema, rawStrongholdSchema } from '../dto/stronghold.schemas';
+import { percentOf, toIso } from '../../../common/lib';
+import { rawStrongholdSchema } from '../dto/stronghold.schemas';
 import { readBuildings, skirmishTiers, strongholdCount } from '../lib/stronghold-stats/stronghold-stats';
 
 const toBuilding = (raw: RawBuilding): StrongholdBuilding => ({
@@ -19,21 +19,7 @@ const toBuilding = (raw: RawBuilding): StrongholdBuilding => ({
   reserve: raw.reserve_title ?? raw.reserve_type ?? null
 });
 
-const toReserves = (value: unknown): StrongholdReserve[] =>
-  rawReservesSchema.parse(value).flatMap((reserve) =>
-    (reserve.in_stock ?? []).map((stock) => ({
-      type: reserve.type ?? 'unknown',
-      title: reserve.title ?? null,
-      level: strongholdCount(stock.level),
-      status: stock.status ?? null,
-      count: strongholdCount(stock.amount),
-      bonusType: reserve.bonus_type ?? null,
-      activatedAt: toIso(fromUnixSeconds(stock.activated_at)),
-      expiresAt: toIso(fromUnixSeconds(stock.active_till))
-    }))
-  );
-
-export const toStronghold = ({ clanId, level, stats, buildings, reserves, updatedAt, elo, provinces }: ToStrongholdInput): ClanStronghold => {
+export const toStronghold = ({ clanId, level, stats, buildings, updatedAt, elo, provinces }: ToStrongholdInput): ClanStronghold => {
   const raw = rawStrongholdSchema.safeParse(stats);
   const info = raw.success ? raw.data : null;
   const storedBuildings = readBuildings(buildings);
@@ -49,7 +35,6 @@ export const toStronghold = ({ clanId, level, stats, buildings, reserves, update
     totalResources: strongholdCount(info?.total_resource_amount),
     buildingSlots: strongholdCount(info?.building_slots),
     buildings: (storedBuildings.length > 0 ? storedBuildings : readBuildings(info?.buildings)).map(toBuilding),
-    reserves: toReserves(reserves),
     skirmishes,
     battles,
     winRate: percentOf({ value: wins, by: battles }),

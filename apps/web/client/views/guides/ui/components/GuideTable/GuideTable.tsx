@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
 import { ROUTES } from '@/shared/constants';
-import { Button, Card, CardHeader, DataTable, FilteredEmptyState, QueryState } from '@/ui-kit';
+import { Card, CardHeader, DataTable, FilteredEmptyState, LoadMore, QueryState } from '@/ui-kit';
 
 import { useGuideCatalog, useGuideColumns } from '../../../model/hooks';
 import { GuideFilters } from '../GuideFilters';
@@ -14,7 +14,7 @@ import s from './GuideTable.module.scss';
 export const GuideTable = () => {
   const t = useTranslations('guides.list');
   const titleId = useId();
-  const { query, total, page, pages, hasPrev, hasNext, prev, next, hasFilters, reset } = useGuideCatalog();
+  const { list, total, hasFilters, reset } = useGuideCatalog();
 
   const columns = useGuideColumns();
 
@@ -25,10 +25,10 @@ export const GuideTable = () => {
         isCompact
         errorDescription={t('errorDescription')}
         errorTitle={t('errorTitle')}
-        query={query}
+        query={list.query}
         skeleton={<DataTable isLoading columns={columns} data={[]} toolbar={<GuideFilters />} />}
       >
-        {({ items }) => (
+        {(items) => (
           <DataTable
             emptyState={
               <FilteredEmptyState
@@ -40,18 +40,14 @@ export const GuideTable = () => {
               />
             }
             footer={
-              pages > 1 && (
-                <>
-                  <span className={s.progress}>{t('page', { page, pages })}</span>
-                  <div className={s.pager}>
-                    <Button disabled={!hasPrev} size='sm' variant='secondary' onClick={prev}>
-                      {t('prev')}
-                    </Button>
-                    <Button disabled={!hasNext} size='sm' variant='secondary' onClick={next}>
-                      {t('next')}
-                    </Button>
-                  </div>
-                </>
+              list.hasMore && (
+                <LoadMore
+                  className={s.more}
+                  hasNextPage={list.hasNextPage}
+                  isError={list.isError}
+                  isFetchingNextPage={list.isFetchingNextPage}
+                  onLoadMore={list.loadMore}
+                />
               )
             }
             caption={t('tableTitle')}

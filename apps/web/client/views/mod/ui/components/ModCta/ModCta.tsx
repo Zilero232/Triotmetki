@@ -12,7 +12,7 @@ import s from './ModCta.module.scss';
 
 export const ModCta = () => {
   const t = useTranslations('mod');
-  const { distribution, manager } = useModDownloads();
+  const { distribution, isManagerAvailable } = useModDownloads();
 
   return (
     <section aria-labelledby='mod-cta-title' className={s.root}>
@@ -25,10 +25,10 @@ export const ModCta = () => {
       <div className={s.actions}>
         <DownloadLink
           hasShine
-          file={manager}
           fileName={distribution.managerFileName}
           href={distribution.managerUrl}
           icon={Download}
+          isAvailable={isManagerAvailable}
           label={t('hero.download')}
           variant='primary'
         />

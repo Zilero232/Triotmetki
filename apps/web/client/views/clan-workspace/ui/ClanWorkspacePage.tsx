@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { PageHero, Skeleton } from '@/ui-kit';
+import { PageHeader, Skeleton } from '@/ui-kit';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import type { ClanWorkspacePageProps } from './ClanWorkspacePage.types';
@@ -23,23 +23,32 @@ export const ClanWorkspacePage = ({ tag }: ClanWorkspacePageProps) => {
   return (
     <div className={s.root}>
       <ResourceGate
+        header={
+          <PageHeader
+            breadcrumbs={[
+              { label: tClans('title'), href: ROUTES.clans.list },
+              { label: `[${tag}]`, href: ROUTES.clans.detail(tag) },
+              { label: t('crumb') }
+            ]}
+            title={t('title')}
+          />
+        }
         back={{ href: ROUTES.clans.list, label: t('missingClan.back') }}
         error={{ title: t('missingClan.errorTitle') }}
         notFound={{ title: t('missingClan.notFound', { tag }) }}
         query={clan}
-        skeleton={<Skeleton className={s.body} height={WORKSPACE_VIEW.skeletonHeight} shape='block' />}
+        skeleton={<Skeleton height={WORKSPACE_VIEW.skeletonHeight} shape='block' />}
       >
         {(page) => (
           <>
-            <PageHero
+            <PageHeader
               breadcrumbs={[
                 { label: tClans('title'), href: ROUTES.clans.list },
                 { label: `[${page.clan.tag}]`, href: ROUTES.clans.detail(page.clan.tag) },
                 { label: t('crumb') }
               ]}
-              art={{ kind: 'clan', emblem: page.clan.emblem, color: page.clan.color }}
-              eyebrow={`[${page.clan.tag}] ${page.clan.name}`}
-              lead={t('lead')}
+              description={t('lead')}
+              meta={`[${page.clan.tag}] ${page.clan.name}`}
               title={t('title')}
             />
             <div className={s.body}>

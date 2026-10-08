@@ -16,7 +16,7 @@ import s from './EventCard.module.scss';
 export const EventCard = ({ clanId, event, isOfficer, members }: EventCardProps) => {
   const t = useTranslations('clanWorkspace');
   const format = useFormatter();
-  const { attendance, reminder, myStatus, hasStarted, isRsvpPending, isRemoving, isSyncing, onRsvp, onRemove, onSync } = useEventActions({
+  const { attendance, reminder, myStatus, hasStarted, canSync, isRsvpPending, isRemoving, isSyncing, onRsvp, onRemove, onSync } = useEventActions({
     clanId,
     event
   });
@@ -75,7 +75,7 @@ export const EventCard = ({ clanId, event, isOfficer, members }: EventCardProps)
           <div className={s.officer}>
             <EditEventDialog clanId={clanId} event={event} />
             <AttendanceDialog clanId={clanId} event={event} members={members} />
-            {hasStarted && (
+            {canSync && (
               <IconButton aria-label={t('events.sync')} disabled={isSyncing} size='sm' variant='outline' onClick={onSync}>
                 <RefreshCw size={14} />
               </IconButton>

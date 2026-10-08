@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
@@ -39,4 +40,4 @@ const Page = ({ params }: PageProps<'/[locale]/me/battles/[id]'>) => (
   </Suspense>
 );
 
-export default Page;
+export default withMessages({ component: Page, messages: ['analytics.battle', 'maps', 'plus'] });

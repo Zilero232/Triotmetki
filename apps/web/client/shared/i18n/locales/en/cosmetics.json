@@ -1,12 +1,12 @@
 {
   "meta": {
     "title": "Profile cosmetics",
-    "description": "Badge, frame and profile banner on the site — for shells and season rewards."
+    "description": "Badge, frame and profile banner on the site — for casings and season rewards."
   },
   "title": "Cosmetics",
-  "description": "A badge, a frame and a profile banner colour — shown on the site only, nothing changes in the game. Bought with shells; seasonal ones come from the season track.",
-  "balance": "Shells",
-  "balanceHint": "Shells can't be bought or cashed out — only earned through challenges and the season.",
+  "description": "A badge, a frame, a profile banner and overlay themes — for the site and your stream only, nothing changes in the game. Bought with casings; seasonal ones come from the season track.",
+  "balance": "Casings",
+  "balanceHint": "Casings can’t be bought or cashed out — only earned through challenges, tank levels and the season.",
   "slots": {
     "badge": "Badges",
     "frame": "Frames",
@@ -16,20 +16,20 @@
   "slotHints": {
     "badge": "Shown next to your nickname on the profile and in leaderboards.",
     "frame": "Outline around the nickname block on the profile.",
-    "banner": "Colour of the profile header.",
+    "banner": "Color of the profile banner.",
     "overlayTheme": "Picked in the streamer studio. Work while Plus is active."
   },
   "equipped": "Equipped",
   "equip": "Equip",
-  "unequip": "Remove",
+  "unequip": "Unequip",
   "buy": "Buy · {price}",
   "owned": "Owned",
   "plusOnly": "With Plus",
   "seasonReward": "Season reward",
   "free": "Free",
-  "notEnough": "Not enough shells",
+  "notEnough": "Not enough casings",
   "empty": "Nothing to show yet.",
-  "error": "Couldn't load cosmetics.",
+  "error": "Could not load cosmetics.",
   "toast": {
     "bought": "Bought",
     "equipped": "Cosmetics updated",
@@ -55,5 +55,8 @@
     "overlay-hud": "HUD",
     "overlay-brass": "Brass",
     "overlay-night": "Night"
-  }
+  },
+  "cancel": "Cancel",
+  "buyConfirmTitle": "Spend {price, plural, one {# casing} other {# casings}}?",
+  "buyConfirmDescription": "The casings are spent at once and cannot be returned."
 }

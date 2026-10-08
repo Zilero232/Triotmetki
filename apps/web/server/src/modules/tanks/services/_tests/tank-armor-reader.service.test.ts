@@ -146,3 +146,23 @@ describe('TankArmorReaderService.open', () => {
     expect(prisma.vehicleArmorModel.findUnique).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('TankArmorReaderService.showcase', () => {
+  const STORED = new Uint8Array([66, 82, 65]);
+
+  it('serves the resolved tank model', async () => {
+    const { service } = createService({ row: ROW, stored: STORED });
+
+    const model = await service.showcase(SUMMARY.slug);
+
+    expect(model.vehicle.tankId).toBe(SUMMARY.tankId);
+  });
+
+  it('never counts an armor view', async () => {
+    const { service, usage } = createService({ row: ROW, stored: STORED });
+
+    await service.showcase(SUMMARY.slug);
+
+    expect(usage.consume).not.toHaveBeenCalled();
+  });
+});

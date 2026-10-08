@@ -37,7 +37,7 @@ export const ArticleHero = () => {
       )}
       <span aria-hidden className={s.scrim} />
       <div className={s.inner}>
-        <Breadcrumbs className={s.crumbs} items={[{ label: t('breadcrumb'), href: ROUTES.blog.list }, { label: post.title }]} />
+        <Breadcrumbs className={s.crumbs} items={[{ label: t('breadcrumb'), href: ROUTES.blog.list }, { label: post.title }]} withSchema={false} />
         <span className={s.chip}>
           <BlogCategoryChip category={post.category} />
         </span>

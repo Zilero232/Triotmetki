@@ -34,7 +34,8 @@
     "mm": "мм",
     "per_min": "выстр./мин",
     "s": "с",
-    "t": "т"
+    "t": "т",
+    "horsepower": "л.\u00a0с."
   },
   "specGroups": {
     "firepower": "Огневая мощь",
@@ -50,7 +51,7 @@
     "crumbTanks": "Танки",
     "crumbTier": "{tier} уровень",
     "figures": {
-      "winRate": "Победы",
+      "winRate": "Процент побед",
       "avgDamage": "Ср. урон",
       "mark3": "3 отметки"
     }
@@ -75,30 +76,30 @@
     }
   },
   "stats": {
-    "title": "Сервер за {period}",
+    "title": "Статистика сервера · {period}",
     "periodLabel": "Период статистики",
     "figures": {
       "winRate": "Процент побед",
       "avgDamage": "Средний урон",
       "battles": "Бои",
       "players": "Игроки",
-      "winRateDiff": "Разница WR"
+      "winRateDiff": "Разница процента побед"
     },
-    "pp": "п.п.",
+    "pp": "п.\u00a0п.",
     "emptyTitle": "Нет боёв за период",
     "emptyDescription": "Выберите период подлиннее.",
-    "cohortsTitle": "По уровню игроков",
+    "cohortsTitle": "По\u00a0скиллу игроков",
     "cohorts": {
       "beginner": "Новички",
       "average": "Средние",
       "good": "Хорошие",
-      "elite": "Топ-10 %"
+      "elite": "Топ-10\u00a0%"
     },
     "cohortLabel": "Игроки",
-    "cohortWinRate": "Победы",
+    "cohortWinRate": "Процент побед",
     "cohortDamage": "Урон",
     "cohortBattles": "Бои",
-    "trendTitle": "Динамика за {days} дн",
+    "trendTitle": "Динамика за {days} дн.",
     "trendEmpty": "Нет данных за период",
     "trendWinRate": "Процент побед",
     "trendDamage": "Средний урон"
@@ -114,13 +115,13 @@
       "p100": "100 %"
     },
     "damageUnit": "урона",
-    "deltaDays": "{days} дн",
+    "deltaDays": "{days} дн.",
     "updated": "Обновлено {date}",
-    "historyTitle": "Пороги за 60 дней",
+    "historyTitle": "История порогов",
     "historyEmpty": "Истории порогов пока нет"
   },
   "mastery": {
-    "title": "Знак «Мастер»",
+    "title": "Знаки классности",
     "levels": {
       "class3": "3-я степень",
       "class2": "2-я степень",
@@ -137,14 +138,14 @@
     "metrics": {
       "wn8": "WN8",
       "avgDamage": "Ср. урон",
-      "winRate": "Победы"
+      "winRate": "% побед"
     },
     "caption": "Лучшие игроки на {name}",
     "player": "Игрок",
     "battlesColumn": "Бои",
     "emptyTitle": "Рейтинг пока пуст",
     "podiumLabel": "Тройка лучших",
-    "rank": "{rank} место",
+    "rank": "{rank}-е место",
     "battles": "{battles, plural, one {# бой} few {# боя} many {# боёв} other {# боя}}"
   },
   "builds": {
@@ -203,7 +204,7 @@
     "verdicts": {
       "buff": "Ап",
       "nerf": "Нерф",
-      "mixed": "Спорно",
+      "mixed": "Ап и\u00a0нерф",
       "new": "Новинка",
       "changed": "Изменения"
     },
@@ -228,7 +229,7 @@
     "emptyTitle": "Данных по экономике пока нет",
     "emptyDescription": "Медианы появятся, когда игроки с модом наберут достаточно случайных боёв на этом танке.",
     "noAccountData": "Для этого типа аккаунта боёв пока мало",
-    "note": "Медианы по {battles, plural, one {# случайному бою} few {# случайным боям} many {# случайным боям} other {# случайного боя}} {players, plural, one {# игрока} few {# игроков} many {# игроков} other {# игрока}} с модом за {days} дн.",
+    "note": "Медианы по\u00a0{battles, plural, one {# случайному бою} few {# случайным боям} many {# случайным боям} other {# случайного боя}} из\u00a0модпака и\u00a0реплеев ({players, plural, one {# игрок} few {# игрока} many {# игроков} other {# игрока}}) за\u00a0{days}\u00a0дн.",
     "noteEmpty": "Считается по итогам боёв из мода и реплеев."
   },
   "learning": {
@@ -243,9 +244,9 @@
       "title": "Ваше место на кривой",
       "battles": "Ваши бои",
       "winRate": "Ваш процент побед",
-      "bucketWinRate": "У игроков на отрезке {bucket}",
-      "ahead": "Выше среднего на отрезке на {delta} п. п.",
-      "behind": "Ниже среднего на отрезке на {delta} п. п.",
+      "bucketWinRate": "У\u00a0игроков с\u00a0{bucket} боями на\u00a0танке",
+      "ahead": "На\u00a0{delta}\u00a0п.\u00a0п. выше, чем у\u00a0игроков с\u00a0тем\u00a0же числом боёв",
+      "behind": "На\u00a0{delta}\u00a0п.\u00a0п. ниже, чем у\u00a0игроков с\u00a0тем\u00a0же числом боёв",
       "emptyTitle": "Нет данных по вашему аккаунту",
       "emptyDescription": "Привяжите аккаунт через Lesta ID и сыграйте на танке, чтобы увидеть своё место."
     }
@@ -290,7 +291,7 @@
       "signIn": "Войдите, чтобы узнать, когда танк вернётся в магазин",
       "enabled": "Сообщим, когда танк вернётся",
       "disabled": "Больше не следим за возвращением танка",
-      "limit": "Достигнут лимит отслеживаемых танков",
+      "limit": "Лимит отслеживаемых танков исчерпан\u00a0— с\u00a0Плюсом он больше",
       "failed": "Не удалось сохранить подписку"
     },
     "note": "По файлам игры и нашей истории акций магазина."

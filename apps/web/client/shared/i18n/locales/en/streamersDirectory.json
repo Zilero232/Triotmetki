@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Tanks streamers",
+    "title": "Mir Tankov streamers",
     "description": "Which streamers are live now, on which tank, with what stats and settings."
   },
   "claimMeta": {
@@ -26,8 +26,7 @@
   },
   "head": {
     "title": "Streamers",
-    "description": "Who is live now, what they play, their stats and settings.",
-    "home": "Home"
+    "description": "Who is live now, what they play, their stats and settings."
   },
   "filters": {
     "label": "Filters",
@@ -41,16 +40,16 @@
     "offline": "Offline",
     "channels": "Channels",
     "hasSettings": "Has settings",
-    "noStats": "Account stats are hidden",
+    "noStats": "Account stats are unavailable right now",
     "wn8": "WN8",
-    "winRate": "Wins",
+    "winRate": "Win rate",
     "battles": "Battles",
     "marks3": "3 marks",
-    "favourites": "Favourite tanks"
+    "favourites": "Favorite tanks"
   },
   "empty": {
     "title": "No streamers yet",
-    "description": "A page appears here once a streamer creates it in the studio and verifies a channel.",
+    "description": "A page appears here as soon as a streamer creates it in the studio.",
     "action": "Create a streamer page",
     "filteredTitle": "Nobody found",
     "filteredDescription": "Nobody matches these filters right now."
@@ -148,7 +147,7 @@
       "dismissed": "Declined",
       "method": "Method",
       "createdAt": "Sent",
-      "review": "A moderator will review the claim and reply in notifications.",
+      "review": "A moderator will review the claim; its status shows on this page.",
       "dismissedHint": "The claim was declined. Try another way to verify.",
       "methods": {
         "oauth": "Via Twitch",
@@ -158,7 +157,7 @@
     },
     "oauth": {
       "title": "Via Twitch",
-      "description": "The fastest way: connect Twitch in the streamer studio. If the channel matches the one on the page, it becomes yours at once.",
+      "description": "The fastest way: connect Twitch in the streamer studio. If the channel matches the one on the page, it usually becomes yours at once.",
       "connected": "Twitch connected: {login}",
       "notConnected": "Twitch is not connected yet",
       "connect": "Connect in the studio",

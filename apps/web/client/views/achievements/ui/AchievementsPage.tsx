@@ -4,7 +4,6 @@ import { Medal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { match } from 'ts-pattern';
 
-import { ROUTES } from '@/shared/constants';
 import { ActionStrip, Card, KeyFigure, PageHero, Tabs } from '@/ui-kit';
 
 import { ACHIEVEMENTS_TABS } from '../config';
@@ -30,7 +29,7 @@ export const AchievementsPage = () => {
           )
         }
         art={{ kind: 'emblem', glyph: <Medal size={480} strokeWidth={1.25} /> }}
-        breadcrumbs={[{ label: t('hero.home'), href: ROUTES.home }, { label: t('hero.title') }]}
+        breadcrumbs={[{ label: t('hero.title') }]}
         lead={t('hero.lead')}
         title={t('hero.title')}
       />

@@ -13,7 +13,7 @@
       "unknown": "Data: checking"
     },
     "hint": {
-      "ok": "All services work. Details on the status page",
+      "ok": "All services are up. Details on the status page",
       "noLestaKey": "Lesta data access is not open yet: in-game player stats are not updating for now",
       "degraded": "Some services respond with a delay",
       "down": "One of the services does not respond",
@@ -32,10 +32,10 @@
     "componentsLead": "Each service is checked on its own.",
     "sourcesTitle": "Where the data comes from",
     "sources": {
-      "lesta": "Lesta — player, clan and vehicle statistics. Until access is open, these sections honestly show empty states.",
+      "lesta": "Lesta — player, clan and vehicle statistics. Without a Lesta connection these sections stay empty.",
       "mod": "The Three Marks mod — battle results of players who run it: damage, marks, economy and loadouts.",
       "replays": "Replays uploaded by players — battle breakdowns and replay search.",
-      "files": "Game files — vehicle characteristics, armour, maps and roles."
+      "files": "Game files — vehicle characteristics, armor, maps and roles."
     },
     "components": {
       "database": "Database",
@@ -53,7 +53,7 @@
       "open": "Lesta answers with errors, requests are paused for now.",
       "halfOpen": "Trying Lesta again after a failure.",
       "notConfigured": "Lesta data access is not open yet.",
-      "unknown": "No state reported."
+      "unknown": "No status reported yet."
     },
     "verdict": {
       "ok": {

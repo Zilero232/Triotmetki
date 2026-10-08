@@ -9,11 +9,11 @@ import { TanksFilters } from './components';
 import s from './TanksTab.module.scss';
 
 export const TanksTab = () => {
-  const { query, rows } = useTanksTab();
+  const { query, rows, total } = useTanksTab();
 
   return (
     <div className={s.root}>
-      <TanksFilters total={rows.length} />
+      <TanksFilters total={total} />
       <QueryState query={query} skeleton={<TanksTable isLoading rows={rows} />}>
         <TanksTable rows={rows} />
       </QueryState>

@@ -67,7 +67,7 @@ export const defaultPreset = ({ presets, initialPreset }: DefaultPresetInput): s
 
 export const isReinstall = (plan: WizardSelectionInput['plan']): boolean => plan?.installed === true && plan.currentComponents.length > 0;
 
-export const wizardSelection = ({ plan, components, presetId, initialComponents }: WizardSelectionInput): Selection => {
+export const wizardSelection = ({ plan, components, presets, presetId, initialComponents }: WizardSelectionInput): Selection => {
   if (initialComponents) {
     return closeDependencies({ components, ids: initialComponents });
   }
@@ -76,7 +76,7 @@ export const wizardSelection = ({ plan, components, presetId, initialComponents 
     return closeDependencies({ components, ids: plan.currentComponents });
   }
 
-  return presetSelection({ components, presetId });
+  return presetSelection({ components, presets, presetId });
 };
 
 export const presetOptions = ({ presets, locale }: PresetOptionsInput): PresetOption[] =>

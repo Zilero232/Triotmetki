@@ -15,7 +15,7 @@
   },
   "figures": {
     "battles": "Бои",
-    "winRate": "Победы",
+    "winRate": "Процент побед",
     "avgDamage": "Средний урон"
   },
   "crumb": "{year} год",
@@ -47,14 +47,14 @@
       "title": "Нанесённый урон",
       "total": "Всего урона",
       "average": "За бой",
-      "frags": "Уничтожено"
+      "frags": "Фраги"
     },
     "tanks": {
       "title": "Любимые танки",
       "battles": "Боёв",
       "damage": "Урон",
       "place": "№{place}",
-      "unknownTank": "№{place} · танк #{tankId} · боёв"
+      "unknownTank": "№{place} · танк #{tankId}, бои"
     },
     "marks": {
       "title": "Отметки и награды",
@@ -65,8 +65,8 @@
     "best": {
       "title": "Бой года",
       "damage": "Урон",
-      "frags": "Уничтожено",
-      "replay": "Смотреть реплей"
+      "frags": "Фраги",
+      "replay": "Открыть реплей"
     }
   },
   "outro": {

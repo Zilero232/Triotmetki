@@ -17,13 +17,14 @@ export const useFirstRun = () => {
 
   const plan = planQuery.data ?? null;
   const components = plan?.catalog?.components ?? [];
-  const presets = (plan?.catalog?.presets ?? [])
+  const catalogPresets = plan?.catalog?.presets ?? [];
+  const presets = catalogPresets
     .filter((preset) => !preset.custom)
     .map((preset) => ({
       id: preset.id,
       title: pickLocalized({ text: preset.title, locale }),
       description: pickLocalized({ text: preset.description, locale }),
-      count: presetSelection({ components, presetId: preset.id }).size
+      count: presetSelection({ components, presets: catalogPresets, presetId: preset.id }).size
     }));
 
   const selected = presets.find((preset) => preset.id === chosenPreset) ?? presets[0] ?? null;

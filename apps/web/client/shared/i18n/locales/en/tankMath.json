@@ -16,7 +16,7 @@
     "description": "How the aiming circle blooms from moving, hull and turret traverse and firing — and how many seconds it takes to aim back in.",
     "meters": "{value} m",
     "seconds": "{value} s",
-    "score": "Snap dispersion",
+    "score": "Snap-shot dispersion",
     "scoreHint": "Circle at 100 m, 2 s after stopping from top speed with the turret traversing. Lower is better.",
     "aimTitle": "Full aim after…",
     "chart": "Dispersion at 100 m over time after an action",
@@ -28,7 +28,7 @@
       "full": "Moving + turret"
     },
     "rows": {
-      "score": "Snap dispersion",
+      "score": "Snap-shot dispersion",
       "aimingTime": "Aiming time",
       "dispersion": "Dispersion at 100 m",
       "aim": {
@@ -46,7 +46,7 @@
     "meters": "{value} m",
     "millimeters": "{value} mm",
     "seconds": "{value} s",
-    "premium": "Special",
+    "premium": "Premium",
     "penetrationChart": "Penetration by distance",
     "flightChart": "Flight time by distance",
     "tableCaption": "Shells compared with the first one",

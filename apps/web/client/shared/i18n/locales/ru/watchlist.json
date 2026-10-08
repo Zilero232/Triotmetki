@@ -28,9 +28,9 @@
       "player": "Игрок",
       "lastBattle": "Последний бой",
       "battles": "Бои",
-      "winRate": "Победы",
+      "winRate": "% побед",
       "avgDamage": "Ср. урон",
-      "wn8": "WN8 7д",
+      "wn8": "WN8 7\u00a0дн.",
       "marks": "Отметки"
     }
   },

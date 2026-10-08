@@ -2,7 +2,16 @@ import { describe, expect, it } from 'vitest';
 
 import type { AttendanceEntry, WorkspaceEvent } from '../../../api';
 
-import { attendanceChanges, attendanceCounts, attendanceDraft, attendanceTone, hasStarted, memberAttendance, splitEvents } from '../attendance';
+import {
+  attendanceChanges,
+  attendanceCounts,
+  attendanceDraft,
+  attendanceTone,
+  canSyncAttendance,
+  hasStarted,
+  memberAttendance,
+  splitEvents
+} from '../attendance';
 
 const entry = (accountId: number, status: AttendanceEntry['status']): AttendanceEntry => ({
   accountId,
@@ -104,6 +113,27 @@ describe('hasStarted', () => {
     expect(hasStarted({ startsAt: '2026-09-27T10:00:00Z', now: new Date('2026-09-27T12:00:00Z') })).toBe(true);
     expect(hasStarted({ startsAt: '2026-09-28T10:00:00Z', now: new Date('2026-09-27T12:00:00Z') })).toBe(false);
     expect(hasStarted({ startsAt: '2026-09-27T10:00:00Z', now: null })).toBe(false);
+  });
+});
+
+describe('canSyncAttendance', () => {
+  const now = new Date('2026-09-27T12:00:00Z');
+  const startsAt = '2026-09-27T10:00:00Z';
+
+  it('syncs a clan wars event that has started', () => {
+    expect(canSyncAttendance({ kind: 'clan_wars', startsAt, now })).toBe(true);
+  });
+
+  it('syncs a Stronghold event that has started', () => {
+    expect(canSyncAttendance({ kind: 'stronghold', startsAt, now })).toBe(true);
+  });
+
+  it('does not sync a training, whose battles the game does not tell apart', () => {
+    expect(canSyncAttendance({ kind: 'training', startsAt, now })).toBe(false);
+  });
+
+  it('does not sync an event that has not started yet', () => {
+    expect(canSyncAttendance({ kind: 'clan_wars', startsAt: '2026-09-28T10:00:00Z', now })).toBe(false);
   });
 });
 

@@ -14,3 +14,7 @@ export const ARMOR_QUOTA = {
 export const TANK_ARMOR_URL_PARSERS = {
   vs: parseAsString
 } as const;
+
+export const ARMOR_ROUTE = {
+  numericId: /^\d+$/u
+} as const;

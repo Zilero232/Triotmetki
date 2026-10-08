@@ -16,7 +16,7 @@
   "remove": "Remove “{name}” from the comparison",
   "clear": "Clear",
   "clearLabel": "Clear the comparison",
-  "expand": "Show the picks",
+  "expand": "Show selected",
   "collapse": "Collapse",
   "toggle": {
     "add": "Add “{name}” to the comparison",

@@ -8,7 +8,14 @@ import { getPlayer, getPopularPlayers } from '../players';
 const lookupPlayer = async (idOrNick: string) => {
   'use cache';
 
-  return lookupRouteEntity({ key: idOrNick, load: async () => (await getPlayer({ idOrNick })).summary.nickname });
+  return lookupRouteEntity({
+    key: idOrNick,
+    load: async () => {
+      const { nickname } = (await getPlayer({ idOrNick })).summary;
+
+      return { name: nickname, key: nickname };
+    }
+  });
 };
 
 export const playerRouteEntity = async (idOrNick: string) => routeEntity({ key: idOrNick, lookup: lookupPlayer });

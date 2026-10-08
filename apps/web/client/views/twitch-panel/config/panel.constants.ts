@@ -16,8 +16,7 @@ export const TWITCH_PANEL = {
     'noMarks',
     'open',
     'notConnected',
-    'error',
-    'attribution'
+    'error'
   ]
 } as const;
 

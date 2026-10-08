@@ -4,13 +4,14 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { clanRouteEntity } from '@/entities/clan/clan/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
 import { requireRouteEntity } from '@/shared/seo/require-route-entity';
-import { PageHeroFallback } from '@/ui-kit';
+import { PageHeaderFallback } from '@/ui-kit';
 import { ClanWorkspacePage } from '@/views/clan-workspace';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/c/[tag]/workspace'>): Promise<Metadata> => {
@@ -36,9 +37,9 @@ const WorkspaceRoute = async ({ params }: Pick<PageProps<'/[locale]/c/[tag]/work
 };
 
 const Page = ({ params }: PageProps<'/[locale]/c/[tag]/workspace'>) => (
-  <Suspense fallback={<PageHeroFallback />}>
+  <Suspense fallback={<PageHeaderFallback />}>
     <WorkspaceRoute params={params} />
   </Suspense>
 );
 
-export default Page;
+export default withMessages({ component: Page, messages: ['clanWorkspace', 'clans.head', 'clans.roster', 'events', 'players.picker'] });

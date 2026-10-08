@@ -21,8 +21,11 @@ import { MARKDOWN_EDITOR } from '../../../config';
 
 export const useMarkdownEditorPlugins = ({ toolbar, onImageUpload }: UseMarkdownEditorPluginsInput) => {
   const { resolvedTheme } = useTheme();
-  const plugins = useMemo(
-    () => [
+  const plugins = useMemo(() => {
+    const canInsertImage = onImageUpload !== undefined;
+    const imagePlugins = canInsertImage ? [imagePlugin({ imageUploadHandler: onImageUpload })] : [];
+
+    return [
       headingsPlugin({ allowedHeadingLevels: MARKDOWN_EDITOR.headingLevels }),
       listsPlugin(),
       quotePlugin(),
@@ -30,12 +33,11 @@ export const useMarkdownEditorPlugins = ({ toolbar, onImageUpload }: UseMarkdown
       linkPlugin(),
       linkDialogPlugin(),
       tablePlugin(),
-      imagePlugin({ imageUploadHandler: onImageUpload }),
+      ...imagePlugins,
       markdownShortcutPlugin(),
-      toolbarPlugin({ toolbarContents: () => createElement(toolbar) })
-    ],
-    [toolbar, onImageUpload]
-  );
+      toolbarPlugin({ toolbarContents: () => createElement(toolbar, { canInsertImage }) })
+    ];
+  }, [toolbar, onImageUpload]);
 
   return {
     plugins,

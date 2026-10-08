@@ -1,3 +1,5 @@
+import { isbot } from 'isbot';
+
 import type { ShowcaseEnvironment } from '../showcase-mode';
 
 type NavigatorHints = Navigator & {
@@ -26,6 +28,7 @@ export const readShowcaseEnvironment = (): Omit<ShowcaseEnvironment, 'prefersRed
 
   return {
     hasWebgl: detectWebgl(),
+    isCrawler: isbot(navigator.userAgent),
     saveData: hints.connection?.saveData ?? false,
     isCoarsePointer: window.matchMedia('(pointer: coarse)').matches,
     cores: hints.hardwareConcurrency,

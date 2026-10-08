@@ -6,6 +6,16 @@
   padding-bottom: var(--space-8);
 }
 
+.head {
+  @include shell;
+
+  padding-block: var(--space-7) var(--space-6);
+
+  @include below(md) {
+    padding-top: var(--space-5);
+  }
+}
+
 .skeleton,
 .empty {
   @include shell;

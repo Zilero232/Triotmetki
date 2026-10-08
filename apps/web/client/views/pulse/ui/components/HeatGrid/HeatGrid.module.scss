@@ -1,6 +1,7 @@
 @use '@/shared/styles/mixins' as *;
 
 .scroller {
+  position: relative;
   padding: var(--space-4);
   overflow-x: auto;
 

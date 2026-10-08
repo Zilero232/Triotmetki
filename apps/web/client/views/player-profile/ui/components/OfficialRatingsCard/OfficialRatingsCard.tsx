@@ -3,8 +3,9 @@
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { percentText } from '@/shared/lib';
-import { DeltaValue } from '@/ui-kit';
+import { DeltaValue, Skeleton } from '@/ui-kit';
 
+import { OFFICIAL_CARD } from '../../../config';
 import { useOfficialRatings } from '../../../model/hooks';
 import { ProfilePanel } from '../ProfilePanel';
 
@@ -13,7 +14,11 @@ import s from './OfficialRatingsCard.module.scss';
 export const OfficialRatingsCard = () => {
   const t = useTranslations('profile.official');
   const format = useFormatter();
-  const { periods, isVisible } = useOfficialRatings();
+  const { periods, isLoading, isVisible } = useOfficialRatings();
+
+  if (isLoading) {
+    return <Skeleton height={OFFICIAL_CARD.skeletonHeight} shape='block' />;
+  }
 
   if (!isVisible) {
     return null;

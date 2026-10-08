@@ -2,7 +2,6 @@
 
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
 import { PageHeader, Tabs } from '@/ui-kit';
 
 import { RECRUITING_KINDS } from '../config';
@@ -13,16 +12,11 @@ import s from './RecruitingPage.module.scss';
 
 export const RecruitingPage = () => {
   const t = useTranslations('recruiting');
-  const tCommon = useTranslations('common');
   const { kind, setKind } = useRecruitingKind();
 
   return (
     <div className={s.root}>
-      <PageHeader
-        breadcrumbs={[{ label: tCommon('home'), href: ROUTES.home }, { label: t('head.title') }]}
-        description={t('head.description')}
-        title={t('head.title')}
-      />
+      <PageHeader breadcrumbs={[{ label: t('head.title') }]} description={t('head.description')} title={t('head.title')} />
       <Tabs
         aside={<CreateRecruitingDialog key={kind} kind={kind} />}
         items={RECRUITING_KINDS.map((value) => ({ value, label: t(`tabs.${value}`), content: <RecruitingBoard kind={value} /> }))}

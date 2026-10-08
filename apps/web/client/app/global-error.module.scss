@@ -1,8 +1,14 @@
 .root {
   display: grid;
   min-height: 100dvh;
+  align-content: center;
   padding: var(--space-6);
-  place-items: center;
+  gap: var(--space-8);
+  justify-items: center;
+}
+
+.attribution {
+  max-width: 64rem;
 }
 
 .actions {

@@ -18,11 +18,23 @@ import s from './CompetitionPage.module.scss';
 
 export const CompetitionPage = ({ slug }: CompetitionPageProps) => {
   const t = useTranslations('competitions');
+  const tTournaments = useTranslations('tournaments.head');
+  const tTabs = useTranslations('tournaments.tabs');
   const query = useCompetition(slug);
 
   return (
     <div className={s.root}>
       <ResourceGate
+        header={
+          <PageHeader
+            breadcrumbs={[
+              { label: tTournaments('title'), href: ROUTES.tournaments.list },
+              { label: tTabs('points'), href: ROUTES.tournaments.points },
+              { label: slug }
+            ]}
+            title={slug}
+          />
+        }
         skeleton={COMPETITION_PAGE.skeletonHeights.map((height) => (
           <Skeleton key={height} height={height} />
         ))}
@@ -34,13 +46,17 @@ export const CompetitionPage = ({ slug }: CompetitionPageProps) => {
         {(competition) => (
           <>
             <PageHeader
+              breadcrumbs={[
+                { label: tTournaments('title'), href: ROUTES.tournaments.list },
+                { label: tTabs('points'), href: ROUTES.tournaments.points },
+                { label: competition.title }
+              ]}
               meta={
                 <>
                   <CompetitionStatusBadge status={competition.status} />
                   {competition.visibility === 'private' && <Badge tone='premium'>{t('visibility.private')}</Badge>}
                 </>
               }
-              breadcrumbs={[{ label: t('head.title'), href: ROUTES.tournaments.points }, { label: competition.title }]}
               title={competition.title}
             />
             <CompetitionSummary competition={competition} />

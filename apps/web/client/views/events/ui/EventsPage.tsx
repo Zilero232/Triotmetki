@@ -3,7 +3,6 @@
 import { CalendarDays, CalendarPlus, CalendarX2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
 import {
   ActionStrip,
   buttonVariants,
@@ -32,7 +31,7 @@ export const EventsPage = () => {
     <div className={s.root}>
       <PageHero
         art={{ kind: 'emblem', glyph: <CalendarDays size={480} strokeWidth={1.25} /> }}
-        breadcrumbs={[{ label: t('head.home'), href: ROUTES.home }, { label: t('head.title') }]}
+        breadcrumbs={[{ label: t('head.title') }]}
         figures={(query.isPending || featured[0]) && <KeyFigure label={t('head.nowFigure')} value={featured[0]?.event.title} variant='compact' />}
         lead={t('head.description')}
         title={t('head.title')}

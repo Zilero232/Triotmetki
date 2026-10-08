@@ -13,8 +13,11 @@ export const getAuthSession = async (): Promise<AuthSession> => {
 };
 
 export const signOut = async (): Promise<void> => {
-  await fromAuth(authClient.signOut());
-  bearerToken.clear();
+  try {
+    await fromAuth(authClient.signOut());
+  } finally {
+    bearerToken.clear();
+  }
 };
 
 export const deleteAccount = async (): Promise<DeleteAccountOutcome> => {

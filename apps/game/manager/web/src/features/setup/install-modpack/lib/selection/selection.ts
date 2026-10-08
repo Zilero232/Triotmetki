@@ -46,11 +46,17 @@ const dependentsOf = ({ components, id }: DependentsInput): Set<string> => {
   return result;
 };
 
-export const presetSelection = ({ components, presetId }: PresetSelectionInput): Selection =>
-  closeDependencies({
-    components,
-    ids: components.filter((component) => presetId !== null && component.presets.includes(presetId)).map((component) => component.id)
-  });
+export const presetSelection = ({ components, presets, presetId }: PresetSelectionInput): Selection => {
+  const preset = presets.find((candidate) => candidate.id === presetId);
+
+  if (!preset) {
+    return closeDependencies({ components, ids: [] });
+  }
+
+  const members = preset.everything ? components : components.filter((component) => component.presets.includes(preset.id));
+
+  return closeDependencies({ components, ids: members.map((component) => component.id) });
+};
 
 export const toggleSelection = ({ components, selection, id, checked }: ToggleSelectionInput): Selection => {
   if (checked) {
@@ -70,7 +76,7 @@ const sameSelection = ({ left, right }: SameSelectionInput): boolean => left.siz
 
 export const matchingPreset = ({ components, presets, selection }: MatchingPresetInput): string => {
   const match = presets.find(
-    (preset) => !preset.custom && sameSelection({ left: presetSelection({ components, presetId: preset.id }), right: selection })
+    (preset) => !preset.custom && sameSelection({ left: presetSelection({ components, presets, presetId: preset.id }), right: selection })
   );
 
   return match?.id ?? presets.find((preset) => preset.custom)?.id ?? INSTALL_WIZARD.customPreset;

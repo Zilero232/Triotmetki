@@ -17,3 +17,16 @@ export type PlayerWrappedRouteInput = {
   nickname: string;
   year: number;
 };
+
+export type ReplaysFilterRouteInput = {
+  player?: string;
+  tank?: number;
+  map?: string;
+  clan?: string;
+};
+
+export type TanksFilterRouteInput = {
+  nations?: string;
+  types?: string;
+  tiers?: number;
+};

@@ -4,6 +4,19 @@
   @include shell;
 }
 
+.skeleton {
+  width: 100%;
+  height: 88px;
+
+  @include below(2xl) {
+    height: 140px;
+  }
+
+  @include below(md) {
+    height: 200px;
+  }
+}
+
 .card {
   display: flex;
   flex-wrap: wrap;

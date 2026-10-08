@@ -1,0 +1,12 @@
+@use '@/shared/styles/mixins' as *;
+
+.band {
+  border-radius: 0;
+}
+
+.main {
+  @include shell;
+  @include stack(var(--space-3));
+
+  padding-top: var(--space-7);
+}

@@ -1,7 +1,7 @@
 {
   "loadErrorTitle": "The stats server is not responding",
   "loadErrorDescription": "Check your connection and try again.",
-  "loadMoreError": "Couldn’t load the rest of the list",
+  "loadMoreError": "Could not load the rest of the list",
   "resetFilters": "Reset filters",
   "retry": "Retry",
   "copy": "Copy",
@@ -42,7 +42,7 @@
     "esc": "Esc"
   },
   "catalogPending": {
-    "title": "The vehicle catalogue is not loaded yet",
+    "title": "The vehicle catalog is not loaded yet",
     "description": "We take the vehicle list from Mir Tankov. As soon as it arrives, every vehicle from tier I to tier X shows up here."
   },
   "dataNotice": {
@@ -99,5 +99,6 @@
     "previousMonth": "Previous month",
     "zone": "MSK",
     "zoneHint": "Times are Moscow time"
-  }
+  },
+  "unsavedChanges": "You have unsaved changes. Leave this page?"
 }

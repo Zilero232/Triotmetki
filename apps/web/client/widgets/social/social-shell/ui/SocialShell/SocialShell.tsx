@@ -18,13 +18,14 @@ import s from './SocialShell.module.scss';
 
 export const SocialShell = ({ section, figures, children }: SocialShellProps) => {
   const t = useTranslations('social.shell');
+  const tNav = useTranslations('nav.items');
   const { state, loginHref, current, isRetrying, retry } = useSocialShell(section);
 
   return (
     <div className={s.root}>
       <PageHero
         art={{ kind: 'emblem', glyph: <current.icon size={SOCIAL_SHELL.emblemSize} strokeWidth={SOCIAL_SHELL.emblemStroke} /> }}
-        breadcrumbs={[{ label: t('home'), href: ROUTES.home }, { label: t(`sections.${section}.title`) }]}
+        breadcrumbs={[{ label: tNav('leagues'), href: ROUTES.social.leagues }, { label: t(`sections.${section}.title`) }]}
         figures={state.isSignedIn ? figures : undefined}
         lead={t(`sections.${section}.lead`)}
         title={t(`sections.${section}.title`)}

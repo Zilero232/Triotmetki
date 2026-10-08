@@ -14,7 +14,7 @@
   "share": {
     "done": "Build link copied",
     "doneBody": "Send it to your platoon mate — the whole build opens as is.",
-    "failed": "Couldn't copy the link"
+    "failed": "Could not copy the link"
   },
   "loadout": {
     "label": "Which build to edit",
@@ -35,14 +35,14 @@
       "builds": "Player builds",
       "none": "No data"
     },
-    "share": "Share",
+    "share": "Pick rate",
     "winRate": "Win rate",
     "avgDamage": "Avg damage",
     "battles": "{count, plural, one {# battle} other {# battles}}",
     "apply": "Apply to build {side}",
     "active": "Applied",
     "empty": "No data on popular builds yet",
-    "error": "Couldn't load popular builds"
+    "error": "Could not load popular builds"
   },
   "panels": {
     "modules": {
@@ -65,7 +65,7 @@
     },
     "consumables": {
       "title": "Consumables",
-      "description": "Repair kits, first aid, rations and fuel",
+      "description": "Repair kits, first aid kits, rations and fuel",
       "pick": "Choose a consumable"
     },
     "directives": {
@@ -121,7 +121,7 @@
     "base": "Base: {value}",
     "winner": "{side} better",
     "updating": "Recalculating…",
-    "error": "Couldn't recalculate the stats",
+    "error": "Could not recalculate the stats",
     "showAll": "All stats",
     "hide": "Collapse",
     "summary": "Build summary",
@@ -132,7 +132,7 @@
   "missing": {
     "notFoundTitle": "Tank not found",
     "notFoundDescription": "There's no vehicle “{slug}”. Check the link or pick a tank from the list.",
-    "errorTitle": "Couldn't load the build",
+    "errorTitle": "Could not load the build",
     "errorDescription": "The server didn't respond. Try again in a few seconds.",
     "back": "All builds"
   },
@@ -151,7 +151,7 @@
     "eyebrow": "How to build the tank",
     "source": {
       "label": "Build source",
-      "top10": "Advice: top 10%",
+      "top10": "Recommended: top 10%",
       "all": "What players use",
       "top1": "Top 1%",
       "or": "or",
@@ -169,7 +169,7 @@
       "points": "pp"
     },
     "stats": {
-      "title": "Stats for the last 30 days",
+      "title": "Last 30 days and thresholds",
       "winRate": "Win rate",
       "avgDamage": "Avg damage",
       "avgFrags": "Avg frags",

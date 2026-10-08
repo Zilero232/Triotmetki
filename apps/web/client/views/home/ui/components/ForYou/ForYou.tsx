@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { Card } from '@/ui-kit';
+import { Card, Skeleton } from '@/ui-kit';
 
 import { HOME, HOME_ICON } from '../../../config';
 import { useForYou } from '../../../model/hooks';
@@ -14,7 +14,15 @@ import s from './ForYou.module.scss';
 
 export const ForYou = () => {
   const t = useTranslations('home.forYou');
-  const { isVisible, nickname, firstWin, leagueRank, challenges } = useForYou();
+  const { isPending, isVisible, nickname, firstWin, leagueRank, challenges } = useForYou();
+
+  if (isPending) {
+    return (
+      <div aria-hidden className={s.root}>
+        <Skeleton className={s.skeleton} shape='block' />
+      </div>
+    );
+  }
 
   if (!isVisible) {
     return null;

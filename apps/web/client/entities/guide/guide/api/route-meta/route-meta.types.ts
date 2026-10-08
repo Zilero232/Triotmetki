@@ -7,6 +7,6 @@ export type GuideRouteMeta = Pick<Guide, 'title'> & {
   contentLocale: Locale | null;
 };
 
-export type GuideSitemapItem = Pick<Guide, 'slug'> & {
+export type GuideSitemapItem = Pick<Guide, 'slug' | 'updatedAt'> & {
   locale: Locale;
 };

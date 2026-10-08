@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "Guess the tank",
-    "description": "A daily Mir Tankov puzzle: guess the tank from its silhouette and stats, with hints along the way."
+    "description": "A daily Mir Tankov puzzle: guess the tank from its class silhouette and stats, with hints along the way."
   },
   "head": {
     "title": "Guess the tank",
-    "description": "A daily puzzle on Mir Tankov vehicles: six tries, a new target at 00:00 MSK.",
+    "description": "A daily puzzle on Mir Tankov vehicles: six tries, a new target at 00:00 Moscow time.",
     "legendLabel": "Legend",
     "legend": {
       "match": "Direct hit",
@@ -75,8 +75,8 @@
   "result": {
     "wonTitle": "{count, plural, one {Identified with the first shot!} other {Target destroyed in # shots}}",
     "lostTitle": "Out of shells",
-    "wonText": "It is indeed the {name}.",
-    "lostText": "Today's tank was the {name}. A new target tomorrow at 00:00 MSK.",
+    "wonText": "Yes, it’s {name}.",
+    "lostText": "Today’s tank was {name}. A new target tomorrow at 00:00 Moscow time.",
     "share": "Share result",
     "shareTitle": "Three Marks · Guess the tank",
     "copied": "Result copied",
@@ -92,7 +92,7 @@
   },
   "states": {
     "loading": "Preparing today's puzzle",
-    "errorTitle": "Couldn't load the vehicle catalog",
+    "errorTitle": "Could not load the vehicle catalog",
     "errorDescription": "The puzzle needs the catalog. Refresh the page a bit later."
   },
   "map": {
@@ -150,7 +150,7 @@
       "wonText": "It is indeed {name}.",
       "lostText": "The map today was {name}. A new puzzle tomorrow at 00:00 Moscow time.",
       "share": "Share the result",
-      "shareTitle": "Tri otmetki · Guess the map",
+      "shareTitle": "Three Marks · Guess the map",
       "copied": "Result copied",
       "copiedHint": "Paste it into your platoon or clan chat.",
       "openMap": "Map page"
@@ -166,7 +166,7 @@
   "hub": {
     "meta": {
       "title": "Mir Tankov mini-games",
-      "description": "Daily Mir Tankov puzzles: guess the tank from its silhouette and the map from a minimap fragment. A new puzzle every day and win streaks."
+      "description": "Daily Mir Tankov puzzles: guess the tank from its class silhouette and hints and the map from a minimap fragment. A new puzzle every day and win streaks."
     },
     "head": {
       "title": "Mini-games",
@@ -174,13 +174,12 @@
       "reset": "New puzzles at 00:00 Moscow time"
     },
     "crumbs": {
-      "home": "Home",
       "hub": "Mini-games"
     },
     "games": {
       "guessTank": {
         "title": "Guess the tank",
-        "description": "The target is classified: work out the tank from its silhouette and the hints after every miss, in six shots."
+        "description": "The target is classified: work out the tank from its class silhouette and the hints after every miss, in six shots."
       },
       "guessMap": {
         "title": "Guess the map",

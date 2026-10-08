@@ -14,6 +14,7 @@ import s from './GarageActions.module.scss';
 export const GarageActions = () => {
   const t = useTranslations('tank.garage');
   const tArmor = useTranslations('armor');
+  const tNav = useTranslations('nav.items');
   const { detail, slug } = useTank();
 
   return (
@@ -23,6 +24,9 @@ export const GarageActions = () => {
       </Link>
       <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.builds.detail(slug)}>
         {t('build')}
+      </Link>
+      <Link className={buttonVariants({ variant: 'secondary', size: 'sm' })} href={ROUTES.replays.filtered({ tank: detail.vehicle.tankId })}>
+        {tNav('replays')}
       </Link>
       <CompareToggle entry={{ kind: 'tank', item: detail.vehicle }} variant='button' />
     </nav>

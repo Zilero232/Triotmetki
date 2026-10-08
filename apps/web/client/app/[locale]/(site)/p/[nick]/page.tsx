@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { playerRouteEntity } from '@/entities/player/profile/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
@@ -56,4 +57,4 @@ const Page = ({ params }: PageProps<'/[locale]/p/[nick]'>) => (
   </>
 );
 
-export default Page;
+export default withMessages({ component: Page, messages: ['cosmetics', 'marks.progress', 'periods', 'profile', 'watchlist.button'] });

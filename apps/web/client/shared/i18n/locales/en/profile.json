@@ -36,11 +36,11 @@
     "achievements": "Achievements",
     "modes": "Modes",
     "charts": "Charts",
-    "insights": "Breakdown",
+    "insights": "Insights",
     "history": "History"
   },
   "overview": {
-    "favoritesTitle": "Favourite vehicles",
+    "favoritesTitle": "Favorite vehicles",
     "favoritesEmpty": "No battles on any vehicle",
     "battles": "Battles",
     "winRate": "Win rate",
@@ -55,7 +55,7 @@
     "activityTitle": "Activity over the year",
     "activitySummary": "{total, plural, one {# battle} other {# battles}} over {active, plural, one {# day} other {# days}}",
     "activityEmpty": "No battles over the last year",
-    "activityDay": "{date}: {battles, plural, =0 {no battles} one {# battle} other {# battles}}{battles, plural, =0 {} other {, {winRate}% wins}}",
+    "activityDay": "{date}: {battles, plural, =0 {no battles} one {# battle} other {# battles}}{battles, plural, =0 {} other {, {winRate}% win rate}}",
     "activityHint": "Hover a day to see its battles",
     "activityAria": "Activity calendar: {total, plural, one {# battle} other {# battles}} over {active, plural, one {# active day} other {# active days}}",
     "less": "Less",
@@ -131,7 +131,9 @@
       "title": "{nickname} session",
       "description": "Session summary for {nickname}: battles, wins, damage and the best tanks of the day."
     },
-    "empty": "No sessions yet"
+    "empty": "No sessions yet",
+    "listErrorTitle": "Sessions failed to load",
+    "listErrorDescription": "The server did not respond. Try again."
   },
   "marks": {
     "progressTitle": "Marks progress",
@@ -226,11 +228,11 @@
       "title": "Results by time of day",
       "beta": "Beta",
       "approximate": "Times are approximate: without the mod we only see battles through periodic stats updates.",
-      "bestHour": "Best time: {from}:00–{to}:00 · {rate}% wins",
-      "worstHour": "Worst time: {from}:00–{to}:00 · {rate}% wins",
-      "bestWeekday": "Strong day: {day} · {rate}% wins",
+      "bestHour": "Best time: {from}:00–{to}:00 · {rate}% win rate",
+      "worstHour": "Worst time: {from}:00–{to}:00 · {rate}% win rate",
+      "bestWeekday": "Strong day: {day} · {rate}% win rate",
       "gridLabel": "Win rate by hour and weekday",
-      "cell": "{hour}:00 · {battles, plural, one {# battle} other {# battles}} · {rate}% wins",
+      "cell": "{hour}:00 · {battles, plural, one {# battle} other {# battles}} · {rate}% win rate",
       "empty": "No battle time data"
     },
     "empty": "Too few battles for a breakdown"
@@ -249,7 +251,6 @@
     "winRate": "Win rate",
     "battles": "Battles",
     "noClan": "No clan",
-    "source": "Data: Lesta Games",
     "session": "SESSION",
     "avgDamage": "Avg damage",
     "best": "Best tank"
@@ -270,7 +271,7 @@
     "seasons": "Seasons",
     "seasonLevel": "{season} · lv. {level}",
     "wn8Ring": "WN8 rating level",
-    "favorites": "Favourite vehicles",
+    "favorites": "Favorite vehicles",
     "favoriteNation": "Nation",
     "favoriteClass": "Class",
     "tiers": {
@@ -284,7 +285,7 @@
       "unicum": "Unicum",
       "super_unicum": "Super unicum"
     },
-    "favoritesFailed": "Favourite nation and class did not load"
+    "favoritesFailed": "Favorite nation and class did not load"
   },
   "achievements": {
     "empty": "The player has no achievements",
@@ -295,12 +296,11 @@
       "memorial": "Commemorative",
       "group": "Group",
       "class": "Mastery",
-      "action": "Events",
+      "action": "Campaigns",
       "other": "Other"
     }
   },
   "hero": {
-    "home": "Home",
     "players": "Players"
   },
   "actions": {
@@ -336,9 +336,9 @@
   "official": {
     "title": "Official Lesta rating",
     "source": "Lesta data",
-    "lead": "We have no battle history for this player yet — here is what Lesta knows about the last weeks.",
+    "lead": "We have no battle history for this player yet — here is Lesta’s own data: recent weeks and all time.",
     "periods": {
-      "1d": "Last day",
+      "1d": "Last 24 hours",
       "7d": "Last 7 days",
       "28d": "Last 28 days",
       "overall": "All time"
@@ -346,10 +346,10 @@
     "fields": {
       "globalRating": "Personal rating",
       "battles": "Battles",
-      "winRate": "Wins",
+      "winRate": "Win rate",
       "avgDamage": "Avg damage",
       "avgXp": "Avg experience",
-      "avgFrags": "Kills per battle",
+      "avgFrags": "Frags per battle",
       "avgSpotted": "Spotted per battle",
       "survivalRate": "Survival",
       "accuracy": "Accuracy",
@@ -363,7 +363,7 @@
     "records": {
       "maxDamage": "Max damage",
       "maxXp": "Max experience",
-      "maxFrags": "Max kills"
+      "maxFrags": "Max frags"
     },
     "since": "since {date}",
     "assist": {
@@ -379,9 +379,9 @@
     "emptyText": "Lesta knows of no Front Line, ranked, Stronghold or Global Map battles for this player.",
     "liveNote": "Fetched from Lesta just now, no per-tank breakdown yet.",
     "battles": "{count, plural, one {# battle} other {# battles}}",
-    "winRate": "Wins",
+    "winRate": "Win rate",
     "avgDamage": "Avg damage",
-    "avgFrags": "Kills per battle",
+    "avgFrags": "Frags per battle",
     "survivalRate": "Survival",
     "maxDamage": "Max damage",
     "names": {

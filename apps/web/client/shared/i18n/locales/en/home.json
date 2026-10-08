@@ -12,7 +12,7 @@
     "online": "Server online",
     "activeEstimate": "Active, last hour",
     "activityStale": "Player activity",
-    "activityStaleHint": "The collector has not refreshed the last hour yet",
+    "activityStaleHint": "Last-hour data is not in yet",
     "activityPending": "being collected",
     "estimatePrefix": "≈ ",
     "estimateHint": "Our estimate from tracked players",
@@ -36,7 +36,7 @@
     }
   },
   "modpack": {
-    "label": "The Tri Otmetki modpack",
+    "label": "The Three Marks modpack",
     "eyebrow": "Modpack and manager",
     "title": "Marks and battle results, right in the game",
     "lead": "A free set of fair-play mods with a manager that installs the modpack, turns on what you need and moves it after a patch.",
@@ -46,7 +46,7 @@
     "soonCta": "Follow the release",
     "soonNote": "Free · Windows 10 and 11 · the modpack and the manager ship together",
     "details": "What's inside",
-    "note": "Free · Windows 10 and 11 · nothing forbidden",
+    "note": "Free · Windows 10 and 11 · no banned features",
     "props": {
       "marks": {
         "title": "Mark percent in battle",
@@ -54,7 +54,7 @@
       },
       "results": {
         "title": "Battle results",
-        "text": "Damage, assistance and the mark change after every battle, the session in the garage"
+        "text": "Damage, assisted damage and the mark change after every battle, the session in the hangar"
       },
       "manager": {
         "title": "One-click install",
@@ -103,7 +103,7 @@
     "battles": "{count, plural, one {# battle} other {# battles}}"
   },
   "marks": {
-    "title": "Marks movement",
+    "title": "Mark changes",
     "period": "last 30 days",
     "all": "All thresholds",
     "empty": "No mark thresholds yet",
@@ -159,8 +159,8 @@
     "label": "For you",
     "title": "Welcome back, {nickname}",
     "titleNoAccount": "Link your account with Lesta ID",
-    "firstWin": "First victory ×2 is available on {count, plural, one {# tank} other {# tanks}}",
-    "firstWinTaken": "All first victories for today are taken",
+    "firstWin": "First win of the day ×2 is available on {count, plural, one {# tank} other {# tanks}}",
+    "firstWinTaken": "All first wins of the day are used up",
     "profile": "My profile",
     "marks": "My marks",
     "analytics": "Session and analytics",

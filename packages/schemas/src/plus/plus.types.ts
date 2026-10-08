@@ -7,7 +7,7 @@ export type PlusStateKind = z.infer<typeof plusStateKindSchema>;
 export type PlusLimitKey = z.infer<typeof plusLimitKeySchema>;
 export type PlusState = z.infer<typeof plusStateSchema>;
 
-export type PlusCountKey = Exclude<PlusLimitKey, 'aiReviews' | 'historyDays'>;
+export type PlusCountKey = Exclude<PlusLimitKey, 'historyDays'>;
 
 export type PlusLimitInput = {
   key: PlusCountKey;

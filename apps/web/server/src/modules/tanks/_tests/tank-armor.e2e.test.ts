@@ -160,6 +160,31 @@ describe('GET /tanks/:idOrSlug/armor', () => {
   });
 });
 
+describe('GET /tanks/:idOrSlug/armor/showcase', () => {
+  it('serves the model for the 3D showcase', async () => {
+    const response = await request(app.getHttpServer()).get('/tanks/tank-1/armor/showcase');
+
+    expect(response.status).toBe(200);
+    expect(response.body.vehicle.slug).toBe(SUMMARY.slug);
+  });
+
+  it('never spends an armor view, however many showcases are shown', async () => {
+    const agent = request.agent(app.getHttpServer());
+
+    for (const tank of range(0, ANONYMOUS_LIMIT + 2)) {
+      expect((await agent.get(`/tanks/tank-${tank}/armor/showcase`)).status).toBe(200);
+    }
+
+    expect((await agent.get('/tanks/tank-0/armor')).status).toBe(200);
+  });
+
+  it('answers 404 when the tank has no armor model', async () => {
+    prisma.vehicleArmorModel.findUnique.mockResolvedValueOnce(null);
+
+    expect((await request(app.getHttpServer()).get('/tanks/tank-404/armor/showcase')).status).toBe(404);
+  });
+});
+
 describe('GET /tanks/:idOrSlug/armor/guns', () => {
   it('lists each gun of the attacker once, with its shells and without collision data', async () => {
     const shell = {

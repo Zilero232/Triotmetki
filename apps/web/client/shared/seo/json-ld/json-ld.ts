@@ -1,21 +1,10 @@
-import type {
-  BlogPosting,
-  BreadcrumbList,
-  Graph,
-  ItemList,
-  OrganizationLeaf,
-  ProfilePage,
-  SearchActionLeaf,
-  SportsTeam,
-  WithActionConstraints,
-  WithContext
-} from 'schema-dts';
+import type { BlogPosting, BreadcrumbList, Graph, ItemList, OrganizationLeaf, ProfilePage, SportsTeam, WithContext } from 'schema-dts';
 
 import { isNonNullish } from 'remeda';
 
 import type { Locale, LocalePathInput } from '@/shared/i18n';
 
-import { SITE } from '@/shared/config/site';
+import { SITE, SUPPORT } from '@/shared/config/site';
 import { ROUTES } from '@/shared/constants';
 import { localePath } from '@/shared/i18n';
 
@@ -33,16 +22,8 @@ export const organizationJsonLd = (): OrganizationLeaf => ({
   '@id': `${SITE.url}${JSON_LD.organizationId}`,
   name: SITE.name,
   url: SITE.url,
-  logo: absoluteUrl(JSON_LD.logo)
-});
-
-const playerSearchAction = (locale: Locale): WithActionConstraints<SearchActionLeaf> => ({
-  '@type': 'SearchAction',
-  target: {
-    '@type': 'EntryPoint',
-    urlTemplate: `${SITE.url}${localePath({ path: ROUTES.players.profile(''), locale })}{${JSON_LD.searchTerm}}`
-  },
-  'query-input': `required name=${JSON_LD.searchTerm}`
+  logo: absoluteUrl(JSON_LD.logo),
+  sameAs: [SUPPORT.telegramUrl]
 });
 
 export const siteJsonLd = (locale: Locale): Graph => ({
@@ -55,8 +36,7 @@ export const siteJsonLd = (locale: Locale): Graph => ({
       name: SITE.name,
       url: localeUrl({ path: ROUTES.home, locale }),
       inLanguage: locale,
-      publisher: { '@id': `${SITE.url}${JSON_LD.organizationId}` },
-      potentialAction: playerSearchAction(locale)
+      publisher: { '@id': `${SITE.url}${JSON_LD.organizationId}` }
     }
   ]
 });

@@ -4,12 +4,13 @@ import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 import { Suspense } from 'react';
 
+import { withMessages } from '@/app/messages';
 import { tournamentRouteMeta } from '@/entities/tournament/tournament/server';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
-import { PageHeroFallback } from '@/ui-kit';
+import { PageHeaderFallback } from '@/ui-kit';
 import { TournamentPage } from '@/views/tournament';
 
 export const generateMetadata = async ({ params }: PageProps<'/[locale]/tournaments/[slug]'>): Promise<Metadata> => {
@@ -35,9 +36,9 @@ const TournamentRoute = async ({ params }: Pick<PageProps<'/[locale]/tournaments
 };
 
 const Page = ({ params }: PageProps<'/[locale]/tournaments/[slug]'>) => (
-  <Suspense fallback={<PageHeroFallback />}>
+  <Suspense fallback={<PageHeaderFallback />}>
     <TournamentRoute params={params} />
   </Suspense>
 );
 
-export default Page;
+export default withMessages({ component: Page, messages: ['community.requirements', 'tournaments'] });
