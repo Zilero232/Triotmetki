@@ -53,6 +53,16 @@ describe('summarizeUsage', () => {
     expect(summary.usage.equipment.find((slot) => slot.slot === 1)?.picks[0]).toMatchObject({ id: 2, share: 1 });
   });
 
+  it('orders picks tied on share and battles by id, whatever order the battles came in', () => {
+    const devices = (id: number) => ({ ...sample({ accountId: 'x' }).loadout, optionalDevices: [1, id, null] });
+    const ids = (summary: ReturnType<typeof summarizeUsage>) => summary.usage.equipment.find((slot) => slot.slot === 1)?.picks.map((pick) => pick.id);
+
+    const forward = summarizeUsage([sample({ accountId: 'a', loadout: devices(103) }), sample({ accountId: 'b', loadout: devices(102) })]);
+    const backward = summarizeUsage([sample({ accountId: 'b', loadout: devices(102) }), sample({ accountId: 'a', loadout: devices(103) })]);
+
+    expect(ids(forward)).toEqual(ids(backward));
+  });
+
   it('keeps win rate and damage per pick from the raw battles', () => {
     const summary = summarizeUsage([
       sample({ accountId: 'a', won: true, damage: 4000 }),

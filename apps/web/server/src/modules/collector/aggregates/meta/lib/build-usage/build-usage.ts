@@ -69,7 +69,8 @@ const toPicks = ({ picks, players }: ToPicksInput) =>
       avgDamage: ratio({ value: pick.damage, by: pick.battles })
     })),
     [(pick) => pick.share, 'desc'],
-    [(pick) => pick.battles, 'desc']
+    [(pick) => pick.battles, 'desc'],
+    [(pick) => pick.key, 'asc']
   ).slice(0, BUILD_USAGE_AGGREGATE.maxPicks);
 
 const idPicks = (input: ToPicksInput) => toPicks(input).map(({ key, ...pick }) => ({ id: Number(key), ...pick }));
