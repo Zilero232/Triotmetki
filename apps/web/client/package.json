@@ -14,10 +14,6 @@
   },
   "license": "UNLICENSED",
   "author": "Alexandr Artemev",
-  "sideEffects": [
-    "*.css",
-    "*.scss"
-  ],
   "type": "module",
   "scripts": {
     "api:build": "openapi-ts",
