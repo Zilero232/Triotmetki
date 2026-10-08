@@ -425,8 +425,8 @@
         "en": "Three Marks plate in battle"
       },
       "description": {
-        "ru": "Плашка модпака после иконки танка и оранжевая подсветка строки в ушах и на экране загрузки (по Tab — только подсветка): у вас и у всех игроков с модом, которые не выключили свой значок. Привязка к сайту не нужна.",
-        "en": "The modpack's plate after the vehicle icon and an orange row highlight in the player panels and the loading screen (the Tab stats get the highlight only): on you and on every player with the mod who left their badge on. No site binding needed."
+        "ru": "Плашка модпака после иконки танка и оранжевая подсветка строки в ушах и на экране загрузки: у вас и у всех игроков с модом, которые не выключили свой значок. Привязка к сайту не нужна.",
+        "en": "The modpack's plate after the vehicle icon and an orange row highlight in the player panels and the loading screen: on you and on every player with the mod who left their badge on. No site binding needed."
       },
       "fairPlay": {
         "ru": "Не боевая информация: в бою с ушами сайт получает только ваш номер аккаунта, номера аккаунтов игроков боя и положение вашего переключателя значка (в начале боя и для игроков, вошедших позже); хранит лишь отметку «мод установлен» на 30 дней и стирает её сразу, как вы выключаете значок, плашку или весь мод.",
@@ -1240,14 +1240,14 @@
         "en": "Tank armour"
       },
       "description": {
-        "ru": "Своё окно «Броня» из списка модов ModsList или меню танка в карусели: настоящий 3D-танк ангара под картой брони — номинал, приведённая с вашего ракурса или пробитие снарядом вашего танка с шансом (зелёный — пробьёт, жёлтый — как повезёт, красный — нет или рикошет; экраны и гусеницы штрихуются). Любой танк игры через поиск, башня и орудие на выбор, «мой танк против этого» со снарядами и дистанцией 0–600 м, ракурсы камеры, легенда и карточка слоёв под курсором по правилам самого клиента. Мышью вращается камера; 3D-схема с triotmetki.ru — одной кнопкой во внешнем браузере.",
-        "en": "Its own «Armour» screen from the ModsList mods list or a carousel tank's menu: the real 3D hangar tank under an armour map — nominal, effective from your view or penetration by your own tank's shell with its chance (green: penetrates, yellow: down to the roll, red: never or ricochet; screens and tracks hatched). Any tank of the game through the search, turret and gun of your choice, «my tank vs this one» with shells and a 0–600 m distance, camera angles, a legend and the layers under the cursor by the client's own rules. The mouse orbits the camera; the 3D scheme from triotmetki.ru is one button away in the external browser."
+        "ru": "Бронирование танка в 3D на triotmetki.ru в один клик: кнопка «Броня танков» в списке модов ModsList открывает выбранный в ангаре танк (или танк в предпросмотре), пункт «Броня танка» в меню танка в карусели — именно этот танк. Страница открывается во внешнем браузере (по выбору — в браузере игры).",
+        "en": "The tank's armour in 3D on triotmetki.ru in one click: the «Tank armour» entry in the ModsList mods list opens the tank selected in the hangar (or the previewed one), «Tank armour» in a carousel tank's menu opens that very tank. The page opens in the external browser (or, by choice, in the game's browser)."
       },
       "fairPlay": {
-        "ru": "Только ангар и только по вашему нажатию; в бою не работает и закрывается со входом в бой (статья 15152: анализ брони в бою объявлен к запрету, моды только для ангара разрешены). Читает лишь коллизию и описание танка в ангаре (публичные данные типа танка, любой танк — через стандартный предпросмотр) и орудие вашего танка; ничего не отправляет: 3D-схема — публичная страница сайта с номером танка.",
-        "en": "Hangar only and only on your click; does nothing in battle and closes on entering one (article 15152: in-battle armour analysis is announced for the ban, hangar-only mods are allowed). Reads only the hangar tank's collision and descriptor (public tank type data, any tank through the stock vehicle preview) and your own tank's gun; sends nothing: the 3D scheme is the site's public page with the tank id."
+        "ru": "Только ангар и только по вашему нажатию; в бою не открывается. Ничего не читает из боя и ничего не отправляет: ссылка — публичная страница сайта с номером танка и языком.",
+        "en": "Hangar only and only on your click; does not open in battle. Reads nothing of a battle and sends nothing: the link is the site's public page with the tank id and the language."
       },
-      "perf": "medium",
+      "perf": "low",
       "preview": {
         "image": "previews/armor_view.svg"
       }
@@ -1322,7 +1322,6 @@
         "hit_viewer",
         "hangar_info",
         "preset_advisor",
-        "armor_view",
         "free_camera"
       ],
       "optional": false,

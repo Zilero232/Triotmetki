@@ -25,7 +25,6 @@ from otmetki.features.pack_badge.model import (
 from otmetki.features.pack_badge.model.constants import (
     FLASH_CLEAR,
     FLASH_MARK,
-    FLASH_REPAINT,
     LIBRARY_ADD,
     LIBRARY_REMOVE,
     LIBRARY_SWF,
@@ -305,7 +304,7 @@ class ShippingTest(unittest.TestCase):
         with open(path, 'rb') as handle:
             source = handle.read()
 
-        for name in (FLASH_MARK, FLASH_REPAINT, FLASH_CLEAR):
+        for name in (FLASH_MARK, FLASH_CLEAR):
             self.assertIn(('prototype.%s = ' % name).encode('ascii'), source)
 
 

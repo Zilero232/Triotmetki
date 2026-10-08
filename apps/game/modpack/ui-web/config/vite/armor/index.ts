@@ -1,1 +1,0 @@
-export { armorConfig } from './armor';

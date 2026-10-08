@@ -115,7 +115,7 @@ class PackBadge(FeatureComponent):
         self.bridge.start()
         self.show('battle start')
         self.hooks.add(arena, 'onVehicleAdded', self._on_vehicle_added)
-        # The loading screen and the Tab table change with the arena period, a few times a battle.
+        # The loading screen changes with the arena period, a few times a battle.
         self.hooks.add(arena, 'onPeriodChange', lambda *args: self.show('arena period'))
 
     def _on_battle_leave(self):

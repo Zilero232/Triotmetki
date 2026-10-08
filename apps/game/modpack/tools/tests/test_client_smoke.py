@@ -36,7 +36,7 @@ STUBBED = (
     'gui', 'BigWorld', 'BattleReplay', 'CurrentVehicle', 'PlayerEvents', 'BattleFeedbackCommon', 'dossiers2',
     'constants', 'SoundGroups', 'messenger', 'notification', 'account_helpers', 'helpers', 'skeletons', 'frameworks',
     'openwg_gameface', 'items', 'vehicle_outfit', 'Keys', 'Avatar', 'Vehicle', 'Math', 'arena_bonus_type_caps',
-    'AvatarInputHandler', 'aih_constants', 'helpers_common', 'CGF', 'cgf_components',
+    'AvatarInputHandler', 'aih_constants', 'helpers_common',
 )
 LOAD_ORDER_SEEDS = (0, 1, 2, 3)
 PLAYER_EVENTS = (
@@ -3481,11 +3481,7 @@ class QuickDemountTest(StoryTest):
 
 
 ARMOR_VIEW_MENU = 'gui.Scaleform.daapi.view.lobby.hangar.hangar_cm_handlers'
-ARMOR_TANK, CAROUSEL_TANK = 2849, 51809
-ARMOR_PAGE = 'otmetki/ui/armor_view'
-ARMOR_LAYOUT = 9
-ARMOR_TICKS = 400
-ARMOR_TURRET, ARMOR_GUN, ARMOR_CHASSIS = 28491, 28492, 28493
+ARMOR_TANK, CAROUSEL_TANK, PREVIEW_TANK = 2849, 51809, 60001
 
 
 def vehicle_menu_class():
@@ -3510,147 +3506,8 @@ def vehicle_menu_class():
     return VehicleContextMenuHandler
 
 
-class ArmorVector(object):
-    # RU 1.45 Math.Vector3, reduced to what the armour probe and the camera presets do with it.
-
-    def __init__(self, x, y, z):
-        self.x, self.y, self.z = x, y, z
-
-    def __add__(self, other):
-        return ArmorVector(self.x + other.x, self.y + other.y, self.z + other.z)
-
-    def __sub__(self, other):
-        return ArmorVector(self.x - other.x, self.y - other.y, self.z - other.z)
-
-    def __mul__(self, factor):
-        return ArmorVector(self.x * factor, self.y * factor, self.z * factor)
-
-    def __iter__(self):
-        return iter((self.x, self.y, self.z))
-
-    @property
-    def length(self):
-        return (self.x ** 2 + self.y ** 2 + self.z ** 2) ** 0.5
-
-    def normalise(self):
-        return None
-
-
-class ArmorBounds(object):
-    # CompoundModel.getBoundsForPart: the unit cube onto a box from (-2, -1, 10) to (2, 1, 12) in the world.
-
-    def applyPoint(self, corner):
-        x, y, z = corner
-        return ArmorVector(-2.0 + 4.0 * x, -1.0 + 2.0 * y, 10.0 + 2.0 * z)
-
-
-class ArmorClip(object):
-
-    def __init__(self, x, y):
-        self.x, self.y, self.w = x, y, 1.0
-
-
-class ArmorCamera(object):
-    # A camera at the origin looking along +z: a world point lands at x / 10, y / 10 of clip space.
-
-    invViewMatrix = instance('Matrix', {
-        'translation': ArmorVector(0.0, 0.0, 0.0),
-        'applyToAxis': lambda matrix, axis: ArmorVector(0.0, 0.0, 1.0),
-    })
-
-
-def armour_hits(start, end):
-    # The hull's front plate inside the box: 100 mm, met head on, in the middle of the screen.
-    if abs(start.x) > 0.2 or abs(start.y) > 0.1:
-        return []
-    return [(10.0, 1.0, 1, 1)]
-
-
-def armour_material():
-    return instance('Material', {
-        'armor': 100.0,
-        'vehicleDamageFactor': 1.0,
-        'useHitAngle': True,
-        'mayRicochet': True,
-        'collideOnceOnly': False,
-        'checkCaliberForRichet': True,
-        'checkCaliberForHitAngleNorm': True,
-    })
-
-
-def armour_descriptor(tank_id):
-    shot = instance('Shot', {
-        'shell': instance('Shell', {'kind': 'ARMOR_PIERCING', 'caliber': 85.0, 'piercingPowerRandomization': 0.25}),
-        'piercingPower': (150.0, 120.0),
-        'maxDistance': 720.0,
-    })
-    return instance('VehicleDescr', {
-        'type': instance('VehicleType', {'compactDescr': tank_id, 'shortUserString': 'T-34'}),
-        'hull': instance('Hull', {'materials': {1: armour_material()}}),
-        'gun': instance('Gun', {'shots': [shot], 'compactDescr': ARMOR_GUN}),
-        'turret': instance('Turret', {'compactDescr': ARMOR_TURRET}),
-        'chassis': instance('Chassis', {'compactDescr': ARMOR_CHASSIS}),
-    })
-
-
-def armour_vehicle(descriptor):
-    collisions = instance('CollisionComponent', {
-        'collideAllWorld': lambda component, start, end: armour_hits(start, end),
-    })
-    appearance = instance('HangarVehicleAppearance', {
-        'isLoaded': lambda appearance: True,
-        'collisions': collisions,
-        'typeDescriptor': descriptor,
-    })
-    model = instance('CompoundModel', {
-        'getBoundsForPart': lambda model, part: ArmorBounds(),
-        'matrix': instance('Matrix', {'yaw': 0.0}),
-    })
-    return instance('ClientSelectableCameraVehicle', {'appearance': appearance, 'model': model})
-
-
-def garage_vehicle(tank_id, name, tier, descriptor=None):
-    return instance('Vehicle', {
-        'intCD': tank_id,
-        'shortUserName': name,
-        'level': tier,
-        'type': 'mediumTank',
-        'name': 'ussr:' + name,
-        'descriptor': descriptor,
-        'isHidden': False,
-    })
-
-
-def vehicle_type_stub(tank_id):
-    gun = instance('Gun', {'compactDescr': ARMOR_GUN, 'shortUserString': 'F-34'})
-    turret = instance('Turret', {'compactDescr': ARMOR_TURRET, 'shortUserString': 'T-34 1940', 'guns': [gun]})
-    names = {ARMOR_TANK: 'T-34', CAROUSEL_TANK: 'T-44'}
-    return instance('VehicleType', {
-        'shortUserString': names.get(tank_id, 'Tank'),
-        'level': 5,
-        'classTag': 'mediumTank',
-        'turrets': [[turret]],
-    })
-
-
-class VehicleDescrStub(object):
-    # RU 1.45 items.vehicles.VehicleDescr, reduced to what the vehicle preview's descriptor needs.
-
-    def __init__(self, typeID=None):
-        self.parts = [typeID]
-
-    def installComponent(self, component):
-        self.parts.append(component)
-
-    def installTurret(self, turret, gun):
-        self.parts.extend((turret, gun))
-
-    def makeCompactDescr(self):
-        return 'descr:%s' % (self.parts,)
-
-
 def install_armor_view_stubs(cls):
-    cls.entries, cls.external, cls.hangar_shown = [], [], []
+    cls.entries, cls.overlays, cls.external = [], [], []
     mods_list = instance('ModsListApi', {
         'addModification': lambda api, **entry: cls.entries.append(entry),
         'updateModification': lambda api, **entry: cls.entries.append(entry),
@@ -3658,7 +3515,7 @@ def install_armor_view_stubs(cls):
     module('gui.modsListApi', g_modsListApi=mods_list)
     if 'gui.shared' not in sys.modules:
         package('gui.shared')
-    module('gui.shared.event_dispatcher', showHangar=lambda: cls.hangar_shown.append(True))
+    module('gui.shared.event_dispatcher', showBrowserOverlayView=cls.overlays.append)
     sys.modules['BigWorld'].openWebBrowser = cls.external.append
     for name in HANGAR_VIEW_PACKAGES[:5]:
         if name not in sys.modules:
@@ -3668,112 +3525,17 @@ def install_armor_view_stubs(cls):
     return menu_class
 
 
-def install_armor_garage(game, own):
-    vehicles = {own.intCD: own}
-    every = dict(vehicles)
-    every[CAROUSEL_TANK] = garage_vehicle(CAROUSEL_TANK, 'T-44', 7)
-    items = instance('Items', {
-        'getVehicles': lambda items, criteria: dict(vehicles if criteria == 'inventory' else every),
-    })
-    items_cache = constants('IItemsCache', {})
-    game.services[items_cache] = instance('ItemsCache', {'items': items})
-    package('skeletons.gui.shared').IItemsCache = items_cache
-    for name in ('gui.shared.utils',):
-        package(name)
-    criteria = constants('REQ_CRITERIA', {'INVENTORY': 'inventory', 'EMPTY': 'empty'})
-    module('gui.shared.utils.requesters', REQ_CRITERIA=criteria)
-    vehicles_module = module(
-        'items.vehicles',
-        getVehicleType=vehicle_type_stub,
-        VehicleDescr=VehicleDescrStub,
-        g_cache=instance('Cache', {'commonConfig': {'materials': {}}}),
-    )
-    package('items').vehicles = vehicles_module
-    sys.modules['items'].parseIntCompactDescr = lambda tank_id: (1, 0, tank_id)
-
-
-def install_armor_space(game, cls, descriptor):
-    entity = armour_vehicle(descriptor)
-    cls.space = instance('HangarSpace', {'getVehicleEntity': lambda space: entity, 'spaceID': 1})
-    cls.space.onVehicleChanged = Event()
-    hangar_space = constants('IHangarSpace', {})
-    if 'skeletons.gui.shared' not in sys.modules:
-        package('skeletons.gui.shared')
-    module('skeletons.gui.shared.utils', IHangarSpace=hangar_space)
-    game.services[hangar_space] = cls.space
-    big_world = sys.modules['BigWorld']
-    big_world.camera = ArmorCamera
-    big_world.projection = lambda: instance('Projection', {'fov': 1.0})
-    big_world.screenSize = lambda: (1920.0, 1080.0)
-    module('Math', Matrix=lambda matrix=None: matrix, Vector3=ArmorVector, Vector2=lambda x, y: [x, y])
-    package('AvatarInputHandler')
-    module(
-        'AvatarInputHandler.cameras',
-        projectPoint=lambda point: ArmorClip(point.x / 10.0, point.y / 10.0),
-        getWorldRayAndPoint=lambda x, y: (ArmorVector(0.0, 0.0, 1.0), ArmorVector(x, y, 0.0)),
-    )
-
-
-def install_armor_camera(cls):
-    cls.camera_moves, cls.camera_resets = [], []
-    manager = instance('HangarCameraManager', {
-        'moveCamera': lambda manager, *args: cls.camera_moves.append(args),
-        'resetCameraTarget': lambda manager, duration: cls.camera_resets.append(duration),
-    })
-    manager_class = constants('HangarCameraManager', {})
-    package('cgf_components')
-    module('cgf_components.hangar_camera_manager', HangarCameraManager=manager_class)
-    module('CGF', getManager=lambda space_id, kind: manager)
-
-
-def install_armor_preview(game, cls):
-    cls.previews = []
+def install_vehicle_preview(cls):
+    cls.previewing = [False]
     preview = instance('PreviewVehicle', {
-        'isPresent': lambda preview: False,
-        'selectVehicle': lambda preview, tank_id, descr: cls.previews.append((tank_id, descr)),
-        'selectNoVehicle': lambda preview: cls.previews.append(None),
+        'isPresent': lambda preview: cls.previewing[0],
+        'item': instance('Vehicle', {'intCD': PREVIEW_TANK}),
     })
     sys.modules['CurrentVehicle'].g_currentPreviewVehicle = preview
 
 
-def install_armor_sub_view(cls):
-    # RU 1.45 GuiImplViewLoadParams / LoadGuiImplViewEvent: the lobby loads the view class with the controller, and
-    # the view reports itself loaded (ViewImpl._onLoading).
-    cls.views = []
-    openwg = sys.modules['openwg_gameface']
-    hud_layout = openwg.res_id_by_key
-    openwg.res_id_by_key = lambda key: ARMOR_LAYOUT if key == ARMOR_PAGE else hud_layout(key)
-    sys.modules['frameworks.wulf'].ViewFlags.LOBBY_SUB_VIEW = 4
-    package('gui.Scaleform.framework.managers')
-    module('gui.Scaleform.framework.managers.loaders', GuiImplViewLoadParams=lambda *params: params)
-    sys.modules['gui.Scaleform.framework'].ScopeTemplates.LOBBY_SUB_SCOPE = 'lobby_sub'
-    shared = sys.modules['gui.shared']
-    shared.events.LoadGuiImplViewEvent = lambda params, controller=None: ('load', params, controller)
-    shared.EVENT_BUS_SCOPE.LOBBY = 'lobby'
-
-    def handle_event(event, scope=None):
-        if not isinstance(event, tuple) or event[0] != 'load':
-            return
-        layout, view_class, _ = event[1]
-        view = view_class(layout, controller=event[2])
-        cls.views.append(view)
-        view._onLoading()
-
-    shared.g_eventBus.handleEvent = handle_event
-    package('gui.hangar_cameras')
-    cls.moves = []
-    camera_events = constants('CameraRelatedEvents', {'LOBBY_VIEW_MOUSE_MOVE': 'move'})
-    camera_events.__init__ = lambda event, kind, ctx=None: cls.moves.append(ctx)
-    module('gui.hangar_cameras.hangar_camera_common', CameraRelatedEvents=camera_events)
-
-
-def page_property(view, name):
-    names = [entry[0] for entry in view.viewModel.strings]
-    return json.loads(view.viewModel.strings[names.index(name)][1] or 'null')
-
-
-def page_send(view, **fields):
-    view._on_send({'message': json.dumps(fields)})
+def opened_tanks(urls):
+    return [url.rsplit('/t/', 1)[1] for url in urls]
 
 
 class ArmorViewTest(StoryTest):
@@ -3782,36 +3544,57 @@ class ArmorViewTest(StoryTest):
     def play(cls, game):
         game.install_hud_stubs()
         menu_class = install_armor_view_stubs(cls)
+        install_vehicle_preview(cls)
         game.vehicle.item = instance('Vehicle', {'intCD': ARMOR_TANK, 'descriptor': None})
 
         app = game.open_hangar()
         cls.entry = dict(next(entry for entry in cls.entries if entry['id'] == 'otmetki_armor_view'))
+        callback = cls.entry.pop('callback')
+        callback(None)
+        cls.previewing[0] = True
+        callback(None)
+        cls.previewing[0] = False
         menu = menu_class(CAROUSEL_TANK)
         cls.options = menu._generateOptions()
         menu.onOptionSelect('vehicleInfo')
+        menu.onOptionSelect(cls.options[-1]['id'])
         cls.selected = list(menu.selected)
-        cls.notice = game.instances()['armor_view'].ui_action('site')
         cls.browser_opens = list(cls.external)
+        cls.play_overlay_and_battle(game, app, callback)
         app.config.update({'hangar_armor_view': False})
         cls.options_off = menu._generateOptions()
         app.bus.emit('component_settings', 'armor_view', ['hangar_armor_view'])
         cls.entry_switched_off = dict(cls.entries[-1])
-        app.config.update({'hangar_armor_view': True})
-        app.bus.emit('enqueued')
-        cls.entry_in_queue = dict(cls.entries[-1])
-        app.bus.emit('dequeued')
         app.translate.language = 'en'
         app.bus.emit('language', 'en')
         cls.entry_in_english = dict(cls.entries[-1])
 
+    @classmethod
+    def play_overlay_and_battle(cls, game, app, callback):
+        component = game.instances()['armor_view']
+        component.settings.update({'open_in': 'game'})
+        callback(None)
+        cls.overlay_opens = list(cls.overlays)
+        component.settings.update({'open_in': 'browser'})
+        app.in_battle = True
+        callback(None)
+        cls.opens_in_battle = len(cls.external) - len(cls.browser_opens)
+        app.in_battle = False
+
     def test_its_own_mods_list_entry_is_in_the_lobby_only(self):
         self.assertEqual((self.entry['lobby'], self.entry['login'], self.entry['enabled']), (True, False, True))
 
-    def test_the_entry_is_named_after_the_component(self):
-        self.assertEqual(self.entry['name'], u'Броня танка')
+    def test_the_mods_list_entry_opens_the_selected_tank_on_the_site(self):
+        self.assertEqual(opened_tanks(self.browser_opens)[0], '2849/armor')
 
-    def test_the_site_action_opens_the_selected_tank_on_the_site(self):
-        self.assertEqual(self.browser_opens, ['https://triotmetki.ru/t/2849/armor'])
+    def test_the_mods_list_entry_opens_the_previewed_tank_during_a_preview(self):
+        self.assertEqual(opened_tanks(self.browser_opens)[1], '60001/armor')
+
+    def test_the_menu_item_opens_the_carousel_tank_on_the_site(self):
+        self.assertEqual(opened_tanks(self.browser_opens)[2], '51809/armor')
+
+    def test_the_page_is_the_sites_own(self):
+        self.assertTrue(self.browser_opens[0].startswith('https://triotmetki.ru/t/'))
 
     def test_the_carousel_menu_gets_one_armour_item_last(self):
         ids = [option['id'] for option in self.options]
@@ -3820,145 +3603,20 @@ class ArmorViewTest(StoryTest):
     def test_the_stock_options_still_reach_the_client(self):
         self.assertEqual(self.selected, ['vehicleInfo'])
 
+    def test_the_game_browser_is_used_only_when_chosen(self):
+        self.assertEqual(opened_tanks(self.overlay_opens), ['2849/armor'])
+
+    def test_a_battle_opens_nothing(self):
+        self.assertEqual(self.opens_in_battle, 0)
+
     def test_the_switch_off_leaves_the_stock_menu(self):
         self.assertEqual([option['id'] for option in self.options_off], ['vehicleInfo'])
 
     def test_the_switch_off_greys_out_the_mods_list_entry_at_once(self):
         self.assertFalse(self.entry_switched_off['enabled'])
 
-    def test_a_battle_queue_greys_out_the_mods_list_entry(self):
-        self.assertFalse(self.entry_in_queue['enabled'])
-
     def test_a_language_change_renames_the_mods_list_entry(self):
         self.assertEqual(self.entry_in_english['name'], 'Tank armour')
-
-
-class ArmorScreenTest(StoryTest):
-
-    @classmethod
-    def install(cls, game):
-        game.install_hud_stubs()
-        install_armor_view_stubs(cls)
-        descriptor = armour_descriptor(ARMOR_TANK)
-        install_armor_space(game, cls, descriptor)
-        install_armor_camera(cls)
-        own = garage_vehicle(ARMOR_TANK, 'T-34', 5, descriptor)
-        install_armor_garage(game, own)
-        install_armor_preview(game, cls)
-        install_armor_sub_view(cls)
-        game.vehicle.item = own
-
-    @classmethod
-    def play(cls, game):
-        cls.install(game)
-        game.open_hangar()
-        capture = Capture()
-        sys.stdout = capture
-        next(entry for entry in cls.entries if entry['id'] == 'otmetki_armor_view')['callback'](None)
-        game.run_callbacks()
-        view = cls.views[0]
-        cls.state = page_property(view, 'state')
-        page_send(view, command='hover', x=0.5, y=0.5)
-        for _ in range(ARMOR_TICKS):
-            game.clock[0] += 0.05
-            game.run_callbacks()
-        cls.play_controls(game, view)
-        sys.stdout = Sink()
-        cls.output = ''.join(capture.parts)
-        cls.is_open_in_battle = game.instances()['armor_view'].screen.is_open
-
-    @classmethod
-    def play_controls(cls, game, view):
-        cls.map = page_property(view, 'map')
-        cls.hover = page_property(view, 'hover')
-        cls.status = page_property(view, 'status')
-        cls.previews_on_own = list(cls.previews)
-        page_send(view, command='mode', mode='shell')
-        cls.shell_map = page_property(view, 'map')
-        page_send(view, command='move', dx=12, dy=-3, dz=0)
-        page_send(view, command='camera', preset='side')
-        page_send(view, command='search', text='t-4')
-        cls.matches = page_property(view, 'state')['matches']
-        page_send(view, command='tank', cd=CAROUSEL_TANK)
-        cls.previews_after_pick = list(cls.previews)
-        game.run_callbacks()
-        cls.status_while_loading = page_property(view, 'status')
-        game.instances()['armor_view'].screen.window.on_escape()
-        cls.escape = page_property(view, 'escape')
-        page_send(view, command='close')
-        cls.space.onVehicleChanged()
-        game.instances()['armor_view'].screen.open(ARMOR_TANK)
-        game.instances()['armor_view'].app.bus.emit('battle_enter')
-
-    def test_the_page_opens_on_the_selected_tank(self):
-        self.assertEqual(self.state['tank']['cd'], ARMOR_TANK)
-
-    def test_the_selected_tank_is_not_swapped_in_the_hangar(self):
-        self.assertEqual(self.previews_on_own, [])
-
-    def test_the_page_lists_the_garage(self):
-        self.assertEqual([row['cd'] for row in self.state['garage']], [ARMOR_TANK])
-
-    def test_the_own_tank_fires_by_default(self):
-        self.assertEqual(self.state['attacker']['cd'], ARMOR_TANK)
-
-    def test_the_own_shells_are_offered(self):
-        self.assertEqual(len(self.state['shells']), 1)
-
-    def test_the_map_found_the_armour(self):
-        self.assertIn('7', self.map['cells'])
-
-    def test_the_finished_map_says_ready(self):
-        self.assertEqual(self.status['tone'], 'good')
-
-    def test_the_hover_card_reads_the_ray_under_the_page_cursor(self):
-        self.assertEqual(self.hover['title'], u'Корпус')
-
-    def test_a_full_grid_logs_its_timing(self):
-        timings = [line for line in self.output.splitlines() if ' rays in ' in line]
-        self.assertEqual(len(timings), 1, self.output)
-
-    def test_the_timing_line_names_the_tank(self):
-        self.assertIn('armor view: T-34 (garage): ', self.output)
-
-    def test_the_hover_ray_logs_its_timing(self):
-        self.assertIn('armor view: hover rays: 1 in ', self.output)
-
-    def test_the_penetration_tab_redraws_the_map_against_the_own_gun(self):
-        self.assertEqual(self.shell_map['mode'], 'shell')
-
-    def test_a_page_drag_turns_the_hangar_camera(self):
-        self.assertIn({'dx': 12.0, 'dy': -3.0, 'dz': 0.0}, self.moves)
-
-    def test_a_camera_preset_flies_the_hangar_camera(self):
-        self.assertEqual(len(self.camera_moves), 1)
-
-    def test_the_search_finds_any_tank_of_the_game(self):
-        self.assertEqual([row['cd'] for row in self.matches], [CAROUSEL_TANK])
-
-    def test_another_tank_is_swapped_in_through_the_vehicle_preview(self):
-        self.assertEqual(self.previews_after_pick[0][0], CAROUSEL_TANK)
-
-    def test_the_swapped_tank_gets_its_top_turret_and_gun(self):
-        self.assertIn(str(ARMOR_TURRET), self.previews_after_pick[0][1])
-
-    def test_the_status_waits_for_the_swapped_tank(self):
-        self.assertEqual(self.status_while_loading['text'], u'Ставлю танк в ангар…')
-
-    def test_esc_is_handed_to_the_page_first(self):
-        self.assertEqual(self.escape, 1)
-
-    def test_closing_gives_the_selected_tank_back(self):
-        self.assertEqual(self.previews[-1], None)
-
-    def test_closing_resets_the_moved_camera(self):
-        self.assertEqual(self.camera_resets, [0])
-
-    def test_closing_loads_the_stock_hangar_view(self):
-        self.assertEqual(self.hangar_shown, [True])
-
-    def test_a_battle_closes_the_screen(self):
-        self.assertFalse(self.is_open_in_battle)
 
 
 def research_tank():

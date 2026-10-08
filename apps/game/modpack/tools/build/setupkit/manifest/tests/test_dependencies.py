@@ -150,10 +150,10 @@ class RequiredByFollowsTheCodeTest(unittest.TestCase):
 
         self.assertEqual(window, {'ui'})
 
-    def test_the_hit_viewer_and_the_armour_viewer_are_core_sub_views(self):
+    def test_the_hit_viewer_is_a_core_sub_view(self):
         screens = keys_using(SUB_VIEW_USE)
 
-        self.assertEqual(screens, {'hit_viewer', 'armor_view'})
+        self.assertEqual(screens, {'hit_viewer'})
 
     def test_gameface_window_and_labels_need_gameface(self):
         users = keys_using(GAMEFACE_IMPORT) | keys_using(HUD_USE) | keys_using(GAMEFACE_USE)

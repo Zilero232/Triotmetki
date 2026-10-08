@@ -1,1 +1,0 @@
-export { DuelPanel } from './DuelPanel';

@@ -1,5 +1,5 @@
 """The armour along a ray through a vehicle's collision, and what a shell does to it. Pure (Python 2/3, no client
-imports); the client side (the hangar vehicle's collision, the camera's rays) is `core/client/armor`.
+imports); the client side (the hangar vehicle's collision) is `core/client/armor`.
 
 - `plates`: `Plate` from one `collideAllWorld` hit and its descriptor material (`plate_from`, `plates_along`), the
   part names of the collision indexes, the first main plate;
@@ -8,8 +8,7 @@ imports); the client side (the hangar vehicle's collision, the camera's rays) is
   HEAT jet's loss between plates, modern HE on screens, `trace` through the plates, the penetration a shell needs,
   and `verdict` with the chance of the roll.
 
-`features/armor_view` (the hangar armour map) uses both; `features/hit_viewer` measures one plate per hit the same
-way.
+`features/hit_viewer` measures the first plate of each recorded hit with them, after the battle, in the hangar.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 

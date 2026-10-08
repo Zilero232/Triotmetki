@@ -7,12 +7,7 @@ import _support  # noqa: F401
 from otmetki.core.settings import Settings
 from otmetki.features.armor_view.i18n import STRINGS
 from otmetki.features.armor_view.model import armor_url, refusal, shows_menu_option, site_locale
-from otmetki.features.armor_view.model.constants import (
-    REFUSAL_BATTLE,
-    REFUSAL_NO_SCREEN,
-    REFUSAL_NO_TANK,
-    REFUSAL_OFF,
-)
+from otmetki.features.armor_view.model.constants import REFUSAL_BATTLE, REFUSAL_NO_TANK, REFUSAL_OFF
 from otmetki.features.armor_view.settings import DEFAULTS, GROUP, SCHEMA, SETTINGS, SWITCH
 
 TANK_ID = 2849
@@ -64,7 +59,7 @@ class RefusalTest(unittest.TestCase):
         assert refusal(True, False, None) == 'armor_view_no_tank'
 
     def test_every_refusal_has_a_text(self):
-        keys = (REFUSAL_OFF, REFUSAL_BATTLE, REFUSAL_NO_TANK, REFUSAL_NO_SCREEN)
+        keys = (REFUSAL_OFF, REFUSAL_BATTLE, REFUSAL_NO_TANK)
 
         missing = [key for key in keys if key not in STRINGS['ru']]
 
@@ -97,17 +92,14 @@ class DescriptorTest(unittest.TestCase):
     def test_the_switch_key(self):
         assert SWITCH == 'hangar_armor_view'
 
-    def test_the_site_place_setting_is_gone(self):
-        assert 'open_in' not in DEFAULTS
+    def test_the_site_opens_in_the_external_browser_by_default(self):
+        assert DEFAULTS['open_in'] == 'browser'
 
-    def test_the_screen_opens_on_the_effective_armour(self):
-        assert DEFAULTS['mode'] == 'effective'
+    def test_the_menu_item_is_on_by_default(self):
+        assert DEFAULTS['context_menu'] is True
 
-    def test_the_map_has_a_medium_detail_by_default(self):
-        assert DEFAULTS['detail'] == 'medium'
-
-    def test_a_distance_past_the_limits_is_held(self):
-        assert settings(distance=5000).get('distance') == 600
+    def test_an_unknown_place_falls_back_to_the_external_browser(self):
+        assert settings(open_in='tab').get('open_in') == 'browser'
 
     def test_the_settings_group(self):
         assert GROUP == 'hangar'

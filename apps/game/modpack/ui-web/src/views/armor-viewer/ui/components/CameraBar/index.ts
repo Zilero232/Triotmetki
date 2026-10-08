@@ -1,1 +1,0 @@
-export { CameraBar } from './CameraBar';

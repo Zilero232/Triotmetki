@@ -20,10 +20,6 @@ package net.triotmetki.packbadge
                 {
                     return PackBadgeLibrary.mark(this, ids, names, otherNames);
                 };
-                prototype.as_otmetkiPackBadgeRepaint = function():String
-                {
-                    return PackBadgeLibrary.repaint(this);
-                };
                 prototype.as_otmetkiPackBadgeClear = function():String
                 {
                     return PackBadgeLibrary.clear(this);
@@ -45,20 +41,6 @@ package net.triotmetki.packbadge
                     painters[page] = painter;
                 }
                 return painter.mark(ids || [], names || [], otherNames || []);
-            }
-            catch (error:Error)
-            {
-                return "error " + error.message;
-            }
-            return "";
-        }
-
-        public static function repaint(page:*):String
-        {
-            try
-            {
-                var painter:BadgePainter = painters[page];
-                return painter != null ? painter.repaint() : "nothing marked yet";
             }
             catch (error:Error)
             {

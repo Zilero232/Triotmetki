@@ -18,9 +18,8 @@ SHOW_OWN_KEY = 'show_pack_badge'
 # to the battle page's prototype, as Battle Observer adds as_BattleObserverCreate; Python calls them on its flashObject.
 LIBRARY_SWF = 'otmetki_pack_badge.swf'
 FLASH_MARK = 'as_otmetkiPackBadge'
-FLASH_REPAINT = 'as_otmetkiPackBadgeRepaint'
 FLASH_CLEAR = 'as_otmetkiPackBadgeClear'
-# The AS3 functions answer one "<screen> rows N, marked M" part per screen (players panel, Tab, loading), joined so.
+# The AS3 functions answer one "<screen> rows N, marked M" part per screen (players panel, loading), joined so.
 STATUS_SEPARATOR = ' | '
 
 LIBRARY_ADD = 'add'

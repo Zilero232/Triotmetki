@@ -1,1 +1,0 @@
-export { ArmorMap } from './ArmorMap';

@@ -8,22 +8,11 @@ import type { UseOrbitCameraInput } from './use-orbit-camera.types';
 
 import { dragMove, wheelMove } from '../../../lib/camera-move';
 
-export const useOrbitCamera = ({ onMove, onHover, onLeave }: UseOrbitCameraInput) => {
+export const useOrbitCamera = ({ onMove }: UseOrbitCameraInput) => {
   const lastRef = useRef<ScreenPoint | null>(null);
 
   const downRef = useEventListener<HTMLDivElement, 'mousedown'>('mousedown', (event) => {
     lastRef.current = { x: event.clientX, y: event.clientY };
-    onLeave?.();
-  });
-
-  const hoverRef = useEventListener<HTMLDivElement, 'mousemove'>('mousemove', (event) => {
-    if (lastRef.current === null) {
-      onHover?.({ x: event.clientX, y: event.clientY });
-    }
-  });
-
-  const leaveRef = useEventListener<HTMLDivElement, 'mouseleave'>('mouseleave', () => {
-    onLeave?.();
   });
 
   const wheelRef = useEventListener<HTMLDivElement, 'wheel'>(
@@ -63,8 +52,6 @@ export const useOrbitCamera = ({ onMove, onHover, onLeave }: UseOrbitCameraInput
 
   return (node: HTMLDivElement) => {
     downRef(node);
-    hoverRef(node);
-    leaveRef(node);
     wheelRef(node);
   };
 };

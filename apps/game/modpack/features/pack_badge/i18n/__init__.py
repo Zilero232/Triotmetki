@@ -5,7 +5,7 @@ STRINGS = {
     'ru': {
         'component_pack_badge': u'Плашка «Три отметки» в бою',
         'component_pack_badge_hint': u'Плашка модпака после иконки танка и подсветка строки в ушах и на экране загрузки, '
-                                     u'по Tab только подсветка: у вас и у всех игроков с модом, которые не выключили «Показывать мой '
+                                     u'у вас и у всех игроков с модом, которые не выключили «Показывать мой '
                                      u'значок». Привязка к сайту не нужна. В бою мод отправляет только ваш номер '
                                      u'аккаунта, номера аккаунтов игроков боя и этот переключатель; выключите значок, '
                                      u'плашку или весь мод, и ваша отметка на сервере сразу сотрётся.',
@@ -15,7 +15,7 @@ STRINGS = {
     'en': {
         'component_pack_badge': u'Three Marks plate in battle',
         'component_pack_badge_hint': u'The modpack\'s plate after the vehicle icon and a row highlight in the player '
-                                     u'panels and the loading screen, only the highlight in Tab: on you and on every player with '
+                                     u'panels and the loading screen: on you and on every player with '
                                      u'the mod who left «Show my badge» on. No site binding needed. In battle the mod '
                                      u'sends only your account number, the battle\'s account numbers and this switch; '
                                      u'switch off your badge, the plate or the whole mod and your mark on the server is '

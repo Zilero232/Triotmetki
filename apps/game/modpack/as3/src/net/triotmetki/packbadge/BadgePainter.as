@@ -18,10 +18,6 @@ package net.triotmetki.packbadge
         private static const LIST_EVENT:String = "itemsCountChange";
         private static const PANEL_NAMES:Array = ["playerNameFullTF", "playerNameCutTF"];
         private static const PANEL_BACKGROUNDS:Array = ["bg", "selfBg", "deadBg", "normAltBg", "deadAltBg"];
-        private static const TAB_FIELD:String = "fullStats";
-        private static const TAB_TABLE:String = "statsTable";
-        private static const TAB_ICONS:String = "vehicleIconCollection";
-        private static const TAB_NAMES:String = "playerNameCollection";
         private static const LOADING_FIELD:String = "battleLoading";
         private static const LOADING_FORM:String = "form";
         private static const LOADING_CONTAINER:String = "container";
@@ -128,10 +124,9 @@ package net.triotmetki.packbadge
             try
             {
                 var panel:String = this.paintPanel();
-                var table:String = this.paintTable();
                 var loading:String = this.paintLoading();
 
-                return "panel " + panel + " | tab " + table + " | loading " + loading;
+                return "panel " + panel + " | loading " + loading;
             }
             catch (error:Error)
             {
@@ -253,23 +248,6 @@ package net.triotmetki.packbadge
             decor.attach(item, backgroundTop(item) + 1, true);
             decor.layout(this.anchor, this.row, true);
             this.drawn++;
-        }
-
-        private function paintTable():String
-        {
-            var table:Object = read(read(this.page, TAB_FIELD), TAB_TABLE);
-            var icons:Object = read(table, TAB_ICONS);
-            var shownNames:Object = read(table, TAB_NAMES);
-            if (icons == null || shownNames == null)
-            {
-                return "not found (no page." + TAB_FIELD + "." + TAB_TABLE + "." + TAB_NAMES + ")";
-            }
-            this.resetCounts();
-            for (var index:int = 0; index < shownNames.length && index < icons.length; index++)
-            {
-                this.paintSlot(icons[index] as DisplayObject, shownNames[index] as TextField, false);
-            }
-            return TAB_FIELD + "." + TAB_TABLE + " cells " + this.slots + ", " + this.counts();
         }
 
         private function paintLoading():String

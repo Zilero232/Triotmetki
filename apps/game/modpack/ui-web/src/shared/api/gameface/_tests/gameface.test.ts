@@ -58,20 +58,6 @@ describe(createGamefaceBridge, () => {
     });
   });
 
-  describe('text', () => {
-    it('reads any string property of the Gameface model by its name', () => {
-      const bridge = createGamefaceBridge({ model: { map: '{"cols":2}' } });
-
-      expect(bridge.text('map')).toBe('{"cols":2}');
-    });
-
-    it('reads null for a property that is not a string', () => {
-      const bridge = createGamefaceBridge({ model: { map: 3 } });
-
-      expect(bridge.text('map')).toBeNull();
-    });
-  });
-
   describe('clientSize', () => {
     it('reads the client size from the view environment', () => {
       const { bridge } = mockBridge();

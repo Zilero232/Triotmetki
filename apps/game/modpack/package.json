@@ -28,7 +28,7 @@
     "swf:build": "mise exec -- node tools/build/swf.mjs",
     "test": "mise exec -- python tools/run_tests.py",
     "typecheck": "tsc -p ui-web --noEmit",
-    "ui:build": "vite build -c ui-web/vite.config.ts --configLoader runner && vite build -c ui-web/vite.config.ts --configLoader runner --mode hud && vite build -c ui-web/vite.config.ts --configLoader runner --mode advisor && vite build -c ui-web/vite.config.ts --configLoader runner --mode viewer && vite build -c ui-web/vite.config.ts --configLoader runner --mode armor",
+    "ui:build": "vite build -c ui-web/vite.config.ts --configLoader runner && vite build -c ui-web/vite.config.ts --configLoader runner --mode hud && vite build -c ui-web/vite.config.ts --configLoader runner --mode advisor && vite build -c ui-web/vite.config.ts --configLoader runner --mode viewer",
     "ui:dev": "vite -c ui-web/vite.config.ts --configLoader runner",
     "ui:test": "vitest run"
   },

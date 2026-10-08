@@ -216,7 +216,10 @@ DROPPED_SECTIONS = (
     'battle_menu',
 )
 DROPPED_KEYS = (
-    ('armor_view', 'open_in'),
+    ('armor_view', 'mode'),
+    ('armor_view', 'detail'),
+    ('armor_view', 'distance'),
+    ('armor_view', 'opacity'),
     ('crosshair', 'repair_timers'),
     ('crosshair', 'aim_circle'),
     ('update_notice', 'show_card'),

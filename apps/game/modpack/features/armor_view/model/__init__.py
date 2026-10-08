@@ -1,17 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.compat import is_int
-from .camera import has_moved  # noqa: F401
-from .cells import Attack, cell_code, encode_cells  # noqa: F401
 from .constants import ARMOR_PATH, DEFAULT_LOCALE, REFUSAL_BATTLE, REFUSAL_NO_TANK, REFUSAL_OFF, SITE_LOCALES, SITE_URL
-from .grid import GridBuild, levels_for, screen_box, screen_fraction  # noqa: F401
-from .modules import Module, ModuleChoice, Turret, default_choice, picked, with_turret  # noqa: F401
-from .page import Attacker, PageView, legend_state, map_state, page_state, shell_label, status_state  # noqa: F401
-from .presets import CameraPose, preset_pose  # noqa: F401
-from .protocol import decode_message  # noqa: F401
-from .readout import readout  # noqa: F401
-from .tanks import TankRow, garage_order, is_listed, search  # noqa: F401
-from .timing import RayTiming  # noqa: F401
 
 # Fair play: a public page of the site about a tank type; the link carries only the tank id and the language.
 

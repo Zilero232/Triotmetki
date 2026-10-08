@@ -2,9 +2,14 @@
 
 Status: implemented 2026-10-06 (server `mod-badges`, companion 0.8.4, ui 0.9.4, new component `pack_badge` 0.1.0).
 `pack_badge` 0.1.3 (2026-10-07) replaces the stock-data drawing, suspected of native client crashes, with our own AS3
-library SWF in the players panel, the Tab stats and the loading screen (section «Drawing», revision 2026-10-07 b); it
-is on by default and switched back on once for installs the 0.3.8 update turned off (companion 0.8.8, config
+library SWF in the players panel and the loading screen (section «Drawing», revision 2026-10-07 b; the Tab was
+dropped 2026-10-08); it is on by default and switched back on once for installs the 0.3.8 update turned off (companion 0.8.8, config
 revision 10).
+
+Revised 2026-10-08: Tab dropped, owner's decision. The plate draws nothing in the Tab stats any more, neither plate nor
+row highlight: the library paints only the players panel (ears) and the battle loading screen, Python no longer
+listens to `GameEvent.FULL_STATS` and the page function `as_otmetkiPackBadgeRepaint` is gone. The status lines are
+`panel ... | loading ...`. The Tab passages below are history.
 
 Revised 2026-10-08 (owner's decision): the mark no longer depends on the site. Every player with the mod installed
 and the switch on is marked, with no binding and no site account, as Near_You does. The mod calls the new unsigned
@@ -12,7 +17,7 @@ and the switch on is marked, with no binding and no site account, as Near_You do
 presence key per account. The signed routes below stay for older mods.
 
 The owner asked for what Near_You's pack has: players who use the modpack carry its icon next to their name in the
-battle player panels («уши»), in the full stats (Tab) and on the loading screen, the player himself included.
+battle player panels («уши»), and on the loading screen (the full stats on Tab were dropped, see the revision above), the player himself included.
 
 ## 1. How the others do it
 
@@ -144,7 +149,8 @@ own in the stock rows.
   (`epicRandomPlayersPanel` on `EpicRandomPage`); its public `listLeft`/`listRight` are sprites whose renderer
   container holds the rows; a row has public `playerNameFullTF` and `playerNameCutTF` (both filled whichever the panel
   mode shows), `vehicleIcon`, `hit` and the backgrounds.
-- **Tab and loading screen.** Their rows are fixed slots rebound to other players by sort. Tab (RU 1.45 client source:
+- **Tab and loading screen.** Their rows are fixed slots rebound to other players by sort. Revised 2026-10-08: Tab is
+  no longer drawn (owner's decision); its description below is kept as history. Tab (RU 1.45 client source:
   `StatsBase`, `FullStatsTable`, `FullStatsTableBase`, `StatsTableItemBase`): the public `fullStats.statsTable` holds
   the cell collections `playerNameCollection` and `vehicleIconCollection`, one index per slot; an
   empty slot keeps its name field hidden. The cells are drawn only once Tab is shown, so Python listens to
@@ -225,11 +231,11 @@ Near_You marks its users: nothing is sent for it, so it shows unbound and when t
 ## 5. What to verify in game
 
 0.1.3 (SWF path, on by default): in a random battle the own row shows the plate after the tank icon and the gradient
-on the loading screen, in the ears (following the panel modes) and in the Tab table; python.log has one `pack badge
-swf:` line per screen for every push (modpack README «pack_badge», «Log»). Play several battles and watch for the
+on the loading screen and in the ears (following the panel modes); the Tab table shows nothing of ours (no plate, no
+row highlight); python.log has one `pack badge swf:` line per screen (`panel ... | loading ...`) for every push (modpack README «pack_badge», «Log»). Play several battles and watch for the
 0xC0000005 crash. The checks below are for the earlier paths.
 
-- Switch on, bound or not: the own row shows the icon in the ears, Tab and the loading screen (with a stock badge
+- Switch on, bound or not: the own row shows the icon in the ears and the loading screen (with a stock badge
   chosen, `replace` shows ours, `keep` the stock one).
 - A second bound account in the same battle (platoon) shows the icon on the first player's screen after a moment.
 - Switching «Показывать мой значок» off hides the own icon at once and, after the next battle start, on the other

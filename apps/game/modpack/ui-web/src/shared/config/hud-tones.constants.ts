@@ -1,7 +1,7 @@
 export const HUD_TONE_COLORS = {
   text: { token: 'hud-text', hex: '#f4f1ea' },
-  muted: { token: 'hud-muted', hex: '#a8a49a' },
-  dim: { token: 'hud-dim', hex: '#6f6c64' },
+  muted: { token: 'hud-muted', hex: '#c6c2b8' },
+  dim: { token: 'hud-dim', hex: '#9a968c' },
   ally: { token: 'hud-ally', hex: '#8fd16a' },
   enemy: { token: 'hud-enemy', hex: '#e5584c' },
   gold: { token: 'hud-gold', hex: '#e8b84a' },

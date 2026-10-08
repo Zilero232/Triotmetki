@@ -3,8 +3,8 @@
 
 $tones: (
   'hud-text': #f4f1ea,
-  'hud-muted': #a8a49a,
-  'hud-dim': #6f6c64,
+  'hud-muted': #c6c2b8,
+  'hud-dim': #9a968c,
   'hud-ally': #8fd16a,
   'hud-enemy': #e5584c,
   'hud-enemy-cb': #9188fe,
@@ -21,16 +21,16 @@ $tones: (
   'hud-index': #ff8a2a
 );
 $surfaces: (
-  'hud-plate-solid': 'linear-gradient(180deg, rgba(14, 14, 16, 0.7), rgba(14, 14, 16, 0.58))',
-  'hud-plate-contrast': 'linear-gradient(180deg, rgba(10, 10, 12, 0.84), rgba(10, 10, 12, 0.76))',
+  'hud-plate-solid': 'linear-gradient(180deg, rgba(10, 10, 12, 0.84), rgba(10, 10, 12, 0.76))',
+  'hud-plate-contrast': 'linear-gradient(180deg, rgba(8, 8, 10, 0.92), rgba(8, 8, 10, 0.86))',
   'hud-plate-line': 'rgba(255, 255, 255, 0.1)',
   'hud-hairline': 'rgba(255, 255, 255, 0.1)',
   'hud-rule': 'rgba(255, 255, 255, 0.22)',
   'hud-tick': 'rgba(255, 255, 255, 0.55)',
-  'hud-plate-edge': 'linear-gradient(90deg, rgba(10, 10, 12, 0.62) 0%, rgba(10, 10, 12, 0.4) 60%, rgba(10, 10, 12, 0) 100%)',
-  'hud-plate-edge-end': 'linear-gradient(270deg, rgba(10, 10, 12, 0.62) 0%, rgba(10, 10, 12, 0.4) 60%, rgba(10, 10, 12, 0) 100%)',
+  'hud-plate-edge': 'linear-gradient(90deg, rgba(10, 10, 12, 0.8) 0%, rgba(10, 10, 12, 0.68) 60%, rgba(10, 10, 12, 0) 100%)',
+  'hud-plate-edge-end': 'linear-gradient(270deg, rgba(10, 10, 12, 0.8) 0%, rgba(10, 10, 12, 0.68) 60%, rgba(10, 10, 12, 0) 100%)',
   'hud-plate-centre':
-    'linear-gradient(90deg, rgba(10, 10, 12, 0) 0%, rgba(10, 10, 12, 0.5) 18%, rgba(10, 10, 12, 0.62) 50%, rgba(10, 10, 12, 0.5) 82%, rgba(10, 10, 12, 0) 100%)',
+    'linear-gradient(90deg, rgba(10, 10, 12, 0) 0%, rgba(10, 10, 12, 0.68) 18%, rgba(10, 10, 12, 0.8) 50%, rgba(10, 10, 12, 0.68) 82%, rgba(10, 10, 12, 0) 100%)',
   'hud-divider': 'rgba(255, 255, 255, 0.08)',
   'hud-bar-track': 'rgba(255, 255, 255, 0.14)',
   'hud-bar-line': 'rgba(0, 0, 0, 0.5)',
@@ -40,7 +40,7 @@ $surfaces: (
   'hud-slot-line': 'rgba(255, 255, 255, 0.14)',
   'hud-slot-bonus': 'rgba(232, 184, 74, 0.55)',
   'hud-slot-active': 'rgba(76, 195, 107, 0.18)',
-  'hud-text-shadow': '1px 1px 0 rgba(0, 0, 0, 0.9), -1px -1px 0 rgba(0, 0, 0, 0.7)',
+  'hud-text-shadow': '1px 0 0 rgba(0, 0, 0, 0.85), -1px 0 0 rgba(0, 0, 0, 0.85), 0 1px 0 rgba(0, 0, 0, 0.9), 0 -1px 0 rgba(0, 0, 0, 0.85)',
   'hud-radius': 0,
   'hud-slot-radius': 2px
 );

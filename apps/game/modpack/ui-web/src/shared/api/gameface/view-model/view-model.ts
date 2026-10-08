@@ -43,7 +43,6 @@ export const createViewModel = (scope: object): ViewModel => {
 
   return {
     state: () => stringOrNull(property(GAMEFACE.model.state)),
-    text: (name) => stringOrNull(property(name)),
     feed: () => stringOrNull(property(GAMEFACE.model.feed)),
     escape: () => numberOrNull(property(GAMEFACE.model.escape)),
     send,

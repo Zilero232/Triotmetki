@@ -6,7 +6,7 @@ from ....core.compat import clamp, is_number
 from .constants import MIN_COS, SHELL_KINDS
 
 
-# The shot rules are core.armor's (the client's reticle rules), one implementation with the hangar armour map.
+# The shot rules are core.armor's: the client's own reticle rules.
 def _shell(shell, caliber):
     caliber = float(caliber) if is_number(caliber) else 0.0
     return Shell(kind=SHELL_KINDS.get(shell), caliber=caliber, power_near=0.0, power_far=0.0, max_distance=0.0)
