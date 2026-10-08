@@ -49,15 +49,23 @@ describe(CrosshairWidget, () => {
   });
 
   it('keeps the box on screen with the full reload time while the gun is loaded', () => {
-    const readouts = data.readouts && { ...data.readouts, reload: { value: '7.6', full: null, state: 'loaded' as const, clip: null } };
+    const readouts = data.readouts && { ...data.readouts, reload: { timer: true, value: '7.6', full: null, state: 'loaded' as const, clip: null } };
     const html = mount({ ...data, readouts });
 
     expect(html.textContent).toContain('7.6');
     expect(html.querySelector('[class*="loaded"]')).not.toBeNull();
   });
 
+  it('keeps the drum without the timer box when the reload timer is off', () => {
+    const readouts = data.readouts && { ...data.readouts, reload: data.readouts.reload && { ...data.readouts.reload, timer: false } };
+    const html = mount({ ...data, readouts });
+
+    expect(shells(html).length).toBeGreaterThan(0);
+    expect(html.textContent).not.toContain('1.8');
+  });
+
   it('reads the loaded state from the game', () => {
-    const reload = { value: '7.6', full: null, state: 'loaded', clip: null };
+    const reload = { timer: true, value: '7.6', full: null, state: 'loaded', clip: null };
 
     expect(crosshairSchema.safeParse({ ...data, readouts: { reload, arcs: null, zoom: null } }).success).toBe(true);
   });

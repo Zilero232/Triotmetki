@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { UiEditor, UiField } from '@/shared/api/protocol';
 
-import { editorGroups, editorRow } from '../editor-layout';
+import { editorGroups, editorRow, foldAdvanced } from '../editor-layout';
 
 const mark: UiField = {
   key: 'mark',
@@ -134,5 +134,38 @@ describe(editorGroups, () => {
     const groups = editorGroups({ fields: [mark, extra, folded], editor, otherLabel: 'More', advancedLabel: 'Advanced' });
 
     expect(groups.map(({ id }) => id).slice(-2)).toEqual(['other', 'advanced']);
+  });
+});
+
+describe(foldAdvanced, () => {
+  const groups = editorGroups({
+    fields: [mark, extra, { ...extra, key: 'alpha', advanced: true }],
+    editor,
+    otherLabel: 'More',
+    advancedLabel: 'Advanced'
+  });
+
+  it('takes the advanced group out of the side column of a list page', () => {
+    const { side } = foldAdvanced({ groups, isListPage: true });
+
+    expect(side.map(({ id }) => id)).toEqual(['shape', 'other']);
+  });
+
+  it('puts the advanced group under the list of a list page', () => {
+    const { folded } = foldAdvanced({ groups, isListPage: true });
+
+    expect(folded?.id).toBe('advanced');
+  });
+
+  it('keeps every group in the side column of a settings page', () => {
+    const { side, folded } = foldAdvanced({ groups, isListPage: false });
+
+    expect({ side: side.length, folded }).toEqual({ side: 3, folded: null });
+  });
+
+  it('folds nothing when the page has no advanced fields', () => {
+    const plain = editorGroups({ fields: [mark], editor, otherLabel: 'More', advancedLabel: 'Advanced' });
+
+    expect(foldAdvanced({ groups: plain, isListPage: true }).folded).toBeNull();
   });
 });

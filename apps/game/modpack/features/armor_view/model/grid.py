@@ -5,9 +5,16 @@ from collections import deque
 
 from ....core.compat import fraction
 from ....core.vendor import attr
-from .constants import BOX_MARGIN, DESIGN_HEIGHT, DETAIL_CELLS, DETAIL_MEDIUM, MAX_CELLS, MIN_CELL_PX, TONE_EMPTY
-
-NEIGHBOURS = tuple((dx, dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1))
+from .constants import (
+    BOX_MARGIN,
+    DESIGN_HEIGHT,
+    DETAIL_CELLS,
+    DETAIL_MEDIUM,
+    MAX_CELLS,
+    MIN_CELL_PX,
+    NEIGHBOURS,
+    TONE_EMPTY,
+)
 
 
 @attr.s(frozen=True)
@@ -32,18 +39,15 @@ class Box(object):
 
 
 def screen_fraction(clip_x, clip_y):
-    """A clip-space point (-1..1, y up) as fractions of the screen from its top left."""
     return (clip_x + 1.0) / 2.0, (1.0 - clip_y) / 2.0
 
 
 def screen_box(clip_points, margin=BOX_MARGIN):
-    """The screen box (fractions) around the projected points, widened by `margin` of its size on each side and held
-    on the screen; None when nothing of it is on the screen."""
     if not clip_points:
         return None
     points = [screen_fraction(x, y) for x, y in clip_points]
-    xs = [x for x, _ in points]
-    ys = [y for _, y in points]
+    xs = [point[0] for point in points]
+    ys = [point[1] for point in points]
 
     pad_x = (max(xs) - min(xs)) * margin
     pad_y = (max(ys) - min(ys)) * margin
@@ -60,8 +64,6 @@ def screen_box(clip_points, margin=BOX_MARGIN):
 
 @attr.s(frozen=True)
 class Level(object):
-    """One grid over `box`: `cols` x `rows` cells of `cell_px` screen pixels, row by row from the top left."""
-
     box = attr.ib()
     cols = attr.ib()
     rows = attr.ib()
@@ -72,19 +74,16 @@ class Level(object):
         return self.cols * self.rows
 
     def centre(self, index):
-        """The cell's centre as screen fractions."""
         row, col = divmod(index, self.cols)
         x = self.box.left + (col + 0.5) * self.box.width / self.cols
         y = self.box.top + (row + 0.5) * self.box.height / self.rows
         return x, y
 
     def clip(self, index):
-        """The cell's centre in clip space (-1..1, y up)."""
         x, y = self.centre(index)
         return x * 2.0 - 1.0, 1.0 - y * 2.0
 
     def cell_at(self, x, y):
-        """The cell under the screen fractions `(x, y)`, or None outside the box."""
         if not self.box.contains(x, y):
             return None
         col = min(self.cols - 1, int((x - self.box.left) / self.box.width * self.cols))
@@ -93,8 +92,6 @@ class Level(object):
 
 
 def level_of(box, screen, cell_px):
-    """The level of `cell_px` design pixels (of a DESIGN_HEIGHT-high screen) over `box` on a `screen` of
-    (width, height) pixels."""
     width, height = screen
     size = max(MIN_CELL_PX, cell_px * height / DESIGN_HEIGHT)
     cols = max(1, int(math.ceil(box.width * width / size)))
@@ -103,10 +100,13 @@ def level_of(box, screen, cell_px):
 
 
 def levels_for(box, screen, detail):
-    """The coarse-to-fine levels of `detail` over `box`, without any past MAX_CELLS cells."""
     sizes = DETAIL_CELLS.get(detail, DETAIL_CELLS[DETAIL_MEDIUM])
     levels = [level_of(box, screen, cell_px) for cell_px in sizes]
-    return [level for level in levels if level.size <= MAX_CELLS]
+    affordable = []
+    for level in levels:
+        if level.size <= MAX_CELLS:
+            affordable.append(level)
+    return affordable
 
 
 def _hot_cells(level, codes):
@@ -121,8 +121,6 @@ def _hot_cells(level, codes):
 
 
 def cells_near(level, coarse, coarse_codes):
-    """The cells of `level` whose centre falls in a cell of the `coarse` level that found armour, or next to one:
-    the rest of the screen box is outside the tank."""
     hot = _hot_cells(coarse, coarse_codes)
     near = []
 
@@ -138,10 +136,6 @@ def cells_near(level, coarse, coarse_codes):
 
 
 class GridBuild(object):
-    """The rays of one map, level by level: `next_cells(limit)` hands out the cells to cast, `record(index, code,
-    plates)` takes each result, `finish_level()` returns the finished `(level, codes)` and starts the next one, and
-    `recode(code_of)` draws the cells again from their plates (another mode or shell) without casting a ray."""
-
     def __init__(self, levels):
         self.levels = list(levels)
         self.level_index = 0
@@ -206,13 +200,11 @@ class GridBuild(object):
         return finished[0], finished[1]
 
     def finished(self):
-        """The last finished `(level, codes)`, or None before the first."""
         if self.previous is None:
             return None
         return self.previous[0], self.previous[1]
 
     def recode(self, code_of):
-        """Draw the finished level's cells and the cells cast so far again with `code_of(plates)`."""
         if self.previous is not None:
             level, _, plates = self.previous
             self.previous = (level, [_code(code_of, cell) for cell in plates], plates)

@@ -7,7 +7,7 @@ import { GalleryTile, ListPageRow, PageNote } from './components';
 
 import s from './ListPage.module.scss';
 
-export const ListPage = ({ page, onRun }: ListPageProps) => {
+export const ListPage = ({ page, compact = false, onRun }: ListPageProps) => {
   const rows = useListPage({ rows: page.rows, onRun });
 
   if (rows.length === 0) {
@@ -20,7 +20,7 @@ export const ListPage = ({ page, onRun }: ListPageProps) => {
         {page.note && <PageNote text={page.note} />}
         <div className={s.gallery} role='list'>
           {rows.map((item) => (
-            <GalleryTile key={item.row.id} item={item} />
+            <GalleryTile key={item.row.id} compact={compact} item={item} />
           ))}
         </div>
       </div>

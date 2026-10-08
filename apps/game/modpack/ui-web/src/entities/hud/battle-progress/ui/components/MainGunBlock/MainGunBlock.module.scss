@@ -1,0 +1,104 @@
+@use '@/shared/styles/gameface' as *;
+
+.block {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.medal {
+  position: relative;
+  display: flex;
+  width: 34px;
+  height: 36px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+}
+
+.reached {
+  position: absolute;
+  right: -4px;
+  bottom: -2px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+
+.head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  color: token(hud-muted);
+
+  @include hud-type(caption);
+  @include ellipsis;
+}
+
+.tally {
+  flex-shrink: 0;
+  margin-left: 8px;
+  color: token(hud-dim);
+  white-space: nowrap;
+
+  @include hud-type(caption);
+}
+
+.figure {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+}
+
+.headline {
+  @include hud-type(key);
+}
+
+.caption {
+  margin-bottom: 2px;
+  margin-left: 6px;
+  color: token(hud-muted);
+  white-space: nowrap;
+
+  @include hud-type(caption);
+}
+
+.track {
+  height: 4px;
+  margin-top: 3px;
+  background-color: token(hud-bar-track);
+}
+
+.fill {
+  width: 100%;
+  height: 100%;
+  transform-origin: 0 50%;
+  transition:
+    transform 240ms token(ease-out),
+    background-color token(duration-base) token(ease-out);
+}
+
+.gold {
+  background-color: token(hud-gold);
+}
+
+.good {
+  background-color: token(hud-good);
+}
+
+.detail {
+  margin-top: 2px;
+  color: token(hud-dim);
+
+  @include hud-type(caption);
+  @include ellipsis;
+}

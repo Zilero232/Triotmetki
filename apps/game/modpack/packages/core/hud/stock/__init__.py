@@ -21,6 +21,7 @@ from .constants import (
     BATTLE_DAMAGE_LOG_PANEL,
     BATTLE_TIMER,
     CONSUMABLES_PANEL,
+    DAMAGE_LOG_VISIBLE,
     FOLLOWED_ALIASES,
     FOLLOWED_METRICS,
     FRAG_CORRELATION_BAR,
@@ -46,6 +47,7 @@ __all__ = (
     'BATTLE_DAMAGE_LOG_PANEL',
     'BATTLE_TIMER',
     'CONSUMABLES_PANEL',
+    'DAMAGE_LOG_VISIBLE',
     'FOLLOWED_ALIASES',
     'FRAG_CORRELATION_BAR',
     'MINIMAP',
@@ -63,7 +65,8 @@ __all__ = (
     'followed_metrics',
     'hide_reticle_parts',
     'stock_metrics',
-    'without_timer',
+    'switch_of',
+    'switched_off',
 )
 
 
@@ -96,9 +99,20 @@ def followed_metrics(metrics, hidden):
     return result
 
 
-def without_timer(args, kwargs, switch):
-    """(args, kwargs) of a client call with its countdown switch (switch: keyword, positional index) off, wherever
-    the caller passed it; a call that left it out keeps the client's default."""
+def switch_of(args, kwargs, switch, default=True):
+    """The value of a client call's switch (switch: keyword, positional index) wherever the caller passed it,
+    `default` when the call left it out."""
+    name, index = switch
+    if name in kwargs:
+        return kwargs[name]
+    if len(args) > index:
+        return args[index]
+    return default
+
+
+def switched_off(args, kwargs, switch):
+    """(args, kwargs) of a client call with its switch (switch: keyword, positional index) off, wherever the caller
+    passed it; a call that left it out keeps the client's default."""
     name, index = switch
     args, kwargs = list(args), dict(kwargs)
     if name in kwargs:

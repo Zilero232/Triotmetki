@@ -1,0 +1,52 @@
+@use '@/shared/styles/gameface' as *;
+
+.fold {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  margin-top: 4px;
+
+  @include raised(radius-lg);
+}
+
+.head {
+  display: flex;
+  height: 36px;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 16px;
+  border: none;
+  background-color: transparent;
+  color: token(color-text);
+  cursor: pointer;
+  text-align: left;
+
+  @include ease(background-color);
+
+  &:hover {
+    background-color: token(color-surface-hover);
+  }
+}
+
+.title {
+  color: token(win-text-caption);
+  font-size: 11px;
+  line-height: 14px;
+
+  @include caps(1px);
+}
+
+.count {
+  flex: 1 1 auto;
+  margin-left: 8px;
+  color: token(color-text-muted);
+  font-size: 11px;
+  line-height: 14px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 16px;
+  border-top: 1px solid token(win-divider);
+}

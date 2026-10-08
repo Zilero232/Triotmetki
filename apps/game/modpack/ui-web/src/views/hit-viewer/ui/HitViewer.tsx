@@ -1,9 +1,10 @@
+import { useOrbitCamera } from '@/features/viewer/orbit-camera';
+import { useViewerFrame } from '@/features/viewer/viewer-frame';
+
 import { HIT_VIEWER } from '../config';
 import { useArmorProfile } from '../model/hooks/use-armor-profile';
-import { useCameraDrag } from '../model/hooks/use-camera-drag';
 import { useHitFilter } from '../model/hooks/use-hit-filter';
 import { useHitViewer } from '../model/hooks/use-hit-viewer';
-import { useViewerFrame } from '../model/hooks/use-viewer-frame';
 import { useViewerKeys } from '../model/hooks/use-viewer-keys';
 import { ArmorProfile } from './components/ArmorProfile';
 import { HitColumn } from './components/HitColumn';
@@ -14,8 +15,8 @@ import s from './HitViewer.module.scss';
 
 export const HitViewer = () => {
   const viewer = useHitViewer();
-  const surfaceRef = useCameraDrag(viewer.move);
-  const frame = useViewerFrame();
+  const surfaceRef = useOrbitCamera({ onMove: viewer.move });
+  const frame = useViewerFrame({ onDescribe: viewer.describe });
   const filter = useHitFilter({ state: viewer.state, onPick: viewer.pickHit });
   const armor = useArmorProfile();
 

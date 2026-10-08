@@ -4,38 +4,47 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 MENU_MODULE = 'gui.Scaleform.daapi.view.lobby.hangar.hangar_cm_handlers'
 MENU_CLASS = 'VehicleContextMenuHandler'
 
-# RU 1.45 showBrowserOverlayView(url, alias=BROWSER_LOBBY_TOP_SUB): unlike BrowserController.load, no client params.
-DISPATCHER_MODULE = 'gui.shared.event_dispatcher'
-OVERLAY_NAME = 'showBrowserOverlayView'
-# RU 1.45 links_handlers/external.py: the external browser.
+# RU 1.45 links_handlers/external.py: the external browser. The client's own browser (MTWebBrowser) answers the site
+# with HTTP 418 (python.log 2026-10-08), so the site opens only outside the game.
 BROWSER_OPENERS = ('openWebBrowser', 'wg_openWebBrowser')
 
 PREVIEW_MODULE = 'CurrentVehicle'
 PREVIEW_NAME = 'g_currentPreviewVehicle'
-CURRENT_NAME = 'g_currentVehicle'
 
 # Its own ModsList entry, as hit_viewer has; the icon is the ui package's.
 MODS_LIST_ID = 'otmetki_armor_view'
 MODS_LIST_ICON = 'gui/gameface/mods/triotmetki/ui/icon.png'
 
-# The in-hangar armour map: one panel with the cells over the whole screen (never moved: a drag puts it back), one
-# with the legend and the hover card, which the player may move like any hangar label.
-MAP_PANEL = 'otmetki.armor_view.map'
-LEGEND_PANEL = 'otmetki.armor_view.legend'
-MAP_LAYOUT = {'x': 0, 'y': 0, 'alignX': 'left', 'alignY': 'top', 'scale': 1.0}
-LEGEND_LAYOUT = {'x': 24, 'y': 0, 'alignX': 'left', 'alignY': 'center', 'scale': 1.0}
+# The screen's page, registered by the ui package's res_map next to the hit viewer, and its view model's string
+# properties: the page state, the armour map cells, the card under the cursor and the build status, each pushed only
+# when it changes, so a hover never sends the cells again; and a count of Esc presses the page answers (its own open
+# list first, else it asks to close), as the settings window does.
+RES_MAP_ID = 'otmetki/ui/armor_view'
+STATE_PROPERTY = 'state'
+MAP_PROPERTY = 'map'
+HOVER_PROPERTY = 'hover'
+STATUS_PROPERTY = 'status'
+ESCAPE_PROPERTY = 'escape'
+PAGE_PROPERTIES = (STATE_PROPERTY, MAP_PROPERTY, HOVER_PROPERTY, STATUS_PROPERTY, ESCAPE_PROPERTY)
+EMPTY_JSON = 'null'
 
-# The map casts rays on every frame (BigWorld.callback(0)) within this budget, so the hangar keeps its frame rate;
-# the time is checked after every chunk of rays. The live log's timing line (python.log `armor view: N rays in X ms
-# over K ticks`) is what tunes these and the detail levels.
+# Rays are cast on every frame within this budget so the hangar keeps its frame rate.
 TICK_S = 0.0
 MAX_RAYS_PER_TICK = 400
 TICK_BUDGET_S = 0.004
 RAY_CHUNK = 16
 # The camera has to stand still this long before the map is built again.
 SETTLE_S = 0.15
-# The hangar vehicle may answer rays a few frames after it reports itself loaded (hit_viewer's settle, python.log
-# 2026-10-05): a coarse level without any armour is cast again this often, this many times.
+# The hangar vehicle may answer rays a few frames after it reports itself loaded (python.log 2026-10-05).
 EMPTY_RETRY_S = 0.2
 EMPTY_RETRIES = 10
-PROGRESS_STEPS = 20
+# A page message the screen did not understand is logged up to this long.
+LOGGED_MESSAGE_CHARS = 200
+
+# The hull's box (CompoundModel.getBoundsForPart(1) maps the unit cube onto it, RU 1.45
+# HangarVehicleAppearance.getCentralPointForArea reads its centre at (0.5, 0.5, 0.5)) gives the point the camera orbits
+# and the tank's size.
+HULL_PART = 1
+CENTRE = (0.5, 0.5, 0.5)
+NEAR_CORNER = (0.0, 0.0, 0.0)
+FAR_CORNER = (1.0, 1.0, 1.0)

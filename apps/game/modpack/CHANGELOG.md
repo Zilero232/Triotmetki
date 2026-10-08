@@ -16,17 +16,18 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Прицел с автозарядкой показывает одну перезарядку, а не две; у лампы нет хвостика таймера.
 - Автосообщение о перезарядке не пишет «Барабан пуст» на танках без барабана.
 - Панели в бою не показывают описание при наведении.
-- «Броня танка»: бронирование танка в 3D из списка модов или по правому клику на танке в карусели.
-- «Броня в ангаре»: карта брони прямо на танке в ангаре, против снаряда вашего танка и с подсказкой под курсором.
+- «Броня танка»: своё окно брони из списка модов или меню танка — любой танк, пробитие вашим снарядом, карточка под курсором.
 - Мод больше не перебивает масштаб интерфейса из настроек игры: точный масштаб убран.
 - Свободная камера в ангаре выключается при разрыве связи.
 - Автопополнение не дублирует запросы при повторном нажатии.
 - В бою меньше перестроек панелей: ещё одна причина вылета закрыта.
-- «Основной калибр» со значком медали и понятным остатком урона.
+- «Основной калибр»: новая плашка с крупной медалью, остатком урона и полосой до порога.
 - Режимы с возрождением: ХП команд, взвод, дуга орудия и прицел следуют новой технике.
 - Автоактивация резервов включается для каждого аккаунта отдельно.
 - Продажа со склада демобилизует только необученных танкистов.
 - Реплеи загружаются и называются только при записи всех боёв.
+- «Выбор ангара»: плитки во всю ширину с картинками из самой игры, ручные поля свёрнуты в «Дополнительно».
+- Стандартный журнал боя больше не появляется под нашим после гибели танка.
 
 ### en
 
@@ -35,17 +36,18 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - The auto-reloader reticle shows one reload, not two; no timer sliver on the lamp.
 - The reload auto message no longer says «Clip empty» on vehicles without a clip.
 - Battle panels show no description on hover.
-- «Tank armour»: the tank's armour in 3D from the mods list or a right click on a carousel tank.
-- «Armour in the hangar»: an armour map right on the hangar tank, against your own tank's shell, with a card under the cursor.
+- «Tank armour»: its own armour screen from the mods list or the tank menu: any tank, penetration by your shell, a card under the cursor.
 - The mod no longer overrides the interface scale from the game settings: the exact scale is gone.
 - The hangar free camera lands on a disconnect.
 - Auto resupply no longer repeats requests on a second press.
 - Fewer panel rebuilds in battle: one more crash cause closed.
-- High Caliber with the medal icon and a clear damage to go.
+- High Caliber: a new plate with a large medal, the damage left and a bar to the threshold.
 - Respawn battles: team HP, platoon, gun arc and reticle follow the new vehicle.
 - Auto reserves are switched on per account.
 - The depot sale dismisses only untrained crew.
 - Replays are uploaded and named only when every battle is recorded.
+- «Hangar switcher»: full-width tiles with pictures from the game itself, the manual fields folded under «Advanced».
+- The stock battle log no longer shows under ours after your tank is destroyed.
 
 ## 0.3.10
 
@@ -99,30 +101,31 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 ### ru
 
-- Бронирование выбранного танка в 3D с сайта: своя кнопка в списке модов и пункт «Бронирование» в меню танка в карусели.
-- Открывается в браузере игры поверх ангара или во внешнем браузере; в бою не работает.
-- Кнопка в списке модов сразу меняет язык и следует за переключателем.
-- «Броня в ангаре»: карта брони прямо на танке — номинальная, приведённая или против снаряда вашего танка.
+- Своё окно «Броня»: из списка модов или по правому клику на танке в карусели, в бою не работает.
+- Настоящий танк ангара под картой брони: номинал, приведённая с вашего ракурса или пробитие вашим снарядом.
 - Зелёный — пробьёт, жёлтый — шанс, красный — нет или рикошет; экраны и гусеницы штрихуются.
 - Под курсором — слои брони, угол, нужное пробитие и шанс пробить.
-- Клавиши: 1 2 3 — режим, Q E — снаряд, R — стрелять из этого танка, Esc — закрыть.
-- Кнопка в списке модов включает карту; в меню танка — «Броня в ангаре» и «Броня в 3D на сайте».
+- Любой танк игры через поиск, башня и орудие на выбор.
+- «Мой танк против этого»: стрелок из ангара, его снаряды, дистанция 0–600 м.
+- Мышью вращается камера; ракурсы лоб, лоб 30°, борт, корма, сверху.
+- 3D-броня на сайте — кнопкой во внешнем браузере: браузер игры не пускает сайт.
 
 ### en
 
-- The selected tank's armour in 3D from the site: its own entry in the mods list and «Armour» in the carousel tank menu.
-- Opens in the game's browser over the hangar or in the external browser; does nothing in battle.
-- The mods list entry follows the language and the switch at once.
-- «Armour in the hangar»: an armour map right on the tank: nominal, effective or against your own tank's shell.
+- Its own «Armour» screen: from the mods list or a right click on a carousel tank; does nothing in battle.
+- The real hangar tank under an armour map: nominal, effective from your view or penetration by your shell.
 - Green: penetrates, yellow: a chance, red: never or ricochet; screens and tracks are hatched.
 - Under the cursor: the armour layers, the angle, the penetration needed and the chance.
-- Keys: 1 2 3 mode, Q E shell, R fire from this tank, Esc close.
-- The mods list entry opens the map; the tank menu has «Armour in the hangar» and «Armour in 3D on the site».
+- Any tank of the game through the search, turret and gun of your choice.
+- «My tank vs this one»: the attacker from your garage, its shells, a 0–600 m distance.
+- The mouse orbits the camera; front, front 30°, side, rear and top views.
+- The site's 3D armour is one button away in the external browser: the game browser refuses the site.
 
 ## ui 0.9.10
 
 ### ru
 
+- Окно «Броня» над танком в ангаре.
 - «Показывать мой значок» переехал на страницу «Плашка «Три отметки» в бою».
 - Кольцо лампы не оставляет хвостика в конце таймера.
 - Исправлен вылет игры в бою: дуги прицела и лампы больше не перестраиваются на лету.
@@ -132,9 +135,12 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Профиль сообщает компонентам об изменённых переключателях и запоминает выбранное вами.
 - Профиль старой версии мода переносится в нынешние настройки перед загрузкой.
 - Код профиля не меняет язык и настройки сессии; места панелей по типам боя очищаются.
+- Своя плашка «Прогресса боя»: медаль, остаток урона и полоса прогресса.
+- Страница-галерея: плитки во всю ширину, вся плитка выбирает, ручные поля свёрнуты в «Дополнительно» внизу.
 
 ### en
 
+- The «Armour» screen over the hangar tank.
 - «Show my badge» moved to the «Three Marks plate in battle» page.
 - The lamp ring leaves no sliver at the end of its timer.
 - Fixed a game crash in battle: the reticle and lamp arcs are no longer rebuilt on the fly.
@@ -144,6 +150,8 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - A profile tells the components about the switches it changed and remembers your choices.
 - A profile of an older mod version is moved to the current settings before it loads.
 - A profile code no longer changes the language or the session settings; panel places per battle type are cleaned.
+- Battle progress has a plate of its own: the medal, the damage left and a progress bar.
+- A gallery page: full-width tiles, the whole tile chooses, the manual fields folded under «Advanced» at the bottom.
 
 ## ui 0.9.9
 
@@ -558,6 +566,8 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Выключение значка, плашки или всего мода сразу стирает вашу отметку на сервере.
 - Обрезанный ник отмечается, только если так начинается ник одного игрока боя.
 - Запрос уходит только в боях с ушами; игроков, вошедших позже, мод спрашивает пачкой.
+- Подсветка строки продолжается под плашкой, плашка стоит чуть дальше от иконки танка.
+- По Tab плашки нет, остаётся только подсветка строки.
 
 ### en
 
@@ -566,6 +576,8 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Switching off your badge, the plate or the whole mod deletes your mark on the server at once.
 - A cut nickname is marked only when exactly one player of the battle has a name that starts so.
 - The request goes only in battles with the player panels; players who join later are asked in a batch.
+- The row highlight runs on under the plate, and the plate sits a little further from the tank icon.
+- No plate in the Tab stats, only the row highlight.
 
 ## pack_badge 0.1.4
 
@@ -647,11 +659,13 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 ### ru
 
+- Окно просмотра открывается и возвращает ангар так же, как окно «Броня».
 - Окно просмотра, открывшееся уже после закрытия, сразу закрывается и возвращает верхнее меню ангара.
 - Броня в точке попадания и экраны с гусеницами считаются так же, как на карте «Броня в ангаре».
 
 ### en
 
+- The viewer opens and gives the hangar back the same way as the «Armour» screen.
 - A viewer window that loads after it was closed closes at once and gives the hangar header back.
 - The armour at a hit, screens and tracks included, is measured the way the «Armour in the hangar» map does it.
 
@@ -778,10 +792,12 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### ru
 
 - «Основной калибр» — со значком медали: «ещё N» урона или «получено»; строка пропадает, когда медаль уже не получить.
+- Новая плашка «Основной калибр»: крупная медаль, остаток урона, полоса до порога; получено — зелёная галочка.
 
 ### en
 
 - High Caliber shows the medal icon with «N to go» or «earned»; the row goes once the medal is out of reach.
+- A new High Caliber plate: a large medal, the damage left, a bar to the threshold; earned shows a green tick.
 
 ## battle_progress 0.2.3
 
@@ -1327,11 +1343,13 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - Превью ангара снимается только сразу после выбора или кнопки «Обновить превью».
 - После снимка превью возвращается обычное сообщение игры о скриншоте.
+- Плитки событийных ангаров и «Натиска» показывают картинку из самой игры; без неё — название ангара.
 
 ### en
 
 - The hangar preview is taken only right after a pick or the «Refresh preview» button.
 - After the preview shot the game's own screenshot message comes back.
+- Event and «Onslaught» hangar tiles show a picture from the game itself; without one, the hangar's name.
 
 ## hangar_space 0.2.2
 
@@ -2187,11 +2205,13 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - Барабан с автозарядкой: одна перезарядка в рамке, без второго такого же числа у снарядов.
 - Центральный маркер игры скрыт только пока видна метка, настройки игры не меняются.
+- Барабан у прицела больше не пропадает, если выключить таймер перезарядки.
 
 ### en
 
 - Auto-reloading drum: one reload in the box, no second identical number by the shells.
 - The game's centre marker is hidden only while the mark shows; the game settings stay as they are.
+- The reticle drum no longer disappears when the reload timer is switched off.
 
 ## crosshair 0.6.6
 
@@ -2351,6 +2371,7 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 ### ru
 
+- Общие окна над танком в ангаре: просмотр попаданий и броня открываются и закрываются одинаково.
 - Плашка «Три отметки» узнаёт игроков с модом без привязки к сайту.
 - Панели в бою не показывают описание при наведении.
 - Настройки игры, изменённые до загрузки её серверных настроек, применяются, когда те придут.
@@ -2360,9 +2381,11 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - Страница панелей в ангаре не пропадает, когда поздно закрывается её прежнее место.
 - В бою не остаётся второго окна панелей; ХП команд обновляются после возрождения.
 - Числа без конца и не-числа в настройках панелей отбрасываются.
+- Стандартный журнал боя больше не появляется под нашим после гибели танка.
 
 ### en
 
+- Shared screens over the hangar tank: the hit viewer and the armour screen open and close the same way.
 - The Three Marks plate finds players with the mod without a site binding.
 - Battle panels show no description on hover.
 - Game settings changed before the game's server settings arrive are applied once they do.
@@ -2372,6 +2395,7 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - The hangar panels page no longer goes away when its earlier place closes late.
 - No second panel window is left in battle; team HP updates after a respawn.
 - Infinite and not-a-number values in panel settings are dropped.
+- The stock battle log no longer shows under ours after your tank is destroyed.
 
 ## core 0.9.7
 
@@ -3303,11 +3327,13 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 - Панель отметок молчит в боях, где отметки на стволе не начисляются.
 - Повреждённый файл истории отметок не ломает карточку и страницу истории.
+- Панель отметок снова видна в случайных боях.
 
 ### en
 
 - The marks panel stays silent in battles that award no marks on gun.
 - A damaged marks history file no longer breaks the card and the history page.
+- The marks panel shows in random battles again.
 
 ## marks_panel 0.8.5
 

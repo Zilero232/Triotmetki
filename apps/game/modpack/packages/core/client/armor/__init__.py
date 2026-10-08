@@ -12,7 +12,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ...armor import Shell, plates_along
 from ...compat import is_number
 from ...log import guarded
-from ..game import client_attr, service
+from ..game import client_attr
+from ..hangar_preview import hangar_space
 from .constants import (
     CAMERAS_MODULE,
     DISTANCE_FACTOR_MODULE,
@@ -27,15 +28,6 @@ from .constants import (
     TRACK_PAIR_NAME,
     UNIT_CORNERS,
 )
-
-
-def hangar_space():
-    """The client's IHangarSpace service, or None outside the lobby."""
-    try:
-        from skeletons.gui.shared.utils import IHangarSpace
-    except ImportError:
-        return None
-    return service(IHangarSpace)
 
 
 @guarded('armor: hangar vehicle')
@@ -214,8 +206,10 @@ def cursor_clip():
 
 def _is_modern_he(shell):
     import constants
-    mechanics = getattr(getattr(shell, 'type', None), 'mechanics', None)
-    modern = getattr(getattr(constants, 'SHELL_MECHANICS_TYPE', None), MODERN_MECHANICS, None)
+    shell_type = getattr(shell, 'type', None)
+    mechanics = getattr(shell_type, 'mechanics', None)
+    mechanics_types = getattr(constants, 'SHELL_MECHANICS_TYPE', None)
+    modern = getattr(mechanics_types, MODERN_MECHANICS, None)
     return mechanics is not None and mechanics == modern
 
 
@@ -228,7 +222,8 @@ def _power(shot, index):
 def shot_shell(shot):
     """One gun shot of a descriptor as a `core.armor.Shell`."""
     shell = shot.shell
-    passes_screens = bool(getattr(getattr(shell, 'type', None), 'shieldPenetration', False))
+    shell_type = getattr(shell, 'type', None)
+    passes_screens = bool(getattr(shell_type, 'shieldPenetration', False))
 
     return Shell(
         kind=shell.kind,

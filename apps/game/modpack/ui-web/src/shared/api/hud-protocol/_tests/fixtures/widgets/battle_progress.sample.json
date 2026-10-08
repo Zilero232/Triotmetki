@@ -1,0 +1,26 @@
+{
+  "data": {
+    "main_gun": {
+      "damage": 1850,
+      "detail": null,
+      "icon": "img://gui/maps/icons/achievement/mainGun.png|otmetki:target",
+      "left": 1090,
+      "left_caption": "до медали",
+      "need": 2940,
+      "progress": 0.629,
+      "reached_icon": "img://gui/maps/icons/library/done.png|otmetki:check",
+      "reached_text": "получено",
+      "status": "progress",
+      "title": "Основной калибр"
+    },
+    "wn8": {
+      "color": "#A06CF0",
+      "icon": "otmetki:wn8",
+      "label": "WN8 боя",
+      "note": "танк 2 105",
+      "value": "~2 473"
+    }
+  },
+  "kind": "battle_progress",
+  "v": 1
+}

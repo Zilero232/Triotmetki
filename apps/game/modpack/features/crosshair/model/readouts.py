@@ -270,12 +270,18 @@ def _reload_box(readouts, settings, translate):
     state = readouts.reload_state()
     if state is None:
         return None
-    value = _reload_value(readouts, state, translate)
+
+    has_timer = bool(settings.get('reload_box'))
     clip = _clip(readouts, settings.get('drum_style'))
+    if not has_timer and clip is None:
+        return None
+
+    value = _reload_value(readouts, state, translate)
     # An auto-reloader refills the shell the box already counts down: one timer, not two.
     if clip is not None and clip['refill'] is not None and clip['refill']['value'] == value:
         clip['refill']['value'] = None
     return {
+        'timer': has_timer,
         'value': value,
         'full': _full(readouts, value, state in COUNTING_STATES, clip),
         'state': state,
@@ -298,7 +304,7 @@ def readouts_data(readouts, settings, translate):
     if readouts is None:
         return None
     data = {
-        'reload': _reload_box(readouts, settings, translate) if settings.get('reload_box') else None,
+        'reload': _reload_box(readouts, settings, translate),
         'arcs': _arcs(readouts) if settings.get('reload_arcs') else None,
         'zoom': _zoom(readouts) if settings.get('show_zoom') else None,
     }
@@ -308,13 +314,15 @@ def readouts_data(readouts, settings, translate):
 
 
 def readouts_text(data):
-    if data is None or data['reload'] is None:
+    reload_box = None if data is None else data['reload']
+    if reload_box is None or not reload_box['timer']:
         return ''
-    return data['reload']['value']
+    return reload_box['value']
 
 
 def wants_readouts(settings):
-    return any(settings.get(key) for key in READOUT_SWITCHES)
+    wants_drum = settings.get('drum_style') != DRUM_OFF
+    return wants_drum or any(settings.get(key) for key in READOUT_SWITCHES)
 
 
 def replaced_reticle_parts(drawn):
@@ -322,10 +330,10 @@ def replaced_reticle_parts(drawn):
         return ()
     parts = []
     reload_box, arcs = drawn.get('reload'), drawn.get('arcs')
-    if reload_box is not None:
+    if reload_box is not None and reload_box.get('timer'):
         parts.append(RETICLE_RELOAD_TIMER)
-        if reload_box.get('clip') is not None:
-            parts.append(RETICLE_CASSETTE)
+    if reload_box is not None and reload_box.get('clip') is not None:
+        parts.append(RETICLE_CASSETTE)
     if arcs is not None and arcs.get('reload') is not None:
         parts.append(RETICLE_RELOAD)
     if arcs is not None and arcs.get('health') is not None:

@@ -5,7 +5,7 @@ import { ScrollArea } from '@/ui-kit';
 import type { HitTableProps } from './HitTable.types';
 
 import { HIT_VIEWER } from '../../../config';
-import { tableBodyHeight } from '../../../lib/viewer-frame';
+import { tableBodyHeight } from '../../../lib/list-height';
 
 import s from './HitTable.module.scss';
 

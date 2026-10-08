@@ -7,6 +7,8 @@ import type {
   EditorRow,
   EditorRowInput,
   EditorRowKind,
+  FoldAdvancedInput,
+  FoldedGroups,
   IsStackedInput,
   PerRowInput
 } from './editor-layout.types';
@@ -101,4 +103,14 @@ export const editorGroups = ({ fields, editor, rowWidth, otherLabel, advancedLab
   ];
 
   return [...groups, ...extra.filter(({ rows }) => rows.length > 0)];
+};
+
+export const foldAdvanced = ({ groups, isListPage }: FoldAdvancedInput): FoldedGroups => {
+  const advanced = groups.find(({ id }) => id === EDITOR.advancedGroup) ?? null;
+
+  if (!isListPage || advanced === null) {
+    return { side: groups, folded: null };
+  }
+
+  return { side: groups.filter((group) => group !== advanced), folded: advanced };
 };

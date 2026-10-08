@@ -4,38 +4,57 @@
   position: relative;
   display: flex;
   overflow: hidden;
-  height: 118px;
+  height: 150px;
+  flex-shrink: 0;
   background-color: token(color-armor-deep);
   background-image: token(win-art);
   border-top-left-radius: token(radius-lg);
   border-top-right-radius: token(radius-lg);
 }
 
-.fallback {
+.placeholder {
   position: absolute;
   top: 0;
   left: 0;
   display: flex;
-  width: 210px;
-  height: 118px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 0 16px;
+}
+
+.name {
+  margin-top: 8px;
+  color: token(color-text-dim);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  white-space: normal;
+
+  @include caps(0.5px);
 }
 
 .image {
   position: absolute;
   top: 0;
   left: 0;
-  width: 210px;
-  height: 118px;
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .scrim {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  top: 0;
   left: 0;
-  height: 118px;
+  width: 100%;
+  height: 100%;
   background-image: token(win-art-scrim);
 }
 

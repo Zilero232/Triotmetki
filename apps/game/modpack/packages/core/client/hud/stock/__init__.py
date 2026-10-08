@@ -16,7 +16,8 @@ override installed by the first panel's request would miss both in the session's
 
 A panel's `stock_aliases()` may also name parts of the stock reticle (`core.hud.stock.RETICLE_PARTS`): those go to
 `reticle.ReticleControl`, which hands the crosshair panel its settings with the parts at opacity 0 while they are
-wanted; leaving the battle page gives every part back.
+wanted; leaving the battle page gives every part back. The stock damage log also shows itself, past the page, on a
+postmortem or vehicle switch: `damage_log.DamageLogControl` keeps it off while the page hides it for us.
 
 What covers the battle view (V, the loading screen, Tab and every other stock overlay) is `core.client.hud.cover`.
 The suppression follows the layer (`HudLayer.watch`, `releases_stock`, `draws`): while a panel is muted (streamer mode),
@@ -30,6 +31,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....hooks import override
 from ....hud.stock import RETICLE_PARTS, STOCK_ALIASES, StockSuppression
 from ....log import log, log_exception, safe
+from .damage_log import DamageLogControl
 from .metrics import StockMetrics
 from .reticle import ReticleControl
 
@@ -51,6 +53,7 @@ class StockControl(object):
         self.hidden = frozenset()
         self.metrics = StockMetrics(layer)
         self.reticle = ReticleControl()
+        self.damage_log = DamageLogControl()
         self.requested = {}
         self.lamps = set()
         watch = getattr(layer, 'watch', None)
@@ -98,6 +101,7 @@ class StockControl(object):
 
         self.metrics.install()
         self.reticle.install()
+        self.damage_log.install()
         return True
 
     def attach(self, page):
@@ -113,6 +117,7 @@ class StockControl(object):
             self.page = None
             self.hidden = frozenset()
             self.reticle.reset()
+            self.damage_log.reset()
             self.metrics.forget()
 
     def filter(self, visible, hidden):
@@ -185,6 +190,7 @@ class StockControl(object):
         self.hidden = target
         self._hide(hidden)
         self._show(frozenset(alias for alias in released if self.present(alias)))
+        self.damage_log.follow(target)
         if hidden or released:
             reason = owner or 'the battle page'
             log('HUD: stock %s hidden, %s restored (%s)' % (sorted(hidden) or '-', sorted(released) or '-', reason))

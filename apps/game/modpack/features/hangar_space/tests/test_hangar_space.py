@@ -125,6 +125,7 @@ class TitlesTest(unittest.TestCase):
 
     def test_a_space_with_event_art_has_a_preview(self):
         assert space_preview('h14_mt_wt_2025').startswith('img://')
+        assert space_preview('h33_comp7') == 'img://comp7/gui/maps/icons/comp7/backgrounds/prime_time_back.jpg'
         assert space_preview('h08_mt_hangar') is None
         assert space_preview(u'') is None
 
@@ -151,11 +152,15 @@ class PageTest(unittest.TestCase):
 
         assert [row['id'] for row in rows] == ['native', 'a', 'b']
 
-    def test_the_page_is_a_gallery_with_a_note(self):
+    def test_the_page_is_a_gallery(self):
         page = build_page(['a'], u'', 'a', translator())
 
         assert page['layout'] == 'gallery'
-        assert page['note'].startswith(u'Ангар и вид меняются сразу')
+
+    def test_the_page_has_no_note_repeating_the_header_hint(self):
+        page = build_page(['a'], u'', 'a', translator())
+
+        assert 'note' not in page
 
     def test_the_chosen_space_has_no_choose_button(self):
         rows = build_page(['a', 'b'], 'b', 'a', translator())['rows']

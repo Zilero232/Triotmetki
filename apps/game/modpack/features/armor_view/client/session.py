@@ -23,11 +23,11 @@ def _finest_cells(levels):
     return '%dx%d cells of %d px' % (finest.cols, finest.rows, finest.cell_px)
 
 
-# One map of one loaded hangar vehicle seen from one camera pose: a vehicle swap or a camera move starts another.
 class MapSession(object):
 
-    def __init__(self, vehicle, pose, now):
+    def __init__(self, vehicle, label, pose, now):
         self.vehicle = vehicle
+        self.label = label
         self.pose = pose
         self.started_at = now
         self.build = None
@@ -54,7 +54,6 @@ class MapSession(object):
         return True
 
     def cast(self, appearance, code_of):
-        """Cast this tick's rays: up to MAX_RAYS_PER_TICK within TICK_BUDGET_S."""
         started = default_timer()
         cast = 0
         level = self.build.level
@@ -74,7 +73,6 @@ class MapSession(object):
         return cast
 
     def retry_empty(self, now):
-        """A coarse level without armour: wait and cast it again; False once the retries are spent."""
         if self.retries >= EMPTY_RETRIES:
             return False
         self.retries += 1
@@ -89,6 +87,6 @@ class MapSession(object):
     def summary(self):
         levels = self.build.levels if self.build is not None else ()
         cells = _finest_cells(levels)
-        return 'armor view: %d rays in %d ms over %d ticks (%d levels, %s)' % (
-            self.rays, int(round(self.work_s * 1000)), self.ticks, len(levels), cells,
+        return 'armor view: %s: %d rays in %d ms over %d ticks (%d levels, %s)' % (
+            self.label, self.rays, int(round(self.work_s * 1000)), self.ticks, len(levels), cells,
         )

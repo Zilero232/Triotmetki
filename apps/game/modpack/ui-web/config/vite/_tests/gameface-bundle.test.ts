@@ -5,12 +5,13 @@ import { build, mergeConfig } from 'vite';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { advisorConfig } from '../advisor';
+import { armorConfig } from '../armor';
 import { hudConfig } from '../hud';
 import { settingsConfig } from '../settings';
 import { viewerConfig } from '../viewer';
 import { UI_BUILD } from '../vite.constants';
 
-const BUNDLE_FILES = ['hud.html', 'icon.png', 'icons.png', 'index.html', 'preset_advisor.js', 'shells.png', 'viewer.html'];
+const BUNDLE_FILES = ['armor.html', 'hud.html', 'icon.png', 'icons.png', 'index.html', 'preset_advisor.js', 'shells.png', 'viewer.html'];
 const CLASSIC_SCRIPT_AT_BODY_END = /<script>\(function\(\)\{[\s\S]*\}\)\(\);<\/script>\s*<\/body>\s*<\/html>\s*$/;
 const SPACE_SEPARATED_COLOUR = /rgba?\(\s*[\d.]+%?\s+[\d.]+%?\s+[\d.]+%?\s*\//;
 const TEXT_SHADOW_IN_REM = /text-shadow:[^;}]*\drem/;
@@ -24,7 +25,7 @@ beforeAll(async () => {
   outDir = await mkdtemp(path.join(tmpdir(), 'otmetki-ui-'));
   vi.stubEnv('NODE_ENV', 'production');
 
-  for (const config of [settingsConfig(), hudConfig(), advisorConfig(), viewerConfig()]) {
+  for (const config of [settingsConfig(), hudConfig(), advisorConfig(), viewerConfig(), armorConfig()]) {
     await build(mergeConfig(config, { configFile: false, logLevel: 'silent', build: { outDir } }));
   }
 }, 60_000);
@@ -48,7 +49,7 @@ describe('committed Gameface bundle', () => {
     }
   });
 
-  it.each(['index.html', 'hud.html', 'viewer.html'])(
+  it.each(['index.html', 'hud.html', 'viewer.html', 'armor.html'])(
     'loads %s with one classic inline script at the end of the body, as the client pages do',
     async (file) => {
       const page = await read(outDir, file);
@@ -60,13 +61,13 @@ describe('committed Gameface bundle', () => {
   );
 
   it('renders no list or select elements, which Gameface only supports through a polyfill', async () => {
-    const files = await Promise.all(['index.html', 'hud.html', 'viewer.html'].map((file) => read(outDir, file)));
+    const files = await Promise.all(['index.html', 'hud.html', 'viewer.html', 'armor.html'].map((file) => read(outDir, file)));
 
     files.forEach((source) => expect(source).not.toMatch(POLYFILLED_ELEMENTS));
   });
 
   it('writes every colour as rgba(r, g, b, a), the only alpha form Gameface parses (text shadows and borders vanish otherwise)', async () => {
-    const files = await Promise.all(['index.html', 'hud.html', 'viewer.html'].map((file) => read(outDir, file)));
+    const files = await Promise.all(['index.html', 'hud.html', 'viewer.html', 'armor.html'].map((file) => read(outDir, file)));
 
     files.forEach((source) => expect(source).not.toMatch(SPACE_SEPARATED_COLOUR));
   });

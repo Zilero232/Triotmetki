@@ -27,14 +27,56 @@ const PAGE: UiPage = {
   ]
 };
 
+const WHITE_TIGER_ART = 'url("img://white_tiger/gui/maps/icons/welcome/background.png")';
+
+const backgrounds = (tile: HTMLElement): string[] =>
+  Array.from(tile.querySelectorAll<HTMLElement>('[style]')).map(({ style }) => style.backgroundImage);
+
 describe(ListPage, () => {
-  it('draws a gallery page as picture tiles with readable names and the folder underneath', () => {
-    const { container } = render(<ListPage page={PAGE} onRun={vi.fn()} />);
+  it('draws a gallery page as one tile per row', () => {
+    render(<ListPage page={PAGE} onRun={vi.fn()} />);
 
     expect(screen.getAllByRole('listitem')).toHaveLength(3);
-    expect(screen.getByText('White Tiger')).toBeTruthy();
+  });
+
+  it('shows the folder under the readable name', () => {
+    render(<ListPage page={PAGE} onRun={vi.fn()} />);
+
     expect(screen.getByText('h14_mt_wt_2025')).toBeTruthy();
-    expect(container.querySelector('img')?.getAttribute('src')).toBe('img://white_tiger/gui/maps/icons/welcome/background.png');
+  });
+
+  it('paints the client image over the tile', () => {
+    render(<ListPage page={PAGE} onRun={vi.fn()} />);
+
+    const tile = screen.getByRole('button', { name: 'White Tiger' });
+
+    expect(backgrounds(tile)).toContain(WHITE_TIGER_ART);
+  });
+
+  it('draws the hangar name as the placeholder of a tile without a picture', () => {
+    render(<ListPage page={PAGE} onRun={vi.fn()} />);
+
+    const tile = screen.getByRole('button', { name: 'Museum of Glory' });
+
+    expect(backgrounds(tile).filter((image) => image.includes('img://'))).toEqual([]);
+  });
+
+  it('names the hangar on the placeholder as well as under it', () => {
+    render(<ListPage page={PAGE} onRun={vi.fn()} />);
+
+    expect(screen.getAllByText('Museum of Glory')).toHaveLength(2);
+  });
+
+  it('has no separate choose button inside a tile, the whole tile chooses', () => {
+    render(<ListPage page={PAGE} onRun={vi.fn()} />);
+
+    expect(screen.queryByText('Choose')).toBeNull();
+  });
+
+  it('makes every tile a native button the keyboard reaches', () => {
+    render(<ListPage page={PAGE} onRun={vi.fn()} />);
+
+    expect(screen.getByRole('button', { name: 'White Tiger' }).tagName).toBe('BUTTON');
   });
 
   it('shows the page note above the tiles', () => {

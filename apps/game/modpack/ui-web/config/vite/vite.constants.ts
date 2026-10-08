@@ -10,11 +10,13 @@ export const UI_BUILD = {
   hudMode: 'hud',
   advisorMode: 'advisor',
   viewerMode: 'viewer',
+  armorMode: 'armor',
   pages: {
     dir: 'pages',
     settings: path.resolve(UI_WEB_ROOT, 'pages/index.html'),
     hud: path.resolve(UI_WEB_ROOT, 'pages/hud.html'),
-    viewer: path.resolve(UI_WEB_ROOT, 'pages/viewer.html')
+    viewer: path.resolve(UI_WEB_ROOT, 'pages/viewer.html'),
+    armor: path.resolve(UI_WEB_ROOT, 'pages/armor.html')
   },
   scripts: {
     advisor: { entry: path.resolve(UI_WEB_ROOT, 'src/advisor.ts'), file: 'preset_advisor.js' }

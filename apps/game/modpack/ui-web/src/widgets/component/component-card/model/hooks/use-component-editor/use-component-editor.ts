@@ -11,6 +11,7 @@ import type { EditorBackdrop, EditorHint, UseComponentEditorInput } from './use-
 import { EDITOR } from '../../../config';
 import { editorGroups } from '../../../lib/editor-layout';
 import { editorSchematic, editorScreens } from '../../../lib/editor-screens';
+import { useAdvancedFold } from '../use-advanced-fold';
 import { useComponentCard } from '../use-component-card';
 import { useFocusLine } from '../use-focus-line';
 
@@ -29,19 +30,26 @@ export const useComponentEditor = ({ component, compact }: UseComponentEditorInp
   const schematic = editorSchematic({ editor, fields: component.fields });
   const screens = editorScreens({ preview: card.preview, editor, previewLabel: t('preview') });
 
+  const groups = editorGroups({
+    fields: component.fields,
+    editor,
+    rowWidth: compact ? EDITOR.row.compactWidth : EDITOR.row.width,
+    otherLabel: t(editor.groups.length > 0 ? 'editorOther' : 'editorSettings'),
+    advancedLabel: t('advancedFields')
+  });
+
+  const fold = useAdvancedFold({ groups, isListPage: card.hasListPage, focusKey });
+
   return {
     card,
     screens,
     schematic,
     hasScreen: component.panel || screens.length > 0 || schematic !== null,
     caption: schematic ? EDITOR.captions.schematic : EDITOR.captions.preview,
-    groups: editorGroups({
-      fields: component.fields,
-      editor,
-      rowWidth: compact ? EDITOR.row.compactWidth : EDITOR.row.width,
-      otherLabel: t(editor.groups.length > 0 ? 'editorOther' : 'editorSettings'),
-      advancedLabel: t('advancedFields')
-    }),
+    groups: fold.side,
+    folded: fold.folded,
+    isFoldOpen: fold.isOpen,
+    toggleFold: fold.toggle,
     focusKey,
     focus,
     hint: hint ?? { label: component.title, text: component.hint ?? t('editorIdle') },

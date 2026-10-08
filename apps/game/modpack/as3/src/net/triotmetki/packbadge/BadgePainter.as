@@ -250,8 +250,8 @@ package net.triotmetki.packbadge
             }
             this.measurePanelRow(item);
             var decor:RowDecor = this.decorFor(item);
-            decor.attach(item, backgroundTop(item) + 1);
-            decor.layout(this.anchor, this.row);
+            decor.attach(item, backgroundTop(item) + 1, true);
+            decor.layout(this.anchor, this.row, true);
             this.drawn++;
         }
 
@@ -267,7 +267,7 @@ package net.triotmetki.packbadge
             this.resetCounts();
             for (var index:int = 0; index < shownNames.length && index < icons.length; index++)
             {
-                this.paintSlot(icons[index] as DisplayObject, shownNames[index] as TextField);
+                this.paintSlot(icons[index] as DisplayObject, shownNames[index] as TextField, false);
             }
             return TAB_FIELD + "." + TAB_TABLE + " cells " + this.slots + ", " + this.counts();
         }
@@ -291,13 +291,13 @@ package net.triotmetki.packbadge
                 var shownNames:Object = read(container, side[1]);
                 for (var index:int = 0; icons != null && shownNames != null && index < shownNames.length && index < icons.length; index++)
                 {
-                    this.paintSlot(icons[index] as DisplayObject, shownNames[index] as TextField);
+                    this.paintSlot(icons[index] as DisplayObject, shownNames[index] as TextField, true);
                 }
             }
             return LOADING_FORM + "." + LOADING_CONTAINER + " slots " + this.slots + ", " + this.counts();
         }
 
-        private function paintSlot(icon:DisplayObject, name:TextField):void
+        private function paintSlot(icon:DisplayObject, name:TextField, withPlate:Boolean):void
         {
             if (icon == null || icon.parent == null || name == null)
             {
@@ -324,8 +324,8 @@ package net.triotmetki.packbadge
                 return;
             }
             var decor:RowDecor = this.decorFor(icon);
-            decor.attach(container, lowestIndex(container, icon, name));
-            decor.layout(this.anchor, this.row);
+            decor.attach(container, lowestIndex(container, icon, name), withPlate);
+            decor.layout(this.anchor, this.row, withPlate);
             this.drawn++;
         }
 

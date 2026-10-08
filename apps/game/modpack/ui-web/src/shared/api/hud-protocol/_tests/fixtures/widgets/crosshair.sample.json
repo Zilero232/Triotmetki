@@ -20,6 +20,7 @@
         },
         "full": "24.6",
         "state": "reloading",
+        "timer": true,
         "value": "1.8"
       },
       "zoom": "8.0"

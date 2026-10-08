@@ -18,6 +18,7 @@ export type GamefaceBridge = {
   fitView: () => boolean;
   onScreenChanged: (callback: () => void) => void;
   state: () => string | null;
+  text: (name: string) => string | null;
   feed: () => string | null;
   escape: () => number | null;
   send: (message: string) => boolean;

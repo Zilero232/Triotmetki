@@ -43,3 +43,7 @@ export type ChipsFitInput = { field: UiField; rowWidth: number };
 export type PerRowInput = { kind: EditorRowKind; rowWidth: number };
 
 export type IsStackedInput = { kind: EditorRowKind; options: EditorOption[] };
+
+export type FoldAdvancedInput = { groups: EditorGroup[]; isListPage: boolean };
+
+export type FoldedGroups = { side: EditorGroup[]; folded: EditorGroup | null };

@@ -37,7 +37,6 @@ def plate_analysis(hit_angle_cos, nominal, uses_angle=True, shell=None, caliber=
 
 
 def first_plate(plates, shell=None, caliber=None):
-    """The first plate with armour along a shot (core.armor Plates, nearest first), analysed for its shell."""
     for plate in plates or ():
         if plate.armor > 0:
             return analysis(plate, shell, caliber)

@@ -1,0 +1,39 @@
+@use '@/shared/styles/gameface' as *;
+
+.picker {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.panel {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  padding: 10px;
+
+  @include viewer-panel;
+}
+
+.heading {
+  margin: 10px 0 6px;
+  color: token(color-text-muted);
+  font-size: 12px;
+
+  @include caps;
+}
+
+.list {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.empty {
+  margin-top: 8px;
+  color: token(color-text-muted);
+  font-size: 13px;
+}

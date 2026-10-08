@@ -630,7 +630,7 @@ class ReadoutsTest(unittest.TestCase):
         assert readouts_data(readouts, Settings({'show_zoom': True}, SCHEMA), str)['zoom'] is None
 
     def test_the_zoom_alone_is_drawn_and_read(self):
-        settings = Settings({'reload_box': False, 'show_zoom': True}, SCHEMA)
+        settings = Settings({'reload_box': False, 'drum_style': 'off', 'show_zoom': True}, SCHEMA)
 
         assert wants_readouts(settings)
         assert readouts_data(sample_readouts(), settings, str) == {'reload': None, 'arcs': None, 'zoom': '8.0'}
@@ -649,12 +649,31 @@ class ReadoutsTest(unittest.TestCase):
         assert 'repairs' not in data
 
     def test_nothing_is_sent_with_every_readout_off(self):
-        settings = Settings({'reload_box': False, 'show_zoom': False}, SCHEMA)
+        settings = Settings({'reload_box': False, 'drum_style': 'off', 'show_zoom': False}, SCHEMA)
 
         assert readouts_data(sample_readouts(), settings, str) is None
 
     def test_nothing_is_read_with_every_readout_off(self):
-        assert not wants_readouts(Settings({'reload_box': False, 'show_zoom': False}, SCHEMA))
+        assert not wants_readouts(Settings({'reload_box': False, 'drum_style': 'off', 'show_zoom': False}, SCHEMA))
+
+    def test_the_drum_stays_with_the_reload_timer_off(self):
+        settings = Settings({'reload_box': False, 'show_zoom': False}, SCHEMA)
+
+        reload_box = readouts_data(sample_readouts(), settings, str)['reload']
+
+        assert reload_box['clip'] is not None
+
+    def test_the_reload_timer_off_draws_no_timer(self):
+        settings = Settings({'reload_box': False, 'show_zoom': False}, SCHEMA)
+
+        reload_box = readouts_data(sample_readouts(), settings, str)['reload']
+
+        assert reload_box['timer'] is False
+
+    def test_the_drum_alone_keeps_the_stock_reload_timer(self):
+        drawn = readouts_data(sample_readouts(), Settings({'reload_box': False, 'show_zoom': False}, SCHEMA), str)
+
+        assert replaced_reticle_parts(drawn) == (RETICLE_CASSETTE,)
 
 
 class PreviewWidgetTest(unittest.TestCase):
@@ -753,7 +772,7 @@ class ReplacedReticlePartsTest(unittest.TestCase):
         assert replaced_reticle_parts(self.drawn(readouts)) == ()
 
     def test_the_drawn_arcs_replace_the_stock_reload_and_hp_indicators(self):
-        drawn = self.drawn(sample_readouts(), reload_box=False, reload_arcs=True, show_zoom=False)
+        drawn = self.drawn(sample_readouts(), reload_box=False, drum_style='off', reload_arcs=True, show_zoom=False)
 
         assert replaced_reticle_parts(drawn) == (RETICLE_RELOAD, RETICLE_CONDITION)
 
@@ -763,7 +782,7 @@ class ReplacedReticlePartsTest(unittest.TestCase):
         assert replaced_reticle_parts(drawn) == (RETICLE_RELOAD_TIMER,)
 
     def test_the_drawn_zoom_replaces_the_stock_zoom_indicator(self):
-        drawn = self.drawn(sample_readouts(), reload_box=False, show_zoom=True)
+        drawn = self.drawn(sample_readouts(), reload_box=False, drum_style='off', show_zoom=True)
 
         assert replaced_reticle_parts(drawn) == (RETICLE_ZOOM,)
 

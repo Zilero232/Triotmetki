@@ -20,9 +20,11 @@ from otmetki.features.hangar_space.model import (
     build_page,
     data_uri,
     is_clean_hangar,
+    look_image,
     preview_file,
     preview_key,
     preview_key_of_file,
+    space_image,
 )
 from otmetki.features.hangar_space.model.constants import PREVIEW_ARM_S, PREVIEW_DATA_PREFIX, PREVIEW_SETTLE_S
 from otmetki.features.hangar_space.model.looks import Look
@@ -30,6 +32,9 @@ from otmetki.features.hangar_space.model.thumbnail import crop_box
 
 MAIN = 'h08_mt_hangar'
 STEEL_HUNTER = 'h33_battle_royale_2021'
+ONSLAUGHT = 'h33_comp7'
+ONSLAUGHT_ART = 'img://comp7/gui/maps/icons/comp7/backgrounds/prime_time_back.jpg'
+ONSLAUGHT_NIGHT = Look('onslaught_night', ONSLAUGHT, 'Night_N1_Light_shadow')
 MUSEUM_KEY = 'h16_mt_museum'
 RAIN = Look('autumn_rain', MAIN, 'h08_mt_hangar_Autumn_TD3')
 HANGAR = {'hangar': True, 'blocking': True, 'alive': True, 'own': False}
@@ -263,6 +268,11 @@ class PageTest(unittest.TestCase):
 
         assert rows[STEEL_HUNTER]['image'] == PREVIEWS[STEEL_HUNTER]
 
+    def test_the_client_art_of_a_space_comes_before_its_captured_frame(self):
+        rows = self.rows({STEEL_HUNTER: 'data:hunter'})
+
+        assert rows[STEEL_HUNTER]['image'] == PREVIEWS[STEEL_HUNTER]
+
     def test_a_space_without_preview_or_art_has_the_drawn_fallback(self):
         rows = self.rows({})
 
@@ -272,6 +282,30 @@ class PageTest(unittest.TestCase):
         rows = self.rows({MAIN: 'data:main'}, default=MAIN)
 
         assert rows['native']['image'] == 'data:main'
+
+
+class ImageTest(unittest.TestCase):
+
+    def test_a_space_with_client_art_shows_the_art(self):
+        assert space_image(ONSLAUGHT, 'data:frame') == ONSLAUGHT_ART
+
+    def test_a_space_without_client_art_shows_its_frame(self):
+        assert space_image(MAIN, 'data:frame') == 'data:frame'
+
+    def test_a_space_without_art_or_frame_leaves_the_placeholder(self):
+        assert space_image(MAIN) is None
+
+    def test_no_space_leaves_the_placeholder(self):
+        assert space_image(u'') is None
+
+    def test_a_look_shows_its_own_frame_first(self):
+        assert look_image(ONSLAUGHT_NIGHT, 'data:night') == 'data:night'
+
+    def test_a_look_without_a_frame_shows_the_art_of_its_space(self):
+        assert look_image(ONSLAUGHT_NIGHT) == ONSLAUGHT_ART
+
+    def test_a_look_without_a_frame_or_space_art_leaves_the_placeholder(self):
+        assert look_image(RAIN) is None
 
 
 if __name__ == '__main__':

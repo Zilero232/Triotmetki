@@ -11,7 +11,7 @@ from ....core.armor import (
     up_to_main,
     verdict,
 )
-from .constants import MAX_LEGEND_LAYERS, MODE_SHELL, PART_KEYS, PLATE_KIND_KEYS, VERDICT_TONES
+from .constants import MAX_READOUT_LAYERS, MODE_SHELL, PART_KEYS, PLATE_KIND_KEYS, VERDICT_TONES
 
 
 def millimetres(value, translate):
@@ -41,14 +41,16 @@ def _row(label, value, tone='text'):
 
 def armour_rows(plates, translate):
     rows = []
-    for plate in plates[:MAX_LEGEND_LAYERS]:
-        rows.append(_row(_plate_label(plate, translate), _plate_value(plate, plate.effective, translate)))
+    for plate in plates[:MAX_READOUT_LAYERS]:
+        label = _plate_label(plate, translate)
+        value = _plate_value(plate, plate.effective, translate)
+        rows.append(_row(label, value))
     return rows
 
 
 def _step_rows(steps, translate):
     rows = []
-    for step in steps[:MAX_LEGEND_LAYERS]:
+    for step in steps[:MAX_READOUT_LAYERS]:
         value = _plate_value(step.plate, step.armor, translate)
         rows.append(_row(_plate_label(step.plate, translate), value))
     return rows
@@ -63,10 +65,13 @@ def _verdict_text(shell_verdict, translate):
 def _notes(steps, shell, translate):
     notes = []
     plates = [step.plate for step in steps]
-    if any(is_overmatched(plate, shell) for plate in plates):
+    is_overmatch = any(is_overmatched(plate, shell) for plate in plates)
+    if is_overmatch:
         notes.append(translate('armor_view_note_overmatch'))
+
     base = shell.rule['normalization'] if shell.rule is not None else 0.0
-    if base and any(normalization(plate, shell) > base for plate in plates):
+    is_widened = base and any(normalization(plate, shell) > base for plate in plates)
+    if is_widened:
         notes.append(translate('armor_view_note_normalization'))
     return notes
 
@@ -96,9 +101,6 @@ def _title(plates, translate):
 
 
 def readout(plates, mode, attack, translate):
-    """The hover card of one ray: the part, each plate up to the main one (kind, nominal, angle, armour along the ray
-    or against the shell), and in the shell mode what the shell needs, has and does; None for a ray that met no
-    armour."""
     if not plates:
         return None
     shown = up_to_main(plates)

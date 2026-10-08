@@ -23,9 +23,10 @@ MODS_LIST = 'modslist'
 RENDERER_HOST = 'core'
 HUD_USE = re.compile(r'\bBattlePanel\b|\bHangarLabel\b|\bPolledHangarCard\b|\bhud_layer\(|\.ui\.show\(')
 GAMEFACE_IMPORT = re.compile(r'^\s*(?:from\s+openwg_gameface\s+import|import\s+openwg_gameface)\b', re.MULTILINE)
-# What reaches Gameface through core without a panel: a stock view's injected page (core/client/hud/gameface/inject)
-# and the renderer itself.
-GAMEFACE_USE = re.compile(r'\bcan_inject\(|\bmod_inject\(|\bcreate_backend\(')
+# What reaches Gameface through core without a panel: a stock view's injected page (core/client/hud/gameface/inject),
+# the renderer itself and a screen loaded as a lobby sub view (core/client/sub_view).
+GAMEFACE_USE = re.compile(r'\bcan_inject\(|\bmod_inject\(|\bcreate_backend\(|\bSubViewHost\(')
+SUB_VIEW_USE = re.compile(r'\bSubViewHost\(')
 MODS_LIST_IMPORT = re.compile(r'^\s*from\s+gui\.modsListApi\s+import\b', re.MULTILINE)
 SKIPPED_DIRS = ('tests', '__pycache__')
 REVIEWED_PINS = {
@@ -144,10 +145,15 @@ class RequiredByFollowsTheCodeTest(unittest.TestCase):
         self.assertIn('session_stats', labels)
         self.assertTrue(labels.issubset(self.by_id[GAMEFACE].required_by))
 
-    def test_only_the_ui_and_the_hit_viewer_open_gameface_windows(self):
+    def test_only_the_ui_opens_a_gameface_window_of_its_own(self):
         window = keys_using(GAMEFACE_IMPORT)
 
-        self.assertEqual(window, {'ui', 'hit_viewer'})
+        self.assertEqual(window, {'ui'})
+
+    def test_the_hit_viewer_and_the_armour_viewer_are_core_sub_views(self):
+        screens = keys_using(SUB_VIEW_USE)
+
+        self.assertEqual(screens, {'hit_viewer', 'armor_view'})
 
     def test_gameface_window_and_labels_need_gameface(self):
         users = keys_using(GAMEFACE_IMPORT) | keys_using(HUD_USE) | keys_using(GAMEFACE_USE)

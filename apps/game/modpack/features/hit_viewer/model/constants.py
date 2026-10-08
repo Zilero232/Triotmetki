@@ -74,11 +74,7 @@ COMMANDS = {
     COMMAND_MOVE: ('dx', 'dy', 'dz'),
     COMMAND_DIAG: ('text',),
 }
-MOVE_FIELDS = COMMANDS[COMMAND_MOVE]
 TEXT_FIELDS = {COMMAND_BATTLE: 'id', COMMAND_DIAG: 'text'}
-# A camera drag or wheel step from the page, in screen pixels and wheel units (RU 1.45 maps_training_base_view
-# ._onMoveSpace passes the same dx, dy, dz on); anything larger is clamped.
-MAX_MOVE = 2000
 MAX_MESSAGE_CHARS = 2048
 
 # The page's own strings: (state key, i18n key).

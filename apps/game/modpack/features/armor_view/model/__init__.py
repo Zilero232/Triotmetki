@@ -3,20 +3,15 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.compat import is_int
 from .camera import has_moved  # noqa: F401
 from .cells import Attack, cell_code, encode_cells  # noqa: F401
-from .constants import (
-    ARMOR_PATH,
-    DEFAULT_LOCALE,
-    MENU_LABELS,
-    MENU_OPTIONS,
-    REFUSAL_BATTLE,
-    REFUSAL_NO_TANK,
-    REFUSAL_OFF,
-    SITE_LOCALES,
-    SITE_URL,
-)
+from .constants import ARMOR_PATH, DEFAULT_LOCALE, REFUSAL_BATTLE, REFUSAL_NO_TANK, REFUSAL_OFF, SITE_LOCALES, SITE_URL
 from .grid import GridBuild, levels_for, screen_box, screen_fraction  # noqa: F401
+from .modules import Module, ModuleChoice, Turret, default_choice, picked, with_turret  # noqa: F401
+from .page import Attacker, PageView, legend_state, map_state, page_state, shell_label, status_state  # noqa: F401
+from .presets import CameraPose, preset_pose  # noqa: F401
+from .protocol import decode_message  # noqa: F401
 from .readout import readout  # noqa: F401
-from .widget import LegendView, legend_widget, map_widget, shell_label  # noqa: F401
+from .tanks import TankRow, garage_order, is_listed, search  # noqa: F401
+from .timing import RayTiming  # noqa: F401
 
 # Fair play: a public page of the site about a tank type; the link carries only the tank id and the language.
 
@@ -49,19 +44,3 @@ def refusal(enabled, in_battle, tank_id):
 
 def shows_menu_option(enabled, in_battle, settings, tank_id):
     return refusal(enabled, in_battle, tank_id) is None and bool(settings.get('context_menu'))
-
-
-def is_menu_option(option_id):
-    return option_id in MENU_OPTIONS
-
-
-def menu_items(translate):
-    """The carousel menu's items of ours: `(option id, label)`, the in-hangar map first."""
-    return [(option_id, translate(key)) for option_id, key in MENU_LABELS]
-
-
-def stepped(index, count, step):
-    """`index` moved by `step` around `count` entries (0 without entries)."""
-    if count <= 0:
-        return 0
-    return (index + step) % count

@@ -33,7 +33,7 @@ from ..model import (
     environment_changes,
     find_look,
     listed_spaces,
-    look_preview,
+    look_image,
     override_changes,
     preview_key,
     reload_plan,
@@ -41,7 +41,7 @@ from ..model import (
     same_path,
     space_name,
     space_names,
-    space_preview,
+    space_image,
     taken_slots,
     wanted_environments,
 )
@@ -260,9 +260,10 @@ class HangarSpace(FeatureComponent):
         look_id = self.settings.get('look')
         look = self.chosen_look(self._space_names()) if look_id else None
         space = self.settings.get('space')
-        key = _thumb_key(look, space)
-        fallback = look_preview(look_id) if look_id else space_preview(space)
-        return self.previews.data_uri(key) or fallback
+        captured = self.previews.data_uri(_thumb_key(look, space))
+        if look is not None:
+            return look_image(look, captured)
+        return space_image(space, captured)
 
     def ui_actions(self):
         if not self.enabled_in_hangar():

@@ -10,17 +10,13 @@ from otmetki.features.armor_view.i18n import STRINGS
 from otmetki.features.armor_view.model import (
     Attack,
     GridBuild,
-    LegendView,
     cell_code,
     encode_cells,
     has_moved,
-    legend_widget,
     levels_for,
-    map_widget,
     readout,
     screen_box,
     screen_fraction,
-    shell_label,
 )
 from otmetki.features.armor_view.model.cells import chance_tone, thickness_tone
 from otmetki.features.armor_view.model.constants import CELL_ALPHABET, THICKNESS_STOPS
@@ -283,64 +279,6 @@ class ReadoutTest(unittest.TestCase):
         card = readout([plate(30, angle=80)], 'shell', attack(caliber=100.0), TRANSLATE)
 
         assert u'Калибр больше трёх толщин: рикошета нет' in [row['label'] for row in card['rows']]
-
-
-class WidgetTest(unittest.TestCase):
-
-    def test_the_map_names_its_box(self):
-        payload = map_widget(Level(box=BOX, cols=2, rows=1, cell_px=8), [1, 0], 'nominal', 60)
-
-        assert payload['data']['left'] == 0.25
-
-    def test_the_map_carries_one_character_per_cell(self):
-        payload = map_widget(Level(box=BOX, cols=2, rows=1, cell_px=8), [1, 0], 'nominal', 60)
-
-        assert payload['data']['cells'] == '10'
-
-    def test_the_shell_label_names_the_kind_and_penetration(self):
-        assert shell_label(attack().shell, 201.4, TRANSLATE) == u'ББ 201 мм'
-
-    def test_the_legend_marks_the_active_mode(self):
-        payload = legend_widget(LegendView(target=u'Т-34', mode='shell', status='ready'), TRANSLATE)
-
-        assert [item['active'] for item in payload['data']['modes']] == [False, False, True]
-
-    def test_the_legend_shows_the_build_progress(self):
-        view = LegendView(target=u'Т-34', mode='nominal', status='building', progress=0.45)
-
-        assert legend_widget(view, TRANSLATE)['data']['status'] == u'Строю карту: 45 %'
-
-    def test_the_thickness_scale_has_a_tone_per_stop_and_one_past_them(self):
-        payload = legend_widget(LegendView(target=u'Т-34', mode='nominal', status='ready'), TRANSLATE)
-
-        assert len(payload['data']['scale']) == len(THICKNESS_STOPS) + 1
-
-    def test_the_shell_mode_names_the_attacker_and_distance(self):
-        view = LegendView(target=u'Т-34', mode='shell', status='ready', attacker=u'ИС', distance=250)
-
-        assert legend_widget(view, TRANSLATE)['data']['attacker'] == u'Стреляет ИС · 250 м'
-
-    def test_the_map_matches_the_page_fixture(self):
-        level = Level(box=BOX, cols=4, rows=2, cell_px=8)
-
-        payload = map_widget(level, [0, 1, 2, 12, 17, 33, 13, 15], 'nominal', 60)
-
-        assert _support.widget_fixture('armor_map', payload)
-
-    def test_the_legend_matches_the_page_fixture(self):
-        card = readout([plate(20, spaced=True), plate(150, angle=40)], 'shell', attack(power=230.0), TRANSLATE)
-        view = LegendView(
-            target=u'Т-34-85',
-            mode='shell',
-            status='ready',
-            attacker=u'ИС-3',
-            shell_labels=(u'ББ 175 мм', u'БП 217 мм'),
-            shell_index=1,
-            distance=100,
-            readout=card,
-        )
-
-        assert _support.widget_fixture('armor_legend', legend_widget(view, TRANSLATE))
 
 
 if __name__ == '__main__':

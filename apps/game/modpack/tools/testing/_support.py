@@ -307,6 +307,20 @@ def write_fixture(path, payload):
     fileio.write_json(path, payload, sort_keys=True)
 
 
+UI_SOURCE_DIR = os.path.join(MODPACK_DIR, 'ui-web', 'src')
+
+
+def ui_fixture(relative_path, payload):
+    """Checks `payload` against the ui-web fixture at `relative_path` (under ui-web/src), which a page's protocol test
+    parses; OTMETKI_UPDATE_FIXTURES=1 rewrites it. Returns whether they match."""
+    path = os.path.join(UI_SOURCE_DIR, *relative_path.split('/'))
+    if os.environ.get('OTMETKI_UPDATE_FIXTURES') == '1':
+        write_fixture(path, payload)
+    if not os.path.isfile(path):
+        return False
+    return load_json(path) == json.loads(json.dumps(payload))
+
+
 def widget_fixture(kind, payload):
     """Checks `payload` (a panel's widget, `core.hud.widget`) against the page's fixture of `kind`, which the ui-web
     tests render; OTMETKI_UPDATE_FIXTURES=1 rewrites it. Returns whether they match."""

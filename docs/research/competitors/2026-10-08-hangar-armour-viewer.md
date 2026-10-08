@@ -140,7 +140,7 @@ How the packs put a hangar tool in reach, and what the RU 1.45 client allows (re
 | Pack / mod | Entry point | How |
 | --- | --- | --- |
 | Armor Inspector (Jove, PROTanki, МОСТ ship it) | A button «по центру под танком» in the hangar and in the vehicle preview (§2) | Two 1.7 KB Scaleform SWFs that find `AmmunitionPanelMC` / `maintenanceBtn` / `tuningBtn` and the preview's `bottomPanel` and add a button. Flash injection into stock views. |
-| PROTanki «анализ брони» | A tooltip by the cursor on the preview tank | Hover on the 3D model; no button (§2) |
+| PROTanki «анализ брони» (`tv.protanki.reducedarmor`) | Its own ModsList entry «Броня», its own lobby view (corrected in §8.1; the first pass read only the download page) | ModsListApi `addModification`, Scaleform view |
 | poliroid BattleHits (Jove, Lebwa, Near_You) | Its own ModsList entry, greyed in the queue | `g_modsListApi.addModification(id=…, lobby=True)` (`refs/mods/poliroid__battle-hits/python/gui/battlehits/hooks.py:110-160`) |
 | poliroid Replays Manager | Its own ModsList entry, the login screen and the stock replay context menu | `addModification` plus its own context menu handler (`rmanager/controllers/actions.py:217`, `_generateOptions`) |
 | Battle Observer, XVM | Settings through ModsSettingsAPI from a ModsList entry, or config files; no armour tool | [deep dive](2026-10-05-modpacks-deep-dive.md) |
@@ -157,3 +157,101 @@ How the packs put a hangar tool in reach, and what the RU 1.45 client allows (re
 **Choice for `armor_view`:** its own ModsList entry (the selected or previewed tank) and «Бронирование» in the carousel tank menu (any tank of the carousel), both opening the site's viewer in `showBrowserOverlayView`, the external browser when the client has no overlay call (`open_in: browser` opens it always). No button under the tank: that needs a SWF injected into `AmmunitionPanelMC`, and Scaleform/Gameface injection is where our native crashes came from (0.3.7, 0.3.8). No hotkey.
 
 **Step 2 built (2026-10-08):** the ModsList entry now toggles the in-hangar map on the selected tank (the site in the vehicle preview), and the carousel menu offers «Броня в ангаре» and «Броня в 3D на сайте». The HUD page in the hangar takes no input outside the HUD edit mode, so the map's keys (1 2 3 modes, Q E shells, R attacker, Esc) and the hover ray under `GUI.mcursor()` run on the Python side. The shot rules are the client's own reticle rules (`gun_marker_ctrl._CrosshairShotResults`, the defaults of `arena_visitor._ArenaModifiersVisitor`), not the ones guessed in §6. Details: the modpack README «armor_view».
+
+## 8. ModsList viewers in other modpacks
+
+Second pass, 2026-10-08, after the owner's correction: «Броня в ангаре я имел ввиду в модлист, а не прям в ангаре» — the viewer should open from ModsList as its own screen, not as a toggle over the plain hangar. Sources: the mod pages and forum topics linked below, the released packages (read as files only, never run), the web builds of the same tools opened in a browser, and our own `python.log` from today's client run.
+
+### 8.1 What exists
+
+| Tool | How the player opens it | What opens | What it shows | Data | Known problems |
+| --- | --- | --- | --- | --- | --- |
+| **Armor Inspector** 4.5.x (wotinspector; shipped by Jove, PROTanki, МОСТ, Aslain) | A button «Armor Inspector» under the tank in the hangar and in the vehicle preview: «В Ангаре нажать на кнопку "Armor Inspector"» ([forum](https://forum.tanki.su/topic/2214954-all-armor-inspector-%D0%B8%D0%BD%D1%81%D0%BF%D0%B5%D0%BA%D1%82%D0%BE%D1%80-%D0%B1%D1%80%D0%BE%D0%BD%D0%B8/)). The package also has a 48×48 `res/scripts/client/gui/mods/mod_armorinspector.png` next to the `.pyc` and bundles ModsListApi 1.7.6, the usual sign of a ModsList entry. The code is encrypted, so the entry is likely but **unconfirmed**. | The client's CEF browser overlay. «Без аппаратного ускорения инспектор открывается в обычном браузере, а не в игре» (forum); «откроется страница браузера с выбранным ранее танком» ([wot-hack](https://wot-hack.ru/armor-inspector-wot/)). | Modes **Дуэль** (penetration % per point for the chosen gun and shell), **Таран** (ram damage, speed sliders), **Рентген** (armour, modules, crew), an HE heat map. Shot scenarios from the last battle. | Its own packaged collision, module and crew models (~24 MB data plus a 7.9 MB wasm), Firebase analytics | Slow first launch; needs hardware acceleration and no AdBlock; needs its site; re-released every patch. The mobile build of the same engine locks tiers IX–X behind a paywall («only from a weird above-and-to-the-right angle», [App Store](https://apps.apple.com/app/id905734645) review). It records battles for a third party (§2). |
+| **PROTanki «анализ брони»** = `tv.protanki.reducedarmor` 3.4.6 «Reduced Armor» (Scaleform views in the `poliroid.views.lobby.reduced_armor` package, i.e. built by poliroid for PROTanki; the [wotsite 12309](https://wotsite.net/mody-dlya-world-of-tanks/12309-mod-dlya-analiza-broni-tankov-pryamo-v-angare-dlya-wot.html) archive, «2.4.0.2 / 1.45.0.0», 672 KB, unpacked to the scratchpad and read as strings; no licence file, the `.pyc` is encrypted) | **ModsList**: it bundles ModsListApi 1.6.01 (Lesta) / 1.7.8 (WG) and ModsSettingsAPI 1.7.0, and its texts carry the entry pair `armorLabel: Броня` / `armorDescription: Рассчет бронированния`. A `ReducedArmorCMRenderer` class suggests a context-menu item as well. The page text says it works in the vehicle preview (carousel or tech tree) and suggests ShowVehicle for tanks not owned. | Its own Scaleform lobby view `ReducedArmorMain` over the real 3D tank (not a browser): a progress bar while it computes; a «КОЛЛИЗИЯ» button that opens a popover «Бронирование» with «Рассчитать», «Автообновление» («при изменении положения камеры»), «Прозрачность наложения» and «Точность вычисления»; the overlay is drawn as Scaleform rectangles (`collisionHolder`, `drawRect`, `as_updateCollisionDPData`, `_collisionSize`). | An info tab with shell-type buttons AP / APCR / HEAT / HE (normalisation tooltips: 5°, 2°, none, none), editable **calibre** and **penetration** (`onCalibreChange`, `onPiercingChange`), and 2-calibre / 3-calibre rule indicators. A popup by the cursor (`reducedArmorMouse`): «Результат» (Пробитие / Не пробил / Рикошет / Попадание), «Приведённая броня», «Элементы» along the ray (орудие, гусля, экран, п. наблюдения, броня). | The client's own collision rays over the hangar tank, the same approach as our map | Manual «Рассчитать» or auto-update on every camera move; accuracy versus time is left to the player; Scaleform injection; the shell is typed in, not taken from a tank; no legend of thicknesses in the strings |
+| **poliroid BattleHits** (MIT; Jove, Lebwa, Near_You) | Its own ModsList entry, greyed in the queue | A separate hangar view over the real 3D tank, with a compact list at the side | Own hits, not armour | Battle records | It sets the convention for a hangar tool opened from ModsList. Our `hit_viewer` copies it and **works on 1.45**: `python.log` 15:07:36 «hit viewer: opened, 14 recorded battles», the page frame read, then «closed… the hangar vehicle and camera are back». |
+| **WG 2.0 Garage Armor Inspector** (stock WoT EU/NA, not Lesta) | The Vehicle Management icon under the tank → ARMOR. Also About Vehicle → Armor, and the vehicle's right-click menu ([WG news](https://worldoftanks.com/news/general-news/update-2-0-garage-ux/), [WG guide](https://worldoftanks.com/en/content/guide/newcomers-guide/how_to_survive/)) | A stock garage screen over the real garage model | Module configuration on the left. «Overlay Type» on the right: nominal, or **Penetration Chance** for the attacker's gun and shell. Hover over a plate for nominal, effective and hit angle. | «Exact collision models from the server» | It is the bar the community now compares against. If Lesta copies it, our no-stock-duplicates rule applies (§1). |
+| **tanks.gg** (site, has a WoT 2.4 / Lesta switch) | Website, «3D Model» tab | A browser page | Screenshot of [IS-7](https://tanks.gg/tank/is-7/model) on 2026-10-08: left: a vertical nominal legend, 0 → 270 mm, green → red; right: a spaced-armour legend, cyan → magenta; top-left: a view dropdown (Collision / **Live** / Visual / Visual HD / Hybrid / Hybrid Live); bottom-left: a gun-arc dial; bottom centre: own gun and turret **«VS»** the target's gun, turret and shell (AP); top-right: a camera button In Live mode: green means it penetrates, red means it does not, magenta means ricochet, and tracks and spaced armour are pale grey. | Extracted models | No modules or crew; it is a website |
+| **armor.wotinspector.com** (site, the same engine as the mod) | Website | A browser page | Screenshot of [СТ Молот](https://armor.wotinspector.com/ru/mirtankov/7946753--/) on 1.45: a wide 3D canvas on a light floor; a **left icon rail**: Mir Tankov/version, рентген, дуэль, теплка, таран, опции; a **right icon rail**: фото, вид, быстр., экран; bottom centre: an attacker → target chip, and the «Цель … выбрать» picker under the canvas Thickness runs green → yellow → red → magenta; tracks are violet, the gun blue, small screens cyan. | Its own models | Ads under the viewer on the RU page |
+| **TONK Armour Viewer** (another game; UX reference, [wiki](https://tonk.wiki.gg/wiki/Armour_Viewer)) | In its garage | A garage screen | Calibre and penetration sliders top right, defaulting to the shell of the tank on screen; the tank list bottom left. Colours: green pen, yellow/orange within ±10 %, red no pen, pink ricochet, cyan overmatch, clear spaced. | Game data | — |
+| XVM, Battle Observer, Jove's and МОСТ's own code | — | — | No armour viewer of their own; they ship Armor Inspector ([round 3](2026-09-29-modpacks-round3.md)) | — | — |
+| «Шкурки с зонами пробития» (2012, [goha](https://www.goha.ru/wotdbru-obnovlenie-ot-7-noyabrya-xzYqkl)) | Installed textures | Recoloured tank skins, also in battle | Hand-drawn weak spots | Artist's guess | Battle-visible and inaccurate; out |
+
+### 8.2 What the layouts have in common
+
+- **Two families.**
+  - A browser app with its own models: Armor Inspector (WASM in CEF), the sites.
+  - The client's own collision rays over the real hangar tank, in a separate lobby view opened from ModsList: PROTanki «Reduced Armor» (Scaleform rectangles, poliroid). That is our map, inside its own screen instead of the HUD page. The owner's request matches this family.
+  - WG draws the stock screen with its engine.
+  - Nobody draws armour in Gameface yet.
+- **The good layouts share one grammar** (WG, tanks.gg, armor.wotinspector, TONK):
+  - the tank takes the whole screen;
+  - a mode switch: nominal / effective / penetration;
+  - an attacker block: gun, shell, sometimes distance; tanks.gg puts it as «own VS target»;
+  - a vertical colour legend at the edge;
+  - a hover card for one point;
+  - module configuration (WG);
+  - camera presets or a free orbit.
+- **What nobody has in game:**
+  - the full client shot rules with a chance per point (screens, HEAT jet loss, the ±25 % band; our `core/armor/penetration`). PROTanki shows the 2- and 3-calibre rules and normalisation, but gives a verdict without a chance;
+  - an offline viewer with no download;
+  - any tank from the tech tree without an extra mod. PROTanki needs ShowVehicle; Armor Inspector needs its site;
+  - the attacker's real gun and shells instead of typed-in calibre and penetration (PROTanki), and a thickness legend.
+
+### 8.3 What is doable for us on Lesta 1.45
+
+Facts measured or read today:
+
+- **Ray cost.** Our armour map logged `2144–2509 rays in 177–210 ms` (`python.log` 15:06:10–15:06:22, 3 levels, 8 px cells). That is about **12 rays per ms (≈ 80 µs per ray)**, Python overhead included.
+- **Rays need no hangar camera.** `collideAllWorld(start, end)` takes world points. Rays can start from a plane in the vehicle's own frame (front, side, rear, top), wherever the hangar camera is. The results depend only on the tank and its modules, so they can be cached.
+- **A tank that is not in the hangar.**
+  - `BigWorld.BspCollisionModel().collideSegment(start, stop)` returns `(dist, normal, hitAngleCos, matKind)`, normal included (`common/ModelHitTester.worldHitTest`).
+  - The parts can be placed with `chassis.hullPosition`, `hull.turretPositions[0]` and `turret.gunPosition`, as `model_assembler` does.
+  - This route would work without the hangar, but `setModelName` loads synchronously; on 1.45 it is untested.
+  - The simpler route is the one `hit_viewer` already uses: `g_currentPreviewVehicle.selectVehicle(intCD)` puts **any** tank into the hangar, and its collision answers.
+- **The browser route fails today.**
+  - `python.log` 15:05:27 and 15:06:47: `[MTWebBrowser] FAILED Url: https://triotmetki.ru/t/62465/armor, Http code: 418`, and the overlay closed.
+  - `curl` gets 200 for the same URL, also with the client's Chrome 103 user agent. Something on our edge refuses the client's browser.
+  - Unrelated but found on the way: the site's `Link` response header repeats the `http://localhost:3000` hreflang entries dozens of times. That is a site bug.
+- **A Gameface lobby sub view over the 3D hangar works:**
+  - `hit_viewer` is such a sub view (see the hit_viewer section of the modpack README);
+  - the page has a transparent background and takes the mouse;
+  - its drags and wheel go to `CameraRelatedEvents.LOBBY_VIEW_MOUSE_MOVE`, so the stock hangar camera orbits;
+  - closing it reloads the stock hangar.
+- **Input on the current map.** The current map lives on the HUD page, which takes no input outside the HUD edit mode. That is why its modes, shell keys and hover ray are read in Python.
+
+| | Option | Player experience | Effort | Crash risk | Beats |
+| --- | --- | --- | --- | --- | --- |
+| a | **ModsList → Gameface window with 2D projections.** Front, side, rear and top orthographic views cast through the hangar tank's collision from planes in its frame, drawn with canvas `fillRect`; hover reads the stored hit of the cell (no new ray); zoom and pan redraw | A clean, flat schematic, fully mouse driven, exact client numbers. But only fixed angles: no free orbit, so effective armour only for those four directions. A ±30° yaw slider means a re-cast. | **M–L.** Cost: a 100×50 view is 5 000 rays ≈ 0.4 s CPU ≈ 2 s of frames at 4 ms each; four views ≈ 8 s; then refine coarse-to-fine and cache per tank and modules. New window, new pure grid model; probe and shot rules reused. | **Low.** A plain Gameface page with `fillRect`, no SVG churn; Python ray load as today | Only adds flat schemes nobody has; it cannot beat Armor Inspector, tanks.gg or PROTanki on the 3D model. |
+| b | **ModsList → CEF overlay with the site's 3D viewer** (§6 step 1) | A real 3D orbit and any tank. But it needs the network and loads a site; it is metered (`armor3d`, anonymous in CEF's cookie jar); Next.js 16 on Chromium 103 is unchecked; **today it fails with HTTP 418.** | **S** once the 418 is found, plus a lean embed route | **Low** (stock view) | It matches Armor Inspector's model (a browser app) without 25 MB or analytics, but has no crew or modules |
+| c | **ModsList → recolour the hangar tank** (current HUD-page map) | Exact and instant on the real model. But it is not a screen: no panels for the mouse, Python hotkeys, a legend label only. It is what the owner rejected as the entry. | Built | Low–medium (measured fine) | On par with PROTanki's overlay, but without its screen |
+| d | **Hybrid: ModsList → our own lobby sub view «Броня»** built like `hit_viewer`. The real 3D tank behind a transparent page; the existing `armor-map` canvas inside that page, not on the HUD page; side panels and camera presets in the page; optional projection thumbnails from (a) later; «3D на сайте» as a secondary button once (b) works | **A real screen from ModsList.** Drag to orbit, wheel to zoom, a hover card from page mouse events, a click in panels for mode, shell and distance; any tank through the preview swap; offline and instant. | **M.** The view plumbing (registration, frame, camera move, preview swap, close back to the hangar) comes from `hit_viewer`. Probe, grid, cells, legend and shot rules come from `armor_view`. New: the page layout and moving the two widgets. The Python hotkeys go away. | **Low–medium.** It is the sub view that already runs on 1.45, with canvas `fillRect` only. Risks: full-screen canvas at 2560/4K, the preview-swap pitfalls `hit_viewer` documented (dangling node adapters, camera limits), rebuilding while the camera animates | **Armor Inspector:** no browser, no download, no site outage, exact Lesta data and rules, Lesta-only tanks on day one. **PROTanki Reduced Armor** (the closest rival, same idea): Gameface instead of a Scaleform injection; the attacker's real shells and the client's shot rules instead of typed-in numbers; coarse-to-fine progressive build instead of a «Рассчитать» button and a progress bar; a legend; any tank without ShowVehicle. **tanks.gg / WG:** the same layout grammar, in game, on the real model. It still lacks crew and modules, HE maps and ram. |
+
+## 9. Recommendation for the ModsList entry
+
+**Build (d): the ModsList entry «Броня танков» opens an «Броня» lobby sub view, the `hit_viewer` way.** It replaces the HUD-page toggle as the entry. The carousel menu item opens the same view with that tank. In the vehicle preview, the view opens on the previewed tank, not the site.
+
+**Layout** (one screen, the tank in the middle, in the grammar of §8.2):
+- **Top left:** title, the tank name with tier and class, close (Esc).
+- **Left column:** the tank picker (own garage first; search over all tanks swaps the preview the `hit_viewer` way) and the module configuration (turret and gun, from `VehicleDescr.installComponent`), as WG puts it.
+- **Top centre:** mode tabs — **Номинал / Приведённая / Пробитие**.
+- **Right column:**
+  - the attacker block «own tank VS this tank» (tanks.gg): attacker = the selected own tank, changeable; shell chips; a distance slider 0–600 m;
+  - under it, the vertical legend: mm stops, or the verdict colours with ricochet, overmatch (3-calibre) and spaced.
+- **Bottom centre:** camera presets (front, front 30°, side, rear, top) through `HangarCameraManager.moveCamera`; the map rebuilds when the camera stops.
+- **Hover card by the cursor:** part, plates along the ray, nominal, angle, effective, needed versus own penetration (±25 %), the verdict with its chance.
+- **Footer button:** «3D на сайте».
+
+**Order of work:**
+1. **Spike, ½ day:**
+   - the `hit_viewer` sub view with the `armor-map` canvas full screen at 1080p, 1440p and 4K;
+   - drag-to-orbit and hover from the same page, told apart by the pressed button;
+   - the preview swap of a tank the player does not own, answering rays.
+2. **The view:**
+   - move the map and legend widgets in;
+   - read input from the page;
+   - drop the Python hotkeys and the HUD labels.
+3. **Later:**
+   - the projection strip (a) as clickable thumbnails that snap the camera;
+   - the site button after the HTTP 418 for the client's browser and the duplicated `Link` header are fixed.
+
+**Out, as before:** Gameface WebGL, shipping our own geometry or crew and module models, anything in battle. Armor Inspector stays an idea reference only: its licence is personal, non-profit use. BattleHits (MIT) is the layout convention, not code we copy.

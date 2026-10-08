@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 
+import type { CameraMove } from '@/features/viewer/orbit-camera';
+
 import { gameface } from '@/shared/api/gameface';
 import { onDistinct } from '@/shared/lib/on-distinct';
 
-import type { CameraMove } from '../../../lib/camera-move';
 import type { ViewerSide, ViewerState } from '../../../lib/viewer-protocol';
 
 import { footerOf, parseViewerState, sendViewer, sideLabelsOf } from '../../../lib/viewer-protocol';
@@ -47,6 +48,7 @@ export const useHitViewer = () => {
     selectedRow: state?.rows.find((row) => row.index === state.selected) ?? null,
     close: () => sendViewer({ command: 'close' }),
     move: (move: CameraMove) => sendViewer({ command: 'move', ...move }),
+    describe: (text: string) => sendViewer({ command: 'diag', text }),
     pickBattle: (id: string) => sendViewer({ command: 'battle', id }),
     pickTab,
     pickHit,

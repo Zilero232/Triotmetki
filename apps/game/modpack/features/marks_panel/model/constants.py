@@ -28,6 +28,8 @@ MARK_TONES = ('muted', 'text', 'text', 'gold')
 
 KIND = 'marks_panel'
 MARKS_CAP = 'DOSSIER_MARKS_ON_GUN'
+# RU 1.45 common/constants.py ARENA_BONUS_TYPE.REGULAR: random battles always move the marks on gun.
+MARKS_BONUS_TYPES = (1,)
 BAR_DAMAGE = 'damage'
 MAX_STARS = 3
 NO_ROWS = {'thresholds': [], 'step': None, 'average': None}

@@ -54,10 +54,6 @@ def data_uri(png):
     return PREVIEW_DATA_PREFIX + to_text(base64.b64encode(png))
 
 
-def tile_image(key, previews, fallback=None):
-    return previews.get(key) or fallback
-
-
 def is_clean_hangar(windows):
     alive = [window for window in windows or () if window.get('alive', True)]
     if any(window.get('own') and window.get('blocking') for window in alive):

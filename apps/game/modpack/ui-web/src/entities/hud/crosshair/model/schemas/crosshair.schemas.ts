@@ -19,6 +19,7 @@ const clipSchema = z.object({
 });
 
 const reloadSchema = z.object({
+  timer: z.boolean(),
   value: z.string(),
   full: z.nullable(z.string()),
   state: z.enum(RETICLE_READOUTS.states),

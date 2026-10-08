@@ -6,7 +6,9 @@ import BigWorld
 
 from ....core.compat import string_types
 from ....core.events import EVENT_SETTINGS_CLOSE
+from ....core.client.sub_view import SubViewHost, move_camera
 from ....core.log import log, log_exception, safe
+from ....core.sub_view import SubViewPage
 from ..model import (
     COMMAND_BATTLE,
     COMMAND_CLOSE,
@@ -23,9 +25,17 @@ from ..model import (
     profile_key,
     viewer_state,
 )
-from .constants import EMPTY_SELECTION, FOCUS_DELAY_S, FOCUS_S, LOGGED_MESSAGE_CHARS, SETTLE_ATTEMPTS, SETTLE_S
+from .constants import (
+    EMPTY_SELECTION,
+    FOCUS_DELAY_S,
+    FOCUS_S,
+    LOGGED_MESSAGE_CHARS,
+    RES_MAP_ID,
+    SETTLE_ATTEMPTS,
+    SETTLE_S,
+    STATE_PROPERTY,
+)
 from .stage import HangarStage, is_exact, map_image
-from .window import ViewerWindowHost, move_camera
 
 
 # poliroid BattleHits' layout: the page lists the hits at the side, the hangar shows the vehicle with its turret and gun
@@ -37,7 +47,8 @@ class HitViewerScreen(object):
     def __init__(self, component, recorder):
         self.component = component
         self.recorder = recorder
-        self.window = ViewerWindowHost(self.on_message, self.close, self.push, self._on_window_gone)
+        page = SubViewPage(key=RES_MAP_ID, properties=(STATE_PROPERTY,))
+        self.window = SubViewHost(page, self.on_message, self.close, self.push, self._on_window_gone)
         self.stage = HangarStage(self._on_model_loaded)
         self.selection = dict(EMPTY_SELECTION)
         self.loaded = None

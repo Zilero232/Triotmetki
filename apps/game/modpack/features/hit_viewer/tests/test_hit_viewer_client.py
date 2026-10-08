@@ -323,7 +323,7 @@ class ScreenTest(unittest.TestCase):
         self.ended = []
         self.screen.stage.end = lambda: self.ended.append(True)
         self.hangar_shown = []
-        window_module = importlib.import_module('otmetki.features.hit_viewer.client.window')
+        window_module = importlib.import_module('otmetki.core.client.sub_view')
         window_module.show_hangar = lambda: self.hangar_shown.append(True)
 
     def tearDown(self):
@@ -339,7 +339,7 @@ class ScreenTest(unittest.TestCase):
             self.callbacks.pop(0)()
 
     def opened_view(self):
-        view = Namespace(viewModel=Namespace(set_state=lambda text: None))
+        view = Namespace(viewModel=Namespace(set_text=lambda index, text: None))
         self.screen.window.is_open = True
         self.screen.window.on_loaded(view)
         return view
@@ -505,20 +505,6 @@ class ScreenTest(unittest.TestCase):
         assert self.hangar_shown == []
 
 
-class Event(object):
-
-    def __init__(self):
-        self.delegates = []
-
-    def __iadd__(self, delegate):
-        self.delegates.append(delegate)
-        return self
-
-    def __isub__(self, delegate):
-        self.delegates.remove(delegate)
-        return self
-
-
 class StageTest(unittest.TestCase):
 
     def setUp(self):
@@ -526,14 +512,7 @@ class StageTest(unittest.TestCase):
         forget_client()
         stub_client()
         stage_module = importlib.import_module('otmetki.features.hit_viewer.client.stage')
-        self.stage_module = stage_module
-        self.space = Namespace(onVehicleChanged=Event())
-        stage_module.hangar_space = lambda: self.space
-        stage_module.camera_place = lambda: None
-        self.callbacks = []
-        stage_module.BigWorld.callback = lambda delay, callback: self.callbacks.append(callback)
         self.stage = stage_module.HangarStage(lambda: None)
-        self.stage.preview = lambda: Namespace(selectNoVehicle=lambda: None)
 
     def tearDown(self):
         forget_client()
@@ -543,40 +522,10 @@ class StageTest(unittest.TestCase):
             else:
                 sys.modules[name] = module
 
-    def test_ending_the_stage_unsubscribes_from_the_hangar(self):
-        self.stage.begin()
-
-        self.stage.end()
-
-        assert self.space.onVehicleChanged.delegates == []
-
-    def test_reopening_before_the_camera_came_back_is_not_left_restoring(self):
-        self.stage.begin()
-        self.stage.shown = True
-        self.stage.end()
-
-        self.stage.begin()
-
-        assert self.stage.restoring is False
-
-    def reopened_and_closed(self):
-        for _ in range(2):
-            self.stage.begin()
-            self.stage.shown = True
-            self.stage.end()
-
-    def test_a_late_restore_of_the_previous_opening_does_not_end_the_new_one(self):
-        self.reopened_and_closed()
-
-        self.callbacks[0]()
-
-        assert self.stage.subscribed is not None
-
     def focused_camera(self):
         manager = CameraManager()
-        self.stage_module.camera_manager = lambda space: manager
-        self.space.spaceID = 1
-        self.stage.space = self.space
+        self.stage.hangar.camera_manager = lambda: manager
+        self.stage.hangar.space = Namespace(spaceID=1)
         self.stage.scene.show = lambda *args: None
         self.stage.world = lambda geometry: ((0.0, 1.0, 2.0), Namespace(yaw=0.5, pitch=0.1))
         self.stage.focus(Namespace(part='hull'), {'outcome': 'pen'}, 0.5)
@@ -586,13 +535,6 @@ class StageTest(unittest.TestCase):
         manager = self.focused_camera()
 
         assert (type(manager.limits), list(manager.limits)) == (Vector2, [2.9, 9.0])
-
-    def test_reopening_keeps_one_hangar_subscription(self):
-        self.reopened_and_closed()
-
-        self.callbacks[1]()
-
-        assert self.space.onVehicleChanged.delegates == []
 
 
 if __name__ == '__main__':

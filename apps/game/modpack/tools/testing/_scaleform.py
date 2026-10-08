@@ -10,7 +10,10 @@
   registerFlashComponent / unregisterFlashComponent;
 - gui/Scaleform/daapi/view/battle/shared/page.py: SharedPage, the battle page the stock suppression and the cover watch
   hook (`_populate`, `_dispose`, `_setComponentsVisibility`), with the components it shows and hides in Flash
-  (`as_setComponentsVisibilityS`); a fresh class per `Scaleform`, so the hooks of one story never reach the next.
+  (`as_setComponentsVisibilityS`); a fresh class per `Scaleform`, so the hooks of one story never reach the next;
+- gui/Scaleform/daapi/view/meta/BattleDamageLogPanelMeta.py: the stock damage log (`battleDamageLogPanel`), which shows
+  and hides itself past the page (`as_setSettingsDamageLogComponentS`) when the camera moves to another vehicle and
+  back (`follow_vehicle(is_own)`, DamageLogPanel._invalidatePanelVisibility); fresh per `Scaleform` as well.
 
 `Scaleform(has_factory, loads_page).install()` stubs the modules; `load_view(app, alias, covers)` loads a view the way
 the app's loader does, `load_battle_page(alias, components)` populates and loads a battle page with its stock
@@ -29,6 +32,7 @@ GF_INJECT_CLASS = 'net.wg.gui.components.containers.inject.GFInjectComponent'
 APP_NAME_SPACE = {'SF_LOBBY': 'scaleform/lobby', 'SF_BATTLE': 'scaleform/battle'}
 LIFECYCLE = {'INITIALIZED': 'app/initialized', 'DESTROYED': 'app/destroyed'}
 BATTLE_COVERS = ('battleLoading', 'fullStats', 'radialMenu')
+DAMAGE_LOG_ALIAS = 'battleDamageLogPanel'
 
 
 class Event(object):
@@ -180,6 +184,28 @@ class StockComponent(object):
         pass
 
 
+def damage_log_panel_class():
+    """A fresh BattleDamageLogPanelMeta and the stock damage log on it, which sets its own visibility on the page."""
+
+    class BattleDamageLogPanelMeta(StockComponent):
+
+        def as_setSettingsDamageLogComponentS(self, isVisible, isColorBlind):
+            if isVisible:
+                self.page.hidden.discard(DAMAGE_LOG_ALIAS)
+            else:
+                self.page.hidden.add(DAMAGE_LOG_ALIAS)
+
+    class DamageLogPanel(BattleDamageLogPanelMeta):
+
+        def __init__(self, page):
+            self.page = page
+
+        def follow_vehicle(self, is_own):
+            self.as_setSettingsDamageLogComponentS(is_own, False)
+
+    return BattleDamageLogPanelMeta, DamageLogPanel
+
+
 def shared_page_class():
     """A fresh SharedPage: `hidden` is what the page has off the screen in Flash."""
 
@@ -257,6 +283,7 @@ class Scaleform(object):
         self.lobby = ScaleformApp(has_factory)
         self.battle = ScaleformApp(has_factory)
         self.shared_page = shared_page_class()
+        self.damage_log_meta, self.damage_log_panel = damage_log_panel_class()
         self.battle_page = type(str('BattlePage'), (ScaleformView, self.shared_page), {'_fullStatsAlias': 'fullStats'})
         self.app_loader = Namespace(
             getApp=lambda appNS=None: self.lobby,
@@ -276,6 +303,8 @@ class Scaleform(object):
         events = Namespace(AppLifeCycleEvent=Namespace(**LIFECYCLE))
         _stub('gui.shared', True, events=events, g_eventBus=self.bus, EVENT_BUS_SCOPE=Namespace(GLOBAL='global'))
         _stub('gui.Scaleform.daapi.view.battle.shared.page', SharedPage=self.shared_page)
+        _stub('gui.Scaleform.daapi.view.meta', True)
+        _stub('gui.Scaleform.daapi.view.meta.BattleDamageLogPanelMeta', BattleDamageLogPanelMeta=self.damage_log_meta)
         return self
 
     def load_view(self, app, alias, covers=()):
@@ -286,11 +315,16 @@ class Scaleform(object):
 
     def load_battle_page(self, alias='classicBattlePage', components=()):
         page = self.battle_page(self.battle, self.factories, alias, BATTLE_COVERS)
-        page.components.update((name, StockComponent()) for name in components)
+        page.components.update((name, self.stock_component(page, name)) for name in components)
         page._populate()
         self.battle.containerManager.views[alias] = page
         self.battle.loaderManager.onViewLoaded(page)
         return page
+
+    def stock_component(self, page, alias):
+        if alias == DAMAGE_LOG_ALIAS:
+            return self.damage_log_panel(page)
+        return StockComponent()
 
     def destroy_view(self, app, view):
         app.containerManager.views.pop(view.alias, None)

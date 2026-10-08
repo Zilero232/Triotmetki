@@ -1,0 +1,1 @@
+export { DuelPanel } from './DuelPanel';

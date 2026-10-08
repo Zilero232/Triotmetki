@@ -1,1 +1,0 @@
-export { LegendChoices } from './LegendChoices';

@@ -1,0 +1,80 @@
+@use '@/shared/styles/gameface' as *;
+
+.duel {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+
+  @include viewer-panel;
+}
+
+.versus {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.vs {
+  margin: 0 8px;
+  color: token(color-text-muted);
+  font-size: 12px;
+
+  @include caps;
+}
+
+.target {
+  min-width: 0;
+  flex: 1 1 auto;
+  color: token(color-text);
+  font-size: 15px;
+  font-weight: 700;
+
+  @include ellipsis;
+}
+
+.caption {
+  margin: 12px 0 6px;
+  color: token(color-text-muted);
+  font-size: 12px;
+
+  @include caps;
+}
+
+.shells {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.shell {
+  height: 30px;
+  box-sizing: border-box;
+  padding: 0 12px;
+  border: 1px solid token(color-border);
+  border-radius: token(radius-sm);
+  margin: 0 6px 6px 0;
+  background-color: transparent;
+  color: token(color-text-muted);
+  cursor: pointer;
+  font-family: $font-family;
+  font-size: 13px;
+  white-space: nowrap;
+
+  @include ease(border-color, color);
+
+  &:hover {
+    border-color: token(color-border-control);
+    color: token(color-text);
+  }
+}
+
+.shellOn {
+  border-color: token(color-accent);
+  background-color: token(win-selected);
+  color: token(color-text);
+}
+
+.none {
+  color: token(color-text-muted);
+  font-size: 13px;
+}

@@ -26,6 +26,8 @@ HIDDEN_ALPHA = 0.0
 # RU 1.45 client source: CrosshairPanelContainerMeta autoloader reload calls.
 AUTOLOADER_UPDATE_TIMER = ('isTimerOn', 4)
 AUTOLOADER_PERCENT_TIMER = ('isTimerOn', 2)
+# RU 1.45 client source: BattleDamageLogPanelMeta.as_setSettingsDamageLogComponentS(isVisible, isColorBlind).
+DAMAGE_LOG_VISIBLE = ('isVisible', 0)
 
 # RU 1.45 gui_battle AS3: MinimapSizeConst.MAP_SIZE and ConsumablesPanel sizes.
 MINIMAP_SIZES = (210, 260, 310, 390, 490, 610)

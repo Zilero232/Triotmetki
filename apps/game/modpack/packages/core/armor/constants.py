@@ -73,6 +73,7 @@ FAR_DISTANCE_M = 500.0
 # (half of the shell's piercingPowerRandomization), which says "likely", not "possible".
 PENETRATION_RANDOMNESS = 0.25
 CHANCE_SIGMA_SHARE = 0.5
+INFINITE = float('inf')
 
 VERDICT_ALWAYS = 'always'
 VERDICT_CHANCE = 'chance'

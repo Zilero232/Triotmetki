@@ -210,8 +210,8 @@ class MainGunRowTest(unittest.TestCase):
         assert row['detail'] == u'доля 30% · команда 6 120'
 
     def test_the_preview_shows_the_share_only_with_its_setting(self):
-        hidden = preview_widget(settings(), translator())['data']['rows'][0]
-        shown = preview_widget(settings(main_gun_share=True), translator())['data']['rows'][0]
+        hidden = preview_widget(settings(), translator())['data']['main_gun']
+        shown = preview_widget(settings(main_gun_share=True), translator())['data']['main_gun']
 
         assert hidden['detail'] is None
         assert shown['detail']
@@ -292,21 +292,10 @@ class PlateTest(unittest.TestCase):
     def test_no_rows_draw_no_text(self):
         assert format_panel([], settings()) is None
 
-    def test_the_plate_has_no_title(self):
+    def test_the_plate_is_its_own_widget_kind(self):
         payload = panel_widget(rows_of(full_state()))
 
-        assert payload['data']['title'] is None
-
-    def test_the_main_gun_row_carries_the_stock_medal(self):
-        payload = panel_widget(rows_of(full_state()))
-
-        icon = payload['data']['rows'][0]['icon']
-        assert icon == 'img://gui/maps/icons/achievement/32x32/mainGun.png|otmetki:target'
-
-    def test_the_wn8_row_carries_its_glyph(self):
-        payload = panel_widget(rows_of(full_state()))
-
-        assert payload['data']['rows'][1]['icon'] == 'otmetki:wn8'
+        assert payload['kind'] == 'battle_progress'
 
     def test_the_text_colours_a_reached_threshold_up(self):
         text = format_panel(rows_of(state(main_gun_state(3100, 14700, 8580))), settings())
@@ -317,6 +306,94 @@ class PlateTest(unittest.TestCase):
         battle = state(main_gun_state(1850, 14700, 8580, hit_ally=True))
 
         assert format_panel(rows_of(battle), settings()) is None
+
+
+class WidgetTest(unittest.TestCase):
+
+    def main_gun(self, battle, **values):
+        return panel_widget(rows_of(battle, **values))['data']['main_gun']
+
+    def test_the_medal_counts_down_the_damage_left(self):
+        main_gun = self.main_gun(state(main_gun_state(1850, 14700, 8580)))
+
+        assert main_gun['left'] == 1090
+
+    def test_the_medal_carries_the_damage_and_the_threshold(self):
+        main_gun = self.main_gun(state(main_gun_state(1850, 14700, 8580)))
+
+        assert (main_gun['damage'], main_gun['need']) == (1850, 2940)
+
+    def test_the_medal_is_named_in_full(self):
+        main_gun = self.main_gun(state(main_gun_state(1850, 14700, 8580)))
+
+        assert main_gun['title'] == u'Основной калибр'
+
+    def test_the_medal_draws_the_large_stock_art(self):
+        main_gun = self.main_gun(state(main_gun_state(1850, 14700, 8580)))
+
+        assert main_gun['icon'] == 'img://gui/maps/icons/achievement/mainGun.png|otmetki:target'
+
+    def test_the_medal_carries_the_stock_tick_for_a_reached_medal(self):
+        main_gun = self.main_gun(state(main_gun_state(1850, 14700, 8580)))
+
+        assert main_gun['reached_icon'] == 'img://gui/maps/icons/library/done.png|otmetki:check'
+
+    def test_the_damage_left_has_its_caption(self):
+        main_gun = self.main_gun(state(main_gun_state(1850, 14700, 8580)))
+
+        assert main_gun['left_caption'] == u'до медали'
+
+    def test_progress_fills_the_bar_to_three_places(self):
+        main_gun = self.main_gun(state(main_gun_state(1850, 14700, 8580)))
+
+        assert main_gun['progress'] == 0.629
+
+    def test_a_reached_medal_says_earned(self):
+        main_gun = self.main_gun(state(main_gun_state(3100, 14700, 8580)))
+
+        assert main_gun['status'] == 'reached'
+        assert main_gun['reached_text'] == u'получено'
+
+    def test_a_reached_medal_has_nothing_left(self):
+        main_gun = self.main_gun(state(main_gun_state(3100, 14700, 8580)))
+
+        assert main_gun['left'] == 0
+
+    def test_a_settled_medal_drops_the_bar(self):
+        main_gun = self.main_gun(state(main_gun_state(3100, 14700, 8580), settled=True))
+
+        assert main_gun['progress'] is None
+
+    def test_the_share_goes_under_the_medal_with_its_setting(self):
+        main_gun = self.main_gun(state(main_gun_state(1850, 14700, 8580)), main_gun_share=True)
+
+        assert main_gun['detail'] == u'доля 30% · команда 6 120'
+
+    def test_the_wn8_line_carries_the_estimate_and_its_colour(self):
+        wn8 = panel_widget(rows_of(full_state()))['data']['wn8']
+
+        assert wn8 == {
+            'icon': 'otmetki:wn8',
+            'label': u'WN8 боя',
+            'value': u'~2 293',
+            'color': '#5B9BF2',
+            'note': u'танк 2 105',
+        }
+
+    def test_a_row_switched_off_leaves_its_section_empty(self):
+        payload = panel_widget(rows_of(full_state(), row_wn8=False))
+
+        assert payload['data']['wn8'] is None
+
+    def test_an_unreachable_medal_leaves_only_the_wn8_line(self):
+        battle = state(main_gun_state(1850, 14700, 900), site_row(), damage=1850, spot=1, frags=1)
+
+        payload = panel_widget(rows_of(battle))
+
+        assert payload['data']['main_gun'] is None
+
+    def test_fixture_for_the_page(self):
+        assert _support.widget_fixture('battle_progress', preview_widget(settings(), translator()))
 
 
 class CountsTest(unittest.TestCase):
@@ -369,10 +446,15 @@ class SettingsTest(unittest.TestCase):
 
 class PreviewTest(unittest.TestCase):
 
-    def test_the_preview_shows_every_row(self):
+    def test_the_preview_shows_the_medal(self):
         payload = preview_widget(settings(), translator())
 
-        assert len(payload['data']['rows']) == 2
+        assert payload['data']['main_gun'] is not None
+
+    def test_the_preview_shows_the_wn8_line(self):
+        payload = preview_widget(settings(), translator())
+
+        assert payload['data']['wn8'] is not None
 
     def test_the_preview_text_counts_down_to_the_threshold(self):
         text = preview_text(settings(), translator())

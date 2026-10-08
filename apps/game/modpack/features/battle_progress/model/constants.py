@@ -60,14 +60,18 @@ KIND_BY_EVENT = (
 ANY_TARGET_KEYS = ('def',)
 
 ROWS = ('main_gun', 'wn8')
-# RU 1.45 gui-part1.pkg: the stock medal art the battle results show.
-ROW_IMAGES = {'main_gun': 'gui/maps/icons/achievement/32x32/mainGun.png'}
-ROW_GLYPHS = {'main_gun': 'target', 'wn8': 'wn8'}
+WIDGET_KIND = 'battle_progress'
+# RU 1.45 gui-part2.pkg: the stock medal art of the achievements page (67x71), sharp at 4K; gui-part1.pkg: the tick.
+MEDAL_IMAGE = 'gui/maps/icons/achievement/mainGun.png'
+MEDAL_GLYPH = 'target'
+REACHED_IMAGE = 'gui/maps/icons/library/done.png'
+REACHED_GLYPH = 'check'
+WN8_GLYPH = 'wn8'
+PROGRESS_DIGITS = 3
 TEXT_COLORS = {'text': COLOR_NEUTRAL, 'muted': COLOR_MUTED, 'good': COLOR_UP, 'bad': COLOR_DOWN}
 ESTIMATE = u'~%s'
 DETAIL_SIZE_STEP = 2
 MIN_DETAIL_SIZE = 8
-CARD_WIDTH = 230
 
 PREVIEW_SIZE = (320, 70)
 PREVIEW_ENEMY_MAX = 14700

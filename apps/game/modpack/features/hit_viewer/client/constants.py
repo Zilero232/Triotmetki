@@ -4,18 +4,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # and received (the target id is the attacker).
 SIDE_BY_EVENT = (('DAMAGE', 'dealt'), ('RECEIVED_DAMAGE', 'received'))
 
-# The viewer page, registered by the ui package's res_map (packages/ui/res_map) next to the settings window and the HUD.
+# The viewer page, registered by the ui package's res_map (packages/ui/res_map) next to the settings window and the HUD,
+# loaded as a lobby sub view over the 3D hangar (core.client.sub_view).
 RES_MAP_ID = 'otmetki/ui/hit_viewer'
-INVALID_RES_ID = -1
 STATE_PROPERTY = 'state'
-SEND_COMMAND = 'send'
-MESSAGE_ARG = 'message'
-# The viewer is a lobby sub view over the 3D hangar, the way the stock Gameface views that show a vehicle open (RU 1.45
-# gui/impl/lobby/maps_training/maps_training_base_view.py, early_access_vehicle_view.py: ViewFlags.LOBBY_SUB_VIEW,
-# ScopeTemplates.LOBBY_SUB_SCOPE, app.setBackgroundAlpha(0), the lobby header menu hidden): the stock hangar UI steps
-# aside and the page's drags and wheel turn the hangar camera (CameraRelatedEvents.LOBBY_VIEW_MOUSE_MOVE). poliroid
-# BattleHits opens a LobbySubView with __background_alpha__ 0 the same way.
-BACKGROUND_ALPHA = 0.0
 
 # How long the camera flies to a hit and how long after the pose it starts (the posed nodes move on the next frames).
 FOCUS_S = 0.5
@@ -24,7 +16,6 @@ FOCUS_DELAY_S = 0.1
 # for it the same way): the hits are placed and measured again this often, this many times, before the viewer gives up.
 SETTLE_S = 0.1
 SETTLE_ATTEMPTS = 20
-RESTORE_WAIT_S = 4.0
 EMPTY_SELECTION = {'battle': None, 'tab': None, 'index': None}
 # A page message the viewer did not understand is logged up to this long.
 LOGGED_MESSAGE_CHARS = 200
@@ -34,11 +25,6 @@ FOCUS_LIMITS_M = (2.9, 9.0)
 # The plate probe reaches this far on both sides of the hit point, in metres.
 PROBE_M = 0.6
 
-# RU 1.45 client source: the stock modules a vehicle descriptor is rebuilt from, the hangar services and classes.
-CAMERA_MANAGER_MODULE = 'cgf_components.hangar_camera_manager'
-CAMERA_MANAGER_CLASS = 'HangarCameraManager'
-PREVIEW_MODULE = 'CurrentVehicle'
-PREVIEW_NAME = 'g_currentPreviewVehicle'
 # vehicle_systems.tankStructure: TankPartNames.TURRET and TankNodeNames.GUN_INCLINATION, the nodes BattleHits poses.
 TURRET_NODE = 'turret'
 GUN_NODE = 'Gun'

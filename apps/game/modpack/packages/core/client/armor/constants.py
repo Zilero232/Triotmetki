@@ -1,5 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import itertools
+
 # RU 1.45 vehicle_systems.tankStructure.TankPartIndexes and the descriptor parts that hold each one's materials.
 MATERIAL_PARTS = ('chassis', 'hull', 'turret', 'gun')
 
@@ -20,4 +22,4 @@ RAY_LENGTH_M = 80.0
 
 # The 8 corners of a part's bounds: CompoundModel.getBoundsForPart maps the unit cube onto the part's box in the
 # world (RU 1.45 HangarVehicleAppearance.getCentralPointForArea reads its centre at (0.5, 0.5, 0.5)).
-UNIT_CORNERS = tuple((x, y, z) for x in (0.0, 1.0) for y in (0.0, 1.0) for z in (0.0, 1.0))
+UNIT_CORNERS = tuple(itertools.product((0.0, 1.0), repeat=3))

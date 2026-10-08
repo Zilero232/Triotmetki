@@ -3,53 +3,17 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import BigWorld
 
 from ....core.client.armor import probe
-from ....core.client.game import client_attr, service
+from ....core.client.hangar_preview import HangarPreview, has_camera_manager, vehicle_compact_descr
 from ....core.client.hud.icons import client_file_exists
 from ....core.hud.icons import image
 from ....core.hit_book import PART_NAMES
-from ....core.hooks import subscribe, unsubscribe
-from ....core.log import guarded, log, safe
+from ....core.log import guarded, log
 from ..model import MODULE_KEYS, effect_model, first_plate, hit_geometry, shell_model, vehicle_vector
-from .constants import (
-    CAMERA_MANAGER_CLASS,
-    CAMERA_MANAGER_MODULE,
-    FOCUS_DISTANCE_M,
-    FOCUS_LIMITS_M,
-    GUN_NODE,
-    PREVIEW_MODULE,
-    PREVIEW_NAME,
-    PROBE_M,
-    RESTORE_WAIT_S,
-    TURRET_NODE,
-)
+from .constants import FOCUS_DISTANCE_M, FOCUS_LIMITS_M, GUN_NODE, PROBE_M, TURRET_NODE
 
 
-def hangar_space():
-    try:
-        from skeletons.gui.shared.utils import IHangarSpace
-    except ImportError:
-        return None
-    return service(IHangarSpace)
-
-
-def camera_manager(space):
-    manager_class = client_attr(CAMERA_MANAGER_MODULE, CAMERA_MANAGER_CLASS)
-    if manager_class is None or space is None:
-        return None
-    import CGF
-    return CGF.getManager(space.spaceID, manager_class)
-
-
-@guarded('hit viewer: vehicle descriptor')
 def preview_descriptor(target):
-    from items import parseIntCompactDescr, vehicles
-    _, nation_id, inner_id = parseIntCompactDescr(target['cd'])
-    descriptor = vehicles.VehicleDescr(typeID=(nation_id, inner_id))
-    if target.get('chassis'):
-        descriptor.installComponent(target['chassis'])
-    if target.get('turret') and target.get('gun'):
-        descriptor.installTurret(target['turret'], target['gun'])
-    return descriptor.makeCompactDescr()
+    return vehicle_compact_descr(target['cd'], target.get('chassis'), target.get('turret'), target.get('gun'))
 
 
 def map_image(path):
@@ -122,97 +86,39 @@ class SceneModels(object):
         self.models = {}
 
 
-# The hangar vehicle is swapped the way the client's own vehicle preview does it (CurrentVehicle.g_currentPreviewVehicle
-# .selectVehicle(intCD, strCD): HangarSpace.updatePreviewVehicle with the stock style; the stock EarlyAccessVehicleView,
-# a Gameface lobby sub view like ours, does the same), and given back with its selectNoVehicle(), which refreshes the
-# selected vehicle with its own outfit (RU 1.45 VehiclePreview._dispose). A recorded point is placed in its part's
-# collision box on the loaded model (model.geometry), the turret and gun take the pose the shot found them in, and the
-# camera flies to the hit the way BattleHits' HangarScene._setCameraData does. Setting the stage up needs no battle:
-# it only follows the hangar's vehicle changes until a hit asks for a vehicle.
+# The hangar vehicle is swapped and given back through the shared hangar preview (core.client.hangar_preview). A
+# recorded point is placed in its part's collision box on the loaded model (model.geometry), the turret and gun take the
+# pose the shot found them in, and the camera flies to the hit the way BattleHits' HangarScene._setCameraData does.
+# Setting the stage up needs no battle: it only follows the hangar's vehicle changes until a hit asks for a vehicle.
 class HangarStage(object):
 
     def __init__(self, on_loaded):
-        self.on_loaded = on_loaded
-        self.space = None
-        self.subscribed = None
-        self.loading = False
-        self.restoring = False
-        self.shown = False
-        self.generation = 0
+        self.hangar = HangarPreview('hit viewer', on_loaded)
         self.aim = None
         self.scene = SceneModels()
 
-    def preview(self):
-        return client_attr(PREVIEW_MODULE, PREVIEW_NAME)
+    @property
+    def space(self):
+        return self.hangar.space
 
     def begin(self):
-        self._finish()
-        self.restoring = False
-        self.generation += 1
-        self.space = hangar_space()
-        if self.space is None or self.preview() is None:
-            log('hit viewer: no hangar space or vehicle preview (%s), the hits cannot be shown on a model'
-                % ('space' if self.space is None else 'preview'))
-            self.space = None
+        if not self.hangar.begin():
+            log('hit viewer: the hits cannot be shown on a model')
             return False
-        self.subscribed = subscribe(self.space, 'onVehicleChanged', self._on_vehicle_changed)
-        if client_attr(CAMERA_MANAGER_MODULE, CAMERA_MANAGER_CLASS) is None:
+        if not has_camera_manager():
             log('hit viewer: no hangar camera manager, the camera will not fly to the hits')
         return True
 
     def show(self, target):
-        if self.space is None:
-            return
-        self.loading = True
-        self.shown = True
         self.scene.hide()
-        self.preview().selectVehicle(target['cd'], preview_descriptor(target))
+        self.hangar.show(target['cd'], preview_descriptor(target))
 
     def end(self):
         self.scene.destroy()
-        if self.space is None:
-            return
-        self.loading = False
-        if not self.shown:
-            self._finish()
-            return
-        self.restoring = True
-        self.shown = False
-        self.preview().selectNoVehicle()
-        generation = self.generation
-        BigWorld.callback(RESTORE_WAIT_S, lambda: self._restore_late(generation))
-
-    @safe
-    def _on_vehicle_changed(self):
-        if self.restoring:
-            self._restore_camera()
-            return
-        if self.loading:
-            self.loading = False
-            self.on_loaded()
-
-    @safe
-    def _restore_late(self, generation):
-        if self.restoring and generation == self.generation:
-            self._restore_camera()
-
-    def _restore_camera(self):
-        self.restoring = False
-        manager = camera_manager(self.space)
-        if manager is not None:
-            manager.resetCameraTarget(0)
-        self._finish()
-
-    def _finish(self):
-        if self.space is None:
-            return
-        if self.subscribed is not None:
-            unsubscribe(self.space, 'onVehicleChanged', self.subscribed)
-        self.space, self.subscribed = None, None
-        log('hit viewer: the hangar vehicle and camera are back')
+        self.hangar.end()
 
     def entity(self):
-        return self.space.getVehicleEntity() if self.space is not None else None
+        return self.hangar.entity()
 
     # BattleHits Vehicle.__updateAppereance poses the turret and gun the same way.
     def pose(self, aim):
@@ -263,8 +169,6 @@ class HangarStage(object):
         found.normalise()
         return vehicle.applyPoint(Math.Vector3(*point)), found
 
-    # The shared hangar armour probe (core.client.armor, the one the armour map casts): every plate along the shot
-    # through the loaded model's collision, the first armoured one measured.
     def measure(self, geometry, shell=None, caliber=None):
         appearance = getattr(self.entity(), 'appearance', None)
         if getattr(appearance, 'collisions', None) is None:
@@ -283,7 +187,7 @@ class HangarStage(object):
         paths = (shell_model(hit.get('shell')), effect_model(hit['outcome'], hit.get('damage')))
         point, direction = self.world(geometry)
         self._show_scene(paths, point, direction)
-        manager = camera_manager(self.space)
+        manager = self.hangar.camera_manager()
         if manager is None:
             return
         manager.moveCamera(point, direction.yaw, -direction.pitch, FOCUS_DISTANCE_M, duration, camera_limits())

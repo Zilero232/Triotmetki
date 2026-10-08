@@ -28,5 +28,15 @@
       "entrance": "OtmetkiHitViewer",
       "impl": "gameface"
     }
+  },
+  {
+    "itemID": "otmetki/ui/armor_view",
+    "type": "Layout",
+    "path": "coui://gui/gameface/mods/triotmetki/ui/armor.html",
+    "parameters": {
+      "extension": "",
+      "entrance": "OtmetkiArmorView",
+      "impl": "gameface"
+    }
   }
 ]

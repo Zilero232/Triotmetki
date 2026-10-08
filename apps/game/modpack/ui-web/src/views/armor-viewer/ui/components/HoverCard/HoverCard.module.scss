@@ -1,0 +1,13 @@
+@use '@/shared/styles/gameface' as *;
+
+.card {
+  position: absolute;
+  display: flex;
+  width: 280px;
+  flex-direction: column;
+  padding: 10px 12px;
+  color: token(color-text);
+  pointer-events: none;
+
+  @include viewer-panel;
+}

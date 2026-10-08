@@ -30,8 +30,5 @@ $battle-results: (
 }
 
 @mixin panel {
-  border: 1px solid rgb(255 255 255 / 8%);
-  border-radius: token(radius-md);
-  background-color: rgb(20 20 23 / 88%);
-  box-shadow: 0 6px 18px rgb(0 0 0 / 45%);
+  @include viewer-panel;
 }

@@ -232,3 +232,60 @@ describe(ComponentEditor, () => {
     expect(screen.getByText('Mark size').closest('[class*="focused"]')).not.toBeNull();
   });
 });
+
+const HANGARS: UiComponent = {
+  ...COMPONENT,
+  id: 'hangar_space',
+  title: 'Hangar switcher',
+  panel: false,
+  editor: undefined,
+  fields: [
+    { key: 'space', label: 'Folder by hand', hint: null, type: 'text', value: '', default: '', max_length: 64, advanced: true },
+    { key: 'look', label: 'Look by hand', hint: null, type: 'text', value: '', default: '', max_length: 64, advanced: true }
+  ],
+  page: {
+    kind: 'list',
+    layout: 'gallery',
+    empty: 'No hangars',
+    rows: [{ id: 'native', title: 'As in the game', subtitle: null, badge: 'Chosen', actions: [] }]
+  }
+};
+
+describe('a gallery page with advanced fields', () => {
+  beforeEach(() => {
+    openEditor(HANGARS.id);
+  });
+
+  it('leaves no side column, the tiles take the full width', () => {
+    const { container } = render(<ComponentEditor component={HANGARS} />);
+
+    expect(container.querySelector('[class*="controls"]')).toBeNull();
+  });
+
+  it('folds the advanced fields under the tiles', () => {
+    render(<ComponentEditor component={HANGARS} />);
+
+    expect(screen.getByRole('button', { name: new RegExp(RU.advancedFields) }).getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('keeps the advanced fields hidden until the fold opens', () => {
+    render(<ComponentEditor component={HANGARS} />);
+
+    expect(screen.queryByText('Folder by hand')).toBeNull();
+  });
+
+  it('shows the advanced fields once the fold opens', () => {
+    render(<ComponentEditor component={HANGARS} />);
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(RU.advancedFields) }));
+
+    expect(screen.getByText('Folder by hand')).toBeTruthy();
+  });
+
+  it('opens the fold when a search led to an advanced field', () => {
+    openSetting({ componentId: HANGARS.id, key: 'look' });
+
+    render(<ComponentEditor component={HANGARS} />);
+
+    expect(screen.getByText('Look by hand')).toBeTruthy();
+  });
+});

@@ -13,7 +13,8 @@ package net.triotmetki.packbadge
         private static const RATIOS:Array = [0, 255];
         private static const TOWARD_ANCHOR:Array = [0, 0.3];
         private static const FROM_ANCHOR:Array = [0.3, 0];
-        private static const GAP:Number = 4;
+        private static const GAP:Number = 10;
+        private static const PLATE_TAIL:Number = 6;
         private static const STRIP_WIDTH:Number = 240;
         private static const MATRIX:Matrix = new Matrix();
 
@@ -41,12 +42,25 @@ package net.triotmetki.packbadge
             }
         }
 
-        public function attach(container:DisplayObjectContainer, stripIndex:int):void
+        public function attach(container:DisplayObjectContainer, stripIndex:int, withPlate:Boolean):void
         {
             this.placeStrip(container, stripIndex);
+            if (!withPlate)
+            {
+                this.removePlate();
+                return;
+            }
             if (this.plate.parent != container)
             {
                 container.addChild(this.plate);
+            }
+        }
+
+        private function removePlate():void
+        {
+            if (this.plate.parent != null)
+            {
+                this.plate.parent.removeChild(this.plate);
             }
         }
 
@@ -74,19 +88,22 @@ package net.triotmetki.packbadge
         public function detach():void
         {
             this.removeStrip();
-            if (this.plate.parent != null)
-            {
-                this.plate.parent.removeChild(this.plate);
-            }
+            this.removePlate();
         }
 
-        public function layout(anchor:Rectangle, row:Rectangle):void
+        public function layout(anchor:Rectangle, row:Rectangle, withPlate:Boolean):void
         {
             var outwardRight:Boolean = anchor.x + anchor.width / 2 >= row.x + row.width / 2;
-            this.plate.x = Math.round(outwardRight ? anchor.right + GAP : anchor.left - GAP - PlateArt.WIDTH);
+            var plateLeft:Number = outwardRight ? anchor.right + GAP : anchor.left - GAP - PlateArt.WIDTH;
+            var plateRight:Number = plateLeft + PlateArt.WIDTH;
+
+            this.plate.x = Math.round(plateLeft);
             this.plate.y = Math.round(row.y + (row.height - PlateArt.HEIGHT) / 2);
-            var left:Number = outwardRight ? Math.max(row.left, anchor.right - STRIP_WIDTH) : anchor.left;
-            var right:Number = outwardRight ? anchor.right : Math.min(row.right, anchor.left + STRIP_WIDTH);
+
+            var outerEdge:Number = withPlate ? plateRight + PLATE_TAIL : anchor.right;
+            var innerEdge:Number = withPlate ? plateLeft - PLATE_TAIL : anchor.left;
+            var left:Number = outwardRight ? Math.max(row.left, anchor.right - STRIP_WIDTH) : innerEdge;
+            var right:Number = outwardRight ? outerEdge : Math.min(row.right, anchor.left + STRIP_WIDTH);
             this.drawStrip(left, row.y, right - left, row.height, outwardRight);
         }
 

@@ -32,6 +32,18 @@ def _progress(main_gun, view):
     return min(1.0, float(main_gun['damage']) / main_gun['need'])
 
 
+def _medal(main_gun, translate):
+    return {
+        'title': translate('bp_medal'),
+        'status': main_gun['status'],
+        'damage': main_gun['damage'],
+        'need': main_gun['need'],
+        'left': max(0, main_gun['need'] - main_gun['damage']),
+        'left_caption': translate('bp_left_caption'),
+        'reached_text': translate('bp_reached'),
+    }
+
+
 # Battle Observer's main gun shows the damage left to the medal (MainGunUI.as as_gunData).
 def main_gun_row(state, settings, translate, view):
     main_gun = state['main_gun']
@@ -50,6 +62,7 @@ def main_gun_row(state, settings, translate, view):
         detail=detail,
         progress=_progress(main_gun, view),
         progress_tone=look['bar'],
+        medal=_medal(main_gun, translate),
     )
 
 

@@ -55,7 +55,6 @@ from .previews import (  # noqa: F401
     preview_file,
     preview_key,
     preview_key_of_file,
-    tile_image,
 )
 from .thumbnail import ThumbnailError, bitmap_thumbnail  # noqa: F401
 
@@ -172,6 +171,15 @@ def space_preview(name):
     return PREVIEWS.get(name) if name else None
 
 
+# The client's own art first, then the frame of the player's hangar; None leaves the tile its drawn placeholder.
+def space_image(name, captured=None):
+    return space_preview(name) or captured
+
+
+def look_image(look, captured=None):
+    return look_preview(look.id) or captured or space_preview(look.space)
+
+
 def is_listed(name):
     return not any(marker in name for marker in HIDDEN_MARKERS)
 
@@ -206,7 +214,7 @@ def space_row(name, chosen, current, translate, previews=None):
         'id': name,
         'title': space_title(name, translate),
         'subtitle': name,
-        'image': tile_image(preview_key(name), previews or {}, space_preview(name)),
+        'image': space_image(name, (previews or {}).get(preview_key(name))),
         'badge': badge,
         'actions': [] if name == chosen else [{'id': ACTION_CHOOSE, 'label': translate('hangar_space_choose')}],
     }
@@ -221,7 +229,7 @@ def look_row(look, chosen, translate, previews=None):
         'id': LOOK_ROW_PREFIX + look.id,
         'title': look_title(look, translate),
         'subtitle': section + SUBTITLE_SEPARATOR + space_title(look.space, translate),
-        'image': tile_image(preview_key(look.space, look.id), previews or {}, look_preview(look.id)),
+        'image': look_image(look, (previews or {}).get(preview_key(look.space, look.id))),
         'badge': translate('hangar_space_badge_chosen') if look.id == chosen else None,
         'actions': [] if look.id == chosen else [{'id': ACTION_LOOK, 'label': translate('hangar_space_choose')}],
     }
@@ -249,14 +257,13 @@ def build_page(names, chosen, current, translate, looks=(), look=u'', pictures=N
     previews = pictures.previews
     active = find_look(looks, look)
     space = u'' if active is not None else chosen
-    native_image = tile_image(preview_key(pictures.default), previews) if pictures.default else None
+    native_image = space_image(pictures.default, previews.get(preview_key(pictures.default)))
     rows = [native_row(not space and active is None, translate, native_image)]
     rows.extend(look_row(item, active.id if active else None, translate, previews) for item in looks)
     rows.extend(space_row(name, space, current, translate, previews) for name in listed_spaces(names))
     return {
         'kind': 'list',
         'layout': LAYOUT_GALLERY,
-        'note': translate('hangar_space_note'),
         'empty': translate('hangar_space_empty'),
         'rows': rows,
     }

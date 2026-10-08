@@ -1,1 +1,0 @@
-export { LegendReadout } from './LegendReadout';

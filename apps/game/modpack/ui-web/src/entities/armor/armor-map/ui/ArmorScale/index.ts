@@ -1,0 +1,1 @@
+export { ArmorScale } from './ArmorScale';

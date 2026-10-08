@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 STRINGS = {
     'ru': {
         'component_hangar_space': u'Выбор ангара',
-        'component_hangar_space_hint': u'Ангар из тех, что уже есть в игре, вместо стандартного, и его вид: освещение и цвет из самой игры. Праздничные и событийные ангары, а также ангары других режимов остаются как в игре. Выберите ангар или вид на странице компонента.',
+        'component_hangar_space_hint': u'Ангар из тех, что уже есть в игре, и его вид — освещение и цвет из самой игры. Меняется сразу, без перезапуска; в режимах и на событиях игра показывает свой ангар.',
         'hangar_space_space': u'Папка ангара вручную',
         'hangar_space_space_hint': u'Для опытных: имя папки из res/spaces, например h16_mt_museum. Пусто — как в игре.',
         'hangar_space_native': u'Как в игре',
@@ -13,7 +13,6 @@ STRINGS = {
         'hangar_space_badge_chosen': u'Выбран',
         'hangar_space_badge_current': u'Сейчас',
         'hangar_space_loaded': u'Сейчас загружен',
-        'hangar_space_note': u'Ангар и вид меняются сразу, без перезапуска игры. Вид — освещение и цвет ангара из самой игры. В режимах и на событиях игра показывает свой ангар, выбранный вернётся в обычном ангаре. Картинка плитки — кадр вашего ангара: он снимается после выбора, когда окно закрыто.',
         'hangar_space_look': u'Вид вручную',
         'hangar_space_look_hint': u'Для опытных: id вида, например autumn_rain. Пусто — как в игре.',
         'hangar_space_section_looks': u'Вид',
@@ -47,7 +46,7 @@ STRINGS = {
     },
     'en': {
         'component_hangar_space': u'Hangar switcher',
-        'component_hangar_space_hint': u'A hangar the game already has instead of the standard one, and its look: lighting and colour from the game itself. Holiday and event hangars and the hangars of other modes stay as in the game. Pick the hangar or the look on the component\'s page.',
+        'component_hangar_space_hint': u'A hangar the game already has, and its look: lighting and colour from the game itself. It changes at once, no restart; modes and events show their own hangar.',
         'hangar_space_space': u'Hangar folder by hand',
         'hangar_space_space_hint': u'For experienced players: a folder name from res/spaces, such as h16_mt_museum. Empty: as in the game.',
         'hangar_space_native': u'As in the game',
@@ -56,7 +55,6 @@ STRINGS = {
         'hangar_space_badge_chosen': u'Chosen',
         'hangar_space_badge_current': u'Now',
         'hangar_space_loaded': u'Loaded now',
-        'hangar_space_note': u'The hangar and the look change at once, no game restart needed. A look is the lighting and colour of the hangar from the game itself. In modes and events the game shows its own hangar; the chosen one comes back in the regular hangar. The picture of a tile is a shot of your own hangar, taken after you pick it once the window is closed.',
         'hangar_space_look': u'Look by hand',
         'hangar_space_look_hint': u'For experienced players: a look id, such as autumn_rain. Empty: as in the game.',
         'hangar_space_section_looks': u'Look',

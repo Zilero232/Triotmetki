@@ -6,13 +6,14 @@ import type { EditorStageProps } from './EditorStage.types';
 
 import { CardPreview } from '../../../CardPreview';
 import { ListPage } from '../../../ListPage';
+import { AdvancedFold } from '../AdvancedFold';
 import { EditorActions } from '../EditorActions';
 import { EditorScreen } from '../EditorScreen';
 
 import s from './EditorStage.module.scss';
 
 export const EditorStage = ({ component, model, compact }: EditorStageProps) => {
-  const { card, hint } = model;
+  const { card, hint, folded } = model;
 
   return (
     <div className={s.stage}>
@@ -31,7 +32,18 @@ export const EditorStage = ({ component, model, compact }: EditorStageProps) => 
             </div>
           )}
           <ScrollArea contentClassName={s.pageContent} label={component.title}>
-            <ListPage page={component.page} onRun={card.run} />
+            <ListPage compact={compact} page={component.page} onRun={card.run} />
+            {folded && (
+              <AdvancedFold
+                focusKey={model.focusKey}
+                group={folded}
+                isOpen={model.isFoldOpen}
+                lineRef={model.focus.lineRef}
+                onHint={model.showHint}
+                onSet={card.setField}
+                onToggle={model.toggleFold}
+              />
+            )}
           </ScrollArea>
         </div>
       )}

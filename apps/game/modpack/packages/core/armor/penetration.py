@@ -7,6 +7,7 @@ from ..vendor import attr
 from .constants import (
     CHANCE_SIGMA_SHARE,
     FAR_DISTANCE_M,
+    INFINITE,
     KIND_MAIN,
     MAX_HIT_ANGLE,
     MIN_HIT_COS,
@@ -28,8 +29,6 @@ from .constants import (
     VERDICT_NO_ARMOUR,
     VERDICT_RICOCHET,
 )
-
-INFINITE = float('inf')
 
 
 @attr.s(frozen=True)

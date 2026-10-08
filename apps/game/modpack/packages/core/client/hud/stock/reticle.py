@@ -16,7 +16,7 @@ from ....hud.stock import (
     RETICLE_RELOAD_TIMER,
     StockSuppression,
     hide_reticle_parts,
-    without_timer,
+    switched_off,
 )
 from ....log import guarded, log, log_exception, safe
 
@@ -55,13 +55,13 @@ class ReticleControl(object):
         @override(CrosshairPanelContainer, 'as_autoloaderUpdateS')
         def _autoloader_update(original, panel, *args, **kwargs):
             if control.hides_timer():
-                args, kwargs = without_timer(args, kwargs, AUTOLOADER_UPDATE_TIMER)
+                args, kwargs = switched_off(args, kwargs, AUTOLOADER_UPDATE_TIMER)
             return original(panel, *args, **kwargs)
 
         @override(CrosshairPanelContainer, 'as_setAutoloaderPercentS')
         def _autoloader_percent(original, panel, *args, **kwargs):
             if control.hides_timer():
-                args, kwargs = without_timer(args, kwargs, AUTOLOADER_PERCENT_TIMER)
+                args, kwargs = switched_off(args, kwargs, AUTOLOADER_PERCENT_TIMER)
             return original(panel, *args, **kwargs)
 
         @override(CrosshairPanelContainer, '_dispose')

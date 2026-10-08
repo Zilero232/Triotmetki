@@ -4,7 +4,7 @@ import { Icon, ScrollArea } from '@/ui-kit';
 
 import type { BattlePickerProps } from './BattlePicker.types';
 
-import { pickerListHeight } from '../../../lib/viewer-frame';
+import { pickerListHeight } from '../../../lib/list-height';
 import { useBattlePicker } from '../../../model/hooks/use-battle-picker';
 import { BattleCard } from './components/BattleCard';
 

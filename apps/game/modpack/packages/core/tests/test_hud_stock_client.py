@@ -20,8 +20,11 @@ STUBBED = (
     'gui.Scaleform.daapi.view.battle.shared.page',
     'gui.Scaleform.daapi.view.battle.classic',
     'gui.Scaleform.daapi.view.battle.classic.page',
+    'gui.Scaleform.daapi.view.meta',
+    'gui.Scaleform.daapi.view.meta.BattleDamageLogPanelMeta',
 )
 HOOKED = ('_populate', '_dispose', '_setComponentsVisibility', '_onRegisterFlashComponent')
+DAMAGE_LOG_HOOKED = 'as_setSettingsDamageLogComponentS'
 
 
 class SharedPage(object):
@@ -52,6 +55,18 @@ class ClassicPage(SharedPage):
 
 class EpicPage(SharedPage):
     pass
+
+
+class BattleDamageLogPanelMeta(object):
+
+    def __init__(self):
+        self.settings = []
+
+    def as_setSettingsDamageLogComponentS(self, isVisible, isColorBlind):
+        self.settings.append((isVisible, isColorBlind))
+
+
+DAMAGE_LOG_ORIGINAL = BattleDamageLogPanelMeta.__dict__[DAMAGE_LOG_HOOKED]
 
 
 class Everything(object):
@@ -94,10 +109,13 @@ def install_stubs():
     sys.modules['BigWorld'].player = lambda: None
     sys.modules['gui.Scaleform.daapi.view.battle.shared.page'].SharedPage = SharedPage
     sys.modules['gui.Scaleform.daapi.view.battle.classic.page'].ClassicPage = ClassicPage
+    meta = sys.modules['gui.Scaleform.daapi.view.meta.BattleDamageLogPanelMeta']
+    meta.BattleDamageLogPanelMeta = BattleDamageLogPanelMeta
     return saved
 
 
 def restore_stubs(saved):
+    setattr(BattleDamageLogPanelMeta, DAMAGE_LOG_HOOKED, DAMAGE_LOG_ORIGINAL)
     for name, module in saved.items():
         if module is None:
             sys.modules.pop(name, None)
@@ -366,6 +384,85 @@ class StockControlTest(unittest.TestCase):
         self.backend.page_drew('panel')
 
         assert self.control.reticle.hidden == frozenset(['reloaderTimerAlphaValue'])
+
+
+class StockDamageLogTest(unittest.TestCase):
+
+    def setUp(self):
+        self.saved = install_stubs()
+        self.originals = {name: SharedPage.__dict__[name] for name in HOOKED}
+        from otmetki.core.client.hud.stock import StockControl
+        self.layer = HudLayer(Backend(), ComponentConfig(MemoryFile()))
+        self.layer.register('damage_log', panel_schema({}))
+        self.control = StockControl(self.layer)
+        self.page = ClassicPage()
+        self.page._populate()
+        self.stock_log = BattleDamageLogPanelMeta()
+
+    def tearDown(self):
+        for name, value in self.originals.items():
+            setattr(SharedPage, name, value)
+        restore_stubs(self.saved)
+
+    def test_the_stock_log_showing_itself_stays_hidden_while_ours_runs(self):
+        self.control.want('damage_log', ('battleDamageLogPanel',))
+
+        self.stock_log.as_setSettingsDamageLogComponentS(True, False)
+
+        assert self.stock_log.settings == [(False, False)]
+
+    def test_the_colour_blind_switch_passes_while_the_stock_log_is_hidden(self):
+        self.control.want('damage_log', ('battleDamageLogPanel',))
+
+        self.stock_log.as_setSettingsDamageLogComponentS(isVisible=True, isColorBlind=True)
+
+        assert self.stock_log.settings == [(False, True)]
+
+    def test_the_stock_log_shows_itself_without_our_panel(self):
+        self.stock_log.as_setSettingsDamageLogComponentS(True, False)
+
+        assert self.stock_log.settings == [(True, False)]
+
+    def test_the_stock_log_shows_itself_again_once_given_back(self):
+        self.control.want('damage_log', ('battleDamageLogPanel',))
+        self.control.want('damage_log', ())
+
+        self.stock_log.as_setSettingsDamageLogComponentS(True, False)
+
+        assert self.stock_log.settings == [(True, False)]
+
+    def test_a_stock_log_given_back_on_another_vehicle_hides_again(self):
+        self.control.want('damage_log', ('battleDamageLogPanel',))
+        self.stock_log.as_setSettingsDamageLogComponentS(False, False)
+
+        self.control.want('damage_log', ())
+
+        assert self.stock_log.settings == [(False, False), (False, False)]
+
+    def test_a_stock_log_given_back_on_the_own_vehicle_is_left_to_the_page(self):
+        self.control.want('damage_log', ('battleDamageLogPanel',))
+        self.stock_log.as_setSettingsDamageLogComponentS(True, False)
+
+        self.control.want('damage_log', ())
+
+        assert self.page.applied[-1] == ({'battleDamageLogPanel'}, set())
+
+    def test_a_stock_log_given_back_on_the_own_vehicle_is_not_set_again(self):
+        self.control.want('damage_log', ('battleDamageLogPanel',))
+        self.stock_log.as_setSettingsDamageLogComponentS(True, False)
+
+        self.control.want('damage_log', ())
+
+        assert self.stock_log.settings == [(False, False)]
+
+    def test_leaving_the_battle_page_forgets_the_stock_log(self):
+        self.control.want('damage_log', ('battleDamageLogPanel',))
+        self.stock_log.as_setSettingsDamageLogComponentS(False, False)
+
+        self.page._dispose()
+        self.control.want('damage_log', ())
+
+        assert self.stock_log.settings == [(False, False)]
 
 
 class CrosshairPanelContainer(object):

@@ -29,13 +29,15 @@ HIDDEN_MARKERS = ('test', 'editor')
 HANGAR_NUMBER = re.compile(r'^h\d+_')
 MT_PREFIX = 'mt_'
 
-# RU 1.45 client art of each space's event or mode; the client has no pictures of its spaces.
+# RU 1.45 client art of each space's event or mode (res/packages/<mode>.pkg, read in place through img://, never
+# copied into our package); the client ships no picture of a space itself, the others fall back to the own frame.
 WHITE_TIGER_ART = 'img://white_tiger/gui/maps/icons/welcome/background.png'
 PREVIEWS = {
     'h08_mt_hangar_wt': WHITE_TIGER_ART,
     'h14_mt_wt_2025': WHITE_TIGER_ART,
     'h33_battle_royale_2021': 'img://battle_royale/gui/maps/intro/chapter_common.png',
     'h00_armory_yard': 'img://armory_yard/gui/maps/icons/shop/intro/slide_1.png',
+    'h33_comp7': 'img://comp7/gui/maps/icons/comp7/backgrounds/prime_time_back.jpg',
 }
 
 PLAN_RELOAD = 'reload'
