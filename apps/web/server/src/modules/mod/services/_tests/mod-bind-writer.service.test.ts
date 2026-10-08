@@ -396,10 +396,10 @@ describe('ModBindWriterService.bind', () => {
     await expect(service.bind({ body: bindBody(), requester: REQUESTER })).resolves.toMatchObject({ account_id: ACCOUNT_ID });
   });
 
-  it('cools an account down once several addresses fail to guess its code', async () => {
+  it('cools an account down once several addresses send it codes that exist but are refused', async () => {
     const { service, prisma } = createService();
 
-    prisma.oneTimeCode.findUnique.mockResolvedValue(null);
+    prisma.oneTimeCode.findUnique.mockResolvedValue(storedCode({ usedAt: NOW }));
 
     for (let attempt = 0; attempt < BIND_CODE.maxFailuresPerAccount; attempt += 1) {
       await service.bind({ body: bindBody(), requester: `198.51.100.${attempt + 1}` }).catch(() => undefined);
@@ -409,6 +409,18 @@ describe('ModBindWriterService.bind', () => {
       status: HttpStatus.TOO_MANY_REQUESTS,
       response: { error: 'rate_limited' }
     });
+  });
+
+  it('never locks an account with unknown codes sent from many addresses', async () => {
+    const { service, prisma } = readyToBind();
+
+    queueMisses({ prisma, count: BIND_CODE.maxFailuresPerAccount * 2 });
+
+    for (let attempt = 0; attempt < BIND_CODE.maxFailuresPerAccount * 2; attempt += 1) {
+      await service.bind({ body: bindBody(), requester: `198.51.100.${attempt + 1}` }).catch(() => undefined);
+    }
+
+    await expect(service.bind({ body: bindBody(), requester: '192.0.2.1' })).resolves.toMatchObject({ account_id: ACCOUNT_ID });
   });
 
   it('keeps an account open when one address alone keeps failing for it', async () => {

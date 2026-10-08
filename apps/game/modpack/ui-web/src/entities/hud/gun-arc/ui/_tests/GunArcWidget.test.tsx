@@ -11,6 +11,8 @@ const data = gunArcSchema.parse(readWidgetFixture('gun_arc'));
 
 const markers = (html: HTMLElement) => [...html.querySelectorAll('svg')].map((svg) => svg.parentElement).filter((marker) => marker !== null);
 
+const shownMarkers = (html: HTMLElement) => markers(html).filter((marker) => !marker.className.includes('idle'));
+
 describe(GunArcWidget, () => {
   it('draws a marker on each side of the reticle', () => {
     const html = render(<GunArcWidget data={data} />).container;
@@ -31,9 +33,35 @@ describe(GunArcWidget, () => {
     expect(markers(html)).toHaveLength(3);
   });
 
-  it('leaves out a marker that is off the screen', () => {
+  it('hides a marker that is off the screen', () => {
     const html = render(<GunArcWidget data={{ ...data, right: null }} />).container;
 
-    expect(markers(html)).toHaveLength(1);
+    expect(shownMarkers(html)).toHaveLength(1);
+  });
+
+  it('keeps a marker that went off the screen mounted', () => {
+    const html = render(<GunArcWidget data={{ ...data, right: null }} />).container;
+
+    expect(markers(html)).toHaveLength(2);
+  });
+
+  it('keeps the last place of a marker that went off the screen', () => {
+    const view = render(<GunArcWidget data={data} />);
+    const before = markers(view.container)[1]?.style.left;
+
+    view.rerender(<GunArcWidget data={{ ...data, right: null }} />);
+
+    expect(markers(view.container)[1]?.style.left).toBe(before);
+  });
+
+  it('keeps the same svg element when every marker goes and comes back', () => {
+    const view = render(<GunArcWidget data={data} />);
+    const before = view.container.querySelector('svg');
+    const empty = { ...data, left: null, right: null, centre: null };
+
+    view.rerender(<GunArcWidget data={empty} />);
+    view.rerender(<GunArcWidget data={data} />);
+
+    expect(view.container.querySelector('svg')).toBe(before);
   });
 });

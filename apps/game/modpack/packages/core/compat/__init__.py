@@ -5,6 +5,8 @@ non-string (a number, None) by converting it to text first, which is what the mo
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import math
+
 from ..vendor import six
 
 PY2 = six.PY2
@@ -37,6 +39,14 @@ def is_int(value):
 
 def is_number(value):
     return is_int(value) or isinstance(value, float)
+
+
+def is_finite_number(value):
+    """`value` is a number (never a bool) that is neither infinite nor NaN."""
+    if not is_number(value):
+        return False
+
+    return not math.isinf(value) and not math.isnan(value)
 
 
 def as_int(value, default=0):

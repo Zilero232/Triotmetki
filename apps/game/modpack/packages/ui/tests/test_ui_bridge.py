@@ -12,7 +12,7 @@ import unittest
 import zlib
 
 import _support
-from otmetki.companion.config import DEFAULTS, FEATURES, Config
+from otmetki.companion.config import DEFAULTS, DEFAULTS_REVISION, FEATURES, Config
 from otmetki.companion.i18n import STRINGS as COMPANION_STRINGS
 from otmetki.core.events import EventBus
 from otmetki.core.hud import ComponentConfig, HudLayer, NullBackend
@@ -28,8 +28,9 @@ from otmetki.ui.components import COMPANION_ID, COMPANION_KEYS, SECTIONS, Featur
 from otmetki.ui.components.component import Component
 from otmetki.ui.components.sources import SectionSource
 from otmetki.ui.fields import Labels
-from otmetki.ui.hud_edit import HudEditor
+from otmetki.ui.hud_edit import HudEditor, move_values
 from otmetki.ui.i18n import STRINGS
+from otmetki.ui.window_layout import layout_values
 from otmetki.ui.profiles import ProfileStore, decode_profile
 from otmetki.ui.profiles.constants import CODE_EXCLUDED_CONFIG_KEYS
 from otmetki.ui.protocol import COMMANDS, PROTOCOL_VERSION, encode_state
@@ -824,13 +825,30 @@ class UserSetTest(BridgeTestCase):
 
         assert self.user_set() == ''
 
-    def test_a_profile_load_records_nothing(self):
+    def test_a_profile_load_records_the_keys_it_changed(self):
         send(self.bridge, type='profile_save', name='A')
         self.context.profiles.get('p1')['data']['config']['hud_modifier'] = 'ctrl'
 
         send(self.bridge, type='profile_load', id='p1')
 
-        assert self.user_set() == ''
+        assert self.user_set() == 'hud_modifier'
+
+    def test_a_profile_load_records_the_section_keys_it_changed(self):
+        send(self.bridge, type='profile_save', name='A')
+        self.context.profiles.get('p1')['data']['components']['minimap'] = {'zoom': 'x2'}
+
+        send(self.bridge, type='profile_load', id='p1')
+
+        assert self.user_set() == 'minimap.zoom'
+
+
+class FiniteValuesTest(unittest.TestCase):
+
+    def test_a_move_drops_an_infinite_coordinate(self):
+        assert move_values({'x': float('inf'), 'y': 5}) == {'y': 5}
+
+    def test_a_window_layout_drops_a_nan_size(self):
+        assert 'width' not in layout_values({'width': float('nan')})
 
 
 class QuietMessageTest(BridgeTestCase):
@@ -852,6 +870,11 @@ class QuietMessageTest(BridgeTestCase):
         send(self.bridge, type='scroll', page='search', top=100)
 
         assert self.notice_kind() == 'error'
+        assert self.bridge.state()['scroll'] == {}
+
+    def test_an_infinite_scroll_position_is_refused(self):
+        send(self.bridge, type='scroll', page='battle', top=float('inf'))
+
         assert self.bridge.state()['scroll'] == {}
 
     def test_a_scroll_position_that_is_not_a_number_is_refused(self):
@@ -1136,7 +1159,33 @@ class BridgeProfilesTest(BridgeTestCase):
         assert self.context.config.get('hud_modifier') == 'alt'
         assert self.minimap().get('zoom') == 'native'
         assert self.damage_log().get('x') == 10
-        assert sorted(event[0] for event in self.context.events) == ['config', 'damage_log', 'minimap']
+        assert sorted(event[0] for event in self.context.events) == sorted(
+            [COMPANION_ID, 'config', 'damage_log', 'minimap'],
+        )
+
+    def test_load_tells_the_component_that_owns_a_changed_switch(self):
+        self.saved_profile()
+        send(self.bridge, type='set', component='marks_panel', key='battle_moe_panel', value=False)
+        del self.context.events[:]
+
+        send(self.bridge, type='profile_load', id='p1')
+
+        assert ('marks_panel', ['battle_moe_panel']) in self.context.events
+
+    def test_a_saved_profile_keeps_the_settings_revision(self):
+        data = self.saved_profile()
+
+        assert data['defaults_revision'] == DEFAULTS_REVISION
+
+    def test_a_profile_of_an_older_revision_is_migrated_before_it_loads(self):
+        data = self.saved_profile()
+        data['defaults_revision'] = 0
+        data['config'].pop('battle_moe_panel', None)
+        send(self.bridge, type='set', component=COMPANION_ID, key='battle_moe_panel', value=False)
+
+        send(self.bridge, type='profile_load', id='p1')
+
+        assert self.context.config.get('battle_moe_panel') is True
 
     def test_load_writes_the_settings_before_it_marks_the_profile_active(self):
         self.saved_profile()
@@ -1359,6 +1408,20 @@ class ProfileCodeTest(BridgeTestCase):
         data = self.imported_data({'config': {}, 'components': components})
 
         assert data['components'] == {'minimap': {'zoom': 'x2'}}
+
+    def test_import_drops_the_language_and_the_session_choices(self):
+        config = {'language': 'en', 'session_idle_minutes': 5, 'share_session_channel': 'x', 'hud_modifier': 'ctrl'}
+
+        data = self.imported_data({'config': config, 'components': {}})
+
+        assert data['config'] == {'hud_modifier': 'ctrl'}
+
+    def test_import_rebuilds_the_hud_places_from_known_battle_types_and_clean_places(self):
+        places = {'comp7': {'damage_log': {'x': 10, 'junk': 1}, 'bad': 'x'}, 'nowhere': {'damage_log': {'x': 1}}}
+
+        data = self.imported_data({'config': {}, 'components': {'hud_layout_places': places}})
+
+        assert data['components']['hud_layout_places'] == {'comp7': {'damage_log': {'x': 10}, 'bad': {}}}
 
     def test_import_keeps_the_hud_places_per_battle_type(self):
         places = {'comp7': {'damage_log': {'x': 10, 'y': 20}}}

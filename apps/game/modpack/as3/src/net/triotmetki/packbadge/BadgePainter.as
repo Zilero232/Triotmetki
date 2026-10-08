@@ -58,19 +58,16 @@ package net.triotmetki.packbadge
             page.addEventListener(Event.REMOVED_FROM_STAGE, this.onPageRemoved, false, 0, true);
         }
 
-        public function mark(ids:Array, shownNames:Array):String
+        public function mark(ids:Array, markedNames:Array, otherNames:Array):String
         {
             this.names = new Dictionary();
             this.nameList = [];
-            for each (var name:* in shownNames)
-            {
-                if (name is String && name != "" && this.names[name] != true)
-                {
-                    this.names[name] = true;
-                    this.nameList.push(name);
-                }
-            }
-            return this.repaint() + " | names " + this.nameList.length + ", ids " + ids.length;
+            this.addNames(markedNames, true);
+            this.addNames(otherNames, false);
+
+            var status:String = this.repaint();
+
+            return status + " | names " + this.nameList.length + ", ids " + ids.length;
         }
 
         public function repaint():String
@@ -78,7 +75,21 @@ package net.triotmetki.packbadge
             this.attachPanel();
             var status:String = this.paint();
             this.settleLater();
+
             return status;
+        }
+
+        private function addNames(shownNames:Array, isMarked:Boolean):void
+        {
+            for each (var name:* in shownNames)
+            {
+                var isNew:Boolean = name is String && name != "" && this.names[name] === undefined;
+                if (isNew)
+                {
+                    this.names[name] = isMarked;
+                    this.nameList.push(name);
+                }
+            }
         }
 
         public function dispose():void
@@ -114,7 +125,19 @@ package net.triotmetki.packbadge
 
         private function paint():String
         {
-            return "panel " + this.paintPanel() + " | tab " + this.paintTable() + " | loading " + this.paintLoading();
+            try
+            {
+                var panel:String = this.paintPanel();
+                var table:String = this.paintTable();
+                var loading:String = this.paintLoading();
+
+                return "panel " + panel + " | tab " + table + " | loading " + loading;
+            }
+            catch (error:Error)
+            {
+                return "error " + error.message;
+            }
+            return "";
         }
 
         private function attachPanel():void
@@ -227,7 +250,6 @@ package net.triotmetki.packbadge
             }
             this.measurePanelRow(item);
             var decor:RowDecor = this.decorFor(item);
-            decor.removeStrip();
             decor.attach(item, backgroundTop(item) + 1);
             decor.layout(this.anchor, this.row);
             this.drawn++;
@@ -302,7 +324,6 @@ package net.triotmetki.packbadge
                 return;
             }
             var decor:RowDecor = this.decorFor(icon);
-            decor.removeStrip();
             decor.attach(container, lowestIndex(container, icon, name));
             decor.layout(this.anchor, this.row);
             this.drawn++;
@@ -320,22 +341,37 @@ package net.triotmetki.packbadge
                 }
             }
             var visible:String = shown.substring(0, end);
-            if (shown.indexOf(CUT_MARK) != end)
+            var isCut:Boolean = shown.indexOf(CUT_MARK) == end;
+            if (!isCut)
             {
-                return this.names[visible] == true;
+                return this.names[visible] === true;
             }
             if (visible.length < MIN_CUT_NAME)
             {
                 return false;
             }
+
+            var match:String = this.onlyNameStartingWith(visible);
+
+            return match != null && this.names[match] === true;
+        }
+
+        private function onlyNameStartingWith(prefix:String):String
+        {
+            var match:String = null;
             for each (var name:String in this.nameList)
             {
-                if (name.indexOf(visible) == 0)
+                if (name.indexOf(prefix) != 0)
                 {
-                    return true;
+                    continue;
                 }
+                if (match != null)
+                {
+                    return null;
+                }
+                match = name;
             }
-            return false;
+            return match;
         }
 
         private function measurePanelRow(item:DisplayObjectContainer):void
@@ -429,20 +465,38 @@ package net.triotmetki.packbadge
         private function onSettle():void
         {
             this.settleId = 0;
-            this.paint();
+            try
+            {
+                this.paint();
+            }
+            catch (error:Error)
+            {
+            }
         }
 
         private function onChanged(event:Event):void
         {
-            this.settleLater();
+            try
+            {
+                this.settleLater();
+            }
+            catch (error:Error)
+            {
+            }
         }
 
         private function onPageRemoved(event:Event):void
         {
             var gone:Function = this.onGone;
             var page:IEventDispatcher = this.page;
-            this.dispose();
-            gone(page);
+            try
+            {
+                this.dispose();
+                gone(page);
+            }
+            catch (error:Error)
+            {
+            }
         }
 
         private static function textOf(field:TextField):String

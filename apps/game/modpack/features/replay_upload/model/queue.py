@@ -60,6 +60,14 @@ def _job_outcome(item, result, now):
     return OUTCOME_BY_RESULT.get(kind, Outcome.RETRY)
 
 
+def _known_fields(known):
+    fields = {}
+    for key, value in (known or {}).items():
+        if isinstance(value, string_types) and value:
+            fields[key] = to_text(value)
+    return fields
+
+
 class ReplayQueue(object):
 
     def __init__(self, storage, max_pending=MAX_PENDING, max_seen=MAX_SEEN, rng=None):
@@ -98,15 +106,17 @@ class ReplayQueue(object):
         key = to_text(arena_unique_id)
         return key in self.seen or self._find(key) is not None
 
-    def _append(self, key, account_id, started_at, now, retry_at):
-        self.items.append({
+    def _append(self, key, account_id, started_at, now, retry_at, known=None):
+        item = {
             'arena_unique_id': key,
             'account_id': int(account_id),
             'started_at': float(started_at) if started_at is not None else None,
             'ended_at': float(now),
             'attempt': 0,
             'retry_at': float(retry_at),
-        })
+        }
+        item.update(_known_fields(known))
+        self.items.append(item)
         overflow = len(self.items) - self.max_pending
         if overflow > 0:
             for item in self.items[:overflow]:
@@ -114,17 +124,17 @@ class ReplayQueue(object):
             self.items = self.items[overflow:]
         self._persist()
 
-    def add(self, arena_unique_id, account_id, started_at, now):
+    def add(self, arena_unique_id, account_id, started_at, now, vehicle=None):
         if not arena_unique_id or not account_id:
             return False
         key = to_text(arena_unique_id)
         if self.knows(key):
             return False
 
-        self._append(key, account_id, started_at, now, float(now) + FIRST_DELAY_S)
+        self._append(key, account_id, started_at, now, float(now) + FIRST_DELAY_S, {'vehicle': vehicle})
         return True
 
-    def request(self, arena_unique_id, account_id, started_at, now):
+    def request(self, arena_unique_id, account_id, started_at, now, path=None):
         if not arena_unique_id or not account_id:
             return REQUEST_INVALID
         key = to_text(arena_unique_id)
@@ -132,11 +142,12 @@ class ReplayQueue(object):
         item = self._find(key)
         if item is not None:
             item['retry_at'] = min(item['retry_at'], float(now))
+            item.update(_known_fields({'path': path}))
             self._persist()
             return REQUEST_READY
 
         self.seen = [value for value in self.seen if value != key]
-        self._append(key, account_id, started_at, now, now)
+        self._append(key, account_id, started_at, now, now, {'path': path})
         return REQUEST_READY
 
     def next_item(self, now):

@@ -129,7 +129,8 @@ class BattleHotkeysClientTest(unittest.TestCase):
         self.backend = Backend()
         hud = importlib.import_module('otmetki.core.client.hud')
         config = ComponentConfig(MemoryFile())
-        hud._state.update({'config': config, 'layer': HudLayer(self.backend, config), 'stock': None})
+        self.layer = HudLayer(self.backend, config)
+        hud._state.update({'config': config, 'layer': self.layer, 'stock': None})
         module = importlib.import_module('otmetki.features.battle_hotkeys.client')
         self.app = App()
         self.component = module.BattleHotkeys(self.app)
@@ -218,6 +219,44 @@ class BattleHotkeysClientTest(unittest.TestCase):
     def test_switched_off_the_keys_do_nothing(self):
         self.app.config.on = False
         self.start()
+
+        self.press('KEY_J')
+
+        assert self.core.writes == []
+
+    def leave_out_of_the_battle_type(self):
+        self.layer.allows = lambda panel_id: False
+
+    def test_the_keys_work_where_the_battle_type_leaves_the_notice_out(self):
+        self.leave_out_of_the_battle_type()
+        self.start()
+
+        self.press('KEY_J')
+
+        assert self.core.values['useServerAim'] is True
+
+    def test_no_notice_where_the_battle_type_leaves_it_out(self):
+        self.leave_out_of_the_battle_type()
+        self.start()
+
+        self.press('KEY_J')
+
+        assert ALIAS not in self.backend.panels
+
+    def test_the_keys_stop_when_switched_off_mid_battle(self):
+        self.leave_out_of_the_battle_type()
+        self.start()
+        self.app.config.on = False
+        self.component.settings_changed(['enabled'])
+
+        self.press('KEY_J')
+
+        assert self.core.writes == []
+
+    def test_the_keys_end_with_the_battle_the_notice_was_left_out_of(self):
+        self.leave_out_of_the_battle_type()
+        self.start()
+        self.app.bus.emit('battle_leave')
 
         self.press('KEY_J')
 

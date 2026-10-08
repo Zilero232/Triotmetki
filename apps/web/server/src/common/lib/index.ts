@@ -23,7 +23,7 @@ export { parseJsonText, readNumber, readRecord, toJsonValue } from './json/json'
 export { escapeLike, insensitiveContains, insensitiveEquals } from './like-pattern/like-pattern';
 export type { InsensitiveEquals } from './like-pattern/like-pattern.types';
 export { modPresenceKey } from './mod-presence/mod-presence';
-export { moscowCalendarDate, moscowDay, moscowDayStart, previousWeek, weekWindow } from './moscow-time/moscow-time';
+export { moscowCalendarDate, moscowDay, moscowDayStart, previousWeek, secondsUntilNextDay, weekWindow } from './moscow-time/moscow-time';
 export type { WeekWindow } from './moscow-time/moscow-time.types';
 export { formatNumberOr, formatPercentOr } from './number-format/number-format';
 export type { FormatNumberInput, FormatPercentInput } from './number-format/number-format.types';

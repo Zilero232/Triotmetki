@@ -5,7 +5,7 @@ import os
 import unittest
 
 import _support
-from otmetki.core.format import COLOR_DOWN, COLOR_UP
+from otmetki.core.format import COLOR_UP
 from otmetki.core.me import tank_rows
 from otmetki.core.hud.panel import ATTACHED
 from otmetki.core.settings import Settings
@@ -88,6 +88,9 @@ class MedalStatusTest(unittest.TestCase):
     def test_is_still_reachable_with_exactly_the_hp_still_needed(self):
         assert medal_status(damage=1850, need=2940, remaining=1090, hit_ally=False) == 'progress'
 
+    def test_is_unreachable_once_the_own_vehicle_is_destroyed(self):
+        assert medal_status(damage=1850, need=2940, remaining=8580, hit_ally=False, is_alive=False) == 'unreachable'
+
     def test_is_failed_once_an_own_shot_hit_an_ally(self):
         assert medal_status(damage=3100, need=2940, remaining=8580, hit_ally=True) == 'failed'
 
@@ -141,7 +144,7 @@ class MainGunRowTest(unittest.TestCase):
         row = only_row(state(main_gun_state(1850, 14700, 8580)))
 
         assert row['text'] == u'Осн. калибр'
-        assert row['value'] == u'−1 090'
+        assert row['value'] == u'ещё 1 090'
 
     def test_progress_never_repeats_the_damage_dealt(self):
         row = only_row(state(main_gun_state(1850, 14700, 8580)))
@@ -162,35 +165,39 @@ class MainGunRowTest(unittest.TestCase):
         assert row['progress'] == 1.0
         assert row['progress_tone'] == 'good'
 
-    def test_reached_shows_the_damage_past_the_threshold(self):
+    def test_reached_says_earned(self):
         row = only_row(state(main_gun_state(3100, 14700, 8580)))
 
-        assert row['value'] == u'+160'
+        assert row['value'] == u'получено'
 
     def test_exactly_the_threshold_is_reached(self):
         row = only_row(state(main_gun_state(2940, 14700, 8580)))
 
-        assert (row['value'], row['tone']) == (u'+0', 'good')
+        assert row['tone'] == 'good'
 
     def test_reached_keeps_one_line_once_settled(self):
         row = only_row(state(main_gun_state(3100, 14700, 8580), settled=True))
 
-        assert row['value'] == u'+160'
         assert row['progress'] is None
 
-    def test_unreachable_is_a_muted_word_without_a_bar(self):
-        row = only_row(state(main_gun_state(1850, 14700, 900)))
+    def test_an_unreachable_medal_has_no_row(self):
+        assert rows_of(state(main_gun_state(1850, 14700, 900))) == []
 
-        assert row['value'] == u'недостижим'
-        assert row['tone'] == 'muted'
-        assert row['progress'] is None
+    def test_a_failed_medal_has_no_row(self):
+        assert rows_of(state(main_gun_state(1850, 14700, 8580, hit_ally=True))) == []
 
-    def test_failed_is_a_bad_word_without_a_bar(self):
-        row = only_row(state(main_gun_state(1850, 14700, 8580, hit_ally=True)))
+    def test_a_destroyed_own_vehicle_leaves_no_row_for_a_medal_not_reached(self):
+        assert rows_of(state(main_gun_state(1850, 14700, 8580, is_alive=False))) == []
 
-        assert row['value'] == u'провален'
-        assert row['tone'] == 'bad'
-        assert row['progress'] is None
+    def test_a_destroyed_own_vehicle_keeps_an_earned_medal(self):
+        row = only_row(state(main_gun_state(3100, 14700, 8580, is_alive=False)))
+
+        assert row['value'] == u'получено'
+
+    def test_the_english_row_counts_the_damage_to_go(self):
+        row = only_row(state(main_gun_state(1850, 14700, 8580)), language='en')
+
+        assert row['value'] == u'1 090 to go'
 
     def test_the_share_is_hidden_by_default(self):
         row = only_row(state(main_gun_state(1850, 14700, 8580)))
@@ -290,23 +297,26 @@ class PlateTest(unittest.TestCase):
 
         assert payload['data']['title'] is None
 
-    def test_each_row_carries_its_glyph(self):
+    def test_the_main_gun_row_carries_the_stock_medal(self):
         payload = panel_widget(rows_of(full_state()))
 
-        icons = [row['icon'] for row in payload['data']['rows']]
-        assert icons == ['otmetki:target', 'otmetki:wn8']
+        icon = payload['data']['rows'][0]['icon']
+        assert icon == 'img://gui/maps/icons/achievement/32x32/mainGun.png|otmetki:target'
+
+    def test_the_wn8_row_carries_its_glyph(self):
+        payload = panel_widget(rows_of(full_state()))
+
+        assert payload['data']['rows'][1]['icon'] == 'otmetki:wn8'
 
     def test_the_text_colours_a_reached_threshold_up(self):
         text = format_panel(rows_of(state(main_gun_state(3100, 14700, 8580))), settings())
 
         assert COLOR_UP in text
 
-    def test_the_text_colours_a_failed_threshold_down(self):
+    def test_a_plate_without_reachable_rows_draws_no_text(self):
         battle = state(main_gun_state(1850, 14700, 8580, hit_ally=True))
 
-        text = format_panel(rows_of(battle), settings())
-
-        assert COLOR_DOWN in text
+        assert format_panel(rows_of(battle), settings()) is None
 
 
 class CountsTest(unittest.TestCase):
@@ -367,7 +377,7 @@ class PreviewTest(unittest.TestCase):
     def test_the_preview_text_counts_down_to_the_threshold(self):
         text = preview_text(settings(), translator())
 
-        assert u'−1 090' in text
+        assert u'ещё 1 090' in text
 
 
 if __name__ == '__main__':

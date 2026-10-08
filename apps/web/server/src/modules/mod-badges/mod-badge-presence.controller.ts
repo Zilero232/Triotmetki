@@ -1,6 +1,6 @@
-import type { Request, Response } from 'express';
+import type { Request } from 'express';
 
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Req } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
@@ -29,19 +29,27 @@ export class ModBadgePresenceController {
   @Throttle({ default: { ...MOD_BADGES_API.presenceThrottle, getTracker: presenceTracker } })
   @ApiBody({ type: ModBadgePresenceRequestDto })
   @ZodResponse({ type: ModBadgesDto })
-  async presence(@Body() body: ModBadgePresenceRequestDto, @Req() request: Request, @Res({ passthrough: true }) response: Response) {
-    await this.presenceWriter.report({ accountId: body.account_id, visible: body.visible });
+  async presence(@Body() body: ModBadgePresenceRequestDto, @Req() request: Request) {
+    const now = new Date();
+    const isOwnClaimed = await this.quota.claimOwnForClient({ ip: request.ip, accountId: body.account_id, now });
+
+    if (isOwnClaimed) {
+      await this.presenceWriter.report({ accountId: body.account_id, visible: body.visible });
+    }
 
     if (body.account_ids.length === 0) {
       return { account_ids: [] };
     }
 
-    const retryAfterSec = await this.quota.claimForClient({ ip: request.ip, accountIds: body.account_ids, now: new Date() });
+    const retryAfterSeconds = await this.quota.claimForClient({ ip: request.ip, accountIds: body.account_ids, now });
 
-    if (retryAfterSec !== null) {
-      response.setHeader('Retry-After', String(retryAfterSec));
-
-      throw new ModException({ status: HttpStatus.TOO_MANY_REQUESTS, error: 'rate_limited', message: 'Daily badge lookups are used up' });
+    if (retryAfterSeconds !== null) {
+      throw new ModException({
+        status: HttpStatus.TOO_MANY_REQUESTS,
+        error: 'rate_limited',
+        message: 'Daily badge lookups are used up',
+        retryAfterSeconds
+      });
     }
 
     return this.presences.visible(body.account_ids);

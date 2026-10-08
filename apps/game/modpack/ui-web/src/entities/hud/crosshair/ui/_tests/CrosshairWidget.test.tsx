@@ -4,12 +4,15 @@ import { describe, expect, it } from 'vitest';
 
 import { readWidgetFixture } from '@/shared/lib/testing/widget-fixture';
 
+import { RETICLE_MARKS } from '../../config';
 import { crosshairSchema } from '../../model/schemas';
 import { CrosshairWidget } from '../CrosshairWidget';
 
 const data = crosshairSchema.parse(readWidgetFixture('crosshair'));
 
 const mount = (input: typeof data): HTMLElement => render(<CrosshairWidget data={input} />).container;
+
+const marked = { ...data, sketch: false, shape: RETICLE_MARKS.shapeIds[0] };
 
 const reload = data.readouts?.reload;
 
@@ -115,6 +118,40 @@ describe(CrosshairWidget, () => {
     view.rerender(<CrosshairWidget data={withClip({ loaded: 3 })} />);
 
     expect(view.container.querySelectorAll('[class*="eject"]')).toHaveLength(1);
+  });
+
+  it('ejects nothing when the next vehicle has another drum', () => {
+    const view = render(<CrosshairWidget data={data} />);
+
+    view.rerender(<CrosshairWidget data={withClip({ size: 4, loaded: 3 })} />);
+
+    expect(view.container.querySelectorAll('[class*="eject"]')).toHaveLength(0);
+  });
+
+  it('keeps the mark mounted while it is off in this view', () => {
+    const view = render(<CrosshairWidget data={marked} />);
+    const before = view.container.querySelectorAll('svg').length;
+
+    view.rerender(<CrosshairWidget data={{ ...marked, shape: null }} />);
+
+    expect(view.container.querySelectorAll('svg')).toHaveLength(before);
+  });
+
+  it('hides the mark while it is off in this view', () => {
+    const view = render(<CrosshairWidget data={marked} />);
+
+    view.rerender(<CrosshairWidget data={{ ...marked, shape: null }} />);
+
+    expect(view.container.querySelector('[class*="idle"]')).not.toBeNull();
+  });
+
+  it('keeps the reticle arcs mounted without readouts', () => {
+    const view = render(<CrosshairWidget data={data} />);
+    const before = view.container.querySelectorAll('svg').length;
+
+    view.rerender(<CrosshairWidget data={{ ...data, readouts: null }} />);
+
+    expect(view.container.querySelectorAll('svg')).toHaveLength(before);
   });
 
   it('keeps every shell slot on screen through a shot', () => {

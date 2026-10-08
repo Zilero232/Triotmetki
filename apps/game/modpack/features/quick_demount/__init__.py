@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'quick_demount'
 PACKAGE_ID = 'net.triotmetki.quick_demount'
 PACKAGE_NAME = 'Three Marks: quick demount'
-VERSION = '0.1.2'
+VERSION = '0.1.3'
 
 
 def create(app):

@@ -7,18 +7,19 @@ import { modErrorCodeSchema } from '@otmetki/schemas';
 import { getUnixTime } from 'date-fns';
 import { ZodSerializationException, ZodValidationException } from 'nestjs-zod';
 import { STATUS_CODES } from 'node:http';
-import { isIncludedIn } from 'remeda';
 
 import type { ReplyInput } from './all-exceptions.types';
 
 import { isPrismaRequestError } from '../../../core';
 import { LestaNotConfiguredError } from '../../../lib/lesta';
+import { ModException } from '../../exceptions';
 import { errorMessage } from '../../lib';
 import { LESTA_NOT_CONNECTED, MOD_REPLY, PRISMA_TO_HTTP } from './all-exceptions.constants';
 import {
   bodyWithField,
   codeForStatus,
   isLestaError,
+  isModContractPath,
   middlewareStatus,
   modErrorForStatus,
   retryAfterSeconds,
@@ -38,7 +39,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
       response.setHeader(MOD_REPLY.serverTimeHeader, String(getUnixTime(new Date())));
     }
 
-    if (isIncludedIn(request.path, MOD_REPLY.contractPaths)) {
+    if (exception instanceof ModException && exception.retryAfterSeconds !== null) {
+      response.setHeader(MOD_REPLY.retryAfterHeader, String(exception.retryAfterSeconds));
+    }
+
+    if (isModContractPath(request.path)) {
       this.replyMod({ exception, response });
 
       return;

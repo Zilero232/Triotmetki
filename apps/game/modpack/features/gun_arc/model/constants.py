@@ -9,7 +9,8 @@ CENTRE_MARKERS = (CENTRE_NONE, 'line', 'dot', 'triangle', 'octagon')
 MARK_NAMES = ('left', 'right', 'centre')
 
 TICK_S = 0.05
-FAST_TICK_S = 0.0
+EMPTY_DRAWN = 'empty'
+FAST_TICK_S = 1 / 30.0
 MIN_DISTANCE_M = 50.0
 CANVAS = (1280, 480)
 

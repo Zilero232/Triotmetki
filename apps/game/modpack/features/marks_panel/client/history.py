@@ -24,6 +24,7 @@ class HistoryBook(object):
             self._on_account(app.account_id)
 
     def _on_account(self, account_id):
+        self.history = None
         store = account_file(self.app.config_dir, HISTORY_FILE, account_id)
         self.history = MarksHistory(store, self.settings.get('max_entries'))
         if self.history.repaired:

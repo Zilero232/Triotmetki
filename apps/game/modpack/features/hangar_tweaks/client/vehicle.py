@@ -10,14 +10,18 @@ def _installed(vehicle):
     return getattr(getattr(vehicle, 'optDevices', None), 'installed', None) or []
 
 
-def _device_state(slot, device):
+def device_state(slot, device):
     if device is None:
         return None
-    return {'slot': slot, 'removable': bool(getattr(device, 'isRemovable', False))}
+    return {
+        'slot': slot,
+        'removable': bool(getattr(device, 'isRemovable', False)),
+        'int_cd': getattr(device, 'intCD', None),
+    }
 
 
 def summary(vehicle):
-    devices = [_device_state(slot, device) for slot, device in enumerate(_installed(vehicle))]
+    devices = [device_state(slot, device) for slot, device in enumerate(_installed(vehicle))]
     crew = [member for _, member in (getattr(vehicle, 'crew', None) or []) if member is not None]
     return {
         'locked': is_locked(vehicle),

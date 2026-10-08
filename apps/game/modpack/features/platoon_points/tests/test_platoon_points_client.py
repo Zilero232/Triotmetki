@@ -110,6 +110,13 @@ class LateArenaEntryTest(unittest.TestCase):
 
         assert self.renders == []
 
+    def test_a_recovered_platoon_mate_is_read_again(self):
+        self.arena_data.infos.append(Namespace(vehicleID=MATE_ID))
+
+        self.panel.hooks.handlers['onVehicleRecovered'](MATE_ID)
+
+        assert sorted(self.panel.platoon.members) == [OWN_ID, MATE_ID]
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -135,6 +135,7 @@ class SceneShot(object):
         self.key = None
         self.restore = []
         self.generation = 0
+        self.previous_notify = None
 
     @property
     def busy(self):
@@ -147,14 +148,21 @@ class SceneShot(object):
     def take(self, key):
         if self.busy:
             return False
-        self._clear_folder()
+        previous_notify = _stock_notify()
+        if previous_notify is None:
+            log('hangar preview: the client screenshot callback is unknown, no shot')
+            return False
+
         self.restore = []
         try:
+            self._clear_folder()
             hide_interface(self.restore)
         except Exception:
             log_exception('hangar preview: interface off')
             restore_interface(self.restore)
             return False
+
+        self.previous_notify = previous_notify
         self.key = key
         self.generation += 1
         generation = self.generation
@@ -183,9 +191,8 @@ class SceneShot(object):
             return
         key = self.key
         self.key = None
-        stock = _stock_notify()
-        if stock is not None:
-            BigWorld.setScreenshotNotifyCallback(stock)
+        BigWorld.setScreenshotNotifyCallback(self.previous_notify)
+        self.previous_notify = None
         restore_interface(self.restore)
         self.restore = []
         self.on_done(key, self._keep(key, path or self._newest_capture()))

@@ -20,11 +20,9 @@ from ..model import (
     to_native,
     with_interface_scale,
 )
-from ..model.scale import exact_scale, needs_scale
 from ..settings import SCHEMA, SWITCH
 from .carousel import CarouselRows
 from .processors import demount, remove_style, return_crew, unload_crew
-from .scale import apply_scale, current_scale, on_scale_changed, restore_scale
 from .vehicle import device_in, free_berths, summary
 
 
@@ -39,33 +37,16 @@ class HangarTweaks(NativeSettingsComponent):
 
     def __init__(self, app):
         NativeSettingsComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS, to_native)
-        self.exact_on = False
         self.carousel_rows = CarouselRows(self.row_count)
-        app.bus.on('hangar', self.apply_exact_scale)
-        on_scale_changed(self.apply_exact_scale)
 
     def settings_changed(self, changed):
         NativeSettingsComponent.settings_changed(self, changed)
-        self.apply_exact_scale()
         self.carousel_rows.resend()
 
     def row_count(self, stock):
         if not self.enabled_in_hangar():
             return stock
         return carousel_row_count(self.settings.get('carousel_rows'), stock)
-
-    def apply_exact_scale(self, *args):
-        if self.app.in_battle:
-            return
-        wanted = exact_scale(self.settings.get('interface_scale_exact')) if self.enabled() else None
-        if wanted is None:
-            if self.exact_on:
-                self.exact_on = False
-                restore_scale()
-            return
-        self.exact_on = True
-        if needs_scale(current_scale(), wanted):
-            apply_scale(wanted)
 
     def desired(self):
         values = self.settings.to_dict()
@@ -108,9 +89,9 @@ class HangarTweaks(NativeSettingsComponent):
         return self.notice_info('hangar_tweaks_sent')
 
     def _demount(self, vehicle, state):
-        slots, refusal = plan_demount(state)
+        planned_devices, refusal = plan_demount(state)
         if not refusal:
-            demount(vehicle, slots, device_in, self._done)
+            demount(vehicle, planned_devices, device_in, self._done)
         return refusal
 
     def _unload_crew(self, vehicle, state):

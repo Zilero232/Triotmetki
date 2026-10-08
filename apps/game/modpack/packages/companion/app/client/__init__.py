@@ -93,9 +93,7 @@ class OtmetkiApp(object):
         self.bus = EventBus()
         self.hooks = Subscriptions()
         self.config_file = deferred(open_config(CONFIG_DIR, 'config.json', pretty=True))
-        stored_config = self.config_file.read({})
-        self.config = Config(migrate_stored(CONFIG_DIR, stored_config), allow_custom_server=is_dev_install())
-        self.save_config()
+        self.config = self._load_config()
         self.translate = Translator(resolve_language(self.config.get('language'), client_language()))
         self.credentials = _credential_store()
         self.state_file = deferred(open_config(CONFIG_DIR, 'state.json'))
@@ -148,6 +146,18 @@ class OtmetkiApp(object):
 
     def save_config(self):
         self.config_file.write(self.config.to_dict())
+
+    def _load_config(self):
+        stored_config = self.config_file.read({})
+        values, is_migrated = migrate_stored(CONFIG_DIR, stored_config)
+        config = Config(values, allow_custom_server=is_dev_install())
+
+        self.config_file.write(config.to_dict())
+        # The migrated components.json is already on disk: its revision goes with it, or the next start migrates again.
+        if is_migrated:
+            self.config_file.flush()
+
+        return config
 
     def register_state(self, key, dump):
         self.state_parts.append((key, dump))

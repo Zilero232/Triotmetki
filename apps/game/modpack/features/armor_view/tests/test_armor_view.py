@@ -3,10 +3,18 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import unittest
 
-import _support  # noqa: F401
+import _support
 from otmetki.core.settings import Settings
 from otmetki.features.armor_view.i18n import STRINGS
-from otmetki.features.armor_view.model import armor_url, is_menu_option, refusal, shows_menu_option, site_locale
+from otmetki.features.armor_view.model import (
+    armor_url,
+    is_menu_option,
+    menu_items,
+    refusal,
+    shows_menu_option,
+    site_locale,
+    stepped,
+)
 from otmetki.features.armor_view.settings import DEFAULTS, GROUP, SCHEMA, SETTINGS, SWITCH
 
 TANK_ID = 2849
@@ -67,9 +75,31 @@ class MenuOptionTest(unittest.TestCase):
         assert shows_menu_option(True, True, settings(), TANK_ID) is False
         assert shows_menu_option(False, False, settings(), TANK_ID) is False
 
-    def test_only_our_option_id_is_ours(self):
+    def test_the_hangar_map_option_is_ours(self):
         assert is_menu_option('otmetki_armor_view') is True
+
+    def test_the_site_option_is_ours(self):
+        assert is_menu_option('otmetki_armor_view_site') is True
+
+    def test_a_stock_option_is_not_ours(self):
         assert is_menu_option('vehicleInfo') is False
+
+    def test_the_hangar_map_comes_first_in_the_menu(self):
+        items = menu_items(_support.translator(STRINGS))
+
+        assert [option_id for option_id, _ in items] == ['otmetki_armor_view', 'otmetki_armor_view_site']
+
+
+class SteppedTest(unittest.TestCase):
+
+    def test_steps_forward(self):
+        assert stepped(0, 3, 1) == 1
+
+    def test_wraps_backwards(self):
+        assert stepped(0, 3, -1) == 2
+
+    def test_no_entries_stay_at_zero(self):
+        assert stepped(2, 0, 1) == 0
 
 
 class DescriptorTest(unittest.TestCase):
@@ -81,8 +111,17 @@ class DescriptorTest(unittest.TestCase):
         assert SETTINGS == (SWITCH,)
         assert SWITCH == 'hangar_armor_view'
 
-    def test_it_opens_in_the_game_by_default(self):
-        assert DEFAULTS == {'context_menu': True, 'open_in': 'game'}
+    def test_the_site_opens_in_the_game_by_default(self):
+        assert DEFAULTS['open_in'] == 'game'
+
+    def test_the_map_opens_on_the_effective_armour(self):
+        assert DEFAULTS['mode'] == 'effective'
+
+    def test_the_map_has_a_medium_detail_by_default(self):
+        assert DEFAULTS['detail'] == 'medium'
+
+    def test_a_distance_past_the_limits_is_held(self):
+        assert settings(distance=5000).get('distance') == 600
 
     def test_the_settings_group(self):
         assert GROUP == 'hangar'

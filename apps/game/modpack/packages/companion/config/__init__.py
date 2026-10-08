@@ -75,7 +75,7 @@ def upgraded(values):
         if revision < since and values.get(key) == old and key not in chosen:
             upgraded_values[key] = new
     for since, key, value in ONE_TIME_SWITCHES:
-        if revision < since:
+        if revision < since and key not in chosen:
             upgraded_values[key] = value
     return upgraded_values
 

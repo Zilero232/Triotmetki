@@ -13,10 +13,11 @@ import type { IngestEvent } from '../../lib/contract/contract.types';
 import type { AuthenticatedDevice, BattleEventsSink } from '../../mod.types';
 
 import { Prisma } from '../../../../../generated';
-import { MOD_INGEST } from '../../config/ingest.constants';
+import { MOD_INGEST, MOD_INGEST_QUOTA } from '../../config/ingest.constants';
 import { moePercent } from '../../lib/battle/battle';
 import { ingestBatchSchema } from '../../lib/contract/contract.schemas';
 import { EventLedgerService } from '../event-ledger.service';
+import { IngestQuotaWriterService } from '../ingest-quota-writer.service';
 import { ModIngestWriterService } from '../mod-ingest-writer.service';
 
 const example = ingestBatchSchema.parse(
@@ -81,6 +82,7 @@ const createService = () => {
   const purgeGuard = allowedGuard();
   const expected = mock<ExpectedValuesReaderService>();
   const webhooks = mock<WebhookEmitter>();
+  const quota = new IngestQuotaWriterService(new RedisMock());
 
   const created = new Set<bigint>();
 
@@ -102,9 +104,9 @@ const createService = () => {
   prisma.battle.findMany.mockResolvedValue(battleEvents.map((event) => mock<Battle>({ tankId: event.vehicle.tank_id, result: 'win' })));
   expected.all.mockResolvedValue(new Map());
 
-  const service = new ModIngestWriterService(prisma, new EventLedgerService(new RedisMock()), expected, purgeGuard, webhooks);
+  const service = new ModIngestWriterService(prisma, new EventLedgerService(new RedisMock()), quota, expected, purgeGuard, webhooks);
 
-  return { service, prisma, webhooks, purgeGuard };
+  return { service, prisma, webhooks, purgeGuard, quota };
 };
 
 const incrementedSessions = (prisma: ReturnType<typeof createService>['prisma']) =>
@@ -323,6 +325,7 @@ describe('ModIngestWriterService side channels', () => {
     const service = new ModIngestWriterService(
       prisma,
       new EventLedgerService(new RedisMock()),
+      new IngestQuotaWriterService(new RedisMock()),
       mock<ExpectedValuesReaderService>(),
       allowedGuard(),
       mock<WebhookEmitter>(),
@@ -357,5 +360,70 @@ describe('ModIngestWriterService side channels', () => {
     expect(webhooks.emit).toHaveBeenCalledWith(
       expect.objectContaining({ subject: { accountIds: [Number(device.accountId)], clanIds: [] }, data: expect.objectContaining({ nickname: null }) })
     );
+  });
+});
+
+describe('ModIngestWriterService daily quota', () => {
+  const quotaDevice = (accountId: bigint): AuthenticatedDevice => ({ ...device, accountId });
+
+  it('refuses a batch past the daily event cap before writing anything', async () => {
+    const { service, prisma, quota } = createService();
+    const owner = quotaDevice(9_000_001n);
+
+    await quota.claimEvents({ accountId: owner.accountId, count: MOD_INGEST_QUOTA.eventsPerDay, now: new Date() });
+
+    await expect(service.ingest({ device: owner, batch: example })).rejects.toMatchObject({ status: HttpStatus.TOO_MANY_REQUESTS });
+    expect(prisma.battle.create).not.toHaveBeenCalled();
+  });
+
+  it('refuses a new battle past the daily battle cap', async () => {
+    const { service, quota } = createService();
+    const owner = quotaDevice(9_000_002n);
+    const [battle] = battleEvents;
+
+    for (let slot = 0; slot < MOD_INGEST_QUOTA.newBattlesPerDay; slot += 1) {
+      await quota.claimBattle({ accountId: owner.accountId, now: new Date() });
+    }
+
+    const ingest = service.ingest({ device: owner, batch: { ...example, events: battle ? [battle] : [] } });
+
+    await expect(ingest).rejects.toMatchObject({ status: HttpStatus.TOO_MANY_REQUESTS });
+  });
+
+  it('does not charge the battle cap for a duplicate battle', async () => {
+    const { service, quota } = createService();
+    const owner = quotaDevice(9_000_003n);
+    const [battle] = battleEvents;
+    const batch = { ...example, events: battle ? [battle] : [] };
+
+    await service.ingest({ device: owner, batch });
+    await service.ingest({ device: owner, batch });
+
+    for (let slot = 1; slot < MOD_INGEST_QUOTA.newBattlesPerDay; slot += 1) {
+      await quota.claimBattle({ accountId: owner.accountId, now: new Date() });
+    }
+
+    await expect(quota.claimBattle({ accountId: owner.accountId, now: new Date() })).rejects.toBeInstanceOf(Error);
+  });
+});
+
+describe('ModIngestWriterService ledger window', () => {
+  it('drops an event older than the ledger window as a duplicate', async () => {
+    const { service, prisma } = createService();
+    const snapshot = { ...moeSnapshot(), occurred_at: example.sent_at - MOD_INGEST.ledgerTtlSeconds - 1 };
+
+    const result = await service.ingest({ device, batch: { ...example, events: [snapshot] } });
+
+    expect(result.duplicates).toBe(1);
+    expect(prisma.playerTank.upsert).not.toHaveBeenCalled();
+  });
+
+  it('accepts an event inside the ledger window', async () => {
+    const { service } = createService();
+    const snapshot = { ...moeSnapshot(), occurred_at: example.sent_at - MOD_INGEST.ledgerTtlSeconds + 60 };
+
+    const result = await service.ingest({ device, batch: { ...example, events: [snapshot] } });
+
+    expect(result.accepted).toBe(1);
   });
 });

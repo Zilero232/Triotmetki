@@ -9,3 +9,5 @@ PREVIOUS_MODE_ATTR = '_VideoCameraControlMode__prevModeName'
 PREVIOUS_ARGS_ATTR = '_VideoCameraControlMode__previousArgs'
 FALLBACK_MODE = 'arcade'
 ESCAPE_KEY = 'KEY_ESCAPE'
+# RU 1.45 PlayerEvents: the lobby account leaves (a battle, a server switch) or the connection drops.
+ACCOUNT_LEFT_EVENTS = ('onAccountBecomeNonPlayer', 'onDisconnected')

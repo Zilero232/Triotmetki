@@ -4,6 +4,7 @@ import time
 
 from ....core.moe import exact_moe, is_post_battle_reading
 from ...payload import build_moe_snapshot_event
+from ..constants import MOE_SENT_KEY
 from ..ledger import BattleSnapshots
 from .dossier import current_vehicle_moe
 
@@ -16,9 +17,15 @@ class MarksCapture(object):
         self.app = app
         self.hangar_moe = {}
         self.battles = BattleSnapshots()
-        self.moe_sent = dict(app.state.get('moe_sent') or {})
-        app.register_state('moe_sent', lambda: self.moe_sent)
+        self.moe_sent = {}
+        app.register_account_state(MOE_SENT_KEY, self._dump_sent, self._load_sent)
         app.bus.on('account', self._on_account)
+
+    def _dump_sent(self):
+        return self.moe_sent
+
+    def _load_sent(self, stored):
+        self.moe_sent = dict(stored) if isinstance(stored, dict) else {}
 
     def _on_account(self, account_id):
         self.hangar_moe = {}

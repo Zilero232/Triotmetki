@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ....core.compat import to_text
 from ....core.format import counted, format_epoch, format_number, format_signed
 from .constants import (
     ACTION_CLEAR,
@@ -113,9 +114,17 @@ def row_of(tank_id, vehicle, summary, translate):
     }
 
 
+def _tank_keys(history):
+    keys = []
+    for key in history.ordered():
+        if to_text(key).isdigit():
+            keys.append(key)
+    return keys
+
+
 def build_page(history, translate, trend_battles, max_rows):
     rows = []
-    for tank_id in history.ordered()[:max_rows]:
+    for tank_id in _tank_keys(history)[:max_rows]:
         summary = history.summary(tank_id, trend_battles)
         if summary is not None:
             rows.append(row_of(tank_id, history.vehicle(tank_id), summary, translate))

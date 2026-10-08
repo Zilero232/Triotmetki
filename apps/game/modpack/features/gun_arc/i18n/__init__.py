@@ -19,7 +19,7 @@ STRINGS = {
         'gun_arc_centre_marker_triangle': u'Треугольник',
         'gun_arc_centre_marker_octagon': u'Восьмиугольник',
         'gun_arc_fast_redraw': u'Ускоренная отрисовка',
-        'gun_arc_fast_redraw_hint': u'Маркеры перерисовываются каждый кадр, а не 20 раз в секунду: плавнее, но на слабом компьютере может снизить FPS.',
+        'gun_arc_fast_redraw_hint': u'Маркеры перерисовываются 30 раз в секунду, а не 20: плавнее, но на слабом компьютере может снизить FPS.',
         'gun_arc_preview': u'УГН ‹ › у прицела',
     },
     'en': {
@@ -39,7 +39,7 @@ STRINGS = {
         'gun_arc_centre_marker_triangle': u'Triangle',
         'gun_arc_centre_marker_octagon': u'Octagon',
         'gun_arc_fast_redraw': u'Faster redraw',
-        'gun_arc_fast_redraw_hint': u'The markers are redrawn every frame instead of 20 times a second: smoother, but it may cost FPS on a weak PC.',
+        'gun_arc_fast_redraw_hint': u'The markers are redrawn 30 times a second instead of 20: smoother, but it may cost FPS on a weak PC.',
         'gun_arc_preview': u'Traverse ‹ › by the reticle',
     },
 }

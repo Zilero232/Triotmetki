@@ -824,7 +824,7 @@ K = keep, A = advanced, D = delete (fixed value in brackets).
 | hangar_cleaner | hide_offer_banners, hide_teaser, hide_event_entries | — | — |
 | hangar_info | clock_format, date_format, show_server, show_ping, show_online, battle_clock | replace_timer, template | battle_clock_format (%H:%M), font_size (14) |
 | hangar_space | — (the page picks the hangar) | space | — |
-| hangar_tweaks | carousel_rows, carousel_tiles, interface_scale, quick_actions | interface_scale_exact | — |
+| hangar_tweaks | carousel_rows, carousel_tiles, interface_scale, quick_actions | — | — |
 | hud_layouts | random, comp7, frontline, event, battle_royale | own_places | — |
 | marks_panel | show_battle_panel, style, color_mode, alt_detail, show_targets, show_battles, hangar_card, hangar_style, show_trend, show_tank_ratings | show_battle, show_step, show_up, show_mastery, show_research, trend_battles, template | step (0.5), max_entries (100), page_rows (50) |
 | minimap | size, transparency, vehicle_names, view_range, max_view_range, draw_range | — | — |

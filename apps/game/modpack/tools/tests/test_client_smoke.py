@@ -16,6 +16,7 @@ import unittest
 import _scaleform
 import _support
 from otmetki.companion.binding import Credentials
+from otmetki.companion.config.constants import DEFAULTS_REVISION
 from otmetki.core.shells.constants import BATTLE_LOG_SHELL_NAMES
 from otmetki.core.vendor.enum34 import IntEnum
 
@@ -74,7 +75,7 @@ HUD_OFF = (
     'hangar_battle_results', 'battle_progress',
 )
 BATTLE_PANELS = [
-    'battle_progress', 'damage_log', 'sixth_sense', 'team_hp',
+    'damage_log', 'sixth_sense', 'team_hp',
 ]
 DESCRIBED_PANELS = [
     'battle_hotkeys', 'battle_loadout', 'battle_progress', 'crosshair', 'damage_log', 'gun_arc',
@@ -1261,6 +1262,7 @@ class Game(object):
         self.hud_backend().on_message(json.dumps({'type': 'moved', 'id': alias, 'x': x, 'y': y}))
 
     def hud_components(self):
+        self.pending_renders()
         hud = [(alias, props) for alias, props in self.components.items() if alias.startswith('otmetki.hud.')]
         return {alias.split('.')[-1]: props for alias, props in hud}
 
@@ -1306,6 +1308,13 @@ class Game(object):
         self.callbacks[:] = [callback for callback in self.callbacks if callback not in pushes]
         for push in pushes:
             push()
+
+    def pending_renders(self):
+        """Run the panel renders put off to the next frame (team_hp draws once a frame)."""
+        renders = [callback for callback in self.callbacks if getattr(callback, '__name__', None) == '_render_pending']
+        self.callbacks[:] = [callback for callback in self.callbacks if callback not in renders]
+        for render in renders:
+            render()
 
     def run_callbacks(self):
         pending = list(self.callbacks)
@@ -1987,7 +1996,7 @@ class ControllerPanelsTest(StoryTest):
         game.hud_module().hud_layer(app).update_settings('battle_progress', {'main_gun_share': True})
         session.own_feedback(Feedback(KINDS.DAMAGE, ENEMY_VEHICLE, Extra(390)))
         session.hit('VEHICLE_HEALTH', ENEMY_VEHICLE, (510, None, 0))
-        cls.main_gun = game.hud_text('battle_progress')
+        cls.main_gun = game.hud_components().get('battle_progress')
 
         game.clock[0] = 200.0
         session.own_feedback(Feedback(KINDS.RECEIVED_DAMAGE, ALLY_VEHICLE, Extra(140, 'HIGH_EXPLOSIVE', reason='ram')))
@@ -1999,12 +2008,11 @@ class ControllerPanelsTest(StoryTest):
         game.events.onAvatarBecomeNonPlayer()
         cls.panels_after_battle = game.hud_components()
 
-    def test_main_gun_is_out_of_reach_before_any_damage(self):
-        self.assertIn(u'Осн. калибр', self.panels['battle_progress']['text'])
-        self.assertIn(u'недостижим', self.panels['battle_progress']['text'])
+    def test_a_main_gun_out_of_reach_draws_no_plate(self):
+        self.assertNotIn('battle_progress', self.panels)
 
-    def test_main_gun_counts_the_own_share_of_the_team_damage(self):
-        self.assertIn(u'доля 100% · команда 390', self.main_gun)
+    def test_a_main_gun_still_out_of_reach_after_the_damage_draws_no_plate(self):
+        self.assertIsNone(self.main_gun)
 
     def test_damage_log_names_the_rammer_and_its_class(self):
         self.assertIn(u'−140', self.rammed)
@@ -2437,10 +2445,10 @@ class SiteRecordsTest(StoryTest):
         self.assertIn(u'WN8 боя', text)
         self.assertNotIn('otmetki.session', self.components_in_battle)
 
-    def test_the_main_gun_shows_the_damage_past_the_threshold_not_the_damage_dealt(self):
+    def test_the_main_gun_says_earned_past_the_threshold_not_the_damage_dealt(self):
         text = self.battle_panels['battle_progress']['text']
 
-        self.assertIn(u'+500', text)
+        self.assertIn(u'получено', text)
         self.assertNotIn(u'1 500', text)
 
     def test_the_main_gun_stays_out_of_a_training_room(self):
@@ -2838,7 +2846,7 @@ class MarksTest(StoryTest):
         cls.after_summary = game.hud_text('marks_panel')
         game.events.onAvatarBecomeNonPlayer()
         cls.panels_after_battle = sorted(game.hud_components())
-        cls.state_parts = [key for key, _ in app.state_parts]
+        cls.state_parts = [key for key, _, _ in app.account_state.parts]
 
     def test_the_hangar_asks_the_site_once_for_the_moe_curve(self):
         self.assertEqual(self.curve_reads, 1)
@@ -2991,11 +2999,14 @@ class InjectHangarTest(StoryTest):
     @classmethod
     def play_reload(cls, game):
         first = game.load_hangar()
+        stale_adaptor = first.components[INJECT_ALIAS]
         second = game.load_hangar()
         cls.first_after_a_reload = game.scaleform.page(first, INJECT_ALIAS)
         cls.page_after_a_reload = game.injected_page(second)
         game.run_callbacks()
         cls.page_after_the_load_check = game.scaleform.page(second, INJECT_ALIAS)
+        stale_adaptor._dispose()
+        cls.attached_after_a_stale_dispose = game.hud_backend().hangar.host.parent is second
         cls.windows = len(game.windows)
 
     def test_the_page_is_placed_in_the_hangar_view(self):
@@ -3032,6 +3043,9 @@ class InjectHangarTest(StoryTest):
 
     def test_a_loaded_page_passes_the_load_check(self):
         self.assertIsNotNone(self.page_after_the_load_check)
+
+    def test_a_late_dispose_of_the_earlier_adaptor_keeps_the_current_page(self):
+        self.assertTrue(self.attached_after_a_stale_dispose)
 
     def test_no_window_is_ever_opened(self):
         self.assertEqual(self.windows, 0)
@@ -3339,7 +3353,7 @@ class DeviceSetup(object):
 
 def garage_tank(tank_id, name, tier, setups, **flags):
     layouts = instance('SetupLayouts', {'setups': dict(enumerate(setups))})
-    devices = instance('OptDevices', {'setupLayouts': layouts})
+    devices = instance('OptDevices', {'setupLayouts': layouts, 'installed': setups[0]})
     attrs = {'intCD': tank_id, 'shortUserName': name, 'level': tier, 'optDevices': devices}
     attrs.update(flags)
     return instance('Vehicle', attrs)
@@ -3380,7 +3394,8 @@ class QuickDemountTest(StoryTest):
         current = garage_tank(1, 'T-34', 5, [DeviceSetup(RAMMER, None, None)])
         tanks = [
             current,
-            garage_tank(2, 'T-44', 8, [DeviceSetup(None, None, None), DeviceSetup(None, RAMMER, None)]),
+            garage_tank(2, 'T-44', 8, [DeviceSetup(None, RAMMER, None), DeviceSetup(None, None, None)]),
+            garage_tank(6, 'IS', 7, [DeviceSetup(None, None, None), DeviceSetup(RAMMER, None, None)]),
             garage_tank(3, 'Obj. 140', 10, [DeviceSetup(None, None, RAMMER)]),
             garage_tank(4, 'T-54', 9, [DeviceSetup(RAMMER, None, None)], isInBattle=True),
             garage_tank(5, 'MS-1', 1, [DeviceSetup(None, None, None)]),
@@ -3451,6 +3466,9 @@ class QuickDemountTest(StoryTest):
 
 ARMOR_VIEW_MENU = 'gui.Scaleform.daapi.view.lobby.hangar.hangar_cm_handlers'
 ARMOR_TANK, CAROUSEL_TANK = 2849, 51809
+ARMOR_MAP_PANEL = 'otmetki.armor_view.map'
+ARMOR_LEGEND_PANEL = 'otmetki.armor_view.legend'
+ARMOR_MAP_TICKS = 400
 
 
 def vehicle_menu_class():
@@ -3475,31 +3493,149 @@ def vehicle_menu_class():
     return VehicleContextMenuHandler
 
 
+class ArmorVector(object):
+    # RU 1.45 Math.Vector3, reduced to what the armour probe does with a ray.
+
+    def __init__(self, x, y, z):
+        self.x, self.y, self.z = x, y, z
+
+    def __add__(self, other):
+        return ArmorVector(self.x + other.x, self.y + other.y, self.z + other.z)
+
+    def __sub__(self, other):
+        return ArmorVector(self.x - other.x, self.y - other.y, self.z - other.z)
+
+    def __mul__(self, factor):
+        return ArmorVector(self.x * factor, self.y * factor, self.z * factor)
+
+    def normalise(self):
+        return None
+
+
+class ArmorBounds(object):
+    # CompoundModel.getBoundsForPart: the unit cube onto a box from (-2, -1, 10) to (2, 1, 12) in the world.
+
+    def applyPoint(self, corner):
+        x, y, z = corner
+        return ArmorVector(-2.0 + 4.0 * x, -1.0 + 2.0 * y, 10.0 + 2.0 * z)
+
+
+class ArmorClip(object):
+
+    def __init__(self, x, y):
+        self.x, self.y, self.w = x, y, 1.0
+
+
+class ArmorCamera(object):
+    # A camera at the origin looking along +z: a world point lands at x / 10, y / 10 of clip space.
+
+    invViewMatrix = instance('Matrix', {
+        'translation': ArmorVector(0.0, 0.0, 0.0),
+        'applyToAxis': lambda matrix, axis: ArmorVector(0.0, 0.0, 1.0),
+    })
+
+
+def armour_hits(start, end):
+    # The hull's front plate inside the box: 100 mm, met head on, in the middle of the screen.
+    if abs(start.x) > 0.2 or abs(start.y) > 0.1:
+        return []
+    return [(10.0, 1.0, 1, 1)]
+
+
+def armour_material():
+    return instance('Material', {
+        'armor': 100.0,
+        'vehicleDamageFactor': 1.0,
+        'useHitAngle': True,
+        'mayRicochet': True,
+        'collideOnceOnly': False,
+        'checkCaliberForRichet': True,
+        'checkCaliberForHitAngleNorm': True,
+    })
+
+
+def armour_descriptor():
+    shot = instance('Shot', {
+        'shell': instance('Shell', {'kind': 'ARMOR_PIERCING', 'caliber': 85.0, 'piercingPowerRandomization': 0.25}),
+        'piercingPower': (150.0, 120.0),
+        'maxDistance': 720.0,
+    })
+    return instance('VehicleDescr', {
+        'type': instance('VehicleType', {'compactDescr': ARMOR_TANK, 'shortUserString': 'T-34'}),
+        'hull': instance('Hull', {'materials': {1: armour_material()}}),
+        'gun': instance('Gun', {'shots': [shot]}),
+    })
+
+
+def armour_vehicle(descriptor):
+    collisions = instance('CollisionComponent', {
+        'collideAllWorld': lambda component, start, end: armour_hits(start, end),
+    })
+    appearance = instance('HangarVehicleAppearance', {
+        'isLoaded': lambda appearance: True,
+        'collisions': collisions,
+        'typeDescriptor': descriptor,
+    })
+    model = instance('CompoundModel', {'getBoundsForPart': lambda model, part: ArmorBounds()})
+    return instance('ClientSelectableCameraVehicle', {'appearance': appearance, 'model': model})
+
+
+def install_armor_view_stubs(cls):
+    cls.entries, cls.overlays, cls.external = [], [], []
+    mods_list = instance('ModsListApi', {
+        'addModification': lambda api, **entry: cls.entries.append(entry),
+        'updateModification': lambda api, **entry: cls.entries.append(entry),
+    })
+    module('gui.modsListApi', g_modsListApi=mods_list)
+    if 'gui.shared' not in sys.modules:
+        package('gui.shared')
+    module('gui.shared.event_dispatcher', showBrowserOverlayView=cls.overlays.append)
+    sys.modules['BigWorld'].openWebBrowser = cls.external.append
+    for name in HANGAR_VIEW_PACKAGES[:5]:
+        if name not in sys.modules:
+            package(name)
+    menu_class = vehicle_menu_class()
+    module(ARMOR_VIEW_MENU, VehicleContextMenuHandler=menu_class)
+    return menu_class
+
+
+def install_armor_map_stubs(game, descriptor):
+    entity = armour_vehicle(descriptor)
+    space = instance('HangarSpace', {'getVehicleEntity': lambda space: entity})
+    hangar_space = constants('IHangarSpace', {})
+    if 'skeletons.gui.shared' not in sys.modules:
+        package('skeletons.gui.shared')
+    module('skeletons.gui.shared.utils', IHangarSpace=hangar_space)
+    game.services[hangar_space] = space
+    big_world = sys.modules['BigWorld']
+    big_world.camera = ArmorCamera
+    big_world.projection = lambda: instance('Projection', {'fov': 1.0})
+    big_world.screenSize = lambda: (1920.0, 1080.0)
+    module('Math', Matrix=lambda matrix=None: matrix)
+    package('AvatarInputHandler')
+    module(
+        'AvatarInputHandler.cameras',
+        projectPoint=lambda point: ArmorClip(point.x / 10.0, point.y / 10.0),
+        getWorldRayAndPoint=lambda x, y: (ArmorVector(0.0, 0.0, 1.0), ArmorVector(x, y, 0.0)),
+    )
+    module('GUI', mcursor=lambda: instance('Cursor', {'position': ArmorVector(0.0, 0.0, 0.0)}))
+
+
 class ArmorViewTest(StoryTest):
 
     @classmethod
     def play(cls, game):
         game.install_hud_stubs()
-        cls.entries, cls.overlays, cls.external = [], [], []
-        mods_list = instance('ModsListApi', {
-            'addModification': lambda api, **entry: cls.entries.append(entry),
-            'updateModification': lambda api, **entry: cls.entries.append(entry),
-        })
-        module('gui.modsListApi', g_modsListApi=mods_list)
-        if 'gui.shared' not in sys.modules:
-            package('gui.shared')
-        module('gui.shared.event_dispatcher', showBrowserOverlayView=cls.overlays.append)
-        sys.modules['BigWorld'].openWebBrowser = cls.external.append
-        for name in HANGAR_VIEW_PACKAGES[:5]:
-            if name not in sys.modules:
-                package(name)
-        menu_class = vehicle_menu_class()
-        module(ARMOR_VIEW_MENU, VehicleContextMenuHandler=menu_class)
-        game.vehicle.item = instance('Vehicle', {'intCD': ARMOR_TANK})
+        menu_class = install_armor_view_stubs(cls)
+        game.vehicle.item = instance('Vehicle', {'intCD': ARMOR_TANK, 'descriptor': None})
 
         app = game.open_hangar()
         cls.entry = dict(next(entry for entry in cls.entries if entry['id'] == 'otmetki_armor_view'))
-        cls.entry.pop('callback')(None)
+        callback = cls.entry.pop('callback')
+        callback(None)
+        cls.is_map_open = game.instances()['armor_view'].map.is_open
+        callback(None)
+        cls.is_map_open_after_second_click = game.instances()['armor_view'].map.is_open
         menu = menu_class(CAROUSEL_TANK)
         cls.options = menu._generateOptions()
         menu.onOptionSelect('vehicleInfo')
@@ -3508,19 +3644,31 @@ class ArmorViewTest(StoryTest):
         cls.overlay_opens = list(cls.overlays)
         app.config.update({'hangar_armor_view': False})
         cls.options_off = menu._generateOptions()
+        app.bus.emit('component_settings', 'armor_view', ['hangar_armor_view'])
+        cls.entry_switched_off = dict(cls.entries[-1])
+        app.translate.language = 'en'
+        app.bus.emit('language', 'en')
+        cls.entry_in_english = dict(cls.entries[-1])
 
     def test_its_own_mods_list_entry_is_in_the_lobby_only(self):
         self.assertEqual(self.entry['id'], 'otmetki_armor_view')
         self.assertEqual((self.entry['lobby'], self.entry['login'], self.entry['enabled']), (True, False, True))
 
-    def test_the_mods_list_entry_opens_the_selected_tank_and_the_menu_item_the_carousel_tank(self):
-        self.assertEqual([url.rsplit('/t/', 1)[1] for url in self.overlay_opens], ['2849/armor', '51809/armor'])
+    def test_the_mods_list_entry_opens_the_hangar_map(self):
+        self.assertTrue(self.is_map_open)
+
+    def test_the_mods_list_entry_closes_an_open_map(self):
+        self.assertFalse(self.is_map_open_after_second_click)
+
+    def test_the_site_item_opens_the_carousel_tank_on_the_site(self):
+        self.assertEqual([url.rsplit('/t/', 1)[1] for url in self.overlay_opens], ['51809/armor'])
 
     def test_the_page_is_the_sites_own(self):
         self.assertTrue(self.overlay_opens[0].startswith('https://triotmetki.ru/'))
 
-    def test_the_carousel_menu_gets_the_armour_item_last(self):
-        self.assertEqual([option['id'] for option in self.options], ['vehicleInfo', 'otmetki_armor_view'])
+    def test_the_carousel_menu_gets_both_armour_items_last(self):
+        ids = [option['id'] for option in self.options]
+        self.assertEqual(ids, ['vehicleInfo', 'otmetki_armor_view', 'otmetki_armor_view_site'])
 
     def test_the_stock_options_still_reach_the_client(self):
         self.assertEqual(self.selected, ['vehicleInfo'])
@@ -3530,6 +3678,61 @@ class ArmorViewTest(StoryTest):
 
     def test_the_switch_off_leaves_the_stock_menu(self):
         self.assertEqual([option['id'] for option in self.options_off], ['vehicleInfo'])
+
+    def test_the_switch_off_greys_out_the_mods_list_entry_at_once(self):
+        self.assertFalse(self.entry_switched_off['enabled'])
+
+    def test_a_language_change_renames_the_mods_list_entry(self):
+        self.assertEqual(self.entry_in_english['name'], 'Tank armour')
+
+
+class ArmorMapTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        install_armor_view_stubs(cls)
+        descriptor = armour_descriptor()
+        install_armor_map_stubs(game, descriptor)
+        game.vehicle.item = instance('Vehicle', {'intCD': ARMOR_TANK, 'descriptor': descriptor})
+        game.open_hangar()
+        capture = Capture()
+        sys.stdout = capture
+        next(entry for entry in cls.entries if entry['id'] == 'otmetki_armor_view')['callback'](None)
+        for _ in range(ARMOR_MAP_TICKS):
+            game.clock[0] += 0.05
+            game.run_callbacks()
+        cls.labels = copy.deepcopy(game.components)
+        component = game.instances()['armor_view']
+        component.map.on_key('mode_shell')
+        cls.shell_map = copy.deepcopy(game.components[ARMOR_MAP_PANEL]['widget'])
+        component.app.bus.emit('battle_enter')
+        sys.stdout = Sink()
+        cls.output = ''.join(capture.parts)
+        cls.labels_in_battle = game.components
+
+    def test_the_map_is_drawn_as_its_widget(self):
+        self.assertEqual(self.labels[ARMOR_MAP_PANEL]['widget']['kind'], 'armor_map')
+
+    def test_the_map_found_the_armour(self):
+        self.assertIn('7', self.labels[ARMOR_MAP_PANEL]['widget']['data']['cells'])
+
+    def test_the_legend_is_drawn_as_its_widget(self):
+        self.assertEqual(self.labels[ARMOR_LEGEND_PANEL]['widget']['kind'], 'armor_legend')
+
+    def test_the_hover_card_reads_the_ray_under_the_cursor(self):
+        card = self.labels[ARMOR_LEGEND_PANEL]['widget']['data']['readout']
+        self.assertEqual(card['title'], u'Корпус')
+
+    def test_a_full_grid_logs_its_timing(self):
+        timings = [line for line in self.output.splitlines() if ' rays in ' in line]
+        self.assertEqual(len(timings), 1, self.output)
+
+    def test_the_shell_key_redraws_the_map_against_the_own_gun(self):
+        self.assertEqual(self.shell_map['data']['mode'], 'shell')
+
+    def test_a_battle_closes_the_map(self):
+        self.assertNotIn(ARMOR_MAP_PANEL, self.labels_in_battle)
 
 
 def research_tank():
@@ -3615,6 +3818,9 @@ class ExactMoeChangeTest(StoryTest):
 
 class AccountExtrasTest(StoryTest):
 
+    # RU 1.45 version.xml <version>: the running client's mods folder is 1.45.0.0.
+    client_version = u'v.1.45.0.0 #2290'
+
     @classmethod
     def play(cls, game):
         game.install_hud_stubs()
@@ -3622,6 +3828,7 @@ class AccountExtrasTest(StoryTest):
         app.config.update({switch: True for switch in (
             'hangar_depot_seller', 'hangar_auto_reserves', 'hangar_space', 'hangar_update_notice',
         )})
+        app.bus.emit('component_settings', 'auto_reserves', ['hangar_auto_reserves'])
         instances = game.instances()
         cls.seller_actions = [action['id'] for action in instances['depot_seller'].ui_actions()]
         cls.seller_empty = instances['depot_seller'].ui_page()['empty']
@@ -3786,6 +3993,12 @@ class AccountSwitchTest(StoryTest):
     def test_the_first_accounts_part_is_kept_under_its_id(self):
         self.assertEqual(self.saved['accounts'][str(ACCOUNT)]['probe'], 'kept by %d' % ACCOUNT)
 
+    def test_the_first_accounts_sent_moe_snapshots_are_kept_under_its_id(self):
+        self.assertIn('moe_sent', self.saved['accounts'][str(ACCOUNT)])
+
+    def test_the_sent_moe_snapshots_are_no_longer_shared(self):
+        self.assertNotIn('moe_sent', self.saved)
+
     def test_another_account_starts_without_the_first_ones_moe_snapshots(self):
         self.assertNotIn(OTHER_TANK, self.moe_tanks)
 
@@ -3833,6 +4046,25 @@ class CaptureFailureTest(StoryTest):
 
     def test_a_failing_results_poll_still_ticks_the_hangar(self):
         self.assertIn('tick', self.heard)
+
+
+class InterruptedMigrationTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        config_dir = os.path.join('mods', 'configs', 'otmetki')
+        os.makedirs(config_dir)
+        with open(os.path.join(config_dir, 'config.json'), 'w') as handle:
+            json.dump({'defaults_revision': 8}, handle)
+        with open(os.path.join(config_dir, 'components.json'), 'w') as handle:
+            json.dump({'pack_badge': {'stock_badge': 'keep'}}, handle)
+
+        game.load(list(ENTRY_MODULES))
+
+        cls.revision_on_disk = _support.load_json(os.path.join(config_dir, 'config.json')).get('defaults_revision')
+
+    def test_the_revision_of_a_migration_is_on_disk_before_any_held_save(self):
+        self.assertEqual(self.revision_on_disk, DEFAULTS_REVISION)
 
 
 class HeldSaveTest(StoryTest):

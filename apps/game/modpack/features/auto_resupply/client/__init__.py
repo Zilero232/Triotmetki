@@ -1,11 +1,13 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import BigWorld
+
 from ....core.client.component import FeatureComponent
 from ....core.client.game import selected_vehicle
 from ....core.log import safe
 from .. import FEATURE_ID
 from ..i18n import STRINGS
-from ..model import ACTION_ALL, ACTION_SELECTED, plan
+from ..model import ACTION_ALL, ACTION_SELECTED, REFUSE_BUSY, plan
 from ..settings import SCHEMA, SWITCH
 from .garage import garage_vehicles, send, summary
 
@@ -16,9 +18,19 @@ class AutoResupply(FeatureComponent):
         FeatureComponent.__init__(self, app, FEATURE_ID, SCHEMA, SWITCH, STRINGS)
         self.queue = []
         self.failed = 0
+        self.generation = 0
+        app.bus.on('account', self._on_account)
+
+    def _on_account(self, *args):
+        self.generation += 1
+        self.queue = []
+        self.failed = 0
+
+    def is_busy(self):
+        return bool(self.queue)
 
     def ui_actions(self):
-        if not self.enabled_in_hangar():
+        if not self.enabled_in_hangar() or self.is_busy():
             return []
         translate = self.app.translate
         return [
@@ -37,8 +49,12 @@ class AutoResupply(FeatureComponent):
     def ui_action(self, action, row=None, value=None):
         if not self.enabled_in_hangar() or action not in (ACTION_SELECTED, ACTION_ALL):
             return None
+        if self.is_busy():
+            return self.notice_error('auto_resupply_refused_%s' % REFUSE_BUSY)
+
         vehicles = self._vehicles_for(action)
-        requests, refusal = plan([summary(vehicle) for vehicle in vehicles], self.settings.to_dict())
+        summaries = [summary(vehicle) for vehicle in vehicles]
+        requests, refusal = plan(summaries, self.settings.to_dict())
         if refusal:
             return self.notice_error('auto_resupply_refused_%s' % refusal)
 
@@ -55,25 +71,32 @@ class AutoResupply(FeatureComponent):
 
     def _enqueue(self, vehicles, requests):
         by_inventory_id = {getattr(vehicle, 'invID', None): vehicle for vehicle in vehicles}
-        was_idle = not self.queue
         for inventory_id, flag, flag_value in requests:
             self.queue.append((by_inventory_id[inventory_id], flag, flag_value))
-        if was_idle:
-            self.failed = 0
-            self._next()
 
-    def _next(self):
-        if not self.queue:
-            if self.failed:
-                self.app.ui.notify(self.app.translate('auto_resupply_failed'))
+        self.failed = 0
+        self._next(self.generation)
+
+    def _next(self, generation):
+        if generation != self.generation:
             return
-        vehicle, flag, value = self.queue[0]
-        send(vehicle, flag, value, self._done)
+        if not self.queue:
+            self._report()
+            return
 
-    @safe
-    def _done(self, success):
-        if self.queue:
-            self.queue.pop(0)
+        vehicle, flag, value = self.queue[0]
+        send(vehicle, flag, value, safe(lambda success: self._done(generation, success)))
+
+    def _done(self, generation, success):
+        if generation != self.generation:
+            return
+
+        self.queue.pop(0)
         if not success:
             self.failed += 1
-        self._next()
+
+        BigWorld.callback(0, safe(lambda: self._next(generation)))
+
+    def _report(self):
+        if self.failed:
+            self.app.ui.notify(self.app.translate('auto_resupply_failed'))

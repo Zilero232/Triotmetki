@@ -8,13 +8,13 @@ from otmetki.core.settings import Settings
 from otmetki.features.auto_messages.i18n import STRINGS
 from otmetki.features.auto_messages.model import (
     AutoMessages,
-    crossed,
     device_trigger,
     hp_percent,
     is_last_alive,
     is_low_hp,
     is_shot,
     is_spotted_alert,
+    reached,
     received_trigger,
     reload_seconds,
     render,
@@ -125,11 +125,17 @@ class TriggerTest(unittest.TestCase):
     def test_a_reload_already_running_says_nothing(self):
         assert reload_seconds(16.0, 20.0, 15) is None
 
-    def test_a_milestone_crossed(self):
-        assert crossed(1800, 2100, 2000)
+    def test_a_milestone_reached(self):
+        assert reached(2100, 2000)
 
-    def test_a_milestone_already_passed(self):
-        assert not crossed(2100, 2500, 2000)
+    def test_a_milestone_already_passed_is_still_reached(self):
+        assert reached(2500, 2000)
+
+    def test_a_milestone_not_reached_yet(self):
+        assert not reached(1800, 2000)
+
+    def test_a_milestone_of_zero_is_off(self):
+        assert not reached(1800, 0)
 
     def test_a_draw(self):
         assert round_result(0, 1) == 'draw'

@@ -8,8 +8,10 @@ import type { ParseOutcome, ParseReplayInput, TracksOfInput } from '../replays.t
 import { errorMessage, toJsonValue } from '../../../common/lib';
 import { ObjectStorage, PrismaService } from '../../../core';
 import { parsePackets, parseReplay, ReplayFormatError } from '../../../lib/replay';
+import { PURGE, PurgeGuardService } from '../../collector/purge';
 import { REPLAY_PARSE } from '../config/parse.constants';
 import { REPLAY_UPLOAD } from '../config/upload.constants';
+import { anonymiseBlocked, summaryAccountIds } from '../lib/blocked-players/blocked-players';
 import { replayColumns } from '../lib/replay-columns/replay-columns';
 import { tracksStorageKey } from '../lib/replay-file/replay-file';
 import { replayMedals } from '../lib/replay-medals/replay-medals';
@@ -24,7 +26,8 @@ export class ReplayParseService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly storage: ObjectStorage,
-    private readonly heatmaps: HeatmapWriterService
+    private readonly heatmaps: HeatmapWriterService,
+    private readonly purgeGuard: PurgeGuardService
   ) {}
 
   async parse({ replayId, isFinalAttempt }: ParseReplayInput): Promise<ParseOutcome> {
@@ -71,7 +74,9 @@ export class ReplayParseService {
       throw error;
     }
 
-    const columns = replayColumns(parsed.summary);
+    const blocked = await this.purgeGuard.blocked(summaryAccountIds(parsed.summary));
+    const summary = anonymiseBlocked({ summary: parsed.summary, blocked, placeholder: PURGE.anonymousReplayName });
+    const columns = replayColumns(summary);
     const [vehicle, battle] = await Promise.all([
       columns.tankId === null ? null : this.prisma.vehicle.findUnique({ where: { tankId: columns.tankId }, select: { type: true } }),
       columns.accountId === null || columns.arenaUniqueId === null
@@ -82,7 +87,7 @@ export class ReplayParseService {
           })
     ]);
 
-    const tracks = this.tracks({ bytes, summary: parsed.summary });
+    const tracks = this.tracks({ bytes, summary });
     const timelineKey = tracks.length > 0 ? tracksStorageKey(replay.storageKey) : null;
 
     if (timelineKey) {
@@ -97,11 +102,11 @@ export class ReplayParseService {
       where: { id: replayId },
       data: {
         ...columns,
-        ...replayTagColumns(parsed.summary),
+        ...replayTagColumns(summary),
         vehicleType: vehicle?.type ?? null,
         battleId: battle?.id ?? null,
-        medals: replayMedals({ markOfMastery: parsed.summary.recorder.markOfMastery, battleAchievements: battle?.achievements ?? [] }),
-        summary: toJsonValue({ ...parsed.summary, warnings: parsed.warnings }),
+        medals: replayMedals({ markOfMastery: summary.recorder.markOfMastery, battleAchievements: battle?.achievements ?? [] }),
+        summary: toJsonValue({ ...summary, warnings: parsed.warnings }),
         status: 'parsed',
         parseError: null,
         parsedAt: new Date(),

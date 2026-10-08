@@ -145,14 +145,24 @@ def repair_entries(entries):
     return kept, len(entries) - len(kept)
 
 
+def stored_vehicles(data):
+    vehicles = data.get('vehicles') if isinstance(data, dict) else None
+    if not isinstance(vehicles, dict):
+        return {}
+
+    kept = {}
+    for key, value in vehicles.items():
+        if isinstance(value, dict):
+            kept[key] = value
+    return kept
+
+
 class MarksHistory(object):
 
     def __init__(self, store, max_entries=100):
         self.store = store
         self.max_entries = max_entries
-        data = store.read({}) or {}
-        vehicles = data.get('vehicles') if isinstance(data, dict) else None
-        self.vehicles = {key: value for key, value in (vehicles or {}).items() if isinstance(value, dict)}
+        self.vehicles = stored_vehicles(store.read({}))
         self.rejected = None
         self.repaired = self._repair()
 

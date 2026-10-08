@@ -1,0 +1,71 @@
+@use '@/shared/styles/gameface' as *;
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  margin-top: 6px;
+}
+
+.bar {
+  display: flex;
+  flex-direction: row;
+}
+
+.stop {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+}
+
+.swatch {
+  width: 100%;
+  height: 8px;
+}
+
+.label {
+  margin-top: 2px;
+  color: token(hud-muted);
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.unit {
+  align-self: flex-end;
+  color: token(hud-muted);
+
+  @include hud-type(caption);
+}
+
+.kinds {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.kind {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 8px;
+  color: token(hud-muted);
+
+  @include hud-type(caption);
+}
+
+.chip {
+  position: relative;
+  display: flex;
+  width: 10px;
+  height: 10px;
+  align-items: center;
+  justify-content: center;
+  margin-right: 4px;
+}
+
+.hatch {
+  width: 4px;
+  height: 10px;
+  transform: rotate(45deg);
+}

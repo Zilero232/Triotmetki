@@ -36,6 +36,7 @@ def shot_shell(shooter_id, effects_index):
     return gun_shell(gun_shots(shooter_id), effects_index) or (None, None)
 
 
+# Fair play: the hit enemy's pose at the own hit, shown only after the battle, as BattleHits does (owner's exception).
 def aim_of(entity):
     getter = getattr(entity, 'getAimParams', None)
     return list(getter()) if getter is not None else None

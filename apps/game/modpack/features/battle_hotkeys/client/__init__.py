@@ -23,20 +23,35 @@ class BattleHotkeys(BattlePanel):
     def __init__(self, app):
         self.hotkeys = {}
         self.ticker = None
+        self.armed = False
         BattlePanel.__init__(self, app, PANEL_SPEC)
 
+    def _on_start(self, *args):
+        BattlePanel._on_start(self, *args)
+        if self.enabled() and not self.armed:
+            self._arm()
+
     def start(self, battle_player):
-        self._install()
+        self._arm()
 
     def stop(self):
         for hotkey in self.hotkeys.values():
             hotkey.remove()
         self.hotkeys = {}
+        self.armed = False
         self._stop_notice()
 
     def settings_changed(self, changed):
-        if self.running:
+        if not self.enabled():
+            self.stop()
+        elif self.armed:
             self._install()
+        elif self.in_started_battle():
+            self._arm()
+
+    def _arm(self):
+        self.armed = True
+        self._install()
 
     def _install(self):
         for choice, option in wanted_toggles(self.settings):
@@ -46,14 +61,17 @@ class BattleHotkeys(BattlePanel):
 
     @safe
     def toggle(self, option):
-        if not self.running:
+        if not self.armed:
             return
+
         current = (read_settings([option]) or {}).get(option)
         value = None
         if current is not None and apply_settings({option: toggled(current)}):
             value = toggled(current)
             log('battle hotkeys: %s %s' % (option, 'on' if value else 'off'))
-        self._notice(option, value)
+
+        if self.running:
+            self._notice(option, value)
 
     def _notice(self, option, value):
         translate = self.app.translate

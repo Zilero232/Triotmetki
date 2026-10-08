@@ -25,13 +25,15 @@ class TeamHp(object):
 
     def add(self, vehicle_id, team, max_hp, alive=True, kind=None, level=None):
         """Adds or refreshes a vehicle; `kind` is its class tag (lightTank, AT-SPG, ...) and `level` its tier, as the
-        player panels show them."""
+        player panels show them. A dead vehicle added alive again (a respawn) comes back with its full HP."""
         if not is_int(vehicle_id) or not is_int(team) or not is_number(max_hp) or max_hp <= 0:
             return False
         known = self.vehicles.get(vehicle_id)
         if known is None:
             self.order.append(vehicle_id)
-        hp = known['hp'] if known is not None else int(max_hp)
+
+        is_revived = known is not None and not known['alive'] and alive
+        hp = known['hp'] if known is not None and not is_revived else int(max_hp)
         self.vehicles[vehicle_id] = {
             'team': team,
             'max': int(max_hp),

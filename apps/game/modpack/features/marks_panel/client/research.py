@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.client.game import client_attr, selected_vehicle, service
+from ....core.log import guarded
 
 # RU 1.45 client source: Vehicle.getUnlocksDescrs(), stats.unlocks, g_techTreeDP.getBlueprintDiscountData.
 
@@ -35,6 +36,7 @@ def _avg_xp(items, tank_id):
     return dossier.getRandomStats().getAvgXP() if dossier is not None else None
 
 
+@guarded('marks: research', fallback=None)
 def selected_research():
     vehicle = selected_vehicle()
     items = _items()

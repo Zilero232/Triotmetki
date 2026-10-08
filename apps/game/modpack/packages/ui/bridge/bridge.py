@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ...companion.config import record_user_set
-from ...core.compat import is_number, string_types, to_text
+from ...core.compat import is_finite_number, string_types, to_text
 from ...core.hud import EVENT_RESET_LAYOUT
 from ...core.log import log, log_exception
 from ..components import COMPANION_ACTIONS, COMPANION_ID, SECTIONS, build_catalog, find
@@ -221,6 +221,10 @@ class SettingsBridge(object):
         for component_id, changed in sorted(changes.items()):
             self._changed(component_id, changed)
         config_changed = changes.get(CONFIG_COMPONENT) or []
+        owners = _config_owners(self.components(), config_changed)
+        for owner_id, keys in sorted(owners.items()):
+            self._changed(owner_id, keys)
+        self._chosen(_loaded_tokens(changes))
         if config_changed:
             context.config_changed(config_changed)
         if 'language' in config_changed:
@@ -291,7 +295,7 @@ class SettingsBridge(object):
         top = message['top']
         if page not in SECTIONS + TOOL_PAGES:
             raise ProtocolError('unknown_page')
-        if not is_number(top):
+        if not is_finite_number(top):
             raise ProtocolError('bad_scroll')
         self.scroll[page] = max(int(top), 0)
 
@@ -302,6 +306,34 @@ class SettingsBridge(object):
         for panel_id in self.editor.panel_ids():
             self._changed(panel_id, self.editor.reset(panel_id))
         self.context.bus.emit(EVENT_RESET_LAYOUT)
+
+
+def _owned_config_keys(component):
+    candidates = (component.switch,) + component.config_keys + component.keys
+    owned = []
+    for key in candidates:
+        if key is None or key in owned:
+            continue
+        if component.source_of(key).kind == CONFIG_KIND:
+            owned.append(key)
+    return owned
+
+
+def _config_owners(components, changed):
+    owners = {}
+    for component in components:
+        for key in _owned_config_keys(component):
+            if key in changed:
+                owners.setdefault(component.id, []).append(key)
+    return owners
+
+
+def _loaded_tokens(changes):
+    tokens = []
+    for component_id, keys in sorted(changes.items()):
+        kind = CONFIG_KIND if component_id == CONFIG_COMPONENT else None
+        tokens.extend(_chosen_tokens(component_id, keys, kind))
+    return tokens
 
 
 def _chosen_tokens(component_id, keys, kind):

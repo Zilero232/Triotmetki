@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .constants import PRIVATE_HANGAR_LABELS
+from .constants import PRIVATE_HANGAR_LABELS, PRIVATE_HUD_PANELS
 
 # Fair play: this component only hides things (the mod's own panels, the battle chat of others); it reads nothing.
 
@@ -8,6 +8,12 @@ from .constants import PRIVATE_HANGAR_LABELS
 def blocked_labels(settings):
     if settings.get('private') and settings.get('hide_hangar_stats'):
         return PRIVATE_HANGAR_LABELS
+    return ()
+
+
+def blocked_panels(settings):
+    if settings.get('private') and settings.get('hide_hangar_stats'):
+        return PRIVATE_HUD_PANELS
     return ()
 
 

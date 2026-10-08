@@ -39,9 +39,12 @@ export const BattleLoadoutWidget = ({ data }: BattleLoadoutWidgetProps) => {
               {!entry.item.empty && <ClientIcon icon={entry.item.icon} size={data.size} tone='muted' />}
               {entry.item.overlay && <ClientIcon className={s.overlay} icon={entry.item.overlay} size={data.size} />}
               {entry.item.bonus && <Glyph className={s.star} name={BATTLE_LOADOUT.bonusGlyph} size={BATTLE_LOADOUT.bonusSize} tone='gold' />}
-              {entry.item.attention && (
-                <Glyph className={s.attention} name={BATTLE_LOADOUT.attentionGlyph} size={BATTLE_LOADOUT.attentionSize} tone='warning' />
-              )}
+              <Glyph
+                className={clsx(s.attention, !entry.item.attention && s.idle)}
+                name={BATTLE_LOADOUT.attentionGlyph}
+                size={BATTLE_LOADOUT.attentionSize}
+                tone='warning'
+              />
             </div>
           )
         )}

@@ -17,3 +17,8 @@
   color: token(hud-text);
   font-weight: 700;
 }
+
+.idle {
+  position: absolute;
+  opacity: 0;
+}

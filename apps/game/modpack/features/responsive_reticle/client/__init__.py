@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.client.battle import controls_own_vehicle, player
+from ....core.client.battle import BattleHooks, controls_own_vehicle, player, vehicle_state
 from ....core.client.component import FeatureComponent
 from ....core.client.game import client_attr
 from ....core.client.timer import Ticker, game_time
@@ -110,6 +110,7 @@ class ResponsiveReticle(FeatureComponent):
         self.shot_results = TickGate()
         self.still = Stillness()
         self.ticker = Ticker(FRAME_S, self._on_frame)
+        self.hooks = BattleHooks()
         self.supported = self._hook_client()
         bus = app.bus
         bus.on('battle_ready', self._on_battle_ready)
@@ -138,19 +139,38 @@ class ResponsiveReticle(FeatureComponent):
         self.stop()
         if not self.enabled() or not self.supported:
             return
+
+        self.hooks.add(vehicle_state, 'onVehicleControlling', self._on_vehicle_controlling)
+        self._follow_vehicle(battle_player)
+
+    # Respawn modes hand the player a new vehicle in the same battle.
+    def _on_vehicle_controlling(self, vehicle):
+        battle_player = player()
+        is_own = getattr(vehicle, 'id', None) == getattr(battle_player, 'playerVehicleID', None)
+        if is_own:
+            self._follow_vehicle(battle_player)
+
+    def _follow_vehicle(self, battle_player):
+        self._halt()
         reason = skip_reason(_is_replay(), _class_tags(battle_player), _static_yaw(battle_player))
         if reason is not None:
-            log('responsive reticle: off in this battle (%s)' % reason)
+            log('responsive reticle: off for this vehicle (%s)' % reason)
             return
+
         self.rotator = getattr(battle_player, 'gunRotator', None)
         if self.rotator is None:
             return
+
         self.lock = _lock_mode()
         self.revisions = None
         self.active = True
         self.ticker.start()
 
     def stop(self):
+        self.hooks.clear()
+        self._halt()
+
+    def _halt(self):
         self.active = False
         self.ticker.stop()
         self.rotator = None

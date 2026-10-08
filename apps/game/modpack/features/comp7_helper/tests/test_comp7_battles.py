@@ -85,6 +85,23 @@ class HistoryTest(unittest.TestCase):
         assert len(history) == KEPT_BATTLES
         assert history[0]['arena'] == 3
 
+    def test_results_that_arrive_late_take_their_battle_place(self):
+        history = record([battle(2, 'win')], battle(1, 'loss'))
+
+        assert [entry['arena'] for entry in history] == [1, 2]
+
+    def test_a_late_loss_does_not_end_the_newer_winning_run(self):
+        history = [battle(2, 'win'), battle(3, 'win')]
+
+        history = record(history, battle(1, 'loss'))
+
+        assert streak(history) == ('win', 2)
+
+    def test_a_stored_file_is_read_in_battle_order(self):
+        history = clean_history([battle(3, 'win'), battle(1, 'loss')])
+
+        assert [entry['arena'] for entry in history] == [1, 3]
+
     def test_a_stored_file_is_cleaned(self):
         assert clean_history([battle(1, 'win'), {'result': 'maybe'}, None]) == [battle(1, 'win')]
         assert clean_history({'a': 1}) == []

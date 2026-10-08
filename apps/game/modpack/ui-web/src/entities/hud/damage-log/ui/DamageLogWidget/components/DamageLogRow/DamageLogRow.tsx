@@ -1,11 +1,12 @@
 import clsx from 'clsx';
 
-import { ClientIcon, Glyph, ShellChip, TabularText, toneClass } from '@/ui-kit';
+import { ClientIcon, ShellChip, TabularText, toneClass } from '@/ui-kit';
 
 import type { DamageLogRowProps } from './DamageLogRow.types';
 
 import { DAMAGE_LOG } from '../../../../config';
 import { DamageLogBar } from '../DamageLogBar';
+import { DamageLogWho } from '../DamageLogWho';
 
 import s from './DamageLogRow.module.scss';
 
@@ -20,19 +21,15 @@ export const DamageLogRow = ({ row, isNewest }: DamageLogRowProps) => (
     <span className={s.cls}>
       <ClientIcon icon={row.cls} size={DAMAGE_LOG.classIcon.height} width={DAMAGE_LOG.classIcon.width} />
     </span>
-    <span className={s.who}>
-      <span className={clsx(s.name, row.muted && s.mutedName)}>{row.name}</span>
-      {row.hitsText && <span className={s.hits}>{row.hitsText}</span>}
-      {row.critsText && (
-        <span className={s.crits}>
-          <Glyph name='module' size={DAMAGE_LOG.critIconSize} tone='warning' />
-          {row.critsText}
-        </span>
-      )}
-    </span>
+    <DamageLogWho row={row} />
     <span className={s.side}>
       {row.bar && <DamageLogBar bar={row.bar} />}
-      <ClientIcon icon={row.ammoRack} size={DAMAGE_LOG.iconSize} tone='received' />
+      <ClientIcon
+        className={clsx(row.ammoRack === null && s.idle)}
+        icon={row.ammoRack ?? DAMAGE_LOG.ammoRackIcon}
+        size={DAMAGE_LOG.iconSize}
+        tone='received'
+      />
     </span>
     {row.note && <span className={s.note}>{row.note}</span>}
   </div>

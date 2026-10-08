@@ -66,6 +66,11 @@ def show_hangar():
     showHangar()
 
 
+@guarded('hit viewer: late view')
+def destroy_view(view):
+    view.destroy()
+
+
 if AVAILABLE:
 
     class ViewerModel(ViewModel):
@@ -173,9 +178,13 @@ class ViewerWindowHost(object):
         self.pushed = text
         self.view.viewModel.set_state(text)
 
+    # A view that loads after close() is destroyed at once: its _finalize gives the lobby header back.
     def on_loaded(self, view):
         if not self.is_open:
+            self.retired.append(view)
+            destroy_view(view)
             return
+
         self.view, self.pushed = view, None
         self.on_ready()
 

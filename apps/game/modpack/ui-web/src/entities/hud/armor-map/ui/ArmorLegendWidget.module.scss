@@ -1,0 +1,40 @@
+@use '@/shared/styles/gameface' as *;
+
+.legend {
+  display: flex;
+  width: 260px;
+  flex-direction: column;
+  padding: 4px 2px;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  @include caps;
+  @include hud-type(caption);
+}
+
+.tank {
+  color: token(hud-muted);
+
+  @include hud-type(body);
+}
+
+.status {
+  margin-top: 6px;
+
+  @include hud-type(caption);
+}
+
+.hint {
+  margin-top: 6px;
+  color: token(hud-muted);
+  white-space: normal;
+
+  @include hud-type(caption);
+}

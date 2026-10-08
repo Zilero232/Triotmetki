@@ -3,8 +3,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import time
 
 from ....core.compat import as_int, is_int, to_text
+from ....core.replay_file import same_vehicle
 from ....core.templates import render
-from .constants import AUTO_NAME_GIVE_UP_S, AUTO_NAME_MATCH_S, AUTO_NAME_SETTLE_S
+from .constants import AUTO_NAME_GIVE_UP_S, AUTO_NAME_MATCH_S, AUTO_NAME_SETTLE_S, EXACT_MATCH
 from .errors import ReplayActionError
 from .names import rename_target
 
@@ -40,14 +41,18 @@ class AutoNamer(object):
     def __init__(self):
         self.pending = []
 
-    def queue(self, event, values, now):
+    def queue(self, event, values, now, vehicle=None):
         arena = event.get('arena_unique_id')
-        if not arena or any(item['arena'] == arena for item in self.pending):
+        if not arena or self._is_queued(arena):
             return False
 
         started = event.get('arena_created_at') or event.get('occurred_at')
-        self.pending.append({'arena': arena, 'started': started, 'values': values, 'queued': now})
+        item = {'arena': arena, 'started': started, 'vehicle': vehicle, 'values': values, 'queued': now}
+        self.pending.append(item)
         return True
+
+    def _is_queued(self, arena):
+        return any(item['arena'] == arena for item in self.pending)
 
     def plan(self, replays, template, now):
         renames = []
@@ -67,21 +72,32 @@ class AutoNamer(object):
         return renames
 
 
-def _matches(item, replay):
+def _closeness(item, replay):
     header = replay.get('header') or {}
+    if not same_vehicle(header.get('vehicle'), item.get('vehicle')):
+        return None
     if header.get('arena_unique_id'):
-        return to_text(header['arena_unique_id']) == to_text(item['arena'])
+        is_same_arena = to_text(header['arena_unique_id']) == to_text(item['arena'])
+        return EXACT_MATCH if is_same_arena else None
+
     started = header.get('date_time')
     if started is None or item['started'] is None:
-        return False
-    return abs(started - item['started']) <= AUTO_NAME_MATCH_S
+        return None
+    distance = abs(started - item['started'])
+    return distance if distance <= AUTO_NAME_MATCH_S else None
 
 
 def _replay_of(item, replays):
+    best = None
+    best_closeness = None
     for replay in replays:
-        if _matches(item, replay):
-            return replay
-    return None
+        closeness = _closeness(item, replay)
+        if closeness is None:
+            continue
+        if best is None or closeness < best_closeness:
+            best = replay
+            best_closeness = closeness
+    return best
 
 
 def _is_waiting(item, replay, now):

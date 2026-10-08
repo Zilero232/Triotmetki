@@ -5,7 +5,7 @@ import { isObjectType, isString } from 'remeda';
 
 import type { BindAttemptCounter } from '../lib/bind-attempts/bind-attempts.types';
 import type { BindResponse } from '../lib/contract/contract.types';
-import type { BindCode, BindCodeInput, BindInput, BindLinkInput, BindRequest, ClaimedCode, RegisterDeviceInput } from '../mod.types';
+import type { BindCode, BindCodeInput, BindInput, BindLinkInput, BindRequest, ClaimCodeInput, ClaimedCode, RegisterDeviceInput } from '../mod.types';
 
 import { AppForbiddenException, ModException } from '../../../common/exceptions';
 import { randomCode } from '../../../common/lib';
@@ -57,11 +57,13 @@ export class ModBindWriterService {
     const request = this.parseRequest(body);
     const counters = bindAttemptCounters({ requester, accountId: request.account_id });
 
-    await this.countAttempt(counters);
+    await this.countAttempt(counters.requester);
+    await this.assertAccountOpen(counters.account);
 
-    const { userId, link } = await this.claimCode(request);
+    const { userId, link } = await this.claimCode({ request, accountCounter: counters.account });
+    const accountKeys = counters.account ? [counters.account.key] : [];
 
-    await this.redis.del(...counters.map(({ key }) => key));
+    await this.redis.del(counters.requester.key, ...accountKeys);
     await this.assertBindable(link.accountId);
 
     const deviceId = newDeviceId();
@@ -93,15 +95,31 @@ export class ModBindWriterService {
     return parsed.data;
   }
 
-  private async countAttempt(counters: BindAttemptCounter[]): Promise<void> {
-    for (const { key, limit } of counters) {
-      const results = await this.redis.multi().incr(key).expire(key, BIND_CODE.failureWindowSeconds).exec();
-      const attempts = Number(results?.[0]?.[1] ?? 0);
+  private async countAttempt(counter: BindAttemptCounter): Promise<void> {
+    const attempts = await this.increment(counter.key);
 
-      if (attempts > limit) {
-        throw new ModException({ status: HttpStatus.TOO_MANY_REQUESTS, error: 'rate_limited' });
-      }
+    if (attempts > counter.limit) {
+      this.rateLimited();
     }
+  }
+
+  private async assertAccountOpen(counter: BindAttemptCounter | null): Promise<void> {
+    if (!counter) {
+      return;
+    }
+
+    const stored = await this.redis.get(counter.key);
+    const refusals = Number(stored ?? 0);
+
+    if (refusals >= counter.limit) {
+      this.rateLimited();
+    }
+  }
+
+  private async increment(key: string): Promise<number> {
+    const results = await this.redis.multi().incr(key).expire(key, BIND_CODE.failureWindowSeconds).exec();
+
+    return Number(results?.[0]?.[1] ?? 0);
   }
 
   private async assertBindable(accountId: bigint): Promise<void> {
@@ -112,7 +130,7 @@ export class ModBindWriterService {
     }
   }
 
-  private async claimCode(request: BindRequest): Promise<ClaimedCode> {
+  private async claimCode({ request, accountCounter }: ClaimCodeInput): Promise<ClaimedCode> {
     const stored = await this.prisma.oneTimeCode.findUnique({ where: { code: request.code, purpose: 'modBind' } });
     const requested = request.account_id === undefined ? null : BigInt(request.account_id);
     const link = stored ? await this.bindLink({ userId: stored.userId, accountId: requested ?? stored.accountId }) : null;
@@ -123,8 +141,12 @@ export class ModBindWriterService {
       stored.expiresAt > new Date() &&
       (stored.accountId === null || stored.accountId === link?.accountId);
 
-    if (!stored || !usable || !link) {
+    if (!stored) {
       return this.refuse();
+    }
+
+    if (!usable || !link) {
+      return this.refuseExisting(accountCounter);
     }
 
     const claimed = await this.prisma.oneTimeCode.updateMany({
@@ -133,7 +155,7 @@ export class ModBindWriterService {
     });
 
     if (claimed.count === 0) {
-      return this.refuse();
+      return this.refuseExisting(accountCounter);
     }
 
     return { userId: stored.userId, link };
@@ -180,7 +202,19 @@ export class ModBindWriterService {
     return this.prisma.userLestaAccount.findFirst({ where: { userId, accountId: linked }, include: { player: true } });
   }
 
+  private async refuseExisting(accountCounter: BindAttemptCounter | null): Promise<never> {
+    if (accountCounter) {
+      await this.increment(accountCounter.key);
+    }
+
+    return this.refuse();
+  }
+
   private refuse(): never {
     throw new ModException({ status: HttpStatus.BAD_REQUEST, error: 'invalid_code' });
+  }
+
+  private rateLimited(): never {
+    throw new ModException({ status: HttpStatus.TOO_MANY_REQUESTS, error: 'rate_limited' });
   }
 }

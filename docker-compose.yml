@@ -159,7 +159,9 @@ services:
     restart: always
     logging: *logging
     # BullMQ needs keys to survive eviction; AOF keeps queued jobs across restarts.
-    command: redis-server --appendonly yes --maxmemory-policy noeviction
+    # The cap keeps a flood of mod ingest keys from taking the host's memory: with noeviction,
+    # Redis refuses writes past it (the API answers errors) instead of silently dropping queued jobs.
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy noeviction
     volumes:
       - redisdata:/data
     networks:

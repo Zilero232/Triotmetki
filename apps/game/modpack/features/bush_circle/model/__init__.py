@@ -1,12 +1,16 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .constants import COLORS, MODE_ALWAYS, MODE_HOTKEY, RADIUS_M
+from .constants import COLORS, MODE_ALWAYS, MODE_HOTKEY, RADIUS_M, RETIRED_HOTKEYS
 
 # Fair play: a fixed circle around the own tank only; nothing about other vehicles.
 
 
 def color_of(name):
     return COLORS.get(name, COLORS['white'])
+
+
+def normalize_hotkey(value):
+    return RETIRED_HOTKEYS.get(value, value)
 
 
 def diameter():

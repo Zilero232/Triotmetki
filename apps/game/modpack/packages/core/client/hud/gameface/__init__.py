@@ -22,6 +22,7 @@ the client once after an install or update changed its res_map (`restart_pending
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import functools
 import os
 
 import BigWorld
@@ -40,7 +41,7 @@ from ....hud.surface import (
     HudSurface,
 )
 from ....inject import message_of
-from ....log import log, log_exception, safe
+from ....log import guarded, log, log_exception, safe
 from ...game import client_windows, main_window
 from ...inject import page_layout
 from ...inject.page import IMPORT_ERROR as PAGE_IMPORT_ERROR
@@ -90,6 +91,7 @@ if IMPORT_ERROR is None:
         def __init__(self, layout, backend):
             super(HudView, self).__init__(ViewSettings(layout, flags=ViewFlags.VIEW, model=HudViewModel()))
             self.backend = backend
+            self.window = None
 
         @property
         def viewModel(self):
@@ -111,8 +113,10 @@ if IMPORT_ERROR is None:
 
         def __init__(self, layout, backend):
             self.backend = backend
-            super(HudWindow, self).__init__(wndFlags=WindowFlags.WINDOW, content=HudView(layout, backend),
+            view = HudView(layout, backend)
+            super(HudWindow, self).__init__(wndFlags=WindowFlags.WINDOW, content=view,
                                             layer=getattr(WindowLayer, WINDOW_LAYER), parent=main_window())
+            view.window = self
 
         # RU 1.45 client source: wulf window.py `_onReady` calls `self.show()`, whose `focus` defaults to True.
         def _onReady(self):
@@ -146,13 +150,42 @@ def is_shown(window):
         return False
 
 
+@guarded('HUD: read a client window')
 def window_info(window, own):
     ready = window.uniqueID != own.uniqueID and is_shown(window)
     return WindowInfo(window, window.layer, window.typeFlag, ready)
 
 
+@guarded('HUD: read a client window id', '?')
+def window_id(window):
+    return window.uniqueID
+
+
 def window_name(window):
-    return '%s %s' % (type(window).__name__, window.uniqueID) if window is not None else 'no window'
+    if window is None:
+        return 'no window'
+    return '%s %s' % (type(window).__name__, window_id(window))
+
+
+@guarded('HUD: read the focus of a window', False)
+def is_focused(window):
+    return bool(window.isFocused)
+
+
+@guarded('HUD: hand the keyboard focus on', False)
+def try_focus(window):
+    window.tryFocus()
+    return True
+
+
+@guarded('HUD: close a replaced Gameface window')
+def destroy_window(window):
+    window.destroy()
+
+
+@guarded('HUD: stop listening to a Gameface page')
+def stop_listening(view):
+    view.viewModel.send -= view._on_send
 
 
 class GamefaceBackend(HudBackend):
@@ -347,59 +380,80 @@ class GamefaceBackend(HudBackend):
         window = self.window
         self.window = None
         self.view = None
+        self.cursor = False
+        self.cursor_poll.stop()
         if self._page() is None:
             self._set_drawn(None)
         if window is not None:
-            log('HUD: Gameface window %s closed' % window.uniqueID)
+            log('HUD: Gameface window %s closed' % window_id(window))
             window.destroy()
 
     @safe
     def on_window_focus(self, window, focused):
-        if focused and window is self.window:
-            self._settle_focus()
+        is_ours = window is self.window or is_hud_window(window)
+        if focused and is_ours:
+            self._settle_focus(window)
 
     def editing(self):
         return self.modifier.held if current_space() == SPACE_LOBBY else self.cursor
 
-    def _focused_window(self):
-        window = self.window
-        return window if window is not None and window.isFocused else None
+    def _focused_window(self, window=None):
+        candidate = self.window if window is None else window
+        if candidate is None or not is_focused(candidate):
+            return None
+        return candidate
 
-    def _settle_focus(self):
-        window = self._focused_window()
-        if window is None:
+    def _settle_focus(self, window=None):
+        focused = self._focused_window(window)
+        if focused is None:
             return
+
         decision = self.focus.decide(game_time(), self.editing())
         if decision == FOCUS_HAND_ON:
-            _next_frame(self._hand_on_focus)
+            _next_frame(functools.partial(self._hand_on_focus, focused))
         elif decision == FOCUS_GIVE_UP:
-            log('HUD: Gameface window %s keeps the focus for now, the client keeps giving it back' % window.uniqueID)
-            _later(FOCUS_RETRY_S, self._retry_focus)
+            log('HUD: Gameface window %s keeps the focus for now, the client keeps giving it back'
+                % window_id(focused))
+            _later(FOCUS_RETRY_S, functools.partial(self._retry_focus, focused))
 
-    def _retry_focus(self):
+    def _retry_focus(self, window=None):
         self.focus = FocusReturn()
-        self._hand_on_focus()
+        self._hand_on_focus(window)
 
     def _focus_target(self, window):
         previous = self.last_focus.window()
-        if previous is not None and window_info(previous, window).ready:
+        previous_info = window_info(previous, window) if previous is not None else None
+        if previous_info is not None and previous_info.ready:
             return previous
-        found = focus_target([window_info(other, window) for other in client_windows()])
+
+        infos = [window_info(other, window) for other in client_windows()]
+        readable = [info for info in infos if info is not None]
+        found = focus_target(readable)
         return found if found is not None else main_window()
 
-    def _hand_on_focus(self):
-        window = self._focused_window()
-        if window is None or self.editing():
+    def _hand_on_focus(self, window=None):
+        focused = self._focused_window(window)
+        if focused is None or self.editing():
             return
-        target = self._focus_target(window)
+
+        target = self._focus_target(focused)
         log('HUD: Gameface window %s took the focus in the %s, handing it to %s'
-            % (window.uniqueID, current_space(), window_name(target)))
+            % (window_id(focused), current_space(), window_name(target)))
         self.focus.handed_on(game_time())
-        if target is not None:
-            target.tryFocus()
+        if target is None or try_focus(target):
+            return
+
+        fallback = main_window()
+        if fallback is not None and fallback is not target:
+            try_focus(fallback)
 
     @safe
     def on_loaded(self, view):
+        if view.window is not self.window:
+            log('HUD: Gameface page of the replaced window %s loaded, closing it' % window_name(view.window))
+            _next_frame(functools.partial(destroy_window, view.window))
+            return
+
         log('HUD: Gameface page view loaded')
         view.viewModel.send += view._on_send
         self.view = view
@@ -410,12 +464,12 @@ class GamefaceBackend(HudBackend):
     @safe
     def on_destroyed(self, view):
         log('HUD: Gameface page view destroyed')
-        view.viewModel.send -= view._on_send
-        if self.view is view or self.view is None:
+        if view.window is self.window:
             self.view = None
             self.window = None
             if self._page() is None:
                 self._set_drawn(None)
+        stop_listening(view)
 
     def _hangar_mouse(self):
         if self.hangar is not None:

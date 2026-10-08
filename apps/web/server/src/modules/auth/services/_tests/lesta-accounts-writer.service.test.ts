@@ -162,3 +162,38 @@ describe('LestaAccountsWriterService.primaryAccountId', () => {
     await expect(service.primaryAccountId('user')).resolves.toBeNull();
   });
 });
+
+describe('LestaAccountsWriterService.link of an account another user had', () => {
+  it('revokes the mod devices the previous owner bound to the account', async () => {
+    const { service, prisma } = createService({ others: 0, isKnown: false });
+
+    prisma.userLestaAccount.findUnique.mockResolvedValue(mock<UserLestaAccount>({ userId: 'previous-owner' }));
+
+    await service.link(identity);
+
+    expect(prisma.modDevice.updateMany).toHaveBeenCalledWith({
+      where: { accountId: 7n, userId: { not: 'user' }, revokedAt: null },
+      data: { revokedAt: expect.any(Date) }
+    });
+  });
+
+  it('keeps the devices when the account stays with its owner', async () => {
+    const { service, prisma } = createService({ others: 0, isKnown: true });
+
+    prisma.userLestaAccount.findUnique.mockResolvedValue(mock<UserLestaAccount>({ userId: 'user' }));
+
+    await service.link(identity);
+
+    expect(prisma.modDevice.updateMany).not.toHaveBeenCalled();
+  });
+
+  it('keeps the devices of a first link', async () => {
+    const { service, prisma } = createService({ others: 0, isKnown: false });
+
+    prisma.userLestaAccount.findUnique.mockResolvedValue(null);
+
+    await service.link(identity);
+
+    expect(prisma.modDevice.updateMany).not.toHaveBeenCalled();
+  });
+});

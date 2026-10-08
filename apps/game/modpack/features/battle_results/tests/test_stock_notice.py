@@ -10,7 +10,7 @@ from otmetki.core.settings import Settings
 from otmetki.features.battle_results.i18n import STRINGS
 from otmetki.features.battle_results.model import APPEND, HOLD, PUSH, StockNotices, build_summary, stock_lines
 from otmetki.features.battle_results.model import with_lines
-from otmetki.features.battle_results.model.constants import STOCK_WAIT_S, UNCLAIMED_AFTER_S
+from otmetki.features.battle_results.model.constants import NOTICE_ARENAS_LIMIT, STOCK_WAIT_S, UNCLAIMED_AFTER_S
 from otmetki.features.battle_results.settings import SCHEMA
 
 MOE_BEFORE = {'tank_id': 1, 'damage_rating': 8600, 'moving_avg_damage': 2550, 'marks_on_gun': 1}
@@ -114,6 +114,26 @@ class StockNoticesTest(unittest.TestCase):
         _, unclaimed = self.notices.expired(100 + UNCLAIMED_AFTER_S)
 
         self.assertEqual(unclaimed, [])
+
+
+class WaitingLimitTest(unittest.TestCase):
+
+    def setUp(self):
+        self.notices = StockNotices()
+        self.delivered = []
+        for arena in range(NOTICE_ARENAS_LIMIT + 1):
+            self.notices.stock_arrived(arena, self.deliverer(arena), 0.0)
+
+    def deliverer(self, arena):
+        return lambda found: self.delivered.append((arena, found))
+
+    def test_the_oldest_waiting_message_is_let_out_unchanged(self):
+        self.assertEqual(self.delivered, [(0, [])])
+
+    def test_the_results_of_a_message_let_out_go_to_the_notification(self):
+        action, _deliver = self.notices.results_arrived(0, 'results')
+
+        self.assertEqual(action, PUSH)
 
 
 class ArenaKeyTest(unittest.TestCase):

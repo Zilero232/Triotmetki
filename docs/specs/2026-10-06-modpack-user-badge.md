@@ -88,9 +88,17 @@ binding, `modBadgePresenceRequestSchema`, `mod-badges/mod-badge-presence.control
   and accounts with a data-deletion request (one batched `blocked` check, which also covers purged accounts).
   Bound devices and `mod_device.badge_visible` play no part.
 - Throttled per client IP (`request.ip` behind the trusted proxy, IPv6 by /56): 30 per minute
-  (`MOD_BADGES_API.presenceThrottle`), and the same 3000 distinct ids per Moscow day with the quota keyed by
-  `ip:` + the first 16 hex characters of an HMAC of the address (`ipQuotaSubject`), then 429 `rate_limited` with
-  Retry-After.
+  (`MOD_BADGES_API.presenceThrottle`), and the same 1500 distinct asked ids per Moscow day
+  (`MOD_BADGES_QUOTA.distinctIdsPerDay`) with the quota keyed by `ip:` + the first 16 hex characters of an HMAC of the
+  network (`ipQuotaSubjects`); an IPv6 client counts against both its /56 and its /48, so rotating /56 networks inside
+  one /48 does not multiply the quota. Past it 429 `rate_limited` with Retry-After. Only new ids count: a request
+  whose ids were all asked today passes even at the cap (the script counts new members with `SMISMEMBER` and refuses
+  only when the set size plus the new ones would pass the limit).
+- Forging and wiping: the route is unsigned, so anyone can claim any `account_id`. To bound how many players one
+  client can mark (`visible: true`) or wipe (`visible: false`), one address subject (the same /56 and /48 subjects)
+  may report at most 5 distinct own accounts per Moscow day (`MOD_BADGES_QUOTA.ownIdsPerDay`, HMAC-hashed set like
+  the lookup quota). Past it the presence write is silently ignored and the lookup is still answered. A real player
+  reports one account, a shared household a few.
 - Retention: the TTL is the deletion; the account purge job deletes the key of a purged account
   (`collector/purge/services/purge.service.ts`).
 
@@ -203,8 +211,8 @@ Near_You marks its users: nothing is sent for it, so it shows unbound and when t
 - The server stores no account id from the read: no table, no cache of the roster, no log line with ids (request logs
   carry method and path only, `core/logger/lib/request-log`); the rate limiter keys on the device id.
 - The server cannot check that the asked ids are the caller's arena, so the opt-in model stays and scraping is capped:
-  a device may ask about at most `MOD_BADGES_QUOTA.distinctIdsPerDay` (3000, about 100 battles of 29 other players)
-  distinct accounts per Moscow day, then gets 429 `rate_limited` with Retry-After until midnight. The count lives in a
+  a device may ask about at most `MOD_BADGES_QUOTA.distinctIdsPerDay` (1500, about 50 battles of 29 other players,
+  more since players repeat) distinct accounts per Moscow day, then gets 429 `rate_limited` with Retry-After until midnight. The count lives in a
   Redis set per device and day whose members are the first 16 hex characters of an HMAC (server secret, day, id), so
   the ids cannot be read back or linked across days; the set expires after two days
   (`mod-badges/services/mod-badge-quota-writer.service.ts`).

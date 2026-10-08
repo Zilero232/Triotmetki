@@ -11,6 +11,8 @@ EXTENSIONS = ('.mtreplay', '.wotreplay')
 RECORDING_NAME = re.compile(r'^temp\d{0,2}\.(mt|wot)replay\Z')
 HEAD_FORMAT = str('<II')
 SIZE_FORMAT = str('<I')
+# RU 1.45 replays folder: a recorded battle's name starts with its local start, 20260927_2209_czech-Cz17_...
+NAME_STAMP = re.compile(r'^(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})_')
 DATE_TIME = re.compile(r'^\s*(\d{1,2})\.(\d{1,2})\.(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})\s*\Z')
 AVATAR_KEY = 'avatar'
 RESULT_WIN = 'win'

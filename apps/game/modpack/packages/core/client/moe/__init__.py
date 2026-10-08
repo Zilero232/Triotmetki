@@ -1,6 +1,6 @@
 """The marks-of-excellence data the marks views share: the site curve and the mastery badges' XP per
-tank (GET /v1/moe/<tank_id>, cached) and the pace of the player's own last battles per tank (kept in the app
-state). One instance per process (`moe_service(app)`), so the in-battle panel and the hangar view read each
+tank (GET /v1/moe/<tank_id>, cached) and the pace of the player's own last battles per tank (kept per account in the
+app state). One instance per process (`moe_service(app)`), so the in-battle panel and the hangar view read each
 curve once."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -22,9 +22,9 @@ class MoeService(object):
         self.app = app
         self.cache = ThresholdCache()
         self.masteries = {}
-        self.pace_book = PaceBook((app.state or {}).get(STATE_KEY))
+        self.pace_book = PaceBook()
         self.listeners = Listeners('marks data listener')
-        app.register_state(STATE_KEY, self.pace_book.to_dict)
+        app.register_account_state(STATE_KEY, self._dump_pace, self._load_pace)
         app.bus.on('vehicle_moe', self._on_vehicle_moe)
         app.bus.on('battle_event', self._on_battle_event)
 
@@ -42,6 +42,12 @@ class MoeService(object):
 
     def pace(self, tank_id):
         return self.pace_book.pace(tank_id)
+
+    def _dump_pace(self):
+        return self.pace_book.to_dict()
+
+    def _load_pace(self, stored):
+        self.pace_book = PaceBook(stored)
 
     def _on_vehicle_moe(self, snapshot):
         self.ensure(snapshot.get('tank_id'))

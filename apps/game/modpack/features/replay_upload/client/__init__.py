@@ -2,12 +2,12 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import time
 
-from ....core.client.game import client_attr
-from ....core.client.native import read_settings
-from ....core.client.replays import DEFAULT_REPLAY_DIR, replay_dir
+from ....core.client.game import client_attr, vehicle_info
+from ....core.client.replays import DEFAULT_REPLAY_DIR, records_all_battles, replay_dir
 from ....core.events import EVENT_REPLAY_UPLOAD_REQUEST, EVENT_REPLAY_UPLOADED
 from ....core.log import log, safe
 from ....core.net.transport import BackgroundRunner, SyncTransport
+from ....core.own_result import own_vehicle
 from ....core.storage import account_file
 from ..model import Endpoint, ReplayFiles, ReplayQueue, ReplayUploader, battle_started_at, find_replay
 from ..model.constants import (
@@ -20,17 +20,17 @@ from ..model.constants import (
     VISIBILITY_PUBLIC,
 )
 from ..settings import PUBLISH, SWITCH
-from .constants import QUEUE_FILE, REPLAY_SETTING, STARTED_KEEP, UPLOAD_RESPONSE_MAX_BYTES, UPLOAD_TIMEOUT_S
+from .constants import QUEUE_FILE, STARTED_KEEP, UPLOAD_RESPONSE_MAX_BYTES, UPLOAD_TIMEOUT_S
 
 
-def game_records_replays():
-    value = (read_settings((REPLAY_SETTING,)) or {}).get(REPLAY_SETTING)
-    if value is None:
+def own_vehicle_name(results):
+    personal = results.get('personal') if isinstance(results, dict) else None
+    if not isinstance(personal, dict):
         return None
-    try:
-        return int(value) != 0
-    except (TypeError, ValueError):
-        return None
+
+    tank_id = own_vehicle(personal).get('typeCompDescr')
+    name, _tier = vehicle_info(tank_id)
+    return name
 
 
 def server_to_local(server_time):
@@ -115,10 +115,13 @@ class ReplayAutoUpload(object):
         started_at = self.started.pop(arena_unique_id, None)
         if self.queue is None or not self._enabled():
             return
-        if game_records_replays() is False:
+        # A client that keeps only the last battle overwrites the file the queue would wait for.
+        if records_all_battles() is not True:
             return
+
         started_at = battle_started_at(started_at, results, server_to_local)
-        if self.queue.add(arena_unique_id, self.app.account_id, started_at, time.time()):
+        vehicle = own_vehicle_name(results)
+        if self.queue.add(arena_unique_id, self.app.account_id, started_at, time.time(), vehicle):
             log('replay queued for upload: %s' % arena_unique_id)
 
     def on_request(self, request, reply):
@@ -138,18 +141,30 @@ class ReplayAutoUpload(object):
             request.get('account_id'),
             request.get('started_at'),
             time.time(),
+            request.get('path'),
         )
 
     def _find(self, item):
-        return find_replay(self.folder, item['account_id'], item['arena_unique_id'], item.get('started_at'))
+        return find_replay(
+            self.folder,
+            item['account_id'],
+            item['arena_unique_id'],
+            item.get('started_at'),
+            item.get('vehicle'),
+            item.get('path'),
+        )
 
-    def on_auth_failed(self):
+    def on_auth_failed(self, account_id):
+        if account_id != self.app.account_id:
+            log('replay upload: an answer for another account, auth left alone')
+            return
+
         self.app.on_auth_failed()
 
     @safe
-    def on_uploaded(self, arena_unique_id, replay_id):
+    def on_uploaded(self, arena_unique_id, replay_id, account_id):
         log('replay uploaded: %s' % arena_unique_id)
-        self.app.bus.emit(EVENT_REPLAY_UPLOADED, arena_unique_id, replay_id)
+        self.app.bus.emit(EVENT_REPLAY_UPLOADED, arena_unique_id, replay_id, account_id)
 
     def tick(self, now):
         self.runner.poll()

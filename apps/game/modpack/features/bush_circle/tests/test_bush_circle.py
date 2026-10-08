@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 import _support  # noqa: F401
+from otmetki.core.settings import Settings
 from otmetki.features.bush_circle.i18n import STRINGS
 from otmetki.features.bush_circle.model import CircleState, color_of, diameter
 from otmetki.features.bush_circle.model.constants import COLOR_CHOICES, HOTKEY_CHOICES, HOTKEYS, RADIUS_M
@@ -121,6 +122,15 @@ class ValuesTest(unittest.TestCase):
 
 
 class SettingsTest(unittest.TestCase):
+
+    def test_a_retired_f7_moves_to_the_default_hotkey(self):
+        assert Settings({'hotkey': 'f7'}, SCHEMA).get('hotkey') == 'ctrl_shift_b'
+
+    def test_a_retired_f8_moves_to_the_default_hotkey(self):
+        assert Settings({'hotkey': 'f8'}, SCHEMA).get('hotkey') == 'ctrl_shift_b'
+
+    def test_no_choice_is_a_stock_chat_key(self):
+        assert 'f7' not in HOTKEY_CHOICES
 
     def test_the_component_switch_is_battle_bush_circle(self):
         assert SETTINGS == ('battle_bush_circle',)

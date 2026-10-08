@@ -351,6 +351,22 @@ class ScreenTest(unittest.TestCase):
         self.screen.window.push_state = self.pushed.append
         self.screen.stage.begin = lambda: True
 
+    def test_a_view_loaded_after_close_is_destroyed(self):
+        destroyed = []
+        view = Namespace(destroy=lambda: destroyed.append(True))
+
+        self.screen.window.on_loaded(view)
+
+        assert destroyed == [True]
+
+    def test_a_view_loaded_after_close_never_counts_as_open(self):
+        view = Namespace(destroy=lambda: None)
+
+        self.screen.window.on_loaded(view)
+        self.screen.window.on_destroyed(view)
+
+        assert self.screen.window.view is None
+
     def test_a_window_the_client_destroyed_gives_the_hangar_back(self):
         view = self.opened_view()
 

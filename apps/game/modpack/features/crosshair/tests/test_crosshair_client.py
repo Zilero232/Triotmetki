@@ -7,7 +7,7 @@ import unittest
 
 import _support
 from otmetki.core.events import EVENT_COMPONENT_SETTINGS, EventBus
-from otmetki.core.hud.stock import RETICLE_CASSETTE, RETICLE_RELOAD_TIMER, RETICLE_ZOOM
+from otmetki.core.hud.stock import RETICLE_CASSETTE, RETICLE_CENTRE, RETICLE_RELOAD_TIMER, RETICLE_ZOOM
 from otmetki.core.hud import ComponentConfig
 from _support import MemoryFile
 from otmetki.features.crosshair.model.readouts import Readouts
@@ -34,6 +34,9 @@ class App(object):
         self.config_dir = '.'
 
     def register_state(self, key, dump):
+        pass
+
+    def register_account_state(self, key, dump, load):
         pass
 
     def save_state(self):
@@ -266,6 +269,10 @@ class CrosshairStockTest(unittest.TestCase):
         widget = self.layer.shown.get(PANEL_ID)
         return widget and widget['data']['readouts']
 
+    def is_empty(self):
+        data = self.layer.shown[PANEL_ID]['data']
+        return (data['readouts'], data['shape'], data['mark']) == (None, None, None)
+
     def reload(self, left=3.0, base=7.6):
         self.component.readouts.set_reload(left, base)
         self.component.render()
@@ -324,8 +331,47 @@ class CrosshairStockTest(unittest.TestCase):
 
         self.component.render()
 
-        assert PANEL_ID not in self.layer.shown
+        assert self.is_empty()
         assert self.hidden() == ()
+
+    def test_the_game_centre_is_hidden_while_the_mark_is_drawn(self):
+        self.config.update(PANEL_ID, {'mark': 'chevron', 'reload_box': False})
+
+        self.component.render()
+
+        assert self.hidden() == (RETICLE_CENTRE,)
+
+    def test_the_game_centre_comes_back_where_the_mark_is_not_drawn(self):
+        self.config.update(PANEL_ID, {'mark': 'chevron', 'reload_box': False, 'modes': 'sniper'})
+
+        self.component.render()
+
+        assert self.hidden() == ()
+
+    def test_the_game_centre_stays_when_the_page_does_not_take_the_panel(self):
+        self.config.update(PANEL_ID, {'mark': 'chevron', 'reload_box': False})
+        self.layer.draws = False
+
+        self.component.render()
+
+        assert self.hidden() == ()
+
+    def test_nothing_is_sent_before_anything_was_drawn(self):
+        self.component.view = POSTMORTEM
+
+        self.component.render()
+
+        assert self.layer.shown == {}
+
+    def test_an_empty_panel_is_sent_once(self):
+        self.reload()
+        self.component.view = POSTMORTEM
+        self.component.render()
+        self.layer.shown.clear()
+
+        self.component.render()
+
+        assert self.layer.shown == {}
 
     def test_the_stock_reload_timer_comes_back_while_an_ally_is_followed(self):
         self.reload()
@@ -418,7 +464,7 @@ class CrosshairStockTest(unittest.TestCase):
 
         self.component._on_view(ARCADE)
 
-        assert PANEL_ID not in self.layer.shown
+        assert self.is_empty()
         assert self.hidden() == ()
 
     def test_a_zoom_change_redraws_the_multiplier(self):

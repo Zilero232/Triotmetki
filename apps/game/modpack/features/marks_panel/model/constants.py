@@ -27,6 +27,7 @@ CURVE_ESTIMATED = 'estimated'
 MARK_TONES = ('muted', 'text', 'text', 'gold')
 
 KIND = 'marks_panel'
+MARKS_CAP = 'DOSSIER_MARKS_ON_GUN'
 BAR_DAMAGE = 'damage'
 MAX_STARS = 3
 NO_ROWS = {'thresholds': [], 'step': None, 'average': None}

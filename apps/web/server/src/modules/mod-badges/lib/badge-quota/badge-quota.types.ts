@@ -1,4 +1,5 @@
 export type QuotaKeyInput = {
+  prefix: string;
   subject: string;
   now: Date;
 };

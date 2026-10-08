@@ -119,7 +119,6 @@ RETIRED_MARKS = {
     'kenney_dotted': 'cross_gap',
     'kenney_pincer': 'angles',
 }
-CENTRE_PART = 'centralTag'
 PREVIEW_SIZE = (128, 128)
 KIND = 'crosshair'
 EDITOR_GROUPS = (

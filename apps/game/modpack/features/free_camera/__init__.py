@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'free_camera'
 PACKAGE_ID = 'net.triotmetki.free_camera'
 PACKAGE_NAME = 'Three Marks: free camera'
-VERSION = '0.1.3'
+VERSION = '0.1.4'
 
 
 def create(app):

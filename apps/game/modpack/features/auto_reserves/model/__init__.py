@@ -46,9 +46,8 @@ def pick(boosters, values):
     if not kinds:
         return [], REFUSE_UNSET
     cleaned = [booster for booster in (clean_booster(raw) for raw in boosters or ()) if booster]
-    active = [booster for booster in cleaned if booster['active']]
-    active_kinds = set(booster['kind'] for booster in active)
-    free = MAX_ACTIVE - len(active)
+    active_kinds = set(booster['kind'] for booster in cleaned if booster['active'])
+    free = free_slots(boosters)
     picks = []
     is_full = False
     for kind in kinds:
@@ -62,6 +61,23 @@ def pick(boosters, values):
     if picks:
         return picks, None
     return [], REFUSE_FULL if is_full else REFUSE_NOTHING
+
+
+def free_slots(boosters):
+    active_count = 0
+    for raw in boosters or ():
+        is_active = isinstance(raw, dict) and bool(raw.get('active'))
+        if is_active:
+            active_count += 1
+
+    return max(MAX_ACTIVE - active_count, 0)
+
+
+def is_slot_freed(boosters, free_at_refusal):
+    if free_at_refusal is None:
+        return False
+
+    return free_slots(boosters) > free_at_refusal
 
 
 def is_due(values, now, checked_at, session_done):

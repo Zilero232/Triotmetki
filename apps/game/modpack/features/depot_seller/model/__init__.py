@@ -14,6 +14,8 @@ from .constants import (  # noqa: F401
     ITEM_ROW_PREFIX,
     KIND_SWITCHES,
     MAX_NAME,
+    MAX_ROLE_LEVEL,
+    PROTECTED_CREW_FLAGS,
     REFUSE_CHANGED,
     REFUSE_NOTHING,
     REFUSE_UNSET,
@@ -52,14 +54,18 @@ def clean_member(raw):
     inv_id = int_or_none(raw.get('inv_id'), 0)
     if inv_id is None:
         return None
-    return {
+    member = {
         'inv_id': inv_id,
         'name': clean_text(raw.get('name'), MAX_NAME, u'') or to_text(inv_id),
         'role': clean_text(raw.get('role'), MAX_NAME, u''),
-        'skills': int_or_none(raw.get('skills'), 0) or 0,
-        'premium': bool(raw.get('premium')),
-        'locked': bool(raw.get('locked')),
+        'role_level': int_or_none(raw.get('role_level'), 0),
+        'skills': int_or_none(raw.get('skills'), 0),
+        'skill_progress': int_or_none(raw.get('skill_progress'), 0),
+        'free_xp': int_or_none(raw.get('free_xp'), 0),
     }
+    for flag in PROTECTED_CREW_FLAGS:
+        member[flag] = raw.get(flag) is not False
+    return member
 
 
 def item_wanted(item, values):
@@ -70,11 +76,25 @@ def item_wanted(item, values):
     return not item['special'] or bool(values.get('include_special'))
 
 
-def member_wanted(member, values):
-    # Premium and unique crew (descriptor.isPremium / isFemale) cannot be hired again: never dismissed.
-    if not values.get(CREW_SWITCH) or member['premium'] or member['locked']:
+def is_protected(member):
+    return any(member[flag] for flag in PROTECTED_CREW_FLAGS)
+
+
+def is_untrained(member):
+    role_level = member['role_level']
+    if role_level is None or role_level >= MAX_ROLE_LEVEL:
         return False
-    return member['skills'] == 0 or bool(values.get('crew_with_skills'))
+
+    progress = (member['skills'], member['skill_progress'], member['free_xp'])
+    return progress == (0, 0, 0)
+
+
+def member_wanted(member, values):
+    # Premium, female, unique and special crew cannot be hired again; trained crew took the player's XP.
+    if not values.get(CREW_SWITCH) or is_protected(member):
+        return False
+
+    return is_untrained(member)
 
 
 def _worth(item):
@@ -120,9 +140,20 @@ def confirm_text(sale, translate):
     if hidden > 0:
         parts.append(translate('depot_seller_more', count=hidden))
     if sale['crew']:
-        crew = count_phrase(len(sale['crew']), translate('depot_seller_crew_forms'))
-        parts.append(translate('depot_seller_dismiss', crew=crew))
+        parts.append(_dismiss_part(sale['crew'], translate))
     return translate('depot_seller_confirm', credits=format_number(sale['credits']), items=u', '.join(parts))
+
+
+def _dismiss_part(crew, translate):
+    names = []
+    for member in crew[:CONFIRM_ITEMS]:
+        names.append(member['name'])
+    hidden = len(crew) - CONFIRM_ITEMS
+    if hidden > 0:
+        names.append(translate('depot_seller_more', count=hidden))
+
+    crew_phrase = count_phrase(len(crew), translate('depot_seller_crew_forms'))
+    return translate('depot_seller_dismiss', crew=crew_phrase, names=u', '.join(names))
 
 
 def item_row(item, translate):

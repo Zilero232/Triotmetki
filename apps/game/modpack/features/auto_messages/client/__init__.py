@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import functools
 import time
 
 from ....core.client.battle import (
@@ -21,12 +22,12 @@ from ....core.client.battle import (
 )
 from ....core.client.component import FeatureComponent
 from ....core.client.game import values_by_name
+from ....core.client.timer import Ticker
 from ....core.log import log
 from .. import FEATURE_ID
 from ..i18n import STRINGS
 from ..model import (
     AutoMessages,
-    crossed,
     device_trigger,
     hp_percent,
     is_last_alive,
@@ -34,6 +35,7 @@ from ..model import (
     is_spotted_alert,
     received_trigger,
     is_shot,
+    reached,
     reload_seconds,
     round_result,
 )
@@ -105,6 +107,7 @@ class AutoMessagesFeature(FeatureComponent):
         self.messages = None
         self.own_battle = False
         self.battle = {}
+        self.gg_retry = None
         app.bus.on('battle_ready', self._on_battle_ready)
         app.bus.on('battle_leave', self._on_battle_leave)
 
@@ -150,6 +153,7 @@ class AutoMessagesFeature(FeatureComponent):
 
     def _stop(self):
         self.hooks.clear()
+        self._cancel_gg_retry()
         self.messages = None
         self.battle = {}
 
@@ -208,11 +212,11 @@ class AutoMessagesFeature(FeatureComponent):
             self._say(trigger, {'vehicle': vehicle_name(attacker), 'hit': call(extra, 'getDamage')})
 
     def _add_damage(self, amount):
-        if not amount:
-            return
-        previous = self.battle['damage']
-        self.battle['damage'] = previous + amount
-        if crossed(previous, self.battle['damage'], self.settings.get('damage_milestone_value')):
+        if amount:
+            self.battle['damage'] += amount
+
+        is_reached = reached(self.battle['damage'], self.settings.get('damage_milestone_value'))
+        if is_reached and not self.messages.was_sent(DAMAGE_MILESTONE):
             self._say(DAMAGE_MILESTONE)
 
     def _on_vehicle_state(self, state, value):
@@ -280,7 +284,27 @@ class AutoMessagesFeature(FeatureComponent):
 
     def _on_round_finished(self, winner_team, *args):
         result = round_result(winner_team, self.battle.get('team'))
-        self._say(GG, {'result': self.app.translate(RESULT_KEY % result)}, any_period=True)
+        values = {'result': self.app.translate(RESULT_KEY % result)}
+        if self._say(GG, values, any_period=True) or self.messages is None:
+            return
+
+        if self.messages.is_rate_limited(time.time()):
+            self._retry_gg_later(values)
+
+    def _retry_gg_later(self, values):
+        self._cancel_gg_retry()
+        self.gg_retry = Ticker(self.settings.get('min_interval_s'), functools.partial(self._retry_gg, values))
+        self.gg_retry.start()
+
+    def _retry_gg(self, values):
+        self.gg_retry = None
+        self._say(GG, values, any_period=True)
+        return False
+
+    def _cancel_gg_retry(self):
+        if self.gg_retry is not None:
+            self.gg_retry.stop()
+            self.gg_retry = None
 
     def _on_chat_error(self, error, *args):
         if self.messages is not None and is_chat_ban(error):

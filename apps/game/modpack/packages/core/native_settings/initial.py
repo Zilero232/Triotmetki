@@ -70,7 +70,8 @@ def offered_action(has_backup, holds_recommended):
 
 class NativeState(object):
     """The client values each component replaced when the player asked for its recommended values, in state.json:
-    `backups` {component: {'settings', 'account'}}; `once` the components whose one-time switch already ran."""
+    `backups` {component: {'settings', 'account'}} of the current account (`load_backups` on an account switch);
+    `once` the components whose one-time switch already ran on this install."""
 
     def __init__(self, backups=None, once=None):
         self.backups = _dict_of(backups)
@@ -105,3 +106,6 @@ class NativeState(object):
 
     def dump_backups(self):
         return dict(self.backups)
+
+    def load_backups(self, backups):
+        self.backups = _dict_of(backups)

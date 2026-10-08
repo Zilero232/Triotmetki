@@ -15,6 +15,9 @@ VISIBILITY_PRIVATE = 'private'
 
 MATCH_WINDOW_S = 300.0
 MAX_CANDIDATES = 30
+# The name stamp has minutes only, and the recording starts a little after the arena is created.
+NAME_STAMP_SLACK_S = 120.0
+EXACT_MATCH = -1.0
 SETTLE_S = 5.0
 
 MAX_PENDING = 50

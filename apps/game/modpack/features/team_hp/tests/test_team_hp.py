@@ -134,6 +134,30 @@ class HealthUpdateTest(unittest.TestCase):
 
         assert not is_changed
 
+    def test_a_respawned_vehicle_comes_back_alive(self):
+        teams = battle()
+        teams.kill(2)
+
+        teams.add(2, 1, 1500)
+
+        assert teams.vehicles[2]['alive'] is True
+
+    def test_a_respawned_vehicle_comes_back_with_full_hp(self):
+        teams = battle()
+        teams.kill(2)
+
+        teams.add(2, 1, 1500)
+
+        assert teams.vehicles[2]['hp'] == 1500
+
+    def test_a_refresh_of_a_living_vehicle_keeps_its_hp(self):
+        teams = battle()
+        teams.set_health(2, 600)
+
+        teams.add(2, 1, 1500)
+
+        assert teams.vehicles[2]['hp'] == 600
+
     def test_a_kill_counts_once(self):
         teams = battle()
         teams.kill(2)

@@ -1,6 +1,8 @@
 # @otmetki/design-tokens
 
-Three Marks' design tokens, framework-agnostic: SCSS maps and a few mixins, one partial per concern. The web client emits them as CSS variables; the modpack's Gameface window inlines their static values at build time.
+The Три отметки design tokens, framework-agnostic: SCSS maps and a few mixins, one partial per concern (colours per theme, scale, motion, surfaces, textures, the in-game HUD and settings window). The site and the manager emit them as CSS variables; the modpack's Gameface window inlines their static values at build time; `readDesignTokens()` reads the values in Node.
+
+## Usage
 
 ```scss
 @use '@otmetki/design-tokens' as tokens;
@@ -41,6 +43,8 @@ Three Marks' design tokens, framework-agnostic: SCSS maps and a few mixins, one 
 - A value is CSS text. Hex colours and plain numbers stay unquoted; anything Sass would rewrite (`rgb(r g b / a)`, shadows, gradients with `rgb()`, data URIs) is a quoted string, emitted verbatim, so the site's CSS is byte-for-byte what it was before the move.
 - A colour token goes into both `$dark` and `$light` in the same change.
 - The data URIs spell the inner `url(` as `url#{"("}`: Vite rebases every `url(` it finds in an imported Sass file and would otherwise break `filter='url(%23n)'`.
-- Consumers: the web client (`apps/web/client/shared/styles/_tokens.scss`, load path `node_modules`) and the modpack's `ui-web` (Vite resolves the `sass` export condition). Site-only layout tokens (shell, header, rows, z-index, safe areas, font stacks) stay in the client.
+- Consumers: the web client (`apps/web/client/shared/styles/_tokens.scss`, load path `node_modules`), the manager (`apps/game/manager/web/src/shared/styles/_tokens.scss`) and the modpack's `ui-web` (Vite resolves the `sass` export condition). Site-only layout tokens (shell, header, rows, z-index, safe areas, font stacks) stay in the client.
 
-Tests: `scss/_tests` and `src/**/_tests`, run from the repo root with `bun run test`.
+## Testing
+
+Tests live in `scss/_tests` and `src/**/_tests`; run them from the repo root with `bun run test`. `bun run lint:css` (part of `verify`) lints the SCSS.

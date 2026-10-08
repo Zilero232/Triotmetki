@@ -1,7 +1,7 @@
 import type { RawBodyRequest } from '@nestjs/common';
-import type { Request, Response } from 'express';
+import type { Request } from 'express';
 
-import { Controller, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Post, Req } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { modBadgePreferenceSchema, modBadgesRequestSchema } from '@otmetki/schemas';
@@ -32,15 +32,18 @@ export class ModBadgesController {
   @Throttle({ default: { ...MOD_BADGES_API.readThrottle, getTracker: modDeviceTracker } })
   @ApiBody({ type: ModBadgesRequestDto })
   @ZodResponse({ type: ModBadgesDto })
-  async badgesOf(@Req() request: RawBodyRequest<Request>, @Res({ passthrough: true }) response: Response) {
+  async badgesOf(@Req() request: RawBodyRequest<Request>) {
     const { device, body } = await this.devices.authenticateBody({ request, schema: modBadgesRequestSchema });
     const now = new Date();
-    const retryAfterSec = await this.quota.claim({ subject: device.id, accountIds: body.account_ids, now });
+    const retryAfterSeconds = await this.quota.claim({ subject: device.id, accountIds: body.account_ids, now });
 
-    if (retryAfterSec !== null) {
-      response.setHeader('Retry-After', String(retryAfterSec));
-
-      throw new ModException({ status: HttpStatus.TOO_MANY_REQUESTS, error: 'rate_limited', message: 'Daily badge lookups are used up' });
+    if (retryAfterSeconds !== null) {
+      throw new ModException({
+        status: HttpStatus.TOO_MANY_REQUESTS,
+        error: 'rate_limited',
+        message: 'Daily badge lookups are used up',
+        retryAfterSeconds
+      });
     }
 
     return this.badges.visible({ accountIds: body.account_ids, now });

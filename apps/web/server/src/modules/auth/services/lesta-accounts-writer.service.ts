@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 
 import type { LestaAccountStore, LinkLestaAccountInput } from '../../../lib/auth';
 import type { LestaClient } from '../../../lib/lesta';
+import type { RevokeMovedDevicesInput } from '../auth.types';
 
 import { errorMessage } from '../../../common/lib';
 import { LESTA_CLIENT, LIMIT_LOCK_SCOPE, lockedTransaction, PrismaService, TokenCipherService } from '../../../core';
@@ -51,6 +52,8 @@ export class LestaAccountsWriterService implements LestaAccountStore {
         if (!isKnown && others >= limit) {
           return { isLinked: false, isCleared: false };
         }
+
+        await this.revokeMovedDevices({ tx, accountId: id, userId });
 
         const isAccountCleared = await this.purgeGuard.liftUserRequests({ db: tx, accountId: id });
 
@@ -107,5 +110,19 @@ export class LestaAccountsWriterService implements LestaAccountStore {
     );
 
     await this.prisma.userLestaAccount.updateMany({ where: { userId }, data: { accessToken: null, tokenExpiresAt: null } });
+  }
+
+  private async revokeMovedDevices({ tx, accountId, userId }: RevokeMovedDevicesInput): Promise<void> {
+    const previous = await tx.userLestaAccount.findUnique({ where: { accountId }, select: { userId: true } });
+    const isSameOwner = !previous || previous.userId === userId;
+
+    if (isSameOwner) {
+      return;
+    }
+
+    await tx.modDevice.updateMany({
+      where: { accountId, userId: { not: userId }, revokedAt: null },
+      data: { revokedAt: new Date() }
+    });
   }
 }

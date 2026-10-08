@@ -5,6 +5,7 @@ from ..window_layout import SECTION as WINDOW_SECTION
 
 FILE_NAME = 'profiles.json'
 FILE_VERSION = 1
+REVISION_KEY = 'defaults_revision'
 MAX_PROFILES = 12
 NAME_MAX_LENGTH = 40
 
@@ -35,6 +36,9 @@ CODE_EXCLUDED_CONFIG_KEYS = (
     'hangar_notification_filter',
     'battle_chat_filter',
     'battle_auto_messages',
+    'language',
+    'session_idle_minutes',
+    'share_session_channel',
 )
 CODE_EXCLUDED_SECTIONS = (
     'auto_reserves',

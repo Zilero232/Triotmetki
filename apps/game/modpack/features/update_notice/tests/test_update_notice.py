@@ -9,7 +9,7 @@ from otmetki.features.update_notice.i18n import STRINGS
 from otmetki.features.update_notice.model import (
     clean_release,
     find_update,
-    game_folder,
+    client_folder,
     installed_packages,
     is_shown,
     version_key,
@@ -55,9 +55,14 @@ class InstalledTest(unittest.TestCase):
 
         assert installed_packages(names) == {'net.triotmetki.core': '0.10.0'}
 
-    def test_the_newest_client_folder_is_the_running_one(self):
-        assert game_folder(['1.44.1.0', 'configs', '1.45.0.0', '1.9.0.0']) == '1.45.0.0'
-        assert game_folder(['configs']) is None
+    def test_the_running_client_names_its_mods_folder(self):
+        assert client_folder(u'v.1.45.0.0 #2290') == '1.45.0.0'
+
+    def test_an_unreadable_client_version_names_no_folder(self):
+        assert client_folder(u'') is None
+
+    def test_no_client_version_names_no_folder(self):
+        assert client_folder(None) is None
 
 
 class UpdateTest(unittest.TestCase):

@@ -6,6 +6,7 @@ import { ModRatingsController } from './mod-ratings.controller';
 import { ModController } from './mod.controller';
 import { modRatingsQueriesProvider } from './providers/mod-ratings-queries.provider';
 import { EventLedgerService } from './services/event-ledger.service';
+import { IngestQuotaWriterService } from './services/ingest-quota-writer.service';
 import { ModBindWriterService } from './services/mod-bind-writer.service';
 import { ModDeviceService } from './services/mod-device.service';
 import { ModIngestWriterService } from './services/mod-ingest-writer.service';
@@ -14,7 +15,15 @@ import { ModRatingsReaderService } from './services/mod-ratings-reader.service';
 @Module({
   imports: [AccountsModule, PurgeGuardModule],
   controllers: [ModController, ModRatingsController],
-  providers: [EventLedgerService, ModBindWriterService, ModDeviceService, ModIngestWriterService, ModRatingsReaderService, modRatingsQueriesProvider],
+  providers: [
+    EventLedgerService,
+    IngestQuotaWriterService,
+    ModBindWriterService,
+    ModDeviceService,
+    ModIngestWriterService,
+    ModRatingsReaderService,
+    modRatingsQueriesProvider
+  ],
   exports: [ModDeviceService]
 })
 export class ModModule {}

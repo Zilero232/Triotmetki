@@ -104,9 +104,14 @@ class ConfigTest(unittest.TestCase):
         self.assertEqual(upgraded.get('battle_loadout'), True)
 
     def test_a_pack_badge_the_0_3_8_update_switched_off_is_turned_on_once(self):
-        upgraded = Config({'defaults_revision': 9, 'battle_pack_badge': False, 'user_set': 'battle_pack_badge'})
+        upgraded = Config({'defaults_revision': 9, 'battle_pack_badge': False})
 
         self.assertTrue(upgraded.get('battle_pack_badge'))
+
+    def test_a_pack_badge_the_player_switched_off_stays_off_through_the_upgrade(self):
+        upgraded = Config({'defaults_revision': 9, 'battle_pack_badge': False, 'user_set': 'battle_pack_badge'})
+
+        self.assertFalse(upgraded.get('battle_pack_badge'))
 
     def test_the_pack_badge_turned_off_after_the_upgrade_stays_off(self):
         upgraded = Config({'defaults_revision': 9})

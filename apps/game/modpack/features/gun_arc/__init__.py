@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'gun_arc'
 PACKAGE_ID = 'net.triotmetki.gun_arc'
 PACKAGE_NAME = 'Three Marks: gun traverse limits'
-VERSION = '0.4.2'
+VERSION = '0.4.3'
 
 
 def create(app):

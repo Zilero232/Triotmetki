@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 import _support  # noqa: F401
+from otmetki.companion.account_state import AccountState
 from otmetki.core.client.lobby_view import LobbyViewWatch
 from otmetki.core.client.moe import MoeService
 from otmetki.core.events import EventBus, Listeners
@@ -122,9 +123,16 @@ class App(object):
         self.state = {}
         self.transport = Transport()
         self.config = Config()
+        self.account_state = AccountState()
 
     def register_state(self, key, dump):
         pass
+
+    def register_account_state(self, key, dump, load):
+        self.account_state.register(self.state, key, dump, load)
+
+    def switch_account(self, account_id):
+        self.state = self.account_state.switch(self.state, account_id)
 
     def user_agent(self):
         return 'otmetki/test'
@@ -146,6 +154,31 @@ class MoeListenersTest(unittest.TestCase):
         service.app.transport.requests[0](404, b'', {})
 
         self.assertEqual(heard, [1])
+
+
+class MoePaceAccountTest(unittest.TestCase):
+
+    def service_with_a_battle_of(self, account_id):
+        app = App()
+        service = MoeService(app)
+        app.switch_account(account_id)
+        service.pace_book.record(5, 'arena', 900)
+        return app, service
+
+    def test_another_account_starts_without_the_first_ones_pace(self):
+        app, service = self.service_with_a_battle_of(1)
+
+        app.switch_account(2)
+
+        self.assertEqual(service.pace_book.battles(5), 0)
+
+    def test_the_first_account_gets_its_pace_back(self):
+        app, service = self.service_with_a_battle_of(1)
+        app.switch_account(2)
+
+        app.switch_account(1)
+
+        self.assertEqual(service.pace_book.battles(5), 1)
 
 
 class SettingsRevisionTest(unittest.TestCase):

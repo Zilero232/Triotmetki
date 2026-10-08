@@ -7,6 +7,7 @@ import RedisMock from 'ioredis-mock';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { createHmac, randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
+import { range } from 'remeda';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { mock, mockDeep } from 'vitest-mock-extended';
@@ -299,6 +300,24 @@ describe('POST /mod/badges/presence', () => {
     const response = await presencePost({ account_id: ACCOUNT_ID, visible: true, account_ids: [OTHER_ACCOUNT_ID] });
 
     expect(response.body).toEqual({ account_ids: [] });
+  });
+
+  it('ignores the presence of one more own account past the daily cap of an address', async () => {
+    const reported = range(1, MOD_BADGES_QUOTA.ownIdsPerDay + 2).map((index) => 90_000_000 + index);
+
+    for (const accountId of reported) {
+      await presencePost({ account_id: accountId, visible: true, account_ids: [] });
+    }
+
+    expect(await redis.exists(modPresenceKey(reported.at(-1) ?? 0))).toBe(0);
+  });
+
+  it('still answers the lookup of an address past its own-account cap', async () => {
+    await redis.set(modPresenceKey(OTHER_ACCOUNT_ID), MOD_BADGE_PRESENCE.value);
+
+    const response = await presencePost({ account_id: 91_000_000, visible: true, account_ids: [OTHER_ACCOUNT_ID] });
+
+    expect(response.body).toEqual({ account_ids: [OTHER_ACCOUNT_ID] });
   });
 
   it('turns a client address away with Retry-After once it used up its daily distinct accounts', async () => {

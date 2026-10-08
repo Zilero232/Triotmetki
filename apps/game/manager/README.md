@@ -1,48 +1,105 @@
-# Three Marks modpack manager
+# @otmetki/manager
 
-A Windows desktop app that installs and looks after the «Мир танков» modpack of [apps/game/modpack](../modpack/README.md). It replaced the Inno Setup installer (removed from the repo; installs it made are still picked up): same client detection, the same component catalogue (`components.json`), presets, profiles and state layout, plus what an installer cannot do — switching components on and off without reinstalling, and moving the modpack into the new `mods\<version>` folder by itself after a game patch.
+The Три отметки modpack manager: a Windows desktop app (Tauri 2) that installs and looks after the «Мир танков» modpack of [apps/game/modpack](../modpack/README.md). It is the one way the site offers to install the modpack (the /mod download). It replaced the Inno Setup installer and keeps its client detection, component catalogue, presets, profiles and state layout, so installs the old installer made are picked up as they are. On top of that it switches components on and off without reinstalling and moves the modpack into the new `mods\<version>` folder by itself after a game patch.
 
-Tauri 2: the Rust core in [`tauri/`](tauri), the React UI in [`web/`](web). Bun workspace `@otmetki/manager`.
+## Features
 
+- **Finds the game** through the Lesta Game Center and installs a preset in one click (Рекомендуемый, Минимальный (FPS), Стример, Все компоненты, or a hand-picked set).
+- **Components:** a switch per component, previews, FPS cost badges, fair-play notes; third-party runtime mods the modpack needs (OpenWG Gameface, ModsList) are installed from pinned, hash-checked releases.
+- **Profiles:** settings plus the component list, `TM1.` share codes and files, sync through the site account.
+- **Updates:** checks the release index, migrates or updates after a client patch, verifies every package (sha256) and the release signature (minisign); self-updates the same way.
+- **Safety:** a conflict check against third-party mods, transactional installs with rollback, no writes while the game runs, never touches other mods without a confirmation.
+- **Maintenance:** game cache cleanup, uninstall, the logs zip, redacted problem reports, a post-launch health check from `python.log`.
+- `triotmetki://` deep links from the site, tray and autostart, ru/en UI.
+
+## Quick start
+
+Needs Windows 10/11 (WebView2 ships with it) and the toolchain from the root [mise.toml](../../../mise.toml) (Rust stable MSVC, Bun).
+
+```bash
+bun install            # from the repo root
+bun run dev:manager    # from the root; or `bun run dev` here: Vite on :1420 + the Rust app (debug)
 ```
-apps/game/manager/
-  package.json            scripts (below); the UI dependencies
-  tauri/                  the Rust app (crate otmetki-manager)
-    Cargo.toml tauri.conf.json build.rs rustfmt.toml
-    capabilities/         what the window may call (core, open/save pickers, links, updater, restart)
-    icons/                generated from apps/web/client/app/icon.svg (`bun run tauri icon`)
-    windows/hooks.nsh     NSIS hook: the uninstaller offers to remove the modpack from the clients
-    contract/             JSON the Rust tests write, the UI tests parse (the IPC contract)
-    src/                  one module per concern, tests in <module>/tests.rs
-  web/                    Vite + React UI
-    index.html vite.config.ts vitest.config.ts vitest.setup.ts tsconfig.json global.d.ts
-    src/                  FSD: app, views, widgets, features, entities, shared, ui-kit
-```
+
+`bun run dev:ui` runs the UI alone in a browser: open `http://localhost:1420/?mock=<scenario>` (`fresh`, `installed`, `update`, `migrate`, `offline`, `no-game`) for fake IPC answered from `tauri/contract/*.json`.
+
+## Layout
+
+| Path                       | What                                                                                                       |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `tauri/`                   | the Rust crate `otmetki-manager`: `Cargo.toml`, `tauri.conf.json`, `build.rs`, `rustfmt.toml`              |
+| `tauri/src/`               | one module per concern (`detect`, `install`, `patch`, `profiles`, `sync`, …), tests in `<module>/tests.rs` |
+| `tauri/capabilities/`      | what the window may call (core, open/save pickers, links, updater, restart)                                |
+| `tauri/contract/`          | JSON the Rust tests compare command outputs with and the UI tests parse: the IPC contract                  |
+| `tauri/icons/`             | generated from `apps/web/client/app/icon.svg` (`bun run tauri icon`)                                       |
+| `tauri/windows/hooks.nsh`  | NSIS hook: the uninstaller offers to remove the modpack from the clients                                   |
+| `web/`                     | the Vite + React UI in FSD: `app`, `views`, `widgets`, `features`, `entities`, `shared`, `ui-kit`          |
+| `scripts/dev-preflight.ts` | stops a stale debug build and Vite before `dev`                                                            |
+
+The module map and the rules are in [CLAUDE.md](CLAUDE.md).
 
 ## Commands
 
+From this folder:
+
+| Script                                        | What                                                                                       |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `dev` · `dev:ui` · `dev:free`                 | Tauri dev (Vite :1420 + debug app) · the UI alone · only free the port and the old process |
+| `build`                                       | `tauri build`: `web/dist`, the release exe and the NSIS installer (needs the updater key)  |
+| `build:ui`                                    | the UI bundle only (`web/dist`)                                                            |
+| `typecheck`                                   | `tsc -p web`; also part of the root `bun run typecheck`                                    |
+| `cargo:check` · `cargo:clippy` · `cargo:test` | `cargo check --all-targets` · clippy with warnings as errors · the Rust tests              |
+| `tauri`                                       | the Tauri CLI (`bun run tauri icon`, `bun run tauri signer …`)                             |
+
+`tauri build` without `TAURI_SIGNING_PRIVATE_KEY` fails on the updater artifacts; for a local installer pass `--config '{"bundle":{"createUpdaterArtifacts":false}}'`.
+
+## Testing
+
 ```bash
-cd apps/game/manager
-bun run dev               # tauri dev: Vite on :1420 + the Rust app (debug)
-bun run build             # tauri build: web/dist + release exe + NSIS installer (needs the updater key, see Releases)
-bun run build:ui          # the UI bundle only (web/dist)
-bun run dev:ui            # the UI alone in a browser; open http://localhost:1420/?mock=<scenario> for fake IPC
-bun run typecheck         # tsc -p web
-bun run cargo:check       # cargo check --all-targets
-bun run cargo:clippy      # clippy, warnings are errors
-bun run cargo:test        # the Rust tests (tempdir fixtures, Cyrillic paths)
-bunx vitest run --project manager                    # the UI tests (from the repo root; also part of `bun run test`)
-OTMETKI_UPDATE_FIXTURES=1 bun run cargo:test         # rewrite tauri/contract/*.json after changing a command's output
+bunx vitest run --project manager                # the UI tests, from the repo root (also part of `bun run test`)
+bun run cargo:test                               # the Rust tests: tempdir fixtures, Cyrillic paths
+OTMETKI_UPDATE_FIXTURES=1 bun run cargo:test     # rewrite tauri/contract/*.json after changing a command's output
 ```
 
-Local builds need Rust stable (MSVC) and WebView2 (Windows 10/11 ship it). `tauri build` without `TAURI_SIGNING_PRIVATE_KEY` fails on the updater artifacts; for a local installer pass `--config '{"bundle":{"createUpdaterArtifacts":false}}'`.
+The Rust side owns the IPC shapes: `cargo test` compares `tauri/contract/*.json` with the serialised command outputs, and each UI entity's `_tests` parse the same files with its zod schema, so a drift fails one side. In CI the `manager` job of [release.yml](../../../.github/workflows/release.yml) runs the UI typecheck and tests and `cargo fmt` / `clippy` / `test` on Windows before building the installer.
 
-## What it does
+## Releases
+
+Everything is published to the VPS by [.github/workflows/release.yml](../../../.github/workflows/release.yml) (manual run; the modpack version, the supported clients and the manager version are read from the repository); there is no S3, CDN or GitHub Release. First-time setup (the VPS folder, the secrets, the key) is in [docs/ops/deploy.md §4](../../../docs/ops/deploy.md#4-game-mod-releases-on-the-vps).
+
+1. Bump `version` in `apps/game/modpack/package.json` (the release version; `otmetki.games` there lists the supported clients) and the `VERSION` of the packages that changed, add the CHANGELOG entries; bump `version` in this `package.json` when the manager changed (the updater offers only a newer version). That `version` is the manager's only one: `tauri.conf.json` points at it and `tauri/build.rs` exposes it as `MANAGER_VERSION`; `Cargo.toml` has none. Commit and push.
+2. Run `release.yml` (no inputs). `check` compares the modpack `version` (and `otmetki.games`) and this `version` with the published `releases.json` and releases only what it does not list yet; with both published it ends green with a notice. The two builds run in parallel: the packages and the catalogue (after the modpack suite and ruff) and this installer (after the UI and Rust checks) (`TAURI_SIGNING_PRIVATE_KEY`; it bundles no modpack files). `publish` signs the release payload (`bunx tauri signer sign`, the payload from `apps/web/server/scripts/modpack-release.ts prepare`), merges what was built into `releases.json` (`… index`: a manager-only release keeps the modpack entries, a modpack-only release keeps the `manager` block) and moves it into `DEPLOY_PATH/downloads` over SSH, `releases.json` last.
+3. The result, under `https://triotmetki.ru/downloads/`:
+
+   | Path                                                             | What                                                                          | Cache             |
+   | ---------------------------------------------------------------- | ----------------------------------------------------------------------------- | ----------------- |
+   | `modpack/<version>/*.mtmod`                                      | the split packages the manager installs, plus `otmetki.<version>.mtmod`       | a year, immutable |
+   | `modpack/<version>/catalog/components.json`                      | the release `catalog` (+ `previews/`)                                         | a year, immutable |
+   | `manager/<version>/otmetki-manager_<v>_x64-setup.exe` (+ `.sig`) | the updater target of the index's `manager` block                             | a year, immutable |
+   | `otmetki-manager-setup.exe`                                      | the same installer, the site's /mod download (`MOD_DISTRIBUTION.managerUrl`)  | revalidated       |
+   | `otmetki.mtmod`                                                  | the single package, «скачать пакеты вручную» (`MOD_DISTRIBUTION.packagesUrl`) | revalidated       |
+   | `releases.json`                                                  | the index the API reads                                                       | revalidated       |
+
+   Package and catalogue URLs are `https://triotmetki.ru/downloads/modpack/<version>/<file>`: the trusted host (`releases::is_trusted_host`), https, no port. A published version is cached for a year: change its contents only by publishing a new version.
+
+## Docs
+
+- [CLAUDE.md](CLAUDE.md): the module map and the rules (Rust owns the logic, the state layout is a contract, the IPC contract).
+- [docs/ops/deploy.md §4](../../../docs/ops/deploy.md#4-game-mod-releases-on-the-vps): first-time release setup on the VPS, the signing key.
+- [docs/specs/2026-09-28-manager-runtime-dependencies.md](../../../docs/specs/2026-09-28-manager-runtime-dependencies.md): the third-party runtime mods; [docs/specs/2026-10-06-custom-hangars.md](../../../docs/specs/2026-10-06-custom-hangars.md): hangar looks.
+- [apps/game/modpack/catalog/README.md](../modpack/catalog/README.md): the component catalogue (`components.json`) the manager reads.
+- The [Reference](#reference) below: how each part of the core works.
+
+## Reference
+
+How the core works, one section per concern: [Screens](#screens), [client detection](#client-detection-taurisrcdetect), [state](#state-taurisrcstate-install--the-old-installers-layout), [runtime dependencies](#runtime-dependencies-taurisrcdependencies), [res_map](#openwg-gameface-res_map-taurisrcgameface), [hangar looks](#hangar-looks-taurisrchangars), [profiles](#profiles-and-durable-settings-taurisrcprofiles-durable), [conflicts](#conflicts-taurisrcconflicts), [legacy sets](#legacy-component-sets-taurisrcprofiles-taurisrcsets), [sync](#sync-through-the-site-taurisrcsync-credentials-site-servicesyncrs), [game cache](#game-cache-taurisrccache), [catalogue](#components-catalogue), [patches and updates](#patches-and-updates-taurisrcpatch-servicecheckrs-background), [self-update](#self-update), [deep links](#deep-links), [logs](#logs), [what's new](#whats-new-taurisrcchangelog-servicewhats_newrs), [problem reports](#problem-reports-taurisrcreport-servicereportrs), [post-launch health](#post-launch-health-taurisrchealth), [UI and IPC](#ui-and-ipc).
+
+### Screens
 
 | Screen                | What                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Главная               | The update status (up to date / update available / moved / updated / waiting for a release / offline / failed) with its action, the conflict check when it found something (with «Восстановить набор»), the selected client (version, branch, mods folder) and the install summary; once after an update the «Модпак обновлён до X» card, and after the game ran the «компонент не загрузился» card (see «What's new» and «Post-launch health»). Not installed: the guided first run (game → preset → install: the preset straight to the wizard's review, or «Установка» to pick by hand). |
-| Главная → Установка   | The first-run wizard, and «Изменить набор» later: client → components (presets «Рекомендуемый / Минимальный (FPS) / Стример / Свой», category tree with dependencies, preview pane with description, fair-play note and video; an installer `.ini` profile can be loaded) → other mods (nothing ticked) → review. The third-party libraries the selection needs are not shown: the install takes them silently.                                                                                                                                                                             |
+| Главная → Установка   | The first-run wizard, and «Изменить набор» later: client → components (presets «Рекомендуемый / Минимальный (FPS) / Стример / Все компоненты / Свой», category tree with dependencies, preview pane with description, fair-play note and video; an installer `.ini` profile can be loaded) → other mods (nothing ticked) → review. The third-party libraries the selection needs are not shown: the install takes them silently.                                                                                                                                                            |
 | Компоненты            | The conflict check («Проверка папки модов»), then the catalogue by category with search, previews, a sound preview where the component ships a sound, the FPS cost badge and «Только лёгкие», fair-play notes and «Новое» on the components the installed release changed; a switch per component moves its `.mtmod` in or out of `mods\<version>` instantly. Switching on a component that was never installed downloads it from the current release (same version only).                                                                                                                  |
 | Профили               | One concept for «what is installed and how it is set up»: a profile keeps the settings (`profiles.json`, shared with the Gameface window) and the list of components that were on. Save the current setup, apply (the settings directly when the components match, else «Установка» at the review step with that list and the settings written after the install), rename, delete, copy the `TM1.` code, import a `TM1.`/`TS1.` code or a `.tmset`/`.json` file; «Начать с готового набора» opens «Установка» with a preset.                                                                |
 | Модпак → Обновления   | The update status and its actions (check, update, move after a patch), then «История выпусков»: the modpack release history from the API (cached for offline use), notes per release and the components each one changed (see «What's new»).                                                                                                                                                                                                                                                                                                                                                |
@@ -140,7 +197,7 @@ Every write follows the mod's durable-settings contract ([modpack README «Durab
 
 Packages are read as zip archives: the central directory and `meta.xml` only (at most 64 KiB), never a file's content. «Восстановить набор» (`restore_missing`, confirmed) takes the write lock, refuses while the game runs, and downloads each missing or replaced package again from the installed release (same version only; otherwise `release_unavailable` and the card points to «Обновить модпак»), staged and verified like an update. It replaces only our packages and does not touch configs. Nothing missing or replaced: `nothing_to_restore`.
 
-### Profiles and the legacy component sets (`tauri/src/profiles`, `tauri/src/sets`)
+### Legacy component sets (`tauri/src/profiles`, `tauri/src/sets`)
 
 A profile in `profiles.json` (the mod's file, see the modpack) is `{id, name, created, updated, data: {config, components}}`; the manager adds a top-level `installed` list of component ids when the profile was saved with components on (the in-game window rewrites only `data` and keeps unknown top-level fields, so the list survives a save from the game; the game ignores it). At most 12 profiles (the game window keeps only the first 12), names up to 40 characters. `TM1.` codes are base64url(zlib(`{name, data, installed?}`)); older decoders read `name` and `data` only.
 
@@ -295,7 +352,7 @@ The dialog shows each part with its size and how many fragments were hidden, and
 
 `get_game_health` scans the last 4 MiB of `python.log` and `otmetki.log` for our components that failed to load: `[OTMETKI] failed to register <id>` and `failed to start` (the companion) lines, and tracebacks through `mod_otmetki_<id>.py[c]` (the game's own loader). The first exception line after it gives the kind: `outdated` (bad magic number / marshal data: a build for another client), `dependency` (`No module named` OpenWG Gameface, or a stray GUIFlash copy), `install` (`No module named …otmetki…`: files gone) or `error`. Only catalogue components are reported, once each, and nothing when `python.log` is older than the install recorded in `manifest.ini`. Главная shows «Компонент X не загрузился» with the fix hint for its kind, the excerpt (redacted), a switch to turn the component off and «Сообщить о проблеме»; the check reruns every minute while the window is open.
 
-## UI and IPC
+### UI and IPC
 
 - React 19, TanStack Query for every Rust call, react-hook-form + zod for forms, `use-intl` (next-intl's core) with ru/en catalogues in `web/src/shared/i18n/locales`, Base UI primitives, SCSS modules on `@otmetki/design-tokens` in the in-game settings window's look (`win-*` tokens and `$window-palette`: tanki.su graphite surfaces, the RU 1.45 lobby's text, buttons and `#f50` selection; gold for updates), `@otmetki/icons` + lucide, sonner toasts.
 - Every command goes through `shared/api/tauri/invokeCommand({ command, schema, args })`: the response is parsed with the entity's zod schema, a rejection becomes a `ManagerError` with the Rust `ErrorCode` (title in `errors.json`, hint in `errorHelp.json`). Events (`patch-report`, `deep-link`) go through `listenEvent`.
@@ -303,25 +360,6 @@ The dialog shows each part with its size and how many fragments were hidden, and
 - Navigation: «Главная» stands alone at the top, then «Модпак» (Компоненты, Профили, Обновления, Обслуживание), «Приложение» (Аккаунт и сайт, Настройки) and the unlabelled support group (Помощь, О программе) pinned to the bottom above the status dock. Ctrl+1…9 open the sections in that order; arrow keys, Home and End move the focus inside the menu; a tooltip names each section and its shortcut (the only label in the 64 px rail below 980 px). A section is marked only when there is something to fix there: «Главная» when the update check failed or the client is unsupported, «Компоненты» with the number of components that failed to load at the last game start (the load-failure card is shown on that page too). The content scrolls back to the top on every page change.
 - The status dock at the bottom of the sidebar shows the modpack version, its state and the game version, opens «Обновления» on click (or «Главная» before the modpack is installed) and carries the one action the state needs: «Обновить до X», «Перенести модпак», «Установить модпак» (opens the wizard) or «Выбрать игру» (opens «Обслуживание»). The install and choose-game actions are hidden on «Главная», where the first-run card already offers them. On «Главная» the «Версия модпака» card moves to the top while it offers an action or reports an error.
 - `bun run dev:ui` with `?mock=fresh|installed|update|migrate|offline|no-game` replaces Tauri IPC with `@tauri-apps/api/mocks` answering from `tauri/contract/*.json` (`web/src/app/lib/dev-ipc`). It is loaded only under `import.meta.env.DEV`, outside Tauri and with the query flag, so it never reaches a build.
-
-## Releases
-
-Everything is published to the VPS by [.github/workflows/release.yml](../../../.github/workflows/release.yml) (manual run; the modpack version, the supported clients and the manager version are read from the repository); there is no S3, CDN or GitHub Release. First-time setup (the VPS folder, the secrets, the key) is in [docs/ops/deploy.md §4](../../../docs/ops/deploy.md#4-game-mod-releases-on-the-vps).
-
-1. Bump `version` in `apps/game/modpack/package.json` (the release version; `otmetki.games` there lists the supported clients) and the `VERSION` of the packages that changed, add the CHANGELOG entries; bump `version` in this `package.json` when the manager changed (the updater offers only a newer version). That `version` is the manager's only one: `tauri.conf.json` points at it and `tauri/build.rs` exposes it as `MANAGER_VERSION`; `Cargo.toml` has none. Commit and push.
-2. Run `release.yml` (no inputs). `check` compares the modpack `version` (and `otmetki.games`) and this `version` with the published `releases.json` and releases only what it does not list yet; with both published it ends green with a notice. The two builds run in parallel: the packages and the catalogue (after the modpack suite and ruff) and this installer (after the UI and Rust checks) (`TAURI_SIGNING_PRIVATE_KEY`; it bundles no modpack files). `publish` signs the release payload (`bunx tauri signer sign`, the payload from `apps/web/server/scripts/modpack-release.ts prepare`), merges what was built into `releases.json` (`… index`: a manager-only release keeps the modpack entries, a modpack-only release keeps the `manager` block) and moves it into `DEPLOY_PATH/downloads` over SSH, `releases.json` last.
-3. The result, under `https://triotmetki.ru/downloads/`:
-
-   | Path                                                             | What                                                                          | Cache             |
-   | ---------------------------------------------------------------- | ----------------------------------------------------------------------------- | ----------------- |
-   | `modpack/<version>/*.mtmod`                                      | the split packages the manager installs, plus `otmetki.<version>.mtmod`       | a year, immutable |
-   | `modpack/<version>/catalog/components.json`                      | the release `catalog` (+ `previews/`)                                         | a year, immutable |
-   | `manager/<version>/otmetki-manager_<v>_x64-setup.exe` (+ `.sig`) | the updater target of the index's `manager` block                             | a year, immutable |
-   | `otmetki-manager-setup.exe`                                      | the same installer, the site's /mod download (`MOD_DISTRIBUTION.managerUrl`)  | revalidated       |
-   | `otmetki.mtmod`                                                  | the single package, «скачать пакеты вручную» (`MOD_DISTRIBUTION.packagesUrl`) | revalidated       |
-   | `releases.json`                                                  | the index the API reads                                                       | revalidated       |
-
-   Package and catalogue URLs are `https://triotmetki.ru/downloads/modpack/<version>/<file>`: the trusted host (`releases::is_trusted_host`), https, no port. A published version is cached for a year: change its contents only by publishing a new version.
 
 ## Not verified yet
 

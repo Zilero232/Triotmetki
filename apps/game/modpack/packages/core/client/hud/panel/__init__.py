@@ -61,6 +61,7 @@ class BattlePanel(FeatureComponent):
         self.report = panel_report(app)
         self.spec = spec
         self.running = False
+        self.start_args = None
         FeatureComponent.__init__(self, app, spec.panel_id, spec.schema, spec.switch, spec.strings)
         self.report.track(spec.panel_id, self.enabled)
         self.hooks = BattleHooks()
@@ -84,15 +85,26 @@ class BattlePanel(FeatureComponent):
 
     def _on_start(self, *args):
         self._on_leave()
+        self.start_args = args
         mode = current_mode(self.stock.page)
         if mode != self.hud.mode:
             log('HUD: battle type %s (%s)' % (mode, mode_details(self.stock.page)))
         self.hud.enter_mode(mode)
         self.wait(None)
-        if self.enabled() and self.hud.allows(self.component_id):
-            self.running = True
-            self.start(*args)
-            self.sync_stock()
+        if self.can_start():
+            self._run()
+
+    def in_started_battle(self):
+        """True between this panel's `start_event` and the battle's end, whether the panel runs or not."""
+        return self.start_args is not None and bool(self.app.in_battle)
+
+    def can_start(self):
+        return self.enabled() and self.hud.allows(self.component_id)
+
+    def _run(self):
+        self.running = True
+        self.start(*self.start_args)
+        self.sync_stock()
 
     def _on_leave(self):
         self.running = False
@@ -107,6 +119,7 @@ class BattlePanel(FeatureComponent):
 
     def _leave_battle(self):
         self._on_leave()
+        self.start_args = None
         self.hud.leave_mode()
 
     def _on_component_settings(self, component_id, changed):
@@ -116,6 +129,8 @@ class BattlePanel(FeatureComponent):
             self._on_leave()
         elif self.running:
             self.sync_stock()
+        elif self.in_started_battle() and self.can_start():
+            self._run()
         self.settings_changed(changed)
 
     def stock_aliases(self):

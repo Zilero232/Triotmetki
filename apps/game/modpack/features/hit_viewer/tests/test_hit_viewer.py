@@ -6,6 +6,7 @@ import math
 import unittest
 
 import _support
+from otmetki.core.armor import Plate
 from otmetki.core.settings import Settings
 from _support import MemoryFile
 from otmetki.features.hit_viewer.i18n import STRINGS
@@ -335,6 +336,10 @@ class AimTest(unittest.TestCase):
         assert clean_aim((1.234567, -0.000049)) == [1.2346, -0.0]
 
 
+def armour_plate(hit_cos, armor):
+    return Plate(distance=1.0, hit_cos=hit_cos, part='hull', material_kind=1, armor=armor)
+
+
 class ArmorTest(unittest.TestCase):
 
     def test_a_plate_hit_straight_on_has_its_nominal_armour(self):
@@ -350,7 +355,7 @@ class ArmorTest(unittest.TestCase):
         assert plate_analysis(0.5, 100, uses_angle=False)['armor'] == 100
 
     def test_the_first_armoured_layer_is_measured(self):
-        assert first_plate([(1.0, 0, True), (0.5, 80, True)])['nominal'] == 80
+        assert first_plate([armour_plate(1.0, 0), armour_plate(0.5, 80)])['nominal'] == 80
 
     def test_no_layers_give_nothing(self):
         assert first_plate([]) is None
@@ -380,7 +385,7 @@ class ArmorTest(unittest.TestCase):
         assert plate_analysis(0.999, 100, shell='ap', caliber=300)['armor'] == 100
 
     def test_the_first_plate_uses_the_shell(self):
-        assert first_plate([(0.5, 100, True)], 'ap', 100)['armor'] == 174
+        assert first_plate([armour_plate(0.5, 100)], 'ap', 100)['armor'] == 174
 
 
 class ShellTest(unittest.TestCase):

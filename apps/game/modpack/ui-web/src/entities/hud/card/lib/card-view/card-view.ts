@@ -1,5 +1,5 @@
 import type { CardData, CardRowData } from '../../model/schemas';
-import type { RowIcon } from './card-view.types';
+import type { CardRowEntry, RowIcon } from './card-view.types';
 
 import { CARD } from '../../config';
 
@@ -16,3 +16,5 @@ export const rowIcon = (row: CardRowData): RowIcon => {
 
   return CARD.status[row.status];
 };
+
+export const cardRowEntries = (rows: CardRowData[]): CardRowEntry[] => rows.map((row, position) => ({ key: String(position), row }));

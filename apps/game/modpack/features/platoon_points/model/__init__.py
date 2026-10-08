@@ -60,13 +60,15 @@ class Platoon(object):
         known = self.members.get(vehicle_id) or {}
         max_hp = _positive_int(seen.get('max_hp'))
         is_alive = seen.get('alive', True)
+        is_revived = is_alive and known.get('alive') is False
+        hp = max_hp if is_revived else known.get('hp', max_hp)
 
         self.members[vehicle_id] = {
             'name': _name(seen.get('name')),
             'own': bool(seen.get('own')),
             'class': seen.get('class'),
             'max': max_hp,
-            'hp': known.get('hp', max_hp) if is_alive else 0,
+            'hp': hp if is_alive else 0,
             'alive': bool(is_alive),
             'frags': known.get('frags', 0),
         }

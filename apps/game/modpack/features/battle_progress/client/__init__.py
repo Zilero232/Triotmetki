@@ -47,6 +47,8 @@ class BattleProgressPanel(BattlePanel):
         self.row = None
         self.has_main_gun = False
         self.hit_ally = False
+        self.is_alive = True
+        self.own_id = None
         self.settled = False
         BattlePanel.__init__(self, app, PANEL_SPEC)
 
@@ -66,9 +68,12 @@ class BattleProgressPanel(BattlePanel):
         self.has_main_gun = main_gun_applies(getattr(arena(), 'guiType', None))
         self.counts = BattleCounts()
         self.hit_ally = False
+        self.is_alive = True
+        self.own_id = getattr(player, 'playerVehicleID', None)
         self.settled = False
 
         self.hooks.add(feedback, 'onPlayerFeedbackReceived', self._on_feedback)
+        self.hooks.add(arena, 'onVehicleKilled', self._on_vehicle_killed)
         self.hooks.add(feedback, 'onPlayerSummaryFeedbackReceived', self._on_summary)
         self.hooks.add(battle_messages, 'onShowPlayerMessageByKey', self._on_player_message)
         self.teams.start(self.hooks, player)
@@ -113,6 +118,12 @@ class BattleProgressPanel(BattlePanel):
             self.hit_ally = True
             self.render()
 
+    # Battle Observer's main gun turns to its warning once the own vehicle is destroyed.
+    def _on_vehicle_killed(self, victim_id, *args):
+        if victim_id == self.own_id and self.is_alive:
+            self.is_alive = False
+            self.render()
+
     def _on_settled(self):
         self.settled = True
         self.render()
@@ -124,7 +135,8 @@ class BattleProgressPanel(BattlePanel):
             return None
         enemies_max = teams.totals(False)['max']
         enemies_hp = teams.health(False)['hp']
-        return main_gun_state(self.counts.values['damage'], enemies_max, enemies_hp, self.hit_ally)
+        damage = self.counts.values['damage']
+        return main_gun_state(damage, enemies_max, enemies_hp, self.hit_ally, self.is_alive)
 
     @safe
     def render(self):

@@ -34,8 +34,9 @@ class PageModel(object):
 
 class PageView(object):
 
-    def __init__(self):
+    def __init__(self, window=None):
         self.viewModel = PageModel()
+        self.window = window
 
     def _on_send(self, args=None):
         pass
@@ -120,7 +121,7 @@ class GamefaceBackendCase(unittest.TestCase):
 
     def battle_up(self):
         self.backend.create(LAMP, {'text': '!'})
-        view = PageView()
+        view = PageView(self.backend.window)
         self.backend.on_loaded(view)
         self.say(type='ready')
         self.run_frames()

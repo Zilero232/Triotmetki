@@ -13,6 +13,7 @@ import { PurgeGuardService } from '../../../collector/purge';
 import { sessionUuid } from '../../lib/battle/battle';
 import { ingestBatchSchema } from '../../lib/contract/contract.schemas';
 import { EventLedgerService } from '../event-ledger.service';
+import { IngestQuotaWriterService } from '../ingest-quota-writer.service';
 import { ModIngestWriterService } from '../mod-ingest-writer.service';
 
 const example = ingestBatchSchema.parse(
@@ -37,6 +38,7 @@ describeWithDatabase('ModIngestWriterService on a real database', () => {
     return new ModIngestWriterService(
       prisma,
       new EventLedgerService(new RedisMock()),
+      new IngestQuotaWriterService(new RedisMock()),
       expected,
       new PurgeGuardService(prisma),
       mock<WebhookEmitter>()

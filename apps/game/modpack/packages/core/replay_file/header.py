@@ -19,6 +19,7 @@ from .constants import (
     MAGIC,
     MAX_BLOCKS,
     MAX_HEADER_BLOCK_BYTES,
+    NAME_STAMP,
     OWN_STATS,
     RECORDING_NAME,
     RESULT_DRAW,
@@ -84,6 +85,29 @@ def parse_date_time(value):
         return float(time.mktime((year, month, day, hour, minute, second, 0, 0, -1)))
     except (OverflowError, ValueError):
         return None
+
+
+def name_time(name):
+    """The local start of the battle a replay file name starts with (YYYYMMDD_HHMM_, minutes) as epoch seconds,
+    or None for a name without it (a renamed replay)."""
+    match = NAME_STAMP.match(os.path.basename(to_text(name)))
+    if match is None:
+        return None
+
+    year, month, day, hour, minute = [int(part) for part in match.groups()]
+    try:
+        return float(time.mktime((year, month, day, hour, minute, 0, 0, 0, -1)))
+    except (OverflowError, ValueError):
+        return None
+
+
+def same_vehicle(header_vehicle, vehicle_name):
+    """Whether a header's playerVehicle (ussr-R04_T-34) is the client's vehicle type name (ussr:R04_T-34); True when
+    either is unknown."""
+    if not header_vehicle or not vehicle_name:
+        return True
+
+    return to_text(header_vehicle) == to_text(vehicle_name).replace(u':', u'-')
 
 
 def _text_or_none(value):

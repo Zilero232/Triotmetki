@@ -25,6 +25,7 @@ STUBBED = (
     'BigWorld', 'Keys', 'BattleReplay', 'ResMgr', 'game', 'gui', 'gui.InputHandler', 'gui.battle_control',
     'gui.battle_control.event_dispatcher', 'AvatarInputHandler', 'AvatarInputHandler.VideoCamera', 'aih_constants',
     'frameworks', 'frameworks.wulf', 'skeletons', 'skeletons.gui', 'skeletons.gui.app_loader', 'helpers',
+    'PlayerEvents',
 )
 DROPPED_PREFIXES = ('otmetki.core.client', 'otmetki.features.free_camera.client')
 
@@ -286,6 +287,8 @@ class FreeCameraClientTest(unittest.TestCase):
         sys.modules['skeletons'] = module('skeletons')
         sys.modules['skeletons.gui'] = module('skeletons.gui')
         sys.modules['skeletons.gui.app_loader'] = module('skeletons.gui.app_loader', IAppLoader='IAppLoader')
+        self.player_events = module('player_events', onAccountBecomeNonPlayer=Event(), onDisconnected=Event())
+        sys.modules['PlayerEvents'] = module('PlayerEvents', g_playerEvents=self.player_events)
         self._install_lobby()
 
     def _install_lobby(self):
@@ -394,6 +397,57 @@ class FreeCameraClientTest(unittest.TestCase):
         assert camera.destroyed
         assert self.lobby_layers == []
         assert not self.layer.muted
+
+    def test_a_disconnect_lands_the_hangar_camera(self):
+        self.press('KEY_LCONTROL', 'KEY_LSHIFT', 'KEY_F')
+
+        self.player_events.onDisconnected()
+
+        assert not self.feature.flight.active
+
+    def test_a_disconnect_shows_the_lobby_again(self):
+        self.press('KEY_LCONTROL', 'KEY_LSHIFT', 'KEY_F')
+
+        self.player_events.onDisconnected()
+
+        assert self.lobby_layers[-1] == ('show', (1, 2))
+
+    def test_a_disconnect_unmutes_the_mod_panels(self):
+        self.press('KEY_LCONTROL', 'KEY_LSHIFT', 'KEY_F')
+
+        self.player_events.onDisconnected()
+
+        assert not self.layer.muted
+
+    def test_a_disconnect_gives_the_keys_back_to_the_client(self):
+        self.press('KEY_LCONTROL', 'KEY_LSHIFT', 'KEY_F')
+        self.player_events.onDisconnected()
+        self.game_keys[:] = []
+
+        self.press('KEY_W')
+
+        assert self.game_keys == [KEYS['KEY_W']]
+
+    def test_leaving_the_account_lands_the_hangar_camera(self):
+        self.press('KEY_LCONTROL', 'KEY_LSHIFT', 'KEY_F')
+
+        self.player_events.onAccountBecomeNonPlayer()
+
+        assert VideoCamera.made[0].destroyed
+
+    def test_a_hangar_shown_mid_flight_lands_the_camera(self):
+        self.press('KEY_LCONTROL', 'KEY_LSHIFT', 'KEY_F')
+
+        self.app.bus.emit('hangar')
+
+        assert not self.feature.flight.active
+
+    def test_a_hangar_shown_mid_flight_puts_the_hangar_camera_back(self):
+        self.press('KEY_LCONTROL', 'KEY_LSHIFT', 'KEY_F')
+
+        self.app.bus.emit('hangar')
+
+        assert self.cameras[-1] is self.hangar_camera
 
     def test_the_client_key_handler_stays_its_own_outside_a_flight(self):
         original = sys.modules['game'].handleKeyEvent

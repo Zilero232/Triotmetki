@@ -1,1 +1,1 @@
-export { arcPath } from './reticle-arcs';
+export { arcPath, arcsView } from './reticle-arcs';

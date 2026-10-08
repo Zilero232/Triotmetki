@@ -71,7 +71,8 @@ PREVIEW_EXTENSION = '.png'
 PREVIEW_DATA_PREFIX = 'data:image/png;base64,'
 PREVIEW_SIZE = (256, 144)
 PREVIEW_TAPS = (0.25, 0.75)
-PREVIEW_ARM_S = 600.0
+# Only right after the player's own pick or refresh press: the lobby is never hidden on its own later.
+PREVIEW_ARM_S = 15.0
 PREVIEW_SETTLE_S = 3.0
 CHECK_IDLE = 'idle'
 CHECK_WAIT = 'wait'

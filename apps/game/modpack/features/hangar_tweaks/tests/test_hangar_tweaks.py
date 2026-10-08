@@ -9,6 +9,7 @@ from otmetki.features.hangar_tweaks.model import (
     REFUSE_LOCKED,
     REFUSE_NOTHING,
     carousel_row_count,
+    is_still_planned,
     plan_crew_return,
     plan_crew_unload,
     plan_demount,
@@ -29,8 +30,8 @@ def vehicle_state(locked=False, **fields):
     return state
 
 
-def device(slot, removable):
-    return {'slot': slot, 'removable': removable}
+def device(slot, removable, int_cd=None):
+    return {'slot': slot, 'removable': removable, 'int_cd': int_cd}
 
 
 class CarouselTest(unittest.TestCase):
@@ -116,10 +117,24 @@ class StyleRemovalTest(unittest.TestCase):
 
 class DemountTest(unittest.TestCase):
 
+    def test_the_planned_device_still_in_its_slot_is_demounted(self):
+        assert is_still_planned(device(0, True, 101), device(0, True, 101)) is True
+
+    def test_another_device_in_the_slot_is_left(self):
+        assert is_still_planned(device(0, True, 101), device(0, True, 202)) is False
+
+    def test_a_device_no_longer_removable_is_left(self):
+        assert is_still_planned(device(0, True, 101), device(0, False, 101)) is False
+
+    def test_an_emptied_slot_is_left(self):
+        assert is_still_planned(device(0, True, 101), None) is False
+
     def test_only_removable_devices_are_demounted(self):
         devices = [device(0, True), None, device(2, False), device(3, True)]
 
-        assert plan_demount(vehicle_state(devices=devices)) == ([0, 3], None)
+        planned, _ = plan_demount(vehicle_state(devices=devices))
+
+        assert [entry['slot'] for entry in planned] == [0, 3]
 
     def test_a_locked_vehicle_is_refused(self):
         state = vehicle_state(locked=True, devices=[device(0, True)])

@@ -1,5 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import BigWorld
+
 from ....core.client.battle.teams import TeamTracker
 from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.native import read_settings, settings_core
@@ -20,8 +22,9 @@ PANEL_SPEC = PanelSpec.of(settings, STRINGS, preview, PREVIEW_SIZE)
 class TeamHpPanel(BattlePanel):
 
     def __init__(self, app):
-        self.tracker = TeamTracker(self.render)
+        self.tracker = TeamTracker(self._request_render)
         self.options = strip_options(None)
+        self.is_render_pending = False
         BattlePanel.__init__(self, app, PANEL_SPEC)
 
     def start(self, player):
@@ -44,6 +47,19 @@ class TeamHpPanel(BattlePanel):
             return
 
         self.options = strip_options(read_settings(STOCK_STRIP_SETTINGS))
+        self.render()
+
+    # The team feed fires once per vehicle update: the panel is drawn once a frame.
+    def _request_render(self):
+        if self.is_render_pending:
+            return
+
+        self.is_render_pending = True
+        BigWorld.callback(0, self._render_pending)
+
+    @safe
+    def _render_pending(self):
+        self.is_render_pending = False
         self.render()
 
     @safe

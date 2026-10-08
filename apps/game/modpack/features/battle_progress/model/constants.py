@@ -11,11 +11,11 @@ PROGRESS = 'progress'
 REACHED = 'reached'
 UNREACHABLE = 'unreachable'
 FAILED = 'failed'
+# Battle Observer's main gun (MainGunUI.as) marks a medal out of reach; here the row goes instead.
+HIDDEN_STATUSES = (UNREACHABLE, FAILED)
 MAIN_GUN_LOOKS = {
-    PROGRESS: {'word': None, 'tone': 'text', 'bar': 'gold'},
-    REACHED: {'word': None, 'tone': 'good', 'bar': 'good'},
-    UNREACHABLE: {'word': 'bp_unreachable', 'tone': 'muted', 'bar': None},
-    FAILED: {'word': 'bp_failed', 'tone': 'bad', 'bar': None},
+    PROGRESS: {'value': 'bp_left', 'tone': 'text', 'bar': 'gold'},
+    REACHED: {'value': 'bp_reached', 'tone': 'good', 'bar': 'good'},
 }
 
 # WN8 as wnefficiency.net defines it, the version the site computes.
@@ -60,10 +60,10 @@ KIND_BY_EVENT = (
 ANY_TARGET_KEYS = ('def',)
 
 ROWS = ('main_gun', 'wn8')
+# RU 1.45 gui-part1.pkg: the stock medal art the battle results show.
+ROW_IMAGES = {'main_gun': 'gui/maps/icons/achievement/32x32/mainGun.png'}
 ROW_GLYPHS = {'main_gun': 'target', 'wn8': 'wn8'}
 TEXT_COLORS = {'text': COLOR_NEUTRAL, 'muted': COLOR_MUTED, 'good': COLOR_UP, 'bad': COLOR_DOWN}
-STILL_NEEDED = u'−%s'
-PAST_THRESHOLD = u'+%s'
 ESTIMATE = u'~%s'
 DETAIL_SIZE_STEP = 2
 MIN_DETAIL_SIZE = 8

@@ -1,3 +1,5 @@
+import clsx from 'clsx';
+
 import { remSquare } from '@/shared/lib/css-unit';
 
 import type { ReticleMarkProps } from './ReticleMark.types';
@@ -7,12 +9,12 @@ import { reticleMarkPrimitives } from '../../../lib/reticle-mark';
 
 import s from './ReticleMark.module.scss';
 
-export const ReticleMark = ({ shape, size, color, outline }: ReticleMarkProps) => {
+export const ReticleMark = ({ shape, size, color, outline, isShown }: ReticleMarkProps) => {
   const { paint } = RETICLE_MARKS;
   const colours = { mark: color ?? paint.mark, outline: paint.outline, shade: paint.outline };
 
   return (
-    <span className={s.mark} style={remSquare(size)}>
+    <span className={clsx(s.mark, !isShown && s.idle)} style={remSquare(size)}>
       <svg
         key={`${shape}-${String(size)}-${String(outline)}`}
         aria-hidden='true'

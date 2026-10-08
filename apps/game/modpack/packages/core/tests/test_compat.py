@@ -4,7 +4,22 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 import _support  # noqa: F401
-from otmetki.core.compat import clamp, clean_text, fraction, int_or_none, number_or_none
+from otmetki.core.compat import clamp, clean_text, fraction, int_or_none, is_finite_number, number_or_none
+
+
+class FiniteNumberTest(unittest.TestCase):
+
+    def test_a_float_is_finite(self):
+        assert is_finite_number(2.5)
+
+    def test_infinity_is_not_finite(self):
+        assert not is_finite_number(float('inf'))
+
+    def test_nan_is_not_finite(self):
+        assert not is_finite_number(float('nan'))
+
+    def test_a_bool_is_not_a_number(self):
+        assert not is_finite_number(True)
 
 
 class NumberOrNoneTest(unittest.TestCase):

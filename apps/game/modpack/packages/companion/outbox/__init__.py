@@ -1,9 +1,20 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import numbers
 import random
 
+from ...core.log import log
 from ...core.net.backoff import backoff_delay
-from .constants import BASE_BACKOFF_S, JITTER, MAX_BACKOFF_S, MAX_BATCH, MAX_EVENTS, Outcome  # noqa: F401
+from .constants import (  # noqa: F401
+    AGELESS_EVENT_TYPES,
+    BASE_BACKOFF_S,
+    JITTER,
+    MAX_BACKOFF_S,
+    MAX_BATCH,
+    MAX_EVENT_AGE_S,
+    MAX_EVENTS,
+    Outcome,
+)
 
 
 def classify_status(status):
@@ -23,6 +34,22 @@ def _stored_events(data):
     if not isinstance(events, list):
         return []
     return [event for event in events if isinstance(event, dict) and event.get('event_id')]
+
+
+def _is_expired(event, oldest_accepted):
+    if event.get('type') in AGELESS_EVENT_TYPES:
+        return False
+
+    occurred_at = event.get('occurred_at')
+    if not isinstance(occurred_at, numbers.Real):
+        return False
+
+    return occurred_at < oldest_accepted
+
+
+def unexpired_events(events, now):
+    oldest_accepted = int(now) - MAX_EVENT_AGE_S
+    return [event for event in events if not _is_expired(event, oldest_accepted)]
 
 
 class Outbox(object):
@@ -64,7 +91,22 @@ class Outbox(object):
     def next_batch(self, now):
         if not self.ready(now):
             return None
+
+        self._drop_expired(now)
+        if not self.events:
+            return None
+
         return list(self.events[:self.batch_size])
+
+    def _drop_expired(self, now):
+        kept = unexpired_events(self.events, now)
+        dropped = len(self.events) - len(kept)
+        if dropped == 0:
+            return
+
+        self.events = kept
+        self._persist()
+        log('outbox: dropped %d events older than the server accepts' % dropped)
 
     def _remove(self, batch):
         ids = set(event.get('event_id') for event in batch)

@@ -31,13 +31,9 @@ SEGMENT_MARGIN = 0.01
 
 # A plate hit at a grazing angle: the cosine is kept above this so the effective armour stays finite.
 MIN_COS = 0.05
-# The shell turns towards the plate's normal by this many degrees before it meets the armour. The client never reads
-# the value (RU 1.45 items/vehicles._readShell skips normalizationAngle on IS_CLIENT): these are the game's standard
-# AP and APCR values; HEAT and HE are not normalised.
-NORMALIZATION_DEG = {'ap': 5.0, 'apcr': 2.0}
-# Over-match: a calibre over twice the plate widens the normalisation by 1.4 * calibre / (2 * armour).
-OVERMATCH_RATIO = 2.0
-OVERMATCH_FACTOR = 1.4
+# The shell codes of the book (core.shells) as the client's shell kinds, for core.armor's normalisation: AP 5 degrees,
+# APCR (APFSDS among them) 2, widened past two calibres; HEAT and HE are not normalised.
+SHELL_KINDS = {'ap': 'ARMOR_PIERCING', 'apcr': 'ARMOR_PIERCING_CR', 'heat': 'HOLLOW_CHARGE', 'he': 'HIGH_EXPLOSIVE'}
 
 # poliroid BattleHits (MIT, gui/battlehits/_constants.py MODEL_PATHS): its shell and hit-effect models, shipped
 # unmodified at their own in-game paths (assets/third_party/battlehits). The HE model is its `hemodern`.

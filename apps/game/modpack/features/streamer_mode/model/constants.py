@@ -13,5 +13,5 @@ HOTKEY_CHOICES = ('ctrl_shift_h', 'ctrl_shift_s', 'f9', 'f10', 'f11', 'none')
 PRIVATE_HANGAR_LABELS = (
     'otmetki.session',
     'otmetki.personal_missions',
-    'otmetki.hud.hangar_marks',
 )
+PRIVATE_HUD_PANELS = ('hangar_marks',)

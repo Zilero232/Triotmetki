@@ -3,14 +3,17 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.client.battle import BattleHooks, arena, arena_dp, own_account_id
 from ....core.client.component import FeatureComponent
 from ....core.client.me import post_json
+from ....core.client.timer import Ticker
+from ....core.events import EVENT_COMPONENT_SETTINGS
 from ....core.log import log
 from ....core.me import OK_STATUS
 from ..i18n import STRINGS
 from ..model import (
     ArenaPlayer,
+    BadgeSwitch,
     BattleBadges,
+    arena_names,
     asked_account_ids,
-    marked_names,
     marked_vehicle_ids,
     parse_badges,
     presence_request,
@@ -18,6 +21,7 @@ from ..model import (
 )
 from ..model.constants import PRESENCE_PATH
 from ..settings import SCHEMA, SECTION, SWITCH
+from .constants import LOOKUP_BATCH_S
 from .flash import PageBridge, set_library
 
 
@@ -50,57 +54,113 @@ class PackBadge(FeatureComponent):
         FeatureComponent.__init__(self, app, SECTION, SCHEMA, SWITCH, STRINGS)
         self.badges = BattleBadges()
         self.hooks = BattleHooks()
-        self.bridge = PageBridge()
+        self.bridge = PageBridge(self._on_page_found)
+        self.added_lookup = Ticker(LOOKUP_BATCH_S, self._ask_added)
+        self.own_switch = BadgeSwitch(self.shows_own())
+        self.last_own_account_id = None
+        self.page_found = False
         self.sync_library()
         bus = app.bus
-        bus.on('hangar', self.sync_library)
+        bus.on('hangar', self._on_hangar)
         bus.on('enqueued', self.sync_library)
+        bus.on(EVENT_COMPONENT_SETTINGS, self._on_settings_changed)
         bus.on('battle_ready', self._on_battle_ready)
         bus.on('battle_leave', self._on_battle_leave)
+
+    def shows_own(self):
+        return self.enabled() and show_own(self.app.config)
 
     # The battle app reads BATTLE_REQUIRED_LIBRARIES when it is created, so the switch is applied before every battle.
     def sync_library(self, *args):
         set_library(self.enabled())
 
+    def _on_hangar(self):
+        self.sync_library()
+        self.report_switch_off()
+
+    def _on_settings_changed(self, component_id, changed):
+        self.report_switch_off()
+
+    # The whole mod, the plate or "show my badge" switched off deletes the own presence on the server at once.
+    def report_switch_off(self):
+        if self.app.in_battle:
+            return
+        if not self.own_switch.switched_off(self.shows_own()):
+            return
+
+        own_id = getattr(self.app, 'account_id', None) or self.last_own_account_id
+        if not own_id:
+            log('pack badge swf: switched off before any own account was known, nothing to delete')
+            return
+
+        payload = presence_request(own_id, False, [])
+        post_json(self.app, PRESENCE_PATH, payload, self._on_hidden)
+
+    def _on_hidden(self, status, data, retry_after):
+        log('pack badge swf: the switch off was reported, the site answered %s' % status)
+
     # RU 1.45 client source: Avatar.py builds ClientArena from the avatar's own arenaUniqueID.
     def _on_battle_ready(self, player):
         if not self.enabled():
             return
+
         visible = show_own(self.app.config)
         arena_id = getattr(player, 'arenaUniqueID', None)
-        self.badges.start(arena_id, own_account_id(player), visible)
+        own_id = own_account_id(player)
+        self.last_own_account_id = own_id or self.last_own_account_id
+        self.badges.start(arena_id, own_id, visible)
+        self.page_found = False
         log('pack badge swf: own row %s' % ('marked' if self.badges.marked else 'not marked'))
+
         self.bridge.start()
         self.show('battle start')
-        self.request(arena_id)
-        self.hooks.add(arena, 'onVehicleAdded', lambda *args: self._on_vehicle_added(arena_id))
+        self.hooks.add(arena, 'onVehicleAdded', self._on_vehicle_added)
         # The loading screen and the Tab table change with the arena period, a few times a battle.
         self.hooks.add(arena, 'onPeriodChange', lambda *args: self.show('arena period'))
 
     def _on_battle_leave(self):
         self.hooks.clear()
+        self.added_lookup.stop()
+        self.page_found = False
         self.badges.stop()
         self.bridge.stop()
 
-    def _on_vehicle_added(self, arena_id):
-        self.request(arena_id)
+    # Only a battle page with the players panel (PAGE_ALIASES) draws the plate, so only its battles ask the site.
+    def _on_page_found(self):
+        if self.page_found:
+            return
+
+        self.page_found = True
+        self.request()
+
+    def _on_vehicle_added(self, *args):
         self.show('vehicle added')
+        if self.page_found:
+            self.added_lookup.start()
+
+    def _ask_added(self):
+        self.request()
+        return False
 
     def show(self, reason):
         if not self.badges.marked:
             return
+
         infos = arena_infos()
         marked = self.badges.marked
-        self.bridge.show(marked_vehicle_ids(arena_vehicles(infos), marked), marked_names(arena_players(infos), marked),
-                         reason)
+        vehicle_ids = marked_vehicle_ids(arena_vehicles(infos), marked)
+        names, other_names = arena_names(arena_players(infos), marked)
 
-    def request(self, arena_id):
+        self.bridge.show(vehicle_ids, names, other_names, reason)
+
+    def request(self):
         badges = self.badges
-        if arena_id != badges.arena_id:
-            return
-        asked = badges.lookup(asked_account_ids(arena_players(arena_infos()), badges.own_account_id))
+        arena_id = badges.arena_id
+        players = arena_players(arena_infos())
+        asked = badges.lookup(asked_account_ids(players, badges.own_account_id))
         if asked is None:
             return
+
         payload = presence_request(badges.own_account_id, badges.visible, asked)
 
         def done(status, data, retry_after):

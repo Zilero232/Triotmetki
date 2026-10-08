@@ -1,5 +1,8 @@
 // @vitest-environment jsdom
+import { createElement } from 'react';
 import { describe, expect, it } from 'vitest';
+
+import type { ResolvedWidget } from '@/features/hud/widget-registry';
 
 import { parseRichText } from '@/shared/lib/rich-text';
 
@@ -8,6 +11,8 @@ import { changedPanels, elementRef, emptyContent, readCountdown, readSize, settl
 const KEPT = parseRichText('урон 1 200');
 
 const SIZE = { lines: 1, width: 100, height: 20 };
+
+const fixedWidget = (): ResolvedWidget => ({ kind: 'crosshair', data: {}, pointer: false, fixedCanvas: true, node: createElement('span') });
 
 describe(settleSizes, () => {
   it('keeps the same sizes object when nothing grew', () => {
@@ -37,6 +42,20 @@ describe(changedPanels, () => {
     const next = { lines: new Map([['a', KEPT]]), widgets: new Map([['a', null]]) };
 
     expect(changedPanels({ previous, next })).toEqual([]);
+  });
+
+  it('skips a fixed-canvas widget that only moved its content', () => {
+    const previous = { lines: new Map([['a', KEPT]]), widgets: new Map([['a', fixedWidget()]]) };
+    const next = { lines: new Map([['a', parseRichText('x')]]), widgets: new Map([['a', fixedWidget()]]) };
+
+    expect(changedPanels({ previous, next })).toEqual([]);
+  });
+
+  it('measures a fixed-canvas widget the first time it shows', () => {
+    const previous = { lines: new Map([['a', KEPT]]), widgets: new Map([['a', null]]) };
+    const next = { lines: new Map([['a', KEPT]]), widgets: new Map([['a', fixedWidget()]]) };
+
+    expect(changedPanels({ previous, next })).toEqual(['a']);
   });
 
   it('lists a panel whose lines changed', () => {

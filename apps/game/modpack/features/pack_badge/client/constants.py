@@ -23,3 +23,6 @@ EVENTS_MODULE = 'gui.shared'
 GAME_EVENTS_MODULE = 'gui.shared.events'
 FULL_STATS_DOWN = 'isDown'
 TAB_REPAINT_DELAY_S = 0.2
+
+# The arena adds the vehicles one by one at the start: their players are asked together, once the adds went quiet.
+LOOKUP_BATCH_S = 1.0

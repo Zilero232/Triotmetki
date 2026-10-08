@@ -288,6 +288,13 @@ def card_of(state, component_id):
     return [item for item in state['components'] if item['id'] == component_id][0]
 
 
+def native_backups(app):
+    app.save_state()
+    accounts = app.state.get('accounts', {})
+    account = accounts.get(str(app.account_id), {})
+    return account.get('native_backup', {})
+
+
 class UiSmokeTest(unittest.TestCase):
 
     def setUp(self):
@@ -517,7 +524,7 @@ class UiSmokeTest(unittest.TestCase):
             app = self.open_hangar(seed)
 
             assert self.core.applied == []
-            assert 'crosshair' not in app.state.get('native_backup', {})
+            assert 'crosshair' not in native_backups(app)
 
     def test_a_fresh_install_leaves_the_reticle_to_the_game(self):
         self.open_window(0)
@@ -539,7 +546,7 @@ class UiSmokeTest(unittest.TestCase):
         self.send(type='action', component='crosshair', action='native_recommended')
 
         assert self.core.values['arcade']['net'] == 0
-        assert app.state['native_backup']['crosshair']['settings']['arcade'] == {'net': 100, 'custom': 3}
+        assert native_backups(app)['crosshair']['settings']['arcade'] == {'net': 100, 'custom': 3}
 
     def test_after_recommended_the_card_offers_the_restore(self):
         self.open_window(0)
@@ -567,7 +574,7 @@ class UiSmokeTest(unittest.TestCase):
         crosshair = card_of(self.state(), 'crosshair')
         assert self.core.values['arcade'] == {'net': 100, 'custom': 3}
         assert [field['value'] for field in crosshair['fields'] if field['key'] == 'preset'] == ['native']
-        assert 'crosshair' not in app.state['native_backup']
+        assert 'crosshair' not in native_backups(app)
 
     def test_after_a_restore_the_card_offers_the_recommended_reticle(self):
         self.open_window(0)

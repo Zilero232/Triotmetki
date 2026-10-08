@@ -32,6 +32,24 @@ class Namespace(object):
         self.__dict__.update(attrs)
 
 
+class Event(object):
+
+    def __init__(self):
+        self.handlers = []
+
+    def __iadd__(self, handler):
+        self.handlers.append(handler)
+        return self
+
+    def __isub__(self, handler):
+        self.handlers.remove(handler)
+        return self
+
+    def __call__(self, *args):
+        for handler in list(self.handlers):
+            handler(*args)
+
+
 class Vector(object):
 
     def __init__(self, x, y, z):
@@ -134,7 +152,7 @@ class Client(object):
                 self.vehicleTypeDescriptor = descriptor(frozenset(['mediumTank']))
                 self.inputHandler = Namespace(getAimingMode=lambda mode: client.locked)
                 self.playerVehicleID = OWN_VEHICLE
-                state = Namespace(getControllingVehicleID=lambda: client.controlled)
+                state = Namespace(getControllingVehicleID=lambda: client.controlled, onVehicleControlling=Event())
                 self.guiSessionProvider = Namespace(shared=Namespace(vehicleState=state))
 
             def getOwnVehicleShotDispersionAngle(self, speed):
@@ -408,6 +426,37 @@ class ResponsiveReticleClientTest(unittest.TestCase):
         self.client.frame(0.016)
 
         assert self.rotator.turns == []
+
+    def respawn(self, tags, vehicle_id=OWN_VEHICLE):
+        self.client.player.vehicleTypeDescriptor = descriptor(frozenset(tags))
+        state = self.client.player.guiSessionProvider.shared.vehicleState
+        state.onVehicleControlling(Namespace(id=vehicle_id))
+
+    def test_a_respawn_in_an_spg_stops_the_frame_turns(self):
+        self.battle()
+        self.respawn(['SPG'])
+
+        self.client.frame(0.016)
+
+        assert self.rotator.turns == []
+
+    def test_a_respawn_from_an_spg_starts_the_frame_turns(self):
+        self.start()
+        self.client.player.vehicleTypeDescriptor = descriptor(frozenset(['SPG']))
+        self.app.bus.emit('battle_ready', self.client.player)
+        self.respawn(['mediumTank'])
+
+        self.client.frame(0.016)
+
+        assert self.rotator.turns == [(SHOT_POINT, 0.016)]
+
+    def test_following_a_teammate_keeps_the_own_vehicle(self):
+        self.battle()
+        self.respawn(['SPG'], vehicle_id=ALLY_VEHICLE)
+
+        self.client.frame(0.016)
+
+        assert self.rotator.turns == [(SHOT_POINT, 0.016)]
 
     def test_switched_off_it_does_nothing(self):
         self.start()

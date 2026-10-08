@@ -2,6 +2,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 
 import { ObjectStorageModule } from '../../core';
+import { PurgeGuardModule } from '../collector/purge';
 import { NotificationsProducerModule } from '../notifications';
 import { REPLAY_FILES } from './config/files.constants';
 import { REPLAYS_QUEUE } from './config/queue.constants';
@@ -16,6 +17,7 @@ import { ReplayTagAggregateService } from './services/replay-tag-aggregate.servi
 @Module({
   imports: [
     NotificationsProducerModule,
+    PurgeGuardModule,
     ObjectStorageModule.register({ root: REPLAY_FILES.root }),
     BullModule.registerQueue({ name: REPLAYS_QUEUE.name })
   ],

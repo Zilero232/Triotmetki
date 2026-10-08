@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { bodyWithField, middlewareStatus, retryAfterSeconds } from '../exception-reply';
+import { bodyWithField, isModContractPath, middlewareStatus, retryAfterSeconds } from '../exception-reply';
 
 describe('bodyWithField', () => {
   it('returns the body when it carries the field', () => {
@@ -39,4 +39,20 @@ describe('retryAfterSeconds', () => {
     expect(retryAfterSeconds('0')).toBeUndefined();
     expect(retryAfterSeconds('soon')).toBeUndefined();
   });
+});
+
+describe('isModContractPath', () => {
+  it.each(['/mod/bind', '/mod/ingest', '/mod/badges', '/mod/badges/presence', '/mod/me/goals', '/mod/settings/apply/poll'])(
+    'answers %s in the mod vocabulary',
+    (path) => {
+      expect(isModContractPath(path)).toBe(true);
+    }
+  );
+
+  it.each(['/mod/bind-code', '/mod/devices', '/mod/devices/dev_1', '/mod/sync', '/mod/reports', '/players', '/replays/mod'])(
+    'answers %s in the API format',
+    (path) => {
+      expect(isModContractPath(path)).toBe(false);
+    }
+  );
 });

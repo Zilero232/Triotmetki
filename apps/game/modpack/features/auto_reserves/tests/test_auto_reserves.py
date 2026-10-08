@@ -10,10 +10,13 @@ from otmetki.features.auto_reserves.model import (
     REFUSE_FULL,
     REFUSE_NOTHING,
     REFUSE_UNSET,
+    free_slots,
     is_due,
+    is_slot_freed,
     pick,
     wanted_kinds,
 )
+from otmetki.features.auto_reserves.model.opt_in import clean_state, is_opted_in, migrated, with_choice
 from otmetki.features.auto_reserves.settings import DEFAULTS, SCHEMA, SETTINGS
 
 
@@ -80,6 +83,65 @@ class PickTest(unittest.TestCase):
         rows = [None, {'id': 'x', 'kind': 'credits'}, {'id': 1, 'kind': 'gold'}, booster(True)]
 
         assert pick(rows, chosen(reserve_credits=True)) == ([], REFUSE_NOTHING)
+
+
+class SlotsTest(unittest.TestCase):
+
+    def test_an_active_reserve_of_a_kind_not_tracked_takes_a_slot(self):
+        boosters = [booster(1, kind=None, active=True), booster(2, kind='xp', active=True), booster(3)]
+
+        assert free_slots(boosters) == 1
+
+    def test_a_reserve_of_a_kind_not_tracked_fills_the_last_slot(self):
+        boosters = [booster(1, kind=None, active=True), booster(2, kind=None, active=True)]
+        boosters.append(booster(3, kind='xp', active=True))
+
+        assert pick(boosters + [booster(9)], chosen(reserve_credits=True)) == ([], REFUSE_FULL)
+
+    def test_a_slot_freed_since_the_refusal_is_seen(self):
+        assert is_slot_freed([booster(1, active=True)], 1)
+
+    def test_no_slot_freed_since_the_refusal(self):
+        assert not is_slot_freed([booster(1, active=True), booster(2, active=True)], 1)
+
+    def test_nothing_refused_is_never_a_freed_slot(self):
+        assert not is_slot_freed([], None)
+
+
+class OptInTest(unittest.TestCase):
+
+    def test_a_broken_file_is_an_empty_state(self):
+        assert clean_state('x') == {'accounts': [], 'migrated': False}
+
+    def test_only_integer_account_ids_are_kept(self):
+        state = clean_state({'accounts': [3, 'x', True, 3, 1], 'migrated': True})
+
+        assert state == {'accounts': [1, 3], 'migrated': True}
+
+    def test_a_choice_adds_the_account(self):
+        state = with_choice(clean_state(None), 5, True)
+
+        assert is_opted_in(state, 5)
+
+    def test_a_choice_off_drops_only_that_account(self):
+        state = {'accounts': [1, 5], 'migrated': True}
+
+        assert with_choice(state, 5, False)['accounts'] == [1]
+
+    def test_the_switch_on_before_the_update_opts_in_the_first_account(self):
+        state = migrated(clean_state(None), 7, True)
+
+        assert state == {'accounts': [7], 'migrated': True}
+
+    def test_the_switch_off_before_the_update_opts_in_nobody(self):
+        state = migrated(clean_state(None), 7, False)
+
+        assert state == {'accounts': [], 'migrated': True}
+
+    def test_the_migration_runs_once(self):
+        state = migrated({'accounts': [7], 'migrated': True}, 8, True)
+
+        assert state['accounts'] == [7]
 
 
 class DueTest(unittest.TestCase):

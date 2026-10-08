@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ...core.compat import is_number, string_types, to_text
+from ...core.compat import is_finite_number, is_number, string_types, to_text
 from ...core.format import strip_tags
 from ...core.hud import EVENT_DESCRIBE, EVENT_EDIT
 from ..components import PANEL_POSITION_KEYS
@@ -31,7 +31,7 @@ def move_values(message):
     values = {}
     for key in POSITION_NUMBERS:
         value = message.get(key)
-        if is_number(value):
+        if is_finite_number(value):
             values[key] = int(round(value))
     for key in POSITION_ALIGNS:
         value = message.get(key)

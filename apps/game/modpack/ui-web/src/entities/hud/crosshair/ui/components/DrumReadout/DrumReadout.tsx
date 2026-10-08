@@ -19,7 +19,7 @@ const cellSize = remBox(clipCell);
 
 export const DrumReadout = ({ clip, style }: DrumReadoutProps) => {
   const view = drumView(clip);
-  const motion = useDrumMotion(clip.loaded);
+  const motion = useDrumMotion({ loaded: clip.loaded, size: clip.size });
   const shell = drum.shell[view.density];
   const loadedPaint = clip.gold ? 'gold' : 'loaded';
   const isRow = view.mode === 'row';

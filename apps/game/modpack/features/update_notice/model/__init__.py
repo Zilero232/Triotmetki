@@ -6,7 +6,7 @@ from .constants import (  # noqa: F401
     ACTION_OPEN,
     ACTION_SKIP,
     DOWNLOAD_PATH,
-    GAME_FOLDER,
+    CLIENT_FOLDER,
     LATEST_PATH,
     MAX_VERSION,
     RELEASE_VERSION,
@@ -55,9 +55,12 @@ def installed_packages(file_names):
     return installed
 
 
-def game_folder(names):
-    folders = [to_text(name) for name in names or () if isinstance(name, string_types) and GAME_FOLDER.match(name)]
-    return max(folders, key=version_key) if folders else None
+def client_folder(version_text):
+    if not isinstance(version_text, string_types):
+        return None
+
+    match = CLIENT_FOLDER.search(to_text(version_text))
+    return match.group(1) if match else None
 
 
 def clean_release(data):

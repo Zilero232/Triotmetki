@@ -2,7 +2,13 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 # Left out: tutorial hints (no verified API) and accelerated training (RU 1.45 sets it by itself).
 
-from .actions import plan_crew_return, plan_crew_unload, plan_demount, plan_style_removal  # noqa: F401
+from .actions import (  # noqa: F401
+    is_still_planned,
+    plan_crew_return,
+    plan_crew_unload,
+    plan_demount,
+    plan_style_removal,
+)
 from .carousel import (  # noqa: F401
     carousel_row_count,
     normalize_rows,

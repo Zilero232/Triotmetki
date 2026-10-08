@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 STRINGS = {
     'ru': {
         'component_auto_reserves': u'Автоактивация резервов',
-        'component_auto_reserves_hint': u'Включает выбранные личные резервы сам: в первом ангаре после запуска игры и, если выбрано, каждый раз, когда резерв закончился. Сначала самый сильный, из равных — тот, что раньше сгорает. Всё выключено, пока вы не выберете резервы.',
+        'component_auto_reserves_hint': u'Включает выбранные личные резервы сам: в первом ангаре после запуска игры и, если выбрано, каждый раз, когда резерв закончился. Сначала самый сильный, из равных — тот, что раньше сгорает. Всё выключено, пока вы не выберете резервы; включается отдельно для каждого аккаунта.',
         'auto_reserves_reserve_credits': u'Резерв на кредиты',
         'auto_reserves_reserve_xp': u'Резерв на опыт',
         'auto_reserves_reserve_crew_xp': u'Резерв на опыт экипажа',
@@ -13,6 +13,7 @@ STRINGS = {
         'auto_reserves_when_session': u'При запуске игры',
         'auto_reserves_when_expiry': u'При запуске и когда закончился',
         'auto_reserves_activate_now': u'Включить выбранные сейчас',
+        'auto_reserves_activate_confirm': u'Включить выбранные резервы сейчас? Включённый резерв тратится, его не выключить.',
         'auto_reserves_sent': u'Запрос на активацию отправлен',
         'auto_reserves_failed': u'Три отметки: игра не включила резерв',
         'auto_reserves_refused_unset': u'Не выбрано ни одного резерва',
@@ -22,7 +23,7 @@ STRINGS = {
     },
     'en': {
         'component_auto_reserves': u'Auto personal reserves',
-        'component_auto_reserves_hint': u'Turns the chosen personal reserves on by itself: in the first hangar after the game starts and, when chosen, whenever one runs out. The strongest first, among equals the one that expires first. Everything is off until you pick reserves.',
+        'component_auto_reserves_hint': u'Turns the chosen personal reserves on by itself: in the first hangar after the game starts and, when chosen, whenever one runs out. The strongest first, among equals the one that expires first. Everything is off until you pick reserves; it is switched on for each account separately.',
         'auto_reserves_reserve_credits': u'Credit reserve',
         'auto_reserves_reserve_xp': u'XP reserve',
         'auto_reserves_reserve_crew_xp': u'Crew XP reserve',
@@ -31,6 +32,7 @@ STRINGS = {
         'auto_reserves_when_session': u'When the game starts',
         'auto_reserves_when_expiry': u'At start and when one runs out',
         'auto_reserves_activate_now': u'Turn the chosen ones on now',
+        'auto_reserves_activate_confirm': u'Turn the chosen reserves on now? A reserve that is on is spent and cannot be turned off.',
         'auto_reserves_sent': u'Activation request sent',
         'auto_reserves_failed': u'Three Marks: the game did not turn the reserve on',
         'auto_reserves_refused_unset': u'No reserve is chosen',

@@ -172,6 +172,20 @@ class BackupTest(unittest.TestCase):
     def test_a_damaged_once_starts_empty(self):
         assert NativeState(once={'minimap': 1}).dump_once() == []
 
+    def test_loaded_backups_replace_the_previous_account_ones(self):
+        state = NativeState(backups={'camera': {'settings': {'dynamicCamera': True}, 'account': {}}})
+
+        state.load_backups(None)
+
+        assert state.backup('camera') is None
+
+    def test_loaded_backups_read_back(self):
+        state = NativeState()
+
+        state.load_backups({'camera': {'settings': {'dynamicCamera': False}, 'account': {}}})
+
+        assert state.backup('camera') == ({'dynamicCamera': False}, {})
+
     def test_damaged_state_starts_empty(self):
         state = NativeState(backups=[1])
 

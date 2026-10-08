@@ -5,7 +5,16 @@ import { mapValues, sortBy } from 'remeda';
 
 import type { WebhookEmitter } from '../../webhooks';
 import type { IngestResponse } from '../lib/contract/contract.types';
-import type { BattleEventInput, BattleEventsSink, IngestInput, LedgeredEventInput, MarkGainedInput, SessionRef, SessionSummary } from '../mod.types';
+import type {
+  AcceptEventInput,
+  BattleEventInput,
+  BattleEventsSink,
+  IngestInput,
+  LedgeredEventInput,
+  MarkGainedInput,
+  SessionRef,
+  SessionSummary
+} from '../mod.types';
 
 import { ModException } from '../../../common/exceptions';
 import { errorMessage } from '../../../common/lib';
@@ -19,6 +28,7 @@ import { countsForSession, moePercent, sessionIncrement, sessionUuid } from '../
 import { sessionTankTotals } from '../lib/session-tanks/session-tanks';
 import { toBattleData, toPlayerTankMoe } from '../mappers/battle.mappers';
 import { EventLedgerService } from './event-ledger.service';
+import { IngestQuotaWriterService } from './ingest-quota-writer.service';
 
 @Injectable()
 export class ModIngestWriterService {
@@ -27,6 +37,7 @@ export class ModIngestWriterService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly ledger: EventLedgerService,
+    private readonly quota: IngestQuotaWriterService,
     private readonly expected: ExpectedValuesReaderService,
     private readonly purgeGuard: PurgeGuardService,
     @Inject(WEBHOOK_EMITTER) private readonly webhooks: WebhookEmitter,
@@ -35,13 +46,14 @@ export class ModIngestWriterService {
 
   async ingest({ device, batch }: IngestInput): Promise<IngestResponse> {
     await this.assertCollectable(device.accountId);
+    await this.quota.claimEvents({ accountId: device.accountId, count: batch.events.length, now: new Date() });
 
     let accepted = 0;
     let duplicates = 0;
     let lastSession: SessionRef | null = null;
 
     for (const event of sortBy(batch.events, (candidate) => candidate.occurred_at)) {
-      const fresh = event.type === 'battle_result' ? await this.battle({ device, event }) : await this.ledgered({ device, event });
+      const fresh = await this.accept({ device, event, sentAt: batch.sent_at });
 
       if (fresh) {
         accepted += 1;
@@ -64,6 +76,14 @@ export class ModIngestWriterService {
     return { accepted, duplicates, ...(session ? { session } : {}) };
   }
 
+  private async accept({ device, event, sentAt }: AcceptEventInput): Promise<boolean> {
+    if (event.type === 'battle_result') {
+      return this.battle({ device, event });
+    }
+
+    return this.ledgered({ device, event, sentAt });
+  }
+
   private async assertCollectable(accountId: bigint): Promise<void> {
     const blocked = await this.purgeGuard.blocked([Number(accountId)]);
 
@@ -73,71 +93,86 @@ export class ModIngestWriterService {
   }
 
   private async battle({ device, event }: BattleEventInput): Promise<boolean> {
-    const { accountId } = device;
-    const tankId = event.vehicle.tank_id;
-    const sessionId = event.session_id && countsForSession(event) ? sessionUuid({ accountId, sessionId: event.session_id }) : null;
-    const startedAt = fromUnixTime(event.arena_created_at);
-    let previousMarks: number | null = null;
+    const quota = { accountId: device.accountId, now: new Date() };
+    let previousMarks: number | null;
+
+    await this.quota.claimBattle(quota);
 
     try {
-      await this.prisma.$transaction(async (tx) => {
-        const previous = event.moe
-          ? await tx.playerTank.findUnique({ where: { accountId_tankId: { accountId, tankId } }, select: { marksOnGun: true, moePercent: true } })
-          : null;
-
-        previousMarks = previous?.marksOnGun ?? null;
-
-        if (sessionId) {
-          await tx.playSession.createMany({
-            data: [{ id: sessionId, accountId, source: 'mod', kind: 'live', status: 'open', startedAt, credits: 0 }],
-            skipDuplicates: true
-          });
-        }
-
-        await tx.battle.create({
-          data: toBattleData({ event, accountId, deviceId: device.id, sessionId, previousMoePercent: previous?.moePercent ?? null })
-        });
-
-        if (sessionId) {
-          await tx.playSession.update({
-            where: { id: sessionId },
-            data: { ...mapValues(sessionIncrement(event), (value) => ({ increment: value })), lastActivityAt: new Date(), status: 'open' }
-          });
-        }
-
-        if (event.moe) {
-          const values = toPlayerTankMoe({ moe: event.moe, previousMarks: previous?.marksOnGun });
-
-          await tx.playerTank.upsert({
-            where: { accountId_tankId: { accountId, tankId } },
-            create: { accountId, tankId, ...values, marksSource: 'mod' },
-            update: values
-          });
-        }
-      });
-
-      if (event.moe) {
-        await this.markGained({
-          accountId,
-          tankId,
-          marks: event.moe.marks_on_gun,
-          previous: previousMarks,
-          percent: moePercent(event.moe.damage_rating)
-        });
-      }
-
-      return true;
+      previousMarks = await this.writeBattle({ device, event });
     } catch (error) {
+      await this.quota.releaseBattle(quota);
+
       if (isUniqueViolationOn({ error, constraint: MOD_INGEST.battleUniqueConstraint })) {
         return false;
       }
 
       throw error;
     }
+
+    if (event.moe) {
+      await this.markGained({
+        accountId: device.accountId,
+        tankId: event.vehicle.tank_id,
+        marks: event.moe.marks_on_gun,
+        previous: previousMarks,
+        percent: moePercent(event.moe.damage_rating)
+      });
+    }
+
+    return true;
   }
 
-  private async ledgered({ device, event }: LedgeredEventInput): Promise<boolean> {
+  private async writeBattle({ device, event }: BattleEventInput): Promise<number | null> {
+    const { accountId } = device;
+    const tankId = event.vehicle.tank_id;
+    const sessionId = event.session_id && countsForSession(event) ? sessionUuid({ accountId, sessionId: event.session_id }) : null;
+    const startedAt = fromUnixTime(event.arena_created_at);
+
+    return this.prisma.$transaction(async (tx) => {
+      const previous = event.moe
+        ? await tx.playerTank.findUnique({ where: { accountId_tankId: { accountId, tankId } }, select: { marksOnGun: true, moePercent: true } })
+        : null;
+
+      if (sessionId) {
+        await tx.playSession.createMany({
+          data: [{ id: sessionId, accountId, source: 'mod', kind: 'live', status: 'open', startedAt, credits: 0 }],
+          skipDuplicates: true
+        });
+      }
+
+      await tx.battle.create({
+        data: toBattleData({ event, accountId, deviceId: device.id, sessionId, previousMoePercent: previous?.moePercent ?? null })
+      });
+
+      if (sessionId) {
+        await tx.playSession.update({
+          where: { id: sessionId },
+          data: { ...mapValues(sessionIncrement(event), (value) => ({ increment: value })), lastActivityAt: new Date(), status: 'open' }
+        });
+      }
+
+      if (event.moe) {
+        const values = toPlayerTankMoe({ moe: event.moe, previousMarks: previous?.marksOnGun });
+
+        await tx.playerTank.upsert({
+          where: { accountId_tankId: { accountId, tankId } },
+          create: { accountId, tankId, ...values, marksSource: 'mod' },
+          update: values
+        });
+      }
+
+      return previous?.marksOnGun ?? null;
+    });
+  }
+
+  private async ledgered({ device, event, sentAt }: LedgeredEventInput): Promise<boolean> {
     const key = { accountId: device.accountId, eventId: event.event_id };
+    const isPastLedgerWindow = event.occurred_at < sentAt - MOD_INGEST.ledgerTtlSeconds;
+
+    if (isPastLedgerWindow) {
+      return false;
+    }
 
     if (!(await this.ledger.claim(key))) {
       return false;

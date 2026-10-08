@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.format import format_number
-from .constants import ESTIMATE, MAIN_GUN_LOOKS, PAST_THRESHOLD, REACHED, ROWS, STILL_NEEDED
+from .constants import ESTIMATE, HIDDEN_STATUSES, MAIN_GUN_LOOKS, REACHED, ROWS
 from .wn8 import rating_color
 
 
@@ -25,31 +25,30 @@ def _share(state, translate):
     return translate('bp_share', share=state['share'], team=format_number(state['team']))
 
 
-def _main_gun_value(main_gun):
-    damage, need = main_gun['damage'], main_gun['need']
-    if damage >= need:
-        return PAST_THRESHOLD % format_number(damage - need)
-    return STILL_NEEDED % format_number(need - damage)
+def _progress(main_gun, view):
+    is_settled = main_gun['status'] == REACHED and view['settled']
+    if is_settled:
+        return None
+    return min(1.0, float(main_gun['damage']) / main_gun['need'])
 
 
+# Battle Observer's main gun shows the damage left to the medal (MainGunUI.as as_gunData).
 def main_gun_row(state, settings, translate, view):
     main_gun = state['main_gun']
-    if main_gun is None:
+    if main_gun is None or main_gun['status'] in HIDDEN_STATUSES:
         return None
-    look = MAIN_GUN_LOOKS[main_gun['status']]
-    detail = _share(main_gun, translate) if settings.get('main_gun_share') else None
-    text = translate('bp_main_gun')
-    if look['word'] is not None:
-        return _row('main_gun', text, translate(look['word']), tone=look['tone'], detail=detail)
 
-    settled = main_gun['status'] == REACHED and view['settled']
+    look = MAIN_GUN_LOOKS[main_gun['status']]
+    left = format_number(main_gun['need'] - main_gun['damage'])
+    detail = _share(main_gun, translate) if settings.get('main_gun_share') else None
+
     return _row(
         'main_gun',
-        text,
-        _main_gun_value(main_gun),
+        translate('bp_main_gun'),
+        translate(look['value'], damage=left),
         tone=look['tone'],
         detail=detail,
-        progress=None if settled else min(1.0, float(main_gun['damage']) / main_gun['need']),
+        progress=_progress(main_gun, view),
         progress_tone=look['bar'],
     )
 

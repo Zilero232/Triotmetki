@@ -3,6 +3,7 @@ export const DAMAGE_LOG = {
   classIcon: { width: 11, height: 13 },
   totalIconSize: 12,
   critIconSize: 10,
+  ammoRackIcon: 'otmetki:ammo_rack',
   hitsPrefix: '×',
   bar: { width: 26, height: 3, minTook: 1 },
   shellKinds: ['ap', 'apcr', 'heat', 'he'],

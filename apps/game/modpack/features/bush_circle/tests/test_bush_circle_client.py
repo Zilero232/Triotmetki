@@ -56,7 +56,7 @@ class BushCircleClientTest(unittest.TestCase):
         module = importlib.import_module('otmetki.features.bush_circle.client')
         self.switch = [True]
         self.circle = module.BushCircle.__new__(module.BushCircle)
-        self.circle.settings = {'mode': 'always', 'hotkey': 'f7', 'color': 'white'}
+        self.circle.settings = {'mode': 'always', 'hotkey': 'ctrl_shift_c', 'color': 'white'}
         self.circle.enabled = lambda: self.switch[0]
         self.circle.state = None
         self.circle.model = None

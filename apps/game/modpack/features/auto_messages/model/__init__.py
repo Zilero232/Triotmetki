@@ -102,8 +102,8 @@ def is_shot(before, after):
     return after[0] < before[0] or after[1] < before[1]
 
 
-def crossed(previous, total, threshold):
-    return threshold > 0 and previous < threshold <= total
+def reached(total, threshold):
+    return threshold > 0 and total >= threshold
 
 
 def round_result(winner_team, own_team):
@@ -157,6 +157,12 @@ class AutoMessages(object):
             return True
         cooldown = COOLDOWNS.get(trigger, ONCE)
         return cooldown is not ONCE and now - self.last[trigger] >= cooldown
+
+    def was_sent(self, trigger):
+        return trigger in self.last
+
+    def is_rate_limited(self, now):
+        return not self._rate_ready(now)
 
     def _rate_ready(self, now):
         self.sent = [moment for moment in self.sent if now - moment < RATE_WINDOW_S]

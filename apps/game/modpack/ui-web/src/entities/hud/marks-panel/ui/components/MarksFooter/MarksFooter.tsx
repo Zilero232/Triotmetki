@@ -26,11 +26,8 @@ export const MarksFooter = ({ damage, target }: MarksFooterProps) => {
       {target !== null && (
         <span className={s.goal}>
           <span className={clsx(s.label, target.reached && s.reached)}>{target.label}</span>
-          {target.reached ? (
-            <Glyph name={MARKS_PANEL.checkGlyph} size={MARKS_PANEL.checkSize} tone='gold' />
-          ) : (
-            <CountText className={s.value} value={target.need} />
-          )}
+          <Glyph className={clsx(!target.reached && s.idle)} name={MARKS_PANEL.checkGlyph} size={MARKS_PANEL.checkSize} tone='gold' />
+          {!target.reached && <CountText className={s.value} value={target.need} />}
         </span>
       )}
     </div>

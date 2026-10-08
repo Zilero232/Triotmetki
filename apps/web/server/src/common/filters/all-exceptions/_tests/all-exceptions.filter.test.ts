@@ -15,7 +15,7 @@ import { AppNotFoundException, ModException } from '../../../exceptions';
 import { MOD_REPLY } from '../all-exceptions.constants';
 import { AllExceptionsFilter } from '../all-exceptions.filter';
 
-const [modPath] = MOD_REPLY.contractPaths;
+const modPath = `${MOD_REPLY.contractPrefix}ingest`;
 
 const zodError = () => {
   const result = z.object({ nickname: z.string() }).safeParse({ nickname: 1 });
@@ -202,6 +202,30 @@ describe('AllExceptionsFilter on the mod contract', () => {
 
     expect(status).toBe(HttpStatus.PAYLOAD_TOO_LARGE);
     expect(body).toEqual({ error: 'too_large' });
+  });
+
+  it.each(['/mod/badges', '/mod/badges/presence', '/mod/me/goals', '/mod/settings/apply/poll'])(
+    'answers a malformed body on %s with invalid_payload',
+    (path) => {
+      const { status, body } = reply(new ZodValidationException(zodError()), { path });
+
+      expect(status).toBe(HttpStatus.BAD_REQUEST);
+      expect(body).toEqual({ error: 'invalid_payload' });
+    }
+  );
+
+  it('answers a throttled mod with rate_limited', () => {
+    const { status, body } = reply(new ThrottlerException(), { path: '/mod/badges/presence' });
+
+    expect(status).toBe(HttpStatus.TOO_MANY_REQUESTS);
+    expect(body).toEqual({ error: 'rate_limited' });
+  });
+
+  it('sends Retry-After from a mod exception that carries one', () => {
+    const exception = new ModException({ status: HttpStatus.TOO_MANY_REQUESTS, error: 'rate_limited', retryAfterSeconds: 30 });
+    const { headers } = reply(exception, { path: '/mod/ingest' });
+
+    expect(headers.get('Retry-After')).toBe('30');
   });
 
   it('answers any other failure with a bare server error', () => {

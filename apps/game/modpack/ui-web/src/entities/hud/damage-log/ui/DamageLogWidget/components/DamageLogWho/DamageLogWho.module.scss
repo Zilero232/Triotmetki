@@ -1,0 +1,48 @@
+@use '@/shared/styles/gameface' as *;
+
+.who {
+  display: flex;
+  width: 96px;
+  flex-direction: row;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.name {
+  @include ellipsis;
+
+  min-width: 0;
+  flex: 0 1 auto;
+  color: token(hud-text);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.muted-name {
+  color: token(hud-muted);
+}
+
+.hits {
+  @include hud-type(caption);
+
+  flex-shrink: 0;
+  margin-left: 3px;
+  color: token(hud-muted);
+}
+
+.crits {
+  @include hud-type(caption);
+
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  align-items: center;
+  margin-left: 3px;
+  color: token(hud-warn);
+  font-weight: 700;
+}
+
+.idle {
+  position: absolute;
+  opacity: 0;
+}

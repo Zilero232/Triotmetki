@@ -13,6 +13,9 @@ const example: { events: Record<string, unknown>[] } = JSON.parse(
 const nowSeconds = () => Math.floor(Date.now() / 1000);
 const withEvent = (patch: (event: Record<string, unknown>) => Record<string, unknown>) => ({ ...example, events: example.events.map(patch) });
 
+const withArenaId = (arenaUniqueId: string) =>
+  withEvent((event) => (event.type === 'battle_result' ? { ...event, arena_unique_id: arenaUniqueId } : event));
+
 describe('ingestBatchSchema', () => {
   it('accepts the contract example', () => {
     expect(ingestBatchSchema.safeParse(example).success).toBe(true);
@@ -21,6 +24,30 @@ describe('ingestBatchSchema', () => {
   it('refuses a battle dated in the future, which would stay inside every recent window forever', () => {
     const future = nowSeconds() + MOD_INGEST.maxFutureSeconds + 3_600;
     const batch = withEvent((event) => (event.type === 'battle_result' ? { ...event, arena_created_at: future } : event));
+
+    expect(ingestBatchSchema.safeParse(batch).success).toBe(false);
+  });
+
+  it('accepts the largest signed 64-bit arena id', () => {
+    const batch = withArenaId('9223372036854775807');
+
+    expect(ingestBatchSchema.safeParse(batch).success).toBe(true);
+  });
+
+  it('refuses an arena id past 2^63-1, which would overflow the bigint column', () => {
+    const batch = withArenaId('9223372036854775808');
+
+    expect(ingestBatchSchema.safeParse(batch).success).toBe(false);
+  });
+
+  it('refuses an arena id longer than 19 digits before converting it', () => {
+    const batch = withArenaId('1'.repeat(400));
+
+    expect(ingestBatchSchema.safeParse(batch).success).toBe(false);
+  });
+
+  it('refuses a non-numeric arena id', () => {
+    const batch = withArenaId('12a');
 
     expect(ingestBatchSchema.safeParse(batch).success).toBe(false);
   });

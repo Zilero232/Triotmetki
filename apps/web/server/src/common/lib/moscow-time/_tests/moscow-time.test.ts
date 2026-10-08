@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { moscowCalendarDate, moscowDay, moscowDayStart, previousWeek, weekWindow } from '../moscow-time';
+import { moscowCalendarDate, moscowDay, moscowDayStart, previousWeek, secondsUntilNextDay, weekWindow } from '../moscow-time';
 
 describe('moscowDay', () => {
   it('rolls over to the next day at Moscow midnight, not UTC midnight', () => {
@@ -68,5 +68,15 @@ describe('previousWeek', () => {
     const now = new Date('2026-09-24T10:00:00Z');
 
     expect(previousWeek(now).end.getTime()).toBe(weekWindow(now).start.getTime());
+  });
+});
+
+describe('secondsUntilNextDay', () => {
+  it('counts down to Moscow midnight', () => {
+    expect(secondsUntilNextDay(new Date('2026-10-06T20:59:30.000Z'))).toBe(30);
+  });
+
+  it('waits a whole day right after midnight', () => {
+    expect(secondsUntilNextDay(new Date('2026-10-06T21:00:00.000Z'))).toBe(24 * 60 * 60);
   });
 });

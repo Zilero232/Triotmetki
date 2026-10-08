@@ -106,6 +106,15 @@ class ChatBan(Exception):
     pass
 
 
+class Clock(object):
+
+    def __init__(self):
+        self.now = 1000.0
+
+    def time(self):
+        return self.now
+
+
 def stub_client():
     for name in STUBBED:
         _support.stub_parents(name)
@@ -143,6 +152,8 @@ class AutoMessagesClientTest(unittest.TestCase):
 
     def patch_client(self):
         module = self.module
+        self.clock = Clock()
+        module.time = self.clock
         module.send_line = lambda channel, text: self.lines.append((channel, text)) or True
         module.send_extra = lambda extra, position: self.extras.append(extra)
         module.vehicle_info = VEHICLES.get
@@ -233,6 +244,52 @@ class AutoMessagesClientTest(unittest.TestCase):
         self.feature._on_round_finished(OWN_TEAM, 0, None)
 
         assert self.lines == [('team', 'gg, победа')]
+
+    def milestone_on(self):
+        self.feature.settings.update({
+            'damage_milestone': True,
+            'damage_milestone_value': 1000,
+            'damage_milestone_text': 'milestone',
+        })
+
+    def test_a_milestone_the_chat_refused_goes_out_with_the_next_damage(self):
+        self.milestone_on()
+        self.module.send_line = lambda channel, text: False
+        self.feature._add_damage(1200)
+        self.patch_client()
+
+        self.feature._add_damage(100)
+
+        assert self.lines == [('team', 'milestone')]
+
+    def test_a_milestone_goes_out_once(self):
+        self.milestone_on()
+        self.feature._add_damage(1200)
+
+        self.feature._add_damage(100)
+
+        assert len(self.lines) == 1
+
+    def gg_after_a_line(self):
+        self.feature.settings.update({'gg': True, 'gg_text': 'gg, {result}'})
+        self.hit_by(ARTY_ID)
+        scheduled = []
+        sys.modules['BigWorld'].callback = lambda delay, callback: scheduled.append((delay, callback))
+        self.feature._on_round_finished(OWN_TEAM, 0, None)
+        return scheduled
+
+    def test_gg_the_rate_gate_refused_waits_for_the_line_interval(self):
+        scheduled = self.gg_after_a_line()
+
+        assert [delay for delay, _ in scheduled] == [10]
+
+    def test_gg_the_rate_gate_refused_goes_out_after_the_interval(self):
+        scheduled = self.gg_after_a_line()
+        self.clock.now += 10
+
+        scheduled[0][1]()
+
+        assert self.lines[-1] == ('team', 'gg, победа')
 
     def test_a_trigger_off_by_default_stays_silent(self):
         self.feature._on_vehicle_state(STATES['FIRE'], True)

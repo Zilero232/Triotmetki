@@ -23,8 +23,11 @@ def _schema_defaults(section):
 def migrate_stored(config_dir, stored_config):
     components_file = open_config(config_dir, COMPONENTS_FILE, pretty=True)
     components = components_file.read({})
+
     config, migrated_components = migrated(stored_config, components, _schema_defaults)
-    if migrated_components != components:
+    is_migrated = migrated_components != components
+    if is_migrated:
         components_file.write(migrated_components)
         log('components.json moved to the merged components')
-    return config
+
+    return config, is_migrated

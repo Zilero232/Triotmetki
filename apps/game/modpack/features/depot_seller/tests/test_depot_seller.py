@@ -29,8 +29,30 @@ def item(cd, kind='modules', count=1, price=1000, **flags):
     return base
 
 
-def member(inv_id, skills=0, premium=False):
-    return {'inv_id': inv_id, 'name': 'crew %d' % inv_id, 'role': 'gunner', 'skills': skills, 'premium': premium}
+def member(inv_id, **fields):
+    base = {
+        'inv_id': inv_id,
+        'name': 'crew %d' % inv_id,
+        'role': 'gunner',
+        'role_level': 75,
+        'skills': 0,
+        'skill_progress': 0,
+        'free_xp': 0,
+        'premium': False,
+        'female': False,
+        'unique': False,
+        'special': False,
+        'locked': False,
+    }
+    base.update(fields)
+    return base
+
+
+def dismissed(crew):
+    sale = plan([], crew, chosen(dismiss_crew=True))[0]
+    if sale is None:
+        return []
+    return [entry['inv_id'] for entry in sale['crew']]
 
 
 def chosen(**values):
@@ -87,12 +109,35 @@ class PlanTest(unittest.TestCase):
         assert sale['credits'] == 5500
         assert [entry['cd'] for entry in sale['items']] == [2, 1]
 
-    def test_crew_with_skills_and_premium_crew_stay(self):
-        crew = [member(1), member(2, skills=2), member(3, premium=True)]
+    def test_an_untrained_reserve_tankman_is_dismissed(self):
+        assert dismissed([member(1)]) == [1]
 
-        assert [entry['inv_id'] for entry in plan([], crew, chosen(dismiss_crew=True))[0]['crew']] == [1]
-        widened = plan([], crew, chosen(dismiss_crew=True, crew_with_skills=True))[0]
-        assert [entry['inv_id'] for entry in widened['crew']] == [1, 2]
+    def test_a_tankman_with_a_full_role_level_stays(self):
+        assert dismissed([member(1, role_level=100)]) == []
+
+    def test_a_tankman_with_an_earned_skill_stays(self):
+        assert dismissed([member(1, skills=1)]) == []
+
+    def test_a_tankman_with_a_skill_in_progress_stays(self):
+        assert dismissed([member(1, skill_progress=12)]) == []
+
+    def test_a_tankman_with_free_xp_stays(self):
+        assert dismissed([member(1, free_xp=300)]) == []
+
+    def test_premium_crew_stays(self):
+        assert dismissed([member(1, premium=True)]) == []
+
+    def test_female_crew_stays(self):
+        assert dismissed([member(1, female=True)]) == []
+
+    def test_unique_crew_stays(self):
+        assert dismissed([member(1, unique=True)]) == []
+
+    def test_special_crew_stays(self):
+        assert dismissed([member(1, special=True)]) == []
+
+    def test_a_tankman_the_read_could_not_check_stays(self):
+        assert dismissed([{'inv_id': 1, 'name': 'crew 1', 'role_level': 50}]) == []
 
     def test_broken_rows_are_dropped(self):
         items = [None, {'kind': 'modules', 'cd': 0, 'count': 1}, item(3, count=0), {'kind': 'tanks', 'cd': 1}]
@@ -111,7 +156,7 @@ class ConfirmationTest(unittest.TestCase):
 
         text = confirm_text(sale, translate)
 
-        assert text == u'Продать за 3 000 кредитов: 2× item 1, демобилизовать 2 танкистов?'
+        assert text == u'Продать за 3 000 кредитов: 2× item 1, демобилизовать 2 танкистов (crew 1, crew 2)?'
 
     def test_a_long_list_ends_with_how_many_more(self):
         items = [item(cd, price=1000 + cd) for cd in range(1, 10)]

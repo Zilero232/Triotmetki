@@ -560,6 +560,29 @@ class TickerTest(unittest.TestCase):
 
         self.assertEqual(len(ticks), 2)
 
+    def test_a_tick_that_stops_the_ticker_schedules_nothing(self):
+        ticker = self.timer.Ticker(1.0, lambda: ticker.stop())
+
+        ticker.start()
+        self.run_callbacks()
+
+        self.assertEqual(self.callbacks, [])
+
+    def test_a_tick_that_restarts_the_ticker_leaves_one_chain(self):
+        ticks = []
+
+        def on_tick():
+            ticks.append(1)
+            if len(ticks) == 1:
+                ticker.stop()
+                ticker.start()
+
+        ticker = self.timer.Ticker(1.0, on_tick)
+        ticker.start()
+        self.run_callbacks()
+
+        self.assertEqual(len(self.callbacks), 1)
+
     def test_elapsed_is_the_game_time_between_ticks(self):
         ticker = self.ticker_recording_elapsed()
 

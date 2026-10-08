@@ -140,7 +140,7 @@ Warnings are:
 5. Mod features that need a Три отметки Плюс subscription on the site: allowed or not?
 6. Network access: is HTTPS to our API (after an explicit binding code) acceptable, and do you need the source code?
 7. Configs: МОСТ's config clean-up deletes `mods/configs/otmetki` (the binding). The mod now mirrors it into `%APPDATA%\TriOtmetki` and restores it; is a mod writing there acceptable, or can a mod's config folder be exempted instead?
-8. The grey features (commander camera, zoom beyond x8, a timer of the player's own full aim, no gun flash and shake, white wrecks and tracks, SafeShot, and the three that ship off by default: the smaller aim circle, auto-activated personal reserves, the exact interface scale with 3–5 carousel rows): allowed or not, item by item. Sent as the letter below; the first ones stay out of the modpack, the last three stay off by default until a written answer.
+8. The grey features (commander camera, zoom beyond x8, a timer of the player's own full aim, no gun flash and shake, white wrecks and tracks, SafeShot, and the three that ship off by default: the smaller aim circle, auto-activated personal reserves, the exact interface scale with 3–5 carousel rows): allowed or not, item by item. Sent as the letter below; the first ones stay out of the modpack, the last three stay off by default until a written answer (the exact interface scale was taken out of the modpack in 0.3.11 until then: «client settings only through the game's own options»).
 
 ### Letter to the curators about the grey features
 
@@ -158,7 +158,7 @@ None of these is in Lesta's ten forbidden categories ([8], [10]); some are in М
 > 6. **SafeShot** — блокировка своего выстрела по союзнику и по уничтоженной технике. Спорно по пункту 10, если это считается изменением параметров техники.
 > 7. **Уменьшенный круг сведения** — свой маркер орудия рисуется на 40–100 % от размера, который посчитал клиент (ближе к тому, куда ложится большинство снарядов). Разброс, наведение и выстрел не меняются, в реплей пишется настоящий размер. Спорно по пункту 4 («умные прицелы»). Сейчас в модпаке, выключен по умолчанию.
 > 8. **Автоактивация личных резервов** — в первом ангаре сессии и, если выбрано, когда резерв закончился, мод отправляет тот же запрос, что кнопка «Активировать» окна резервов, только для резервов, которые игрок сам отметил. Единственное действие ангара без нажатия кнопки; спорно по п. 2.1.7 правил игры (боты и макросы). Сейчас в модпаке, выключен по умолчанию.
-> 9. **Точный масштаб интерфейса и 3–5 рядов карусели** — масштаб между штатными шагами (например, 130 %) через штатный механизм масштаба, без записи в настройки игры, и карусель в 3–5 рядов без правки Flash. Только ангар и только вид. Сейчас в модпаке, выключен по умолчанию.
+> 9. **Точный масштаб интерфейса и 3–5 рядов карусели** — масштаб между штатными шагами (например, 130 %) через штатный механизм масштаба, без записи в настройки игры, и карусель в 3–5 рядов без правки Flash. Только ангар и только вид. Точный масштаб убран из модпака до ответа, 3–5 рядов в модпаке, выключены по умолчанию.
 >
 > Ответ «да» или «нет» по каждому пункту нам достаточно. Если что-то разрешено с условиями (например, только по клавише или без изменения конфигов камеры), напишите, пожалуйста, какими.
 >

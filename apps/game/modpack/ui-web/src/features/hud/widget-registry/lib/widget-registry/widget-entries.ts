@@ -1,3 +1,4 @@
+import { armorLegendSchema, ArmorLegendWidget, armorMapSchema, ArmorMapWidget } from '@/entities/hud/armor-map';
 import { battleLoadoutSchema, BattleLoadoutWidget } from '@/entities/hud/battle-loadout';
 import { battleSummarySchema, BattleSummaryWidget } from '@/entities/hud/battle-summary';
 import { cardSchema, CardWidget } from '@/entities/hud/card';
@@ -18,14 +19,16 @@ export const WIDGET_ENTRIES = [
   defineHudWidget({ kind: 'team_hp', schema: teamHpSchema, Component: TeamHpWidget }),
   defineHudWidget({ kind: 'damage_log', schema: damageLogSchema, Component: DamageLogWidget }),
   defineHudWidget({ kind: 'marks_panel', schema: marksPanelSchema, Component: MarksPanelWidget }),
-  defineHudWidget({ kind: 'gun_arc', schema: gunArcSchema, Component: GunArcWidget }),
+  defineHudWidget({ kind: 'gun_arc', schema: gunArcSchema, Component: GunArcWidget, fixedCanvas: true }),
   defineHudWidget({ kind: 'battle_loadout', schema: battleLoadoutSchema, Component: BattleLoadoutWidget, pointer: true }),
   defineHudWidget({ kind: 'battle_summary', schema: battleSummarySchema, Component: BattleSummaryWidget }),
   defineHudWidget({ kind: 'option_notice', schema: optionNoticeSchema, Component: OptionNoticeWidget }),
   defineHudWidget({ kind: 'sixth_sense', schema: sixthSenseSchema, Component: SixthSenseWidget }),
   defineHudWidget({ kind: 'clock_strip', schema: clockStripSchema, Component: ClockStripWidget }),
   defineHudWidget({ kind: 'platoon_points', schema: platoonPointsSchema, Component: PlatoonPointsWidget }),
-  defineHudWidget({ kind: 'crosshair', schema: crosshairSchema, Component: CrosshairWidget }),
+  defineHudWidget({ kind: 'crosshair', schema: crosshairSchema, Component: CrosshairWidget, fixedCanvas: true }),
   defineHudWidget({ kind: 'tank_card', schema: tankCardSchema, Component: TankCardWidget }),
-  defineHudWidget({ kind: 'card', schema: cardSchema, Component: CardWidget })
+  defineHudWidget({ kind: 'card', schema: cardSchema, Component: CardWidget }),
+  defineHudWidget({ kind: 'armor_map', schema: armorMapSchema, Component: ArmorMapWidget }),
+  defineHudWidget({ kind: 'armor_legend', schema: armorLegendSchema, Component: ArmorLegendWidget })
 ];

@@ -1,3 +1,5 @@
+import clsx from 'clsx';
+
 import { remRect } from '@/shared/lib/css-unit';
 
 import type { GunArcMarkerProps } from './GunArcMarker.types';
@@ -10,12 +12,12 @@ import s from './GunArcMarker.module.scss';
 
 const { box, paint } = GUN_ARC;
 
-export const GunArcMarker = ({ mark, point }: GunArcMarkerProps) => {
+export const GunArcMarker = ({ mark, point, isShown }: GunArcMarkerProps) => {
   const { d, filled } = markerPath(mark);
   const place = markerPlace(point);
 
   return (
-    <span className={s.marker} style={remRect({ ...place, ...box })}>
+    <span className={clsx(s.marker, !isShown && s.idle)} style={remRect({ ...place, ...box })}>
       <svg
         key={String(filled)}
         aria-hidden='true'

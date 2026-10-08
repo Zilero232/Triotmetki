@@ -108,5 +108,89 @@ class NativeComponentTest(unittest.TestCase):
         assert self.writes == [{'sniperZoom': 8}]
 
 
+class UnsyncedClient(object):
+
+    def __init__(self):
+        self.is_synced = False
+        self.on_sync = []
+        self.writes = []
+        self.account_writes = []
+
+    def synced(self):
+        return self.is_synced
+
+    def listen_sync(self, callback):
+        self.on_sync.append(callback)
+        return True
+
+    def sync(self):
+        self.is_synced = True
+        callbacks = self.on_sync
+        self.on_sync = []
+        for callback in callbacks:
+            callback()
+
+    def apply(self, values):
+        if not self.is_synced:
+            return False
+        self.writes.append(dict(values))
+        return True
+
+    def apply_account(self, values):
+        self.account_writes.append(dict(values))
+        return True
+
+
+def to_account(values):
+    return {'minimapSize': values.get('rows')}
+
+
+class UnsyncedComponentTest(unittest.TestCase):
+
+    def setUp(self):
+        module, self.config = load_native_component()
+        self.client = UnsyncedClient()
+        module.apply_changed = self.client.apply
+        module.apply_account_changed = self.client.apply_account
+        module.settings_synced = self.client.synced
+        module.on_settings_synced = self.client.listen_sync
+        self.app = App()
+        self.component = module.NativeSettingsComponent(
+            self.app, 'tweaks', SCHEMA, 'tweaks', {}, to_native, to_account
+        )
+        self.app.bus.emit('hangar')
+
+    def change(self, **values):
+        changed = self.config.update('tweaks', values)
+        self.app.bus.emit(EVENT_COMPONENT_SETTINGS, 'tweaks', changed)
+
+    def test_a_change_before_the_server_settings_is_written_when_they_arrive(self):
+        self.change(zoom='x8')
+
+        self.client.sync()
+
+        assert self.client.writes == [{'sniperZoom': 8}]
+
+    def test_a_change_before_the_server_settings_is_written_on_the_next_hangar(self):
+        self.change(zoom='x8')
+        self.client.is_synced = True
+
+        self.app.bus.emit('hangar')
+
+        assert self.client.writes == [{'sniperZoom': 8}]
+
+    def test_the_account_half_waits_for_the_settings_core_half(self):
+        self.change(rows='one')
+
+        assert self.client.account_writes == []
+
+    def test_the_account_half_follows_once_the_settings_core_half_is_written(self):
+        self.change(rows='one')
+
+        self.client.sync()
+
+        assert self.client.account_writes == [{'minimapSize': 'one'}]
+
+
 if __name__ == '__main__':
     unittest.main()

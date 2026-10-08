@@ -11,7 +11,23 @@ const sources = (html: HTMLElement) => [...html.querySelectorAll('img')].map((im
 
 const fixture = damageLogSchema.parse(readWidgetFixture('damage_log'));
 
+const withFirstReceived = (changes: Partial<(typeof fixture.received)[number]>): typeof fixture => ({
+  ...fixture,
+  received: fixture.received.map((row, index) => (index === 0 ? { ...row, ...changes } : row))
+});
+
+const svgCount = (html: HTMLElement) => html.querySelectorAll('svg').length;
+
 describe(DamageLogWidget, () => {
+  it('keeps the glyphs of a row mounted when its crits and ammo rack mark come in', () => {
+    const view = render(<DamageLogWidget data={withFirstReceived({ crits: 0, ammo_rack: null })} />);
+    const before = svgCount(view.container);
+
+    view.rerender(<DamageLogWidget data={withFirstReceived({ crits: 2, ammo_rack: 'otmetki:ammo_rack' })} />);
+
+    expect(svgCount(view.container)).toBe(before);
+  });
+
   it('draws the totals as an icon and a number', () => {
     const html = render(<DamageLogWidget data={fixture} />).container;
 

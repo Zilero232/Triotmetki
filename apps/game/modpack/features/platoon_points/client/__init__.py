@@ -57,6 +57,7 @@ class PlatoonPointsPanel(BattlePanel):
         self.hooks.add(arena, 'onVehicleKilled', self._on_killed)
         self.hooks.add(arena, 'onVehicleAdded', self._on_arena_entry)
         self.hooks.add(arena, 'onVehicleUpdated', self._on_arena_entry)
+        self.hooks.add(arena, 'onVehicleRecovered', self._on_arena_entry)
         self.render()
 
     def _on_arena_entry(self, vehicle_id=None, *args):

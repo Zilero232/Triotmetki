@@ -5,7 +5,7 @@ import unittest
 import _support
 from otmetki.companion.binding import Credentials
 from otmetki.core.codec import decode_json, parse_retry_after
-from otmetki.companion.outbox import MAX_BACKOFF_S, Outbox, Outcome, classify_status
+from otmetki.companion.outbox import MAX_BACKOFF_S, MAX_EVENT_AGE_S, Outbox, Outcome, classify_status, unexpired_events
 from otmetki.companion.sender import IngestEndpoint, IngestSender
 from _support import verify_request
 from otmetki.core.net.signing import DEVICE_HEADER
@@ -27,6 +27,14 @@ STATUS_OUTCOMES = (
 
 def event(index):
     return {'type': 'queue', 'event_id': 'e%d' % index, 'occurred_at': index}
+
+
+NOW = 10000000
+OLDEST_ACCEPTED = NOW - MAX_EVENT_AGE_S
+
+
+def dated(event_id, occurred_at, event_type='moe_snapshot'):
+    return {'type': event_type, 'event_id': event_id, 'occurred_at': occurred_at}
 
 
 def outbox(**kwargs):
@@ -198,6 +206,72 @@ class OutboxTest(unittest.TestCase):
         box = Outbox(MemoryFile({'events': 'garbage'}))
 
         self.assertEqual(box.events, [])
+
+
+class UnexpiredEventsTest(unittest.TestCase):
+
+    def test_drops_a_ledgered_event_older_than_the_server_window(self):
+        events = [dated('old', OLDEST_ACCEPTED - 1)]
+
+        self.assertEqual(unexpired_events(events, NOW), [])
+
+    def test_keeps_an_event_exactly_on_the_window_edge(self):
+        events = [dated('edge', OLDEST_ACCEPTED)]
+
+        self.assertEqual(event_ids(unexpired_events(events, NOW)), ['edge'])
+
+    def test_drops_an_old_battle_start(self):
+        events = [dated('start', OLDEST_ACCEPTED - 1, 'battle_start')]
+
+        self.assertEqual(unexpired_events(events, NOW), [])
+
+    def test_keeps_an_old_battle_result(self):
+        events = [dated('battle', OLDEST_ACCEPTED - 1, 'battle_result')]
+
+        self.assertEqual(event_ids(unexpired_events(events, NOW)), ['battle'])
+
+    def test_keeps_an_event_without_a_numeric_time(self):
+        events = [dated('undated', None)]
+
+        self.assertEqual(event_ids(unexpired_events(events, NOW)), ['undated'])
+
+    def test_keeps_the_order_of_the_remaining_events(self):
+        events = [
+            dated('first', NOW),
+            dated('old', OLDEST_ACCEPTED - 1),
+            dated('second', NOW - 1),
+        ]
+
+        self.assertEqual(event_ids(unexpired_events(events, NOW)), ['first', 'second'])
+
+
+class OutboxExpiryTest(unittest.TestCase):
+
+    def test_next_batch_leaves_out_expired_events(self):
+        box = outbox()
+        box.enqueue(dated('old', OLDEST_ACCEPTED - 1))
+        box.enqueue(dated('fresh', NOW))
+
+        batch = box.next_batch(NOW)
+
+        self.assertEqual(event_ids(batch), ['fresh'])
+
+    def test_expired_events_leave_the_stored_queue(self):
+        storage = MemoryFile()
+        box = Outbox(storage)
+        box.enqueue(dated('old', OLDEST_ACCEPTED - 1))
+        box.enqueue(dated('fresh', NOW))
+        box.next_batch(NOW)
+
+        restored = Outbox(storage)
+
+        self.assertEqual(event_ids(restored.events), ['fresh'])
+
+    def test_no_batch_when_every_event_expired(self):
+        box = outbox()
+        box.enqueue(dated('old', OLDEST_ACCEPTED - 1))
+
+        self.assertIsNone(box.next_batch(NOW))
 
 
 class SenderTest(unittest.TestCase):

@@ -18,6 +18,14 @@ const eventTime = unixTime.refine((seconds) => seconds <= Date.now() / 1000 + MO
   message: 'The event is dated in the future'
 });
 
+const arenaUniqueId = z
+  .string()
+  .max(MOD_INGEST.arenaUniqueId.maxDigits, { abort: true })
+  .regex(/^\d+$/, { abort: true })
+  .refine((value) => BigInt(value) <= MOD_INGEST.arenaUniqueId.max, {
+    message: 'The arena id does not fit a signed 64-bit integer'
+  });
+
 const count = z.number().int().min(0);
 const capped = (field: keyof typeof MOD_BATTLE_LIMITS.stats) => count.max(MOD_BATTLE_LIMITS.stats[field]);
 const arenaField = (field: keyof typeof MOD_BATTLE_LIMITS.arena) => count.max(MOD_BATTLE_LIMITS.arena[field]);
@@ -71,7 +79,7 @@ export const battleResultEventSchema = z.strictObject({
   type: z.literal('battle_result'),
   event_id: z.string().regex(/^battle:\d+$/),
   occurred_at: eventTime,
-  arena_unique_id: z.string().regex(/^\d+$/),
+  arena_unique_id: arenaUniqueId,
   arena_type_id: arenaField('arena_type_id'),
   map_name: z.string().max(64).nullable(),
   bonus_type: arenaField('bonus_type'),

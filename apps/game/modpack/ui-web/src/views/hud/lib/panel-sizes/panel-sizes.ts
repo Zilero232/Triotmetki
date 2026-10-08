@@ -35,8 +35,21 @@ export const settleSizes = ({ current, readings }: SettleSizesInput): Sizes => {
 const isSameContent = ({ previous, next, id }: SameContentInput): boolean =>
   previous.lines.get(id) === next.lines.get(id) && previous.widgets.get(id) === next.widgets.get(id);
 
+const keepsFixedCanvas = ({ previous, next, id }: SameContentInput): boolean => {
+  const before = previous.widgets.get(id);
+  const after = next.widgets.get(id);
+
+  if (!before?.fixedCanvas || !after?.fixedCanvas) {
+    return false;
+  }
+
+  return before.kind === after.kind;
+};
+
+const isChanged = (input: SameContentInput): boolean => !isSameContent(input) && !keepsFixedCanvas(input);
+
 export const changedPanels = ({ previous, next }: ChangedPanelsInput): string[] =>
-  [...next.lines.keys()].filter((id) => !isSameContent({ previous, next, id }));
+  [...next.lines.keys()].filter((id) => isChanged({ previous, next, id }));
 
 export const readSize = ({ element, lines, scale }: ReadSizeInput): Measured | null => {
   if (!element || element.offsetWidth <= 0 || element.offsetHeight <= 0) {

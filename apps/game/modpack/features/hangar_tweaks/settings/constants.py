@@ -14,14 +14,10 @@ DEFAULTS = {
     'carousel_tiles': NATIVE,
     'interface_scale': NATIVE,
     'quick_actions': True,
-    'interface_scale_exact': 0,
 }
-LIMITS = {'interface_scale_exact': (0, 300)}
 
 CHOICES = {
     'carousel_rows': CAROUSEL_ROWS,
     'carousel_tiles': CAROUSEL_TILES,
     'interface_scale': INTERFACE_SCALE_CHOICES,
 }
-
-ADVANCED = ('interface_scale_exact',)

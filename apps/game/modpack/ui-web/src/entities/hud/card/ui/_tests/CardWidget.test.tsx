@@ -11,6 +11,8 @@ const data = cardSchema.parse(readWidgetFixture('card'));
 
 const STRIP_MARK = 'span[style*="background-color"]';
 
+const MEDAL = 'img://gui/maps/icons/achievement/32x32/mainGun.png';
+
 describe(CardWidget, () => {
   it('draws the header, the chips, the rows and the footer of the Python card', () => {
     const html = render(<CardWidget data={data} />).container;
@@ -22,6 +24,23 @@ describe(CardWidget, () => {
     expect(html.textContent).toContain('Союз-4. Прорыв линии обороны');
     expect(html.textContent).toContain('Нанести 4000 урона');
     expect(html.textContent).toContain('ср. урон 2 781');
+  });
+
+  it('draws a row icon from the client as its image', () => {
+    const rows = data.rows.map((row, index) => (index === 0 ? { ...row, icon: MEDAL, status: null } : row));
+    const html = render(<CardWidget data={{ ...data, rows }} />).container;
+
+    expect(html.querySelector('img')?.getAttribute('src')).toBe(MEDAL);
+  });
+
+  it('keeps the row elements when a row value changes', () => {
+    const view = render(<CardWidget data={data} />);
+    const before = view.container.querySelector('img, svg');
+    const rows = data.rows.map((row, index) => (index === 0 ? { ...row, value: 'ещё 1 090' } : row));
+
+    view.rerender(<CardWidget data={{ ...data, rows }} />);
+
+    expect(view.container.querySelector('img, svg')).toBe(before);
   });
 
   it('paints a rating in its colour', () => {

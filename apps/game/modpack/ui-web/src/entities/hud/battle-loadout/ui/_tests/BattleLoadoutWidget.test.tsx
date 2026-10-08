@@ -17,6 +17,8 @@ const sources = (html: HTMLElement) => [...html.querySelectorAll('img')].map((im
 
 const data = battleLoadoutSchema.parse(readWidgetFixture('battle_loadout'));
 
+const withAttention = (attention: boolean): typeof data => ({ ...data, items: data.items.map((item) => ({ ...item, attention })) });
+
 const TOOLTIP_CONTENT_ID = 11;
 const TOOLTIP_DECORATOR_ID = 12;
 
@@ -100,6 +102,15 @@ const withEmptySlot = () => {
 };
 
 describe(BattleLoadoutWidget, () => {
+  it('keeps the attention marks mounted while they come and go', () => {
+    const view = render(<BattleLoadoutWidget data={withAttention(false)} />);
+    const before = view.container.querySelectorAll('svg').length;
+
+    view.rerender(<BattleLoadoutWidget data={withAttention(true)} />);
+
+    expect(view.container.querySelectorAll('svg')).toHaveLength(before);
+  });
+
   it('draws every cell at the stock slot size in rem', () => {
     const container = drawNew(false);
     const cell = container.querySelector<HTMLElement>(`.${s.cell}`);
@@ -141,14 +152,14 @@ describe(BattleLoadoutWidget, () => {
   it('draws the specialisation stars', () => {
     const container = drawNew(false);
 
-    expect(container.querySelectorAll('svg')).toHaveLength(2);
+    expect(container.querySelectorAll(`.${s.star} svg`)).toHaveLength(2);
   });
 
   it('draws our glyph when the client has no icon for a device', () => {
     const container = drawNew(false, withoutIcon());
 
     expect(cellOf(container, 'Турбонагнетатель')?.querySelector('img')).toBeNull();
-    expect(cellOf(container, 'Турбонагнетатель')?.querySelectorAll('svg')).toHaveLength(2);
+    expect(cellOf(container, 'Турбонагнетатель')?.querySelectorAll(`:not(.${s.idle}) > svg`)).toHaveLength(2);
     expect(container.textContent).toBe('');
   });
 

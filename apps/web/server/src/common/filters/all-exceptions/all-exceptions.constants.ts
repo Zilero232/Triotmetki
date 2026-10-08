@@ -26,8 +26,10 @@ export const LESTA_NOT_CONNECTED = {
 
 export const MOD_REPLY = {
   pathPrefixes: ['/mod/', '/replays/mod'],
-  contractPaths: ['/mod/bind', '/mod/ingest'],
-  serverTimeHeader: 'x-otmetki-server-time'
+  contractPrefix: '/mod/',
+  apiPaths: ['/mod/bind-code', '/mod/devices', '/mod/sync', '/mod/reports'],
+  serverTimeHeader: 'x-otmetki-server-time',
+  retryAfterHeader: 'Retry-After'
 } as const;
 
 export const STATUS_TO_MOD_ERROR: Partial<Record<number, ModErrorCode>> = {

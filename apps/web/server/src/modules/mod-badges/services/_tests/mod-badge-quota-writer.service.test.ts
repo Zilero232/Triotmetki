@@ -5,8 +5,8 @@ import { mock } from 'vitest-mock-extended';
 
 import type { AppConfigService } from '../../../../config';
 
+import { secondsUntilNextDay } from '../../../../common/lib';
 import { MOD_BADGES_QUOTA } from '../../config/mod-badges.constants';
-import { secondsUntilNextDay } from '../../lib/badge-quota/badge-quota';
 import { ModBadgeQuotaWriterService } from '../mod-badge-quota-writer.service';
 
 const NOW = new Date('2026-10-06T12:00:00.000Z');
@@ -59,5 +59,73 @@ describe('ModBadgeQuotaWriterService.claim', () => {
     await askDistinct({ service, subject: 'dev_a', count: MOD_BADGES_QUOTA.distinctIdsPerDay });
 
     await expect(service.claim({ subject: 'dev_b', accountIds: [1], now: NOW })).resolves.toBeNull();
+  });
+});
+
+describe('ModBadgeQuotaWriterService.claim at the cap', () => {
+  it('still answers a device at the cap that asks only about accounts it already asked about', async () => {
+    const service = createService();
+
+    await askDistinct({ service, subject: 'dev_full', count: MOD_BADGES_QUOTA.distinctIdsPerDay });
+
+    await expect(service.claim({ subject: 'dev_full', accountIds: [1, 2, 3], now: NOW })).resolves.toBeNull();
+  });
+
+  it('refuses a request whose new accounts would pass the cap', async () => {
+    const service = createService();
+
+    await askDistinct({ service, subject: 'dev_near', count: MOD_BADGES_QUOTA.distinctIdsPerDay - 1 });
+
+    const claim = service.claim({ subject: 'dev_near', accountIds: [999_999_998, 999_999_999], now: NOW });
+
+    await expect(claim).resolves.toBe(secondsUntilNextDay(NOW));
+  });
+});
+
+describe('ModBadgeQuotaWriterService.claimForClient', () => {
+  it('counts two /56 networks of one IPv6 /48 against one shared quota', async () => {
+    const service = createService();
+    const half = MOD_BADGES_QUOTA.distinctIdsPerDay / 2;
+
+    await service.claimForClient({ ip: '2001:db8:7:100::1', accountIds: range(1, half + 1), now: NOW });
+    await service.claimForClient({ ip: '2001:db8:7:200::1', accountIds: range(half + 1, 2 * half + 1), now: NOW });
+
+    const claim = service.claimForClient({ ip: '2001:db8:7:300::1', accountIds: [999_999_999], now: NOW });
+
+    await expect(claim).resolves.toBe(secondsUntilNextDay(NOW));
+  });
+});
+
+describe('ModBadgeQuotaWriterService.claimOwnForClient', () => {
+  const claimOwn = (service: ModBadgeQuotaWriterService, accountId: number) => service.claimOwnForClient({ ip: '198.51.100.9', accountId, now: NOW });
+
+  it('lets one address report its own accounts up to the daily cap', async () => {
+    const service = createService();
+
+    for (let accountId = 1; accountId < MOD_BADGES_QUOTA.ownIdsPerDay; accountId += 1) {
+      await claimOwn(service, accountId);
+    }
+
+    await expect(claimOwn(service, MOD_BADGES_QUOTA.ownIdsPerDay)).resolves.toBe(true);
+  });
+
+  it('ignores one more own account past the cap', async () => {
+    const service = createService();
+
+    for (let accountId = 1; accountId <= MOD_BADGES_QUOTA.ownIdsPerDay; accountId += 1) {
+      await claimOwn(service, accountId + 100);
+    }
+
+    await expect(claimOwn(service, 999)).resolves.toBe(false);
+  });
+
+  it('keeps accepting an own account it already reported today', async () => {
+    const service = createService();
+
+    for (let accountId = 1; accountId <= MOD_BADGES_QUOTA.ownIdsPerDay; accountId += 1) {
+      await claimOwn(service, accountId + 200);
+    }
+
+    await expect(claimOwn(service, 201)).resolves.toBe(true);
   });
 });

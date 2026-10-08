@@ -2,7 +2,7 @@ export type PresenceTrackedRequest = {
   ip?: string;
 };
 
-export type IpQuotaSubjectInput = {
+export type IpQuotaSubjectsInput = {
   ip: string | undefined;
   secret: string;
 };

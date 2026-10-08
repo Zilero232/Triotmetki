@@ -26,3 +26,22 @@ export type ClaimClientQuotaInput = {
   accountIds: readonly number[];
   now: Date;
 };
+
+export type ClaimOwnPresenceInput = {
+  ip: string | undefined;
+  accountId: number;
+  now: Date;
+};
+
+export type ClientQuotaKeysInput = {
+  ip: string | undefined;
+  prefix: string;
+  now: Date;
+};
+
+export type ClaimQuotaKeysInput = {
+  keys: readonly string[];
+  accountIds: readonly number[];
+  limit: number;
+  now: Date;
+};

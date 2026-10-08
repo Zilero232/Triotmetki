@@ -1,4 +1,5 @@
 import { remBox } from '@/shared/lib/css-unit';
+import { useLastPresent } from '@/shared/lib/use-last-present';
 
 import type { GunArcWidgetProps } from './GunArcWidget.types';
 
@@ -7,12 +8,20 @@ import { GunArcMarker } from './components';
 
 import s from './GunArcWidget.module.scss';
 
-const { canvas } = GUN_ARC;
+const { canvas, origin } = GUN_ARC;
 
-export const GunArcWidget = ({ data }: GunArcWidgetProps) => (
-  <div className={s.canvas} style={remBox(canvas)}>
-    {data.left && <GunArcMarker mark={{ shape: data.marker, side: 'left' }} point={data.left} />}
-    {data.right && <GunArcMarker mark={{ shape: data.marker, side: 'right' }} point={data.right} />}
-    {data.centre && data.centre_marker !== 'none' && <GunArcMarker mark={{ shape: data.centre_marker, side: 'centre' }} point={data.centre} />}
-  </div>
-);
+export const GunArcWidget = ({ data }: GunArcWidgetProps) => {
+  const left = useLastPresent(data.left) ?? origin;
+  const right = useLastPresent(data.right) ?? origin;
+  const centre = useLastPresent(data.centre) ?? origin;
+
+  return (
+    <div className={s.canvas} style={remBox(canvas)}>
+      <GunArcMarker isShown={data.left !== null} mark={{ shape: data.marker, side: 'left' }} point={left} />
+      <GunArcMarker isShown={data.right !== null} mark={{ shape: data.marker, side: 'right' }} point={right} />
+      {data.centre_marker !== 'none' && (
+        <GunArcMarker isShown={data.centre !== null} mark={{ shape: data.centre_marker, side: 'centre' }} point={centre} />
+      )}
+    </div>
+  );
+};

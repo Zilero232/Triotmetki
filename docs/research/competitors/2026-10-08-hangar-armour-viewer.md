@@ -88,7 +88,7 @@ Read from `D:\Games\Tanki` (v.1.45.0.0 #2290: `res/packages`, `win64`) and the d
 
 **Step 1: «Броня в 3D» (A)**
 - An action in an existing hangar component (round 3 P1-5 suggested `hangar_info`), or a button on our hangar HUD page next to the tank. It opens `showBrowserOverlayView` with the selected or previewed tank's `intCD` (`g_currentVehicle.item.intCD`, or `g_currentPreviewVehicle`).
-- Fallback: `open_url` (external browser) when the overlay call fails.
+- Fallback: `open_url` (external browser) when the client lacks the overlay call or it raises at once; `showBrowserOverlayView` is an `adisp_process`, so a failure while it loads the view is not seen by the caller.
 - It sends nothing to our server. The URL carries a public tank id; the site visit is the player's own request.
 - To check on the site:
   - the page in Chromium 103;
@@ -154,4 +154,6 @@ How the packs put a hangar tool in reach, and what the RU 1.45 client allows (re
 - **Browser:** `gui.shared.event_dispatcher.showBrowserOverlayView(url, alias=VIEW_ALIAS.BROWSER_LOBBY_TOP_SUB, params=None, callbackOnLoad=None, webHandlers=None, forcedSkipEscape=False, browserParams=None, hiddenLayers=None, parent=None)` (an `adisp_process`: `GUI_SETTINGS.checkAndReplaceWebBridgeMacros`, `URLMacros().parse`, then a `LoadViewEvent`); the name is confirmed on 1.45.
 - **Hotkey:** possible through `core.client.hotkey`, but no pack opens an armour tool by key, and our settings window rule already avoids hotkeys for windows.
 
-**Choice for `armor_view`:** its own ModsList entry (the selected or previewed tank) and «Бронирование» in the carousel tank menu (any tank of the carousel), both opening the site's viewer in `showBrowserOverlayView`, the external browser as the fallback. No button under the tank: that needs a SWF injected into `AmmunitionPanelMC`, and Scaleform/Gameface injection is where our native crashes came from (0.3.7, 0.3.8). No hotkey.
+**Choice for `armor_view`:** its own ModsList entry (the selected or previewed tank) and «Бронирование» in the carousel tank menu (any tank of the carousel), both opening the site's viewer in `showBrowserOverlayView`, the external browser when the client has no overlay call (`open_in: browser` opens it always). No button under the tank: that needs a SWF injected into `AmmunitionPanelMC`, and Scaleform/Gameface injection is where our native crashes came from (0.3.7, 0.3.8). No hotkey.
+
+**Step 2 built (2026-10-08):** the ModsList entry now toggles the in-hangar map on the selected tank (the site in the vehicle preview), and the carousel menu offers «Броня в ангаре» and «Броня в 3D на сайте». The HUD page in the hangar takes no input outside the HUD edit mode, so the map's keys (1 2 3 modes, Q E shells, R attacker, Esc) and the hover ray under `GUI.mcursor()` run on the Python side. The shot rules are the client's own reticle rules (`gun_marker_ctrl._CrosshairShotResults`, the defaults of `arena_visitor._ArenaModifiersVisitor`), not the ones guessed in §6. Details: the modpack README «armor_view».

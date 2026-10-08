@@ -1,9 +1,19 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import time
+
 from ...compat import to_native
 from ...log import log
 from ...vendor import six
-from .constants import DEFAULT_MAX_RESPONSE_BYTES, DEFAULT_TIMEOUT_S, HTTP_WORKER, NETWORK_ERROR, SECURE_SCHEME
+from .constants import (
+    DEFAULT_MAX_RESPONSE_BYTES,
+    DEFAULT_TIMEOUT_S,
+    HTTP_WORKER,
+    NETWORK_ERROR,
+    READ_BLOCK_BYTES,
+    READ_DEADLINE_FACTOR,
+    SECURE_SCHEME,
+)
 from .runner import BackgroundRunner
 from .tls import is_allowed_url, tls_available, verified_context
 
@@ -12,6 +22,10 @@ HTTPError = six.moves.urllib.error.HTTPError
 
 
 class ResponseTooLarge(IOError):
+    pass
+
+
+class ResponseTooSlow(IOError):
     pass
 
 
@@ -33,11 +47,28 @@ def _opener(url):
     return _urlrequest.build_opener(_urlrequest.HTTPSHandler(context=context), _RefuseRedirects)
 
 
-def read_capped(stream, max_bytes):
-    data = stream.read(max_bytes + 1)
-    if len(data) > max_bytes:
-        raise ResponseTooLarge('response over %d bytes' % max_bytes)
-    return data
+def read_deadline(timeout, clock=time.time):
+    return clock() + timeout * READ_DEADLINE_FACTOR
+
+
+def read_capped(stream, max_bytes, deadline=None, clock=time.time):
+    chunks = []
+    size = 0
+    while True:
+        if deadline is not None and clock() > deadline:
+            raise ResponseTooSlow('response not read in time')
+
+        block = min(READ_BLOCK_BYTES, max_bytes + 1 - size)
+        chunk = stream.read(block)
+        if not chunk:
+            break
+
+        chunks.append(chunk)
+        size += len(chunk)
+        if size > max_bytes:
+            raise ResponseTooLarge('response over %d bytes' % max_bytes)
+
+    return b''.join(chunks)
 
 
 def _headers_of(response):
@@ -68,26 +99,36 @@ def perform(method, url, headers, body, timeout, max_bytes=DEFAULT_MAX_RESPONSE_
         return NETWORK_ERROR, b'', {}
     request = _urlrequest.Request(url, data=body, headers=native_headers(_sized_headers(headers, body)))
     request.get_method = lambda: method
+    deadline = read_deadline(timeout)
     try:
         response = opener.open(request, timeout=timeout)
         try:
-            return response.getcode(), read_capped(response, max_bytes), _headers_of(response)
+            return response.getcode(), read_capped(response, max_bytes, deadline), _headers_of(response)
         finally:
             response.close()
     except HTTPError as error:
-        return _error_reply(error, max_bytes)
+        return _error_reply(error, max_bytes, deadline)
     except Exception:
         return NETWORK_ERROR, b'', {}
 
 
-def _error_reply(error, max_bytes):
+def _error_reply(error, max_bytes, deadline):
     try:
-        data = read_capped(error, max_bytes)
-    except ResponseTooLarge:
+        data = read_capped(error, max_bytes, deadline)
+    except (ResponseTooLarge, ResponseTooSlow):
         return NETWORK_ERROR, b'', {}
     except Exception:
         data = b''
+    finally:
+        _close(error)
     return error.code, data, _headers_of(error)
+
+
+def _close(response):
+    try:
+        response.close()
+    except Exception:
+        return
 
 
 class SyncTransport(object):

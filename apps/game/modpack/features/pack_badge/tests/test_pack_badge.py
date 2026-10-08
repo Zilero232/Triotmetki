@@ -10,11 +10,12 @@ from otmetki.companion.config import DEFAULTS as COMPANION_DEFAULTS
 from otmetki.core.errors import ReasonError
 from otmetki.features.pack_badge.model import (
     ArenaPlayer,
+    BadgeSwitch,
     BattleBadges,
+    arena_names,
     asked_account_ids,
     is_anonymised,
     library_action,
-    marked_names,
     marked_vehicle_ids,
     parse_badges,
     presence_request,
@@ -164,29 +165,59 @@ def arena_player(account_id, name, fake_name=''):
     return ArenaPlayer(account_id=account_id, name=name, fake_name=fake_name, is_bot=False)
 
 
-class MarkedNamesTest(unittest.TestCase):
+class ArenaNamesTest(unittest.TestCase):
 
     def test_names_the_players_of_marked_accounts(self):
         players = [arena_player(OWN, 'Own'), arena_player(2, 'Other'), arena_player(3, 'Friend')]
 
-        self.assertEqual(marked_names(players, frozenset([OWN, 3])), ['Friend', 'Own'])
+        names, _ = arena_names(players, frozenset([OWN, 3]))
+
+        self.assertEqual(names, ['Friend', 'Own'])
+
+    def test_names_every_other_player_apart(self):
+        players = [arena_player(OWN, 'Own'), arena_player(2, 'Other'), arena_player(3, 'Friend')]
+
+        _, other_names = arena_names(players, frozenset([OWN, 3]))
+
+        self.assertEqual(other_names, ['Other'])
 
     def test_an_anonymised_player_is_found_by_both_names(self):
         players = [arena_player(OWN, 'Own', fake_name='Hidden')]
 
-        self.assertEqual(marked_names(players, frozenset([OWN])), ['Hidden', 'Own'])
+        names, _ = arena_names(players, frozenset([OWN]))
 
-    def test_each_name_goes_once_and_as_text(self):
+        self.assertEqual(names, ['Hidden', 'Own'])
+
+    def test_each_name_goes_once(self):
         players = [arena_player(2, b'Twin', fake_name=b'Twin'), arena_player(2, 'Twin')]
 
-        self.assertEqual(marked_names(players, frozenset([2])), ['Twin'])
-        self.assertIsInstance(marked_names(players, frozenset([2]))[0], type(u''))
+        names, _ = arena_names(players, frozenset([2]))
+
+        self.assertEqual(names, ['Twin'])
+
+    def test_names_go_as_text(self):
+        players = [arena_player(2, b'Twin')]
+
+        names, _ = arena_names(players, frozenset([2]))
+
+        self.assertIsInstance(names[0], type(u''))
+
+    def test_a_name_both_marked_and_not_counts_as_marked(self):
+        players = [arena_player(2, 'Twin'), arena_player(3, 'Twin')]
+
+        _, other_names = arena_names(players, frozenset([2]))
+
+        self.assertEqual(other_names, [])
 
     def test_leaves_out_empty_names(self):
-        self.assertEqual(marked_names([arena_player(2, None), arena_player(2, '')], frozenset([2])), [])
+        names, _ = arena_names([arena_player(2, None), arena_player(2, '')], frozenset([2]))
 
-    def test_names_nobody_without_marked_accounts(self):
-        self.assertEqual(marked_names([arena_player(OWN, 'Own')], frozenset()), [])
+        self.assertEqual(names, [])
+
+    def test_names_nobody_marked_without_marked_accounts(self):
+        names, _ = arena_names([arena_player(OWN, 'Own')], frozenset())
+
+        self.assertEqual(names, [])
 
 
 class LibraryActionTest(unittest.TestCase):
@@ -297,8 +328,8 @@ class BattleBadgesTest(unittest.TestCase):
     def test_the_first_lookup_goes_out_with_nobody_to_ask_to_record_the_own_badge(self):
         self.assertEqual(self.started().lookup([]), [])
 
-    def test_nothing_goes_out_with_the_own_badge_off_and_nobody_to_ask(self):
-        self.assertIsNone(self.started(visible=False).lookup([]))
+    def test_the_own_badge_off_is_reported_with_nobody_to_ask(self):
+        self.assertEqual(self.started(visible=False).lookup([]), [])
 
     def test_the_own_badge_off_still_asks_about_the_others(self):
         self.assertEqual(self.started(visible=False).lookup([2]), [2])
@@ -344,6 +375,12 @@ class BattleBadgesTest(unittest.TestCase):
         self.assertFalse(changed)
         self.assertEqual(badges.marked, frozenset([OWN]))
 
+    def test_a_later_lookup_with_the_own_badge_off_and_nobody_new_is_skipped(self):
+        badges = self.started(visible=False)
+        badges.lookup([])
+
+        self.assertIsNone(badges.lookup([]))
+
     def test_forgets_everything_when_the_battle_ends(self):
         badges = self.started()
         badges.answered(ARENA, frozenset([2]))
@@ -351,6 +388,30 @@ class BattleBadgesTest(unittest.TestCase):
         badges.stop()
 
         self.assertEqual(badges.marked, frozenset())
+
+
+class BadgeSwitchTest(unittest.TestCase):
+
+    def test_switching_off_is_reported(self):
+        switch = BadgeSwitch(True)
+
+        self.assertTrue(switch.switched_off(False))
+
+    def test_switching_off_is_reported_once(self):
+        switch = BadgeSwitch(True)
+        switch.switched_off(False)
+
+        self.assertFalse(switch.switched_off(False))
+
+    def test_switching_on_is_not_reported(self):
+        switch = BadgeSwitch(False)
+
+        self.assertFalse(switch.switched_off(True))
+
+    def test_staying_on_is_not_reported(self):
+        switch = BadgeSwitch(True)
+
+        self.assertFalse(switch.switched_off(True))
 
 
 if __name__ == '__main__':

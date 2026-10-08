@@ -2,7 +2,14 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.native_settings import tri_state
 from ..settings.constants import FLAGS
-from .constants import ACTION_ALL, ACTION_SELECTED, REFUSE_LOCKED, REFUSE_NOTHING, REFUSE_UNSET  # noqa: F401
+from .constants import (  # noqa: F401
+    ACTION_ALL,
+    ACTION_SELECTED,
+    REFUSE_BUSY,
+    REFUSE_LOCKED,
+    REFUSE_NOTHING,
+    REFUSE_UNSET,
+)
 
 # Left out: an automatic crew return, RU 1.45 has no such vehicle flag.
 

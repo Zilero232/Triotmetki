@@ -20,17 +20,17 @@ def threshold(enemy_max):
 
 
 # Fair play: an unseen enemy keeps its last known HP, so out of reach is shown only on proof.
-def medal_status(damage, need, remaining, hit_ally):
+def medal_status(damage, need, remaining, hit_ally, is_alive=True):
     if hit_ally:
         return FAILED
     if damage >= need:
         return REACHED
-    if remaining < need - damage:
+    if not is_alive or remaining < need - damage:
         return UNREACHABLE
     return PROGRESS
 
 
-def main_gun_state(own_damage, enemies_max, enemies_hp, hit_ally=False):
+def main_gun_state(own_damage, enemies_max, enemies_hp, hit_ally=False, is_alive=True):
     damage = int(own_damage or 0)
     need = threshold(enemies_max)
     remaining = max(0, int(enemies_hp or 0))
@@ -43,5 +43,5 @@ def main_gun_state(own_damage, enemies_max, enemies_hp, hit_ally=False):
         'remaining': remaining,
         'team': team,
         'share': share,
-        'status': medal_status(damage, need, remaining, hit_ally),
+        'status': medal_status(damage, need, remaining, hit_ally, is_alive),
     }

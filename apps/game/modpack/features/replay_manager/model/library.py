@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os
 
 from ....core.compat import is_number, string_types, to_text
-from ....core.replay_file import is_replay_name, read_header
+from ....core.replay_file import is_replay_name, name_time, read_header
 from .constants import INDEX_BUDGET_S, LIBRARY_VERSION, SCAN_MAX_FILES
 
 
@@ -20,6 +20,25 @@ def _stored_entry(name, entry):
     return {'stamp': entry['stamp'], 'header': header if isinstance(header, dict) else None}
 
 
+def _names_worth_a_stat(names):
+    stamped = []
+    unstamped = []
+    for name in names:
+        if not is_replay_name(name):
+            continue
+        stamp = name_time(name)
+        if stamp is None:
+            unstamped.append(name)
+        else:
+            stamped.append((stamp, name))
+
+    stamped.sort(reverse=True)
+    newest_stamped = []
+    for _stamp_time, name in stamped[:SCAN_MAX_FILES]:
+        newest_stamped.append(name)
+    return newest_stamped + unstamped
+
+
 def _newest_files(folder, listdir, stat):
     try:
         names = listdir(folder)
@@ -27,9 +46,7 @@ def _newest_files(folder, listdir, stat):
         names = []
 
     found = []
-    for name in names:
-        if not is_replay_name(name):
-            continue
+    for name in _names_worth_a_stat(names):
         path = os.path.join(folder, name)
         try:
             info = stat(path)

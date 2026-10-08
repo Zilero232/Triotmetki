@@ -2,8 +2,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from ....core.client.game import service
 from ....core.client.garage import is_locked
+from ..model import slot_in
 
-# RU 1.45 client source: IItemsCache.items.getVehicles(REQ_CRITERIA.INVENTORY), optDevices.setupLayouts.
+# RU 1.45 client source: IItemsCache.items.getVehicles(REQ_CRITERIA.INVENTORY), optDevices.installed.
 
 
 def _items():
@@ -12,13 +13,10 @@ def _items():
     return cache.items if cache is not None else None
 
 
+# RemoveOptionalDevice (RU 1.45 items_actions/actions) takes no setup index: only the active setup's slots count.
 def _slot_of(vehicle, device_id):
-    layouts = getattr(getattr(vehicle, 'optDevices', None), 'setupLayouts', None)
-    for _, setup in sorted((getattr(layouts, 'setups', None) or {}).items()):
-        ids = list(setup.getIntCDs())
-        if device_id in ids:
-            return ids.index(device_id)
-    return None
+    installed = vehicle.optDevices.installed
+    return slot_in(installed.getIntCDs(), device_id)
 
 
 def _garage():

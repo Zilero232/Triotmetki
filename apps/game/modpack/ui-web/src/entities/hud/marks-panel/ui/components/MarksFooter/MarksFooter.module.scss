@@ -42,3 +42,8 @@
 
   @include hud-type(body);
 }
+
+.idle {
+  position: absolute;
+  opacity: 0;
+}

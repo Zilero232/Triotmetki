@@ -10,6 +10,7 @@ from otmetki.core.native_settings import client_keys, merge_value, native_choice
 from otmetki.core.settings import Settings
 from otmetki.features.crosshair.i18n import STRINGS
 from otmetki.features.crosshair.model import (
+    hidden_centre,
     mark_html,
     mark_image,
     mark_offset,
@@ -31,6 +32,7 @@ from otmetki.features.crosshair.model.constants import (
 from otmetki.features.crosshair.model.editor import editor
 from otmetki.features.crosshair.model.preview import preview_text, preview_widget, sample_readouts
 from otmetki.core.hud.stock import (
+    RETICLE_CENTRE,
     RETICLE_CASSETTE,
     RETICLE_CONDITION,
     RETICLE_RELOAD,
@@ -114,10 +116,10 @@ class PresetTest(unittest.TestCase):
 
         assert result['arcade'] == PRESET_PARTS['minimal']
 
-    def test_a_picked_mark_takes_the_place_of_the_game_centre(self):
+    def test_a_picked_mark_leaves_the_saved_game_centre_alone(self):
         result = to_native(Settings({'mark': 'chevron_thin'}, SCHEMA).to_dict())
 
-        assert result['arcade'] == dict(PRESET_PARTS['minimal'], centralTag=0)
+        assert result['arcade'] == PRESET_PARTS['minimal']
 
     def test_the_client_values_are_the_preset_and_the_server_reticle(self):
         assert client_keys(SCHEMA) == ('preset', 'server_reticle')
@@ -239,18 +241,27 @@ class RetiredMarkTest(unittest.TestCase):
 
 class CentreMarkReticleTest(unittest.TestCase):
 
-    def test_a_mark_hides_the_game_centre_of_its_reticles(self):
-        assert native({'mark': 'cross', 'modes': 'sniper'}) == {'sniper': {'centralTag': 0}}
+    def test_a_mark_writes_no_game_centre_into_the_saved_options(self):
+        assert native({'mark': 'cross', 'modes': 'sniper'}) == {}
+
+    def test_a_drawn_mark_hides_the_game_centre_for_the_battle(self):
+        assert hidden_centre(Settings({'mark': 'cross'}, SCHEMA), True) == (RETICLE_CENTRE,)
+
+    def test_the_game_centre_stays_where_the_mark_is_not_drawn(self):
+        assert hidden_centre(Settings({'mark': 'cross'}, SCHEMA), False) == ()
+
+    def test_the_game_centre_stays_when_not_asked_to_hide_it(self):
+        assert hidden_centre(Settings({'mark': 'cross', 'mark_hides_centre': False}, SCHEMA), True) == ()
 
     def test_a_mark_keeps_the_game_centre_when_not_asked_to_hide_it(self):
         result = native({'mark': 'cross', 'preset': 'contrast', 'mark_hides_centre': False})
 
         assert result['arcade'] == PRESET_PARTS['contrast']
 
-    def test_hiding_the_centre_overrides_the_preset(self):
+    def test_the_preset_keeps_its_own_centre_under_a_mark(self):
         result = native({'mark': 'dot', 'preset': 'classic'})
 
-        assert result['arcade']['centralTag'] == 0
+        assert result['arcade'] == PRESET_PARTS['classic']
 
     def test_the_mark_follows_the_reticle_plus_the_players_offset(self):
         settings = Settings({'x': 2, 'y': -3}, SCHEMA)

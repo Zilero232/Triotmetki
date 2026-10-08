@@ -4,7 +4,7 @@ from ...native_settings import changed_values
 from ..component import FeatureComponent
 from .account_settings import apply_account_changed
 from .defaults import ClientDefaults, section_is_new
-from .settings_core import apply_changed
+from .settings_core import apply_changed, on_settings_synced, settings_synced
 
 
 class NativeSettingsComponent(FeatureComponent):
@@ -12,8 +12,10 @@ class NativeSettingsComponent(FeatureComponent):
     player changes them (the settings window, a profile load: bus `component_settings`) and only in the
     hangar, so a later change in the game's own settings window is never overridden (a RecommendedSettingsComponent
     may switch one client setting once: its `once`). A change writes only the client settings it moves; one made in
-    battle (the window opened with the hotkey) is written on the next hangar. `to_account` maps the
-    values kept in the client's AccountSettings instead of the settings core (the minimap size)."""
+    battle (the window opened with the hotkey) is written on the next hangar, one the client could not take (its server
+    settings not arrived yet) when they arrive or on the next hangar; the AccountSettings half only after the settings
+    core half. `to_account` maps the values kept in the client's AccountSettings instead of the settings core (the
+    minimap size)."""
 
     def __init__(self, app, component_id, schema, switch, strings, to_native, to_account=None):
         FeatureComponent.__init__(self, app, component_id, schema, switch, strings)
@@ -21,6 +23,7 @@ class NativeSettingsComponent(FeatureComponent):
         self.to_account = to_account
         self.written = None
         self.pending = False
+        self.waiting_for_sync = False
         app.bus.on('hangar', self._on_hangar_native)
 
     def desired(self):
@@ -61,13 +64,30 @@ class NativeSettingsComponent(FeatureComponent):
 
     def _write(self, native, account):
         current = self.current_client_values()
-        applied = apply_changed(native)
+
+        if not apply_changed(native):
+            return self._retry_later()
         if account and not apply_account_changed(account):
-            return False
-        if applied:
-            self.pending = False
-            self.written = current
-        return applied
+            return self._retry_later()
+
+        self.pending = False
+        self.written = current
+        return True
+
+    def _retry_later(self):
+        self.pending = True
+        if not settings_synced():
+            self._wait_for_sync()
+        return False
+
+    def _wait_for_sync(self):
+        if not self.waiting_for_sync:
+            self.waiting_for_sync = on_settings_synced(self._on_synced)
+
+    def _on_synced(self):
+        self.waiting_for_sync = False
+        if self.pending and self.enabled_in_hangar():
+            self.apply_changes()
 
 
 class RecommendedSettingsComponent(NativeSettingsComponent):

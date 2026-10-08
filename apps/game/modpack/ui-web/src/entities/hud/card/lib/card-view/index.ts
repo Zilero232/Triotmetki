@@ -1,3 +1,3 @@
-export { hasCardBody, rowIcon } from './card-view';
+export { cardRowEntries, hasCardBody, rowIcon } from './card-view';
 
 export type { RowIcon } from './card-view.types';

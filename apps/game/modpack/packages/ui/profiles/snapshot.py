@@ -2,6 +2,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import copy
 
+from ...companion.config.constants import DEFAULTS_REVISION
+from ...companion.config.migrate import migrated
+from ...core.compat import is_int
+from ...core.hud.modes import PLACES_SECTION, clean_places
 from .constants import (
     CODE_EXCLUDED_CONFIG_KEYS,
     CODE_EXCLUDED_SECTION_KEYS,
@@ -10,6 +14,7 @@ from .constants import (
     EXCLUDED_CONFIG_KEYS,
     EXCLUDED_CONFIG_PREFIXES,
     EXCLUDED_SECTIONS,
+    REVISION_KEY,
 )
 
 
@@ -26,7 +31,7 @@ def take_snapshot(config, component_config=None):
     sections = copy.deepcopy(component_config.data) if component_config is not None else {}
     for key in EXCLUDED_SECTIONS:
         sections.pop(key, None)
-    return {'config': values, 'components': sections}
+    return {'config': values, 'components': sections, REVISION_KEY: DEFAULTS_REVISION}
 
 
 def _part(snapshot, key):
@@ -45,11 +50,11 @@ def shared_snapshot(snapshot):
             continue
         dropped = CODE_EXCLUDED_SECTION_KEYS.get(key, ())
         sections[key] = {name: value for name, value in section.items() if name not in dropped}
-    return {'config': shared_values, 'components': sections}
+    return {'config': shared_values, 'components': sections, REVISION_KEY: snapshot_revision(snapshot)}
 
 
 def imported_snapshot(snapshot, config, component_config=None):
-    shared = shared_snapshot(snapshot)
+    shared = shared_snapshot(current_snapshot(snapshot, component_config))
     known_keys = config.schema.defaults
     values = {key: value for key, value in shared['config'].items() if key in known_keys}
     sections = {}
@@ -57,10 +62,42 @@ def imported_snapshot(snapshot, config, component_config=None):
         known = _known_section(key, section, component_config)
         if known is not None:
             sections[key] = known
-    return {'config': values, 'components': sections}
+    return {'config': values, 'components': sections, REVISION_KEY: DEFAULTS_REVISION}
+
+
+def snapshot_revision(snapshot):
+    revision = snapshot.get(REVISION_KEY) if isinstance(snapshot, dict) else None
+    return revision if is_int(revision) else None
+
+
+def _schema_defaults_of(component_config):
+    def schema_defaults(section):
+        settings = component_config.get(section) if component_config is not None else None
+        if settings is None:
+            return None
+        return settings.schema.defaults
+
+    return schema_defaults
+
+
+def current_snapshot(snapshot, component_config=None):
+    """`snapshot` moved to the current settings layout by the companion's own migration when it says it was taken
+    by an older mod; one without a revision (taken before profiles kept it) or a current one unchanged."""
+    revision = snapshot_revision(snapshot)
+    if revision is None or revision >= DEFAULTS_REVISION:
+        return snapshot
+
+    stored_config = dict(_part(snapshot, 'config'), defaults_revision=revision)
+    components = copy.deepcopy(_part(snapshot, 'components'))
+    schema_defaults = _schema_defaults_of(component_config)
+    config, sections = migrated(stored_config, components, schema_defaults)
+
+    return {'config': portable_values(config), 'components': sections, REVISION_KEY: DEFAULTS_REVISION}
 
 
 def _known_section(key, section, component_config):
+    if key == PLACES_SECTION:
+        return clean_places(section)
     if key in CODE_RAW_SECTIONS:
         return copy.deepcopy(section)
     settings = component_config.get(key) if component_config is not None else None
@@ -71,6 +108,7 @@ def _known_section(key, section, component_config):
 
 
 def apply_snapshot(snapshot, config, save_config, component_config=None, layer=None):
+    snapshot = current_snapshot(snapshot, component_config)
     changes = {}
     changed = config.update(portable_values(_part(snapshot, 'config')))
     if changed:

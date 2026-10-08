@@ -9,7 +9,7 @@ from ....core.compat import is_int
 from ....core.shells import shell_code
 from .. import settings
 from ..i18n import STRINGS
-from ..model import mark_offset, mark_text, preview, shows_in, to_native
+from ..model import hidden_centre, mark_offset, mark_text, preview, shows_in, to_native
 from ..model.constants import PREVIEW_SIZE, READOUT_TICK_S
 from ..model.editor import editor
 from ..model.readouts import (
@@ -68,6 +68,9 @@ class CrosshairComponent(BattlePanel):
         self.states = values_by_name(VEHICLE_VIEW_STATE, READOUT_STATES)
         self.readouts = None
         self.drawn_readouts = None
+        self.draws_mark = False
+        self.is_empty = False
+        self.has_panel = False
         self.ticker = Ticker(READOUT_TICK_S, self._on_tick)
         BattlePanel.__init__(self, app, PANEL_SPEC)
         self.view = None
@@ -121,10 +124,15 @@ class CrosshairComponent(BattlePanel):
         self.ticker.stop()
         self.readouts = None
         self.drawn_readouts = None
+        self.draws_mark = False
+        self.is_empty = False
+        self.has_panel = False
         self.view = None
 
     def stock_aliases(self):
-        return replaced_reticle_parts(self.drawn_readouts)
+        readout_parts = replaced_reticle_parts(self.drawn_readouts)
+        centre = hidden_centre(self.settings, self.draws_mark)
+        return readout_parts + centre
 
     def _on_view(self, view):
         self.view = view
@@ -212,12 +220,16 @@ class CrosshairComponent(BattlePanel):
         if ctrl is None or not (draws_mark or drawn):
             self._hide_all()
             return
+
         payload = crosshair_widget(self.settings, self.app.translate, readouts, sketch=False, with_mark=with_mark)
         self.drawn_readouts = drawn
+        self.draws_mark = draws_mark
+        self.is_empty = False
         if not self.show(self._text(with_mark, drawn), payload):
-            self.drawn_readouts = None
-            self.sync_stock()
+            self._forget_drawn()
             return
+
+        self.has_panel = True
 
         position = call(ctrl, 'getScaledPosition', (0, 0))
         size = call(ctrl, 'getSize', (0, 0))
@@ -225,9 +237,19 @@ class CrosshairComponent(BattlePanel):
         x, y = mark_offset(position, size, scale, self.settings)
         self.hud.place(PANEL_ID, x, y)
 
+    # The panel stays on the page with nothing in it: a mount per toggle crashed cohtml (0.3.11).
     def _hide_all(self):
+        self._forget_drawn()
+        if self.is_empty or not self.has_panel:
+            return
+
+        payload = crosshair_widget(self.settings, self.app.translate, None, sketch=False, with_mark=False)
+        self.is_empty = True
+        self.show(u'', payload)
+
+    def _forget_drawn(self):
         self.drawn_readouts = None
-        self.hide()
+        self.draws_mark = False
         self.sync_stock()
 
     def _text(self, with_mark, drawn):

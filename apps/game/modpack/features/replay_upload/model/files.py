@@ -4,14 +4,24 @@ import binascii
 import os
 
 from ....core.compat import to_bytes, to_text
-from ....core.replay_file import EXTENSIONS, is_replay_name, read_header
-from .constants import FILE_FIELD, MATCH_WINDOW_S, MAX_CANDIDATES, MAX_NAME_LENGTH, UNSAFE_NAME_CHARS
+from ....core.replay_file import EXTENSIONS, is_replay_name, name_time, read_header, same_vehicle
+from .constants import (
+    EXACT_MATCH,
+    FILE_FIELD,
+    MATCH_WINDOW_S,
+    MAX_CANDIDATES,
+    MAX_NAME_LENGTH,
+    NAME_STAMP_SLACK_S,
+    UNSAFE_NAME_CHARS,
+)
 
 
-def matches(header, account_id, arena_unique_id, started_at):
+def matches(header, account_id, arena_unique_id, started_at, vehicle=None):
     if not header or header.get('player_id') is None or account_id is None:
         return False
     if int(header['player_id']) != int(account_id):
+        return False
+    if not same_vehicle(header.get('vehicle'), vehicle):
         return False
     if header.get('arena_unique_id'):
         return header['arena_unique_id'] == to_text(arena_unique_id)
@@ -20,34 +30,97 @@ def matches(header, account_id, arena_unique_id, started_at):
     return abs(header['date_time'] - float(started_at)) <= MATCH_WINDOW_S
 
 
-def _candidates(folder, started_at):
+def closeness(header, arena_unique_id, started_at):
+    if header.get('arena_unique_id'):
+        return EXACT_MATCH
+    return abs(header['date_time'] - float(started_at))
+
+
+def _is_named_far(name, started_at):
+    if started_at is None:
+        return False
+    stamped = name_time(name)
+    if stamped is None:
+        return False
+
+    return abs(stamped - float(started_at)) > MATCH_WINDOW_S + NAME_STAMP_SLACK_S
+
+
+def _stat(path):
+    try:
+        return os.stat(path)
+    except (IOError, OSError):
+        return None
+
+
+def _distance(candidate, started_at):
+    mtime, _size, path = candidate
+    if started_at is None:
+        return -mtime
+    stamped = name_time(path)
+    moment = stamped if stamped is not None else mtime
+
+    return abs(moment - float(started_at))
+
+
+def _replay_names(folder):
     try:
         names = os.listdir(folder)
     except (IOError, OSError):
         return []
+
+    replay_names = []
+    for name in names:
+        if is_replay_name(name):
+            replay_names.append(name)
+    return replay_names
+
+
+def _candidates(folder, started_at):
     earliest = None if started_at is None else float(started_at) - MATCH_WINDOW_S
 
     candidates = []
-    for name in names:
-        if not is_replay_name(name):
+    for name in _replay_names(folder):
+        if _is_named_far(name, started_at):
             continue
         path = os.path.join(folder, name)
-        try:
-            info = os.stat(path)
-        except (IOError, OSError):
+        info = _stat(path)
+        if info is None:
             continue
         if earliest is None or info.st_mtime >= earliest:
             candidates.append((info.st_mtime, info.st_size, path))
 
-    candidates.sort(reverse=True)
+    candidates.sort(key=lambda candidate: _distance(candidate, started_at))
     return candidates[:MAX_CANDIDATES]
 
 
-def find_replay(folder, account_id, arena_unique_id, started_at):
-    for mtime, size, path in _candidates(folder, started_at):
-        if matches(read_header(path), account_id, arena_unique_id, started_at):
+def _known_file(known_path):
+    if not known_path:
+        return []
+    info = _stat(known_path)
+    if info is None:
+        return []
+
+    return [(info.st_mtime, info.st_size, known_path)]
+
+
+def find_replay(folder, account_id, arena_unique_id, started_at, vehicle=None, known_path=None):
+    best = None
+    best_closeness = None
+    for candidate in _known_file(known_path) + _candidates(folder, started_at):
+        mtime, size, path = candidate
+        header = read_header(path)
+        if not matches(header, account_id, arena_unique_id, started_at, vehicle):
+            continue
+
+        candidate_closeness = closeness(header, arena_unique_id, started_at)
+        if candidate_closeness == EXACT_MATCH:
             return path, size, mtime
-    return None
+        if best is None or candidate_closeness < best_closeness:
+            best = (path, size, mtime)
+            best_closeness = candidate_closeness
+
+    return best
 
 
 def upload_name(path):

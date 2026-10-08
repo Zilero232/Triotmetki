@@ -30,6 +30,13 @@ def _class_factory(app):
     return getattr(utils, 'classFactory', None) if utils is not None else None
 
 
+def _registered_adaptor(parent_view, alias):
+    components = getattr(parent_view, 'components', None)
+    if not isinstance(components, dict):
+        return None
+    return components.get(alias)
+
+
 def new_inject_component(app):
     """A new stock GFInjectComponent made by `app`'s AS3 ClassFactory (base_app ClassFactory.getObject), or None."""
     factory = _class_factory(app)
@@ -56,6 +63,7 @@ class InjectHost(object):
         self.layout = None
         self.parent = None
         self.component = None
+        self.adaptor = None
         self.view = None
 
     def attached(self):
@@ -84,6 +92,7 @@ class InjectHost(object):
         try:
             parent_view.flashObject.addChild(component)
             parent_view.registerFlashComponent(component, self.alias)
+            self.adaptor = _registered_adaptor(parent_view, self.alias)
         except Exception:
             log_exception('inject %s: placing the GFInjectComponent' % self.alias)
             self.detach()
@@ -139,6 +148,11 @@ class InjectHost(object):
 
     @safe
     def on_adaptor_disposed(self, adaptor):
+        is_stale = self.adaptor is not None and adaptor is not self.adaptor
+        if is_stale:
+            log('inject %s: an adaptor of an earlier placement disposed, ignored' % self.alias)
+            return
+
         log('inject %s: adaptor disposed with its parent view' % self.alias)
         self._gone()
 
@@ -151,4 +165,5 @@ class InjectHost(object):
     def _forget(self):
         self.parent = None
         self.component = None
+        self.adaptor = None
         self.view = None

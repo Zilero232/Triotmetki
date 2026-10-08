@@ -61,6 +61,6 @@
     "@types/react-dom": "catalog:",
     "sass-embedded": "catalog:",
     "typescript": "catalog:",
-    "vite": "^8.3.1"
+    "vite": "catalog:"
   }
 }

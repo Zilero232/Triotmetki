@@ -159,5 +159,48 @@ class SessionStatsClientTest(unittest.TestCase):
         assert self.stats.session.idle_seconds == 600
 
 
+class SessionShareClientTest(SessionStatsClientTest):
+
+    def setUp(self):
+        SessionStatsClientTest.setUp(self)
+        self.app.config.values['share_session_report'] = True
+        self.app.ui = Ui()
+        self.app.current_credentials = lambda: None
+        self.sent = []
+        module = sys.modules['otmetki.features.session_stats.client']
+        module.can_read = lambda app: True
+        module.preference_body = lambda credentials, is_enabled, channel: {}
+        module.post_signed = lambda app, path, payload, done: self.sent.append(done)
+
+    def answer(self, status):
+        done = self.sent.pop(0)
+        done(status, None, None)
+
+    def test_a_share_answer_for_an_account_left_is_dropped(self):
+        self.stats.sync_share(1000.0)
+        self.app.switch_account(2)
+
+        self.answer(200)
+
+        assert self.stats.share_synced is None
+
+    def test_a_refusal_is_forgotten_on_another_account(self):
+        self.stats.sync_share(1000.0)
+        self.answer(409)
+
+        self.app.switch_account(2)
+
+        assert self.stats.share_refused is None
+
+
+class Ui(object):
+
+    def __init__(self):
+        self.notes = []
+
+    def notify(self, text):
+        self.notes.append(text)
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { MOD_BADGE_PRESENCE } from '../../../config/badge-presence.constants';
-import { ipQuotaSubject, presenceTracker, presentAccounts } from '../badge-presence';
+import { ipQuotaSubjects, presenceTracker, presentAccounts } from '../badge-presence';
 
 const SECRET = 'server-secret-for-tests';
 
@@ -15,18 +15,46 @@ describe('presenceTracker', () => {
   });
 });
 
-describe('ipQuotaSubject', () => {
+describe('ipQuotaSubjects', () => {
   it('never stores the client address itself', () => {
-    expect(ipQuotaSubject({ ip: '203.0.113.7', secret: SECRET })).not.toContain('203.0.113.7');
+    const [subject] = ipQuotaSubjects({ ip: '203.0.113.7', secret: SECRET });
+
+    expect(subject).not.toContain('203.0.113.7');
   });
 
-  it('maps one client to one subject and two clients to two', () => {
-    expect(ipQuotaSubject({ ip: '203.0.113.7', secret: SECRET })).toBe(ipQuotaSubject({ ip: '203.0.113.7', secret: SECRET }));
-    expect(ipQuotaSubject({ ip: '203.0.113.7', secret: SECRET })).not.toBe(ipQuotaSubject({ ip: '203.0.113.8', secret: SECRET }));
+  it('maps one IPv4 client to one subject', () => {
+    expect(ipQuotaSubjects({ ip: '203.0.113.7', secret: SECRET })).toHaveLength(1);
+  });
+
+  it('keeps two IPv4 clients apart', () => {
+    const first = ipQuotaSubjects({ ip: '203.0.113.7', secret: SECRET });
+    const second = ipQuotaSubjects({ ip: '203.0.113.8', secret: SECRET });
+
+    expect(first).not.toEqual(second);
+  });
+
+  it('counts an IPv6 client against its /56 and its /48', () => {
+    expect(ipQuotaSubjects({ ip: '2001:db8:1:2::1', secret: SECRET })).toHaveLength(2);
+  });
+
+  it('shares the /48 subject between two /56 networks of one /48', () => {
+    const [, first] = ipQuotaSubjects({ ip: '2001:db8:1:100::1', secret: SECRET });
+    const [, second] = ipQuotaSubjects({ ip: '2001:db8:1:ff00::1', secret: SECRET });
+
+    expect(first).toBe(second);
+  });
+
+  it('keeps the /56 subjects of two networks of one /48 apart', () => {
+    const [first] = ipQuotaSubjects({ ip: '2001:db8:1:100::1', secret: SECRET });
+    const [second] = ipQuotaSubjects({ ip: '2001:db8:1:ff00::1', secret: SECRET });
+
+    expect(first).not.toBe(second);
   });
 
   it('keeps the address quota apart from the device quotas', () => {
-    expect(ipQuotaSubject({ ip: '203.0.113.7', secret: SECRET }).startsWith(MOD_BADGE_PRESENCE.ipSubjectPrefix)).toBe(true);
+    const [subject] = ipQuotaSubjects({ ip: '203.0.113.7', secret: SECRET });
+
+    expect(subject?.startsWith(MOD_BADGE_PRESENCE.ipSubjectPrefix)).toBe(true);
   });
 });
 

@@ -45,6 +45,9 @@ class App(object):
     def register_state(self, key, dump):
         self.parts.append((key, dump))
 
+    def register_account_state(self, key, dump, load):
+        self.parts.append((key, dump))
+
     def save_state(self):
         for key, dump in self.parts:
             self.state[key] = dump()

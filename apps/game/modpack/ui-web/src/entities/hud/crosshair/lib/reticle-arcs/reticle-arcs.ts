@@ -1,8 +1,8 @@
 import { clamp } from 'remeda';
 
-import { polarPoint } from '@/shared/lib/radial';
+import { polarPoint, RADIAL } from '@/shared/lib/radial';
 
-import type { ArcPathInput } from './reticle-arcs.types';
+import type { ArcPathInput, ArcsView, ArcsViewInput, ArcView, ArcViewInput } from './reticle-arcs.types';
 
 import { RETICLE_READOUTS } from '../../config';
 
@@ -23,3 +23,17 @@ export const arcPath = ({ side, progress, centre }: ArcPathInput): string | null
 
   return `M${from}A${radius} ${radius} 0 0 ${sweep} ${to}`;
 };
+
+const arcView = ({ side, progress, centre }: ArcViewInput): ArcView => {
+  const d = progress === null ? null : arcPath({ side, progress, centre });
+
+  return { d: d ?? RADIAL.emptyPath, isShown: d !== null };
+};
+
+export const arcsView = ({ arcs, centre }: ArcsViewInput): ArcsView => ({
+  isIdle: arcs === null,
+  leftTrack: arcView({ side: 'left', progress: 1, centre }).d,
+  rightTrack: arcView({ side: 'right', progress: 1, centre }).d,
+  reload: arcView({ side: 'left', progress: arcs?.reload ?? null, centre }),
+  health: arcView({ side: 'right', progress: arcs?.health ?? null, centre })
+});

@@ -39,8 +39,6 @@ CAMERA_MANAGER_MODULE = 'cgf_components.hangar_camera_manager'
 CAMERA_MANAGER_CLASS = 'HangarCameraManager'
 PREVIEW_MODULE = 'CurrentVehicle'
 PREVIEW_NAME = 'g_currentPreviewVehicle'
-# vehicle_systems.tankStructure.TankPartIndexes: CHASSIS 0, HULL 1, TURRET 2, GUN 3; the materials of each part.
-MATERIAL_PARTS = ('chassis', 'hull', 'turret', 'gun')
 # vehicle_systems.tankStructure: TankPartNames.TURRET and TankNodeNames.GUN_INCLINATION, the nodes BattleHits poses.
 TURRET_NODE = 'turret'
 GUN_NODE = 'Gun'

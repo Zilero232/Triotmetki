@@ -5,6 +5,7 @@ import { HudPlate, HudText } from '@/ui-kit';
 
 import type { CardWidgetProps } from './CardWidget.types';
 
+import { cardRowEntries } from '../lib/card-view';
 import { CardChips, CardHeader, CardRow, CardStrip } from './components';
 
 import s from './CardWidget.module.scss';
@@ -15,8 +16,8 @@ export const CardWidget = ({ data }: CardWidgetProps) => (
       <CardHeader data={data} />
       {data.chips.length > 0 && <CardChips chips={data.chips} />}
       {data.strip.length > 0 && <CardStrip marks={data.strip} />}
-      {data.rows.map((row, index) => (
-        <CardRow key={`${String(index)}-${row.text ?? row.label ?? ''}`} row={row} />
+      {cardRowEntries(data.rows).map((entry) => (
+        <CardRow key={entry.key} row={entry.row} />
       ))}
       <HudText className={s.footer} text={data.footer} />
     </div>

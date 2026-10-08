@@ -28,17 +28,36 @@ def own_battle(arena_id, results):
     }
 
 
+def _battle_time(entry):
+    return int_or_none(entry.get('t')) or 0
+
+
+def by_battle_time(entries):
+    ordered = sorted(entries, key=_battle_time)
+    return ordered[-KEPT_BATTLES:]
+
+
 def clean_history(raw):
     if not isinstance(raw, list):
         return []
-    kept = [entry for entry in raw if isinstance(entry, dict) and entry.get('result') in RESULT_TONES]
-    return kept[-KEPT_BATTLES:]
+
+    kept = []
+    for entry in raw:
+        if isinstance(entry, dict) and entry.get('result') in RESULT_TONES:
+            kept.append(entry)
+    return by_battle_time(kept)
 
 
+def _is_recorded(history, battle):
+    return any(entry.get('arena') == battle['arena'] for entry in history)
+
+
+# Results of an earlier battle can arrive after a later one: the streak follows the battles' own order.
 def record(history, battle):
-    if battle is None or any(entry.get('arena') == battle['arena'] for entry in history):
+    if battle is None or _is_recorded(history, battle):
         return history
-    return (history + [battle])[-KEPT_BATTLES:]
+
+    return by_battle_time(history + [battle])
 
 
 def streak(history):

@@ -108,6 +108,7 @@ class SessionStats(FeatureComponent):
 
     def _on_account(self, account_id):
         self.site.reset(account_id)
+        self.share_refused = None
         self.show(False)
 
     def _on_hangar(self):
@@ -276,9 +277,10 @@ class SessionStats(FeatureComponent):
             return
 
         self.share_sending = True
+        account_id = self.app.account_id
 
         def done(status, data, retry_after):
-            self._on_share_answer(wanted, status)
+            self._on_share_answer(wanted, status, account_id)
 
         post_signed(self.app, SHARE_PATH, payload, done)
 
@@ -293,8 +295,10 @@ class SessionStats(FeatureComponent):
         is_enabled = wanted[0]
         return is_enabled or self.share_synced is not None
 
-    def _on_share_answer(self, wanted, status):
+    def _on_share_answer(self, wanted, status, account_id):
         self.share_sending = False
+        if account_id != self.app.account_id:
+            return
 
         outcome = preference_outcome(status)
         if outcome == SHARE_SYNCED:

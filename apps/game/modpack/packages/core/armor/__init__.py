@@ -1,0 +1,117 @@
+"""The armour along a ray through a vehicle's collision, and what a shell does to it. Pure (Python 2/3, no client
+imports); the client side (the hangar vehicle's collision, the camera's rays) is `core/client/armor`.
+
+- `plates`: `Plate` from one `collideAllWorld` hit and its descriptor material (`plate_from`, `plates_along`), the
+  part names of the collision indexes, the first main plate;
+- `penetration`: the client's own shot rules (RU 1.45 gun_marker_ctrl._CrosshairShotResults, the reticle's shot
+  result): penetration at a distance, ricochet with the 3-calibre rule, normalisation widened past two calibres, the
+  HEAT jet's loss between plates, modern HE on screens, `trace` through the plates, the penetration a shell needs,
+  and `verdict` with the chance of the roll.
+
+`features/armor_view` (the hangar armour map) uses both; `features/hit_viewer` measures one plate per hit the same
+way.
+"""
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+from .constants import (
+    KIND_GUN,
+    KIND_MAIN,
+    KIND_SPACED,
+    KIND_TRACK,
+    MAX_EFFECTIVE_MM,
+    OUTCOME_MAIN,
+    OUTCOME_NO_MAIN,
+    OUTCOME_RICOCHET,
+    OUTCOME_STOPPED,
+    PART_CHASSIS,
+    PART_GUN,
+    PART_HULL,
+    PART_NAMES,
+    PART_TRACK,
+    PART_TURRET,
+    PENETRATION_RANDOMNESS,
+    SHELL_AP,
+    SHELL_APCR,
+    SHELL_APFSDS,
+    SHELL_APHE,
+    SHELL_FLAME,
+    SHELL_HE,
+    SHELL_HEAT,
+    SHELL_KINDS,
+    SHELL_RULES,
+    VERDICT_ALWAYS,
+    VERDICT_CHANCE,
+    VERDICT_NEVER,
+    VERDICT_NO_ARMOUR,
+    VERDICT_RICOCHET,
+)
+from .penetration import (
+    Shell,
+    Step,
+    Trace,
+    Verdict,
+    is_overmatched,
+    needed_power,
+    normalization,
+    normalized_cos,
+    penetration_armor,
+    power_at,
+    ricochets,
+    roll_chance,
+    trace,
+    verdict,
+)
+from .plates import Plate, first_main, part_name, plate_from, plates_along, up_to_main
+
+__all__ = (
+    'KIND_GUN',
+    'KIND_MAIN',
+    'KIND_SPACED',
+    'KIND_TRACK',
+    'MAX_EFFECTIVE_MM',
+    'OUTCOME_MAIN',
+    'OUTCOME_NO_MAIN',
+    'OUTCOME_RICOCHET',
+    'OUTCOME_STOPPED',
+    'PART_CHASSIS',
+    'PART_GUN',
+    'PART_HULL',
+    'PART_NAMES',
+    'PART_TRACK',
+    'PART_TURRET',
+    'PENETRATION_RANDOMNESS',
+    'Plate',
+    'SHELL_AP',
+    'SHELL_APCR',
+    'SHELL_APFSDS',
+    'SHELL_APHE',
+    'SHELL_FLAME',
+    'SHELL_HE',
+    'SHELL_HEAT',
+    'SHELL_KINDS',
+    'SHELL_RULES',
+    'Shell',
+    'Step',
+    'Trace',
+    'VERDICT_ALWAYS',
+    'VERDICT_CHANCE',
+    'VERDICT_NEVER',
+    'VERDICT_NO_ARMOUR',
+    'VERDICT_RICOCHET',
+    'Verdict',
+    'first_main',
+    'is_overmatched',
+    'needed_power',
+    'normalization',
+    'normalized_cos',
+    'part_name',
+    'penetration_armor',
+    'plate_from',
+    'plates_along',
+    'power_at',
+    'ricochets',
+    'roll_chance',
+    'trace',
+    'up_to_main',
+    'verdict',
+)

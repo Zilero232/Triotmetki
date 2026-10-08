@@ -380,9 +380,15 @@ class PreviewTest(ClientCase):
         self.big_world.screenShot = self.screen_shot
         capture = sys.modules['otmetki.features.hangar_space.client.capture']
         capture.hide_interface = lambda restore: restore.append(lambda: self.restored.append(True))
+        self.capture = capture
+        self.client_notify = [self.stock_notify]
+        capture._stock_notify = lambda: self.client_notify[0]
         self.client.clean_hangar_on_screen = lambda: self.clean[0]
         self.client.current_name = lambda: self.hangar.spacePath.split('/')[1]
         self.component.enabled_in_hangar = lambda: True
+
+    def stock_notify(self, path):
+        pass
 
     def screen_shot(self, extension, name):
         path = '%s_000.%s' % (name, extension)
@@ -466,6 +472,40 @@ class PreviewTest(ClientCase):
         self.settle()
 
         assert len(self.shots) == 2
+
+    def test_the_client_screenshot_callback_comes_back_after_the_shot(self):
+        self.pick_museum()
+
+        self.settle()
+
+        assert self.notify[0] == self.stock_notify
+
+    def test_no_shot_when_the_client_screenshot_callback_is_unknown(self):
+        self.client_notify[0] = None
+        self.pick_museum()
+
+        self.settle()
+
+        assert self.shots == []
+
+    def test_no_interface_is_hidden_when_the_client_screenshot_callback_is_unknown(self):
+        self.client_notify[0] = None
+        self.pick_museum()
+
+        self.settle()
+
+        assert self.restored == []
+
+    def test_a_hangar_cleared_long_after_the_pick_is_not_shot(self):
+        self.clean[0] = False
+        self.pick_museum()
+        self.settle()
+        self.now[0] += 60.0
+        self.clean[0] = True
+
+        self.settle()
+
+        assert self.shots == []
 
     def test_a_look_live_in_its_space_is_saved_under_the_look(self):
         self.component.ui_action('look', 'look:autumn_rain')

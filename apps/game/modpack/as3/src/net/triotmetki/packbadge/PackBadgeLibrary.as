@@ -16,9 +16,9 @@ package net.triotmetki.packbadge
             try
             {
                 var prototype:Object = Object(getDefinitionByName(PAGE_CLASS)).prototype;
-                prototype.as_otmetkiPackBadge = function(ids:Array, names:Array = null):String
+                prototype.as_otmetkiPackBadge = function(ids:Array, names:Array = null, otherNames:Array = null):String
                 {
-                    return PackBadgeLibrary.mark(this, ids, names);
+                    return PackBadgeLibrary.mark(this, ids, names, otherNames);
                 };
                 prototype.as_otmetkiPackBadgeRepaint = function():String
                 {
@@ -34,7 +34,7 @@ package net.triotmetki.packbadge
             }
         }
 
-        public static function mark(page:*, ids:Array, names:Array):String
+        public static function mark(page:*, ids:Array, names:Array, otherNames:Array):String
         {
             try
             {
@@ -44,7 +44,7 @@ package net.triotmetki.packbadge
                     painter = new BadgePainter(page as IEventDispatcher, forget);
                     painters[page] = painter;
                 }
-                return painter.mark(ids || [], names || []);
+                return painter.mark(ids || [], names || [], otherNames || []);
             }
             catch (error:Error)
             {

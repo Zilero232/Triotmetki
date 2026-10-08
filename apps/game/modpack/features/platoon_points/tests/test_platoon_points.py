@@ -114,6 +114,22 @@ class PlatoonTest(unittest.TestCase):
         assert changed is True
         assert platoon.members[2]['hp'] == 0
 
+    def test_a_respawned_mate_comes_back_with_full_hp(self):
+        platoon = fought_platoon()
+        platoon.killed(2, 99, False)
+
+        platoon.add(2, seen(u'Друг', False, 'lightTank', 1000))
+
+        assert platoon.members[2]['hp'] == 1000
+
+    def test_a_respawned_mate_keeps_its_frags(self):
+        platoon = fought_platoon()
+        platoon.killed(2, 99, False)
+
+        platoon.add(2, seen(u'Друг', False, 'lightTank', 1000))
+
+        assert platoon.members[2]['frags'] == 1
+
     def test_without_mates_only_the_own_row(self):
         rows = fought_platoon().rows(default_rules(), False)
 

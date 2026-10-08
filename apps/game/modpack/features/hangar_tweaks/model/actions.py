@@ -7,10 +7,18 @@ def plan_demount(vehicle):
     if vehicle.get('locked'):
         return [], REFUSE_LOCKED
     devices = vehicle.get('devices') or []
-    slots = [device['slot'] for device in devices if device and device.get('removable')]
-    if not slots:
+    planned = [device for device in devices if device and device.get('removable')]
+    if not planned:
         return [], REFUSE_NOTHING
-    return slots, None
+    return planned, None
+
+
+def is_still_planned(planned, current):
+    if current is None:
+        return False
+    if not current.get('removable'):
+        return False
+    return current.get('int_cd') == planned.get('int_cd')
 
 
 def plan_crew_unload(vehicle, free_berths):

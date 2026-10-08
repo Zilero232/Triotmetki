@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 FEATURE_ID = 'streamer_mode'
 PACKAGE_ID = 'net.triotmetki.streamer_mode'
 PACKAGE_NAME = 'Three Marks: streamer mode'
-VERSION = '0.1.3'
+VERSION = '0.1.4'
 
 
 def create(app):

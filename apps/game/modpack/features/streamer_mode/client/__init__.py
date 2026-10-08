@@ -7,7 +7,7 @@ from ....core.client.hud import hud_layer
 from ....core.hooks import override
 from ....core.log import log, safe
 from ..i18n import STRINGS
-from ..model import PanelToggle, blocked_labels, hides_chat, is_player_line
+from ..model import PanelToggle, blocked_labels, blocked_panels, hides_chat, is_player_line
 from ..model.constants import HOTKEYS
 from ..settings import SCHEMA, SECTION, SWITCH
 
@@ -77,10 +77,14 @@ class StreamerMode(FeatureComponent):
         self.app.ui.set_muted(hidden)
 
     def _apply_private(self):
-        blocked = ()
+        labels = ()
+        panels = ()
         if self.enabled():
-            blocked = blocked_labels(self.settings)
-        self.app.ui.set_blocked(blocked)
+            labels = blocked_labels(self.settings)
+            panels = blocked_panels(self.settings)
+
+        self.app.ui.set_blocked(labels)
+        hud_layer(self.app).set_blocked(panels)
 
     def _hides_chat(self):
         return self.enabled() and hides_chat(self.settings, self.app.in_battle)

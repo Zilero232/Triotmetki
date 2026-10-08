@@ -51,10 +51,12 @@ def log_status(context, status):
 
 class PageBridge(object):
 
-    def __init__(self):
+    def __init__(self, on_page):
+        self.on_page = on_page
         self.page = None
         self.vehicle_ids = None
         self.names = None
+        self.other_names = None
         self.attempts = 0
         self.tab_logged = False
         self.tab_listening = False
@@ -74,16 +76,19 @@ class PageBridge(object):
         self.page = None
         self.vehicle_ids = None
         self.names = None
+        self.other_names = None
 
-    def show(self, vehicle_ids, names, reason):
+    def show(self, vehicle_ids, names, other_names, reason):
         self.vehicle_ids = list(vehicle_ids)
         self.names = list(names)
+        self.other_names = list(other_names)
         self.push(reason)
 
     def _on_page(self, view):
         self.page = weakref.ref(view)
         log('pack badge swf: battle page %s found' % getattr(view, 'alias', '?'))
         self.push('page found')
+        self.on_page()
 
     def _on_app_gone(self):
         self.retry.stop()
@@ -110,8 +115,9 @@ class PageBridge(object):
             self._wait()
             return
         self.retry.stop()
-        status = self._call(FLASH_MARK, self.vehicle_ids, self.names)
-        log_status('%s, %d marked vehicles, %d names' % (reason, len(self.vehicle_ids), len(self.names)), status)
+        status = self._call(FLASH_MARK, self.vehicle_ids, self.names, self.other_names)
+        counts = (reason, len(self.vehicle_ids), len(self.names), len(self.other_names))
+        log_status('%s, %d marked vehicles, %d marked names, %d other names' % counts, status)
 
     @safe
     def repaint(self):

@@ -1,13 +1,13 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ....core.client.battle import call, controls_own_vehicle, crosshair, player
+from ....core.client.battle import call, controls_own_vehicle, crosshair, player, vehicle_state
 from ....core.client.game import client_attr, client_module
 from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.timer import Ticker
 from ....core.log import safe
 from ..i18n import STRINGS
 from ..model import marker_offsets, reticle_offset, screen_offset, screen_size, sector_points
-from ..model.constants import FAST_TICK_S, MARK_NAMES, NO_LIMITS, PREVIEW_SIZE, TICK_S
+from ..model.constants import EMPTY_DRAWN, FAST_TICK_S, MARK_NAMES, NO_LIMITS, PREVIEW_SIZE, TICK_S
 from ..model.preview import preview_text, preview_widget
 from ..model.widget import empty_widget, panel_widget
 from ..settings import PANEL_ID, SCHEMA, SWITCH
@@ -75,21 +75,38 @@ class GunArcPanel(BattlePanel):
         self.limits = None
         self.client = ClientMath()
         self.drawn = None
+        self.has_panel = False
         self.ticker = Ticker(TICK_S, self._on_tick)
         BattlePanel.__init__(self, app, PANEL_SPEC)
 
     def start(self, battle_player):
+        self.hooks.add(vehicle_state, 'onVehicleControlling', self._on_vehicle_controlling)
+        self._follow_vehicle(battle_player)
+
+    # Respawn modes hand the player a new vehicle in the same battle.
+    def _on_vehicle_controlling(self, vehicle):
+        battle_player = player()
+        is_own = getattr(vehicle, 'id', None) == getattr(battle_player, 'playerVehicleID', None)
+        if is_own:
+            self._follow_vehicle(battle_player)
+
+    def _follow_vehicle(self, battle_player):
         self.limits = yaw_limits(battle_player)
+        if not self.limits:
+            self.wait(NO_LIMITS)
+            self._take_off()
+            return
+
         self.drawn = None
-        self.wait(None if self.limits else NO_LIMITS)
-        if self.limits:
-            self._follow_redraw_setting()
-            self.ticker.start()
+        self.wait(None)
+        self._follow_redraw_setting()
+        self.ticker.start()
 
     def stop(self):
         self.ticker.stop()
         self.limits = None
         self.drawn = None
+        self.has_panel = False
 
     def settings_changed(self, changed):
         self.drawn = None
@@ -122,17 +139,25 @@ class GunArcPanel(BattlePanel):
 
     def _draw(self, offsets, reticle, drawn):
         payload = panel_widget(offsets, self.settings)
-        if payload is None and self.drawn is not None:
-            payload = empty_widget(self.settings)
-        if payload is None or not self.show(u'', payload):
+        if payload is None:
             self._take_off()
             return
+
+        if not self.show(u'', payload):
+            self.drawn = None
+            return
+
         self.hud.place(PANEL_ID, reticle[0], reticle[1])
         self.drawn = drawn
+        self.has_panel = True
 
+    # The panel stays on the page with no markers: a mount per toggle crashed cohtml (0.3.11).
     def _take_off(self):
-        self.drawn = None
-        self.hide()
+        if self.drawn == EMPTY_DRAWN or not self.has_panel:
+            return
+
+        self.show(u'', empty_widget(self.settings))
+        self.drawn = EMPTY_DRAWN
 
     def _marks_on_screen(self, screen):
         if not self.client.ready():

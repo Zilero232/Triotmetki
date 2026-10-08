@@ -6,7 +6,7 @@ import unittest
 import _support
 from otmetki.core.settings import Settings
 from otmetki.features.streamer_mode.i18n import STRINGS
-from otmetki.features.streamer_mode.model import PanelToggle, blocked_labels, hides_chat, is_player_line
+from otmetki.features.streamer_mode.model import PanelToggle, blocked_labels, blocked_panels, hides_chat, is_player_line
 from otmetki.features.streamer_mode.model.constants import HOTKEY_CHOICES, HOTKEYS, PRIVATE_HANGAR_LABELS
 from otmetki.features.streamer_mode.settings import SCHEMA, SETTINGS
 
@@ -48,6 +48,18 @@ class PrivateModeTest(unittest.TestCase):
 
     def test_the_labels_stay_when_their_switch_is_off(self):
         assert blocked_labels(settings({'private': True, 'hide_hangar_stats': False})) == ()
+
+    def test_the_private_mode_blocks_the_hangar_tank_card(self):
+        assert blocked_panels(settings({'private': True})) == ('hangar_marks',)
+
+    def test_the_tank_card_is_no_ui_label(self):
+        assert 'otmetki.hud.hangar_marks' not in PRIVATE_HANGAR_LABELS
+
+    def test_the_tank_card_stays_outside_the_private_mode(self):
+        assert blocked_panels(settings()) == ()
+
+    def test_the_tank_card_stays_when_the_stats_switch_is_off(self):
+        assert blocked_panels(settings({'private': True, 'hide_hangar_stats': False})) == ()
 
     def test_the_private_mode_hides_the_chat_in_battle(self):
         assert hides_chat(settings({'private': True}), True)

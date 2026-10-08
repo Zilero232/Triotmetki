@@ -1,6 +1,8 @@
 # @otmetki/gamedata
 
-The pure «Мир танков» loadout calculator and the game-data model it reads. No I/O and no dependencies, so the client's build constructor and the server's importer run the same maths. The importer that produces this data (XML parsers, GitHub reader, database writer) lives in the server app: [apps/web/server/src/modules/gamedata](../../apps/web/server/src/modules/gamedata/README.md).
+The pure «Мир танков» loadout calculator and the game-data model it reads, plus the ballistics, dispersion, spotting and armor-penetration math. No I/O and no runtime dependencies, so the client's build constructor and 3D armor viewer and the server run the same maths. The importer that produces this data (XML parsers, GitHub reader, database writer) lives in the server: [apps/web/server/src/modules/gamedata](../../apps/web/server/src/modules/gamedata/README.md).
+
+## Usage
 
 ```ts
 import { calculateLoadout } from '@otmetki/gamedata';
@@ -17,19 +19,25 @@ const stats = calculateLoadout({
 });
 ```
 
-The root exports `calculateLoadout` with its input and output types (`LoadoutInput`, `FinalStats`, …), `resolveModules`, the model types (`VehicleSpec`, `OptionalDevice`, `Equipment`, `CrewSkill`, `FieldModification`, …) the ballistics, dispersion and spotting math (`ballisticsCurve`, `aimTimeline`, `spottingDuel`, …) and the modifier model (`Modifier`, `MODIFIER_OPS`).
+The root exports `calculateLoadout` with its input and output types (`LoadoutInput`, `FinalStats`, …), `resolveModules`, the model types (`VehicleSpec`, `OptionalDevice`, `Equipment`, `CrewSkill`, `FieldModification`, …), the ballistics, dispersion and spotting math (`ballisticsCurve`, `aimTimeline`, `spottingDuel`, …), the armor math (`traceArmorRay`, `penetrationAtDistance`, `ARMOR_FLAGS`, the geometry codec `encodeArmorGeometry` / `decodeArmorGeometry`) and the modifier model (`Modifier`, `MODIFIER_OPS`).
 
-| Folder          | Concern                                                                                                                                                              |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/model`     | The data shapes the importer produces and the calculator reads                                                                                                       |
-| `src/modifiers` | The structured modifier model and its application                                                                                                                    |
-| `src/loadout`   | `calculateLoadout` → final stats                                                                                                                                     |
-| `src/math`      | Ballistics, aiming and dispersion curves, handling scenarios and spotting (`ballisticsCurve`, `aimTimeline`, `spottingDuel`, …)                                      |
-| `src/armor`     | Penetration math (`calculateArmorHit`, `traceArmorRay`, `penetrationAtDistance`), armor flags and the binary geometry codec shared by the importer and the 3D viewer |
+## Layout
 
-The calculator is tested in `src/loadout/_tests/loadout.test.ts` against fixtures of parsed vehicles and devices (`src/loadout/_tests/fixtures.ts`), run from the repo root with `bun run test`.
+| Folder          | Concern                                                                                              |
+| --------------- | ---------------------------------------------------------------------------------------------------- |
+| `src/model`     | the data shapes the importer produces and the calculator reads                                       |
+| `src/modifiers` | the structured modifier model and its application                                                    |
+| `src/loadout`   | `calculateLoadout` → final stats                                                                     |
+| `src/math`      | ballistics, aiming and dispersion curves, handling scenarios and spotting                            |
+| `src/armor`     | penetration math, armor flags and the binary geometry codec shared by the importer and the 3D viewer |
 
-## Modifier model
+## Testing
+
+Tests live in `src/**/_tests`; the calculator is checked in `src/loadout/_tests/loadout.test.ts` against fixtures of parsed vehicles and devices (`src/loadout/_tests/fixtures.ts`). Run them from the repo root with `bun run test`.
+
+## Reference
+
+### Modifier model
 
 Every effect is a `Modifier`:
 
@@ -51,7 +59,7 @@ type Modifier = {
 - Devices with a script instead of factors are mapped explicitly. Stereoscope becomes `circularVisionRadius` (`still`). Camouflage net becomes `invisibility/additive` (`still`). Low-noise tracks become `miscAttrs/invisibilityAdditiveTerm`. Rotation mechanisms become `onMove/onStillRotationSpeedFactor` (`tracked`/`wheeled`). Grousers become `physics/terrainResistance`.
 - Skill directives carry `skillBoost: { skill, perkLevelMultiplier?, efficiencyFactor? }` instead of modifiers.
 
-## Loadout calculator: order of application
+### Loadout calculator: order of application
 
 This follows `items/vehicles.py` (`_updateAttributes`), `items/utils.py` (`updateVehicleAttrFactors`, `getReloadTime`…), `items/VehicleDescrCrew.py` and `gui/shared/items_parameters/params.py` of the 1.45 client:
 
@@ -72,7 +80,7 @@ This follows `items/vehicles.py` (`_updateAttributes`), `items/utils.py` (`updat
    - HP = `(hull + turret) × healthFactor`.
    - weight = the sum of all module weights.
 
-### Assumptions and limitations
+#### Assumptions and limitations
 
 - The crew is uniform: every member has the same major qualification level, and skills are applied as if the best member has them. Mixed crews, wounded crew, and the universalist and desperado situational bonuses are not modelled.
 - Default crew = 100 %, so non-commanders are at 110 %, exactly as the client computes it. Final stats therefore differ slightly from raw XML values.

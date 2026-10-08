@@ -21,6 +21,10 @@ REFUSE_NOTHING = 'nothing'
 REFUSE_CHANGED = 'changed'
 
 MAX_NAME = 60
+# RU 1.45 client source: MAX_ROLE_LEVEL of gui.shared.gui_items.Tankman, the full role level.
+MAX_ROLE_LEVEL = 100
+# A missing flag counts as set: a tankman the read could not check is never dismissed.
+PROTECTED_CREW_FLAGS = ('premium', 'female', 'unique', 'special', 'locked')
 CONFIRM_ITEMS = 6
 CREW_ROW_PREFIX = 'crew:'
 ITEM_ROW_PREFIX = 'item:'

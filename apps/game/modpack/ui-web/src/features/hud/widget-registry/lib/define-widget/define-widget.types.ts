@@ -8,12 +8,14 @@ export type DefineHudWidgetInput<Data> = {
   schema: z.ZodMiniType<Data>;
   Component: FunctionComponent<HudWidgetProps<Data>>;
   pointer?: boolean;
+  fixedCanvas?: boolean;
 };
 
 export type ParsedHudWidget = {
   kind: string;
   data: unknown;
   pointer: boolean;
+  fixedCanvas: boolean;
   node: ReactElement;
 };
 

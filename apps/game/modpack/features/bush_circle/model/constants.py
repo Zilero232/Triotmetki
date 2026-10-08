@@ -9,10 +9,10 @@ HOTKEYS = {
     'none': (None, ()),
     'ctrl_shift_b': ('KEY_B', ('KEY_LCONTROL', 'KEY_LSHIFT')),
     'ctrl_shift_c': ('KEY_C', ('KEY_LCONTROL', 'KEY_LSHIFT')),
-    'f7': ('KEY_F7', ()),
-    'f8': ('KEY_F8', ()),
 }
-HOTKEY_CHOICES = ('ctrl_shift_b', 'ctrl_shift_c', 'f7', 'f8', 'none')
+HOTKEY_CHOICES = ('ctrl_shift_b', 'ctrl_shift_c', 'none')
+# RU 1.45 scripts/command_mapping.xml binds F2-F8 to the stock chat commands (CMD_CHAT_SHORTCUT_*).
+RETIRED_HOTKEYS = {'f7': 'ctrl_shift_b', 'f8': 'ctrl_shift_b'}
 # ARGB, the form BigWorld.PyTerrainSelectedArea.setup takes (RU 1.45 CombatSelectedArea.COLOR_WHITE).
 COLORS = {
     'white': 0xFFFFFFFF,

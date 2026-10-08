@@ -305,6 +305,22 @@ class LibraryTest(unittest.TestCase):
         self.assertEqual(library.progress(), (0, SCAN_MAX_FILES))
         self.assertNotIn('r0000.mtreplay', library.files)
 
+    def test_scan_stats_only_the_newest_stamped_names_and_every_renamed_one(self):
+        stamped = ['2026%04d_1200_ussr-R04_T-34_map.mtreplay' % (101 + number) for number in range(SCAN_MAX_FILES + 5)]
+        names = stamped + ['renamed.mtreplay']
+        library = ReplayLibrary(MemoryFile(), lambda path: None)
+        statted = []
+
+        def stat(path):
+            statted.append(os.path.basename(path))
+            return FileInfo(1)
+
+        library.scan('x', listdir=lambda folder: names, stat=stat)
+
+        self.assertEqual(len(statted), SCAN_MAX_FILES + 1)
+        self.assertNotIn(stamped[0], statted)
+        self.assertIn('renamed.mtreplay', statted)
+
     def test_a_new_replay_is_the_first_header_a_short_slice_reads(self):
         library = self.library()
         read_all(library)
@@ -907,6 +923,28 @@ class AutoNameTest(unittest.TestCase):
         renames = namer.plan(by_time, '{map}', STARTED + 500)
 
         self.assertEqual(planned(renames), [('left_early.mtreplay', u'Прохоровка.mtreplay')])
+
+    def test_of_two_replays_without_an_arena_the_closest_start_wins(self):
+        namer = AutoNamer()
+        namer.queue(own_event('778'), event_values(), 0.0)
+        by_time = [
+            folder_replay('later.mtreplay', started=STARTED + 200),
+            folder_replay('closest.mtreplay', started=STARTED + 30),
+        ]
+
+        renames = namer.plan(by_time, '{map}', STARTED + 500)
+
+        self.assertEqual(planned(renames), [('closest.mtreplay', u'Прохоровка.mtreplay')])
+
+    def test_a_replay_of_another_vehicle_is_not_named(self):
+        namer = AutoNamer()
+        namer.queue(own_event('778'), event_values(), 0.0, 'ussr:R04_T-34')
+        other = folder_replay('other.mtreplay', started=STARTED + 30)
+        other['header']['vehicle'] = 'germany-G04_PzVI_Tiger_I'
+
+        renames = namer.plan([other], '{map}', STARTED + 3 * 3600)
+
+        self.assertEqual(renames, [])
 
     def test_waits_for_the_file_to_settle(self):
         namer = AutoNamer()

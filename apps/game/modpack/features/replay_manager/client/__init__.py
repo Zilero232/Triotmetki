@@ -4,11 +4,11 @@ import os
 import time
 
 from ....core.client.component import ACTION_REFRESH, FeatureComponent
-from ....core.client.game import map_label, vehicle_short_name
+from ....core.client.game import map_label, vehicle_info, vehicle_short_name
 from ....core.client.hud.icons import client_file_exists
 from ....core.client.me import can_read, post_signed, signed_body
 from ....core.client.timer import Ticker
-from ....core.client.replays import replay_dir
+from ....core.client.replays import records_all_battles, replay_dir
 from ....core.compat import to_text
 from ....core.errors import ReasonError
 from ....core.events import (
@@ -119,7 +119,12 @@ class ReplayManager(FeatureComponent):
         self.analysis = AnalysisWatch()
         self.queued = set()
 
-    def _on_uploaded(self, arena_unique_id, replay_id):
+    def _on_uploaded(self, arena_unique_id, replay_id, account_id=None):
+        is_current = account_id is None or account_id == self.app.account_id
+        if not is_current:
+            UploadedIndex(self.account_file(INDEX_FILE, account_id)).add(arena_unique_id, replay_id)
+            return
+
         self.queued.discard(arena_unique_id)
         if self.index is not None:
             self.index.add(arena_unique_id, replay_id)
@@ -128,6 +133,10 @@ class ReplayManager(FeatureComponent):
     def _on_battle_event(self, event, now):
         if not self.enabled() or not self.settings.get('auto_rename'):
             return
+        # A client that keeps only the last battle overwrites its file: there is nothing to name.
+        if records_all_battles() is not True:
+            return
+
         vehicle = event.get('vehicle') or {}
         result = self.app.translate('replay_manager_result_%s' % (event.get('result') or 'draw'))
         values = name_values(
@@ -136,7 +145,8 @@ class ReplayManager(FeatureComponent):
             vehicle_short_name(vehicle.get('tank_id')),
             result,
         )
-        self.namer.queue(event, values, time.time())
+        vehicle_name, _tier = vehicle_info(vehicle.get('tank_id'))
+        self.namer.queue(event, values, time.time(), vehicle_name)
 
     def _on_tick(self, now):
         self._poll_analysis(now)
@@ -331,7 +341,12 @@ class ReplayManager(FeatureComponent):
         if not arena:
             raise ReplayActionError(ERROR_NO_ARENA)
 
-        request = {'arena_unique_id': arena, 'account_id': self.app.account_id, 'started_at': header.get('date_time')}
+        request = {
+            'arena_unique_id': arena,
+            'account_id': self.app.account_id,
+            'started_at': header.get('date_time'),
+            'path': replay['path'],
+        }
         state = self._upload_state(request)
         notice_key = 'replay_manager_upload_%s' % state
         if state != UPLOAD_READY:

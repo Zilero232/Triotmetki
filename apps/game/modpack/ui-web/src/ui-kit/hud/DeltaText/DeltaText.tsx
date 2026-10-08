@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 
 import { HUD_FIGURE, HUD_TONE_COLORS } from '@/shared/config';
+import { RADIAL } from '@/shared/lib/radial';
 
 import type { DeltaTextProps } from './DeltaText.types';
 
@@ -15,20 +16,18 @@ export const DeltaText = ({ text, direction, tone, className }: DeltaTextProps) 
 
   return (
     <span className={clsx(s.delta, toneClass(shown), className)}>
-      {path && (
-        <span className={s.triangle}>
-          <svg
-            aria-hidden='true'
-            className={s.svg}
-            height='100%'
-            viewBox={`0 0 ${String(HUD_FIGURE.triangleBox)} ${String(HUD_FIGURE.triangleBox)}`}
-            width='100%'
-            xmlns='http://www.w3.org/2000/svg'
-          >
-            <path d={path} fill={HUD_TONE_COLORS[shown].hex} />
-          </svg>
-        </span>
-      )}
+      <span className={clsx(s.triangle, path === null && s.idle)}>
+        <svg
+          aria-hidden='true'
+          className={s.svg}
+          height='100%'
+          viewBox={`0 0 ${String(HUD_FIGURE.triangleBox)} ${String(HUD_FIGURE.triangleBox)}`}
+          width='100%'
+          xmlns='http://www.w3.org/2000/svg'
+        >
+          <path d={path ?? RADIAL.emptyPath} fill={HUD_TONE_COLORS[shown].hex} />
+        </svg>
+      </span>
       {text}
     </span>
   );

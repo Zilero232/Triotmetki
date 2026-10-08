@@ -1,6 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from ....core.client.garage import fresh_vehicle, run_in_order, run_processor
+from ..model import is_still_planned
+from .vehicle import device_state
 
 # RU 1.45 client source: processors module.getInstallerProcessor, tankman.TankmanUnload / TankmanReturn.
 
@@ -30,16 +32,21 @@ def _style_remover(vehicle):
     return OutfitApplier(vehicle, ((outfit, SeasonType.ALL),))
 
 
-def _demount_step(vehicle, slot, device_in):
+def _demount_step(vehicle, planned, device_in):
+    slot = planned['slot']
+
     def make():
         current = fresh_vehicle(vehicle)
         device = device_in(current, slot)
-        return _installer(current, device, slot) if device is not None else None
+        if not is_still_planned(planned, device_state(slot, device)):
+            return None
+        return _installer(current, device, slot)
     return make
 
 
-def demount(vehicle, slots, device_in, done):
-    run_in_order([_demount_step(vehicle, slot, device_in) for slot in slots], done, 'demount')
+def demount(vehicle, planned_devices, device_in, done):
+    steps = [_demount_step(vehicle, planned, device_in) for planned in planned_devices]
+    run_in_order(steps, done, 'demount')
 
 
 def unload_crew(vehicle, done):

@@ -5,7 +5,7 @@ from ....core.client.game import client_attr, service
 from ....core.compat import to_text
 from ....core.log import guarded
 from ..model.constants import KIND_SHELLS
-from .constants import KIND_TYPES, SPECIAL_DEVICE_FLAGS
+from .constants import KIND_TYPES, SPECIAL_CREW_CHECKS, SPECIAL_DEVICE_FLAGS
 
 # RU 1.45 client source: IItemsCache.items.getItems(itemTypeID, criteria), REQ_CRITERIA.INVENTORY.
 
@@ -79,14 +79,35 @@ def depot_items():
     return found
 
 
+def _is_special_crew(descriptor):
+    for name in SPECIAL_CREW_CHECKS:
+        check = client_attr('items.special_crew', name)
+        if check is None or check(descriptor):
+            return True
+    return False
+
+
+def _skill_progress(descriptor):
+    if not descriptor.skills:
+        return 0
+    return descriptor.lastSkillLevel
+
+
+# RU 1.45 client source: items.tankmen.TankmanDescr, gui.shared.gui_items.Tankman.
 def _member(tankman):
-    descriptor = getattr(tankman, 'descriptor', None)
+    descriptor = tankman.descriptor
     return {
         'inv_id': tankman.invID,
         'name': to_text(getattr(tankman, 'fullUserName', u'') or u''),
         'role': to_text(getattr(tankman, 'roleUserName', u'') or u''),
-        'skills': int(getattr(tankman, 'earnedSkillsCount', 0) or 0),
-        'premium': bool(getattr(descriptor, 'isPremium', False) or getattr(descriptor, 'isFemale', False)),
+        'role_level': descriptor.roleLevel,
+        'skills': max(tankman.earnedSkillsCount, len(descriptor.skills)),
+        'skill_progress': _skill_progress(descriptor),
+        'free_xp': descriptor.freeXP,
+        'premium': bool(descriptor.isPremium),
+        'female': bool(descriptor.isFemale),
+        'unique': bool(descriptor.isUnique),
+        'special': _is_special_crew(descriptor),
         'locked': _flag(tankman, 'isLockedByVehicle'),
     }
 

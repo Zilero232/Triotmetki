@@ -11,6 +11,7 @@ from otmetki.core.hud.modes import (
     allowed_panels,
     battle_mode,
     clean_place,
+    clean_places,
 )
 from _support import MemoryFile
 
@@ -139,6 +140,27 @@ class CleanPlaceTest(unittest.TestCase):
 
     def test_a_boolean_coordinate_is_dropped(self):
         assert clean_place({'x': True}) == {}
+
+    def test_an_infinite_coordinate_is_dropped(self):
+        assert clean_place({'x': float('inf')}) == {}
+
+    def test_a_nan_coordinate_is_dropped(self):
+        assert clean_place({'x': float('nan')}) == {}
+
+
+class CleanPlacesTest(unittest.TestCase):
+
+    def test_only_known_battle_types_are_kept(self):
+        assert clean_places({'comp7': {}, 'nowhere': {}}) == {'comp7': {}}
+
+    def test_a_battle_type_that_is_not_an_object_is_dropped(self):
+        assert clean_places({'comp7': 'x'}) == {}
+
+    def test_each_place_is_cleaned(self):
+        assert clean_places({'comp7': {'damage_log': {'x': 5.4, 'junk': 1}}}) == {'comp7': {'damage_log': {'x': 5}}}
+
+    def test_a_section_that_is_not_an_object_is_empty(self):
+        assert clean_places(['comp7']) == {}
 
 
 class ModePlacesTest(unittest.TestCase):

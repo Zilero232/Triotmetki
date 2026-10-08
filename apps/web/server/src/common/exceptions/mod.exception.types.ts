@@ -6,4 +6,5 @@ export type ModExceptionInput = {
   status: number;
   error: ModErrorCode;
   message?: string;
+  retryAfterSeconds?: number;
 };

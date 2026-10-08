@@ -22,6 +22,7 @@ from otmetki.companion.settings_share import (
     result_path,
     signed_post,
 )
+from otmetki.companion.settings_share.values import clean_values
 from _support import verify_request
 from otmetki.core.net.signing import DEVICE_HEADER
 
@@ -104,6 +105,18 @@ def apply_request(groups, settings=None):
 
 def changed_fields(changes):
     return [(group, field) for group, field, _, _ in changes]
+
+
+class CleanValuesTest(unittest.TestCase):
+
+    def test_an_infinite_whole_number_is_dropped(self):
+        assert clean_values({'fpsCap': float('inf')}) == {}
+
+    def test_a_nan_whole_number_is_dropped(self):
+        assert clean_values({'fpsCap': float('nan')}) == {}
+
+    def test_a_whole_number_in_range_is_kept(self):
+        assert clean_values({'fpsCap': 144}) == {'fpsCap': 144}
 
 
 class ExportTest(unittest.TestCase):

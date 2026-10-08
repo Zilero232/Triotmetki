@@ -25,9 +25,6 @@ ACTION_KEYS = (
 INTERFACE_SCALE = 'interfaceScale'
 INTERFACE_SCALES = {'auto': 0.0, 'x1': 1.0, 'x1_25': 1.25, 'x1_5': 1.5, 'x1_75': 1.75, 'x2': 2.0}
 SCALE_TOLERANCE = 1e-3
-# Applied through InterfaceScaleSetting.setSystemValue and InterfaceScaleManager.changeScale, never saved.
-EXACT_SCALE_RANGE = (50, 300)
-PERCENT = 100.0
 
 REFUSE_LOCKED = 'locked'
 REFUSE_NOTHING = 'nothing'

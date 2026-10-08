@@ -24,7 +24,16 @@ from otmetki.core.net.signing import (
     TIMESTAMP_HEADER,
 )
 from otmetki.core.net.transport import BackgroundRunner
-from otmetki.core.replay_file import EXTENSIONS, MAGIC, is_replay_name, parse_date_time, read_header, read_header_from
+from otmetki.core.replay_file import (
+    EXTENSIONS,
+    MAGIC,
+    is_replay_name,
+    name_time,
+    parse_date_time,
+    read_header,
+    read_header_from,
+    same_vehicle,
+)
 from _support import MemoryFile, verify_request
 from otmetki.core.storage import JsonFile
 from otmetki.core.vendor import attr
@@ -55,6 +64,7 @@ from otmetki.features.replay_upload.model.constants import (
     MAX_AGE_S,
     MAX_BACKOFF_S,
     MAX_BYTES,
+    MAX_CANDIDATES,
     QUOTA_BACKOFF_S,
     REQUEST_INVALID,
     REQUEST_READY,
@@ -79,8 +89,10 @@ def local_stamp(epoch):
     return time.strftime('%d.%m.%Y %H:%M:%S', time.localtime(epoch))
 
 
-def replay_bytes(player_id=ACCOUNT, arena_unique_id=ARENA, started=STARTED, stream=b'\x00' * 64):
+def replay_bytes(player_id=ACCOUNT, arena_unique_id=ARENA, started=STARTED, stream=b'\x00' * 64, vehicle=None):
     arena = {'playerID': player_id, 'dateTime': local_stamp(started), 'mapName': '14_siegfried_line'}
+    if vehicle is not None:
+        arena['playerVehicle'] = vehicle
     blocks = [json.dumps(arena).encode('utf-8')]
     if arena_unique_id is not None:
         results = [{'arenaUniqueID': arena_unique_id, 'personal': {}}, {}, {}]
@@ -159,12 +171,15 @@ class RecordingListener(object):
     def __init__(self):
         self.auth_failures = 0
         self.uploaded = []
+        self.accounts = []
 
-    def on_auth_failed(self):
+    def on_auth_failed(self, account_id):
         self.auth_failures += 1
+        self.accounts.append(account_id)
 
-    def on_uploaded(self, arena_unique_id, replay_id):
+    def on_uploaded(self, arena_unique_id, replay_id, account_id):
         self.uploaded.append((arena_unique_id, replay_id))
+        self.accounts.append(account_id)
 
 
 class ReplayHeaderTest(unittest.TestCase):
@@ -220,6 +235,23 @@ class ReplayHeaderTest(unittest.TestCase):
         self.assertTrue(is_replay_name('replay_last_battle.MTREPLAY'))
         self.assertFalse(is_replay_name('temp.wotreplay'))
         self.assertFalse(is_replay_name('notes.txt'))
+
+    def test_a_client_name_carries_its_local_start(self):
+        expected = time.mktime((2026, 9, 27, 15, 30, 0, 0, 0, -1))
+
+        self.assertEqual(name_time('20260927_1530_ussr-R04_T-34_14_siegfried_line.wotreplay'), expected)
+
+    def test_a_renamed_replay_has_no_start_in_its_name(self):
+        self.assertIsNone(name_time('my best battle.mtreplay'))
+
+    def test_the_header_vehicle_is_the_client_vehicle_name(self):
+        self.assertTrue(same_vehicle('ussr-R04_T-34', 'ussr:R04_T-34'))
+
+    def test_another_header_vehicle_is_not_the_same(self):
+        self.assertFalse(same_vehicle('ussr-R04_T-34', 'ussr:R05_KV'))
+
+    def test_an_unknown_vehicle_never_rules_a_replay_out(self):
+        self.assertTrue(same_vehicle(None, 'ussr:R04_T-34'))
 
 
 class MatchesTest(unittest.TestCase):
@@ -297,6 +329,63 @@ class FindReplayTest(unittest.TestCase):
 
     def test_missing_folder(self):
         self.assertIsNone(find_replay(os.path.join(self.folder, 'nope'), ACCOUNT, ARENA, STARTED))
+
+    def test_of_two_early_leaves_the_one_closest_to_the_start_wins(self):
+        now = time.time()
+        started = now - 600
+        closest = self.write('a.wotreplay', replay_bytes(arena_unique_id=None, started=started + 20), now - 100)
+        self.write('b.wotreplay', replay_bytes(arena_unique_id=None, started=started + 200), now - 5)
+
+        found = find_replay(self.folder, ACCOUNT, ARENA, started)
+
+        self.assertEqual(found[0], closest)
+
+    def test_a_replay_of_another_vehicle_never_matches(self):
+        now = time.time()
+        started = now - 600
+        data = replay_bytes(arena_unique_id=None, started=started, vehicle='ussr-R04_T-34')
+        self.write('a.wotreplay', data, now - 10)
+
+        self.assertIsNone(find_replay(self.folder, ACCOUNT, ARENA, started, 'germany:G04_PzVI_Tiger_I'))
+
+    def test_the_replay_of_the_same_vehicle_matches(self):
+        now = time.time()
+        started = now - 600
+        data = replay_bytes(arena_unique_id=None, started=started, vehicle='ussr-R04_T-34')
+        own = self.write('a.wotreplay', data, now - 10)
+
+        self.assertEqual(find_replay(self.folder, ACCOUNT, ARENA, started, 'ussr:R04_T-34')[0], own)
+
+    def test_a_name_stamped_far_from_the_start_is_never_read(self):
+        now = time.time()
+        started = now - 600
+        far_name = time.strftime('%Y%m%d_%H%M', time.localtime(started - 3600)) + '_ussr-R04_T-34_map.wotreplay'
+        self.write(far_name, replay_bytes(started=started), now - 10)
+
+        self.assertIsNone(find_replay(self.folder, ACCOUNT, ARENA, started))
+
+    def test_the_known_file_is_found_outside_the_folder(self):
+        elsewhere = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, elsewhere)
+        known = os.path.join(elsewhere, 'my battle.wotreplay')
+        with open(known, 'wb') as handle:
+            handle.write(replay_bytes())
+
+        found = find_replay(self.folder, ACCOUNT, ARENA, None, known_path=known)
+
+        self.assertEqual(found[0], known)
+
+    def test_more_candidates_than_the_cap_still_reach_the_closest(self):
+        now = time.time()
+        started = now - 600
+        for index in range(MAX_CANDIDATES + 5):
+            data = replay_bytes(arena_unique_id=None, started=started + 250)
+            self.write('late%02d.wotreplay' % index, data, now - index)
+        closest = self.write('z.wotreplay', replay_bytes(arena_unique_id=None, started=started), started)
+
+        found = find_replay(self.folder, ACCOUNT, ARENA, started)
+
+        self.assertEqual(found[0], closest)
 
 
 class MultipartTest(unittest.TestCase):
@@ -749,6 +838,20 @@ class ManualRequestTest(unittest.TestCase):
         self.assertEqual(state, REQUEST_READY)
         self.assertEqual(queue.next_item(1000.0)['arena_unique_id'], str(ARENA))
 
+    def test_a_request_keeps_the_known_file(self):
+        queue = new_queue()
+
+        queue.request(ARENA, ACCOUNT, STARTED, 1000.0, REPLAY_PATH)
+
+        self.assertEqual(queue.next_item(1000.0)['path'], REPLAY_PATH)
+
+    def test_a_battle_keeps_its_vehicle(self):
+        queue = new_queue()
+
+        queue.add(ARENA, ACCOUNT, STARTED, 1000.0, 'ussr:R04_T-34')
+
+        self.assertEqual(queue.next_item(1000.0 + FIRST_DELAY_S)['vehicle'], 'ussr:R04_T-34')
+
     def test_a_request_hurries_a_waiting_upload_without_a_second_item(self):
         queue = new_queue()
         queue.add(ARENA, ACCOUNT, STARTED, 1000.0)
@@ -868,6 +971,7 @@ class ReplayUploaderTest(unittest.TestCase):
 
         self.assertEqual(handled, 1)
         self.assertEqual(self.listener.uploaded, [(str(ARENA), '7b0c2a44-1111-4111-8111-111111111111')])
+        self.assertEqual(self.listener.accounts, [ACCOUNT])
         self.assertEqual(len(self.queue), 1)
 
     def test_the_next_upload_starts_after_the_first_is_done(self):

@@ -7,6 +7,8 @@ DEFAULT_WORKER = 'otmetki-worker'
 
 DEFAULT_MAX_RESPONSE_BYTES = 8 * 1024 * 1024
 READ_BLOCK_BYTES = 64 * 1024
+# A server that trickles bytes resets the socket timeout on every read: the whole answer gets this many timeouts.
+READ_DEADLINE_FACTOR = 4
 
 SECURE_SCHEME = 'https'
 PLAIN_SCHEME = 'http'

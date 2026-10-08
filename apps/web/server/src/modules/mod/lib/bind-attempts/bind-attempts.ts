@@ -1,10 +1,10 @@
 import { DEFAULT_IPV6_SUBNET_PREFIX, normalizeIp } from '@nestjs/throttler';
 
-import type { BindAttemptCounter, BindAttemptsInput } from './bind-attempts.types';
+import type { BindAttemptCounters, BindAttemptsInput } from './bind-attempts.types';
 
 import { BIND_CODE } from '../../config/bind-code.constants';
 
-export const bindAttemptCounters = ({ requester, accountId }: BindAttemptsInput): BindAttemptCounter[] => {
+export const bindAttemptCounters = ({ requester, accountId }: BindAttemptsInput): BindAttemptCounters => {
   const network = normalizeIp(requester, DEFAULT_IPV6_SUBNET_PREFIX);
   const requesterCounter = {
     key: `${BIND_CODE.failurePrefix}${network}:${accountId ?? BIND_CODE.anyAccount}`,
@@ -12,8 +12,10 @@ export const bindAttemptCounters = ({ requester, accountId }: BindAttemptsInput)
   };
 
   if (accountId === undefined) {
-    return [requesterCounter];
+    return { requester: requesterCounter, account: null };
   }
 
-  return [requesterCounter, { key: `${BIND_CODE.accountFailurePrefix}${accountId}`, limit: BIND_CODE.maxFailuresPerAccount }];
+  const accountCounter = { key: `${BIND_CODE.accountFailurePrefix}${accountId}`, limit: BIND_CODE.maxFailuresPerAccount };
+
+  return { requester: requesterCounter, account: accountCounter };
 };

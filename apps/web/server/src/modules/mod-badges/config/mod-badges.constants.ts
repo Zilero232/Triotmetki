@@ -6,19 +6,38 @@ export const MOD_BADGES_API = {
 } as const;
 
 export const MOD_BADGES_QUOTA = {
-  distinctIdsPerDay: 3000,
+  distinctIdsPerDay: 1500,
+  ownIdsPerDay: 5,
   keyPrefix: 'otmetki:mod:badges:asked:',
+  ownKeyPrefix: 'otmetki:mod:badges:own:',
   memberHexLength: 16,
   ttlSeconds: 2 * 24 * 60 * 60,
   refused: -1,
   script: [
-    "if redis.call('SCARD', KEYS[1]) >= tonumber(ARGV[1]) then",
-    '  return -1',
-    'end',
+    'local limit = tonumber(ARGV[1])',
+    'local members = {}',
     'for index = 3, #ARGV do',
-    "  redis.call('SADD', KEYS[1], ARGV[index])",
+    '  members[#members + 1] = ARGV[index]',
     'end',
-    "redis.call('EXPIRE', KEYS[1], ARGV[2])",
-    "return redis.call('SCARD', KEYS[1])"
+    'if #members == 0 then',
+    '  return 0',
+    'end',
+    'for _, key in ipairs(KEYS) do',
+    "  local known = redis.call('SMISMEMBER', key, unpack(members))",
+    '  local fresh = 0',
+    '  for _, isKnown in ipairs(known) do',
+    '    if isKnown == 0 then',
+    '      fresh = fresh + 1',
+    '    end',
+    '  end',
+    "  if fresh > 0 and redis.call('SCARD', key) + fresh > limit then",
+    '    return -1',
+    '  end',
+    'end',
+    'for _, key in ipairs(KEYS) do',
+    "  redis.call('SADD', key, unpack(members))",
+    "  redis.call('EXPIRE', key, ARGV[2])",
+    'end',
+    'return 0'
   ].join('\n')
 } as const;

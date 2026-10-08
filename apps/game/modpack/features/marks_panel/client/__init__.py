@@ -7,18 +7,29 @@ from ....core.client.battle import call, feedback, is_enemy
 from ....core.client.game import player_tank_id, values_by_name
 from ....core.client.hud.panel import BattlePanel, PanelSpec
 from ....core.client.moe import moe_service
-from ....core.log import safe
+from ....core.log import guarded, safe
 from .. import settings
 from ..i18n import STRINGS
 from ..model import BattleTotals, format_panel, panel_state, preview
+from ..model.battle_type import counts_marks
 from ..model.constants import KIND_DAMAGE, PREVIEW_SIZE
 from ..model.widget import marks_widget
 from ..settings import CARD_PANEL_ID
 from .card import TankCardPanel
-from .constants import KIND_BY_EVENT, NO_SNAPSHOT
+from .constants import KIND_BY_EVENT, NO_MARKS_BATTLE, NO_SNAPSHOT
+
+try:
+    from arena_bonus_type_caps import ARENA_BONUS_TYPE_CAPS
+except ImportError:
+    ARENA_BONUS_TYPE_CAPS = None
 
 
 PANEL_SPEC = PanelSpec.of(settings, STRINGS, preview, PREVIEW_SIZE)
+
+
+@guarded('marks panel: battle type caps', True)
+def battle_counts_marks(player):
+    return counts_marks(ARENA_BONUS_TYPE_CAPS, getattr(player, 'arenaBonusType', None))
 
 
 # Fair play: onPlayerFeedbackReceived carries only the player's own events.
@@ -37,6 +48,10 @@ class MarksPanel(BattlePanel):
         self.moe.listen(self._on_curve)
 
     def start(self, player):
+        if not battle_counts_marks(player):
+            self.wait(NO_MARKS_BATTLE % getattr(player, 'arenaBonusType', None))
+            return
+
         tank_id = player_tank_id(player)
         snapshot = self.moe.snapshot(tank_id) or self.card.history.last_reading(tank_id)
         if snapshot is None:

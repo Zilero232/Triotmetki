@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 EVENT_COMPONENT_SETTINGS = 'component_settings'
+EVENT_LANGUAGE = 'language'
 EVENT_REPLAY_UPLOADED = 'replay_uploaded'
 EVENT_REPLAY_UPLOAD_REQUEST = 'replay_upload_request'
 EVENT_SETTINGS_CLOSE = 'settings_close'

@@ -17,6 +17,11 @@
   margin-right: 3px;
 }
 
+.idle {
+  position: absolute;
+  opacity: 0;
+}
+
 .svg {
   @include svg-canvas;
 }

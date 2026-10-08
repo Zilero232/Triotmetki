@@ -29,8 +29,16 @@ class StockNotices(object):
         if arena in self.held:
             return self.held.pop(arena)
         self.waiting[arena] = (deliver, now + STOCK_WAIT_S)
-        _bounded(self.waiting)
+        self._release_the_oldest_waiting()
         return None
+
+    def _release_the_oldest_waiting(self):
+        while len(self.waiting) > NOTICE_ARENAS_LIMIT:
+            arena, (deliver, _until) = self.waiting.popitem(last=False)
+            self.released[arena] = True
+            deliver([])
+
+        _bounded(self.released)
 
     def results_arrived(self, arena, results):
         arena = arena_key(arena)

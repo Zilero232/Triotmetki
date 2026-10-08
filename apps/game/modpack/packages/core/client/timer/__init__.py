@@ -81,6 +81,8 @@ class Ticker(object):
         if not self.running or generation != self.generation:
             return
         keep = self._run()
+        if not self.running or generation != self.generation:
+            return
         if keep is False:
             self.running = False
             return

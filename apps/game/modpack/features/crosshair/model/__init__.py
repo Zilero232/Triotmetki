@@ -1,9 +1,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from ....core.hud.stock import RETICLE_CENTRE
 from ....core.native_settings import NATIVE, tri_state
 from .constants import (
     ARCADE,
-    CENTRE_PART,
     DEFAULT_MARK_COLOR,
     MARK_COLORS,
     MARK_FILES,
@@ -31,15 +31,17 @@ def to_native(values):
         for reticle in reticles:
             result[reticle] = dict(PRESET_PARTS[preset])
 
-    has_mark = mark_image(values.get('mark'), values.get('mark_size')) is not None
-    if has_mark and values.get('mark_hides_centre'):
-        for reticle in reticles:
-            result.setdefault(reticle, {})[CENTRE_PART] = 0
-
     server_reticle = tri_state(values.get('server_reticle'))
     if server_reticle is not None:
         result[SERVER_RETICLE] = server_reticle
     return result
+
+
+# The stock centre marker is hidden per battle while the mark is drawn, never in the saved options.
+def hidden_centre(settings, draws_mark):
+    if draws_mark and settings.get('mark_hides_centre'):
+        return (RETICLE_CENTRE,)
+    return ()
 
 
 def rendition(size, renditions=MARK_RENDITIONS):

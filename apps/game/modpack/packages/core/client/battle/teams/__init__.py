@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Feeds `core.teams.TeamHp` from the battle session: the arena data behind the player panels, the numbers of the
 client's own BattleFieldCtrl (the stock score strip's source, `feed`), the health updates the client receives for
-markers and panels, the own vehicle's HP and the arena's kills. Shared by the team HP panel and the «Основной калибр»
+markers and panels, the own vehicle's HP and the arena's kills; the arena's vehicle updates and recoveries (the
+respawn modes) read the arena data again. Shared by the team HP panel and the «Основной калибр»
 counter; each panel owns one tracker and calls `on_change()` to redraw."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -42,6 +43,8 @@ class TeamTracker(object):
         hooks.add(vehicle_state, 'onVehicleStateUpdated', self._on_vehicle_state)
         hooks.add(arena, 'onVehicleKilled', self._on_vehicle_killed)
         hooks.add(arena, 'onVehicleAdded', self._on_vehicle_added)
+        hooks.add(arena, 'onVehicleUpdated', self._on_vehicle_added)
+        hooks.add(arena, 'onVehicleRecovered', self._on_vehicle_added)
         self.feed.listen(self._on_battle_field)
         self.sync()
 

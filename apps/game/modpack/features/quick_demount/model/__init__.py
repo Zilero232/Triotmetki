@@ -12,6 +12,14 @@ def carriers(vehicles, current_id, show_locked):
     return sorted(rows, key=lambda row: (-row['tier'], row['name']))
 
 
+def slot_in(device_ids, device_id):
+    slots = list(device_ids or ())
+    if device_id not in slots:
+        return None
+
+    return slots.index(device_id)
+
+
 def tier_numeral(tier):
     if is_int(tier) and 1 <= tier <= len(TIER_NUMERALS):
         return TIER_NUMERALS[tier - 1]

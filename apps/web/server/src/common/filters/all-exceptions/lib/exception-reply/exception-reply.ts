@@ -6,11 +6,18 @@ import type { ModErrorCode } from '../../../../exceptions';
 import type { BodyWithFieldInput } from './exception-reply.types';
 
 import { LestaApiError, LestaHttpError, LestaNetworkError, LestaQueueFullError } from '../../../../../lib/lesta';
-import { STATUS_TO_CODE, STATUS_TO_MOD_ERROR } from '../../all-exceptions.constants';
+import { MOD_REPLY, STATUS_TO_CODE, STATUS_TO_MOD_ERROR } from '../../all-exceptions.constants';
 
 export const codeForStatus = (status: number): ApiErrorCode => STATUS_TO_CODE[status] ?? 'INTERNAL_ERROR';
 
 export const modErrorForStatus = (status: number): ModErrorCode => STATUS_TO_MOD_ERROR[status] ?? 'server_error';
+
+export const isModContractPath = (path: string): boolean => {
+  const isUnderPath = (apiPath: string) => path === apiPath || path.startsWith(`${apiPath}/`);
+  const isApiRoute = MOD_REPLY.apiPaths.some(isUnderPath);
+
+  return path.startsWith(MOD_REPLY.contractPrefix) && !isApiRoute;
+};
 
 export const isLestaError = (error: unknown): boolean =>
   error instanceof LestaApiError || error instanceof LestaHttpError || error instanceof LestaNetworkError || error instanceof LestaQueueFullError;

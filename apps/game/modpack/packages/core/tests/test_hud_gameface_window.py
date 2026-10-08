@@ -48,6 +48,9 @@ class ClientWindow(object):
     def _onFocus(self, focused):
         self.focus_changes.append(focused)
 
+    def destroy(self):
+        self.destroyed = True
+
 
 class BackendSpy(object):
 
@@ -73,6 +76,42 @@ class OtherWindow(object):
 
     def tryFocus(self):
         self.focus_tries += 1
+
+
+class BrokenWindow(OtherWindow):
+
+    @property
+    def layer(self):
+        raise RuntimeError('the window is gone')
+
+    @layer.setter
+    def layer(self, value):
+        pass
+
+
+class Command(object):
+
+    def __init__(self):
+        self.handlers = []
+
+    def __iadd__(self, handler):
+        self.handlers.append(handler)
+        return self
+
+    def __isub__(self, handler):
+        self.handlers.remove(handler)
+        return self
+
+
+class PageView(object):
+
+    def __init__(self, window):
+        self.window = window
+        self.viewModel = type(str('Model'), (object,), {})()
+        self.viewModel.send = Command()
+
+    def _on_send(self, args=None):
+        pass
 
 
 class ClientViewModel(object):
@@ -298,6 +337,72 @@ class HudWindowTest(unittest.TestCase):
         self.later[0][1]()
 
         self.assertEqual(self.page.focus_tries, tries + 1)
+
+    def test_a_replaced_window_whose_page_goes_keeps_the_new_window(self):
+        backend, window = self.focused_backend()
+
+        backend.on_destroyed(PageView(ClientWindow()))
+
+        self.assertIs(backend.window, window)
+
+    def test_the_current_window_whose_page_goes_is_forgotten(self):
+        backend, window = self.focused_backend()
+
+        backend.on_destroyed(PageView(window))
+
+        self.assertIsNone(backend.window)
+
+    def test_a_page_of_a_replaced_window_closes_that_window(self):
+        backend, window = self.focused_backend()
+        replaced = ClientWindow()
+
+        backend.on_loaded(PageView(replaced))
+        self.run_frames()
+
+        self.assertTrue(replaced.destroyed)
+
+    def test_a_page_of_a_replaced_window_is_not_taken(self):
+        backend, window = self.focused_backend()
+
+        backend.on_loaded(PageView(ClientWindow()))
+
+        self.assertIsNone(backend.view)
+
+    def test_a_replaced_hud_window_hands_its_focus_on_too(self):
+        backend, window = self.focused_backend()
+        replaced = self.gameface.HudWindow(1, backend)
+        replaced.isFocused = True
+
+        backend.on_window_focus(replaced, True)
+        self.run_frames()
+
+        self.assertEqual(self.page.focus_tries, 1)
+
+    def test_an_unreadable_window_is_skipped_when_the_focus_is_handed_on(self):
+        backend, window = self.focused_backend()
+        self.windows.append(BrokenWindow(40, 10))
+
+        backend.on_window_focus(window, True)
+        self.run_frames()
+
+        self.assertEqual(self.page.focus_tries, 1)
+
+    def test_closing_the_window_ends_the_battle_edit(self):
+        backend = self.battle_backend()
+        backend.cursor_poll.stop = lambda: None
+
+        backend.close()
+
+        self.assertFalse(backend.cursor)
+
+    def test_closing_the_window_stops_the_cursor_poll(self):
+        backend = self.battle_backend()
+        stopped = []
+        backend.cursor_poll.stop = lambda: stopped.append(True)
+
+        backend.close()
+
+        self.assertEqual(stopped, [True])
 
     def test_the_page_input_area_is_logged_once_per_change(self):
         backend = self.gameface.GamefaceBackend()

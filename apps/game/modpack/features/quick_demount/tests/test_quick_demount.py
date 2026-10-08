@@ -6,7 +6,14 @@ import unittest
 import _support
 from otmetki.core.settings import Settings
 from otmetki.features.quick_demount.i18n import STRINGS
-from otmetki.features.quick_demount.model import carriers, demount_menu, option_id, tier_numeral, vehicle_of
+from otmetki.features.quick_demount.model import (
+    carriers,
+    demount_menu,
+    option_id,
+    slot_in,
+    tier_numeral,
+    vehicle_of,
+)
 from otmetki.features.quick_demount.settings import GROUP, SCHEMA, SETTINGS, SWITCH
 
 GARAGE = [
@@ -20,6 +27,18 @@ GARAGE = [
 
 def menu(current_id=1, language='en', **values):
     return demount_menu(GARAGE, current_id, Settings(values, SCHEMA), _support.translator(STRINGS, language))
+
+
+class SlotTest(unittest.TestCase):
+
+    def test_the_slot_is_the_index_in_the_active_setup(self):
+        assert slot_in([0, 77, 0], 77) == 1
+
+    def test_a_device_not_in_the_active_setup_has_no_slot(self):
+        assert slot_in([0, 0, 0], 77) is None
+
+    def test_a_missing_setup_has_no_slot(self):
+        assert slot_in(None, 77) is None
 
 
 class CarriersTest(unittest.TestCase):

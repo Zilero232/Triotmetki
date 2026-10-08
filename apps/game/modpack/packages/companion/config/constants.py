@@ -250,6 +250,7 @@ DROPPED_KEYS = (
     ('damage_log', 'alt_entry_template'),
     ('pack_badge', 'stock_badge'),
     ('hangar_marks', 'alt_detail'),
+    ('hangar_tweaks', 'interface_scale_exact'),
 )
 DROPPED_PANELS = ('aim_info',)
 USER_SET_KEY = 'user_set'

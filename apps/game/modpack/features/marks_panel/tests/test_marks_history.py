@@ -71,6 +71,16 @@ class StorageTest(unittest.TestCase):
 
         assert sorted(store.read({})) == ['vehicles', 'version']
 
+    def test_a_file_whose_vehicles_are_not_an_object_reads_empty(self):
+        history = MarksHistory(MemoryFile({'vehicles': ['broken']}))
+
+        assert history.vehicles == {}
+
+    def test_a_file_that_is_not_an_object_reads_empty(self):
+        history = MarksHistory(MemoryFile(['broken']))
+
+        assert history.vehicles == {}
+
 
 class VehicleLabelTest(unittest.TestCase):
 
@@ -294,6 +304,14 @@ class CorrectionTest(unittest.TestCase):
 
 
 class PageTest(unittest.TestCase):
+
+    def test_a_vehicle_key_that_is_not_a_tank_id_is_left_off_the_page(self):
+        history = two_battles()
+        history.vehicles['junk'] = dict(history.vehicles['1'])
+
+        rows = build_page(history, translator(), 5, 50)['rows']
+
+        assert [row['id'] for row in rows] == ['1']
 
     def test_page_row_of_a_vehicle(self):
         row = build_page(two_battles(), translator(), 5, 50)['rows'][0]

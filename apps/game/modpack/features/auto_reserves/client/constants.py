@@ -7,3 +7,5 @@ RESOURCE_KINDS = (
     ('CREW_XP', 'crew_xp'),
     ('FREE_XP', 'free_xp'),
 )
+
+OPT_IN_FILE = 'auto_reserves_accounts.json'

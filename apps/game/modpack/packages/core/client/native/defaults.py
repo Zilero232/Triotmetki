@@ -29,14 +29,16 @@ from .settings_core import apply_settings, on_settings_synced, read_settings, se
 
 
 def native_state(app):
-    """The NativeState every client-settings component of `app` shares, kept in state.json."""
+    """The NativeState every client-settings component of `app` shares, kept in state.json: the backups per account
+    (the client settings are the account's own), the one-time switches per install."""
     state = getattr(app, STATE_ATTR, None)
     if state is not None:
         return state
+
     stored = app.state or {}
-    state = NativeState(stored.get(BACKUP_STATE_KEY), stored.get(ONCE_STATE_KEY))
+    state = NativeState(once=stored.get(ONCE_STATE_KEY))
     setattr(app, STATE_ATTR, state)
-    app.register_state(BACKUP_STATE_KEY, state.dump_backups)
+    app.register_account_state(BACKUP_STATE_KEY, state.dump_backups, state.load_backups)
     app.register_state(ONCE_STATE_KEY, state.dump_once)
     if isinstance(app.state, dict):
         app.state.pop(RETIRED_STAMP_STATE_KEY, None)
@@ -180,8 +182,11 @@ class ClientDefaults(object):
         if not self._keep_backup(values):
             return self._failed()
         self._update(wanted)
-        self.component.apply()
+        written = self.component.apply()
         self.app.save_state()
+
+        if not written:
+            return self._failed()
         return None
 
     def _failed(self):

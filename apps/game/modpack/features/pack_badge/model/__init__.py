@@ -74,17 +74,24 @@ def marked_vehicle_ids(vehicles, marked):
     return sorted(ids)
 
 
-# The stock rows keep the vehicle id in private fields Scaleform does not resolve from a mod, so the library finds a row
-# by the name it shows: the player name, and the fake name the client shows for an anonymised player.
-def marked_names(players, marked):
+def shown_names(player):
     names = set()
+    for name in (player.name, player.fake_name):
+        if name:
+            names.add(to_text(name))
+    return names
+
+
+# Scaleform cannot resolve the rows' private vehicle ids, so rows are found by shown name; unmarked names go too.
+def arena_names(players, marked):
+    marked_names = set()
+    other_names = set()
     for player in players:
-        if player.account_id not in marked:
-            continue
-        for name in (player.name, player.fake_name):
-            if name:
-                names.add(to_text(name))
-    return sorted(names)
+        target = marked_names if player.account_id in marked else other_names
+        target.update(shown_names(player))
+
+    other_names -= marked_names
+    return sorted(marked_names), sorted(other_names)
 
 
 def library_action(libraries, name, is_on):
@@ -108,12 +115,15 @@ class BattleBadges(object):
         self.asked = frozenset()
         self.lookups = 0
 
+    # The first report always goes out, the switch off too: it is what deletes the own presence on the server.
     def lookup(self, account_ids):
         if not self.own_account_id or self.lookups >= MAX_LOOKUPS:
             return None
+
         fresh = [account_id for account_id in account_ids if account_id not in self.asked]
-        if not fresh and (self.lookups or not self.visible):
+        if not fresh and self.lookups:
             return None
+
         self.lookups += 1
         self.asked = self.asked | frozenset(fresh)
         return fresh
@@ -127,3 +137,15 @@ class BattleBadges(object):
 
     def stop(self):
         self.start(None, None, False)
+
+
+class BadgeSwitch(object):
+
+    def __init__(self, is_visible):
+        self.is_visible = bool(is_visible)
+
+    def switched_off(self, is_visible):
+        was_visible = self.is_visible
+        self.is_visible = bool(is_visible)
+
+        return was_visible and not self.is_visible

@@ -25,6 +25,7 @@ import { mockPrismaService } from '../../../core/prisma/_tests/prisma-mock';
 import { parseReplaySummary } from '../../../lib/replay';
 import { FIXTURE, readFixture } from '../../../lib/replay/_tests/fixtures';
 import { EntitlementsService } from '../../billing';
+import { PurgeGuardService } from '../../collector/purge';
 import { ModDeviceService } from '../../mod';
 import { REPLAYS_QUEUE } from '../config/queue.constants';
 import { REPLAY_UPLOAD } from '../config/upload.constants';
@@ -181,7 +182,11 @@ describe('POST /replays', () => {
     prisma.replay.findUnique.mockResolvedValueOnce(replayRow({ id: replayId, storageKey: String(created?.storageKey) }));
 
     const heatmaps = mock<HeatmapWriterService>();
-    const outcome = await new ReplayParseService(prisma, storage, heatmaps).parse({ replayId, isFinalAttempt: true });
+    const purgeGuard = mock<PurgeGuardService>();
+
+    purgeGuard.blocked.mockResolvedValue(new Set());
+
+    const outcome = await new ReplayParseService(prisma, storage, heatmaps, purgeGuard).parse({ replayId, isFinalAttempt: true });
     const update = prisma.replay.update.mock.calls.at(-1)?.[0].data;
 
     expect(outcome).toEqual({ status: 'parsed', hasTracks: true });

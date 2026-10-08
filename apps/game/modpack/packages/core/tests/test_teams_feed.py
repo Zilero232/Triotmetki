@@ -71,8 +71,11 @@ class ArenaDP(object):
 
 class Hooks(object):
 
+    def __init__(self):
+        self.handlers = {}
+
     def add(self, resolve, name, handler):
-        pass
+        self.handlers[name] = handler
 
 
 def refuse_a_second_linkage(*data):
@@ -192,6 +195,24 @@ class BattleFieldFeedTest(unittest.TestCase):
         enemies = self.tracker.teams.team(False)
 
         assert [vehicle['level'] for vehicle in enemies] == [8, 7]
+
+    def test_a_respawn_reads_the_arena_again(self):
+        hooks = Hooks()
+        self.tracker.start(hooks, Namespace(team=1))
+        self.tracker.teams.kill(2)
+
+        hooks.handlers['onVehicleRecovered'](2)
+
+        assert self.tracker.teams.vehicles[2]['hp'] == 1200
+
+    def test_a_vehicle_update_reads_the_arena_again(self):
+        hooks = Hooks()
+        self.tracker.start(hooks, Namespace(team=1))
+        self.tracker.teams.kill(2)
+
+        hooks.handlers['onVehicleUpdated'](2)
+
+        assert self.tracker.teams.vehicles[2]['alive'] is True
 
 
 if __name__ == '__main__':

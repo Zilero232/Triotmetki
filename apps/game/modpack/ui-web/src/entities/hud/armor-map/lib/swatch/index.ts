@@ -1,0 +1,1 @@
+export { swatchStyle } from './swatch';

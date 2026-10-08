@@ -120,6 +120,7 @@ class ReplayUploader(object):
         self.clock = clock
         self.listener = listener
         self.in_flight = None
+        self.in_flight_account = None
         self.paused = threading.Event()
 
     def pause(self):
@@ -142,6 +143,7 @@ class ReplayUploader(object):
             return False
 
         self.in_flight = item['arena_unique_id']
+        self.in_flight_account = item['account_id']
         endpoint = self.endpoint
         files = self.files
         clock = self.clock
@@ -155,7 +157,9 @@ class ReplayUploader(object):
 
     def _complete(self, result):
         arena_unique_id = self.in_flight
+        account_id = self.in_flight_account
         self.in_flight = None
+        self.in_flight_account = None
         if arena_unique_id is None:
             return
 
@@ -163,6 +167,6 @@ class ReplayUploader(object):
         outcome = self.queue.complete(arena_unique_id, result, self.clock(), retry_after)
 
         if outcome == Outcome.AUTH:
-            self.listener.on_auth_failed()
+            self.listener.on_auth_failed(account_id)
         elif outcome == Outcome.DONE:
-            self.listener.on_uploaded(arena_unique_id, uploaded_replay_id(result))
+            self.listener.on_uploaded(arena_unique_id, uploaded_replay_id(result), account_id)

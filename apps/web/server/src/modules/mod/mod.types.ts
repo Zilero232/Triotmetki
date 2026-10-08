@@ -4,6 +4,7 @@ import type { Request } from 'express';
 import type { z, ZodType } from 'zod';
 
 import type { ModDevice, Player, UserLestaAccount } from '../../../generated';
+import type { BindAttemptCounter } from './lib/bind-attempts/bind-attempts.types';
 import type { bindRequestSchema } from './lib/contract/contract.schemas';
 import type { BattleResultEvent, IngestBatch, IngestEvent, IngestResponse } from './lib/contract/contract.types';
 
@@ -98,6 +99,7 @@ export type BattleEventInput = {
 export type LedgeredEventInput = {
   device: AuthenticatedDevice;
   event: Exclude<IngestEvent, BattleResultEvent>;
+  sentAt: number;
 };
 
 export type SessionRef = {
@@ -142,4 +144,33 @@ export type BattleStartedEvent = {
 
 export type BattleEventsSink = {
   started: (event: BattleStartedEvent) => Promise<void>;
+};
+
+export type ClaimIngestEventsInput = {
+  accountId: bigint;
+  count: number;
+  now: Date;
+};
+
+export type IngestBattleQuotaInput = {
+  accountId: bigint;
+  now: Date;
+};
+
+export type ClaimIngestQuotaInput = {
+  key: string;
+  count: number;
+  limit: number;
+  now: Date;
+};
+
+export type ClaimCodeInput = {
+  request: BindRequest;
+  accountCounter: BindAttemptCounter | null;
+};
+
+export type AcceptEventInput = {
+  device: AuthenticatedDevice;
+  event: IngestEvent;
+  sentAt: number;
 };

@@ -10,7 +10,7 @@ Pure (Python 2/3). The client side (reading the arena and the battle page) is `c
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ...compat import clamp, is_int, is_number, string_types, to_text
+from ...compat import clamp, is_finite_number, is_int, string_types, to_text
 from ..panel.constants import PANEL_LIMITS
 from .constants import (
     BONUS_TYPE_MODES,
@@ -50,6 +50,7 @@ __all__ = (
     'allowed_panels',
     'battle_mode',
     'clean_place',
+    'clean_places',
 )
 
 
@@ -84,7 +85,7 @@ def clean_place(values):
         return place
     for key in PLACE_NUMBERS:
         value = values.get(key)
-        if is_number(value) and not isinstance(value, bool):
+        if is_finite_number(value):
             low, high = PANEL_LIMITS[key]
             place[key] = int(clamp(int(round(value)), low, high))
     for key, choices in PLACE_ALIGNS:
@@ -92,6 +93,29 @@ def clean_place(values):
         if isinstance(value, string_types) and to_text(value) in choices:
             place[key] = to_text(value)
     return place
+
+
+def clean_places(raw):
+    """{battle type: {panel id: clean place}} of a stored or imported `hud_layout_places` section; anything else
+    is dropped."""
+    places = {}
+    if not isinstance(raw, dict):
+        return places
+
+    for mode in MODES:
+        panels = raw.get(mode)
+        if not isinstance(panels, dict):
+            continue
+        places[mode] = _clean_panels(panels)
+    return places
+
+
+def _clean_panels(panels):
+    cleaned = {}
+    for panel_id, place in panels.items():
+        if isinstance(panel_id, string_types):
+            cleaned[to_text(panel_id)] = clean_place(place)
+    return cleaned
 
 
 def _has_places(panels):

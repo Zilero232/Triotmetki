@@ -43,12 +43,32 @@ package net.triotmetki.packbadge
 
         public function attach(container:DisplayObjectContainer, stripIndex:int):void
         {
-            this.removeStrip();
-            container.addChildAt(this.strip, Math.max(0, Math.min(stripIndex, container.numChildren)));
+            this.placeStrip(container, stripIndex);
             if (this.plate.parent != container)
             {
                 container.addChild(this.plate);
             }
+        }
+
+        private function placeStrip(container:DisplayObjectContainer, stripIndex:int):void
+        {
+            var index:int = stripIndex;
+            if (this.strip.parent == container)
+            {
+                var current:int = container.getChildIndex(this.strip);
+                if (current < index)
+                {
+                    index--;
+                }
+                if (current == index)
+                {
+                    return;
+                }
+            }
+
+            this.removeStrip();
+            var clamped:int = Math.max(0, Math.min(index, container.numChildren));
+            container.addChildAt(this.strip, clamped);
         }
 
         public function detach():void

@@ -429,8 +429,8 @@
         "en": "The modpack's plate after the vehicle icon and an orange row highlight in the player panels, the Tab stats and the loading screen: on you and on every player with the mod who left their badge on. No site binding needed."
       },
       "fairPlay": {
-        "ru": "Не боевая информация: раз за бой сайт получает только ваш номер аккаунта, номера аккаунтов игроков боя и положение вашего переключателя значка; хранит лишь отметку «мод установлен» на 30 дней и стирает её, когда вы выключаете значок в «Данные и сайт».",
-        "en": "Not combat information: once a battle the site gets only your account number, the account numbers of the battle's players and your badge switch; it keeps only a 30-day «has the mod» mark and deletes it when you switch your badge off in «Data and site»."
+        "ru": "Не боевая информация: в бою с ушами сайт получает только ваш номер аккаунта, номера аккаунтов игроков боя и положение вашего переключателя значка (в начале боя и для игроков, вошедших позже); хранит лишь отметку «мод установлен» на 30 дней и стирает её сразу, как вы выключаете значок, плашку или весь мод.",
+        "en": "Not combat information: in a battle with the player panels the site gets only your account number, the account numbers of the battle's players and your badge switch (at the start and for players who join later); it keeps only a 30-day «has the mod» mark and deletes it as soon as you switch off your badge, the plate or the whole mod."
       },
       "perf": "low",
       "preview": {
@@ -825,8 +825,8 @@
         "en": "A carousel of 1–5 rows (1–2 the game's own setting, 3–5 added by the mod), tile size and interface scale from the game settings; quick actions on a button: demount removable equipment, take the style off, crew to the barracks and return the previous crew."
       },
       "fairPlay": {
-        "ru": "Работает только в ангаре. Точный масштаб интерфейса и 3–5 рядов карусели выходят за штатные настройки игры: это не запрещено Лестой, но компонент выключен по умолчанию, а оба пункта стоят «Как в игре».",
-        "en": "Works in the hangar only. The exact interface scale and 3–5 carousel rows go beyond the game's own options: Lesta does not forbid them, but the component is kept off by default and both start at «As in the game»."
+        "ru": "Работает только в ангаре. 3–5 рядов карусели выходят за штатные настройки игры: это не запрещено Лестой, но компонент выключен по умолчанию, а ряды стоят «Как в игре».",
+        "en": "Works in the hangar only. 3–5 carousel rows go beyond the game's own options: Lesta does not forbid them, but the component is kept off by default and the rows start at «As in the game»."
       },
       "perf": "low",
       "preview": {
@@ -1240,14 +1240,14 @@
         "en": "Tank armour"
       },
       "description": {
-        "ru": "Бронирование танка в 3D с triotmetki.ru: своя кнопка в списке модов ModsList открывает выбранный танк, пункт «Бронирование» в меню по правому клику на танке в карусели — любой танк. Страница открывается в браузере игры поверх ангара (или во внешнем браузере, по выбору).",
-        "en": "The tank's armour in 3D from triotmetki.ru: its own entry in the ModsList mods list opens the selected tank, «Armour» in the right-click menu of a carousel tank opens any of them. The page opens in the game's browser over the hangar (or in the external browser, by choice)."
+        "ru": "Карта брони прямо на танке в ангаре: номинальная, приведённая с вашего ракурса или против снаряда вашего танка (зелёный — пробьёт, жёлтый — как повезёт, красный — нет или рикошет; экраны и гусеницы — своей штриховкой), с подсказкой по слоям под курсором и правилами снарядов самого клиента. Включается своей кнопкой в списке модов ModsList или пунктом «Броня в ангаре» в меню танка в карусели; там же — 3D-схема с triotmetki.ru в браузере игры (для танков в предпросмотре — только она).",
+        "en": "An armour map right on the hangar tank: nominal, effective from your view or against your own tank's shell (green: penetrates, yellow: down to the roll, red: never or ricochet; screens and tracks hatched), with the layers under the cursor and the client's own shell rules. Opens from its entry in the ModsList mods list or «Armour in the hangar» in a carousel tank's menu, next to the 3D scheme from triotmetki.ru in the game's browser (the only one for previewed tanks)."
       },
       "fairPlay": {
-        "ru": "Только ангар и только по вашему нажатию; в бою не работает (анализ брони в бою объявлен к запрету, моды только для ангара разрешены). Мод ничего не отправляет: открывается публичная страница сайта с номером танка.",
-        "en": "Hangar only and only on your click; does nothing in battle (in-battle armour analysis is announced for the ban, hangar-only mods are allowed). The mod sends nothing: it opens the site's public page with the tank id."
+        "ru": "Только ангар и только по вашему нажатию; в бою не работает и закрывается со входом в бой (статья 15152: анализ брони в бою объявлен к запрету, моды только для ангара разрешены). Читает лишь коллизию и описание танка в ангаре (публичные данные танка) и орудие вашего танка; ничего не отправляет: 3D-схема — публичная страница сайта с номером танка.",
+        "en": "Hangar only and only on your click; does nothing in battle and closes on entering one (article 15152: in-battle armour analysis is announced for the ban, hangar-only mods are allowed). Reads only the hangar tank's collision and descriptor (public tank data) and your own tank's gun; sends nothing: the 3D scheme is the site's public page with the tank id."
       },
-      "perf": "low",
+      "perf": "medium",
       "preview": {
         "image": "previews/armor_view.svg"
       }
@@ -1322,6 +1322,7 @@
         "hit_viewer",
         "hangar_info",
         "preset_advisor",
+        "armor_view",
         "free_camera"
       ],
       "optional": false,

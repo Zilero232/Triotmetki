@@ -5,6 +5,11 @@
   flex-shrink: 0;
 }
 
+.idle {
+  position: absolute;
+  opacity: 0;
+}
+
 .svg {
   @include svg-canvas;
 }

@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from ...core.compat import is_int, is_number, string_types, to_text
+from ...core.compat import is_finite_number, is_int, string_types, to_text
 from .constants import (
     APPLICABLE_GROUPS,
     GROUP_CONTROLS,
@@ -18,14 +18,14 @@ def _clean_bool(kind, value):
 
 
 def _clean_int(kind, value):
-    if not is_number(value) or int(value) != value:
+    if not is_finite_number(value) or int(value) != value:
         return None
     value = int(value)
     return value if kind[1] <= value <= kind[2] else None
 
 
 def _clean_number(kind, value):
-    if not is_number(value):
+    if not is_finite_number(value):
         return None
     value = round(float(value), 4)
     return value if kind[1] <= value <= kind[2] else None

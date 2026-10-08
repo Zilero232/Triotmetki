@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import base64
 import hashlib
+import io
 import re
 import threading
 import time
@@ -22,7 +23,7 @@ from otmetki.core.net.transport import (
     tls_available,
     verified_context,
 )
-from otmetki.core.net.transport import tls
+from otmetki.core.net.transport import exchange, tls
 from otmetki.core.net.transport.constants import TRUSTED_ROOTS
 
 ISRG_FINGERPRINTS = [
@@ -282,6 +283,84 @@ class GuardTest(LocalServerTestCase):
         finally:
             tls._cache.clear()
             tls._cache.update(saved)
+
+
+class ClosingStream(io.BytesIO):
+
+    def __init__(self, data):
+        io.BytesIO.__init__(self, data)
+        self.was_closed = False
+
+    def close(self):
+        self.was_closed = True
+        io.BytesIO.close(self)
+
+
+class SteppingClock(object):
+
+    def __init__(self, step):
+        self.now = 0.0
+        self.step = step
+
+    def __call__(self):
+        self.now += self.step
+        return self.now
+
+
+class ReadCappedTest(unittest.TestCase):
+
+    def test_reads_the_whole_answer_in_blocks(self):
+        stream = io.BytesIO(b'x' * 200000)
+
+        data = exchange.read_capped(stream, 300000)
+
+        self.assertEqual(len(data), 200000)
+
+    def test_an_answer_over_the_cap_is_refused(self):
+        stream = io.BytesIO(b'x' * 200000)
+
+        with self.assertRaises(exchange.ResponseTooLarge):
+            exchange.read_capped(stream, 100000)
+
+    def test_an_answer_read_past_the_deadline_is_refused(self):
+        stream = io.BytesIO(b'x' * 200000)
+        clock = SteppingClock(step=1.0)
+
+        with self.assertRaises(exchange.ResponseTooSlow):
+            exchange.read_capped(stream, 300000, deadline=2.5, clock=clock)
+
+    def test_the_deadline_is_a_few_timeouts_from_now(self):
+        deadline = exchange.read_deadline(10.0, clock=lambda: 100.0)
+
+        self.assertEqual(deadline, 140.0)
+
+
+class ErrorReplyTest(unittest.TestCase):
+
+    def error(self, body):
+        self.stream = ClosingStream(body)
+        return exchange.HTTPError('http://127.0.0.1/x', 500, 'boom', {}, self.stream)
+
+    def test_an_error_answer_keeps_its_status_and_body(self):
+        error = self.error(b'{"error":"x"}')
+
+        status, body, _ = exchange._error_reply(error, 4096, None)
+
+        self.assertEqual((status, body), (500, b'{"error":"x"}'))
+
+    def test_an_error_answer_is_closed(self):
+        error = self.error(b'{}')
+
+        exchange._error_reply(error, 4096, None)
+
+        self.assertTrue(self.stream.was_closed)
+
+    def test_an_error_answer_over_the_cap_is_closed_too(self):
+        error = self.error(b'x' * 5000)
+
+        exchange._error_reply(error, 4096, None)
+
+        self.assertTrue(self.stream.was_closed)
 
 
 class VerifiedContextTest(unittest.TestCase):

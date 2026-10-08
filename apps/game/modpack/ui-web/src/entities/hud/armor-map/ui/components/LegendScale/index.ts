@@ -1,0 +1,1 @@
+export { LegendScale } from './LegendScale';

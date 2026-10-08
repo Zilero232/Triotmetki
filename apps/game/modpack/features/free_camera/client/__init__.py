@@ -3,13 +3,13 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from ....core.client.component import FeatureComponent
 from ....core.client.hotkey import HotkeyChoice
 from ....core.client.hud import hud_layer
-from ....core.hooks import is_restorable, override, restore
+from ....core.hooks import is_restorable, override, restore, subscribe
 from ....core.log import log, log_exception, safe
 from ..i18n import STRINGS
 from ..model import PLACE_HANGAR, PLACE_REPLAY, START, STOP, Flight, flight_place
 from ..model.constants import HOTKEYS
 from ..settings import SCHEMA, SECTION, SWITCH
-from .constants import ESCAPE_KEY
+from .constants import ACCOUNT_LEFT_EVENTS, ESCAPE_KEY
 from .flights import HangarFlight, ReplayFlight, set_lobby_gui, toggle_battle_gui
 
 
@@ -20,6 +20,15 @@ def _game_module():
         log('free camera: the client input module is missing, the camera keys stay with the client')
         return None
     return game
+
+
+def _player_events():
+    try:
+        from PlayerEvents import g_playerEvents
+    except ImportError:
+        log('free camera: the client player events are missing, a flight lands on the next hangar')
+        return None
+    return g_playerEvents
 
 
 def _is_replay():
@@ -41,10 +50,19 @@ class FreeCamera(FeatureComponent):
         self.muted = None
         self.input_hooked = False
         self._install_hotkey()
+        self._watch_account()
         bus = app.bus
-        bus.on('hangar', self._install_hotkey)
+        bus.on('hangar', self._on_hangar)
         bus.on('battle_enter', self._on_battle_enter)
         bus.on('battle_leave', self._on_battle_leave)
+
+    def _watch_account(self):
+        events = _player_events()
+        if events is None:
+            return
+        for name in ACCOUNT_LEFT_EVENTS:
+            if hasattr(events, name):
+                subscribe(events, name, self._on_account_left)
 
     def settings_changed(self, changed):
         self._install_hotkey()
@@ -73,6 +91,17 @@ class FreeCamera(FeatureComponent):
         if choice != self.hotkey_choice:
             self.hotkey_choice = choice
             self.hotkey.set(choice)
+
+    def _on_hangar(self):
+        if self.flight.place == PLACE_HANGAR:
+            self.stop()
+        self._install_hotkey()
+
+    def _on_account_left(self, *args):
+        if self.flight.place != PLACE_HANGAR:
+            return
+        self.flights[PLACE_HANGAR].drop()
+        self._finish(show_gui=True)
 
     def _on_battle_enter(self):
         if self.flight.place == PLACE_HANGAR:

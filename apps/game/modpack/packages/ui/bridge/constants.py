@@ -2,9 +2,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import re
 
-from ...core.events import EVENT_COMPONENT_SETTINGS  # noqa: F401
+from ...core.events import EVENT_COMPONENT_SETTINGS, EVENT_LANGUAGE  # noqa: F401
 
-EVENT_LANGUAGE = 'language'
 CONFIG_COMPONENT = 'config'
 CONFIG_KIND = 'config'
 

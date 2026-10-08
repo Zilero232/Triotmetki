@@ -127,7 +127,8 @@
         "arena_unique_id": {
           "type": "string",
           "pattern": "^[0-9]+$",
-          "description": "64-bit arena id as a decimal string (exceeds JS safe integer range)."
+          "maxLength": 19,
+          "description": "64-bit arena id as a decimal string (exceeds JS safe integer range); at most 9223372036854775807 (2^63-1), the server refuses a larger value with 400 invalid_payload."
         },
         "arena_type_id": {
           "type": "integer",

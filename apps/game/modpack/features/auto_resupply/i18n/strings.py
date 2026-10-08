@@ -17,6 +17,7 @@ STRINGS = {
         'auto_resupply_refused_unset': u'Выберите «Включено» или «Выключено» хотя бы для одного флажка',
         'auto_resupply_refused_nothing': u'Всё уже выставлено',
         'auto_resupply_refused_locked': u'Танки в бою, в очереди или во взводе',
+        'auto_resupply_refused_busy': u'Предыдущие запросы ещё отправляются',
     },
     'en': {
         'component_auto_resupply': u'Auto resupply',
@@ -33,5 +34,6 @@ STRINGS = {
         'auto_resupply_refused_unset': u'Choose On or Off for at least one flag',
         'auto_resupply_refused_nothing': u'Everything is already set',
         'auto_resupply_refused_locked': u'The tanks are in battle, in the queue or in a platoon',
+        'auto_resupply_refused_busy': u'The previous requests are still being sent',
     },
 }

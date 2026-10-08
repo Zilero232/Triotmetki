@@ -5,6 +5,10 @@
   display: flex;
 }
 
+.idle {
+  opacity: 0;
+}
+
 .svg {
   @include svg-canvas;
 }

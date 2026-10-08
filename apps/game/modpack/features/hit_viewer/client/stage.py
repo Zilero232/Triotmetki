@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import BigWorld
 
+from ....core.client.armor import probe
 from ....core.client.game import client_attr, service
 from ....core.client.hud.icons import client_file_exists
 from ....core.hud.icons import image
@@ -15,7 +16,6 @@ from .constants import (
     FOCUS_DISTANCE_M,
     FOCUS_LIMITS_M,
     GUN_NODE,
-    MATERIAL_PARTS,
     PREVIEW_MODULE,
     PREVIEW_NAME,
     PROBE_M,
@@ -58,17 +58,6 @@ def map_image(path):
 
 def is_exact(target):
     return all(target.get(key) for key in MODULE_KEYS)
-
-
-def _material(descriptor, part_index, material_kind):
-    found = None
-    if 0 <= part_index < len(MATERIAL_PARTS):
-        materials = getattr(getattr(descriptor, MATERIAL_PARTS[part_index], None), 'materials', None)
-        found = materials.get(material_kind) if materials is not None else None
-    if found is None:
-        from items import vehicles
-        found = vehicles.g_cache.commonConfig['materials'].get(material_kind)
-    return found
 
 
 # RU 1.45 HangarCameraManager.moveCamera keeps the limits it is given and setMinDist writes into them
@@ -274,19 +263,17 @@ class HangarStage(object):
         found.normalise()
         return vehicle.applyPoint(Math.Vector3(*point)), found
 
+    # The shared hangar armour probe (core.client.armor, the one the armour map casts): every plate along the shot
+    # through the loaded model's collision, the first armoured one measured.
     def measure(self, geometry, shell=None, caliber=None):
-        collisions = self.collisions()
-        if collisions is None:
+        appearance = getattr(self.entity(), 'appearance', None)
+        if getattr(appearance, 'collisions', None) is None:
             return None
         point, direction = self.world(geometry)
-        found = collisions.collideAllWorld(point - direction * PROBE_M, point + direction * PROBE_M)
-        descriptor = self.entity().appearance.typeDescriptor
-        layers = []
-        for _, hit_angle_cos, material_kind, part_index in found or ():
-            material = _material(descriptor, part_index, material_kind)
-            if material is not None and material.armor:
-                layers.append((hit_angle_cos, material.armor, material.useHitAngle))
-        return first_plate(layers, shell, caliber)
+        start = point - direction * PROBE_M
+        end = point + direction * PROBE_M
+
+        return first_plate(probe(appearance, start, end), shell, caliber)
 
     @guarded('hit viewer: scene models')
     def _show_scene(self, paths, point, direction):
