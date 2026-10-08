@@ -100,6 +100,7 @@ PLACEMENT = {
     'preset_advisor': (SECTION_HANGAR, CONTEXT_HANGAR),
     'free_camera': (SECTION_REPLAYS, CONTEXT_ANY),
     'quick_demount': (SECTION_HANGAR, CONTEXT_HANGAR),
+    'armor_view': (SECTION_HANGAR, CONTEXT_HANGAR),
 }
 
 PANEL_OWNERS = {

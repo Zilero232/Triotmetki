@@ -3449,6 +3449,89 @@ class QuickDemountTest(StoryTest):
         self.assertEqual([option['id'] for option in self.options_off], ['information'])
 
 
+ARMOR_VIEW_MENU = 'gui.Scaleform.daapi.view.lobby.hangar.hangar_cm_handlers'
+ARMOR_TANK, CAROUSEL_TANK = 2849, 51809
+
+
+def vehicle_menu_class():
+    # RU 1.45 lobby/hangar/hangar_cm_handlers.VehicleContextMenuHandler, reduced to what the feature touches.
+
+    class VehicleContextMenuHandler(object):
+
+        def __init__(self, vehicle_id):
+            self.vehCD = vehicle_id
+            self.selected = []
+
+        @classmethod
+        def _makeItem(cls, optId, optLabel=None, optInitData=None, optSubMenu=None, linkage=None, iconType=''):
+            return {'id': optId, 'label': optLabel}
+
+        def _generateOptions(self, ctx=None):
+            return [self._makeItem('vehicleInfo', 'Information')]
+
+        def onOptionSelect(self, optionId):
+            self.selected.append(optionId)
+
+    return VehicleContextMenuHandler
+
+
+class ArmorViewTest(StoryTest):
+
+    @classmethod
+    def play(cls, game):
+        game.install_hud_stubs()
+        cls.entries, cls.overlays, cls.external = [], [], []
+        mods_list = instance('ModsListApi', {
+            'addModification': lambda api, **entry: cls.entries.append(entry),
+            'updateModification': lambda api, **entry: cls.entries.append(entry),
+        })
+        module('gui.modsListApi', g_modsListApi=mods_list)
+        if 'gui.shared' not in sys.modules:
+            package('gui.shared')
+        module('gui.shared.event_dispatcher', showBrowserOverlayView=cls.overlays.append)
+        sys.modules['BigWorld'].openWebBrowser = cls.external.append
+        for name in HANGAR_VIEW_PACKAGES[:5]:
+            if name not in sys.modules:
+                package(name)
+        menu_class = vehicle_menu_class()
+        module(ARMOR_VIEW_MENU, VehicleContextMenuHandler=menu_class)
+        game.vehicle.item = instance('Vehicle', {'intCD': ARMOR_TANK})
+
+        app = game.open_hangar()
+        cls.entry = dict(next(entry for entry in cls.entries if entry['id'] == 'otmetki_armor_view'))
+        cls.entry.pop('callback')(None)
+        menu = menu_class(CAROUSEL_TANK)
+        cls.options = menu._generateOptions()
+        menu.onOptionSelect('vehicleInfo')
+        menu.onOptionSelect(cls.options[-1]['id'])
+        cls.selected = list(menu.selected)
+        cls.overlay_opens = list(cls.overlays)
+        app.config.update({'hangar_armor_view': False})
+        cls.options_off = menu._generateOptions()
+
+    def test_its_own_mods_list_entry_is_in_the_lobby_only(self):
+        self.assertEqual(self.entry['id'], 'otmetki_armor_view')
+        self.assertEqual((self.entry['lobby'], self.entry['login'], self.entry['enabled']), (True, False, True))
+
+    def test_the_mods_list_entry_opens_the_selected_tank_and_the_menu_item_the_carousel_tank(self):
+        self.assertEqual([url.rsplit('/t/', 1)[1] for url in self.overlay_opens], ['2849/armor', '51809/armor'])
+
+    def test_the_page_is_the_sites_own(self):
+        self.assertTrue(self.overlay_opens[0].startswith('https://triotmetki.ru/'))
+
+    def test_the_carousel_menu_gets_the_armour_item_last(self):
+        self.assertEqual([option['id'] for option in self.options], ['vehicleInfo', 'otmetki_armor_view'])
+
+    def test_the_stock_options_still_reach_the_client(self):
+        self.assertEqual(self.selected, ['vehicleInfo'])
+
+    def test_the_overlay_needs_no_external_browser(self):
+        self.assertEqual(self.external, [])
+
+    def test_the_switch_off_leaves_the_stock_menu(self):
+        self.assertEqual([option['id'] for option in self.options_off], ['vehicleInfo'])
+
+
 def research_tank():
     # RU 1.45 Vehicle.getUnlocksDescrs: (index, xpCost, nodeCD, required set); 31 a gun, 32 an engine, 41 the next tank.
     table = [(0, 20000, 31, set()), (1, 5000, 32, set()), (2, 60000, 41, {31})]

@@ -1231,6 +1231,28 @@
       }
     },
     {
+      "id": "armor_view",
+      "category": "hangar",
+      "context": "hangar",
+      "presets": ["recommended"],
+      "title": {
+        "ru": "Броня танка",
+        "en": "Tank armour"
+      },
+      "description": {
+        "ru": "Бронирование танка в 3D с triotmetki.ru: своя кнопка в списке модов ModsList открывает выбранный танк, пункт «Бронирование» в меню по правому клику на танке в карусели — любой танк. Страница открывается в браузере игры поверх ангара (или во внешнем браузере, по выбору).",
+        "en": "The tank's armour in 3D from triotmetki.ru: its own entry in the ModsList mods list opens the selected tank, «Armour» in the right-click menu of a carousel tank opens any of them. The page opens in the game's browser over the hangar (or in the external browser, by choice)."
+      },
+      "fairPlay": {
+        "ru": "Только ангар и только по вашему нажатию; в бою не работает (анализ брони в бою объявлен к запрету, моды только для ангара разрешены). Мод ничего не отправляет: открывается публичная страница сайта с номером танка.",
+        "en": "Hangar only and only on your click; does nothing in battle (in-battle armour analysis is announced for the ban, hangar-only mods are allowed). The mod sends nothing: it opens the site's public page with the tank id."
+      },
+      "perf": "low",
+      "preview": {
+        "image": "previews/armor_view.svg"
+      }
+    },
+    {
       "id": "free_camera",
       "category": "hangar",
       "context": "any",
@@ -1331,7 +1353,7 @@
       "sourceUrl": "https://gitlab.com/-/project/26509092/uploads/9705f0b2627e9a074ecac2e84f38c9ca/me.poliroid.modslistapi_1.6.01.wotmod",
       "sha256": "b312adfcd005405d49b711e79b4032be7d624b6e38d4156364d1c04bc5dba71f",
       "size": 79776,
-      "requiredBy": ["ui", "hit_viewer"],
+      "requiredBy": ["ui", "hit_viewer", "armor_view"],
       "optional": false,
       "restartRequired": false
     }

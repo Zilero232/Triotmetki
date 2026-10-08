@@ -30,6 +30,7 @@ import {
   ScrollText,
   Server,
   Shield,
+  ShieldHalf,
   SlidersHorizontal,
   Sparkles,
   Sunset,
@@ -87,7 +88,8 @@ export const MOD_SHOWCASE = [
       { id: 'hangar_looks', icon: Sunset, context: 'hangar', isDefault: false },
       { id: 'hit_viewer', icon: Crosshair, context: 'hangar', isDefault: true },
       { id: 'update_notice', icon: BellRing, context: 'hangar', isDefault: true },
-      { id: 'preset_advisor', icon: BadgeCheck, context: 'hangar', isDefault: true }
+      { id: 'preset_advisor', icon: BadgeCheck, context: 'hangar', isDefault: true },
+      { id: 'armor_view', icon: ShieldHalf, context: 'hangar', isDefault: true }
     ]
   },
   {

@@ -216,6 +216,10 @@
         "title": "Build hints in the loadout",
         "text": "Marks the site's recommended equipment and directives for your tank in the loadout window."
       },
+      "armor_view": {
+        "title": "Tank armour",
+        "text": "The tank's armour in 3D from the site: from the mods list or «Armour» in the carousel tank menu."
+      },
       "free_camera": {
         "title": "Free camera",
         "text": "The game's own video camera on a key in replays and the hangar. Never in a live battle."

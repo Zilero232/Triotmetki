@@ -11,17 +11,21 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 
 ### ru
 
+- Исправлен вылет игры в бою.
 - Плашка «Три отметки» видна у всех игроков с модом, привязка к сайту не нужна.
 - Прицел с автозарядкой показывает одну перезарядку, а не две; у лампы нет хвостика таймера.
 - Автосообщение о перезарядке не пишет «Барабан пуст» на танках без барабана.
 - Панели в бою не показывают описание при наведении.
+- «Броня танка»: бронирование танка в 3D из списка модов или по правому клику на танке в карусели.
 
 ### en
 
+- Fixed a game crash in battle.
 - The Three Marks plate shows on every player with the mod, no site binding needed.
 - The auto-reloader reticle shows one reload, not two; no timer sliver on the lamp.
 - The reload auto message no longer says «Clip empty» on vehicles without a clip.
 - Battle panels show no description on hover.
+- «Tank armour»: the tank's armour in 3D from the mods list or a right click on a carousel tank.
 
 ## 0.3.10
 
@@ -71,19 +75,35 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 - The Three Marks badge sits after the name and no longer covers the achievement badge.
 - Battle chat auto messages: artillery on me, ally damage, spotted and a dozen more events to pick.
 
+## armor_view 0.1.0
+
+### ru
+
+- Бронирование выбранного танка в 3D с сайта: своя кнопка в списке модов и пункт «Бронирование» в меню танка в карусели.
+- Открывается в браузере игры поверх ангара или во внешнем браузере; в бою не работает.
+
+### en
+
+- The selected tank's armour in 3D from the site: its own entry in the mods list and «Armour» in the carousel tank menu.
+- Opens in the game's browser over the hangar or in the external browser; does nothing in battle.
+
 ## ui 0.9.10
 
 ### ru
 
 - «Показывать мой значок» переехал на страницу «Плашка «Три отметки» в бою».
 - Кольцо лампы не оставляет хвостика в конце таймера.
+- Исправлен вылет игры в бою: дуги прицела и лампы больше не перестраиваются на лету.
 - Панели в бою не показывают описание при наведении.
+- Карточка «Броня танка» на странице «Ангар».
 
 ### en
 
 - «Show my badge» moved to the «Three Marks plate in battle» page.
 - The lamp ring leaves no sliver at the end of its timer.
+- Fixed a game crash in battle: the reticle and lamp arcs are no longer rebuilt on the fly.
 - Battle panels show no description on hover.
+- The «Tank armour» card on the «Hangar» page.
 
 ## ui 0.9.9
 
@@ -2456,10 +2476,12 @@ The modpack's release notes, read by the manager («Помощь» → «Что 
 ### ru
 
 - Переключатель «Показывать мой значок» больше не отправляется на сайт после привязки: он едет только с плашкой в бою.
+- Переключатель «Броня танка» в настройках, включён по умолчанию.
 
 ### en
 
 - The «Show my badge» switch is no longer reported to the site after binding: it only travels with the battle's plate.
+- The «Tank armour» switch in the settings, on by default.
 
 ## companion 0.8.8
 

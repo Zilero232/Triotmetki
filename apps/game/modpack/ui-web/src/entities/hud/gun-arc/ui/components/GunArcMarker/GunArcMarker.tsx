@@ -17,6 +17,7 @@ export const GunArcMarker = ({ mark, point }: GunArcMarkerProps) => {
   return (
     <span className={s.marker} style={remRect({ ...place, ...box })}>
       <svg
+        key={String(filled)}
         aria-hidden='true'
         className={s.svg}
         height='100%'

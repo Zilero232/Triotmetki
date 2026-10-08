@@ -132,3 +132,26 @@ Read from `D:\Games\Tanki` (v.1.45.0.0 #2290: `res/packages`, `win64`) and the d
 - Gameface WebGL.
 
 **Catalogue**: category hangar, fair-play note «Только в ангаре; в бою не работает (статья 15152: анализ брони в бою объявлен к запрету, моды только для ангара разрешены)», kill-switch entry, CHANGELOG line.
+
+## 7. Entry points
+
+How the packs put a hangar tool in reach, and what the RU 1.45 client allows (read 2026-10-08 from `D:\Games\Tanki\res\packages\scripts.pkg`, the `.pyc` names and constants, and the local copies in `refs/mods`).
+
+| Pack / mod | Entry point | How |
+| --- | --- | --- |
+| Armor Inspector (Jove, PROTanki, МОСТ ship it) | A button «по центру под танком» in the hangar and in the vehicle preview (§2) | Two 1.7 KB Scaleform SWFs that find `AmmunitionPanelMC` / `maintenanceBtn` / `tuningBtn` and the preview's `bottomPanel` and add a button. Flash injection into stock views. |
+| PROTanki «анализ брони» | A tooltip by the cursor on the preview tank | Hover on the 3D model; no button (§2) |
+| poliroid BattleHits (Jove, Lebwa, Near_You) | Its own ModsList entry, greyed in the queue | `g_modsListApi.addModification(id=…, lobby=True)` (`refs/mods/poliroid__battle-hits/python/gui/battlehits/hooks.py:110-160`) |
+| poliroid Replays Manager | Its own ModsList entry, the login screen and the stock replay context menu | `addModification` plus its own context menu handler (`rmanager/controllers/actions.py:217`, `_generateOptions`) |
+| Battle Observer, XVM | Settings through ModsSettingsAPI from a ModsList entry, or config files; no armour tool | [deep dive](2026-10-05-modpacks-deep-dive.md) |
+| WG 2.0 Garage (stock, not on Lesta) | «About Vehicle» → Armor tab, from the garage, the tech tree and the **vehicle's right-click menu** ([WG news](https://worldoftanks.com/news/general-news/update-2-0-garage-ux/)) | Stock UI |
+| Ours today | `ui` (`otmetki`) and `hit_viewer` (`otmetki_hit_viewer`): two ModsList entries from one modpack | `packages/ui/client/entry_points/mods_list.py`, `features/hit_viewer/client/mods_list.py` |
+
+**What 1.45 has:**
+- **ModsList** keeps entries by `id` (`controller.py`: a second `addModification` with a known id becomes `updateModification`), so one mod may add several. We already ship two.
+- **The carousel is Scaleform:** `gui/Scaleform/daapi/view/lobby/hangar/carousels/{basic,ranked,comp7,epicBattle,battle_pass,mapbox,…}/tank_carousel.pyc` (`TankCarouselMeta`). Its right-click menu is the Python handler `gui/Scaleform/daapi/view/lobby/hangar/hangar_cm_handlers.VehicleContextMenuHandler`, registered for `CONTEXT_MENU_HANDLER_TYPE.VEHICLE` (`'vehicle'`) by `lobby/hangar/__init__.getContextMenuHandlers` (inside `BootcampComponentOverride` with the bootcamp variant). It keeps the tank in `vehCD` (`_initFlashValues`), builds its list in `_generateOptions(ctx)` with `_makeItem(optId, optLabel, …)`, and `AbstractContextMenuHandler.onOptionSelect(optionId)` (`framework/managers/context_menu.pyc`) calls the method its id maps to or logs «Unknown context menu option». That is the same seam `quick_demount` overrides on the tank setup's `OptDeviceItemContextMenu`: pure Python, the Flash side only draws the list it gets. **Safe** with `core.hooks.override` (original first, our item appended, only our id answered).
+- **Vehicle preview:** `g_currentPreviewVehicle` (`CurrentVehicle`); its bottom panel is Scaleform, reachable only by Flash injection.
+- **Browser:** `gui.shared.event_dispatcher.showBrowserOverlayView(url, alias=VIEW_ALIAS.BROWSER_LOBBY_TOP_SUB, params=None, callbackOnLoad=None, webHandlers=None, forcedSkipEscape=False, browserParams=None, hiddenLayers=None, parent=None)` (an `adisp_process`: `GUI_SETTINGS.checkAndReplaceWebBridgeMacros`, `URLMacros().parse`, then a `LoadViewEvent`); the name is confirmed on 1.45.
+- **Hotkey:** possible through `core.client.hotkey`, but no pack opens an armour tool by key, and our settings window rule already avoids hotkeys for windows.
+
+**Choice for `armor_view`:** its own ModsList entry (the selected or previewed tank) and «Бронирование» in the carousel tank menu (any tank of the carousel), both opening the site's viewer in `showBrowserOverlayView`, the external browser as the fallback. No button under the tank: that needs a SWF injected into `AmmunitionPanelMC`, and Scaleform/Gameface injection is where our native crashes came from (0.3.7, 0.3.8). No hotkey.

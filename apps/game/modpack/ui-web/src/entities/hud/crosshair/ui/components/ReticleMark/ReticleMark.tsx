@@ -14,6 +14,7 @@ export const ReticleMark = ({ shape, size, color, outline }: ReticleMarkProps) =
   return (
     <span className={s.mark} style={remSquare(size)}>
       <svg
+        key={`${shape}-${String(size)}-${String(outline)}`}
         aria-hidden='true'
         className={s.svg}
         height='100%'
