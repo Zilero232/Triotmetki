@@ -5,7 +5,6 @@
   },
   "hero": {
     "onAir": "Live",
-    "eyebrow": "Three Marks for streamers",
     "title": "A stream where <hot>the numbers don't lie</hot>",
     "lead": "Live stats in OBS, viewer challenges verified from the actual battle, and a bot that knows your WN8 better than chat does.",
     "ctaHow": "How challenges work",
@@ -23,7 +22,7 @@
     "challenges": {
       "tag": "Battle-verified",
       "title": "Verified challenges",
-      "text": "You set the condition — “3000 damage in a light tank” — and a viewer donates with the challenge code. The mod checks the real battle, not the streamer’s word. The result goes to chat and the overlay on its own.",
+      "text": "A viewer sets the condition with a donation — “3000 damage in a light tank” — and the real battle decides whether it is met, not the streamer’s word.",
       "stamp": "Verified by the mod"
     },
     "commands": {

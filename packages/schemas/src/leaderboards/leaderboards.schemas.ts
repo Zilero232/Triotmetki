@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { ratingPeriodSchema } from '../common/period/period.schemas';
 import { accountIdSchema, clanIdSchema, countSchema, tankIdSchema } from '../common/primitives/primitives.schemas';

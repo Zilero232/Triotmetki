@@ -51,6 +51,11 @@ export const useGuideEditorForm = (guide: Guide | null) => {
       form.reset(form.getValues());
       toast.success(guide ? t('editor.updated') : t('editor.created'));
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.guides.all, refetchType: 'none' });
+
+      if (guide && guide.slug !== saved.slug) {
+        queryClient.removeQueries({ queryKey: QUERY_KEYS.guides.bySlug(guide.slug) });
+      }
+
       queryClient.setQueryData(QUERY_KEYS.guides.detail({ viewerId: session?.user.id ?? null, slug: saved.slug }), saved);
       router.push(ROUTES.guides.detail(saved.slug));
     },

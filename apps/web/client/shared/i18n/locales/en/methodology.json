@@ -35,7 +35,7 @@
       "title": "EFF (efficiency rating)",
       "lead": "The classic formula that rewards damage adjusted for the average tier played, frags, spotting, capture and base defense.",
       "lines": {
-        "total": "EFF = damage·({numerator} ÷ (tier + {offset}))·({base} + {slope}·tier ÷ 100) + frags·{frag} + spotted·{spot} + ln(capture + 1) ÷ ln({logBase})·{capture} + defense·{defense}"
+        "total": "EFF = damage·({numerator} ÷ (tier + {offset}))·({base} + {slope}·tier ÷ 100) + frags·{frag} + spotted·{spot} + ln(capture + 1) ÷ ln({logBase})·{capture} + defense·{defence}"
       },
       "notes": {
         "tier": "Every value is a per-battle average; “tier” is the average vehicle tier weighted by the battles on each tank."
@@ -46,7 +46,7 @@
       "lead": "Our own rating. It does not lean on anyone else’s tables: it shows what share of the players in our database you beat on each of your tanks.",
       "lines": {
         "percentiles": "For each tank we build the distribution of average damage, win rate, frags, spotting and base defense across every player in our database (percentiles at {levels}%) and find your place in it from 0 to 1.",
-        "score": "Tank score = {damage}% × damage + {winRate}% × wins + {frags}% × frags + {spotted}% × spotting + {defense}% × defense",
+        "score": "Tank score = {damage}% × damage + {winRate}% × wins + {frags}% × frags + {spotted}% × spotting + {defence}% × defense",
         "shrink": "While battles are few the score is pulled to the middle: (battles × score + {prior} × {neutral}) ÷ (battles + {prior})",
         "account": "Account Bronya Index = battle-weighted average tank score × {scale}"
       },

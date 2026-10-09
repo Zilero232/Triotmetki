@@ -6,7 +6,8 @@ import { match } from 'ts-pattern';
 import { DailyPuzzleShelf } from '@/entities/play/daily-puzzle';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { buttonVariants, DataSourceNote, EmptyState, ErrorState, PageHeader } from '@/ui-kit';
+import { useReservedHeight } from '@/shared/lib';
+import { buttonVariants, EmptyState, ErrorState, PageHeader } from '@/ui-kit';
 
 import { GuessMapContext } from '../model/context';
 import { useGuessMapState } from '../model/hooks';
@@ -18,6 +19,7 @@ export const GuessMapPage = () => {
   const t = useTranslations('play.map');
   const tCrumbs = useTranslations('play.hub.crumbs');
   const state = useGuessMapState();
+  const { reservedStyle, measureRef } = useReservedHeight();
 
   return (
     <div className={s.root}>
@@ -32,9 +34,15 @@ export const GuessMapPage = () => {
         title={t('head.title')}
       />
       {match(state)
-        .with({ kind: 'loading' }, () => <MapSkeleton />)
+        .with({ kind: 'loading' }, () => (
+          <div ref={measureRef} className={s.busy}>
+            <MapSkeleton />
+          </div>
+        ))
         .with({ kind: 'error' }, ({ isRetrying, retry }) => (
-          <ErrorState description={t('states.errorDescription')} isRetrying={isRetrying} title={t('states.errorTitle')} onRetry={retry} />
+          <div className={s.reserved} style={reservedStyle}>
+            <ErrorState description={t('states.errorDescription')} isRetrying={isRetrying} title={t('states.errorTitle')} onRetry={retry} />
+          </div>
         ))
         .with({ kind: 'unavailable' }, () => <EmptyState description={t('states.unavailableDescription')} title={t('states.unavailableTitle')} />)
         .with({ kind: 'ready' }, ({ game }) => (
@@ -44,7 +52,6 @@ export const GuessMapPage = () => {
         ))
         .exhaustive()}
       <DailyPuzzleShelf current='guessMap' />
-      <DataSourceNote />
     </div>
   );
 };

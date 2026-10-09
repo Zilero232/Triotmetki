@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { httpUrlSchema, isoDateTimeSchema, tankIdSchema, uuidSchema } from '../../common/primitives/primitives.schemas';
 import { VEHICLE_SOURCE, VEHICLE_SOURCE_KINDS } from './vehicle-sources.constants';

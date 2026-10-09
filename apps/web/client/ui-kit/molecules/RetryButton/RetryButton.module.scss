@@ -1,0 +1,11 @@
+@use '@/shared/styles/mixins' as *;
+
+.icon {
+  :disabled > & {
+    @include spin;
+  }
+
+  @include reduced-motion {
+    animation: none;
+  }
+}

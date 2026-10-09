@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { accountIdSchema, countSchema, isoDateSchema, isoDateTimeSchema, tankIdSchema } from '../common/primitives/primitives.schemas';
 import { modSyncLibrariesSchema } from '../mod-sync/mod-sync.schemas';

@@ -1,5 +1,4 @@
 {
-  "draft": "Draft. This is not the final wording: the operator's details and the highlighted fields will be filled in before payments open.",
   "related": "Other documents",
   "docs": {
     "privacy": {
@@ -9,8 +8,8 @@
     },
     "terms": {
       "title": "Terms of use and public offer",
-      "lead": "Terms of using the service and the public offer for the Three Marks Plus subscription.",
-      "description": "Terms of use and public offer of the Three Marks service: site rules, the subscription and refunds."
+      "lead": "Terms of using the service and the Three Marks Plus subscription.",
+      "description": "Terms of use of the Three Marks service: site rules, the Plus subscription and refunds."
     },
     "contacts": {
       "title": "Contacts",
@@ -21,11 +20,11 @@
   "sections": {
     "operator": {
       "title": "Data controller",
-      "body": "The personal data controller is <todo>full name or company name</todo>, TIN <todo>TIN</todo>, PSRN <todo>PSRN</todo>, address: <todo>address</todo>. Contact for data questions: <mail>{email}</mail>."
+      "body": "Personal data is processed by the Three Marks project team. For any question about data processing, including requests to access, correct or delete your data, write to <mail>{email}</mail>."
     },
     "data": {
       "title": "What data we process",
-      "body": "When you sign in with Lesta ID: the Mir Tankov account ID and nickname and a Lesta API access token. If you provide them: your email address and Telegram ID. If you bound the modpack: your battle results, your shots, tank loadouts, queue times, game settings (when you send them), replays (if you turned uploads on) and the device key. For the modpack plate the mod sends the account numbers of a battle’s players: the site keeps no copy of that list and, while the switch is on, keeps only a 30-day “mod installed” mark on your account. For the Plus subscription: payment history and subscription status; card data is handled by the payment provider, we never receive or store it. Public game statistics come from the open Lesta API."
+      "body": "When you sign in with Lesta ID: the Mir Tankov account ID and nickname and a Lesta API access token. If you provide or link them: your email address and your Telegram, Discord or VK IDs. If you bound the modpack: your battle results, your shots, tank loadouts, queue times, game settings (when you send them), replays (if you turned uploads on) and the device key. For the modpack plate the mod sends the account numbers of a battle’s players: the site keeps no copy of that list and, while the switch is on, keeps only a 30-day “mod installed” mark on your account. For the Plus subscription: its status and term and, once payments open, payment history; card data is handled by the payment provider, we never receive or store it. Public game statistics come from the open Lesta API."
     },
     "purposes": {
       "title": "Why",
@@ -33,15 +32,19 @@
     },
     "basis": {
       "title": "Legal basis",
-      "body": "The consent you give when you sign in and turn on notifications, and performance of the contract (terms of use and public offer), under Russian Federal Law No. 152-FZ “On Personal Data”."
+      "body": "The consent you give when you sign in and turn on notifications, and performance of the terms of use, under Russian Federal Law No. 152-FZ “On Personal Data”."
     },
     "storage": {
-      "title": "Where and how long data is stored",
-      "body": "Data is stored on servers in the Russian Federation: <todo>hosting provider and region</todo>. We keep it while you have an account and delete it right after the account is deleted, except payment records the law requires us to keep longer. Battle results and sessions from the modpack are kept for up to 2 years."
+      "title": "Where data is stored",
+      "body": "Data is stored on rented servers (VPS) in the Russian Federation. We never sell it or use it for advertising."
+    },
+    "retention": {
+      "title": "How long data is kept and how to delete it",
+      "body": "Account data is kept while the account exists. When you delete the account, its links, settings, notifications, API keys, modpack devices and your posts are deleted at once, and the linked game accounts are hidden from the site and no longer tracked at once; a background job then deletes their data. We delete a game account’s data the same way on Lesta Games’ request. If you later sign in with Lesta ID again, tracking of your account resumes. While the account exists, statistics history, modpack battle results and sessions are kept for up to 2 years, and notifications for 180 days. Database backups are overwritten in rotation and kept for up to 6 months. Subscription and payment records are kept as long as the law requires."
     },
     "transfer": {
       "title": "Who receives data",
-      "body": "The payment provider <todo>payment provider name</todo>, to take payments; the email provider, for the emails you turned on; Telegram and Discord, only if you connected the bot or session reports. Data is never sold or shared for advertising."
+      "body": "We do not share data with third parties, ad networks or search engines. The exceptions: Lesta Games, since Lesta ID sign-in runs over OpenID on their side and public statistics are requested from their open API by account number; and the payment provider, once payments open, only to process a payment. If you connected Telegram, Discord or VK yourself, notifications and reports are delivered through them."
     },
     "rights": {
       "title": "Your rights",
@@ -49,19 +52,19 @@
     },
     "cookies": {
       "title": "Cookies and local storage",
-      "body": "We use a session cookie to keep you signed in, a technical device cookie with a random identifier to count free allowances without signing in (such as 3D armor views), and browser local storage for theme, language and display settings. Analytics services: <todo>list, if any</todo>."
+      "body": "The site has no analytics, ads or third-party trackers. Cookies: the sign-in session on the API domain (valid for 30 days and extended while you use the site); a signed random device ID to count free allowances without signing in, such as 3D armor views (up to 400 days); a temporary 10-minute cookie while you connect a streaming service; an interface language cookie if you switched the language. Browser local storage holds the sign-in token, theme, rating appearance, table settings, pinned tanks and maps, the comparison selection, your player, recent players and daily game progress; session storage holds a referral code until you sign up. This data stays in your browser and you can clear it in the browser settings."
     },
     "privacyChanges": {
       "title": "Changes to this policy",
-      "body": "A new version is published on this page. For material changes we notify you on the site. Version date: <todo>date</todo>."
+      "body": "Version of October 9, 2026. A new version is published on this page; for material changes we notify you on the site."
     },
     "parties": {
       "title": "Parties",
-      "body": "The provider is <todo>full name or company name</todo>, TIN <todo>TIN</todo>, PSRN <todo>PSRN</todo>, address: <todo>address</todo>, email: <mail>{email}</mail>. The user is anyone who uses the Three Marks site or buys a subscription."
+      "body": "These terms are between the Three Marks project team and the user: anyone who uses the Three Marks site, modpack or modpack manager. Contact the team at <mail>{email}</mail>."
     },
     "subject": {
       "title": "Subject",
-      "body": "Three Marks is an unofficial fan-made statistics and tools service for Mir Tankov. It is not affiliated with Lesta Games; game data comes from the open Lesta API. The core features are free."
+      "body": "Three Marks is an unofficial fan-made statistics and tools service for Mir Tankov. It is not affiliated with Lesta Games; game data comes from the open Lesta API, and the rights to the game and its materials belong to Lesta Games. The core features are free."
     },
     "account": {
       "title": "Account",
@@ -69,15 +72,15 @@
     },
     "plus": {
       "title": "The Plus subscription",
-      "body": "Three Marks Plus is a paid subscription that raises limits and unlocks extra features. Some features are free within a monthly allowance (for example 3D armor and detailed battle analysis); allowances follow the calendar month and renew on the 1st at 00:00 Moscow time. The subscription's contents, allowances, prices and periods are listed on the Plus page and form part of this offer. Paying for the subscription means accepting the offer."
+      "body": "Three Marks Plus is a subscription that raises limits and unlocks extra features. Some features are free within a monthly allowance (for example 3D armor and detailed battle analysis); allowances follow the calendar month and renew on the 1st at 00:00 Moscow time. The subscription's contents and allowances are listed on the Plus page. Until payments open, Plus is only granted for free, as a trial and promo days."
     },
     "payment": {
-      "title": "Payment and renewal",
-      "body": "Payments are processed by <todo>payment provider name</todo>. The subscription renews automatically unless you turn auto-renewal off under “Subscription”. A fiscal receipt is sent to your email under Russian Federal Law No. 54-FZ."
+      "title": "Payment",
+      "body": "Payments are not open yet and we charge nothing. Before they open, this section will list the prices, the payment provider and how payment, renewal and receipts work."
     },
     "refund": {
       "title": "Refunds",
-      "body": "You can cancel at any time: turn auto-renew off under “Subscription”, and access stays until the end of the paid period. The paid period is not refunded automatically: we refund the unused days on your request — write to <mail>{email}</mail> or the <bot>bot</bot>. The money goes back the way you paid, within 10 days of the request."
+      "body": "You can cancel at any time, and access stays until the end of the paid period. We refund the unused days on request: write to <mail>{email}</mail> or the <bot>bot</bot>. The money goes back the way you paid, within 10 days of the request."
     },
     "rules": {
       "title": "Acceptable use",
@@ -89,11 +92,7 @@
     },
     "termsChanges": {
       "title": "Changes to the terms",
-      "body": "A new version takes effect when published on this page. For active subscriptions, price changes apply from the next period. Version date: <todo>date</todo>."
-    },
-    "requisites": {
-      "title": "Company details",
-      "body": "<todo>full name or company name</todo>\nTIN <todo>TIN</todo>, PSRN <todo>PSRN</todo>\nAddress: <todo>address</todo>\nEmail: <mail>{email}</mail>"
+      "body": "Version of October 9, 2026. A new version takes effect when published on this page. If a price changes, subscriptions already paid for get it only from the next period."
     },
     "support": {
       "title": "Three Marks support",

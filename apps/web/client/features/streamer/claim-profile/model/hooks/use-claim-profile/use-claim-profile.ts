@@ -51,6 +51,8 @@ export const useClaimProfile = (slug: string) => {
     queryClient.setQueryData(QUERY_KEYS.streamers.claim(slug), next);
 
     if (next.status === 'resolved') {
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.me.streamer.profile });
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.streamers.profile(slug) });
       toast.success(t('resolved.toast'));
     }
   };

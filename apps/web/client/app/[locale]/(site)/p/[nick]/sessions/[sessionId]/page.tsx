@@ -31,8 +31,11 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/p/[nick]
 
 const SessionRoute = async ({ params }: Pick<PageProps<'/[locale]/p/[nick]/sessions/[sessionId]'>, 'params'>) => {
   const { nick, sessionId } = await params;
+  const nickname = decodeRouteParam(nick);
 
-  return <PlayerSessionPage nickname={decodeRouteParam(nick)} sessionId={sessionId} />;
+  await requireRouteEntity(playerRouteEntity(nickname));
+
+  return <PlayerSessionPage nickname={nickname} sessionId={sessionId} />;
 };
 
 const Page = ({ params }: PageProps<'/[locale]/p/[nick]/sessions/[sessionId]'>) => (

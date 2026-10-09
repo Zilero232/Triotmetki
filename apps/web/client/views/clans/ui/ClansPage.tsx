@@ -3,7 +3,7 @@
 import { StrongholdIcon } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
-import { DataSourceNote, PageHero } from '@/ui-kit';
+import { PageHero } from '@/ui-kit';
 
 import { useClanLeaders } from '../model/hooks';
 import { ClanLeaders, ClanRating, ClanSearch } from './components';
@@ -26,7 +26,6 @@ export const ClansPage = () => {
       {isShown && <ClanLeaders query={query} />}
       <div className={s.content}>
         <ClanRating />
-        <DataSourceNote />
       </div>
     </div>
   );

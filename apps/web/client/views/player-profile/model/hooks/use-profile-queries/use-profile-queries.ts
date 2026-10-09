@@ -4,6 +4,7 @@ import type { InsightsPeriod } from '@otmetki/schemas';
 
 import type { PlayerTanksFilter } from '@/entities/player/profile';
 
+import { useAuthSession } from '@/entities/auth/session';
 import {
   getNicknameHistory,
   getPlayerActivity,
@@ -15,6 +16,7 @@ import {
   getPlayerTanks,
   PLAYERS_REQUEST
 } from '@/entities/player/profile';
+import { usePlus } from '@/features/plus/plus-gate';
 
 import type { UsePlayerHistoryInput } from './use-profile-queries.types';
 
@@ -23,8 +25,18 @@ import { useProfileSection } from '../use-profile-section';
 export const usePlayerTanks = (filter: PlayerTanksFilter = {}) =>
   useProfileSection({ section: 'tanks', params: filter, fetcher: (input) => getPlayerTanks({ ...input, filter }) });
 
-export const usePlayerHistory = ({ metric, granularity }: UsePlayerHistoryInput) =>
-  useProfileSection({ section: 'history', params: { metric, granularity }, fetcher: (input) => getPlayerHistory({ ...input, metric, granularity }) });
+export const usePlayerHistory = ({ metric, granularity }: UsePlayerHistoryInput) => {
+  const { data: session } = useAuthSession();
+  const { isPlus } = usePlus();
+
+  const viewerId = session?.user.id ?? null;
+
+  return useProfileSection({
+    section: 'history',
+    params: { metric, granularity, viewerId, isPlus },
+    fetcher: (input) => getPlayerHistory({ ...input, metric, granularity })
+  });
+};
 
 export const usePlayerActivity = () =>
   useProfileSection({

@@ -3,7 +3,7 @@
 import { HeartPulse } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { DataSourceNote, ErrorState, PageHero, SectionHeader, Skeleton } from '@/ui-kit';
+import { ErrorState, PageHero, SectionHeader, Skeleton } from '@/ui-kit';
 
 import { STATUS_PAGE } from '../config';
 import { useStatusPage } from '../model/hooks';
@@ -68,7 +68,6 @@ export const StatusPage = () => {
             {build.commit ? t('buildWithCommit', { version: build.version, commit: build.commit }) : t('build', { version: build.version })}
           </p>
         )}
-        <DataSourceNote />
       </div>
     </div>
   );

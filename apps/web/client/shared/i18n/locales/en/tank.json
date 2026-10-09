@@ -43,7 +43,6 @@
     "mobility": "Mobility",
     "scouting": "Scouting"
   },
-  "source": "Data: Lesta Games API",
   "loading": "Loading the vehicle",
   "garage": {
     "actionsLabel": "Vehicle actions",
@@ -317,6 +316,6 @@
     "meta": "Win rate and average damage of this tank on each map in random battles, from players running the Three Marks mod and uploaded replays",
     "map": "Map",
     "emptyTitle": "No battles yet",
-    "emptyDescription": "Random battles on this tank will show up here from players running the Three Marks mod and from uploaded replays."
+    "emptyDescription": "The table fills in once enough battles on this tank come in."
   }
 }

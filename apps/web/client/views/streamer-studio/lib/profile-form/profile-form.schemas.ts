@@ -1,5 +1,5 @@
 import { STREAMER_PLATFORMS, STREAMER_PROFILE, streamerPlatformSchema, upsertStreamerProfileSchema } from '@otmetki/schemas';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { PROFILE_FORM } from '../../config';
 import { isChannelHost } from './profile-form';

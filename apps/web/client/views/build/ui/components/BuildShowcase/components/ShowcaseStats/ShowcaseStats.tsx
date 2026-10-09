@@ -14,7 +14,7 @@ export const ShowcaseStats = () => {
   const { items, hasStats, isPending } = useShowcaseStats();
 
   return match({ isPending, hasStats })
-    .with({ isPending: true }, () => <Skeleton height={140} />)
-    .with({ hasStats: true }, () => <StatList items={items} title={t('title')} />)
+    .with({ isPending: true }, () => <Skeleton height={252} />)
+    .with({ hasStats: true }, () => <StatList columns={1} items={items} title={t('title')} />)
     .otherwise(() => <p className={s.empty}>{t('empty')}</p>);
 };

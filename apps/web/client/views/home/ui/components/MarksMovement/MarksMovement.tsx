@@ -34,7 +34,7 @@ export const MarksMovement = () => {
             </div>
           </div>
         }
-        empty={<EmptyState isCompact title={t('empty')} />}
+        empty={<EmptyState isCompact isFramed title={t('empty')} />}
         isEmpty={({ rows }) => rows.length === 0}
         query={query}
       >

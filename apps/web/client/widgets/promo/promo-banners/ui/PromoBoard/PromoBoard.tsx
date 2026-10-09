@@ -5,14 +5,14 @@ import { useId } from 'react';
 
 import { PROMO_CAROUSEL } from '../../config';
 import { usePromoBoard } from '../../model/hooks';
-import { PromoCarousel, PromoSocial } from '../components';
+import { PromoCarousel } from '../components';
 
 import s from './PromoBoard.module.scss';
 
 export const PromoBoard = () => {
   const t = useTranslations('promo.board');
   const titleId = useId();
-  const { hero, tiles, isManagerReady } = usePromoBoard();
+  const { hero, tiles } = usePromoBoard();
 
   return (
     <section aria-labelledby={titleId} className={s.root}>
@@ -25,7 +25,6 @@ export const PromoBoard = () => {
           <PromoCarousel key={key} className={s.tile} delay={delay} items={items} label={t('tile', { index: index + 1 })} variant='tile' />
         ))}
       </div>
-      <PromoSocial isManagerReady={isManagerReady} />
     </section>
   );
 };

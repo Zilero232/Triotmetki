@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { DataSourceNote, PageHeader, Tabs } from '@/ui-kit';
+import { PageHeader, Tabs } from '@/ui-kit';
 
 import { useShopTab } from '../model/hooks';
 import { OfferList, ReturnsTable } from './components';
@@ -26,7 +26,6 @@ export const ShopPage = () => {
         variant='panel'
         onValueChange={setTab}
       />
-      <DataSourceNote />
     </div>
   );
 };

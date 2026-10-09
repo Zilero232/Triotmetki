@@ -5,7 +5,7 @@
   },
   "header": {
     "title": "Developer API",
-    "lead": "REST API /v1: WN8, player history, tank statistics, marks of excellence thresholds, clans and sessions. Data source: Lesta Games.",
+    "lead": "REST API /v1: WN8, player history, tank statistics, marks of excellence thresholds, clans and sessions.",
     "getKey": "Get a key"
   },
   "figures": {
@@ -107,9 +107,7 @@
   "terms": {
     "title": "API terms",
     "items": {
-      "free": "The public API is free: anyone can get a key. Plus only raises your personal limits.",
       "personal": "Plus limits are for personal non-commercial use: your own bots, widgets and scripts.",
-      "community": "Open free community projects can get Community limits at no cost — contact us about your project.",
       "resale": "Reselling access to our API or putting its data behind a paywall is forbidden.",
       "lesta": "Part of the data comes from the Lesta API, so Lesta Games’ terms apply too: credit the data source and do not use it commercially."
     }

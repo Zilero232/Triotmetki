@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { accountIdSchema, countSchema, isoDateTimeSchema, percentSchema, uuidSchema } from '../common/primitives/primitives.schemas';
 import { WATCHLIST, WATCHLIST_DIGESTS, WATCHLIST_PERIODS } from './watchlist.constants';

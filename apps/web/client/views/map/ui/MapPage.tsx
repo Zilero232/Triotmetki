@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import { useRouteParam } from '@/shared/lib';
-import { DataSourceNote, PageHeader, Tabs } from '@/ui-kit';
+import { PageHeader, Tabs } from '@/ui-kit';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import { useMapDetail } from '../model/hooks';
@@ -41,7 +41,6 @@ export const MapPage = () => {
               variant='panel'
             />
             <MapNav arenaId={map.arenaId} />
-            <DataSourceNote />
           </>
         )}
       </ResourceGate>

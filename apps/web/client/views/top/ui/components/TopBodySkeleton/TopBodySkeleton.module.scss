@@ -9,3 +9,20 @@
 .content {
   @include page(var(--space-7));
 }
+
+.filters {
+  min-height: 134px;
+  border-bottom: 1px solid var(--color-border);
+
+  @include below(lg) {
+    min-height: 42px;
+  }
+}
+
+.hallHeader {
+  min-height: 52px;
+}
+
+.body {
+  padding: var(--space-4);
+}

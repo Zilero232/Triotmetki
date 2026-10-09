@@ -3,12 +3,21 @@
 import NumberFlow from '@number-flow/react';
 import { useLocale } from 'next-intl';
 
-import { flowFormat } from '@/shared/lib';
+import { flowFormat, unitSuffix } from '@/shared/lib';
 
 import type { AnimatedNumberProps } from './AnimatedNumber.types';
 
 export const AnimatedNumber = ({ value, format, prefix, suffix, className }: AnimatedNumberProps) => {
   const locale = useLocale();
 
-  return <NumberFlow className={className} format={flowFormat(format)} locales={locale} prefix={prefix} suffix={suffix} value={value} />;
+  return (
+    <NumberFlow
+      className={className}
+      format={flowFormat(format)}
+      locales={locale}
+      prefix={prefix}
+      suffix={unitSuffix({ suffix, locale })}
+      value={value}
+    />
+  );
 };

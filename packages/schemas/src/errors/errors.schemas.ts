@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { plusFeatureSchema, plusLimitKeySchema } from '../plus/plus.schemas';
 import { API_ERROR_CODES } from './errors.constants';

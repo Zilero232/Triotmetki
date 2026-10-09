@@ -1,5 +1,5 @@
 import { playerSummarySchema, vehicleSummarySchema } from '@otmetki/schemas';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { COMPARE_KINDS } from '../../config';
 

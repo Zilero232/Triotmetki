@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { isoDateTimeSchema } from '../common/primitives/primitives.schemas';
 import { modDeviceIdSchema, modRatingsRequestSchema } from '../mod/mod.schemas';

@@ -24,6 +24,7 @@ export const useCosmeticsPage = () => {
   const onSaved = (next: CosmeticsInventory) => {
     queryClient.setQueryData(QUERY_KEYS.me.cosmetics, next);
     void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.me.progression.shells });
+    void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.cosmetics.all });
   };
 
   const purchase = useMutation({

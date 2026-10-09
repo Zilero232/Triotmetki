@@ -1,5 +1,5 @@
 import { COMPETITION } from '@otmetki/schemas';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { JOIN_FORM } from '../../config/competition-page.constants';
 

@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { isoDateTimeSchema, uuidSchema } from '../common/primitives/primitives.schemas';
 import { MOD_REPORTS } from './mod-reports.constants';

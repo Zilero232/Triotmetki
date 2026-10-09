@@ -17,7 +17,9 @@ export const PlusPage = () => {
   const t = useTranslations('plus.header');
   const tBrand = useTranslations('brand');
   const format = useFormatter();
-  const { isPlus, isTrialOffered, trialDays, fromMonthlyRub, isPricePending } = usePlusPage();
+  const { isPlus, isTrialOffered, trialDays, fromMonthlyRub } = usePlusPage();
+
+  const priceValue = fromMonthlyRub === null ? null : t('priceValue', { price: format.number(fromMonthlyRub, PLUS_CHECKOUT.priceFormat) });
 
   return (
     <div className={s.root}>
@@ -36,22 +38,9 @@ export const PlusPage = () => {
             {isTrialOffered && <p className={s.offer}>{t('trialOffer', { days: trialDays })}</p>}
           </div>
         }
-        figures={
-          isPricePending ? (
-            <KeyFigure label={t('priceFigure')} size='xl' value={null} variant='compact' />
-          ) : (
-            fromMonthlyRub !== null && (
-              <KeyFigure
-                label={t('priceFigure')}
-                size='xl'
-                value={t('priceValue', { price: format.number(fromMonthlyRub, PLUS_CHECKOUT.priceFormat) })}
-                variant='compact'
-              />
-            )
-          )
-        }
         art={{ kind: 'emblem', glyph: <OtmetkiLogoIcon size={480} /> }}
         breadcrumbs={[{ label: tBrand('plus') }]}
+        figures={<KeyFigure label={t('priceFigure')} size='xl' value={priceValue} variant='compact' />}
         lead={t('description')}
         title={tBrand('plus')}
       />

@@ -33,7 +33,6 @@ import s from './TankPage.module.scss';
 export const TankPage = () => {
   const t = useTranslations('tank.missing');
   const tNav = useTranslations('nav.items');
-  const ts = useTranslations('tank');
   const name = useRouteParam('slug');
   const query = useTankDetail();
 
@@ -74,7 +73,6 @@ export const TankPage = () => {
                 <BestBattles />
               </div>
               <SimilarTanks />
-              <p className={s.source}>{ts('source')}</p>
             </div>
           </TankProvider>
         )}

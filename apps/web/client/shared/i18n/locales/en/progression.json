@@ -34,7 +34,7 @@
     "endsAt": "New challenges on {date}",
     "empty": "Play this week — challenges appear for your most played tanks.",
     "done": "Done",
-    "reward": "+{casings, plural, one {# casing} other {# casings}} · +{points, plural, one {# point} other {# points}}",
+    "reward": "+{shells, plural, one {# casing} other {# casings}} · +{points, plural, one {# point} other {# points}}",
     "progress": "{value} of {target}",
     "metric": {
       "damageBattles": "{target, plural, one {# battle} other {# battles}} with {threshold}+ damage",

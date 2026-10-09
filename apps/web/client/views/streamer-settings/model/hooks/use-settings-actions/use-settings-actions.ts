@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { settingsAsText, useSettingsFormatter } from '@/entities/streamer/settings';
-import { downloadFile } from '@/shared/lib';
+import { downloadFile } from '@/shared/lib/data-file';
 
 import { settingsFile } from '../../../lib/settings-page';
 

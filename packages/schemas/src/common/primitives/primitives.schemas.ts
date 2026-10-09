@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 export const accountIdSchema = z.coerce.number().int().positive();
 export const clanIdSchema = z.coerce.number().int().positive();

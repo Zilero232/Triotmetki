@@ -10,10 +10,10 @@ export const useMoeRows = () => {
   const { query, all, total, q, pinned, isCollecting, isUntracked } = useMoeFeed();
   const { isPending, filterIds, rowIds } = usePinnedRows({ scope: 'tanks', isPinnedOnly: pinned });
 
-  const { hasNextPage, isFetchingNextPage, fetchNextPage } = query;
+  const { hasNextPage, isFetchingNextPage, isFetchNextPageError, fetchNextPage } = query;
   const named = filterByName({ rows: all, query: q });
 
-  useFetchAllPages({ hasNextPage: hasNextPage && !isCollecting, isFetchingNextPage, fetchNextPage });
+  useFetchAllPages({ hasNextPage: hasNextPage && !isCollecting, isFetchingNextPage, isFetchNextPageError, fetchNextPage });
 
   return {
     rows: filterIds === null ? named : named.filter(({ vehicle }) => filterIds.includes(String(vehicle.tankId))),

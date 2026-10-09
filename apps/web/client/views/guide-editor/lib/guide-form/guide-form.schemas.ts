@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { zCreateGuide, zUpdateGuide } from '@/entities/guide/guide';
 

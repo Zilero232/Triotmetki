@@ -18,6 +18,7 @@ export const QUERY_KEYS = {
   },
   leaderboard: (params: object) => ['leaderboard', params] as const,
   cosmetics: {
+    all: ['cosmetics'] as const,
     profile: (accountId: number) => ['cosmetics', 'profile', accountId] as const,
     profiles: (accountIds: readonly number[]) => ['cosmetics', 'profiles', accountIds] as const
   },
@@ -204,6 +205,7 @@ export const QUERY_KEYS = {
     list: ({ viewerId, params }: GuideListKeyInput) => ['guides', 'list', viewerId, params] as const,
     mine: ({ viewerId }: GuideViewerKeyInput) => ['guides', 'mine', viewerId] as const,
     authors: ['guides', 'authors'] as const,
+    bySlug: (slug: string) => ['guides', 'detail', slug] as const,
     detail: ({ viewerId, slug }: GuideDetailKeyInput) => ['guides', 'detail', slug, viewerId] as const
   },
   blog: {

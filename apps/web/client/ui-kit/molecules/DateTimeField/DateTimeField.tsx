@@ -4,9 +4,8 @@ import { Popover } from '@base-ui/react/popover';
 import { clsx } from 'clsx';
 import { CalendarClock, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { DayPicker } from 'react-day-picker';
+import dynamic from 'next/dynamic';
 
-import { TIME_ZONE } from '@/shared/i18n';
 import { useDateTimeField, useFormControl } from '@/shared/lib';
 
 import type { DateTimeFieldProps } from './DateTimeField.types';
@@ -16,6 +15,11 @@ import { TimeSpin } from './components';
 import { DATE_TIME_FIELD_VIEW } from './DateTimeField.constants';
 
 import s from './DateTimeField.module.scss';
+
+const DateCalendar = dynamic(() => import('./components/DateCalendar').then((module) => module.DateCalendar), {
+  ssr: false,
+  loading: () => <div aria-hidden className={s.calendarPlaceholder} />
+});
 
 export const DateTimeField = ({
   value,
@@ -69,39 +73,7 @@ export const DateTimeField = ({
       <Popover.Portal>
         <Popover.Positioner align='start' className={s.positioner} sideOffset={6}>
           <Popover.Popup className={s.popup}>
-            <DayPicker
-              fixedWeeks
-              showOutsideDays
-              classNames={{
-                root: s.calendar,
-                months: s.months,
-                month: s.month,
-                month_caption: s.caption,
-                caption_label: s.captionLabel,
-                nav: s.nav,
-                button_previous: s.navButton,
-                button_next: s.navButton,
-                chevron: s.chevron,
-                month_grid: s.grid,
-                weekdays: s.weekdays,
-                weekday: s.weekday,
-                week: s.week,
-                day: s.day,
-                day_button: s.dayButton,
-                today: s.today,
-                selected: s.selected,
-                outside: s.outside,
-                disabled: s.disabled
-              }}
-              defaultMonth={selectedDay}
-              labels={{ labelNext: () => t('nextMonth'), labelPrevious: () => t('previousMonth') }}
-              locale={dayLocale}
-              mode='single'
-              selected={selectedDay}
-              timeZone={TIME_ZONE}
-              weekStartsOn={1}
-              onSelect={onDaySelect}
-            />
+            <DateCalendar dayLocale={dayLocale} selectedDay={selectedDay} onDaySelect={onDaySelect} />
             <div className={s.time}>
               <span className={s.timeLabel}>{t('time')}</span>
               <TimeSpin

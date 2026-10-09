@@ -8,6 +8,7 @@ export default eslint(
     ignores: [
       '**/node_modules',
       '**/.next',
+      '**/.next-*',
       '**/out',
       '**/dist',
       '**/generated',
@@ -231,6 +232,25 @@ export default eslint(
     files: ['apps/web/client/**/*.tsx'],
     rules: {
       'siberiacancode-jsx-a11y/no-noninteractive-tabindex': ['error', { tags: [], roles: ['tabpanel', 'region'], allowExpressionValues: true }]
+    }
+  },
+
+  // `import { z } from 'zod'` keeps zod's whole namespace in the client bundle, every
+  // locale included (~70 KB gz on every page); the namespace import tree-shakes.
+  // The first two entries repeat the base config's list, which a file-scoped rule replaces.
+  {
+    name: 'otmetki/zod-namespace',
+    files: ['apps/web/client/**/*.{ts,tsx}', 'packages/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        'TSEnumDeclaration[const=true]',
+        'TSExportAssignment',
+        {
+          selector: "ImportDeclaration[source.value='zod'][importKind!='type'] > ImportSpecifier[imported.name='z'][importKind!='type']",
+          message: "Use `import * as z from 'zod'`: the named `z` keeps every locale in the bundle."
+        }
+      ]
     }
   },
 

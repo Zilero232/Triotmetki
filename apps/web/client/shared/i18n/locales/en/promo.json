@@ -76,18 +76,6 @@
       "lead": "3D armor models with thickness and angles and <hl>a side-by-side comparison</hl> of vehicles.",
       "cta": "View armor"
     },
-    "builds": {
-      "kicker": "Services",
-      "title": "How to build a tank",
-      "lead": "Equipment, crew and consumables <hl>with win rates from real battles</hl>.",
-      "cta": "To builds"
-    },
-    "marks": {
-      "kicker": "Marks",
-      "title": "Damage for 65, 85 and 95%",
-      "lead": "The damage each mark needs <hl>for every vehicle in the game</hl> and a battles-to-mark forecast.",
-      "cta": "Marks table"
-    },
     "ratings": {
       "kicker": "Methodology",
       "title": "How we rate players",
@@ -99,18 +87,6 @@
       "title": "Guess the tank and the map",
       "lead": "Daily Mir Tankov puzzles: <hl>a new tank and a new map</hl> every day.",
       "cta": "Play"
-    },
-    "tournaments": {
-      "kicker": "Tournaments",
-      "title": "Brackets and sign-ups",
-      "lead": "Tournaments run by players: <hl>sign-ups, the bracket and results</hl> on one page.",
-      "cta": "To tournaments"
-    },
-    "streamers": {
-      "kicker": "Streamers",
-      "title": "Overlays for OBS",
-      "lead": "A streamer profile, <hl>OBS overlays</hl> and game settings for viewers.",
-      "cta": "For streamers"
     }
   },
   "mock": {
@@ -157,15 +133,5 @@
         "crit": "Critical"
       }
     }
-  },
-  "social": {
-    "label": "Stay in touch",
-    "telegram": {
-      "title": "Telegram bot",
-      "hint": "@{bot}: notifications and sessions"
-    },
-    "plus": "Plus subscription",
-    "manager": "Download the manager",
-    "modpack": "Modpack"
   }
 }

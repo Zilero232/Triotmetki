@@ -57,4 +57,4 @@ const Page = ({ params }: PageProps<'/[locale]/p/[nick]'>) => (
   </>
 );
 
-export default withMessages({ component: Page, messages: ['cosmetics', 'marks.progress', 'periods', 'profile', 'watchlist.button'] });
+export default withMessages({ component: Page, messages: ['cosmetics', 'marks.progress', 'periods', 'plus', 'profile', 'watchlist.button'] });

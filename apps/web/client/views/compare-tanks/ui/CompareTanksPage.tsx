@@ -25,7 +25,6 @@ export const CompareTanksPage = () => {
         <CompareDock />
       </PageHeader>
       {ids.length > 0 ? <CompareBoard /> : <ComparePresets />}
-      <p className={s.source}>{t('source')}</p>
     </div>
   );
 };

@@ -33,6 +33,8 @@ export const generateMetadata = async ({ params }: PageProps<'/[locale]/c/[tag]/
 const WorkspaceRoute = async ({ params }: Pick<PageProps<'/[locale]/c/[tag]/workspace'>, 'params'>) => {
   const tag = decodeRouteParam((await params).tag);
 
+  await requireRouteEntity(clanRouteEntity(tag));
+
   return <ClanWorkspacePage tag={tag} />;
 };
 

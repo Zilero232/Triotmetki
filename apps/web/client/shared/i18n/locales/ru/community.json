@@ -56,7 +56,7 @@
     "minBattles": "от {value, plural, one {# боя} few {# боёв} many {# боёв} other {# боя}}",
     "minWn8": "WN8 от {value, number}",
     "maxWn8": "WN8 до {value, number}",
-    "minWinRate": "победы от {value, number}%",
+    "minWinRate": "победы от {value, number}\u00a0%",
     "fields": {
       "legend": "Требования к игроку",
       "minBattles": "Боёв от",

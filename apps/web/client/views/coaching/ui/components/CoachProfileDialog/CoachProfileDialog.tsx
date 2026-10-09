@@ -4,17 +4,21 @@ import { useTranslations } from 'next-intl';
 import { Controller } from 'react-hook-form';
 
 import { FormDialog } from '@/features/community/form-dialog';
-import { buttonVariants, Select } from '@/ui-kit';
+import { buttonVariants, ErrorState, Select } from '@/ui-kit';
 
 import { useCoachProfileForm } from '../../../model/hooks';
 import { CoachAboutFields, CoachActiveField, CoachContactsFields, CoachTanksField } from './components';
 
 export const CoachProfileDialog = () => {
   const t = useTranslations('coaching.profile');
-  const { dialog, accounts, isSignedIn, hasProfile, isLoading } = useCoachProfileForm();
+  const { dialog, accounts, isSignedIn, hasProfile, isLoading, isLoadFailed, isRetrying, retry } = useCoachProfileForm();
 
   if (!isSignedIn) {
     return null;
+  }
+
+  if (isLoadFailed) {
+    return <ErrorState isCompact isRetrying={isRetrying} title={t('loadError')} onRetry={retry} />;
   }
 
   return (

@@ -3,7 +3,7 @@
 import { clsx } from 'clsx';
 import { useTranslations } from 'next-intl';
 
-import { Card, CardHeader, DataSourceNote, QueryState, SegmentedControl, Skeleton } from '@/ui-kit';
+import { Card, CardHeader, QueryState, SegmentedControl, Skeleton } from '@/ui-kit';
 
 import type { TankMathProps } from './TankMath.types';
 
@@ -33,7 +33,6 @@ export const TankMath = ({ tankId, id, className }: TankMathProps) => {
               <BallisticsSection config={config} />
               <SpottingSection data={data} preset={preset} />
               <p className={s.note}>{t('note')}</p>
-              <DataSourceNote />
             </div>
           )
         }

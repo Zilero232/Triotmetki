@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 
-import { EXTERNAL_LINKS, LEGAL, SUPPORT } from '@/shared/config';
+import { EXTERNAL_LINKS, SUPPORT } from '@/shared/config';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { PageHeader } from '@/ui-kit';
@@ -17,18 +17,12 @@ export const LegalPage = ({ doc }: LegalPageProps) => {
   return (
     <article className={s.root}>
       <PageHeader breadcrumbs={[{ label: t(`docs.${doc}.title`) }]} description={t(`docs.${doc}.lead`)} title={t(`docs.${doc}.title`)} />
-      {LEGAL.isDraft && (
-        <p className={s.draft} role='note'>
-          {t('draft')}
-        </p>
-      )}
       {LEGAL_SECTIONS[doc].map((section, index) => (
         <section key={section} className={s.section} id={section}>
           <h2 className={s.heading}>{`${index + 1}. ${t(`sections.${section}.title`)}`}</h2>
           <p className={s.body}>
             {t.rich(`sections.${section}.body`, {
               email: SUPPORT.email,
-              todo: (chunks) => <mark className={s.todo}>{chunks}</mark>,
               mail: (chunks) => (
                 <a className={s.link} href={`mailto:${SUPPORT.email}`}>
                   {chunks}

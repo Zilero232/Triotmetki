@@ -92,6 +92,6 @@
     "linkAction": "Привязать аккаунт",
     "emptyTitle": "Боёв в режиме нет",
     "emptyText": "За {days, plural, one {последний # день} few {последние # дня} many {последние # дней} other {последние # дня}} мы не видели ваших боёв в этом режиме.",
-    "career": "За всё время по данным Лесты: {battles, plural, one {# бой} few {# боя} many {# боёв} other {# боя}}, {winRate}% побед, средний урон {damage}"
+    "career": "За всё время по данным Лесты: {battles, plural, one {# бой} few {# боя} many {# боёв} other {# боя}}, {winRate}\u00a0% побед, средний урон {damage}"
   }
 }

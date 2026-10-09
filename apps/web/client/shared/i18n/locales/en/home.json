@@ -35,48 +35,6 @@
       "tournaments": "Schedule and brackets"
     }
   },
-  "modpack": {
-    "label": "The Three Marks modpack",
-    "eyebrow": "Modpack and manager",
-    "title": "Marks and battle results, right in the game",
-    "lead": "A free set of fair-play mods with a manager that installs the modpack, turns on what you need and moves it after a patch.",
-    "download": "Download the manager",
-    "downloadModpack": "Download the modpack",
-    "soonEyebrow": "Coming soon: modpack",
-    "soonCta": "Follow the release",
-    "soonNote": "Free · Windows 10 and 11 · the modpack and the manager ship together",
-    "details": "What's inside",
-    "note": "Free · Windows 10 and 11 · no banned features",
-    "props": {
-      "marks": {
-        "title": "Mark percent in battle",
-        "text": "Live mark progress and the damage you need for the next one"
-      },
-      "results": {
-        "title": "Battle results",
-        "text": "Damage, assisted damage and the mark change after every battle, the session in the hangar"
-      },
-      "manager": {
-        "title": "One-click install",
-        "text": "Profiles, component sets and moving the modpack after a client update"
-      },
-      "fairPlay": {
-        "title": "Fair play only",
-        "text": "No enemy positions or reload timers — only what the client itself shows"
-      }
-    },
-    "preview": {
-      "title": "Modpack manager",
-      "preset": "Set: Recommended",
-      "items": {
-        "marks": "Marks in battle",
-        "results": "Battle results",
-        "session": "Session",
-        "replayUpload": "Replay auto-upload"
-      },
-      "patch": "Move after a patch"
-    }
-  },
   "garage": {
     "title": "Popular vehicles",
     "period": "this week",
@@ -145,14 +103,14 @@
     "stronghold": "Stronghold"
   },
   "community": {
-    "title": "Streamers and clans",
+    "title": "Streamers",
     "streamers": {
       "title": "Who is live",
       "description": "Live Mir Tankov streamers and their settings"
     },
-    "clans": {
-      "title": "Clans",
-      "description": "Rosters, activity and strongholds"
+    "forStreamers": {
+      "title": "For streamers",
+      "description": "OBS overlays, viewer challenges and your own page"
     }
   },
   "forYou": {
@@ -161,8 +119,6 @@
     "titleNoAccount": "Link your account with Lesta ID",
     "firstWin": "First win of the day ×2 is available on {count, plural, one {# tank} other {# tanks}}",
     "firstWinTaken": "All first wins of the day are used up",
-    "profile": "My profile",
-    "marks": "My marks",
     "analytics": "Session and analytics",
     "watchlist": "Watchlist",
     "link": "Link an account",
@@ -219,8 +175,7 @@
       "title": "Shortcuts",
       "profile": "Profile",
       "tanks": "My tanks",
-      "sessions": "Sessions",
-      "marks": "Marks"
+      "sessions": "Sessions"
     },
     "missing": {
       "title": "Player “{nickname}” not found",

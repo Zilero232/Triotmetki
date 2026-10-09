@@ -50,7 +50,7 @@ export const BattleCard = ({ battle }: BattleCardProps) => {
         <div className={s.fact}>
           <dt>{t('facts.moe')}</dt>
           <dd>
-            {battle.moePercent === null ? '—' : `${format.number(battle.moePercent, 'decimal2')}%`}
+            {battle.moePercent === null ? '—' : format.number(battle.moePercent / 100, 'percent2')}
             {battle.moePercentDelta !== null && <DeltaValue className={s.delta} suffix='%' value={battle.moePercentDelta} />}
           </dd>
         </div>

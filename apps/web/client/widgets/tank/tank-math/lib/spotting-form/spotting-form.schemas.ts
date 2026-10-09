@@ -1,5 +1,5 @@
 import { FOLIAGE_KINDS } from '@otmetki/gamedata';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { TANK_MATH } from '../../config';
 

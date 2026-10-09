@@ -1,7 +1,5 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-
 import { PlusGate } from '@/features/plus/plus-gate';
 import { TanksHubNav } from '@/widgets/tank/tanks-hub-nav';
 
@@ -11,7 +9,6 @@ import { EconomyTable, MyEconomy, StatsControls, StatsTable, TanksFilters, Tanks
 import s from './TanksPage.module.scss';
 
 export const TanksPage = () => {
-  const t = useTranslations('tanks');
   const [{ view }] = useTanksState();
 
   return (
@@ -31,7 +28,6 @@ export const TanksPage = () => {
             <EconomyTable />
           </>
         )}
-        <p className={s.source}>{t('source')}</p>
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
+import { RequestTime } from '@/shared/seo/request-time';
 import { PageHeaderFallback } from '@/ui-kit';
 import { ReplayPage, ReplaySkeleton } from '@/views/replay';
 
@@ -37,15 +38,20 @@ const ReplayRoute = async ({ params }: Pick<PageProps<'/[locale]/replays/[id]'>,
 };
 
 const Page = ({ params }: PageProps<'/[locale]/replays/[id]'>) => (
-  <Suspense
-    fallback={
-      <PageHeaderFallback hasDescription={false}>
-        <ReplaySkeleton />
-      </PageHeaderFallback>
-    }
-  >
-    <ReplayRoute params={params} />
-  </Suspense>
+  <>
+    <Suspense
+      fallback={
+        <PageHeaderFallback hasDescription={false}>
+          <ReplaySkeleton />
+        </PageHeaderFallback>
+      }
+    >
+      <ReplayRoute params={params} />
+    </Suspense>
+    <Suspense>
+      <RequestTime />
+    </Suspense>
+  </>
 );
 
 export default withMessages({ component: Page, messages: ['maps', 'modes.all', 'modes.replay', 'replays', 'tanks.picker'] });

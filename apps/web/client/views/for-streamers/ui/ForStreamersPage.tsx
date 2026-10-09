@@ -28,7 +28,6 @@ export const ForStreamersPage = () => {
         }
         art={{ kind: 'emblem', glyph: <MonitorPlay size={480} strokeWidth={1.25} /> }}
         breadcrumbs={[{ label: t('crumb') }]}
-        eyebrow={t('eyebrow')}
         lead={t('lead')}
         title={t('pageTitle')}
       />

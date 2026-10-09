@@ -30,5 +30,5 @@
     "errorTitle": "Could not load builds",
     "errorDescription": "Check your connection and try again."
   },
-  "source": "Data: battles of players running the Three Marks mod, their own tanks only. Shares stay hidden below {min} battles."
+  "source": "Only players' own tanks count. Shares stay hidden below {min, plural, one {# battle} other {# battles}}."
 }

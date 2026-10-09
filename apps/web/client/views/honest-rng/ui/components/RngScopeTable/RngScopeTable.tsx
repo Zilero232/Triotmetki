@@ -31,7 +31,7 @@ export const RngScopeTable = ({ title, scopeLabel, rows }: RngScopeTableProps) =
                 <th scope='row'>{row.label}</th>
                 <td>{format.number(row.shots)}</td>
                 <td>{row.meanRoll === null ? '—' : <DeltaValue format={{ maximumFractionDigits: 1 }} suffix='%' value={row.meanRoll} />}</td>
-                <td>{row.within === null ? '—' : `${format.number(row.within, { maximumFractionDigits: 1 })}%`}</td>
+                <td>{row.within === null ? '—' : format.number(row.within / 100, { style: 'percent', maximumFractionDigits: 1 })}</td>
               </tr>
             ))}
           </tbody>

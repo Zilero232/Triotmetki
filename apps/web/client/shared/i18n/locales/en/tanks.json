@@ -3,7 +3,6 @@
     "title": "Tank statistics",
     "description": "Stats of every Mir Tankov tank: win rate, average damage, win rate gap and popularity across the server."
   },
-  "source": "Data: Lesta Games API",
   "head": {
     "title": "Tanks",
     "description": "Win rate, damage and popularity of Mir Tankov vehicles across battle modes.",

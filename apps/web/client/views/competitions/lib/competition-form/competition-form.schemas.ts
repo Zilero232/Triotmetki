@@ -1,5 +1,5 @@
 import { COMPETITION_MODES, COMPETITION_VISIBILITIES, competitionScoringSchema, createCompetitionSchema } from '@otmetki/schemas';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { zonedInputToIso } from '@/shared/lib';
 

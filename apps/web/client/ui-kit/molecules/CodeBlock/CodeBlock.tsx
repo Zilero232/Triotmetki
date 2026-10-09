@@ -3,9 +3,9 @@
 import { clsx } from 'clsx';
 import { Check, Copy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Fragment } from 'react';
+import { lazy, Suspense } from 'react';
 
-import { codeLines, useCopyFeedback } from '@/shared/lib';
+import { useCopyFeedback } from '@/shared/lib';
 
 import type { CodeBlockProps } from './CodeBlock.types';
 
@@ -13,10 +13,11 @@ import { IconButton } from '../../atoms';
 
 import s from './CodeBlock.module.scss';
 
+const CodeLines = lazy(() => import('./components').then((module) => ({ default: module.CodeLines })));
+
 export const CodeBlock = ({ code, language, title, className }: CodeBlockProps) => {
   const t = useTranslations('common');
   const { copied, onCopyClick } = useCopyFeedback({ value: code });
-  const lines = codeLines(code);
 
   return (
     <figure className={clsx(s.root, className)}>
@@ -29,18 +30,9 @@ export const CodeBlock = ({ code, language, title, className }: CodeBlockProps) 
       </figcaption>
       <pre className={s.pre}>
         <code className={s.code}>
-          {lines.map(({ key, isFirst, className: lineClassName, tokens }) => (
-            <Fragment key={key}>
-              {!isFirst && '\n'}
-              <span className={lineClassName}>
-                {tokens.map((token) => (
-                  <span key={token.key} className={token.className} style={token.style}>
-                    {token.value}
-                  </span>
-                ))}
-              </span>
-            </Fragment>
-          ))}
+          <Suspense fallback={code}>
+            <CodeLines code={code} />
+          </Suspense>
         </code>
       </pre>
     </figure>

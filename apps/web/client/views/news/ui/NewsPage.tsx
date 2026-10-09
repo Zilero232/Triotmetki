@@ -4,7 +4,7 @@ import { Newspaper } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { TankPicker } from '@/features/tank/pick-tank';
-import { Button, Card, DataSourceNote, FilteredEmptyState, PageHeader, QueryState, SegmentedControl } from '@/ui-kit';
+import { Button, Card, FilteredEmptyState, PageHeader, QueryState, SegmentedControl } from '@/ui-kit';
 import { LeadFeed, LeadFeedSkeleton } from '@/widgets/content/lead-feed';
 
 import { NEWS } from '../config';
@@ -67,7 +67,6 @@ export const NewsPage = () => {
           {t('more', { shown: feed.entries.length, total: feed.total })}
         </Button>
       )}
-      <DataSourceNote />
     </div>
   );
 };

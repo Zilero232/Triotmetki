@@ -16,13 +16,6 @@
   max-width: 60ch;
 }
 
-.eyebrow {
-  @include marked-label;
-
-  margin: 0;
-  color: var(--color-gold);
-}
-
 .title {
   @include display(var(--display-md));
 
@@ -37,22 +30,11 @@
   line-height: var(--leading-body);
 }
 
-.layout {
-  display: grid;
-  align-items: start;
-  gap: var(--space-5);
-  grid-template-columns: minmax(0, 1fr);
-
-  @include from(3xl) {
-    gap: var(--space-6);
-    grid-template-columns: minmax(0, 1fr) minmax(16rem, 20rem);
-  }
-}
-
 .main {
   @include panel;
   @include stack(var(--space-5));
 
+  max-width: 64rem;
   padding: var(--space-5) var(--space-6) var(--space-6);
 
   @include below(md) {

@@ -34,10 +34,6 @@ export const TELEGRAM_BOT = {
   url: 'https://t.me/OtmetkiBot'
 } as const;
 
-export const LEGAL = {
-  isDraft: true
-} as const;
-
 export const SUPPORT = {
   email: 'support@triotmetki.ru',
   telegramUrl: TELEGRAM_BOT.url

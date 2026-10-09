@@ -2,7 +2,7 @@ import { stylelint } from '@siberiacancode/stylelint';
 
 export default {
   ...stylelint,
-  ignoreFiles: ['**/node_modules/**', '**/.next/**', '**/dist/**', '**/out/**', '**/coverage/**'],
+  ignoreFiles: ['**/node_modules/**', '**/.next/**', '**/.next-*/**', '**/dist/**', '**/out/**', '**/coverage/**'],
   rules: {
     ...stylelint.rules,
 

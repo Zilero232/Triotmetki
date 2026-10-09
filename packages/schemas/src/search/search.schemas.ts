@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { accountIdSchema, clanIdSchema, countSchema } from '../common/primitives/primitives.schemas';
 import { listParam } from '../common/query/query.schemas';

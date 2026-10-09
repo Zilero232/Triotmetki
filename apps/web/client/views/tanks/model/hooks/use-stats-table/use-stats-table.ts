@@ -5,7 +5,8 @@ import { useLocalStorage } from '@siberiacancode/reactuse';
 import { usePinnedRows } from '@/features/app/pin-rows';
 import { useVehicleFilters } from '@/features/tank/filter-vehicles';
 import { STORAGE_KEYS } from '@/shared/constants';
-import { DATA_FILE, downloadFile, toCsv, useHydrated } from '@/shared/lib';
+import { useHydrated } from '@/shared/lib';
+import { DATA_FILE, downloadFile, toCsv } from '@/shared/lib/data-file';
 
 import type { OptionalTankColumn } from '../use-tank-columns';
 

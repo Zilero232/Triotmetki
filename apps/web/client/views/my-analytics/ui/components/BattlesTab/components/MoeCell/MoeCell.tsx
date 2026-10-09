@@ -15,7 +15,8 @@ export const MoeCell = ({ percent, delta }: MoeCellProps) => {
 
   return (
     <span className={s.root}>
-      {format.number(percent, 'decimal2')}%{delta !== null && <DeltaValue className={s.delta} suffix='%' value={delta} />}
+      {format.number(percent / 100, 'percent2')}
+      {delta !== null && <DeltaValue className={s.delta} suffix='%' value={delta} />}
     </span>
   );
 };

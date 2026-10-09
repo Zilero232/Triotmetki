@@ -21,7 +21,15 @@ export const MapFragment = () => {
       <div className={s.frame}>
         {image && (
           <m.div animate={{ scale: zoom }} className={s.zoom} initial={false} style={{ transformOrigin: origin }} transition={FRAGMENT_ZOOM}>
-            <Image fill alt={isOver ? name : t('alt')} className={s.image} draggable={false} sizes={GUESS_MAP.imageSizes} src={image} />
+            <Image
+              fill
+              alt={isOver ? name : t('alt')}
+              className={s.image}
+              draggable={false}
+              loading='eager'
+              sizes={GUESS_MAP.imageSizes}
+              src={image}
+            />
           </m.div>
         )}
       </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useTableVirtualizer } from '@/shared/lib';
+import { useTableVirtualizer } from '@/shared/lib/use-table-virtualizer';
 
 import type { DataTableVirtualRowsProps } from './DataTableVirtualRows.types';
 

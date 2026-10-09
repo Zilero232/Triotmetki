@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { countSchema, isoDateSchema, isoDateTimeSchema, percentSchema, tankIdSchema } from '../common/primitives/primitives.schemas';
 import { listParam, paginatedSchema, paginationQuerySchema, sortQuery } from '../common/query/query.schemas';

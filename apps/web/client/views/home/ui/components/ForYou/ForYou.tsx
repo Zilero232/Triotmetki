@@ -1,13 +1,13 @@
 'use client';
 
-import { Award, BarChart3, Eye, Target, Trophy, UserRound } from 'lucide-react';
+import { Award, BarChart3, Eye, Target, Trophy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
 import { Card, Skeleton } from '@/ui-kit';
 
-import { HOME, HOME_ICON } from '../../../config';
+import { HOME_ICON } from '../../../config';
 import { useForYou } from '../../../model/hooks';
 
 import s from './ForYou.module.scss';
@@ -43,14 +43,6 @@ export const ForYou = () => {
         <nav className={s.links}>
           {nickname && (
             <>
-              <Link className={s.link} href={ROUTES.players.profile(nickname)}>
-                <UserRound aria-hidden size={HOME_ICON.forYou} />
-                {t('profile')}
-              </Link>
-              <Link className={s.link} href={{ pathname: ROUTES.players.profile(nickname), query: HOME.forYou.marksQuery }}>
-                <Trophy aria-hidden size={HOME_ICON.forYou} />
-                {t('marks')}
-              </Link>
               <Link className={s.link} href={ROUTES.social.leagues}>
                 <Award aria-hidden size={HOME_ICON.forYou} />
                 {leagueRank === null ? t('league') : t('leagueRank', { rank: leagueRank })}

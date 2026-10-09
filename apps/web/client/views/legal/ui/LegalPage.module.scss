@@ -7,14 +7,6 @@
   padding-block: var(--space-7) var(--space-8);
 }
 
-.draft {
-  padding: var(--space-3) var(--space-4);
-  border: 1px dashed var(--color-warning);
-  border-radius: var(--radius-md);
-  margin: 0;
-  color: var(--color-text);
-}
-
 .section {
   @include stack(var(--space-2));
 
@@ -33,13 +25,6 @@
   color: var(--color-text-muted);
   line-height: 1.6;
   white-space: pre-line;
-}
-
-.todo {
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--color-warning) 22%, transparent);
-  color: var(--color-text);
-  padding-inline: 4px;
 }
 
 .link {

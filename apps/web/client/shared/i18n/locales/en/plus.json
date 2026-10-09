@@ -127,10 +127,6 @@
       "enabled": "We will let you know once checkout opens",
       "disabled": "Checkout alert turned off",
       "failed": "Could not save the setting"
-    },
-    "includes": {
-      "title": "What Plus includes",
-      "free": "Profiles, marks and the core stats stay free for everyone — with Plus or without."
     }
   },
   "faq": {

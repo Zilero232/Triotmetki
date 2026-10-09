@@ -27,7 +27,7 @@ export const CardStats = ({ stats, marks3 }: CardStatsProps) => {
       <div className={s.cell}>
         <dt>{t('winRate')}</dt>
         <dd className={s.value} data-tone={stats.winRateTone ?? undefined}>
-          {stats.winRate === null ? '—' : `${format.number(stats.winRate, DIRECTORY.percentFormat)}%`}
+          {stats.winRate === null ? '—' : format.number(stats.winRate / 100, DIRECTORY.percentFormat)}
         </dd>
       </div>
       <div className={s.cell}>

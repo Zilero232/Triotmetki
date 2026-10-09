@@ -33,7 +33,7 @@ export const ChartsSection = () => {
           <figcaption className={s.caption}>{t('area')}</figcaption>
           <AreaChart
             ariaLabel={t('area')}
-            formatValue={(value) => `${format.number(value, { maximumFractionDigits: 1 })}%`}
+            formatValue={(value) => format.number(value / 100, { style: 'percent', maximumFractionDigits: 1 })}
             labels={labels}
             series={[{ id: 'a', label: t('seriesA'), values: [...CHART_SPECIMENS.area] }]}
           />

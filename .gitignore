@@ -1,53 +1,72 @@
 # Dependencies
 node_modules/
+.venv/
 
-# Build output
+# Build output: JavaScript
 .next/
+.next-*/
 out/
 dist/
 generated/
 *.tsbuildinfo
-*.wotmod
+
+# Build output: game modpack and manager
 *.mtmod
-__pycache__/
-apps/game/manager/tauri/target/
+*.wotmod
 apps/game/manager/tauri/gen/
+apps/game/manager/tauri/target/
+
+# Python bytecode and tool caches
+__pycache__/
 *.pyc
-.venv/
 .pytest_cache/
 .ruff_cache/
 
-# Secrets and local config — every .env variant except the committed template
-.env
-.env.*
-!.env.example
+# JavaScript tool caches
+.cache/
+.eslintcache
+.stylelintcache
 
-# Agent tooling — rules and agents are the repo's own, everything else is local
-.agents/
-.claude/*
-!.claude/rules/
-!.claude/agents/
-.codebase-memory/
-
-# Logs
-*.log
-
-# Test artifacts and tool caches
+# Test and audit artifacts
 coverage/
 e2e/.results/
 e2e/.screens/
 playwright-report/
 .playwright/
-.cache/
-.eslintcache
-.stylelintcache
-.visit-probe.mjs
+.lighthouseci/
+*.lighthouse.html
+*.lighthouse.json
 
-# Local state: replays and armor models (.data), a dev copy of the VPS downloads folder
-.data/
-apps/web/server/downloads/
-/downloads/
+# Throwaway probe scripts in the repo root
+/.pw-*
+/.visit-probe.mjs
 
-# Redesign screenshots and scripts (local only)
-apps/game/modpack/ui-web/.redesign/
+# Redesign screenshots and scripts
 apps/game/manager/web/.redesign/
+apps/game/modpack/ui-web/.redesign/
+
+# Local state: replays and armor models, a dev copy of the VPS downloads folder
+.data/
+/downloads/
+apps/web/server/downloads/
+
+# Secrets: every .env variant except the committed template
+.env
+.env.*
+!.env.example
+
+# Agent tooling: rules and agents belong to the repo, everything else is local
+.agents/
+.claude/*
+!.claude/agents/
+!.claude/rules/
+.codebase-memory/
+
+# Logs
+*.log
+
+# OS and editor noise (.vscode keeps its shared settings)
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/

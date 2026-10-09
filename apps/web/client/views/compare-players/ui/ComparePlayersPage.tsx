@@ -9,7 +9,7 @@ import { useId } from 'react';
 
 import { ROUTES } from '@/shared/constants';
 import { MOTION_VARIANTS } from '@/shared/lib';
-import { Card, CardHeader, DataSourceNote, EmptyState, PageHeader, QueryState, SegmentedControl } from '@/ui-kit';
+import { Card, CardHeader, EmptyState, PageHeader, QueryState, SegmentedControl } from '@/ui-kit';
 
 import { useComparePage } from '../model/hooks';
 import { AddSlot, CompareTable, PlayerSlot } from './components';
@@ -65,7 +65,6 @@ export const ComparePlayersPage = () => {
           </QueryState>
         )}
       </Card>
-      <DataSourceNote />
     </div>
   );
 };

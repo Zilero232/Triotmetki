@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 
 import { Link } from '@/shared/i18n/navigation';
-import { Band } from '@/ui-kit';
+import { Band, SectionHeader } from '@/ui-kit';
 
 import { HOME_COMMUNITY, HOME_ICON } from '../../../config';
 
@@ -15,9 +15,7 @@ export const CommunityBand = () => {
 
   return (
     <Band aria-labelledby={titleId} innerClassName={s.inner}>
-      <h2 className={s.title} id={titleId}>
-        {t('title')}
-      </h2>
+      <SectionHeader id={titleId} title={t('title')} variant='display' />
       <ul className={s.grid}>
         {HOME_COMMUNITY.map(({ key, href, icon: Icon }) => (
           <li key={key} className={s.item}>

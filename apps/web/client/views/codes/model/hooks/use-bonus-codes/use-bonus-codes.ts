@@ -21,7 +21,7 @@ export const useBonusCodes = () => {
     tab,
     query,
     figures: query.data && query.data.active.length + query.data.expired.length > 0 ? query.data : null,
-    hasFigures: query.isPending || Boolean(query.data && query.data.active.length + query.data.expired.length > 0),
+    hasFigures: query.isPending || query.isError || Boolean(query.data && query.data.active.length + query.data.expired.length > 0),
     activeCount: query.data ? query.data.active.length : null,
     expiringCount: expiringCount({ codes: query.data?.active ?? [], now, expiringDays: CODES.expiringDays }),
     setTab: (next: CodesTab) => void setTab(next)

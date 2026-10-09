@@ -1,13 +1,15 @@
 'use client';
 
-import { Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 
 import { fallbackRowCount } from '@/shared/lib';
 
 import type { DataTableProps } from './DataTable.types';
 
-import { DataTableContent, DataTableFallback } from './components';
+import { DataTableFallback } from './components';
 import { DATA_TABLE } from './DataTable.constants';
+
+const DataTableContent = lazy(() => import('./components/DataTableContent').then((module) => ({ default: module.DataTableContent<any> })));
 
 export const DataTable = <T,>({
   density = 'default',

@@ -35,7 +35,7 @@ export const CrewCalculator = () => {
             {...CREW_XP.percentRange}
             label={t('percent')}
             value={percent}
-            valueLabel={`${format.number(percent)}%`}
+            valueLabel={format.number(percent / 100, 'percent')}
             onValueChange={field('percent')}
           />
           <div className={s.fields}>

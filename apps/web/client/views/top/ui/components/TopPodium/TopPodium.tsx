@@ -13,10 +13,14 @@ import s from './TopPodium.module.scss';
 
 export const TopPodium = () => {
   const t = useTranslations('top');
-  const { filter, podium, isLoading, isRefreshing } = useTopBoard();
+  const { filter, podium, isLoading, isRefreshing, query } = useTopBoard();
 
   if (isLoading) {
     return <PodiumSkeleton count={TOP_BOARD.podiumSize} {...TOP_BOARD.podiumSkeleton} />;
+  }
+
+  if (query.isError) {
+    return <PodiumSkeleton isBlank count={TOP_BOARD.podiumSize} {...TOP_BOARD.podiumSkeleton} />;
   }
 
   if (podium.length === 0) {

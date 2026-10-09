@@ -1,5 +1,5 @@
 import { activateChallengeSchema } from '@otmetki/schemas';
-import { z } from 'zod';
+import * as z from 'zod';
 
 export const activateFormSchema = z.object({
   donorName: z

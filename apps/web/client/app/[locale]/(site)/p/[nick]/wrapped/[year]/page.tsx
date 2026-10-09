@@ -46,7 +46,11 @@ const WrappedRoute = async ({ params }: Pick<PageProps<'/[locale]/p/[nick]/wrapp
     notFound();
   }
 
-  return <PlayerWrappedPage nickname={decodeRouteParam(nick)} year={year} />;
+  const nickname = decodeRouteParam(nick);
+
+  await requireRouteEntity(playerRouteEntity(nickname));
+
+  return <PlayerWrappedPage nickname={nickname} year={year} />;
 };
 
 const Page = ({ params }: PageProps<'/[locale]/p/[nick]/wrapped/[year]'>) => (

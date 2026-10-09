@@ -4,7 +4,7 @@ import type { LeaderboardScope } from '@otmetki/schemas';
 
 import { useTranslations } from 'next-intl';
 
-import { ActionStrip, Card, DataSourceNote, Tabs } from '@/ui-kit';
+import { ActionStrip, Card, Tabs } from '@/ui-kit';
 
 import { TOP_SCOPES } from '../../../config';
 import { useTopParams } from '../../../model/hooks';
@@ -40,7 +40,6 @@ export const TopBody = () => {
           </div>
         </Card>
         <HallOfFame />
-        <DataSourceNote />
       </div>
     </>
   );

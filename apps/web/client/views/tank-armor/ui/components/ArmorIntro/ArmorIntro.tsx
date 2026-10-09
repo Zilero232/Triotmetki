@@ -2,25 +2,10 @@
 
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/shared/constants';
-import { Link } from '@/shared/i18n/navigation';
-
-import type { ArmorIntroProps } from './ArmorIntro.types';
-
 import s from './ArmorIntro.module.scss';
 
-export const ArmorIntro = ({ slug }: ArmorIntroProps) => {
+export const ArmorIntro = () => {
   const t = useTranslations('armor.page');
 
-  return (
-    <p className={s.root}>
-      {t.rich('intro', {
-        link: (chunks) => (
-          <Link className={s.link} href={ROUTES.tanks.detail(slug)}>
-            {chunks}
-          </Link>
-        )
-      })}
-    </p>
-  );
+  return <p className={s.root}>{t('intro')}</p>;
 };

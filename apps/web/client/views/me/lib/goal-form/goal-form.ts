@@ -2,7 +2,7 @@ import type { GoalMetric } from '@otmetki/schemas';
 
 import { createGoalFieldsSchema, hasGoalTank, isGoalTankMetric } from '@otmetki/schemas';
 import { addDays } from 'date-fns';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import type { ToGoalInputInput } from './goal-form.types';
 

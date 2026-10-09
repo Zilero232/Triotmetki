@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { isoDateTimeSchema } from '../common/primitives/primitives.schemas';
 import { TELEGRAM_WEB_LOGIN } from './telegram.constants';

@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { accountIdSchema, clanIdSchema, countSchema, isoDateSchema, isoDateTimeSchema, uuidSchema } from '../common/primitives/primitives.schemas';
 import { API_KEY, WEBHOOK } from './developer.constants';

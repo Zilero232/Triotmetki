@@ -1,6 +1,6 @@
 @use '@/shared/styles/mixins' as *;
 
-.root {
+.root.root {
   position: sticky;
   top: calc(var(--header-offset) + var(--space-4));
 }

@@ -114,7 +114,7 @@
     "nowLoud": "Notifications are arriving immediately right now"
   },
   "push": {
-    "eyebrow": "Web Push",
+    "eyebrow": "This device",
     "title": "Browser push",
     "description": "System notifications on this device — even with the site closed.",
     "status": {

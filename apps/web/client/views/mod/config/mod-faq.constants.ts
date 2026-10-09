@@ -2,7 +2,6 @@ import { ROUTES } from '@/shared/constants';
 
 export const MOD_FAQ = [
   { id: 'ban' },
-  { id: 'free' },
   { id: 'patch' },
   { id: 'conflicts' },
   { id: 'perf' },

@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import * as rootParams from 'next/root-params';
 
-import { LEGAL } from '@/shared/config';
 import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { createPageMetadata } from '@/shared/seo';
@@ -19,7 +18,7 @@ export const legalMetadata = async (doc: (typeof LEGAL_DOCS)[number]): Promise<M
     description: t(`${doc}.description`),
     path: ROUTES.legal[doc],
     locale,
-    index: !LEGAL.isDraft,
+    index: true,
     follow: true
   });
 };

@@ -1,1 +1,0 @@
-export { ModpackPreview } from './ModpackPreview';

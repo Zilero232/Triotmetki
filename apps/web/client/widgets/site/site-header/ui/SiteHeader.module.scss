@@ -29,7 +29,7 @@
   }
 }
 
-.nav {
+.inner > .nav {
   @include below(4xl) {
     display: none;
   }

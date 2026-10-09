@@ -14,10 +14,11 @@ export const MetricCell = ({ value, metric }: MetricCellProps) => {
     return <span className={s.root}>—</span>;
   }
 
-  return (
-    <span className={s.root}>
-      {format.number(value, { maximumFractionDigits: metric ? METRIC_DIGITS[metric] : 0 })}
-      {metric && isIncludedIn(metric, PERCENT_METRICS) && '%'}
-    </span>
-  );
+  const digits = metric ? METRIC_DIGITS[metric] : 0;
+  const isPercent = metric !== undefined && isIncludedIn(metric, PERCENT_METRICS);
+  const text = isPercent
+    ? format.number(value / 100, { style: 'percent', maximumFractionDigits: digits })
+    : format.number(value, { maximumFractionDigits: digits });
+
+  return <span className={s.root}>{text}</span>;
 };

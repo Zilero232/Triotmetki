@@ -28,12 +28,14 @@ export const AccountShell = ({ children }: AccountShellProps) => {
         .with({ isFailed: true }, () => <ErrorState isRetrying={isRetrying} onRetry={retry} />)
         .with({ isSignedIn: false }, () => (
           <EmptyState
+            isFramed
             action={
-              <Link className={buttonVariants({ variant: 'primary', size: 'sm' })} href={loginHref}>
+              <Link className={buttonVariants({ variant: 'primary' })} href={loginHref}>
                 <LogIn size={14} />
                 {t('signIn')}
               </Link>
             }
+            className={s.guest}
             description={t(`guest.${section.key}.description`)}
             icon={<section.icon aria-hidden size={28} />}
             title={t(`guest.${section.key}.title`)}

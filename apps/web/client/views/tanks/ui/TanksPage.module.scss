@@ -10,9 +10,3 @@
   @include shell;
   @include stack(var(--space-5));
 }
-
-.source {
-  @include source-line;
-
-  margin: 0;
-}

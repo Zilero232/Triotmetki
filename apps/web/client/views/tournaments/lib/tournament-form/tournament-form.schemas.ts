@@ -1,5 +1,5 @@
 import { isFuture } from 'date-fns';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { zCreateTournament } from '@/entities/tournament/tournament';
 import { requirementsFormSchema } from '@/features/community/stat-requirements';

@@ -32,7 +32,6 @@ export const PlayerWrappedPage = ({ nickname: requested, year }: PlayerWrappedPa
           ]}
           description={t('lead', { nickname, year })}
           emblem={<CalendarDays />}
-          meta={t('eyebrow', { year })}
           title={t('title', { nickname, year })}
         >
           {wrapped.data && wrapped.data.battles > 0 && (

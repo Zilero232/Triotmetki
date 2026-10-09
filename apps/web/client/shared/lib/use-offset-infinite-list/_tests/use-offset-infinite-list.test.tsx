@@ -1,3 +1,4 @@
+import type { QueryKey } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -45,5 +46,38 @@ describe('useOffsetInfiniteList', () => {
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.items).toEqual([]);
     expect(result.current.total).toBe(0);
+  });
+
+  it('hands the query state no data when the first page fails, so it shows the error with a retry', async () => {
+    const queryFn = vi.fn(() => Promise.reject(new Error('down')));
+    const { result } = renderHook(() => useOffsetInfiniteList<string>({ queryKey: ['broken'], queryFn }), { wrapper: createWrapper() });
+
+    await waitFor(() => expect(result.current.query.isError).toBe(true));
+
+    expect(result.current.query.data).toBeUndefined();
+  });
+
+  it('keeps the loaded items while the filters of the same list change', async () => {
+    const { result, rerender } = renderHook(({ queryKey }: { queryKey: QueryKey }) => useOffsetInfiniteList({ queryKey, queryFn: fetchPage }), {
+      wrapper: createWrapper(),
+      initialProps: { queryKey: ['letters', 'list', { from: 'a' }] }
+    });
+
+    await waitFor(() => expect(result.current.isPending).toBe(false));
+    rerender({ queryKey: ['letters', 'list', { from: 'b' }] });
+
+    expect(result.current.items).toEqual(['a', 'b']);
+  });
+
+  it('shows no items of another list while the new one loads', async () => {
+    const { result, rerender } = renderHook(({ queryKey }: { queryKey: QueryKey }) => useOffsetInfiniteList({ queryKey, queryFn: fetchPage }), {
+      wrapper: createWrapper(),
+      initialProps: { queryKey: ['letters', 'mine', {}] }
+    });
+
+    await waitFor(() => expect(result.current.isPending).toBe(false));
+    rerender({ queryKey: ['letters', 'list', {}] });
+
+    expect(result.current.items).toEqual([]);
   });
 });

@@ -1,5 +1,5 @@
 import { createApiKeySchema } from '@otmetki/schemas';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { KEY_EXPIRY } from '../../config';
 

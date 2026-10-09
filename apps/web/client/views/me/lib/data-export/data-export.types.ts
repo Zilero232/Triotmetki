@@ -1,6 +1,6 @@
 import type { AnalyticsExport, RawStatsExport } from '@otmetki/schemas';
 
-import type { CsvCell } from '@/shared/lib';
+import type { CsvCell } from '@/shared/lib/data-file';
 
 export type RawExportKind = 'rawJson' | 'tanksCsv';
 

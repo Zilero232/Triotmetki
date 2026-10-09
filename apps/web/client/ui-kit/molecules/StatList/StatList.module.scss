@@ -35,16 +35,15 @@
 }
 
 .label {
-  overflow: hidden;
+  min-width: 0;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .value {
   @include numeric;
 
+  flex-shrink: 0;
   color: var(--color-text);
   font-size: var(--text-sm);
   font-weight: 700;
@@ -62,7 +61,7 @@
   font-weight: 400;
 }
 
-.delta {
+.value > .delta {
   min-width: 0;
   margin-left: var(--space-2);
 }

@@ -1,1 +1,1 @@
-export { nextPageOffset } from './page-offset';
+export { isSameListKey, nextPageOffset } from './page-offset';

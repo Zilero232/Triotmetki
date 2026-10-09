@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { LEAGUE_METRICS, LEAGUE_SCOPES, LEAGUE_TIERS, LEAGUE_ZONES, WEEKLY_CHALLENGE_METRICS } from './social.constants';
 

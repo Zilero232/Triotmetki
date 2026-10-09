@@ -55,7 +55,7 @@
     "activityTitle": "Активность за год",
     "activitySummary": "{total, plural, one {# бой} few {# боя} many {# боёв} other {# боя}} за {active, plural, one {# день} few {# дня} many {# дней} other {# дня}}",
     "activityEmpty": "Нет боёв за последний год",
-    "activityDay": "{date}: {battles, plural, =0 {боёв не\u00a0было} one {# бой} few {# боя} many {# боёв} other {# боя}}{battles, plural, =0 {} other {, {winRate}% побед}}",
+    "activityDay": "{date}: {battles, plural, =0 {боёв не\u00a0было} one {# бой} few {# боя} many {# боёв} other {# боя}}{battles, plural, =0 {} other {, {winRate}\u00a0% побед}}",
     "activityHint": "Наведите на день, чтобы увидеть бои",
     "activityAria": "Календарь активности: {total, plural, one {# бой} few {# боя} many {# боёв} other {# боя}} за {active, plural, one {# активный день} few {# активных дня} many {# активных дней} other {# активного дня}}",
     "less": "Меньше",
@@ -152,7 +152,7 @@
     "collection": "Коллекция трёх отметок",
     "collectionValue": "{done} из {total}",
     "battles": "{count, plural, one {# бой} few {# боя} many {# боёв} other {# боя}}",
-    "toNext": "до {percent}%: +{damage} урона",
+    "toNext": "до {percent}\u00a0%: +{damage} урона",
     "projection": {
       "projected": "≈ {count, plural, one {# бой} few {# боя} many {# боёв} other {# боя}} до 3 отметок при вашем среднем",
       "done": "Три отметки взяты",
@@ -201,7 +201,7 @@
     "weakTanks": "Где вы ниже сервера",
     "strongTanks": "Где вы сильнее сервера",
     "ppSuffix": " п.\u00a0п.",
-    "damageRatio": "урон {value}% от сервера",
+    "damageRatio": "урон {value}\u00a0% от сервера",
     "tips": {
       "weak_class": {
         "title": "Слабый класс",
@@ -213,7 +213,7 @@
       },
       "low_damage_tank": {
         "title": "Недобор урона",
-        "body": "На {tank} вы наносите {damageRatio}% от среднего урона сервера."
+        "body": "На {tank} вы наносите {damageRatio}\u00a0% от среднего урона сервера."
       },
       "not_enough_battles": {
         "title": "Мало боёв",
@@ -228,11 +228,11 @@
       "title": "Результаты по времени суток",
       "beta": "Бета",
       "approximate": "Время примерное: без мода мы видим бои только при периодическом обновлении статистики.",
-      "bestHour": "Лучшее время: {from}:00–{to}:00 · {rate}% побед",
-      "worstHour": "Хуже всего: {from}:00–{to}:00 · {rate}% побед",
-      "bestWeekday": "Сильный день: {day} · {rate}% побед",
+      "bestHour": "Лучшее время: {from}:00–{to}:00 · {rate}\u00a0% побед",
+      "worstHour": "Хуже всего: {from}:00–{to}:00 · {rate}\u00a0% побед",
+      "bestWeekday": "Сильный день: {day} · {rate}\u00a0% побед",
       "gridLabel": "Процент побед по часам и дням недели",
-      "cell": "{hour}:00 · {battles, plural, one {# бой} few {# боя} many {# боёв} other {# боя}} · {rate}% побед",
+      "cell": "{hour}:00 · {battles, plural, one {# бой} few {# боя} many {# боёв} other {# боя}} · {rate}\u00a0% побед",
       "empty": "Нет данных о времени боёв"
     },
     "empty": "Мало боёв для разбора"

@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { vehicleIdentity } from '@/entities/tank/tank';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { NationBackdrop, TankImage, TierNumeral } from '@/ui-kit';
+import { Breadcrumbs, NationBackdrop, TankImage, TierNumeral } from '@/ui-kit';
 
 import type { BuildStageProps } from './BuildStage.types';
 
@@ -17,6 +17,7 @@ import s from './BuildStage.module.scss';
 export const BuildStage = ({ toggle, left, right, stats, compare, notice, actions }: BuildStageProps) => {
   const t = useTranslations('builds.showcase');
   const tGame = useTranslations('game');
+  const tHead = useTranslations('builds.head');
   const { vehicle } = useBuildContext();
 
   const tank = vehicleIdentity(vehicle);
@@ -27,6 +28,7 @@ export const BuildStage = ({ toggle, left, right, stats, compare, notice, action
       <div className={s.left}>{left}</div>
       <div className={s.center}>
         <header className={s.head}>
+          <Breadcrumbs isCurrentAccent items={[{ label: tHead('crumbBuilds'), href: ROUTES.builds.list }, { label: vehicle.name }]} />
           <span className={s.eyebrow}>{t('eyebrow')}</span>
           <h1 className={s.title} data-premium={tank.isPremium || undefined}>
             {vehicle.name}

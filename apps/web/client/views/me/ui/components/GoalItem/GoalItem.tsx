@@ -1,7 +1,7 @@
 'use client';
 
 import { Trash2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { Badge, IconButton, ProgressBar } from '@/ui-kit';
 
@@ -14,6 +14,7 @@ import s from './GoalItem.module.scss';
 
 export const GoalItem = ({ goal, onRemove }: GoalItemProps) => {
   const t = useTranslations('me.goals');
+  const format = useFormatter();
   const { progress, tankName, daysLeft, formatValue: value } = useGoalItem(goal);
 
   const { metric, target, baseline, current, status } = goal;
@@ -35,7 +36,7 @@ export const GoalItem = ({ goal, onRemove }: GoalItemProps) => {
         label={t('progress', { from: value(baseline), current: current === null ? '—' : value(current) })}
         tone={status === 'achieved' ? 'good' : 'accent'}
         value={progress * 100}
-        valueLabel={`${Math.round(progress * 100)}%`}
+        valueLabel={format.number(progress, 'share')}
       />
       <span className={s.rule}>{t(`rule.${metric}`)}</span>
       {daysLeft !== null && <span className={s.deadline}>{daysLeft >= 0 ? t('daysLeft', { count: daysLeft }) : t('overdue')}</span>}

@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { countSchema, httpsUrlSchema, isoDateTimeSchema, uuidSchema } from '../common/primitives/primitives.schemas';
 import { INBOX } from './notifications.constants';

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { PercentFormatter } from '../percent.types';
 
-import { percentText } from '../percent';
+import { percentSign, percentText, unitSuffix } from '../percent';
 import { PERCENT_TEXT } from '../percent.constants';
 
 const formatter = (locale: string): PercentFormatter => ({
@@ -25,5 +25,25 @@ describe('percentText', () => {
 
   it('prints the placeholder for a missing rate', () => {
     expect(percentText({ format: formatter('en'), value: null })).toBe(PERCENT_TEXT.empty);
+  });
+});
+
+describe('percentSign', () => {
+  it('puts a no-break space before the sign in Russian', () => {
+    expect(percentSign('ru')).toBe(`${String.fromCharCode(160)}%`);
+  });
+
+  it('glues the sign to the number in English', () => {
+    expect(percentSign('en')).toBe('%');
+  });
+});
+
+describe('unitSuffix', () => {
+  it('localizes the percent sign', () => {
+    expect(unitSuffix({ suffix: '%', locale: 'ru' })).toBe(`${String.fromCharCode(160)}%`);
+  });
+
+  it('keeps any other suffix as is', () => {
+    expect(unitSuffix({ suffix: ' pp', locale: 'ru' })).toBe(' pp');
   });
 });

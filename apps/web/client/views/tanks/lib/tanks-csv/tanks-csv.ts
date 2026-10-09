@@ -1,6 +1,6 @@
 import type { TankServerStatsRow } from '@otmetki/schemas';
 
-import type { CsvCell } from '@/shared/lib';
+import type { CsvCell } from '@/shared/lib/data-file';
 
 export const tanksCsvRows = (rows: readonly TankServerStatsRow[]): Record<string, CsvCell>[] =>
   rows.map(({ vehicle, battles, players, winRate, winRateDiff, avgDamage, avgFrags, avgSpotted, avgXp, avgBlocked, survivalRate, accuracy }) => ({

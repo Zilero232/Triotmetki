@@ -117,7 +117,7 @@
       }
     },
     "camoSkill": "Навык «Маскировка»",
-    "camoSkillValue": "{value} %",
+    "camoSkillValue": "{value}\u00a0%",
     "verdict": {
       "me": "Я вижу первым",
       "them": "Цель видит первой",

@@ -19,7 +19,7 @@ export const TankArmorPage = () => {
   return (
     <div className={s.root}>
       <ArmorHeader client={query.data?.response.source.client} name={name} slug={tankSlug} version={query.data?.response.gameVersion}>
-        <ArmorIntro slug={tankSlug} />
+        <ArmorIntro />
       </ArmorHeader>
       <div className={s.stage}>
         {isLimitPending && <ArmorLoading />}

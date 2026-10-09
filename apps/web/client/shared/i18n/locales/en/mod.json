@@ -5,7 +5,6 @@
   },
   "hero": {
     "crumb": "Modpack",
-    "eyebrow": "Modpack for Mir Tankov",
     "title": "Three Marks modpack",
     "lead": "Your marks percentage right in battle, a battle log, session stats in the hangar and a replay manager — {count, plural, one {# component} other {# components}} for your own data and what the client already shows. One app installs and updates them.",
     "download": "Download the manager",
@@ -417,11 +416,7 @@
     "items": {
       "ban": {
         "question": "Can the modpack get me banned?",
-        "answer": "Bans are for mods that reveal enemies, help aiming or change vehicle stats. The modpack has none of that: its components work with your own data and with what the client already shows. Every component is checked against Lesta's list of forbidden mods."
-      },
-      "free": {
-        "question": "How much is it?",
-        "answer": "Nothing. Every component is free, there are no ads, and the modpack does not need a Plus subscription."
+        "answer": "No: every component is checked against Lesta's list of forbidden mods. What the modpack reads and what it never does is in the Fair play section above."
       },
       "patch": {
         "question": "What happens after a patch?",
@@ -455,7 +450,7 @@
   },
   "cta": {
     "title": "Try it in your next battle",
-    "text": "The manager is free, components turn off one by one, and the modpack comes off as easily as it goes on."
+    "text": "Setup takes a couple of minutes, and if you change your mind, the modpack comes off as easily as it goes on."
   },
   "profile": {
     "meta": {

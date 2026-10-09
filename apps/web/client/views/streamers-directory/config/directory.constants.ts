@@ -20,5 +20,5 @@ export const DIRECTORY = {
   emblemStroke: 1.25,
   favourites: 3,
   iconSize: 15,
-  percentFormat: { minimumFractionDigits: 1, maximumFractionDigits: 1 }
+  percentFormat: { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 }
 } as const;

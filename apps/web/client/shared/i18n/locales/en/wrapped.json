@@ -19,7 +19,6 @@
     "avgDamage": "Avg damage"
   },
   "crumb": "Year {year}",
-  "eyebrow": "Year in review · {year}",
   "title": "{nickname}: {year} in review",
   "lead": "How the year went for {nickname}: battles, damage, favorite tanks and the best battle.",
   "missing": {

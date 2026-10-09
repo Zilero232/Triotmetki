@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { accountIdSchema, countSchema, isoDateTimeSchema, percentSchema } from '../common/primitives/primitives.schemas';
 import { vehicleFilterSchema, vehicleSummarySchema } from '../vehicles/vehicles.schemas';

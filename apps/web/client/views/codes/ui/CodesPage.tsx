@@ -3,7 +3,7 @@
 import { Gift } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { ActionStrip, DataSourceNote, KeyFigure, PageHero, QueryState, Skeleton, Tabs } from '@/ui-kit';
+import { ActionStrip, KeyFigure, PageHero, QueryState, Skeleton, Tabs } from '@/ui-kit';
 
 import { CODES } from '../config';
 import { useBonusCodes } from '../model/hooks';
@@ -61,7 +61,6 @@ export const CodesPage = () => {
             />
           )}
         </QueryState>
-        <DataSourceNote />
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { highlight } from 'sugar-high';
 import { describe, expect, it } from 'vitest';
 
-import { codeLines } from '@/shared/lib';
+import { codeLines } from '@/shared/lib/code-lines';
 
 const SAMPLE = "const answer = 42;\n// <script>\nfetch('/v1/players')";
 

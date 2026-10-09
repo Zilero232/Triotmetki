@@ -1,5 +1,5 @@
 import { createOverlaySchema, overlayConfigSchema } from '@otmetki/schemas';
-import { z } from 'zod';
+import * as z from 'zod';
 
 const { theme, layout, metrics, accentColor, fontScale, animate, showTank, resetAt, locale } = overlayConfigSchema.shape;
 

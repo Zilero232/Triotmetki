@@ -48,7 +48,7 @@
       "moe2": "2 отм.",
       "moe1": "1 отм."
     },
-    "progress": "{current}% → {target}%",
+    "progress": "{current}\u00a0% → {target}\u00a0%",
     "damageLeft": "ещё ≈{damage} среднего урона",
     "empty": "Нет данных о прогрессе отметок. Проценты видны с модом-компаньоном."
   },

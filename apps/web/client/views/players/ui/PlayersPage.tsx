@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { buttonVariants, DataSourceNote, PageHero } from '@/ui-kit';
+import { buttonVariants, PageHero } from '@/ui-kit';
 
 import { PlayerSearch, PopularPlayers, RecentPlayers } from './components';
 
@@ -36,7 +36,6 @@ export const PlayersPage = () => {
       <div className={s.content}>
         <RecentPlayers />
         <PopularPlayers />
-        <DataSourceNote />
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { Card, DataSourceNote, PageHeader, Skeleton } from '@/ui-kit';
+import { Card, PageHeader, Skeleton } from '@/ui-kit';
 import { SessionDetail } from '@/widgets/player/session-detail';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
@@ -33,7 +33,6 @@ export const PlayerSessionPage = ({ nickname, sessionId }: PlayerSessionPageProp
           {({ summary }) => <SessionDetail accountId={summary.accountId} nickname={summary.nickname} sessionId={sessionId} />}
         </ResourceGate>
       </Card>
-      <DataSourceNote />
     </div>
   );
 };

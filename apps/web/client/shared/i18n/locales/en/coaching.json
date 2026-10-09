@@ -14,7 +14,7 @@
     "description": "Experienced players review battles and replays for free. Send a request and the coach gets in touch."
   },
   "list": {
-    "title": "Coaches",
+    "title": "Find a coach",
     "tankPlaceholder": "Filter by tank",
     "emptyTitle": "No coaches",
     "emptyDescription": "Nobody offers coaching yet. Be the first.",
@@ -148,6 +148,7 @@
     "discordError": "2 to 128 characters",
     "active": "Taking requests",
     "activeHint": "Turn off to hide the profile from the list",
+    "loadError": "Could not load your coach profile",
     "saved": "Profile saved"
   },
   "errors": {

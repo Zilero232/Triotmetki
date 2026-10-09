@@ -166,6 +166,12 @@
     white-space: normal;
   }
 
+  .label {
+    display: flex;
+    min-height: 2lh;
+    align-items: center;
+  }
+
   .value {
     font-size: var(--num-lg);
   }

@@ -1,3 +1,5 @@
+import type { ReactElement } from 'react';
+
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -20,6 +22,14 @@ const COLUMNS: TableColumn<Row>[] = [
   { id: 'action', header: 'Action', cell: () => <button type='button'>Watch</button> }
 ];
 
+const renderTable = async (ui: ReactElement) => {
+  const { container } = render(ui);
+
+  await screen.findByRole('columnheader', { name: /Nickname/ });
+
+  return container;
+};
+
 const bodyRows = () => screen.getAllByRole('row').slice(1);
 
 const renderedNames = () => bodyRows().map((row) => within(row).getAllByRole('cell')[0].textContent);
@@ -35,9 +45,9 @@ afterEach(() => {
 });
 
 describe('DataTableVirtualRows', () => {
-  it('renders only a window of a long list, starting at the top', () => {
+  it('renders only a window of a long list, starting at the top', async () => {
     stubViewport();
-    render(<DataTable columns={COLUMNS} data={ROWS} virtualizeAfter={VIRTUALIZE_AFTER} />);
+    await renderTable(<DataTable columns={COLUMNS} data={ROWS} virtualizeAfter={VIRTUALIZE_AFTER} />);
 
     const names = renderedNames();
 
@@ -46,9 +56,9 @@ describe('DataTableVirtualRows', () => {
     expect(names.length).toBeLessThan(TOTAL);
   });
 
-  it('moves the window when the table is scrolled', () => {
+  it('moves the window when the table is scrolled', async () => {
     stubViewport();
-    const { container } = render(<DataTable columns={COLUMNS} data={ROWS} virtualizeAfter={VIRTUALIZE_AFTER} />);
+    const container = await renderTable(<DataTable columns={COLUMNS} data={ROWS} virtualizeAfter={VIRTUALIZE_AFTER} />);
     const scroller = container.querySelector('[data-virtual="true"]');
 
     if (!(scroller instanceof HTMLElement)) {
@@ -66,22 +76,22 @@ describe('DataTableVirtualRows', () => {
     expect(renderedNames()).not.toContain(ROWS[0].name);
   });
 
-  it('hands the clicked row to onRowClick', () => {
+  it('hands the clicked row to onRowClick', async () => {
     stubViewport();
     const onRowClick = vi.fn<(row: Row) => void>();
 
-    render(<DataTable columns={COLUMNS} data={ROWS} virtualizeAfter={VIRTUALIZE_AFTER} onRowClick={onRowClick} />);
+    await renderTable(<DataTable columns={COLUMNS} data={ROWS} virtualizeAfter={VIRTUALIZE_AFTER} onRowClick={onRowClick} />);
 
     fireEvent.click(within(bodyRows()[1]).getAllByRole('cell')[0]);
 
     expect(onRowClick).toHaveBeenCalledWith(ROWS[1]);
   });
 
-  it('leaves clicks on controls inside a row to the control', () => {
+  it('leaves clicks on controls inside a row to the control', async () => {
     stubViewport();
     const onRowClick = vi.fn<(row: Row) => void>();
 
-    render(<DataTable columns={COLUMNS} data={ROWS} virtualizeAfter={VIRTUALIZE_AFTER} onRowClick={onRowClick} />);
+    await renderTable(<DataTable columns={COLUMNS} data={ROWS} virtualizeAfter={VIRTUALIZE_AFTER} onRowClick={onRowClick} />);
 
     fireEvent.click(within(bodyRows()[0]).getByRole('button', { name: 'Watch' }));
 

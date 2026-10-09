@@ -1,5 +1,5 @@
-import { CrewCommanderIcon, Mark3Icon, RadioIcon, StrongholdIcon } from '@otmetki/icons';
-import { Activity, ListChecks, Newspaper, NotebookPen, PackageCheck, ScrollText, ShieldCheck, Swords, Tag, Ticket, Wrench } from 'lucide-react';
+import { CrewCommanderIcon, Mark3Icon, RadioIcon } from '@otmetki/icons';
+import { Activity, Clapperboard, ListChecks, Newspaper, NotebookPen, ScrollText, Swords, Tag, Ticket, Wrench } from 'lucide-react';
 
 import { ROUTES } from '@/shared/constants';
 
@@ -17,26 +17,9 @@ export const HOME_FIGURES = {
   version: { icon: Tag, tone: 'sky' }
 } as const;
 
-export const HOME_MODPACK = {
-  href: ROUTES.mod,
-  details: ROUTES.modFeatures,
-  props: [
-    { key: 'marks', icon: Mark3Icon, tone: 'gold' },
-    { key: 'results', icon: ScrollText, tone: 'sky' },
-    { key: 'manager', icon: PackageCheck, tone: 'olive' },
-    { key: 'fairPlay', icon: ShieldCheck, tone: 'steel' }
-  ],
-  preview: [
-    { key: 'marks', isOn: true },
-    { key: 'results', isOn: true },
-    { key: 'session', isOn: true },
-    { key: 'replayUpload', isOn: false }
-  ]
-} as const;
-
 export const HOME_COMMUNITY = [
   { key: 'streamers', href: ROUTES.streamers.list, icon: RadioIcon },
-  { key: 'clans', href: ROUTES.clans.list, icon: StrongholdIcon }
+  { key: 'forStreamers', href: ROUTES.streamers.forStreamers, icon: Clapperboard }
 ] as const;
 
 export const NEWS_KIND_ICON = {
@@ -55,8 +38,5 @@ export const HOME_ICON = {
   forYou: 16,
   dashboard: 16,
   figure: 16,
-  more: 14,
-  modpack: 18,
-  modpackProp: 20,
-  toggle: 12
+  more: 14
 } as const;

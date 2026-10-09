@@ -1,5 +1,3 @@
-import { DataSourceNote } from '@/ui-kit';
-
 import { PathAside } from '../PathAside';
 import { PremiumStrip } from '../PremiumStrip';
 import { TreeCanvas } from '../TreeCanvas';
@@ -13,6 +11,5 @@ export const TreeWorkspace = () => (
       <PathAside />
     </div>
     <PremiumStrip />
-    <DataSourceNote />
   </div>
 );

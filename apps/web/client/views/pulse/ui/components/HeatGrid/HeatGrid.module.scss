@@ -11,8 +11,11 @@
 .grid {
   --cell: 22px;
 
+  width: 100%;
+  min-width: calc(var(--cell) * 26);
   border-collapse: separate;
   border-spacing: 3px;
+  table-layout: fixed;
 
   @include below(md) {
     --cell: 14px;
@@ -25,10 +28,13 @@
   @include sr-only;
 }
 
+.corner {
+  width: 3em;
+}
+
 .hour {
   @include label;
 
-  min-width: var(--cell);
   font-weight: 500;
   text-align: start;
 }
@@ -42,7 +48,6 @@
 }
 
 .cell {
-  width: var(--cell);
   height: var(--cell);
   padding: 0;
   border-radius: var(--radius-xs);

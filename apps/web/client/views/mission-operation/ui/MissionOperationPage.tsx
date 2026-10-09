@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/shared/constants';
-import { DataSourceNote, PageHeader, PageHeaderSkeleton } from '@/ui-kit';
+import { PageHeader, PageHeaderSkeleton } from '@/ui-kit';
 import { ResourceGate } from '@/widgets/site/resource-missing';
 
 import { useOperationDetail } from '../model/hooks';
@@ -40,7 +40,6 @@ export const MissionOperationPage = () => {
           </>
         )}
       </ResourceGate>
-      <DataSourceNote />
     </div>
   );
 };

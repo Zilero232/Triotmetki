@@ -1,6 +1,6 @@
 'use client';
 
-import { CalendarDays, Trophy, UserRound, Warehouse } from 'lucide-react';
+import { CalendarDays, UserRound, Warehouse } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { CompareToggle } from '@/features/compare/compare-selection';
@@ -36,12 +36,6 @@ export const DashboardLinks = ({ accountId, nickname }: DashboardLinksProps) => 
           <Link className={s.link} href={{ pathname: ROUTES.players.profile(nickname), query: HOME.dashboard.sessionsQuery }}>
             <CalendarDays aria-hidden size={HOME_ICON.dashboard} />
             {t('sessions')}
-          </Link>
-        </li>
-        <li>
-          <Link className={s.link} href={{ pathname: ROUTES.players.profile(nickname), query: HOME.forYou.marksQuery }}>
-            <Trophy aria-hidden size={HOME_ICON.dashboard} />
-            {t('marks')}
           </Link>
         </li>
       </ul>

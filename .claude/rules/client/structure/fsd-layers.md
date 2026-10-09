@@ -29,6 +29,11 @@ barrels — they reach `shared/seo` and `next/font`, which break the middleware 
 imports `@/shared/lib/env`, `@/shared/lib/route-param`, `@/shared/config/client-env` by
 path. `decodeRouteParam` (`@/shared/lib/route-param`), `isServer` (`@/shared/lib/env`) and
 `useBreadcrumbs` (`@/shared/lib/use-breadcrumbs`) are not in the barrel; import them by path.
+Modules that import a heavy library stay out of `@/shared/lib` too (`data-file`, `code-lines`,
+`chart-scale`, `use-bar-chart-layout`, `use-line-chart-layout`, `use-data-table`,
+`use-table-virtualizer`): there is no `sideEffects` flag, so a barrel ships every module it
+re-exports on every page. A `ui-kit` primitive lazy-loads its library-backed part
+(`React.lazy` / `next/dynamic`); details in apps/web/client/CLAUDE.md.
 
 Inside a slice, relative imports go through the nearest barrel too: `../hooks`,
 `../../model/hooks`, `./components`, `../lib/<concern>` — not the file behind it

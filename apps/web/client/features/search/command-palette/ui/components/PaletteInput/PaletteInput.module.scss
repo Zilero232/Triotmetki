@@ -39,7 +39,7 @@
   }
 }
 
-.close {
+.root > .close {
   display: none;
 }
 
@@ -48,7 +48,7 @@
     display: none;
   }
 
-  .close {
+  .root > .close {
     display: inline-flex;
   }
 }

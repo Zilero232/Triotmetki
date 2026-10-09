@@ -1,6 +1,6 @@
 import type { MoeThresholdPercentiles } from '@otmetki/ratings';
 
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { recentPeriodSchema } from '../common/period/period.schemas';
 import {

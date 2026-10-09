@@ -272,8 +272,8 @@
       "lowSpotting": "Засвечено {value} при среднем {reference} — для этого класса засвет важен.",
       "lowAssist": "Помощь {value} при среднем {reference}.",
       "diedEarly": "Уничтожен рано: {value}\u00a0с из\u00a0{reference}\u00a0с боя.",
-      "lowAccuracy": "Процент попаданий {value}% при норме {reference}% и\u00a0выше.",
-      "lowPenetration": "Процент пробитий {value}% при норме {reference}% и\u00a0выше\u00a0— проверьте снаряды и\u00a0цели.",
+      "lowAccuracy": "Процент попаданий {value}\u00a0% при норме {reference}\u00a0% и\u00a0выше.",
+      "lowPenetration": "Процент пробитий {value}\u00a0% при норме {reference}\u00a0% и\u00a0выше\u00a0— проверьте снаряды и\u00a0цели.",
       "moeLoss": "Бой потянул отметку вниз: {value} при скользящем среднем {reference}."
     },
     "title": "Разбор боя"

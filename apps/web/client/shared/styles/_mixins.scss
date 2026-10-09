@@ -641,7 +641,7 @@ $status-tones: (
   }
 }
 
-@mixin touch-target($size: 40px) {
+@mixin touch-target($size: 44px) {
   @media (pointer: coarse) {
     min-width: $size;
     min-height: $size;
@@ -836,9 +836,9 @@ $status-tones: (
   @include shell;
   @include stack($gap);
 
-  padding-block: var(--space-9);
+  padding-block: var(--space-7) var(--space-9);
 
-  @include below(xl) {
-    padding-top: var(--space-7);
+  @include below(md) {
+    padding-top: var(--space-5);
   }
 }

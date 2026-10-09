@@ -6,6 +6,7 @@ export const FORMATS = {
     decimal1: { minimumFractionDigits: 1, maximumFractionDigits: 1 },
     decimal2: { minimumFractionDigits: 2, maximumFractionDigits: 2 },
     percent: { style: 'percent', maximumFractionDigits: 2 },
+    percent2: { style: 'percent', minimumFractionDigits: 2, maximumFractionDigits: 2 },
     share: { style: 'percent', maximumFractionDigits: 0 },
     signed: { signDisplay: 'exceptZero', maximumFractionDigits: 2 },
     signedPercent: { style: 'percent', signDisplay: 'exceptZero', maximumFractionDigits: 2 },

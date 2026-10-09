@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { requirementsFormSchema } from '@/features/community/stat-requirements';
 

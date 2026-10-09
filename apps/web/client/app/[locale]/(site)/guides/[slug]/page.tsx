@@ -10,6 +10,7 @@ import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
+import { RequestTime } from '@/shared/seo/request-time';
 import { PageHeaderFallback } from '@/ui-kit';
 import { GuidePage } from '@/views/guide';
 
@@ -37,9 +38,14 @@ const GuideRoute = async ({ params }: Pick<PageProps<'/[locale]/guides/[slug]'>,
 };
 
 const Page = ({ params }: PageProps<'/[locale]/guides/[slug]'>) => (
-  <Suspense fallback={<PageHeaderFallback />}>
-    <GuideRoute params={params} />
-  </Suspense>
+  <>
+    <Suspense fallback={<PageHeaderFallback />}>
+      <GuideRoute params={params} />
+    </Suspense>
+    <Suspense>
+      <RequestTime />
+    </Suspense>
+  </>
 );
 
 export default withMessages({ component: Page, messages: ['community.comments', 'community.report', 'guides', 'maps'] });

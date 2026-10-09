@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { serverPeriodSchema, skillCohortSchema } from '../common/period/period.schemas';
 import { isoDateTimeSchema } from '../common/primitives/primitives.schemas';

@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { MyFollowsStrip } from '@/features/streamer/follow-streamer';
 import { ROUTES } from '@/shared/constants';
 import { Link } from '@/shared/i18n/navigation';
-import { Button, buttonVariants, Card, DataSourceNote, EmptyState, FilteredEmptyState, PageHero, QueryState, Skeleton } from '@/ui-kit';
+import { Button, buttonVariants, Card, EmptyState, FilteredEmptyState, PageHero, QueryState, Skeleton } from '@/ui-kit';
 import { StreamersHubNav } from '@/widgets/streamer/streamers-hub';
 
 import { DIRECTORY } from '../config';
@@ -77,7 +77,6 @@ export const StreamersDirectoryPage = () => {
             {t('more')}
           </Button>
         )}
-        <DataSourceNote />
       </div>
     </div>
   );

@@ -85,7 +85,7 @@
       "meta": "Win rate and average damage of tanks on this map in random battles, from players running the Three Marks mod and uploaded replays",
       "tank": "Tank",
       "emptyTitle": "No battles yet",
-      "emptyDescription": "Random battles on this map will show up here from players running the Three Marks mod and from uploaded replays."
+      "emptyDescription": "The table fills in once enough battles on this map come in."
     }
   },
   "unnamed": "Unknown map",

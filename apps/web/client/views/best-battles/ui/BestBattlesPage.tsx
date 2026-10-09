@@ -3,7 +3,7 @@
 import { Trophy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Card, DataSourceNote, FilteredEmptyState, KeyFigure, PageHero, PodiumSkeleton, QueryState } from '@/ui-kit';
+import { Card, FilteredEmptyState, KeyFigure, PageHero, PodiumSkeleton, QueryState } from '@/ui-kit';
 
 import { BEST_BATTLES_VIEW } from '../config';
 import { useBestBattles } from '../model/hooks';
@@ -19,7 +19,7 @@ export const BestBattlesPage = () => {
     <div className={s.root}>
       <PageHero
         figures={
-          view.isFacetsPending ? (
+          view.isFacetsUnknown ? (
             <KeyFigure label={t('hero.topDamage')} value={null} variant='compact' />
           ) : (
             view.facets && (
@@ -37,6 +37,7 @@ export const BestBattlesPage = () => {
       />
       <div className={s.content}>
         {view.feed.isPending && <PodiumSkeleton count={BEST_BATTLES_VIEW.podiumSize} {...BEST_BATTLES_VIEW.podiumSkeleton} />}
+        {view.feed.isError && <PodiumSkeleton isBlank count={BEST_BATTLES_VIEW.podiumSize} {...BEST_BATTLES_VIEW.podiumSkeleton} />}
         {view.podium.length > 0 && (
           <div className={s.board} data-refreshing={view.feed.isPlaceholderData}>
             <BestBattlesPodium battles={view.podium} metric={view.metric} />
@@ -73,7 +74,6 @@ export const BestBattlesPage = () => {
             </QueryState>
           </div>
         </Card>
-        <DataSourceNote />
       </div>
     </div>
   );

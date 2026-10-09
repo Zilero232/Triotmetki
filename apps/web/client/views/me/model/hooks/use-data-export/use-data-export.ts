@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { usePlus } from '@/features/plus/plus-gate';
-import { downloadFile } from '@/shared/lib';
+import { downloadFile } from '@/shared/lib/data-file';
 
 import type { DataExportKind } from '../../../lib/data-export';
 

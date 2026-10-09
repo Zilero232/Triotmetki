@@ -30,7 +30,7 @@ export const PlaylistRow = ({ item, index }: PlaylistRowProps) => {
         {item.moePercent !== null && (
           <div className={s.fact}>
             <dt>{t('moe')}</dt>
-            <dd>{format.number(item.moePercent, 'decimal2')}%</dd>
+            <dd>{format.number(item.moePercent / 100, 'percent2')}</dd>
           </div>
         )}
         {item.damageToNextMark !== null && (

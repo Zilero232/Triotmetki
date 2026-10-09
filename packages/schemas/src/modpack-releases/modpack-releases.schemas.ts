@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { MODPACK_RELEASE_STATUSES, MODPACK_RELEASES } from './modpack-releases.constants';
 

@@ -1,6 +1,6 @@
 @use '@/shared/styles/mixins' as *;
 
-.band {
+.band.band {
   width: 100vw;
   margin-inline: calc(50% - 50vw);
 }

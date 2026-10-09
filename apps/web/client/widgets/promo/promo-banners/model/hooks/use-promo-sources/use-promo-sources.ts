@@ -9,12 +9,12 @@ import { QUERY_KEYS } from '@/shared/constants';
 import { PROMO_TANKS } from '../../../config';
 
 export const usePromoSources = () => {
-  const { isPublished, manager } = useModpackAvailability();
+  const { isPublished } = useModpackAvailability();
   const { data: tanks = [] } = useQuery({
     queryKey: QUERY_KEYS.tanks.stats(PROMO_TANKS),
     queryFn: ({ signal }) => listTankStats({ ...PROMO_TANKS, signal }),
     select: ({ items }) => items.map(({ vehicle }) => vehicle)
   });
 
-  return { isModpackPublished: isPublished, isManagerReady: manager !== null, tanks };
+  return { isModpackPublished: isPublished, tanks };
 };

@@ -1,5 +1,5 @@
 import * as Y from 'yjs';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import type { TacticLayer } from '@/entities/tactic/board';
 

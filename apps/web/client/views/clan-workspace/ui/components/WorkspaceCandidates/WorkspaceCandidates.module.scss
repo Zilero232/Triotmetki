@@ -4,7 +4,7 @@
   @include stack(var(--space-4));
 }
 
-.filter {
+.root > .filter {
   max-width: 100%;
   align-self: flex-start;
   overflow-x: auto;

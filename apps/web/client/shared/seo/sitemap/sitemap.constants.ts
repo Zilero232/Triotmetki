@@ -1,6 +1,5 @@
 import { PAGINATION } from '@otmetki/schemas';
 
-import { LEGAL } from '@/shared/config';
 import { ROUTES } from '@/shared/constants';
 
 export const SITEMAP = {
@@ -54,5 +53,7 @@ export const SITEMAP_STATIC_PATHS = [
   ROUTES.mod,
   ROUTES.plus,
   ROUTES.developers,
-  ...(LEGAL.isDraft ? [] : [ROUTES.legal.privacy, ROUTES.legal.terms, ROUTES.legal.contacts])
+  ROUTES.legal.privacy,
+  ROUTES.legal.terms,
+  ROUTES.legal.contacts
 ] as const;

@@ -2,7 +2,7 @@
 
 import { clsx } from 'clsx';
 
-import { useDataTable } from '@/shared/lib';
+import { useDataTable } from '@/shared/lib/use-data-table';
 
 import type { DataTableProps } from '../../DataTable.types';
 

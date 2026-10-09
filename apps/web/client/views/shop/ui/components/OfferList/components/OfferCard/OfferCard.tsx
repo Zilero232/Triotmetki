@@ -23,7 +23,7 @@ export const OfferCard = ({ entry: { offer, href, vehicles, isRunning } }: Offer
         ) : (
           <span className={s.title}>{offer.title}</span>
         )}
-        {offer.discountPercent !== null && <Badge tone='success'>−{offer.discountPercent}%</Badge>}
+        {offer.discountPercent !== null && <Badge tone='success'>−{format.number(offer.discountPercent / 100, 'percent')}</Badge>}
       </div>
       {vehicles.length > 0 && (
         <ul aria-label={t('tanks')} className={s.tanks}>

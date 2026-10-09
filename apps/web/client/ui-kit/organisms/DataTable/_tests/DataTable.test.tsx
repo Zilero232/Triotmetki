@@ -1,3 +1,5 @@
+import type { ReactElement } from 'react';
+
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
@@ -19,6 +21,12 @@ const COLUMNS: TableColumn<Row>[] = [
   { accessorKey: 'wn8', header: 'WN8' }
 ];
 
+const renderTable = async (ui: ReactElement) => {
+  render(ui);
+
+  await screen.findByRole('columnheader', { name: /Nickname/ });
+};
+
 const bodyNames = () =>
   screen
     .getAllByRole('row')
@@ -26,14 +34,14 @@ const bodyNames = () =>
     .map((row) => within(row).getAllByRole('cell')[0].textContent);
 
 describe('DataTable', () => {
-  it('renders a row per item under a header row', () => {
-    render(<DataTable columns={COLUMNS} data={ROWS} />);
+  it('renders a row per item under a header row', async () => {
+    await renderTable(<DataTable columns={COLUMNS} data={ROWS} />);
 
     expect(screen.getAllByRole('row')).toHaveLength(ROWS.length + 1);
   });
 
-  it('honours the initial sorting', () => {
-    render(<DataTable columns={COLUMNS} data={ROWS} initialSorting={[{ id: 'wn8', desc: true }]} />);
+  it('honours the initial sorting', async () => {
+    await renderTable(<DataTable columns={COLUMNS} data={ROWS} initialSorting={[{ id: 'wn8', desc: true }]} />);
 
     const expected = [...ROWS].sort((a, b) => b.wn8 - a.wn8).map((row) => row.name);
 
@@ -41,32 +49,32 @@ describe('DataTable', () => {
     expect(screen.getByRole('columnheader', { name: /WN8/ })).toHaveAttribute('aria-sort', 'descending');
   });
 
-  it('sorts when a header is clicked', () => {
-    render(<DataTable columns={COLUMNS} data={ROWS} />);
+  it('sorts when a header is clicked', async () => {
+    await renderTable(<DataTable columns={COLUMNS} data={ROWS} />);
 
     fireEvent.click(screen.getByRole('button', { name: /Nickname/ }));
 
     expect(bodyNames()).toEqual(ROWS.map((row) => row.name).sort());
   });
 
-  it('shows the empty state when there is no data', () => {
-    render(<DataTable columns={COLUMNS} data={[]} emptyState={<p>Нет данных</p>} />);
+  it('shows the empty state when there is no data', async () => {
+    await renderTable(<DataTable columns={COLUMNS} data={[]} emptyState={<p>Нет данных</p>} />);
 
     expect(screen.getByText('Нет данных')).toBeInTheDocument();
   });
 
-  it('renders every row of a list up to the virtualisation threshold', () => {
+  it('renders every row of a list up to the virtualisation threshold', async () => {
     const rows = Array.from({ length: DATA_TABLE.virtualizeAfter }, (_, index) => ({ name: `Player ${index}`, wn8: index }));
 
-    render(<DataTable columns={COLUMNS} data={rows} />);
+    await renderTable(<DataTable columns={COLUMNS} data={rows} />);
 
     expect(screen.getAllByRole('row')).toHaveLength(rows.length + 1);
   });
 
-  it('virtualises long lists instead of rendering every row', () => {
+  it('virtualises long lists instead of rendering every row', async () => {
     const many = Array.from({ length: 500 }, (_, index) => ({ name: `Player ${index}`, wn8: index }));
 
-    render(<DataTable columns={COLUMNS} data={many} virtualizeAfter={50} />);
+    await renderTable(<DataTable columns={COLUMNS} data={many} virtualizeAfter={50} />);
 
     expect(screen.getAllByRole('row').length).toBeLessThan(many.length);
   });

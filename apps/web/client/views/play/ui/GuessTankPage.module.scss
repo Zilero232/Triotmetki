@@ -3,3 +3,12 @@
 .root {
   @include page(var(--gap-section));
 }
+
+.busy {
+  display: contents;
+}
+
+.reserved {
+  display: grid;
+  min-width: 0;
+}

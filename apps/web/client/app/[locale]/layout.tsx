@@ -1,8 +1,9 @@
 import { clsx } from 'clsx';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale } from 'next-intl/server';
+import { preconnect } from 'react-dom';
 
-import { FONT_VARIABLES } from '@/shared/config';
+import { env, FONT_VARIABLES } from '@/shared/config';
 import { FORMATS, resolveLocale, routing, TIME_ZONE } from '@/shared/i18n';
 import { defaultMetadata, defaultViewport } from '@/shared/seo';
 
@@ -20,6 +21,8 @@ export const generateStaticParams = () => routing.locales.map((locale) => ({ loc
 
 const LocaleLayout = async ({ children }: Pick<LayoutProps<'/[locale]'>, 'children'>) => {
   const locale = resolveLocale(await getLocale());
+
+  preconnect(env.NEXT_PUBLIC_API_URL, { crossOrigin: 'anonymous' });
 
   return (
     <html suppressHydrationWarning className={clsx(FONT_VARIABLES)} data-theme='dark' lang={locale}>

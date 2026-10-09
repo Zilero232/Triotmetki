@@ -50,7 +50,7 @@ This is the status of every area at the last audit. **Ready** means the piece is
 | **Bots and streamer integrations**: Telegram, Discord, VK, Twitch, DonationAlerts, VK Video Live, YouTube | Blocked, optional | Each one is off while its token is empty |
 | **SMTP**: `SMTP_*`, `EMAIL_FROM`, SPF/DKIM | Blocked, optional | Email is off while `SMTP_HOST` is empty. Leave it empty rather than copying the Mailpit values from `.env.example` |
 | Web push (`VAPID_*`) | Optional | `bunx web-push generate-vapid-keys` |
-| **Legal pages**: operator name, ИНН, ОГРН/ОГРНИП, address, dates, hosting, payments, retention, cookies | Blocked | 13 `<todo>` per language (§5) |
+| Legal pages `/privacy`, `/terms`, `/contacts`: no operator requisites by design, indexed and in the sitemap | Ready | The Payment section of `/terms` before checkout opens (§5) |
 | **Release signing**: `TAURI_SIGNING_PRIVATE_KEY`, `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | Blocked | One minisign key signs both the manager's self-update and every modpack release the manager installs. `release.yml` refuses to run without it. Its public half must match `plugins.updater.pubkey` in `tauri.conf.json` (§4) |
 | Windows code signing of the manager installer | Not set up | The NSIS installer ships unsigned, and SmartScreen warns on the first run |
 | Modpack and manager release (`release.yml`) | Ready | Needs the secrets above and the downloads folder; the first release is in §4 |
@@ -222,15 +222,7 @@ Later releases: bump the versions, commit, push and run the workflow again. Only
 
 ## 5. Legal pages and Plus: fill before checkout opens
 
-- [ ] `/privacy`, `/terms` and `/contacts` are **drafts**. They render a "draft" banner, and every `<todo>…</todo>` in `apps/web/client/shared/i18n/locales/{ru,en}/legal.json` (13 per language) must be filled before launch:
-  - operator full name or company name, ИНН (TIN), ОГРН/ОГРНИП (PSRN), address and contact e-mail;
-  - effective dates;
-  - hosting provider and region;
-  - payment provider name and refund terms;
-  - retention period;
-  - cookies and third-party list.
-
-  Once they are filled, drop the draft notice.
+- [ ] The legal pages publish no operator requisites: the operator is the project team, reachable at the support email. If the cookies, retention periods (`RETENTION` in the purge module, the Timescale policies, the backup rotation) or the data shared with third parties change, update `apps/web/client/shared/i18n/locales/{ru,en}/legal.json` and its revision date. Before checkout opens, fill the `payment` section of `/terms` (prices, the payment provider, renewal, receipts) and the `transfer` and `data` sections of `/privacy` if anything else changes.
 - [ ] Plus checkout stays off (`PLUS.checkoutEnabled = false` in `packages/schemas/src/plus`) until Lesta confirms the model in writing (see [docs/research/data/lesta-api.md](../research/data/lesta-api.md#monetisation-status)). To open checkout:
   - set `YOOKASSA_*` and the webhook;
   - flip the flag and deploy.

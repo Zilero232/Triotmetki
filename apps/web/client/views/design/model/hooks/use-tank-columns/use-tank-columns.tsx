@@ -35,7 +35,7 @@ export const useTankColumns = (): TableColumn<TankServerStatsRow>[] => {
         <RatingBadge
           size='sm'
           tone={ratingTone({ scale: 'winRate', value: info.getValue() })}
-          value={`${format.number(info.getValue(), { maximumFractionDigits: 2 })}%`}
+          value={format.number(info.getValue() / 100, 'percent')}
           withPips={false}
         />
       ),

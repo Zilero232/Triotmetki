@@ -1,7 +1,8 @@
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { GridRows } from '@visx/grid';
 
-import { CHART, tickIndices } from '@/shared/lib';
+import { CHART } from '@/shared/lib';
+import { tickIndices } from '@/shared/lib/chart-scale';
 
 import type { ChartAxesProps } from '../../ChartKit.types';
 

@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { vehicleStatsSchema } from '../../builds/builds.schemas';
 import { ratingPeriodSchema, serverPeriodSchema, skillCohortSchema, statsModeSchema } from '../../common/period/period.schemas';

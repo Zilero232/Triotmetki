@@ -3,7 +3,7 @@
 import { CrosshairIcon } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
-import { Badge, DataSourceNote, EmptyState, KeyFigure, PageHero, QueryState, SectionHeader, Skeleton } from '@/ui-kit';
+import { Badge, EmptyState, KeyFigure, PageHero, QueryState, SectionHeader, Skeleton } from '@/ui-kit';
 
 import { useMissionsHub } from '../model/hooks';
 import { MissionsSkeleton, OperationCard } from './components';
@@ -54,7 +54,6 @@ export const MissionsPage = () => {
             ))
           }
         </QueryState>
-        <DataSourceNote />
       </div>
     </div>
   );

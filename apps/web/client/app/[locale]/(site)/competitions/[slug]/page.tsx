@@ -10,6 +10,7 @@ import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
+import { RequestTime } from '@/shared/seo/request-time';
 import { PageHeaderFallback } from '@/ui-kit';
 import { CompetitionPage } from '@/views/competition';
 
@@ -36,9 +37,14 @@ const CompetitionRoute = async ({ params }: Pick<PageProps<'/[locale]/competitio
 };
 
 const Page = ({ params }: PageProps<'/[locale]/competitions/[slug]'>) => (
-  <Suspense fallback={<PageHeaderFallback />}>
-    <CompetitionRoute params={params} />
-  </Suspense>
+  <>
+    <Suspense fallback={<PageHeaderFallback />}>
+      <CompetitionRoute params={params} />
+    </Suspense>
+    <Suspense>
+      <RequestTime />
+    </Suspense>
+  </>
 );
 
 export default withMessages({ component: Page, messages: ['competitions', 'tournaments.head', 'tournaments.tabs'] });

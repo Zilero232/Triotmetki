@@ -7,3 +7,8 @@ export type PercentTextInput = {
   value: number | null | undefined;
   digits?: number;
 };
+
+export type UnitSuffixInput = {
+  suffix: string | undefined;
+  locale: string;
+};

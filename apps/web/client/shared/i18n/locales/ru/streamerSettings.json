@@ -106,7 +106,7 @@
     "hz": "{value} Гц",
     "fps": "{value} FPS",
     "deg": "{value}°",
-    "percent": "{value}%",
+    "percent": "{value}\u00a0%",
     "gb": "{value} ГБ"
   },
   "sources": {

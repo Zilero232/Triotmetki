@@ -4,18 +4,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { useId } from 'react';
 
 import { ROUTES } from '@/shared/constants';
-import {
-  Card,
-  DataSourceNote,
-  DataTable,
-  EmptyState,
-  Podium,
-  PodiumCard,
-  PodiumSkeleton,
-  QueryState,
-  SectionHeader,
-  SegmentedControl
-} from '@/ui-kit';
+import { Card, DataTable, EmptyState, Podium, PodiumCard, PodiumSkeleton, QueryState, SectionHeader, SegmentedControl } from '@/ui-kit';
 
 import { HOME } from '../../../config';
 import { useTopPlayerColumns, useTopPlayers } from '../../../model/hooks';
@@ -84,7 +73,6 @@ export const TopPlayers = () => {
           </>
         )}
       </QueryState>
-      <DataSourceNote />
     </section>
   );
 };

@@ -1,3 +1,3 @@
 export const API_TERMS = {
-  items: ['free', 'personal', 'community', 'resale', 'lesta']
+  items: ['personal', 'resale', 'lesta']
 } as const;

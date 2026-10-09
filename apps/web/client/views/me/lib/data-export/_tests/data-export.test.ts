@@ -2,7 +2,7 @@ import type { AnalyticsExport, RawStatsExport } from '@otmetki/schemas';
 
 import { describe, expect, it } from 'vitest';
 
-import { DATA_FILE } from '@/shared/lib';
+import { DATA_FILE } from '@/shared/lib/data-file';
 
 import { exportFile, isRawExport } from '../data-export';
 

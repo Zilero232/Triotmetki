@@ -1,5 +1,5 @@
 import { createWebhookEndpointSchema, WEBHOOK, webhookFilterSchema } from '@otmetki/schemas';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import type { ReportIssueInput } from './webhook-form.types';
 

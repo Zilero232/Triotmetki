@@ -4,7 +4,7 @@ import { FlaskConical } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { PlusBadge, PlusGate } from '@/features/plus/plus-gate';
-import { ActionStrip, DataSourceNote, KeyFigure, PageHero, Tabs } from '@/ui-kit';
+import { ActionStrip, KeyFigure, PageHero, Tabs } from '@/ui-kit';
 
 import { SUPERTEST, SUPERTEST_SCOPES } from '../config';
 import { useSupertestPage } from '../model/hooks';
@@ -55,7 +55,6 @@ export const SupertestPage = () => {
         ) : (
           <SupertestFeed scope='all' />
         )}
-        <DataSourceNote />
       </div>
     </div>
   );

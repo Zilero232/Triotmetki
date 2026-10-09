@@ -79,7 +79,7 @@ const setup = ({ session, integrations = [] }: Seed) => {
     </QueryClientProvider>
   );
 
-  return renderHook(() => useClaimProfile(SLUG), { wrapper });
+  return { client, ...renderHook(() => useClaimProfile(SLUG), { wrapper }) };
 };
 
 const renderReady = async (claim: StreamerClaim | null, integrations: StreamerIntegration[] = []) => {
@@ -223,5 +223,15 @@ describe('useClaimProfile', () => {
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith(TEXT.resolved.toast));
     expect(toast.info).not.toHaveBeenCalled();
     expect(result.current.stage).toBe('resolved');
+  });
+
+  it('refreshes the studio profile once a claim is verified, so the studio no longer reports no profile', async () => {
+    vi.mocked(verifyClaim).mockResolvedValue({ ...OPEN_CODE_CLAIM, status: 'resolved' });
+    const { client, result } = await renderReady(OPEN_CODE_CLAIM);
+
+    client.setQueryData(QUERY_KEYS.me.streamer.profile, null);
+    act(() => result.current.onVerify());
+
+    await waitFor(() => expect(client.getQueryState(QUERY_KEYS.me.streamer.profile)?.isInvalidated).toBe(true));
   });
 });

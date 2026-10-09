@@ -1,8 +1,8 @@
 import { match } from 'ts-pattern';
 
-import type { DownloadFileInput } from '@/shared/lib';
+import type { DownloadFileInput } from '@/shared/lib/data-file';
 
-import { DATA_FILE, toCsv } from '@/shared/lib';
+import { DATA_FILE, toCsv } from '@/shared/lib/data-file';
 
 import type { CsvFileInput, DataExportKind, ExportFileInput, JsonFileInput, RawExportKind } from './data-export.types';
 

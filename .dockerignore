@@ -6,6 +6,7 @@
 
 # Build outputs and local state that have no business in an image.
 **/.next
+**/.next-*
 **/out
 **/dist
 **/generated

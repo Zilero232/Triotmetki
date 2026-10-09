@@ -22,7 +22,7 @@ export const useMissionsHub = () => {
   return {
     campaigns,
     operationsCount: operationsCount > 0 ? operationsCount : null,
-    hasFigure: campaigns.isPending || operationsCount > 0,
+    hasFigure: campaigns.isPending || campaigns.isError || operationsCount > 0,
     progressOf: (questIds: readonly number[]) => (isSignedIn ? operationProgress({ questIds, items }) : null)
   };
 };

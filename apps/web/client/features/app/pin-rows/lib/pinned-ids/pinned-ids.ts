@@ -1,5 +1,5 @@
 import { unique } from 'remeda';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import type { TogglePinnedIdInput } from './pinned-ids.types';
 

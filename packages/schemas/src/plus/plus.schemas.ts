@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import type { PLUS_LIMITS } from './plus.constants';
 

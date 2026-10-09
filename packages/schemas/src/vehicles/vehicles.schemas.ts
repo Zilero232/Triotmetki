@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { tankIdSchema } from '../common/primitives/primitives.schemas';
 import { booleanParam, listParam } from '../common/query/query.schemas';

@@ -1,12 +1,13 @@
 'use client';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import { BLOG_CATEGORIES, listBlogPosts } from '@/entities/blog/post';
 import { useBlogEditorAccess } from '@/features/blog/editor-access';
 import { env } from '@/shared/config';
 import { QUERY_KEYS } from '@/shared/constants';
+import { resolveLocale } from '@/shared/i18n';
 import { nextPageOffset } from '@/shared/lib';
 
 import { BLOG_PAGE } from '../../../config';
@@ -19,9 +20,12 @@ export const useBlogFeed = () => {
   const filters = useBlogFilters();
   const tags = useBlogTags();
   const { canEdit } = useBlogEditorAccess();
+  const locale = resolveLocale(useLocale());
+  const params = { ...filters.params, locale };
+
   const query = useInfiniteQuery({
-    queryKey: QUERY_KEYS.blog.list(filters.params),
-    queryFn: ({ pageParam, signal }) => listBlogPosts({ ...filters.params, limit: BLOG_PAGE.pageSize, offset: pageParam, signal }),
+    queryKey: QUERY_KEYS.blog.list(params),
+    queryFn: ({ pageParam, signal }) => listBlogPosts({ ...params, limit: BLOG_PAGE.pageSize, offset: pageParam, signal }),
     initialPageParam: 0,
     getNextPageParam: nextPageOffset,
     staleTime: BLOG_PAGE.staleMs

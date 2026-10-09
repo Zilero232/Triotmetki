@@ -15,7 +15,7 @@ export const HeatGrid = ({ rows }: HeatGridProps) => {
         <caption className={s.caption}>{t('caption')}</caption>
         <thead>
           <tr>
-            <th scope='col'>
+            <th className={s.corner} scope='col'>
               <span className={s.caption}>{t('day')}</span>
             </th>
             {rows[0]?.cells.map((cell) => (

@@ -3,7 +3,7 @@
 import { GlobalMapIcon } from '@otmetki/icons';
 import { useTranslations } from 'next-intl';
 
-import { DataSourceNote, PageHero, Tabs } from '@/ui-kit';
+import { PageHero, Tabs } from '@/ui-kit';
 import { MapRotationPanel } from '@/widgets/map/map-rotation';
 
 import { useMapsTab } from '../model/hooks';
@@ -35,7 +35,6 @@ export const MapsPage = () => {
           variant='panel'
           onValueChange={setTab}
         />
-        <DataSourceNote />
       </div>
     </div>
   );

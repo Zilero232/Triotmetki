@@ -1,10 +1,11 @@
 'use client';
 
-import { seriesTone, useBarChartLayout } from '@/shared/lib';
+import { seriesTone } from '@/shared/lib';
+import { useBarChartLayout } from '@/shared/lib/use-bar-chart-layout';
 
 import type { BarChartPlotProps } from '../../BarChart.types';
 
-import { ChartCanvas } from '../../../ChartKit';
+import { ChartCanvas } from '../../../ChartKit/components/ChartCanvas';
 
 import s from '../../../ChartKit/ChartKit.module.scss';
 

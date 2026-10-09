@@ -62,7 +62,7 @@
   font-size: var(--text-xs);
 }
 
-.clear {
+.root > .clear {
   position: absolute;
   top: 50%;
   right: var(--space-2);

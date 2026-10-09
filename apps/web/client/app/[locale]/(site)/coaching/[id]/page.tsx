@@ -10,6 +10,7 @@ import { ROUTES } from '@/shared/constants';
 import { resolveLocale } from '@/shared/i18n';
 import { decodeRouteParam } from '@/shared/lib/route-param';
 import { createPageMetadata } from '@/shared/seo';
+import { RequestTime } from '@/shared/seo/request-time';
 import { PageHeaderFallback } from '@/ui-kit';
 import { CoachPage } from '@/views/coach';
 
@@ -36,9 +37,14 @@ const CoachRoute = async ({ params }: Pick<PageProps<'/[locale]/coaching/[id]'>,
 };
 
 const Page = ({ params }: PageProps<'/[locale]/coaching/[id]'>) => (
-  <Suspense fallback={<PageHeaderFallback />}>
-    <CoachRoute params={params} />
-  </Suspense>
+  <>
+    <Suspense fallback={<PageHeaderFallback />}>
+      <CoachRoute params={params} />
+    </Suspense>
+    <Suspense>
+      <RequestTime />
+    </Suspense>
+  </>
 );
 
 export default withMessages({ component: Page, messages: ['coaching', 'community.stats', 'tanks.picker'] });

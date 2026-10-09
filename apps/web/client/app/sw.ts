@@ -4,7 +4,7 @@ import type { PrecacheEntry, SerwistGlobalConfig } from 'serwist';
 
 import { defaultCache } from '@serwist/turbopack/worker';
 import { Serwist } from 'serwist';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { PWA } from '../shared/config/pwa';
 import { sameOriginCaching } from '../shared/lib/same-origin-caching';

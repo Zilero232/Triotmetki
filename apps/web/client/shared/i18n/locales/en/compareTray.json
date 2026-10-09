@@ -22,8 +22,8 @@
     "add": "Add “{name}” to the comparison",
     "remove": "Remove “{name}” from the comparison",
     "full": {
-      "tank": "{limit} tanks are already picked — remove one to add another",
-      "player": "{limit} players are already picked — remove one to add another"
+      "tank": "{limit, plural, one {# tank is} other {# tanks are}} already picked — remove one to add another",
+      "player": "{limit, plural, one {# player is} other {# players are}} already picked — remove one to add another"
     },
     "button": "Add to compare",
     "buttonOn": "In comparison",

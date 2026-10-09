@@ -7,7 +7,7 @@ import { resolvePromos } from '../../../lib/resolve-promos';
 import { usePromoSources } from '../use-promo-sources';
 
 export const usePromoBoard = () => {
-  const { isModpackPublished, isManagerReady, tanks } = usePromoSources();
+  const { isModpackPublished, tanks } = usePromoSources();
 
   const resolve = (ids: readonly PromoId[]) => resolvePromos({ ids, specs: PROMO_ITEMS, isModpackPublished, tanks });
 
@@ -17,7 +17,6 @@ export const usePromoBoard = () => {
       key: ids.join('-'),
       items: resolve(ids),
       delay: PROMO_CAROUSEL.tileDelay + index * PROMO_CAROUSEL.tileStagger
-    })),
-    isManagerReady
+    }))
   };
 };

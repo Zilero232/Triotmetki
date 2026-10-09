@@ -11,6 +11,18 @@
   }
 }
 
+.guest {
+  --empty-state-justify: center;
+
+  min-height: 240px;
+  padding: var(--space-8) var(--space-7);
+  text-align: center;
+
+  @include below(md) {
+    padding: var(--space-6) var(--space-5);
+  }
+}
+
 .skeleton {
   @include stack(var(--gap-panel));
 }

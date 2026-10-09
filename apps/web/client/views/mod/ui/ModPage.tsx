@@ -29,7 +29,6 @@ export const ModPage = () => {
         actions={<ModActions />}
         art={{ kind: 'emblem', glyph: <OtmetkiLogoIcon size={MOD_PAGE.heroGlyph} /> }}
         breadcrumbs={[{ label: t('crumb') }]}
-        eyebrow={t('eyebrow')}
         lead={t('lead', { count: figures.components })}
         title={t('title')}
       />

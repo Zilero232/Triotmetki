@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { accountIdSchema, isoDateSchema, isoDateTimeSchema } from '../common/primitives/primitives.schemas';
 import { OFFICIAL_RATING_FIELDS, OFFICIAL_RATING_PERIODS, OFFICIAL_RATINGS } from './official-ratings.constants';

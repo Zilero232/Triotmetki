@@ -10,7 +10,7 @@
     "source": "Mir Tankov {version} · {client}",
     "sourceTitle": "Geometry, armor, modules and shells come from the Mir Tankov (Lesta Games) client, build {client}",
     "fallbackTitle": "Armor",
-    "intro": "An interactive armor layout: effective armor, spaced plates, ricochets and penetration with the chosen shell at any distance. The tank’s specs are on the <link>tank page</link>."
+    "intro": "An interactive armor layout: effective armor, spaced plates, ricochets and penetration with the chosen shell at any distance."
   },
   "states": {
     "loading": "Scanning the armor…",
@@ -107,12 +107,12 @@
   },
   "quota": {
     "remaining": "3D views left: {remaining} of {limit}. The allowance renews on {date}.",
-    "signIn": "Sign in with Lesta ID for {count} views a month",
+    "signIn": "Sign in with Lesta ID for {count, plural, one {# view} other {# views}} a month",
     "plus": "Unlimited with Plus"
   },
   "limit": {
     "title": "This month's free 3D views are used up",
-    "anonymous": "Without signing in you can open {limit, plural, one {# vehicle} other {# vehicles}} in 3D. Sign in with Lesta ID to get {free} views a month, or go unlimited with Plus. The tank page stays free.",
+    "anonymous": "Without signing in you can open {limit, plural, one {# vehicle} other {# vehicles}} in 3D. Sign in with Lesta ID to get {free, plural, one {# view} other {# views}} a month, or go unlimited with Plus. The tank page stays free.",
     "free": "You have opened {limit, plural, one {# vehicle} other {# vehicles}} in 3D this month, which is the free allowance. It renews on {date}, and vehicles you opened in the last day can still be viewed again. Plus makes 3D armor unlimited."
   },
   "attack": {

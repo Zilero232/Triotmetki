@@ -52,15 +52,15 @@ afterEach(() => {
 });
 
 describe('PinToggle', () => {
-  it('pins a row and re-renders only the toggle whose state changed', () => {
+  it('pins a row and re-renders only the toggle whose state changed', async () => {
     render(
       <NextIntlClientProvider locale='ru' messages={messages.ru}>
         <PinnedTable />
       </NextIntlClientProvider>
     );
 
+    const [, bravo] = await screen.findAllByRole('button', { pressed: false });
     const before = new Map(renders);
-    const [, bravo] = screen.getAllByRole('button', { pressed: false });
 
     fireEvent.click(bravo);
 

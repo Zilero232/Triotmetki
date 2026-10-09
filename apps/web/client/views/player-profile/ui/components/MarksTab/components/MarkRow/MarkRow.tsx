@@ -30,7 +30,7 @@ export const MarkRow = ({ row, averageDamage }: MarkRowProps) => {
       </div>
       <div className={s.progress}>
         <div className={s.head}>
-          <span className={s.percent}>{format.number(percent, { maximumFractionDigits: 2 })}%</span>
+          <span className={s.percent}>{format.number(percent / 100, 'percent')}</span>
           {nextMarkPercent !== null && damageToNextMark !== null && (
             <span className={s.next}>{t('toNext', { percent: nextMarkPercent, damage: format.number(damageToNextMark) })}</span>
           )}

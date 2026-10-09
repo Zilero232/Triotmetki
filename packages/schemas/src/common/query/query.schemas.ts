@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { countSchema } from '../primitives/primitives.schemas';
 import { LIST_SEPARATOR, PAGINATION } from './query.constants';

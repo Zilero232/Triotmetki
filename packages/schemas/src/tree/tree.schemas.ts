@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { countSchema, tankIdSchema } from '../common/primitives/primitives.schemas';
 import { nationSchema, vehicleSummarySchema } from '../vehicles/vehicles.schemas';

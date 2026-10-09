@@ -10,7 +10,6 @@ import {
   HomeActions,
   HomeHero,
   MarksMovement,
-  ModpackPromo,
   MyDashboard,
   StrongTanks,
   TopPlayers
@@ -37,9 +36,6 @@ export const HomePage = () => (
     </Reveal>
     <Reveal>
       <MarksMovement />
-    </Reveal>
-    <Reveal>
-      <ModpackPromo />
     </Reveal>
     <Reveal>
       <Band as='div' isDark={false} texture='noise' tone='raised' width='full'>

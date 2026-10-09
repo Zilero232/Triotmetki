@@ -3,19 +3,7 @@
 import { CalendarDays, CalendarPlus, CalendarX2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import {
-  ActionStrip,
-  buttonVariants,
-  CopyField,
-  DataSourceNote,
-  EmptyState,
-  ErrorState,
-  KeyFigure,
-  PageHero,
-  QueryState,
-  Skeleton,
-  ToggleChips
-} from '@/ui-kit';
+import { ActionStrip, buttonVariants, CopyField, EmptyState, ErrorState, KeyFigure, PageHero, QueryState, Skeleton, ToggleChips } from '@/ui-kit';
 
 import { EVENTS, EVENTS_FEED } from '../config';
 import { useEventCalendar } from '../model/hooks';
@@ -92,9 +80,6 @@ export const EventsPage = () => {
           <EventsPast />
         </section>
       </QueryState>
-      <div className={s.section}>
-        <DataSourceNote />
-      </div>
     </div>
   );
 };

@@ -19,7 +19,6 @@
     "avgDamage": "Средний урон"
   },
   "crumb": "{year} год",
-  "eyebrow": "Итоги года · {year}",
   "title": "{nickname}: итоги {year} года",
   "lead": "Каким был год для {nickname}: бои, урон, любимые танки и лучший бой.",
   "missing": {
